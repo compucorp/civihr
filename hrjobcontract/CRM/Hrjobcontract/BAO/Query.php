@@ -63,6 +63,8 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
           'type'  => CRM_Utils_Type::T_INT,
           'where' => 'hrjobcontract.id'
       );
+
+      self::$_hrjobFields['hrjobcontract_leave_leave_amount']['type'] = CRM_Utils_Type::T_STRING;
     }
 
     return self::$_hrjobFields;
@@ -73,7 +75,14 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $fields = $this->getFields();
       foreach ($fields as $fldName => $params) {
         if (!empty($query->_returnProperties[$fldName])) {
-          $query->_select[$fldName]  = "{$params['where']} as $fldName";
+          if ($fldName == 'hrjobcontract_leave_leave_amount') {
+            $query->_select[$fldName] = "GROUP_CONCAT(civicrm_hrjobcontract_leave.leave_type,
+            ':', civicrm_hrjobcontract_leave.leave_amount) as $fldName";
+          }
+          else{
+            $query->_select[$fldName] = "{$params['where']} as $fldName";
+          }
+
           $query->_element[$fldName] = 1;
           list($tableName, $dnc) = explode('.', $params['where'], 2);
           $query->_tables[$tableName]  = $query->_whereTables[$tableName] = 1;
@@ -210,7 +219,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
       case 'hrjobcontract_leave_leave_type':
         $query->_qill[$grouping][]  = 'Leave Type IN ' . implode(', ', $value) . '';
-        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("civicrm_hrjobcontract_leave.leave_type", 'IN', '(' . implode(',', $value) . ')');
+        $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("civicrm_hrjobcontract_leave.leave_type", 'IN', $value);
         $query->_where[$grouping][] = CRM_Contact_BAO_Query::buildClause("civicrm_hrjobcontract_leave.leave_amount", '>', 0);
         $query->_tables['civicrm_hrjobcontract_leave'] = $query->_whereTables['civicrm_hrjobcontract_leave'] = 1;
         return;
@@ -327,11 +336,15 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
   function from($name, $mode, $side) {
     $from = '';
-    $todayDate = date('Y-m-d');
     switch ($name) {
       case 'civicrm_contact':
         $from .= " $side JOIN civicrm_hrjobcontract hrjobcontract ON hrjobcontract.contact_id = contact_a.id AND hrjobcontract.deleted = 0 ";
-        $from .= " $side JOIN civicrm_hrjobcontract_revision rev ON rev.jobcontract_id = hrjobcontract.id ";
+        $from .= " $side JOIN civicrm_hrjobcontract_revision rev ON rev.id = (SELECT id
+                    FROM civicrm_hrjobcontract_revision jcr2
+                    WHERE
+                    jcr2.jobcontract_id = hrjobcontract.id
+                    ORDER BY jcr2.effective_date DESC
+                    LIMIT 1)";
       break;
       case 'civicrm_hrjobcontract_details':
         $from .= " $side JOIN civicrm_hrjobcontract_details ON rev.details_revision_id = civicrm_hrjobcontract_details.jobcontract_revision_id ";

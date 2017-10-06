@@ -78,7 +78,7 @@ define([
         return $q.all([
           (function () {
             var params = _.assign({}, filters, (additionalParams || {}), {
-              options: { sort: sort || 'id DESC' }
+              options: _.assign({}, filters.options, { sort: sort || 'id DESC' })
             });
 
             if (pagination) {
@@ -106,9 +106,9 @@ define([
           return {
             list: currentList.values,
             total: allList.count,
-            allIds: allList.values.map(function (record) {
+            allIds: _.compact(allList.values.map(function (record) {
               return record.id;
-            }).join(',')
+            })).join(',')
           };
         });
       },

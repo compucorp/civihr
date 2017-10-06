@@ -20,7 +20,7 @@ gulp.task('sass', ['sass:sync'], function () {
     .pipe(stripCssComments({ preserve: false }))
     .pipe(postcss([postcssPrefix({
       prefix: bootstrapNamespace + ' ',
-      exclude: [/^html/, /^body/]
+      exclude: [/^html/, /^body/, /page-civi/]
     })]))
     .pipe(transformSelectors(namespaceRootElements, { splitOnCommas: true }))
     .pipe(gulp.dest('css/'));

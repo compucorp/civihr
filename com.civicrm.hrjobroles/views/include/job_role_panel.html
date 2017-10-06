@@ -5,7 +5,7 @@
         <div class="col-sm-6">
           <dl class="dl-inline">
             <dt>Role / Project Name:</dt>
-            <dd>{{jobroles.edit_data[job_roles_data.id]['title']}}</dd>
+            <dd>{{jobroles.editData[job_roles_data.id]['title']}}</dd>
           </dl>
         </div>
         <div class="col-sm-6">
@@ -57,11 +57,11 @@
                 <div class="col-sm-8">
                   <p
                     class="form-control-static"
-                    editable-text="jobroles.edit_data[job_roles_data.id]['title']"
+                    editable-text="jobroles.editData[job_roles_data.id]['title']"
                     e-name="title"
                     onbeforesave="jobroles.validateTitle($data)"
                     e-required>
-                    {{jobroles.edit_data[job_roles_data.id]['title'] || '-'}}
+                    {{jobroles.editData[job_roles_data.id]['title'] || '-'}}
                   </p>
                 </div>
               </div>
@@ -69,12 +69,12 @@
                 <label for="contract" class="col-sm-4 control-label">Contract:</label>
                 <div class="col-sm-6">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
-                    {{jobroles.contractsData[jobroles.edit_data[job_roles_data.id]['job_contract_id']]['title'] || '-'}}
+                    {{jobroles.contractsData[jobroles.editData[job_roles_data.id]['job_contract_id']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <ui-select
                       prevent-animations
-                      ng-model="jobroles.edit_data[job_roles_data.id]['job_contract_id']"
+                      ng-model="jobroles.editData[job_roles_data.id]['job_contract_id']"
                       theme="civihr-ui-select"
                       title="Choose a contract"
                       on-select="jobroles.onContractEdited($data, job_roles_data.id)"
@@ -86,20 +86,20 @@
                         <div ng-bind-html="contract.value.label | highlight: $select.search"></div>
                       </ui-select-choices>
                     </ui-select>
-                    <input type="hidden" name="contract" ng-model="jobroles.edit_data[job_roles_data.id]['job_contract_id']">
+                    <input type="hidden" name="contract" ng-model="jobroles.editData[job_roles_data.id]['job_contract_id']">
                   </span>
                 </div>
               </div>
               <div class="form-group" ng-init="jobroles.initData(job_roles_data.id, 'start_date', job_roles_data.start_date)">
                 <label for="{{prefix}}start_date"
                   class="col-sm-4 control-label"
-                  ng-class="{ 'required-mark': !jobroles.edit_data[job_roles_data.id]['start_date'] }">
+                  ng-class="{ 'required-mark': !jobroles.editData[job_roles_data.id]['start_date'] }">
                   Start Date:
                 </label>
                 <!-- FIX: xeditable datepicker doesn't work here as it isn't compatible with input field -->
                 <div class="col-sm-5">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
-                    {{jobroles.edit_data[job_roles_data.id]['start_date'] | formatDate}}
+                    {{jobroles.editData[job_roles_data.id]['start_date'] | formatDate}}
                   </p>
                   <div class="input-group" ng-hide="!editableForm.$visible">
                     <input type="text" class="form-control" id="{{prefix}}start_date"
@@ -107,15 +107,11 @@
                       name="start_date"
                       is-open="jobroles.CalendarShow.start_date"
                       uib-datepicker-popup
-                      ng-model="jobroles.edit_data[job_roles_data.id]['start_date']"
+                      ng-model="jobroles.editData[job_roles_data.id]['start_date']"
                       ng-change="select('start_date')"
                       ng-disabled="isDisabled"
                       close-text="Close"
-                      ng-click="jobroles.open('start_date')"
                       required>
-                    <span class="input-group-addon">
-                      <i class="fa fa-calendar"></i>
-                    </span>
                   </div>
                   <div ng-show="editableForm.start_date.$error.custom">
                     <div ng-repeat="error in editableForm.start_date.$error.custom" class="form-error-message">
@@ -131,7 +127,7 @@
                 <!-- FIX: xeditable datepicker doesn't work here as it isn't compatible with input field -->
                 <div class="col-sm-5">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
-                    {{jobroles.edit_data[job_roles_data.id]['end_date'] || "Unspecified" | formatDate }}
+                    {{jobroles.editData[job_roles_data.id]['end_date'] || "Unspecified" | formatDate }}
                   </p>
                   <div class="input-group" ng-hide="!editableForm.$visible">
                     <input type="text" class="form-control" id="{{prefix}}end_date"
@@ -139,14 +135,10 @@
                       name="end_date"
                       is-open="jobroles.CalendarShow.end_date"
                       uib-datepicker-popup
-                      ng-model="jobroles.edit_data[job_roles_data.id]['end_date']"
+                      ng-model="jobroles.editData[job_roles_data.id]['end_date']"
                       ng-change="select('end_date')"
                       ng-disabled="isDisabled"
-                      ng-click="jobroles.open('end_date')"
                       close-text="Close">
-                    <span class="input-group-addon">
-                      <i class="fa fa-calendar"></i>
-                    </span>
                   </div>
                   <div ng-show="editableForm.end_date.$error.custom">
                     <div ng-repeat="error in editableForm.end_date.$error.custom" class="form-error-message">
@@ -163,12 +155,12 @@
                 </label>
                 <div class="col-sm-8">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
-                    {{jobroles.LocationsData[jobroles.edit_data[job_roles_data.id]['location']]['title'] || '-'}}
+                    {{jobroles.LocationsData[jobroles.editData[job_roles_data.id]['location']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <ui-select
                       prevent-animations
-                      ng-model="jobroles.edit_data[job_roles_data.id]['location']"
+                      ng-model="jobroles.editData[job_roles_data.id]['location']"
                       theme="civihr-ui-select"
                       name="newLocation"
                       title="Choose a location">
@@ -186,12 +178,12 @@
                 </label>
                 <div class="col-sm-8">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
-                    {{jobroles.RegionsData[jobroles.edit_data[job_roles_data.id]['region']]['title'] || '-'}}
+                    {{jobroles.RegionsData[jobroles.editData[job_roles_data.id]['region']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <ui-select
                       prevent-animations
-                      ng-model="jobroles.edit_data[job_roles_data.id]['region']"
+                      ng-model="jobroles.editData[job_roles_data.id]['region']"
                       theme="civihr-ui-select"
                       name="newRegion"
                       title="Choose a Region">
@@ -209,12 +201,12 @@
                 </label>
                 <div class="col-sm-8">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
-                    {{jobroles.DepartmentsData[jobroles.edit_data[job_roles_data.id]['department']]['title'] || '-'}}
+                    {{jobroles.DepartmentsData[jobroles.editData[job_roles_data.id]['department']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <ui-select
                       prevent-animations
-                      ng-model="jobroles.edit_data[job_roles_data.id]['department']"
+                      ng-model="jobroles.editData[job_roles_data.id]['department']"
                       theme="civihr-ui-select"
                       name="newDepartment"
                       title="Choose a Department">
@@ -232,12 +224,12 @@
                 </label>
                 <div class="col-sm-8">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
-                    {{jobroles.LevelsData[jobroles.edit_data[job_roles_data.id]['level']]['title'] || '-'}}
+                    {{jobroles.LevelsData[jobroles.editData[job_roles_data.id]['level']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <ui-select
                     prevent-animations
-                    ng-model="jobroles.edit_data[job_roles_data.id]['level']"
+                    ng-model="jobroles.editData[job_roles_data.id]['level']"
                     theme="civihr-ui-select"
                     name="newLevel"
                     title="Choose a Level">
@@ -259,9 +251,9 @@
                 </label>
                 <div class="col-sm-10">
                   <p class="form-control-static"
-                    editable-textarea="jobroles.edit_data[job_roles_data.id]['description']"
+                    editable-textarea="jobroles.editData[job_roles_data.id]['description']"
                     e-name="description" e-rows="6" e-cols="40">
-                    {{ jobroles.edit_data[job_roles_data.id]['description'] || '-'}}
+                    {{ jobroles.editData[job_roles_data.id]['description'] || '-'}}
                   </p>
                 </div>
               </div>
@@ -306,7 +298,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr ng-repeat="(key, funder) in jobroles.edit_data[job_roles_data.id]['funders']">
+                  <tr ng-repeat="(key, funder) in jobroles.editData[job_roles_data.id]['funders']">
                     <td>
                       <span ng-show="!tableform.$visible">
                         {{funder.funder_id.sort_name}}
@@ -333,6 +325,7 @@
                     <td>
                       <!-- editable funder type (will restrict the fields to amount or percentage -->
                       <span editable-select="funder.type"
+                        e-class="no-select2"
                         e-form="tableform" e-name="funder-type"
                         e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes"
                         e-ng-change="jobroles.updateAdditionalRowType(job_roles_data.id, 'funder', key, $data)">
@@ -421,10 +414,11 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr ng-repeat="(key, cost_centre) in jobroles.edit_data[job_roles_data.id]['cost_centers']">
+                  <tr ng-repeat="(key, cost_centre) in jobroles.editData[job_roles_data.id]['cost_centers']">
                     <td>
                       <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
                       <span editable-select="cost_centre.cost_centre_id"
+                        e-class="no-select2"
                         e-form="tableformcc"
                         e-name="cost-centre"
                         e-ng-options="value.id as value.title for value in jobroles.CostCentreList | orderBy: 'weight'">
@@ -434,6 +428,7 @@
                     <td>
                       <!-- editable cost_centre type (will restrict the fields to amount or percentage -->
                       <span editable-select="cost_centre.type"
+                        e-class="no-select2"
                         e-form="tableformcc"
                         e-name="cost-centre-type"
                         e-ng-options="k as rowType.name for (k, rowType) in jobroles.rowTypes"

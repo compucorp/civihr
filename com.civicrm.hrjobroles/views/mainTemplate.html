@@ -4,25 +4,25 @@
   </div>
 
   <section class="job-roles__list">
-    <div class="page-header page-header-primary" ng-show="jobroles.present_job_roles.length">
+    <div class="page-header page-header-primary" ng-show="jobroles.presentJobRoles.length">
       <h2>Current Roles and Projects:</h2>
     </div>
     <crm-loading show="!jobroles.loading">
-      <ul class="list-unstyled">
-        <li ng-repeat="job_roles_data in jobroles.present_job_roles"
-          ng-include src="jobroles.job_role_panel_url">
+      <ul class="list-unstyled" ng-if="!jobroles.loading">
+        <li ng-repeat="job_roles_data in jobroles.presentJobRoles"
+          ng-include src="jobroles.jobRolePanelUrl">
         </li>
       </ul>
     </crm-loading>
   </section>
-  <section class="job-roles__list" ng-show="jobroles.past_job_roles.length">
+  <section class="job-roles__list" ng-show="jobroles.pastJobRoles.length">
     <div class="page-header page-header-danger">
       <h2>Past Roles and Projects:</h2>
     </div>
     <crm-loading show="!jobroles.loading">
-      <ul class="list-unstyled">
-        <li ng-repeat="job_roles_data in jobroles.past_job_roles"
-          ng-include src="jobroles.job_role_panel_url">
+      <ul class="list-unstyled" ng-if="!jobroles.loading">
+        <li ng-repeat="job_roles_data in jobroles.pastJobRoles"
+          ng-include src="jobroles.jobRolePanelUrl">
         </li>
       </ul>
     </crm-loading>
@@ -30,9 +30,9 @@
 
   <section>
     <div ng-show="!!jobroles.add_new">
-      <div ng-include src="jobroles.add_new_role_url"></div>
+      <div ng-include src="jobroles.addNewRoleUrl"></div>
     </div>
-    <button class="btn btn-primary" ng-click="jobroles.add_new_role()" ng-hide="jobroles.add_new">
+    <button class="btn btn-primary" ng-click="jobroles.addNewRole()" ng-hide="jobroles.add_new">
       <span class="btn-icon"><i class="fa fa-plus"></i></span> Add new job role
     </button>
   </section>

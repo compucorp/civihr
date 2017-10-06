@@ -68,5 +68,3 @@ function hrsampledata_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function hrsampledata_civicrm_managed(&$entities) {
   return _hrsampledata_civix_civicrm_managed($entities);
 }
-
-

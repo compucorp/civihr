@@ -14,23 +14,40 @@ class CRM_HRSampleData_Cleaner_AbsenceTypeTest extends CRM_HRSampleData_BaseCSVP
     $this->rows[] = $this->importHeadersFixture();
   }
 
-  public function testProcess() {
-    $absenceType = AbsenceTypeFabricator::fabricate();
-    $testAbsenceType = $this->apiGet('HRAbsenceType', ['name' => $absenceType->name]);
-    $this->assertEquals($absenceType->name, $testAbsenceType['name']);
+  public function testProcessWithDeleteOnUninstallOn() {
+    $testAbsenceType = AbsenceTypeFabricator::fabricate();
 
     $this->rows[] = [
-      $absenceType->name,
-      $absenceType->name,
+      $testAbsenceType->name,
+      $testAbsenceType->name,
       1,
       0,
+      1,
       1,
     ];
 
     $this->runProcessor('CRM_HRSampleData_Cleaner_AbsenceType', $this->rows);
 
-    $absenceType = $this->apiGet('HRAbsenceType', ['name' => $absenceType->name]);
+    $absenceType = $this->apiGet('HRAbsenceType', ['name' => $testAbsenceType->name]);
     $this->assertEmpty($absenceType);
+  }
+
+  public function testProcessWithDeleteOnUninstallOff() {
+    $testAbsenceType = AbsenceTypeFabricator::fabricate();
+
+    $this->rows[] = [
+      $testAbsenceType->name,
+      $testAbsenceType->name,
+      1,
+      0,
+      1,
+      0,
+    ];
+
+    $this->runProcessor('CRM_HRSampleData_Cleaner_AbsenceType', $this->rows);
+
+    $absenceType = $this->apiGet('HRAbsenceType', ['name' => $testAbsenceType->name]);
+    $this->assertEquals($testAbsenceType->name, $absenceType['name']);
   }
 
   private function importHeadersFixture() {
@@ -40,7 +57,7 @@ class CRM_HRSampleData_Cleaner_AbsenceTypeTest extends CRM_HRSampleData_BaseCSVP
       'is_active',
       'allow_credits',
       'allow_debits',
+      'delete_on_uninstall',
     ];
   }
-
 }

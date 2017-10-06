@@ -51,6 +51,8 @@ class CRM_HRSampleData_Importer_JobContract extends CRM_HRSampleData_CSVImporter
     $entities['HRJobHealth']['provider'] = $this->getDataMapping('contact_mapping', $entities['HRJobHealth']['provider']);
     $entities['HRJobHealth']['provider_life_insurance'] = $this->getDataMapping('contact_mapping', $entities['HRJobHealth']['provider_life_insurance']);
 
+    $entities['HRJobPension']['pension_type'] = $this->getDataMapping('contact_mapping', $entities['HRJobPension']['pension_type']);
+
     $entities['HRJobHour']['location_standard_hours'] = $this->standardHours[$entities['HRJobHour']['location_standard_hours']];
 
     $entities['HRJobPay']['pay_scale'] = $this->payScales[$entities['HRJobPay']['pay_scale']];

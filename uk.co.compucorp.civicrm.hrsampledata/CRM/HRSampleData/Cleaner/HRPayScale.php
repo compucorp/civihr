@@ -10,7 +10,7 @@ class CRM_HRSampleData_Cleaner_HRPayScale extends CRM_HRSampleData_CSVCleanerVis
    * {@inheritdoc}
    */
   public function visit(array $row) {
-    $this->deleteRecord('HRPayScale', ['pay_scale' => $row['pay_scale']]);
+    $this->deleteRecord('HRPayScale', ['pay_scale' => $row['pay_scale']], $row['delete_on_uninstall']);
   }
 
 }

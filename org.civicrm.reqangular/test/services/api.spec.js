@@ -8,24 +8,23 @@ define([
   'use strict';
 
   describe('api', function () {
-    var api, $httpBackend, $httpParamSerializer;
+    var api, $httpBackend, $httpParamSerializer, $rootScope;
     var entity = 'entity';
     var action = 'action';
 
     beforeEach(module('common.apis'));
 
-    beforeEach(inject(function (_api_, _$httpBackend_, _$httpParamSerializer_) {
+    beforeEach(inject(function (_api_, _$httpBackend_, _$httpParamSerializer_, _$rootScope_) {
       api = _api_;
       $httpBackend = _$httpBackend_;
       $httpParamSerializer = _$httpParamSerializer_;
+      $rootScope = _$rootScope_;
     }));
-
-    afterEach(function () {
-      $httpBackend.flush();
-    });
 
     describe('sendGET', function () {
       var promise;
+
+      afterEach(function () { $httpBackend.flush(); });
 
       describe('when the API does not return an error', function () {
         var returnValue = {
@@ -100,6 +99,13 @@ define([
         });
       });
 
+      /**
+       * Mocks and sends a fake GET request
+       *
+       * @param  {any} returnValue - value to be returned by the GET request
+       * @param  {Object} params - params to be used in the API call
+       * @return {Promise}
+       */
       function expectAndSendGET (returnValue, params) {
         $httpBackend
           .whenGET(new RegExp('action=' + action + '&entity=' + entity))
@@ -111,6 +117,8 @@ define([
 
     describe('sendPOST', function () {
       var promise;
+
+      afterEach(function () { $httpBackend.flush(); });
 
       describe('when the API doesnt return an error', function () {
         var returnValue = {
@@ -185,11 +193,76 @@ define([
         });
       });
 
+      /**
+       * Mocks and sends a fake POST request
+       *
+       * @param  {any} returnValue - value to be returned by the POST request
+       * @param  {Object} params - params to be used in the API call
+       * @return {Promise}
+       */
       function expectAndSendPOST (returnValue, params) {
         $httpBackend.whenPOST('/civicrm/ajax/rest').respond(returnValue);
 
         return api.sendPOST(entity, action, params);
       }
+    });
+
+    describe('getAll()', function () {
+      var returnValue = { is_error: 0, values: [{}] };
+
+      describe('custom options', function () {
+        beforeEach(function () {
+          spyOn(api, 'sendGET').and.returnValue(returnValue);
+          $rootScope.$digest();
+        });
+
+        describe('when no custom options are passed', function () {
+          beforeEach(function () {
+            api.getAll(entity, {});
+          });
+
+          it('still uses default options in the API call', function () {
+            expect(api.sendGET).toHaveBeenCalledWith(entity, 'get',
+              jasmine.objectContaining({
+                options: jasmine.any(Object)
+              }), undefined
+            );
+          });
+        });
+
+        describe('when custom options are passed', function () {
+          var customOptions = { or: [['field1', 'field2', 'field3']] };
+
+          beforeEach(function () {
+            api.getAll(entity, { options: customOptions });
+          });
+
+          it('uses them in the API call', function () {
+            expect(api.sendGET).toHaveBeenCalledWith(entity, 'get',
+              jasmine.objectContaining({
+                options: jasmine.objectContaining(customOptions)
+              }), undefined
+            );
+          });
+        });
+      });
+    });
+
+    describe('when API returns values without "id" property', function () {
+      var returnValue = { values: [ {}, {}, {} ], is_error: 0 };
+      var promiseResult;
+
+      beforeEach(function () {
+        spyOn(api, 'sendGET').and.returnValue(returnValue);
+        api.getAll(entity, {}).then(function (result) {
+          promiseResult = result;
+        });
+        $rootScope.$digest();
+      });
+
+      it('sets allIds property as an empty string', function () {
+        expect(promiseResult.allIds).toEqual('');
+      });
     });
   });
 });
