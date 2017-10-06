@@ -143,17 +143,13 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
         ['disabled' => 'disabled']
       );
     }
-    $calculationUnitFieldOptions =  [
-      'options' => $this->getCalculationUnitOptions(),
-      'option_url' => NULL,
-      'label' => 'Calculate Leave in'
-    ];
-    if($this->absenceTypeHasEverBeenUsed()) {
-      $calculationUnitFieldOptions['disabled'] = 'disabled';
-    }
     $this->addSelect(
       'calculation_unit',
-      $calculationUnitFieldOptions,
+      [
+        'options' => $this->getCalculationUnitOptions(),
+        'option_url' => NULL,
+        'label' => 'Calculate Leave in'
+      ],
       TRUE
     );
     $this->addYesNo(
@@ -423,13 +419,26 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
   /**
    * Get the option values for the calculation_unit
    * select field.
+   * When the Absence Type has been used, the only option
+   * returned is the current value of the calculation unit for the
+   * absence type.
    *
    * @return array
    */
   private function getCalculationUnitOptions() {
     $options = AbsenceType::buildOptions('calculation_unit');
     $selectOptions = [];
+    $absenceTypeHasBeenUsed = $this->absenceTypeHasEverBeenUsed();
+    $calculationUnitValue = false;
+
+    if($absenceTypeHasBeenUsed) {
+      $calculationUnitValue = AbsenceType::getFieldValue(AbsenceType::class, $this->_id, 'calculation_unit');
+    }
+
     foreach($options as $value => $label) {
+      if($calculationUnitValue && $value != $calculationUnitValue) {
+        continue;
+      }
       $selectOptions[$value] = ts($label);
     }
 
