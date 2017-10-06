@@ -1,1 +1,1 @@
-({    baseUrl : 'src',    out: 'dist/contact-summary.min.js',    name: 'contact-summary',    skipModuleInsertion: true,    paths: {        'common': 'empty:'    }})
+({  baseUrl: 'src',  out: 'dist/contact-summary.min.js',  name: 'contact-summary',  skipModuleInsertion: true,  paths: {    'common': 'empty:',    'leave-absences': '%uk.co.compucorp.civicrm.hrleaveandabsences%/js/angular/src/leave-absences'  }})

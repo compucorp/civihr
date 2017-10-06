@@ -18,5 +18,8 @@
     "path": "^0.12.7",
     "protractor": "1.4.0",
     "requirejs": "^2.1.22"
+  },
+  "dependencies": {
+    "civicrm-cv": "^0.1.2"
   }
 }

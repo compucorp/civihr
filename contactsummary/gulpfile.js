@@ -9,6 +9,7 @@ var exec = require('child_process').exec;
 var path = require('path');
 var fs = require('fs');
 var civicrmScssRoot = require('civicrm-scssroot')();
+var cv = require('civicrm-cv')({ mode: 'promise' });
 
 gulp.task('sass', ['sass-sync'], function () {
   gulp.src('scss/*.scss')
@@ -24,10 +25,56 @@ gulp.task('sass-sync', function () {
   civicrmScssRoot.updateSync();
 });
 
-gulp.task('requirejs-bundle', function (done) {
-  exec('r.js -o js/build.js', function (err, stdout, stderr) {
+gulp.task('requirejs-bundle', ['create-full-path-build-file'], function (done) {
+  exec('r.js -o js/build.tmp.js', function (err, stdout, stderr) {
     err && err.code && console.log(stdout);
     done();
+  });
+});
+
+gulp.task('create-full-path-build-file', function (done) {
+  fs.readFile('./js/build.js', 'utf8', function (error, buildFile) {
+    if (error) {
+      throw error;
+    }
+
+    var extensions = buildFile.match(/%([A-z0-9.\-_]+)%/g);
+    // return unique extensions:
+    extensions = extensions.filter(function (ext, index) {
+      return extensions.indexOf(ext) === index;
+    });
+
+    var promises = extensions.map(function (extension) {
+      var cleanExtensionName = extension.match(/%([A-z0-9.\-_]+)%/)[1];
+
+      return cv('path -x ' + cleanExtensionName)
+      .then(function (path) {
+        return {
+          extension: extension,
+          path: path[0].value
+        };
+      });
+    });
+
+    Promise.all(promises).then(function (results) {
+      results.forEach(function (result) {
+        var extensionRegExp = new RegExp(result.extension, 'g');
+
+        buildFile = buildFile.replace(extensionRegExp, result.path);
+      });
+
+      fs.writeFile('./js/build.tmp.js', buildFile, 'utf8', function (error) {
+        if (error) {
+          throw error;
+        }
+
+        done();
+      });
+    })
+    .catch(function (error) {
+      console.error(error);
+      throw error;
+    });
   });
 });
 
