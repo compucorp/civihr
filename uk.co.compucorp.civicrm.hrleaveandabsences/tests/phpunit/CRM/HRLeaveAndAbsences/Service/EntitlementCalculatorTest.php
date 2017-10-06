@@ -51,6 +51,6 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest extends BaseHeadl
   }
 
   private function createBasicType($params = array()) {
-    return AbsenceTypeFabricator::fabricate();
+    return AbsenceTypeFabricator::fabricate($params);
   }
 }
