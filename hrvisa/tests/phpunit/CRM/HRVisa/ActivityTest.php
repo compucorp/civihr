@@ -113,7 +113,7 @@ class CRM_HRVisa_ActivityTest extends PHPUnit_Framework_TestCase implements Head
       date('YmdHis', strtotime($activity['values'][$activity['id']]['activity_date_time'])),
       "Activity date time not set to latest Immigration visa end date for 'Visa Expiration' activity (in line " . __LINE__ . ")");
 
-    $this->assertEquals(CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'), $activity['values'][$activity['id']]['status_id'], 'in line ' . __LINE__ . ' Status of \'Visa Expiration\' activity should be \'Scheduled\' but wrongly is ' . $activity['values'][$activity['id']]['status_id']);
+    $this->assertEquals(CRM_HRVisa_Activity::getActivityStatusID('Scheduled'), $activity['values'][$activity['id']]['status_id'], 'in line ' . __LINE__ . ' Status of \'Visa Expiration\' activity should be \'Scheduled\' but wrongly is ' . $activity['values'][$activity['id']]['status_id']);
 
     // now mark the field visa required to false
     $params = array(
@@ -128,11 +128,11 @@ class CRM_HRVisa_ActivityTest extends PHPUnit_Framework_TestCase implements Head
     $activityGetParams = array('id' => $activityId);
     $activity = civicrm_api3('activity', 'get', $activityGetParams);
 
-    $this->assertEquals(CRM_Core_OptionGroup::getValue('activity_status', 'Cancelled', 'name'), $activity['values'][$activity['id']]['status_id'], 'in line ' . __LINE__ . ' Status of \'Visa Expiration\' activity should be \'Cancelled\' but wrongly is ' . $activity['values'][$activity['id']]['status_id']);
+    $this->assertEquals(CRM_HRVisa_Activity::getActivityStatusID('Cancelled'), $activity['values'][$activity['id']]['status_id'], 'in line ' . __LINE__ . ' Status of \'Visa Expiration\' activity should be \'Cancelled\' but wrongly is ' . $activity['values'][$activity['id']]['status_id']);
   }
 
   private function getTargetContactActivity($contactId) {
-    $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Visa Expiration', 'name');
+    $activityTypeId = CRM_HRVisa_Activity::getActivityTypeID('Visa Expiration');
     // to check if visa expiration activity exists for the input target_contact_id
     $activityGetParams = array(
       'contact_id' => $contactId,
