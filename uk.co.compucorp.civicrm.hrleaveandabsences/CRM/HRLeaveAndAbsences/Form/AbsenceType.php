@@ -207,7 +207,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
     $this->add(
       'checkbox',
       'allow_accruals_request',
-      ts('Allow staff to request to accrue additional days leave of this type during the period')
+      ts('Allow staff to request to accrue additional leave of this type during the period')
     );
     $this->add(
       'text',
@@ -243,7 +243,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
     $this->add(
       'text',
       'max_number_of_days_to_carry_forward',
-      ts('Maximum number of days that can be carried forward to a new period? (Leave blank for unlimited)'),
+      ts('Maximum amount of leave that can be carried forward to a new period? (Leave blank for unlimited)'),
       $this->getDAOFieldAttributes('max_number_of_days_to_carry_forward')
     );
     $this->add(
