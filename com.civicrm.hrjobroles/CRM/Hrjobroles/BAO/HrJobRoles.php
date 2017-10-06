@@ -81,7 +81,7 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
               WHERE hrjr.job_contract_id = %1
                 AND hrjr.start_date <= '{$today}'
                 AND (
-                  hrjr.end_date = 0
+                  hrjr.end_date IS NULL
                   OR hrjr.end_date >= '{$today}'
                 )
                 AND cog.name = 'hrjc_department'";
