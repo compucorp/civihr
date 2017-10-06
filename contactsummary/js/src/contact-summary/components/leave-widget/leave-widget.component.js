@@ -1,8 +1,10 @@
 /* eslint-env amd */
 
 define([
+  'leave-absences/shared/models/absence-type.model',
   'contact-summary/modules/components'
-], function (components) {
+], function (AbsenceType, components) {
+  console.log('....', AbsenceType);
   components.component('leaveWidget', {
     controller: leaveWidgetController,
     controllerAs: 'leaveWidget',
