@@ -289,21 +289,28 @@ def listCivihrExtensions() {
       name: 'Job Roles',
       shortName: 'hrjobroles',
       folder: 'com.civicrm.hrjobroles',
-      hasJSTests: false,
+      hasJSTests: true,
       hasPHPTests: true
     ],
     [
       name: 'Contacts Access Rights',
       shortName: 'contactaccessrights',
       folder: 'contactaccessrights',
-      hasJSTests: false,
+      hasJSTests: true,
       hasPHPTests: true
+    ],
+    [
+      name: 'Contacts Summary',
+      shortName: 'contactsummary',
+      folder: 'contactsummary',
+      hasJSTests: true,
+      hasPHPTests: false
     ],
     [
       name: 'Job Contracts',
       shortName: 'hrjobcontract',
       folder: 'hrjobcontract',
-      hasJSTests: false,
+      hasJSTests: true,
       hasPHPTests: true
     ],
     [
@@ -333,6 +340,13 @@ def listCivihrExtensions() {
       folder: 'hrvisa',
       hasJSTests: false,
       hasPHPTests: true
+    ],
+    [
+      name: 'Reqangular',
+      shortName: 'reqangular',
+      folder: 'org.civicrm.reqangular',
+      hasJSTests: true,
+      hasPHPTests: false
     ],
     [
       name: 'HRCore',
