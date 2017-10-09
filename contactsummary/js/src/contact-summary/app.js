@@ -2,13 +2,13 @@
 
 define([
   'common/angular',
+  'leave-absences/shared/components/leave-widget/leave-widget.component',
   'contact-summary/modules/filters',
   'contact-summary/modules/services',
   'contact-summary/modules/settings',
   'contact-summary/controllers/contactSummary',
   'contact-summary/controllers/keyDates',
   'contact-summary/controllers/keyDetails',
-  'contact-summary/components/leave-widget/leave-widget.component',
   'contact-summary/directives/donutChart'
 ], function (angular) {
   var app = angular.module('contactsummary', [
@@ -16,8 +16,9 @@ define([
     'ngResource',
     'ui.bootstrap',
     'common.services',
+    'leave-absences.components',
+    'leave-absences.settings',
     'contactsummary.controllers',
-    'contactsummary.components',
     'contactsummary.directives',
     'contactsummary.filters',
     'contactsummary.services',

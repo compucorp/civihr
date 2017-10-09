@@ -38,7 +38,7 @@ gulp.task('create-full-path-build-file', function (done) {
       throw error;
     }
 
-    var extensions = buildFile.match(/%([A-z0-9.\-_]+)%/g);
+    var extensions = buildFile.match(/%([A-z0-9.\-_]+)%/g) || [];
     // return unique extensions:
     extensions = extensions.filter(function (ext, index) {
       return extensions.indexOf(ext) === index;
