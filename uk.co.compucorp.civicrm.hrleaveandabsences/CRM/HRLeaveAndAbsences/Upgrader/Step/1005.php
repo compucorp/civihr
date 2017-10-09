@@ -21,7 +21,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1005 {
     ];
     
     foreach ($menuItems as $menuItem) {
-      $menuItem->label = 'Absences';
+      $menuItem->label = 'Leave';
       $menuItem->save();
     }
 
