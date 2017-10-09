@@ -21,7 +21,7 @@ gulp.task('sass', ['sass:sync'], function () {
     .pipe(stripCssComments({ preserve: false }))
     .pipe(postcss([postcssPrefix({
       prefix: bootstrapNamespace + ' ',
-      exclude: [/^html/, /^body/, outsideNamespaceRegExp]
+      exclude: [/^html/, /^body/, /page-civi/, outsideNamespaceRegExp]
     })]))
     .pipe(transformSelectors(namespaceRootElements, { splitOnCommas: true }))
     .pipe(transformSelectors(removeOutsideNamespaceMarker, { splitOnCommas: true }))

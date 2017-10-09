@@ -1,0 +1,15 @@
+%search-filter-block {
+  margin: 20px 0;
+  padding: 18px 15px;
+  background-color: $crm-white;
+  box-shadow: $box-shadow;
+  border-radius: 0;
+
+  .form-layout-compressed {
+    margin: 0;
+  }
+
+  .select2-container {
+    width: 180px !important;
+  }
+}
