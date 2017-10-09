@@ -117,23 +117,14 @@ pipeline {
 
   /* Testing JS */
   // TODO: Execute test and Generate report without stop on fail
-    stage('Testing JS: Install NPM in parallel') {
+    stage('Testing JS: Install JS packages') {
       steps {
         script {
-          def extensionTestings = [:]
-
-          // Install NPM jobs
           for (extension in listCivihrExtensions()) {
-            if(!extension.hasJSTests) {
-              continue;
-            }
-
-            extensionTestings[extension.shortName] = {
-              installNPM(extension)
+            if(extension.hasJSTests) {
+              installJSPackages(extension);
             }
           }
-          // Running install NPM jobs in parallel
-          parallel extensionTestings
         }
       }
     }
@@ -249,13 +240,13 @@ def testPHPUnit(java.util.LinkedHashMap extension) {
 }
 
 /*
- * Installk JS Testing
+ * Install JS Testing
  * params: extension
  */
-def installNPM(java.util.LinkedHashMap extension) {
+def installJSPackages(java.util.LinkedHashMap extension) {
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    npm install || true
+    yarn || true
   """
 }
 
