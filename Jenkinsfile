@@ -155,13 +155,6 @@ pipeline {
                 failureThreshold: '1',
                 unstableNewThreshold: '1',
                 unstableThreshold: '1'
-              ],
-              [
-                $class: 'SkippedThreshold',
-                failureNewThreshold: '0',
-                failureThreshold: '0',
-                unstableNewThreshold: '0',
-                unstableThreshold: '0'
               ]
             ],
             tools: [
