@@ -2,6 +2,7 @@
 @import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/variables";
 
 #bootstrap-theme {
+  @import "SCSSROOT/uk.co.compucorp.civicrm.hrleaveandabsences/scss/components/leave-widget";
   @import "./components/*";
 }
 
