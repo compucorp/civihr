@@ -160,7 +160,7 @@ pipeline {
             tools: [
               [
                 $class: 'JUnitType',
-                pattern: '$KARMA_TESTS_REPORT_FOLDER/*.xml'
+                pattern: env.KARMA_TESTS_REPORT_FOLDER + '/*.xml'
               ]
             ]
           ])
