@@ -17,6 +17,7 @@ pipeline {
     CIVICRM_EXT_ROOT = "$DRUPAL_MODULES_ROOT/civicrm/tools/extensions"
     WEBURL = "http://jenkins.compucorp.co.uk:8900"
     ADMIN_PASS = credentials('CVHR_ADMIN_PASS')
+    KARMA_TESTS_REPORT_FOLDER = "reports/js-karma"
   }
 
   stages {
@@ -115,8 +116,7 @@ pipeline {
       }
     }
 
-  /* Testing JS */
-  // TODO: Execute test and Generate report without stop on fail
+    /* Testing JS */
     stage('Testing JS: Install JS packages') {
       steps {
         script {
@@ -129,12 +129,16 @@ pipeline {
       }
     }
 
-    stage('Testing JS: Test JS in sequent') {
+    stage('Testing JS: Test JS') {
       steps {
         script {
-          // Testing JS in sequent
-          for (extension in listCivihrExtensions) {
-            if(extension.hasJSTests) {
+          // This is necessary to avoid an additional loop
+          // in each extension folder to read the XML.
+          // After each test we move the reports to this folder
+          sh "mkdir -p $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER"
+
+          for (extension in listCivihrExtensions()) {
+            if (extension.hasJSTests) {
               testJS(extension)
             }
           }
@@ -163,7 +167,7 @@ pipeline {
             tools: [
               [
                 $class: 'JUnitType',
-                pattern: 'reports/js-karma/*.xml'
+                pattern: '$KARMA_TESTS_REPORT_FOLDER/*.xml'
               ]
             ]
           ])
@@ -257,9 +261,14 @@ def installJSPackages(java.util.LinkedHashMap extension) {
 def testJS(java.util.LinkedHashMap extension) {
   echo "JS Testing ${extension.name}"
 
+  // We cannot change, using CLI arguments, the place where
+  // karma stores the junit XML report, so the last command
+  // here copies the XML from the extension folder to the
+  // workspace, where Jenkins will read it
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    gulp test || true
+    gulp test --reporters junit || true
+    mv test-reports/*.xml $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/ || true
   """
 }
 
