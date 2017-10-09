@@ -66,6 +66,11 @@ module.exports = function (config) {
           '--remote-debugging-port=9222'
         ]
       }
+    },
+    junitReporter: {
+      outputDir: extPath + 'test-reports',
+      useBrowserName: false,
+      outputFile: 'contactsummary.xml'
     }
   });
 };
