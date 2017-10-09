@@ -54,7 +54,7 @@ class CRM_HRVisa_Activity {
     // activity processing if immigration data found
     if ($immigrationDateInfo['count']) {
       // get 'Visa Expiration' activity for this contact
-      $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Visa Expiration', 'name');
+      $activityTypeId = self::getActivityTypeID('Visa Expiration');
       $activityStatuses = CRM_Core_OptionGroup::values('activity_status', FALSE, FALSE, FALSE, NULL, 'name');
 
       // to check if visa expiration activity exists for the input target_contact_id
@@ -103,5 +103,21 @@ class CRM_HRVisa_Activity {
         }
       }
     } // end of if for immgration info check
+  }
+
+  public static function getActivityTypeID($activityType) {
+    return self::getActivityFieldOptionID('activity_type_id', $activityType);
+  }
+
+  public static function getActivityStatusID($activityStatus) {
+    return self::getActivityFieldOptionID('status_id', $activityStatus);
+  }
+
+  private static function getActivityFieldOptionID($field, $option) {
+    return CRM_Core_PseudoConstant::getKey(
+      CRM_Activity_BAO_Activity::class,
+      $field,
+      $option
+    );
   }
 }
