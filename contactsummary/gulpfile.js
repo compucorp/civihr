@@ -9,7 +9,7 @@ var exec = require('child_process').exec;
 var path = require('path');
 var fs = require('fs');
 var civicrmScssRoot = require('civicrm-scssroot')();
-var cv = require('civicrm-cv')({ mode: 'promise' });
+var cv = require('civicrm-cv')({ mode: 'sync' });
 
 gulp.task('sass', ['sass-sync'], function () {
   gulp.src('scss/*.scss')
@@ -25,62 +25,22 @@ gulp.task('sass-sync', function () {
   civicrmScssRoot.updateSync();
 });
 
-gulp.task('requirejs-bundle', ['create-full-path-build-file'], function (done) {
+gulp.task('requirejs', function (done) {
+  buildFileManager().createTempFile();
+
   exec('r.js -o js/build.tmp.js', function (err, stdout, stderr) {
     err && err.code && console.log(stdout);
     done();
   });
 });
 
-gulp.task('create-full-path-build-file', function (done) {
-  fs.readFile('./js/build.js', 'utf8', function (error, buildFile) {
-    if (error) {
-      throw error;
-    }
-
-    var extensions = buildFile.match(/%([A-z0-9.\-_]+)%/g) || [];
-    // return unique extensions:
-    extensions = extensions.filter(function (ext, index) {
-      return extensions.indexOf(ext) === index;
-    });
-
-    var promises = extensions.map(function (extension) {
-      var cleanExtensionName = extension.match(/%([A-z0-9.\-_]+)%/)[1];
-
-      return cv('path -x ' + cleanExtensionName)
-      .then(function (path) {
-        return {
-          extension: extension,
-          path: path[0].value
-        };
-      });
-    });
-
-    Promise.all(promises).then(function (results) {
-      results.forEach(function (result) {
-        var extensionRegExp = new RegExp(result.extension, 'g');
-
-        buildFile = buildFile.replace(extensionRegExp, result.path);
-      });
-
-      fs.writeFile('./js/build.tmp.js', buildFile, 'utf8', function (error) {
-        if (error) {
-          throw error;
-        }
-
-        done();
-      });
-    })
-    .catch(function (error) {
-      console.error(error);
-      throw error;
-    });
-  });
-});
-
 gulp.task('watch', function () {
+  var sourcePath = 'js/src/**/*.js';
+  var watchPaths = buildFileManager().getWatchPaths();
+  watchPaths.push(sourcePath);
+
   gulp.watch('scss/**/*.scss', ['sass']);
-  gulp.watch('js/src/**/*.js', ['requirejs-bundle']).on('change', function (file) {
+  gulp.watch(watchPaths, ['requirejs']).on('change', function (file) {
     try { test.for(file.path); } catch (ex) { test.all(); }
   });
   gulp.watch(['js/test/**/*.js', '!js/test/mocks/**/*.js', '!js/test/test-main.js']).on('change', function (file) {
@@ -92,7 +52,7 @@ gulp.task('test', function (done) {
   test.all();
 });
 
-gulp.task('default', ['requirejs-bundle', 'sass', 'test', 'watch']);
+gulp.task('default', ['requirejs', 'sass', 'test', 'watch']);
 
 var test = (function () {
   /**
@@ -159,3 +119,135 @@ var test = (function () {
     }
   };
 })();
+
+/**
+ * Returns an object that can interact with the build.js file. The object can
+ * create a temporary build file using the full extension paths, or returns
+ * a list of directories to watch for JS changes.
+ *
+ * @return {Object}
+ */
+function buildFileManager () {
+  var buildFileContent, requiredExtensions;
+
+  /**
+   * Initializes the Build File Manager by extracting the required extensions
+   * and finding the full path for each extension.
+   */
+  (function init () {
+    initRequiredExtensions();
+    initAliasFullPath();
+  })();
+
+  /**
+   * Creates the temporary build file and replaces the extension names with
+   * their full path.
+   */
+  function createTempFile () {
+    var tempBuildFileContent = buildFileContent;
+
+    requiredExtensions.forEach(function (record) {
+      var extensionRegExp = new RegExp(record.alias.path, 'g');
+
+      tempBuildFileContent = tempBuildFileContent.replace(
+        extensionRegExp, record.alias.fullPath);
+    });
+
+    fs.writeFileSync('./js/build.tmp.js', tempBuildFileContent, 'utf8');
+  }
+
+  /**
+   * Returns the alias name and path.
+   *
+   * @param {Array} parts - an array containing the raw name and path for
+   * the alias.
+   * @return {Object}
+   */
+  function getAliasObject (parts) {
+    return {
+      name: getTrimmedWords(parts[0]),
+      path: parts[1].trim().replace(/['"]+/g, '')
+    };
+  }
+
+  /**
+   * Returns the extension name and path. The path is retrieved using the
+   * civicrm-cv tool, which returns the full path for an extension.
+   *
+   * @param {Array} parts - an array containing the raw name for the extension.
+   * @return {Object}
+   */
+  function getExtensionObject (parts) {
+    var name = getTrimmedWords(parts[1]);
+    var path = cv('path -x ' + name);
+
+    return {
+      name: name,
+      path: path[0].value
+    };
+  }
+
+  /**
+   * Returns a clean string by removing unwanted characters such as '', "", %%
+   * and :, and removing extra white space.
+   *
+   * @param {String} string - the string to clean.
+   * @param {String}
+   */
+  function getTrimmedWords (string) {
+    var words = /([\w ._-]+)/;
+
+    return words.exec(string.trim())[0];
+  }
+
+  /**
+   * Return watch paths for JS files that are part of the extensions specified
+   * in the build file.
+   *
+   * @return {Array}
+   */
+  function getWatchPaths () {
+    return requiredExtensions.map(function (record) {
+      return record.alias.fullPath + '/**/**.js';
+    });
+  }
+
+  /**
+   * Initializes each alias full path by replacing the extension name, with
+   * the extension path.
+   */
+  function initAliasFullPath () {
+    requiredExtensions.forEach(function (record) {
+      var extRegExp = new RegExp('%' + record.extension.name + '%');
+
+      record.alias.fullPath = record.alias.path.replace(
+        extRegExp, record.extension.path);
+    });
+  }
+
+  /**
+   * Initializes the required extensions by extracting them from the build file.
+   * The required extensions is an array detailing the name and path for both
+   * the alias (ex: leave-absences) and the extension
+   * (ex: uk.co.compucorp.civicrm.hrleaveandabsences).
+   */
+  function initRequiredExtensions () {
+    var paths;
+    buildFileContent = fs.readFileSync('./js/build.js', 'utf8');
+    paths = buildFileContent.match(/.*%([\w._-]+)%.*/g) || [];
+
+    requiredExtensions = paths.map(function (path) {
+      var parts = path.split(':');
+
+      return {
+        alias: getAliasObject(parts),
+        extension: getExtensionObject(parts)
+      };
+    });
+  }
+
+  return {
+    createTempFile: createTempFile,
+    getWatchPaths: getWatchPaths
+  };
+}
