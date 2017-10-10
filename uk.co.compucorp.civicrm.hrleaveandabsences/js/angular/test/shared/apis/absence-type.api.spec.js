@@ -1,8 +1,10 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/lodash',
   'common/moment',
   'mocks/data/absence-type-data',
-  'leave-absences/shared/apis/absence-type-api'
+  'leave-absences/shared/apis/absence-type.api'
 ], function (_, moment, mockData) {
   'use strict';
 

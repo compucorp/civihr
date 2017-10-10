@@ -1,11 +1,13 @@
+/* eslint-env amd, jasmine */
+
 define([
-  'leave-absences/shared/models/entitlement-model',
-  'mocks/apis/entitlement-api-mock',
+  'leave-absences/shared/models/entitlement.model',
+  'mocks/apis/entitlement-api-mock'
 ], function () {
-  'use strict'
+  'use strict';
 
   describe('Entitlement', function () {
-    var $provide, Entitlement, EntitlementInstance, EntitlementAPI, $rootScope;
+    var $provide, Entitlement, EntitlementAPI, $rootScope;
 
     beforeEach(module('leave-absences.models', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -15,9 +17,8 @@ define([
       $provide.value('EntitlementAPI', _EntitlementAPIMock_);
     }));
 
-    beforeEach(inject(function (_Entitlement_, _EntitlementInstance_, _EntitlementAPI_, _$rootScope_) {
+    beforeEach(inject(function (_Entitlement_, _EntitlementAPI_, _$rootScope_) {
       Entitlement = _Entitlement_;
-      EntitlementInstance = _EntitlementInstance_;
       EntitlementAPI = _EntitlementAPI_;
       $rootScope = _$rootScope_;
 
@@ -26,7 +27,7 @@ define([
     }));
 
     afterEach(function () {
-      //to excute the promise force an digest
+      // to excute the promise force an digest
       $rootScope.$apply();
     });
 

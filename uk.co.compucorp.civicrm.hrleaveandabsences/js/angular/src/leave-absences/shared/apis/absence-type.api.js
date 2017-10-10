@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'common/moment',

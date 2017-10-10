@@ -241,7 +241,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
           'Invalid Request Cancelation Option'
       );
     }
-
+    self::validateAbsenceTypeTitle($params);
     self::validateTOIL($params);
     self::validateCarryForward($params);
   }
@@ -282,6 +282,37 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     if(!self::fieldIsUnique('must_take_public_holiday_as_leave', 1, $params)) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
         'There is already one Absence Type where "Must staff take public holiday as leave" is selected'
+      );
+    }
+  }
+
+  /**
+   * Checks if another Absence Type exists with same title as
+   * the Absence Type being created/updated and throws an exception if found.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   */
+  private static function validateAbsenceTypeTitle($params) {
+    $title = CRM_Utils_Array::value('title', $params);
+    if (!$title) {
+      return;
+    }
+
+    $absenceType = new self();
+    $absenceType->title = $title;
+
+    if (!empty($params['id'])) {
+      $id = (int) $params['id'];
+      $absenceType->whereAdd("id <> $id");
+    }
+
+    $absenceType->find(true);
+
+    if ($absenceType->id) {
+      throw new InvalidAbsenceTypeException(
+        'Absence Type with same title already exists!'
       );
     }
   }

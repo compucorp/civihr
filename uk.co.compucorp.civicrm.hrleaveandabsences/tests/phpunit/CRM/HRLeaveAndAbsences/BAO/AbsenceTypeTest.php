@@ -33,12 +33,13 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
   }
 
-  /**
-   * @expectedException PEAR_Exception
-   * @expectedExceptionMessage DB Error: already exists
-   */
   public function testTypeTitlesShouldBeUnique() {
     AbsenceTypeFabricator::fabricate(['title' => 'Type 1']);
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException',
+      'Absence Type with same title already exists!'
+    );
     AbsenceTypeFabricator::fabricate(['title' => 'Type 1']);
   }
 
@@ -756,5 +757,40 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
     $this->assertEquals($absenceType3->id, $absenceTypes[1]->id);
     $this->assertEquals($absenceType3->title, $absenceTypes[1]->title);
+  }
+
+  public function testNoExceptionIsThrownWhenUpdatingAnAbsenceTypeWithoutChangingTheTitle() {
+    $params = ['title' => 'Type 1'];
+    $absenceType = AbsenceTypeFabricator::fabricate($params);
+
+    //update the absence type
+    $params['id'] = $absenceType->id;
+    $params['default_entitlement'] = 50;
+
+    try{
+      $absenceType = AbsenceTypeFabricator::fabricate($params);
+      $this->assertEquals($absenceType->default_entitlement, $params['default_entitlement']);
+    } catch(CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException $e) {
+      $this->fail($e->getMessage());
+    }
+  }
+
+  public function testExceptionIsThrownWhenUpdatingAnAbsenceTypeWithTitleOfAnotherExistingAbsenceType() {
+    $params1 = ['title' => 'Type 1'];
+    $absenceType1 = AbsenceTypeFabricator::fabricate($params1);
+
+    $params2 = ['title' => 'Type 2'];
+    $absenceType2 = AbsenceTypeFabricator::fabricate($params2);
+
+    //update the second absence type with the title of the first type
+    $params['id'] = $absenceType2->id;
+    $params['title'] = $params1['title'];
+
+    $this->setExpectedException(
+      CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException::class,
+      'Absence Type with same title already exists!'
+    );
+
+    AbsenceTypeFabricator::fabricate($params);
   }
 }

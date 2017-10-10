@@ -635,6 +635,283 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($balanceAfterDateChange, $balance);
   }
 
+  public function testBalanceIsUpdatedForExistingToilWhenChangeBalanceIsFalseAndToilToAccrueChangedAndDatesDidNotChange() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $toilToAccrue1 = 1;
+    $toilParams = [
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => $toilToAccrue1
+    ];
+
+    $params = $this->getDefaultParams($toilParams);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //Just to make sure that we have the expected balance change for the toil
+    $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue1, $previousBalance);
+
+    //update toil request and change the toil_to_accrue
+    $toilToAccrue2 = 2;
+    $params['id'] = $toilRequest->id;
+    $params['change_balance'] = 0;
+    $params['toil_to_accrue'] = $toilToAccrue2;
+
+    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
+      $params,
+      false
+    );
+
+    //Balance change is updated for the TOIL
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue2, $balance);
+  }
+
+  public function testBalanceIsUpdatedForExistingToilWhenChangeBalanceIsTrueAndToilToAccrueChangedAndDatesDidNotChange() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $toilToAccrue1 = 1;
+    $toilParams = [
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => $toilToAccrue1
+    ];
+
+    $params = $this->getDefaultParams($toilParams);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //Just to make sure that we have the expected balance change for the toil
+    $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue1, $previousBalance);
+
+    //update toil request and change the toil_to_accrue
+    $toilToAccrue2 = 2;
+    $params['id'] = $toilRequest->id;
+    $params['change_balance'] = 1;
+    $params['toil_to_accrue'] = $toilToAccrue2;
+
+    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
+      $params,
+      false
+    );
+
+    //Balance change is updated for the TOIL
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue2, $balance);
+  }
+
+  public function testBalanceRemainsSameButDatesAreUpdatedForToilWhenChangeBalanceIsTrueAndToilToAccrueNotChangedAndDatesChanged() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $toilToAccrue1 = 1;
+    $toilParams = [
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => $toilToAccrue1
+    ];
+
+    $params = $this->getDefaultParams($toilParams);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //Just to make sure that we have the expected balance change for the toil
+    $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue1, $previousBalance);
+    //4 days 2016-01-04 to 2016-01-07
+    $this->assertCount(4, $toilRequest->getDates());
+
+    //Update toil request and change the dates.
+    //Balance will not change since TOIl balance is determined by
+    //The toil_to_accrue parameter and not the dates of the request
+    //Although the dates will change.
+    $params['id'] = $toilRequest->id;
+    $params['change_balance'] = 1;
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-04');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-10');
+
+    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
+      $params,
+      false
+    );
+
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue1, $balance);
+
+    //7 days 2016-01-04 to 2016-01-10
+    $this->assertCount(7, $toilRequest->getDates());
+  }
+
+  public function testBalanceRemainsSameButDatesAreUpdatedForToilWhenChangeBalanceIsFalseAndToilToAccrueNotChangedAndDatesChanged() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $toilToAccrue1 = 1;
+    $toilParams = [
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => $toilToAccrue1
+    ];
+
+    $params = $this->getDefaultParams($toilParams);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //Just to make sure that we have the expected balance change for the toil
+    $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue1, $previousBalance);
+    //4 days 2016-01-04 to 2016-01-07
+    $this->assertCount(4, $toilRequest->getDates());
+
+    //Update toil request and change the dates.
+    //Balance will not change since TOIl balance is determined by
+    //The toil_to_accrue parameter and not the dates of the request
+    //Although the dates will change.
+    $params['id'] = $toilRequest->id;
+    $params['change_balance'] = 0;
+    $params['from_date'] = CRM_Utils_Date::processDate('2016-01-04');
+    $params['to_date'] = CRM_Utils_Date::processDate('2016-01-10');
+
+    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
+      $params,
+      false
+    );
+
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue1, $balance);
+
+    //7 days 2016-01-04 to 2016-01-10
+    $this->assertCount(7, $toilRequest->getDates());
+  }
+
+  public function testBalanceAndDatesNotUpdatedForExistingToilWhenChangeBalanceIsFalseAndToilToAccrueAndDatesDidNotChange() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $toilToAccrue1 = 1;
+    $toilParams = [
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => $toilToAccrue1
+    ];
+
+    $params = $this->getDefaultParams($toilParams);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //Just to make sure that we have the expected balance change for the toil
+    $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue1, $previousBalance);
+    $dates1 = CRM_Utils_Array::collect('id', $toilRequest->getDates());
+
+    $params['id'] = $toilRequest->id;
+    $params['change_balance'] = 0;
+
+    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
+      $params,
+      false
+    );
+
+    //Both the dates and balance changes remain the same.
+    $dates2 = CRM_Utils_Array::collect('id', $toilRequest->getDates());
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue1, $balance);
+
+    $this->assertEquals($dates1, $dates2);
+  }
+
+  public function testBalanceAndDatesRemainsSameForExistingToilWhenChangeBalanceIsTrueAndToilToAccrueAndDatesDidNotChange() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $toilToAccrue1 = 1;
+    $toilParams = [
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => $toilToAccrue1
+    ];
+
+    $params = $this->getDefaultParams($toilParams);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+
+    //Just to make sure that we have the expected balance change for the toil
+    $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue1, $previousBalance);
+    $dates1 = CRM_Utils_Array::collect('id', $toilRequest->getDates());
+
+    $params['id'] = $toilRequest->id;
+    $params['change_balance'] = 1;
+
+    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
+      $params,
+      false
+    );
+
+    //Both the dates and balance changes remain the same.
+    //The balance change is also same amount
+    $dates2 = CRM_Utils_Array::collect('id', $toilRequest->getDates());
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
+    $this->assertEquals($toilToAccrue1, $balance);
+
+    $this->assertEquals($dates1, $dates2);
+  }
+
   public function testGetBreakdownIncludeOnlyTheLeaveBalanceChangesOfTheLeaveRequestDates() {
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,

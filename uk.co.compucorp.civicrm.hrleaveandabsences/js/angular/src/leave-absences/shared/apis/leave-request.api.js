@@ -102,6 +102,18 @@ define([
         },
 
         /**
+         * Gets the balance change breakdown
+         * @NOTE: This breakdown is not affected by a work pattern change
+         *
+         * @param  {Integer} leaveRequestId Leave Request ID
+         * @return {Promise} resolves with the detailed balance breakdown
+         */
+        getBalanceChangeBreakdown: function (leaveRequestId) {
+          return this.sendGET('LeaveRequest', 'getBreakdown',
+            { leave_request_id: leaveRequestId }, false);
+        },
+
+        /**
          * Create a new leave request with given params.
          *
          * @param {Object} params matched the API end point params with

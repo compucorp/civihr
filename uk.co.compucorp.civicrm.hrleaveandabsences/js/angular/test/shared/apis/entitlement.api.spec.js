@@ -3,7 +3,7 @@
 define([
   'mocks/data/entitlement-data',
   'mocks/data/leave-balance-report.data',
-  'leave-absences/shared/apis/entitlement-api'
+  'leave-absences/shared/apis/entitlement.api'
 ], function (mockData, leaveBalanceReportMockData) {
   'use strict';
 

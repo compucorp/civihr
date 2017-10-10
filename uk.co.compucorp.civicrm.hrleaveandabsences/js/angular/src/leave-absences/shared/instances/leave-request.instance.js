@@ -125,6 +125,18 @@ define([
         },
 
         /**
+         * Gets the current balance change according to a current work pattern
+         *
+         * @return {Promise} resolves to an object containing
+         *   a balance change amount and a detailed breakdown
+         */
+        calculateBalanceChange: function () {
+          return LeaveRequestAPI.calculateBalanceChange(
+            _.pick(this, ['contact_id', 'from_date',
+              'from_date_type', 'to_date', 'to_date_type']));
+        },
+
+        /**
          * Cancel a leave request
          */
         cancel: function () {
@@ -220,6 +232,33 @@ define([
          */
         delete: function () {
           return LeaveRequestAPI.delete(this.id);
+        },
+
+        /**
+         * Gets the balance change breakdown of the leave request
+         *
+         * @return {Promise}
+         */
+        getBalanceChangeBreakdown: function () {
+          return LeaveRequestAPI.getBalanceChangeBreakdown(this.id)
+            .then(function (response) {
+              return {
+                amount: _.reduce(response.values, function (sum, entry) {
+                  return sum + parseFloat(entry.amount);
+                }, 0),
+                breakdown: response.values.map(function (entry) {
+                  return {
+                    amount: parseFloat(entry.amount),
+                    date: entry.date,
+                    type: {
+                      id: entry.id,
+                      value: entry.type,
+                      label: entry.label
+                    }
+                  };
+                })
+              };
+            });
         },
 
         /**

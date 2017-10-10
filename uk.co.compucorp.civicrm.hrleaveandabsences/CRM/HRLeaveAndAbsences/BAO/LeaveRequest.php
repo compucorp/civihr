@@ -486,7 +486,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $currentBalance = $leavePeriodEntitlement->getBalance($requestsToExcludeFromBalance);
 
-    if(!$absenceType->allow_overuse && $leaveRequestBalance > $currentBalance) {
+    if(!$absenceType->allow_overuse && ($currentBalance + $leaveRequestBalance) < 0) {
       throw new InvalidLeaveRequestException(
         'There are only '. $currentBalance .' days leave available. This request cannot be made or approved',
         'leave_request_balance_change_greater_than_remaining_balance',
@@ -513,7 +513,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       $params['to_date_type']
     );
 
-    return abs($leaveRequestBalance['amount']);
+    return $leaveRequestBalance['amount'];
   }
 
   /**
@@ -1177,6 +1177,29 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     return null;
+  }
+
+  /**
+   * Checks If the toil_to_accrue value for a TOIL request to be updated
+   * changed since when it was created.
+   *
+   * Returns NULL for a freshly created Leave request or a request type
+   * is not a TOIL type.
+   *
+   * @param array $params
+   *
+   * @return bool|null
+   */
+  public static function toilToAccrueChanged($params) {
+    if($params['request_type'] != self::REQUEST_TYPE_TOIL || empty($params['id'])) {
+      return null;
+    }
+
+    $toilRequest = self::findById($params['id']);
+    $toilToAccrue = $toilRequest->toil_to_accrue;
+    $newToilToAccrue = $params['toil_to_accrue'];
+
+    return $toilToAccrue != $newToilToAccrue;
   }
 
   /**

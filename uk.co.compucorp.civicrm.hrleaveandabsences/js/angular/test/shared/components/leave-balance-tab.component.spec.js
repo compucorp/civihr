@@ -7,7 +7,7 @@ define([
   'mocks/data/leave-balance-report.data',
   'mocks/apis/absence-type-api-mock',
   'mocks/apis/entitlement-api-mock',
-  'leave-absences/shared/models/entitlement-model',
+  'leave-absences/shared/models/entitlement.model',
   'leave-absences/shared/components/leave-balance-tab.component',
   'leave-absences/shared/config'
 ], function (_, absencePeriodMock, absenceTypeMock, reportMockData) {
