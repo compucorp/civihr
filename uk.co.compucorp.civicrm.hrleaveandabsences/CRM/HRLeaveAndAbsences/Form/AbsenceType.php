@@ -87,6 +87,10 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
         $params['notification_receivers_ids'] = explode(',', $params['notification_receivers_ids']);
       }
 
+      if(!array_key_exists('add_public_holiday_to_entitlement', $params)) {
+        $params['add_public_holiday_to_entitlement'] = 0;
+      }
+
       $actionDescription = ($this->_action & CRM_Core_Action::UPDATE) ? 'updated' : 'created';
       try {
         $absenceType = CRM_HRLeaveAndAbsences_BAO_AbsenceType::create($params);

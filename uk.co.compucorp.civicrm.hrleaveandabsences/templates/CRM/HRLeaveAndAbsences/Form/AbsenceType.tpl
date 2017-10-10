@@ -39,7 +39,7 @@
             </div>
             <div class="form-group row public-holiday-option">
               <div class="col-sm-6">{$form.add_public_holiday_to_entitlement.label}</div>
-              <div class="col-sm-6">{$form.add_public_holiday_to_entitlement.html}</div>
+              <div class="col-sm-6">{$form.add_public_holiday_to_entitlement.html}<span class="entitlement-help-text">{help id="id-entitlement-error"}</span></div>
             </div>
             <div class="form-group row">
               <div class="col-sm-6">{$form.notification_receivers_ids.label}</div>
@@ -275,40 +275,40 @@
                 }
 
                 function initCalculationUnitControls() {
-                  setEntitlementLabelText();
-                  var prev_calculation_unit_val = $('.absence-calculation-unit select option:selected').val();
+                  calculationUnitRelatedControls();
+
                   $('.absence-calculation-unit select').on('change', function(e) {
-                    var add_public_holiday_entitlement = $('.public-holiday-option input[type=radio]:checked').val();
-                    var hours_unit_value = getHoursUnitValue();
-                    if(this.value == hours_unit_value && add_public_holiday_entitlement == 1) {
-                      $('.absence-calculation-unit select').select2('val', prev_calculation_unit_val);
-                      showPublicHolidayEntitlementErrorAlert();
-                    }
-                    else {
-                      prev_calculation_unit_val = $('.absence-calculation-unit select option:selected').val();
-                    }
-                    setEntitlementLabelText();
+                    calculationUnitRelatedControls();
                   });
                 }
 
+                function calculationUnitRelatedControls() {
+                  publicHolidayToggle();
+                  setEntitlementLabelText();
+                  toggleEntitlementHelpIcon();
+                }
                 function setEntitlementLabelText() {
                   $('.entitlement-label').text($('.absence-calculation-unit select option:selected').text());
                 }
 
-                function initPublicHolidayControls() {
-                  $('.public-holiday-option input[type=radio]').on('click', function(e) {
-                    var calculation_unit = $('.absence-calculation-unit select option:selected').val();
-                    var hours_unit_value = getHoursUnitValue();
-                    if (this.value == 1 && calculation_unit == hours_unit_value) {
-                      showPublicHolidayEntitlementErrorAlert();
-                      e.preventDefault();
-                    }
-                  });
+                function toggleEntitlementHelpIcon() {
+                  if($('.public-holiday-option input[type=radio]').attr('disabled')) {
+                    $('.entitlement-help-text').show();
+                  }
+                  else {
+                    $('.entitlement-help-text').hide();
+                  }
                 }
 
-                function showPublicHolidayEntitlementErrorAlert() {
-                  CRM.alert("You cannot add public holiday to entitlement when calculation unit is in Hours",
-                    'Modify Absence Type', 'error');
+                function publicHolidayToggle() {
+                  var calculation_unit = $('.absence-calculation-unit select option:selected').val();
+                  var hours_unit_value = getHoursUnitValue();
+                  if(calculation_unit == hours_unit_value) {
+                    $('.public-holiday-option input[type=radio]').val([0]).attr('disabled', true);
+                  }
+                  else {
+                    $('.public-holiday-option input[type=radio]').attr('disabled', false);
+                  }
                 }
 
                 function getHoursUnitValue() {
@@ -325,7 +325,6 @@
                   initColorPicker();
                   initDeleteButton();
                   initCalculationUnitControls()
-                  initPublicHolidayControls()
                 });
 
               });
