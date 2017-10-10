@@ -1,7 +1,10 @@
 /* eslint-env amd */
 
 define([
-  'common/angular'
+  'common/angular',
+  './shared-settings'
 ], function (angular) {
-  return angular.module('leave-absences.components', []);
+  return angular.module('leave-absences.components', [
+    'leave-absences.settings'
+  ]);
 });

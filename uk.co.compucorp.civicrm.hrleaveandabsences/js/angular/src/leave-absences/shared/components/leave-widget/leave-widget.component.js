@@ -1,8 +1,7 @@
 /* eslint-env amd */
 
 define([
-  'leave-absences/shared/modules/components',
-  'leave-absences/shared/modules/shared-settings'
+  'leave-absences/shared/modules/components'
 ], function (components) {
   components.component('leaveWidget', {
     controller: leaveWidgetController,

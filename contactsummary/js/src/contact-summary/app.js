@@ -17,7 +17,6 @@ define([
     'ui.bootstrap',
     'common.services',
     'leave-absences.components',
-    'leave-absences.settings',
     'contactsummary.controllers',
     'contactsummary.directives',
     'contactsummary.filters',

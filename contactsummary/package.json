@@ -2,6 +2,7 @@
   "name": "contact-summary",
   "version": "0.0.1",
   "devDependencies": {
+    "civicrm-cv": "~0.1.2",
     "civicrm-scssroot": "git://github.com/totten/civicrm-scssroot.git#v0.1.1",
     "gulp": "^3.9.0",
     "gulp-clean": "^0.3.1",
@@ -18,8 +19,5 @@
     "path": "^0.12.7",
     "protractor": "1.4.0",
     "requirejs": "^2.1.22"
-  },
-  "dependencies": {
-    "civicrm-cv": "^0.1.2"
   }
 }
