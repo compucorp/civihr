@@ -12,7 +12,3 @@ _If the PR introduces noteworthy technical changes, please describe them here. P
 
 ## Comments
 _Anything else you would like the reviewer to note_
-
----
-
-- [ ] Tests Pass
