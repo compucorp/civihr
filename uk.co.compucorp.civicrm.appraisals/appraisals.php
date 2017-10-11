@@ -182,7 +182,7 @@ function appraisals_civicrm_pageRun($page) {
             // Temporary, necessary to use the mocked API data
             CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.reqangular', 'dist/reqangular.mocks.min.js', 1010);
 
-            CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.appraisals', CRM_Core_Config::singleton()->debug ? 'js/src/appraisals.js' : 'js/dist/appraisals.min.js', 1010);
+            CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.appraisals', 'js/dist/appraisals.min.js', 1010);
         }
     }
 }
