@@ -1,0 +1,6 @@
+{htxt id="id-entitlement-error-title"}
+  {ts}Modify Absence Type{/ts}
+{/htxt}
+{htxt id="id-entitlement-error"}
+  {ts}You cannot add public holiday to entitlement when calculation unit is in Hours.{/ts}
+{/htxt}

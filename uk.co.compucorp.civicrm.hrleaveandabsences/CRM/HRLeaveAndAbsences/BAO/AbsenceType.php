@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
 use CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException as InvalidAbsenceTypeException;
+use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
 
 class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_AbsenceType {
 
@@ -244,6 +245,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     self::validateAbsenceTypeTitle($params);
     self::validateTOIL($params);
     self::validateCarryForward($params);
+    self::validateCalculationUnit($params);
   }
 
   /**
@@ -252,6 +254,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * There can be only one AbsenceType where this field is true. So this
    * method checks if one such type already exists and throws an error if that
    * is the case.
+   * It also checks to ensure that public holiday cannot be added to entitlement
+   * if the absence type leave is to be calculated in hours.
    *
    * @param array $params
    *  The params array received by the create method
@@ -263,6 +267,46 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
         'There is already one Absence Type where public holidays should be added to it'
       );
+    }
+
+    $calculationUnitOptions = array_flip(self::buildOptions('calculation_unit', 'validate'));
+    $calculationUnitIsInHours = $params['calculation_unit'] == $calculationUnitOptions['hours'];
+    if($params['add_public_holiday_to_entitlement'] == 1 && $calculationUnitIsInHours) {
+      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
+        'You cannot add public holiday to entitlement when Absence Type calculation unit is in Hours'
+      );
+    }
+  }
+
+  /**
+   * Validates that the calculation_unit column cannot be changed once the
+   * Absence Type is in use.
+   *
+   * @param array $params
+   *  The params array received by the create method
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   */
+  private static function validateCalculationUnit($params) {
+    if(empty($params['id'])) {
+      return;
+    }
+
+    if(empty($params['calculation_unit'])) {
+      return;
+    }
+
+    $oldValue = self::getFieldValue(self::class, $params['id'], 'calculation_unit');
+    $calculationUnitChanged = $oldValue != $params['calculation_unit'];
+    if($calculationUnitChanged) {
+      $absenceTypeService = new AbsenceTypeService();
+      $absenceTypeHasBeenUsed = $absenceTypeService->absenceTypeHasEverBeenUsed($params['id']);
+
+      if($absenceTypeHasBeenUsed) {
+        throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
+          'The Calculation unit cannot be changed because the Absence Type is In Use!'
+        );
+      }
     }
   }
 

@@ -11,6 +11,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriod
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest
@@ -358,7 +359,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
   public function testCanSaveALeavePeriodEntitlementFromAnEntitlementCalculation() {
 
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
     $period = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
     $this->setContractDates('2016-01-01', '2016-12-31');
 
@@ -428,7 +429,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testSaveFromCalculationWillReplaceExistingLeavePeriodEntitlement() {
-    $type = $this->createAbsenceType();
+    $type = AbsenceTypeFabricator::fabricate();
     $period = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
     $this->setContractDates('2016-01-01', '2016-12-31');
 
@@ -578,7 +579,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   public function testGetStartAndEndDatesShouldReturnAbsencePeriodDateIfContractStartDateIsLessThanThePeriodStartDate() {
     $this->setContractDates('2015-12-31', null);
     $absencePeriod = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
-    $absenceType = $this->createAbsenceType();
+    $absenceType = AbsenceTypeFabricator::fabricate();
 
     $periodEntitlement = LeavePeriodEntitlement::create([
       'contact_id' => $this->contract['contact_id'],
@@ -594,7 +595,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   public function testGetStartAndEndDatesShouldReturnContractDateIfContractStartDateIsGreaterThanThePeriodStartDate() {
     $this->setContractDates('2016-03-17', null);
     $absencePeriod = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
-    $absenceType = $this->createAbsenceType();
+    $absenceType = AbsenceTypeFabricator::fabricate();
 
     $periodEntitlement = LeavePeriodEntitlement::create([
       'contact_id' => $this->contract['contact_id'],
@@ -610,7 +611,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   public function testGetStartAndEndDatesShouldReturnAbsencePeriodDateIfContractEndDateIsGreaterThanThePeriodEndDate() {
     $this->setContractDates('2015-03-17', '2017-01-01');
     $absencePeriod = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
-    $absenceType = $this->createAbsenceType();
+    $absenceType = AbsenceTypeFabricator::fabricate();
 
     $periodEntitlement = LeavePeriodEntitlement::create([
       'contact_id' => $this->contract['contact_id'],
@@ -626,7 +627,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   public function testGetStartAndEndDatesShouldReturnContractDateIfContractEndDateIsLessThanThePeriodEndDate() {
     $this->setContractDates('2016-03-17', '2016-05-23');
     $absencePeriod = $this->createAbsencePeriod('2016-01-01', '2016-12-31');
-    $absenceType = $this->createAbsenceType();
+    $absenceType = AbsenceTypeFabricator::fabricate();
 
     $periodEntitlement = LeavePeriodEntitlement::create([
       'contact_id' => $this->contract['contact_id'],
@@ -644,15 +645,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       'title' => microtime(),
       'start_date' => date('YmdHis', strtotime($startDate)),
       'end_date' => date('YmdHis', strtotime($endDate)),
-    ]);
-  }
-
-  private function createAbsenceType() {
-    return AbsenceType::create([
-      'title' => 'Type ' . microtime(),
-      'color' => '#000000',
-      'default_entitlement' => 20,
-      'allow_request_cancelation' => 1,
     ]);
   }
 
