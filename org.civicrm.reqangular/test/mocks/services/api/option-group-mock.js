@@ -36,125 +36,177 @@ define([
         return {
           hrjc_department: [
             {
-              id: '856',
-              option_group_id: '112',
+              id: '1',
+              option_group_id: '1',
+              is_reserved: '1',
+              is_active: '1',
               label: 'Finance',
-              value: 'Finance',
+              name: 'finance',
+              option_group_name: 'hrjc_department',
+              value: '1',
               weight: '1'
             },
             {
-              id: '857',
-              option_group_id: '112',
+              id: '2',
+              option_group_id: '1',
+              is_reserved: '1',
+              is_active: '1',
               label: 'HR',
-              value: 'HR',
+              name: 'hr',
+              option_group_name: 'hrjc_department',
+              value: '2',
               weight: '2'
             },
             {
-              id: '858',
-              option_group_id: '112',
+              id: '3',
+              option_group_id: '1',
+              is_reserved: '1',
+              is_active: '1',
               label: 'IT',
-              value: 'IT',
+              name: 'it',
+              option_group_name: 'hrjc_department',
+              value: '3',
               weight: '3'
             },
             {
-              id: '859',
-              option_group_id: '112',
+              id: '4',
+              option_group_id: '1',
+              is_reserved: '1',
+              is_active: '1',
               label: 'Fundraising',
-              value: 'Fundraising',
+              name: 'fundraising',
+              option_group_name: 'hrjc_department',
+              value: '4',
               weight: '4'
             },
             {
-              id: '860',
-              option_group_id: '112',
+              id: '5',
+              option_group_id: '1',
+              is_reserved: '1',
+              is_active: '1',
               label: 'Marketing',
-              value: 'Marketing',
+              name: 'marketing',
+              option_group_name: 'hrjc_department',
+              value: '5',
               weight: '5'
             }
           ],
           hrjc_level_type: [
             {
-              id: '845',
-              option_group_id: '111',
+              id: '6',
+              option_group_id: '2',
+              is_reserved: '1',
+              is_active: '1',
               label: 'Senior Manager',
-              value: 'Senior Manager',
+              name: 'seniormanager',
+              option_group_name: 'hrjc_level_type',
+              value: '1',
               weight: '1'
             },
             {
-              id: '846',
-              option_group_id: '111',
+              id: '7',
+              option_group_id: '2',
+              is_reserved: '1',
+              is_active: '1',
               label: 'Junior Manager',
-              value: 'Junior Manager',
+              name: 'juniormanager',
+              option_group_name: 'hrjc_level_type',
+              value: '2',
               weight: '2'
             },
             {
-              id: '847',
-              option_group_id: '111',
+              id: '8',
+              option_group_id: '2',
+              is_reserved: '1',
+              is_active: '1',
               label: 'Senior Staff',
-              value: 'Senior Staff',
+              name: 'seniorstaff',
+              option_group_name: 'hrjc_level_type',
+              value: '3',
               weight: '3'
             },
             {
-              id: '848',
-              option_group_id: '111',
-              label: 'Junior Staff',
-              value: 'Junior Staff',
+              id: '9',
+              option_group_id: '2',
+              is_reserved: '1',
+              is_active: '1',
+              label: 'Junior Manager',
+              name: 'juniorstaff',
+              option_group_name: 'hrjc_level_type',
+              value: '4',
               weight: '4'
             }
           ],
           hrjc_location: [
             {
-              id: '854',
-              option_group_id: '115',
+              id: '10',
+              option_group_id: '3',
+              is_reserved: '1',
+              is_active: '1',
               label: 'Headquarters',
-              value: 'Headquarters',
+              name: 'headquarters',
+              option_group_name: 'hrjc_location',
+              value: '1',
               weight: '1'
             },
             {
-              id: '855',
-              option_group_id: '115',
+              id: '11',
+              option_group_id: '3',
+              is_reserved: '1',
+              is_active: '1',
               label: 'Home or Home-Office',
-              value: 'Home',
-              weight: '1'
+              name: 'home',
+              option_group_name: 'hrjc_location',
+              value: '2',
+              weight: '2'
             }
           ],
           hrjc_region: [
             {
-              id: '1',
-              option_group_id: '11',
+              id: '12',
+              option_group_id: '4',
+              is_reserved: '1',
+              is_active: '1',
               label: 'Region #1',
-              value: 'Region #1',
+              name: 'region1',
+              option_group_name: 'hrjc_region',
+              value: '1',
               weight: '1'
             },
             {
-              id: '2',
-              option_group_id: '22',
+              id: '13',
+              option_group_id: '4',
+              is_reserved: '1',
+              is_active: '1',
               label: 'Region #2',
-              value: '1',
-              weight: '1'
+              name: 'region2',
+              option_group_name: 'hrjc_region',
+              value: '2',
+              weight: '2'
             }
           ],
           hrleaveandabsences_absence_type_calculation_unit: [
             {
-              id: '1169',
-              option_group_id: '149',
-              name: 'days',
-              label: 'Days',
-              value: '1',
-              weight: '1',
-              is_active: '1',
+              id: '14',
+              option_group_id: '5',
               is_reserved: '1',
-              option_group_name: 'hrleaveandabsences_absence_type_calculation_unit'
+              is_active: '1',
+              label: 'Days',
+              name: 'days',
+              option_group_name: 'hrleaveandabsences_absence_type_calculation_unit',
+              value: '1',
+              weight: '1'
             },
             {
-              id: '1170',
-              option_group_id: '149',
-              name: 'hours',
-              label: 'Hours',
-              value: '2',
-              weight: '2',
-              is_active: '1',
+              id: '15',
+              option_group_id: '5',
               is_reserved: '1',
-              option_group_name: 'hrleaveandabsences_absence_type_calculation_unit'
+              is_active: '1',
+              label: 'Hours',
+              name: 'hours',
+              option_group_name: 'hrleaveandabsences_absence_type_calculation_unit',
+              value: '2',
+              weight: '2'
             }
           ]
         };
