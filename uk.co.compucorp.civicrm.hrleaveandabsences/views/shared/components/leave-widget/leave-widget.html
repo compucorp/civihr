@@ -3,35 +3,11 @@
     <h2 class="panel-title">Leave</h2>
   </header>
   <div class="panel-body">
-    <div class="leave-widget__types">
-      <table class="table-responsive">
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>
-              Available balance
-              <button class="info-button">
-                <i class="fa fa-info-circle"></i>
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="leave-widget__types-name">Holiday/Vacation</td>
-            <td class="leave-widget__types-balance">8d 5h</td>
-          </tr>
-          <tr>
-            <td class="leave-widget__types-name">Holiday/Vacation</td>
-            <td class="leave-widget__types-balance">8d 5h</td>
-          </tr>
-          <tr>
-            <td class="leave-widget__types-name">Holiday/Vacation</td>
-            <td class="leave-widget__types-balance">8d 5h</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <leave-widget-balance
+      absence-types="leaveWidget.absenceTypes"
+      current-absence-period="leaveWidget.currentAbsencePeriod"
+      logged-in-contact-id="leaveWidget.loggedInContactId"
+    ></leave-widget-balance>
 
     <hr />
 

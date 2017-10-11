@@ -1,0 +1,21 @@
+<div class="leave-widget__types">
+  <table class="table-responsive">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>
+          Available balance
+          <button class="info-button">
+            <i class="fa fa-info-circle"></i>
+          </button>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="type in leaveWidgetBalance.absenceTypes">
+        <td class="leave-widget__types-name">{{ type.title }}</td>
+        <td class="leave-widget__types-balance">8d 5h</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
