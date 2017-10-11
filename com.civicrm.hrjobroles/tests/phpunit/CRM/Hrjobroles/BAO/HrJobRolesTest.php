@@ -155,8 +155,13 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends \PHPUnit_Framework_TestCase impl
 
     $department = $this->createDepartment('special_investigation', 'Special Investigation')['value'];
 
-    $this->createJobRole(array('job_contract_id' => $contract->id, 'department' => $department));
-    $this->createJobRole(array('job_contract_id' => $contract->id, 'department' => $department));
+    $params = [
+      'job_contract_id' => $contract->id,
+      'department' => $department,
+      'start_date' => date('Ymd')
+    ];
+    $this->createJobRole($params);
+    $this->createJobRole($params);
 
     $departmentsList = CRM_Hrjobroles_BAO_HrJobRoles::getCurrentDepartmentsList($contract->id);
 

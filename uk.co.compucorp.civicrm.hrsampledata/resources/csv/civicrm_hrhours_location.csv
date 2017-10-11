@@ -1,6 +1,6 @@
-location,standard_hours,periodicity
-Victoria,40,Week
-Stratford,38,Week
-Hammersmith,38,Week
-Islington,38,Week
-Clapham,38,Week
+location,standard_hours,periodicity,delete_on_uninstall
+Victoria,40,Week,1
+Stratford,38,Week,1
+Hammersmith,38,Week,1
+Islington,38,Week,1
+Clapham,38,Week,1

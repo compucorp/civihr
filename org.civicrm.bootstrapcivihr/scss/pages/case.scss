@@ -1,0 +1,77 @@
+.page-civicrm-case {
+  .font-size12pt {
+    font-size: $font-size-base;
+
+    label {
+      width: 212px;
+      display: inline-block;
+    }
+  }
+
+  .crm-case-search-form-block {
+    tr {
+      td.crm-submit-buttons {
+        padding: 12.5px 20px;
+      }
+
+      &:nth-child(n+1):nth-child(-n+4) > td {
+        padding: 5px 20px;
+
+        &:first-child {
+          width: 220px;
+          box-sizing: border-box;
+        }
+      }
+
+      &.crm-case-search-form-block-sort_name > td {
+        .crm-button_qf_Search_refresh {
+          float: right !important;
+        }
+
+        #_qf_Search_refresh-top {
+          margin-right: 0 !important;
+        }
+      }
+
+      .crm-i {
+        display: none;
+      }
+    }
+
+    #Application {
+      margin-left: -5px;
+      margin-right: -5px;
+
+      .crm-accordion-body td {
+        padding-left: 0 !important;
+      }
+    }
+  }
+
+  .crm-search-tasks {
+    @extend %search-filter-block;
+  }
+
+  .caseSelector > tbody  > tr {
+    .dataTable tr > td:first-child,
+    .dataTable tr > th:first-child {
+      text-align: center;
+    }
+
+    th a {
+      color: $gray-darker;
+    }
+
+    .nestedActivitySelector td:nth-child(8) {
+      text-align: left !important;
+    }
+
+    .paginate_button {
+      line-height: normal;
+    }
+
+    .ui-buttonset .ui-button {
+      padding: 5px 10px;
+    }
+  }
+}

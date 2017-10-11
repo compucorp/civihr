@@ -13,7 +13,7 @@ class CRM_HRSampleData_Cleaner_LocationType extends CRM_HRSampleData_CSVCleanerV
    *   Should at least contain `name`
    */
   public function visit(array $row) {
-    $this->deleteRecord('LocationType', ['name' => $row['name']]);
+    $this->deleteRecord('LocationType', ['name' => $row['name']], $row['delete_on_uninstall']);
   }
 
 }
