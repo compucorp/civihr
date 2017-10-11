@@ -12,9 +12,9 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="type in leaveWidgetBalance.absenceTypes">
+      <tr ng-repeat="type in leaveWidgetBalance.absenceTypeEntitlements">
         <td class="leave-widget__types-name">{{ type.title }}</td>
-        <td class="leave-widget__types-balance">8d 5h</td>
+        <td class="leave-widget__types-balance">{{ type.balance }}</td>
       </tr>
     </tbody>
   </table>

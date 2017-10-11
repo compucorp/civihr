@@ -8,8 +8,8 @@ define([
   'mocks/apis/absence-type-api-mock'
 ], function (_) {
   describe('LeaveWidget', function () {
-    var $componentController, $provide, $rootScope, AbsencePeriod, AbsenceType,
-      ctrl, Session;
+    var $componentController, $provide, $rootScope, $scope, AbsencePeriod,
+      AbsenceType, ctrl, Session;
     var loggedInContactId = 101;
 
     beforeEach(module('common.mocks', 'leave-absences.components',
@@ -17,9 +17,8 @@ define([
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (_$rootScope_, _AbsencePeriodAPIMock_,
+    beforeEach(inject(function (_AbsencePeriodAPIMock_,
     _AbsenceTypeAPIMock_, _SessionMock_) {
-      $rootScope = _$rootScope_;
       Session = _SessionMock_;
 
       $provide.value('Session', Session);
@@ -27,12 +26,15 @@ define([
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
     }));
 
-    beforeEach(inject(function (_$componentController_, $q, _AbsencePeriod_,
-    _AbsenceType_, Session) {
+    beforeEach(inject(function (_$componentController_, $q, _$rootScope_,
+    _AbsencePeriod_, _AbsenceType_, Session) {
       $componentController = _$componentController_;
+      $rootScope = _$rootScope_;
+      $scope = $rootScope.$new();
       AbsencePeriod = _AbsencePeriod_;
       AbsenceType = _AbsenceType_;
 
+      spyOn($scope, '$on').and.callThrough();
       spyOn(Session, 'get').and.returnValue($q.resolve({
         contactId: loggedInContactId }));
       spyOn(AbsencePeriod, 'all').and.callThrough();
@@ -40,7 +42,9 @@ define([
     }));
 
     beforeEach(function () {
-      ctrl = $componentController('leaveWidget');
+      ctrl = $componentController('leaveWidget', {
+        $scope: $scope
+      });
     });
 
     it('should be defined', function () {
@@ -48,6 +52,10 @@ define([
     });
 
     describe('on init', function () {
+      it('sets loading child components to false', function () {
+        expect(ctrl.loading.childComponents).toBe(false);
+      });
+
       it('sets loading component to true', function () {
         expect(ctrl.loading.component).toBe(true);
       });
@@ -62,6 +70,48 @@ define([
 
       it('sets the logged in contact id to null', function () {
         expect(ctrl.loggedInContactId).toBe(null);
+      });
+
+      it('watches for child components loading and ready events', function () {
+        expect($scope.$on).toHaveBeenCalledWith(
+          'LeaveWidget::childIsLoading', jasmine.any(Function));
+        expect($scope.$on).toHaveBeenCalledWith(
+          'LeaveWidget::childIsReady', jasmine.any(Function));
+      });
+
+      describe('child components', function () {
+        describe('when child components are loading', function () {
+          beforeEach(function () {
+            $rootScope.$broadcast('LeaveWidget::childIsLoading');
+            $rootScope.$broadcast('LeaveWidget::childIsLoading');
+            $rootScope.$broadcast('LeaveWidget::childIsLoading');
+          });
+
+          it('sets loading child components to true', function () {
+            expect(ctrl.loading.childComponents).toBe(true);
+          });
+
+          describe('when a few child components are ready', function () {
+            beforeEach(function () {
+              $rootScope.$broadcast('LeaveWidget::childIsReady');
+              $rootScope.$broadcast('LeaveWidget::childIsReady');
+            });
+
+            it('keeps loading child components set to true', function () {
+              expect(ctrl.loading.childComponents).toBe(true);
+            });
+
+            describe('when all child components are ready', function () {
+              beforeEach(function () {
+                $rootScope.$broadcast('LeaveWidget::childIsReady');
+              });
+
+              it('sets loading child components to false', function () {
+                expect(ctrl.loading.childComponents).toBe(false);
+              });
+            });
+          });
+        });
       });
 
       describe('absence types', function () {
