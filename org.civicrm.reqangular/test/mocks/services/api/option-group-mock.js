@@ -20,18 +20,18 @@ define([
         return promiseResolvedWith(values);
       },
 
-            /**
-             * Adds a spy on every method for testing purposes
-             */
+      /**
+       * Adds a spy on every method for testing purposes
+       */
       spyOnMethods: function () {
         _.functions(this).forEach(function (method) {
           spyOn(this, method).and.callThrough();
         }.bind(this));
       },
 
-            /**
-             * Mocked option values, grouped by option group
-             */
+      /**
+       * Mocked option values, grouped by option group
+       */
       mockedOptionValues: function () {
         return {
           hrjc_department: [
@@ -129,20 +129,44 @@ define([
               id: '2',
               option_group_id: '22',
               label: 'Region #2',
-              value: 'Region #2',
+              value: '1',
               weight: '1'
+            }
+          ],
+          hrleaveandabsences_absence_type_calculation_unit: [
+            {
+              id: '1169',
+              option_group_id: '149',
+              name: 'days',
+              label: 'Days',
+              value: '1',
+              weight: '1',
+              is_active: '1',
+              is_reserved: '1',
+              option_group_name: 'hrleaveandabsences_absence_type_calculation_unit'
+            },
+            {
+              id: '1170',
+              option_group_id: '149',
+              name: 'hours',
+              label: 'Hours',
+              value: '2',
+              weight: '2',
+              is_active: '1',
+              is_reserved: '1',
+              option_group_name: 'hrleaveandabsences_absence_type_calculation_unit'
             }
           ]
         };
       }
     };
 
-        /**
-         * Returns a promise that will resolve with the given value
-         *
-         * @param {any} value
-         * @return {Promise}
-         */
+    /**
+     * Returns a promise that will resolve with the given value
+     *
+     * @param {any} value
+     * @return {Promise}
+     */
     function promiseResolvedWith (value) {
       var deferred = $q.defer();
       deferred.resolve(value);
