@@ -14,7 +14,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest extends BaseHeadl
 
   public function testCanReturnCalculationsForMultipleAbsenceTypes()
   {
-    $this->createBasicType();
+    AbsenceTypeFabricator::fabricate();
     $period = new AbsencePeriod();
 
     // mock the array returned by an API call
@@ -34,7 +34,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest extends BaseHeadl
 
   public function testCanOnlyReturnCalculationsForEnabledAbsenceTypes()
   {
-    $this->createBasicType(['is_active' => false]);
+    AbsenceTypeFabricator::fabricate(['is_active' => false]);
     $period = new AbsencePeriod();
 
     // mock the array returned by an API call
@@ -48,9 +48,5 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest extends BaseHeadl
     // new disabled AbsenceType, so we should get only 3 calculations, since
     // the new one is disabled and should not be included in the calculation
     $this->assertCount(3, $calculations);
-  }
-
-  private function createBasicType($params = array()) {
-    return AbsenceTypeFabricator::fabricate($params);
   }
 }

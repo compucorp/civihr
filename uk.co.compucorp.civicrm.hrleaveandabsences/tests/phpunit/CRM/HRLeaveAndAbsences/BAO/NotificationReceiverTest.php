@@ -14,7 +14,7 @@ class CRM_HRLeaveAndAbsences_BAO_NotificationReceiverTest extends BaseHeadlessTe
   public function setUp()
   {
     parent::setUp();
-    $this->instantiateAbsenceType();
+    $this->absenceType = AbsenceTypeFabricator::fabricate();
   }
 
   public function tearDown()
@@ -37,11 +37,6 @@ class CRM_HRLeaveAndAbsences_BAO_NotificationReceiverTest extends BaseHeadlessTe
         $this->absenceType->id
     );
     $this->assertEmpty($receiversIds);
-  }
-
-  private function instantiateAbsenceType()
-  {
-    $this->absenceType = AbsenceTypeFabricator::fabricate();
   }
 
   private function getContactsIds($limit = 5)

@@ -275,18 +275,19 @@
                 }
 
                 function initCalculationUnitControls() {
-                  calculationUnitRelatedControls();
+                  toggleCalculationUnitRelatedControls();
 
                   $('.absence-calculation-unit select').on('change', function(e) {
-                    calculationUnitRelatedControls();
+                    toggleCalculationUnitRelatedControls();
                   });
                 }
 
-                function calculationUnitRelatedControls() {
+                function toggleCalculationUnitRelatedControls() {
                   publicHolidayToggle();
                   setEntitlementLabelText();
                   toggleEntitlementHelpIcon();
                 }
+
                 function setEntitlementLabelText() {
                   $('.entitlement-label').text($('.absence-calculation-unit select option:selected').text());
                 }
