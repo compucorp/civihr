@@ -25,7 +25,8 @@ define([
       'allow_carry_forward': '1',
       'max_number_of_days_to_carry_forward': '5',
       'carry_forward_expiration_duration': '12',
-      'carry_forward_expiration_unit': '2'
+      'carry_forward_expiration_unit': '2',
+      'calculation_unit': '1'
     }, {
       'id': '2',
       'title': 'TOIL',
@@ -44,7 +45,8 @@ define([
       'allow_accrue_in_the_past': '0',
       'accrual_expiration_duration': '3',
       'accrual_expiration_unit': '2',
-      'allow_carry_forward': '0'
+      'allow_carry_forward': '0',
+      'calculation_unit': '1'
     }, {
       'id': '3',
       'title': 'Sick',
@@ -60,7 +62,8 @@ define([
       'is_active': '1',
       'allow_accruals_request': '0',
       'allow_accrue_in_the_past': '0',
-      'allow_carry_forward': '0'
+      'allow_carry_forward': '0',
+      'calculation_unit': '1'
     }, {
       'id': '4',
       'title': 'Weekend',
@@ -76,7 +79,8 @@ define([
       'is_active': '1',
       'allow_accruals_request': '0',
       'allow_accrue_in_the_past': '0',
-      'allow_carry_forward': '0'
+      'allow_carry_forward': '0',
+      'calculation_unit': '1'
     }, {
       'id': '5',
       'title': 'Custom',
@@ -91,7 +95,8 @@ define([
       'is_active': '0',
       'allow_accruals_request': '0',
       'allow_carry_forward': '0',
-      'is_sick': '0'
+      'is_sick': '0',
+      'calculation_unit': '1'
     }]
   };
 

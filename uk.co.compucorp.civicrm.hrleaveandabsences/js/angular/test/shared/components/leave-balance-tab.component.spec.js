@@ -5,6 +5,7 @@ define([
   'mocks/data/absence-period-data',
   'mocks/data/absence-type-data',
   'mocks/data/leave-balance-report.data',
+  'common/mocks/services/api/option-group-mock',
   'mocks/apis/absence-type-api-mock',
   'mocks/apis/entitlement-api-mock',
   'leave-absences/shared/models/entitlement.model',
@@ -43,8 +44,10 @@ define([
       });
     }));
 
-    beforeEach(inject(['shared-settings', function (_sharedSettings_) {
+    beforeEach(inject(['shared-settings', 'api.optionGroup.mock', function (_sharedSettings_, _OptionGroupAPIMock_) {
       sharedSettings = _sharedSettings_;
+
+      $provide.value('api.optionGroup', _OptionGroupAPIMock_);
     }]));
 
     beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
@@ -61,6 +64,7 @@ define([
 
       spyOn(AbsencePeriod, 'all').and.callThrough();
       spyOn(AbsenceType, 'all').and.callThrough();
+      spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
       spyOn(leaveBalanceReport, 'all').and.callThrough();
       spyOn(notificationService, 'error');
       spyOn(Session, 'get').and.returnValue($q.resolve({ contactId: loggedInContactId }));
@@ -147,8 +151,14 @@ define([
           });
         });
 
+        it('populates calculation units to loaded absence types', function () {
+          expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
+        });
+
         it('stores the absence types', function () {
-          expect(ctrl.absenceTypes).toEqual(absenceTypeMock.all().values);
+          expect(ctrl.absenceTypes).toEqual(absenceTypeMock.all().values.map(function (absenceType) {
+            return _.assign(absenceType, { calculation_unit_symbol: 'd' });
+          }));
         });
       });
 
