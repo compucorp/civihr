@@ -5,6 +5,8 @@
     no_mangle: true,
     max_line_length: 1000
   },
+  generateSourceMaps: true,
+  useSourceUrl: true,
   paths: {
     'common/angular': 'common/vendor/angular/angular.min',
     'common/angularAnimate': 'common/vendor/angular/angular-animate.min',

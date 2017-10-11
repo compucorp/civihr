@@ -15,7 +15,7 @@ class CRM_Contactsummary_Page_ContactSummary extends CRM_Core_Page {
     CRM_Core_Resources::singleton()
       ->addVars('contactsummary', array(
         'baseURL' => CRM_Extension_System::singleton()->getMapper()->keyToUrl('org.civicrm.contactsummary')))
-      ->addScriptFile('org.civicrm.contactsummary', CRM_Core_Config::singleton()->debug ? 'js/src/contact-summary.js' : 'js/dist/contact-summary.min.js', 1005)
+      ->addScriptFile('org.civicrm.contactsummary', 'js/dist/contact-summary.min.js', 1005)
       ->addStyleFile('org.civicrm.contactsummary', 'css/contactsummary.css');
   }
 }
