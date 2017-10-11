@@ -25,10 +25,14 @@
               <tbody>
                 <tr ng-repeat="record in leaveBalanceTab.report">
                   <td>{{record.contact_display_name}}</td>
-                  <td ng-repeat-start="type in leaveBalanceTab.selectedAbsenceTypes">{{record.absence_types[type.id].entitlement}}</td>
-                  <td>{{record.absence_types[type.id].used}}</td>
-                  <td>{{record.absence_types[type.id].balance}}</td>
-                  <td ng-repeat-end>{{record.absence_types[type.id].requested}}</td>
+                  <td
+                    ng-repeat-start="type in leaveBalanceTab.selectedAbsenceTypes"
+                    ng-init="unitSymbol = (leaveBalanceTab.absenceTypes | filter : { 'id': type.id })[0].calculation_unit_symbol"
+                    >{{ +record.absence_types[type.id].entitlement + unitSymbol }}</td>
+                  <td>{{ +record.absence_types[type.id].used + unitSymbol }}</td>
+                  <td>{{ +record.absence_types[type.id].balance + unitSymbol }}</td>
+                  <td ng-repeat-end
+                    >{{ +record.absence_types[type.id].requested + unitSymbol }}</td>
                 </tr>
                 <tr ng-if="leaveBalanceTab.reportCount > leaveBalanceTab.pagination.size">
                   <td colspan="6">
