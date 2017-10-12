@@ -47,7 +47,19 @@ define([
                     ]
                 },
                 expectedContractDetails = {
-                    values: [{title: 'Project Manager', period_start_date: '2015-01-31', period_end_date: '2015-11-01'}]
+                    values: [
+                      {
+                        api_HRJobHour_get: {
+                          values: []
+                        },
+                        api_HRJobPay_get: {
+                          values: []
+                        },
+                        title: 'Project Manager',
+                        period_start_date: '2015-01-31',
+                        period_end_date: '2015-11-01'
+                      }
+                    ]
                 };
 
             beforeEach(function () {

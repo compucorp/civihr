@@ -43,7 +43,7 @@ define([
         describe('get', function () {
             var details,
                 expectedDateOfBirth = '1970/01/01',
-                expectedAge = moment(moment(expectedDateOfBirth, 'YYYY-MM-DD')).fromNow(true),
+                expectedAge = moment().diff(moment(expectedDateOfBirth, 'YYYY-MM-DD'), 'years'),
                 expectedResponse = {values: [{birth_date: expectedDateOfBirth}]}, expectedContactId = 123;
 
             beforeEach(function () {
