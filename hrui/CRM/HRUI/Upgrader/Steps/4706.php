@@ -25,10 +25,17 @@ trait CRM_HRUI_Upgrader_Steps_4706 {
 
     $customGroup = array_shift($customGroup['values']);
 
+    $fieldName = 'has_applied_for_identification';
+    $customField = civicrm_api3('CustomField', 'get', ['name' => $fieldName]);
+
+    if ($customField['count'] > 0) {
+      return;
+    }
+
     // Add "is applying" field
     $fieldData = [
       'custom_group_id' => $customGroup['id'],
-      'name' => 'has_applied_for_identification',
+      'name' => $fieldName,
       'label' => 'Applied for NI/SSN',
       'html_type' => 'Radio',
       'data_type' => 'Boolean',
@@ -41,10 +48,17 @@ trait CRM_HRUI_Upgrader_Steps_4706 {
   }
 
   private function up4706_create_activity_type() {
+    $activityName = "Check on contact for NI/SSN";
+    $activityType = civicrm_api3('OptionValue', 'get', ['name' => $activityName]);
+
+    if ($activityType['count'] > 0) {
+      return;
+    }
+
     civicrm_api3('OptionValue', 'create', [
       'option_group_id' => "activity_type",
       'component_id' => "CiviTask",
-      'name' => "Check on contact for NI/SSN",
+      'name' => $activityName,
     ]);
   }
 
