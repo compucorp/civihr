@@ -29,7 +29,7 @@ module.exports = function (config) {
       // all the common/ dependencies
       civihrPath + 'org.civicrm.reqangular/dist/reqangular.min.js',
 
-      // Extensions files
+      // External extensions files
       { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/angular/src/**/*.js', included: false },
 
       // the application modules
