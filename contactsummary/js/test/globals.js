@@ -2,7 +2,8 @@
     CRM.vars = {
         contactsummary: {
             baseURL: '/base/tools/extensions/civihr/contactsummary'
-        }
+        },
+        leaveAndAbsences: {}
     };
 
     CRM.url({
