@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>LeavePeriodEntitlement</class>
+  <name>civicrm_hrleaveandabsences_leave_period_entitlement</name>
+  <comment>A period entitlement for an specific set a contract and absence type</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique Leave Period Entitlement ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>period_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to AbsencePeriod</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>period_id</name>
+    <table>civicrm_hrleaveandabsences_absence_period</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>type_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to AbsenceType</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>type_id</name>
+    <table>civicrm_hrleaveandabsences_absence_type</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to Contact (civicrm_contact)</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>overridden</name>
+    <type>boolean</type>
+    <default>false</default>
+    <comment>Indicates if the entitlement was overridden</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>comment</name>
+    <type>text</type>
+    <length>400</length>
+    <comment>The comment added by the user about the calculation for this entitlement</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>comment_author_id</name>
+    <type>int unsigned</type>
+    <comment>FK to Contact. The contact that represents the user who added the comment to this entitlement</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>comment_author_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>comment_date</name>
+    <type>datetime</type>
+    <comment>The date and time the comment for this entitlement was added/updated</comment>
+    <add>4.4</add>
+  </field>
+
+  <index>
+    <name>unique_entitlement</name>
+    <fieldName>period_id</fieldName>
+    <fieldName>contact_id</fieldName>
+    <fieldName>type_id</fieldName>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
+
+</table>

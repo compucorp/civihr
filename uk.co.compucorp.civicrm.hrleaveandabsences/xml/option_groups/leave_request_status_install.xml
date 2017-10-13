@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+
+  <OptionGroups>
+    <OptionGroup>
+      <name>hrleaveandabsences_leave_request_status</name>
+      <title>Leave Request Status</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+
+  <OptionValues>
+    <OptionValue>
+      <label>Approved</label>
+      <value>1</value>
+      <name>approved</name>
+      <is_default>0</is_default>
+      <weight>0</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_status</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Admin Approved</label>
+      <value>2</value>
+      <name>admin_approved</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_status</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Awaiting Approval</label>
+      <value>3</value>
+      <name>awaiting_approval</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_status</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>More Information Required</label>
+      <value>4</value>
+      <name>more_information_required</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_status</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Rejected</label>
+      <value>5</value>
+      <name>rejected</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_status</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Cancelled</label>
+      <value>6</value>
+      <name>cancelled</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_status</option_group_name>
+    </OptionValue>
+
+  </OptionValues>
+</CustomData>

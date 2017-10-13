@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/admin/leaveandabsences/import</path>
+    <page_callback>CRM_HRLeaveAndAbsences_Import_Controller</page_callback>
+    <title>Import Leave/Absence Requests</title>
+    <access_arguments>administer leave and absences</access_arguments>
+  </item>
+</menu>

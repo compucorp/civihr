@@ -14,6 +14,18 @@ define([
         json: {}
       });
 
+      /**
+       * The API returns values as strings, so we convert them to booleans to
+       * make it easy to use them inside conditions
+       *
+       * @param {Object} values - The values object as returned by the API
+       */
+      function adjustAddPublicHolidaysValue(values) {
+        angular.forEach(values, function (value) {
+          value.add_public_holidays = !!parseInt(value.add_public_holidays);
+        });
+      }
+
       return {
         getOne: function(params) {
 
@@ -38,6 +50,8 @@ define([
             if (UtilsService.errorHandler(data, 'Unable to fetch contract leave', deffered)) {
               return
             }
+
+            adjustAddPublicHolidaysValue(data.values);
 
             deffered.resolve(data.values);
           },
@@ -126,6 +140,8 @@ define([
               return
             }
 
+            adjustAddPublicHolidaysValue(data.values);
+
             deffered.resolve(data.values);
           },
           function() {
@@ -165,6 +181,25 @@ define([
               (!modelEntry || typeof modelEntry !== 'object' || typeof modelEntry.leave_type === 'undefined')) {
               return null;
             }
+
+            /**
+             * This is a little helper method to calculate the estimated leave amount for a
+             * leave type.
+             *
+             * If this leave type has "add_public_holidays" set, the estimated amount will be
+             * the leave amount + the given number of Public Holidays. Otherwise, the estimated
+             * amount is the same as the leave amount.
+             *
+             * @param {number} numberOfPublicHolidays
+             * @returns {number}
+             */
+            modelEntry.getEstimatedLeaveAmount = function (numberOfPublicHolidays) {
+              if (this.add_public_holidays && numberOfPublicHolidays) {
+                return parseFloat(this.leave_amount) + numberOfPublicHolidays;
+              }
+
+              return this.leave_amount;
+            };
 
             angular.forEach(leaveType, function(type, typeId) {
               modelEntry.leave_type = typeId;

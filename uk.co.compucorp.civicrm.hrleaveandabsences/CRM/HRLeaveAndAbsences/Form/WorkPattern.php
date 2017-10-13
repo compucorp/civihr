@@ -2,6 +2,10 @@
 
 require_once 'CRM/Core/Form.php';
 
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_Service_WorkPattern as WorkPatternService;
+
 /**
  * Form controller class
  *
@@ -36,7 +40,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
     public function setDefaultValues() {
       if (empty($this->defaultValues)) {
         if ($this->_id) {
-          $this->defaultValues = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getValuesArray($this->_id);
+          $this->defaultValues = WorkPattern::getValuesArray($this->_id);
           $this->setIsVisibleForWeeksInDefaultValues();
 
         } else {
@@ -48,13 +52,13 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
               [
                 'is_visible' => true,
                 'days' => [
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND],
-                  ['type' => CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_WEEKEND],
+                  ['type' => WorkDay::getWorkingDayTypeValue()],
+                  ['type' => WorkDay::getWorkingDayTypeValue()],
+                  ['type' => WorkDay::getWorkingDayTypeValue()],
+                  ['type' => WorkDay::getWorkingDayTypeValue()],
+                  ['type' => WorkDay::getWorkingDayTypeValue()],
+                  ['type' => WorkDay::getWeekendTypeValue()],
+                  ['type' => WorkDay::getWeekendTypeValue()],
                 ]
               ]
             ]
@@ -84,10 +88,10 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
         $this->assign('max_number_of_weeks', self::MAX_NUMBER_OF_WEEKS);
         $this->assign('delete_url', $this->getDeleteUrl());
 
-        CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/hrleaveandabsences.css');
-        CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/inputmask.min.js');
-        CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/inputmask.numeric.extensions.min.js');
-        CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.form.workpattern.js');
+        CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
+        CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/crm/vendor/inputmask.min.js');
+        CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/crm/vendor/inputmask.numeric.extensions.min.js');
+        CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/crm/hrleaveandabsences.form.workpattern.js');
 
         parent::buildQuickForm();
     }
@@ -116,7 +120,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
 
             $actionDescription = ($this->_action & CRM_Core_Action::UPDATE) ? 'updated' : 'created';
             try {
-                $workPattern = CRM_HRLeaveAndAbsences_BAO_WorkPattern::create($params);
+                $workPattern = WorkPattern::create($params);
                 CRM_Core_Session::setStatus(ts("The Work Pattern '%1' has been $actionDescription.", array( 1 => $workPattern->label)), 'Success', 'success');
             } catch(Exception $ex) {
                 $message = ts("The Work Pattern could not be $actionDescription.");
@@ -174,7 +178,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
             'select',
             "weeks[$i][days][$j][type]",
             false,
-            CRM_HRLeaveAndAbsences_BAO_WorkDay::getWorkTypeOptions(),
+            WorkDay::buildOptions('type'),
             false,
             ['class' => 'work-day-type']
           );
@@ -269,7 +273,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
      */
     private function validateWorkDay($weekIndex, $dayIndex, $day, &$errors)
     {
-      if($day['type'] == CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES) {
+      if($day['type'] == WorkDay::getWorkingDayTypeValue()) {
         $this->validateWorkingDay($weekIndex, $dayIndex, $day, $errors);
       } else {
         $this->validateNonWorkingDay($weekIndex, $dayIndex, $day, $errors);
@@ -300,7 +304,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       $breakField = $this->getWorkDayFieldName($weekIndex, $dayIndex, 'break');
 
       if (!$hasTimeFrom) {
-        $errors[$timeFromField] = ts('Please inform the Time From');
+        $errors[$timeFromField] = ts('Please fill in the Time From');
       } else {
         if (!$this->isValidHour($day['time_from'])) {
           $errors[$timeFromField] = ts('Invalid hour');
@@ -308,7 +312,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       }
 
       if (!$hasTimeTo) {
-        $errors[$timeToField] = ts('Please inform the Time To');
+        $errors[$timeToField] = ts('Please fill in the Time To');
       } else {
         if (!$this->isValidHour($day['time_to'])) {
           $errors[$timeToField] = ts('Invalid hour');
@@ -316,7 +320,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       }
 
       if (!$hasBreak) {
-        $errors[$breakField] = ts('Please inform the Break');
+        $errors[$breakField] = ts('Please fill in the Break');
       } else {
         if (!is_numeric($day['break'])) {
           $errors[$breakField] = ts('Break should be a valid number');
@@ -421,7 +425,7 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
             [ 'type' => 'cancel', 'name' => ts('Cancel') ],
         ];
 
-        if($this->_action & CRM_Core_Action::UPDATE) {
+        if($this->_action & CRM_Core_Action::UPDATE && $this->canDelete()) {
             $buttons[] = [ 'type' => 'delete', 'name' => ts('Delete') ];
         }
 
@@ -586,5 +590,15 @@ class CRM_HRLeaveAndAbsences_Form_WorkPattern extends CRM_Core_Form
       }
 
       return $numberOfHours;
+    }
+
+    /**
+     * Checks whether a WorkPattern object can be deleted.
+     *
+     * @return bool
+     */
+    private function canDelete() {
+      $workPattern = new WorkPatternService();
+      return !$workPattern->workPatternHasEverBeenUsed($this->_id);
     }
 }

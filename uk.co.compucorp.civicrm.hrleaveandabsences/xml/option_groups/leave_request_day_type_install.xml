@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+
+  <OptionGroups>
+    <OptionGroup>
+      <name>hrleaveandabsences_leave_request_day_type</name>
+      <title>Leave Request Day Types</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+
+  <OptionValues>
+    <OptionValue>
+      <label>All Day</label>
+      <value>1</value>
+      <name>all_day</name>
+      <is_default>0</is_default>
+      <weight>0</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_day_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Half-day AM</label>
+      <value>2</value>
+      <name>half_day_am</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_day_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Half-day PM</label>
+      <value>3</value>
+      <name>half_day_pm</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_day_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Weekend</label>
+      <value>4</value>
+      <name>weekend</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_day_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Non Working Day</label>
+      <value>5</value>
+      <name>non_working_day</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_day_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Public Holiday</label>
+      <value>6</value>
+      <name>public_holiday</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_day_type</option_group_name>
+    </OptionValue>
+
+  </OptionValues>
+</CustomData>

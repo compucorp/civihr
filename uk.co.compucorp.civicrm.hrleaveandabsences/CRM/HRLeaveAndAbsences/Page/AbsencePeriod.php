@@ -46,8 +46,10 @@ class CRM_HRLeaveAndAbsences_Page_AbsencePeriod extends CRM_Core_Page_Basic {
     $returnURL = CRM_Utils_System::url('civicrm/admin/leaveandabsences/periods', 'reset=1');
     CRM_Utils_Weight::addOrder($rows, 'CRM_HRLeaveAndAbsences_DAO_AbsencePeriod', 'id', $returnURL);
 
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.list.absenceperiod.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/crm/hrleaveandabsences.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/crm/hrleaveandabsences.list.absenceperiod.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()->addScriptFile('civicrm', 'js/jquery/jquery.crmEditable.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
 
     $this->assign('rows', $rows);
   }
@@ -69,22 +71,30 @@ class CRM_HRLeaveAndAbsences_Page_AbsencePeriod extends CRM_Core_Page_Basic {
    */
   public function &links() {
     if(empty($this->links)) {
+      $returnUrl = CRM_Utils_System::url(
+        'civicrm/admin/leaveandabsences/periods',
+        http_build_query([
+          'action' => 'browse',
+          'reset' => 1,
+        ])
+      );
+
       $this->links = [
         CRM_Core_Action::UPDATE  => [
-          'name'  => ts('Edit'),
-          'url'   => 'civicrm/admin/leaveandabsences/periods',
-          'qs'    => 'action=update&id=%%id%%&reset=1',
+          'name' => ts('Edit'),
+          'url' => 'civicrm/admin/leaveandabsences/periods',
+          'qs' => 'action=update&id=%%id%%&reset=1',
           'title' => ts('Edit Absence Period'),
         ],
         CRM_Core_Action::DELETE  => [
-          'name'  => ts('Delete'),
+          'name' => ts('Delete'),
           'class' => 'civihr-delete',
           'title' => ts('Delete Absence Period'),
         ],
         CRM_Core_Action::BASIC => [
-          'name'  => ts('Manage Entitlements'),
-          'url'   => 'civicrm/admin/leaveandabsences/periods/manage_entitlements',
-          'qs'    => 'id=%%id%%&reset=1',
+          'name' => ts('Manage Entitlements'),
+          'url' => 'civicrm/admin/leaveandabsences/periods/manage_entitlements',
+          'qs' => 'id=%%id%%&reset=1&returnUrl=' . urlencode($returnUrl),
           'class' => 'civihr-manage-entitlements',
           'title' => ts('Manage entitlements for this Absence Period'),
         ]

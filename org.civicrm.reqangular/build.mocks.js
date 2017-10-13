@@ -19,6 +19,7 @@
     'common/mocks/services/api/contact-job-role-api.api.mock',
     'common/mocks/services/api/group-mock',
     'common/mocks/services/api/group-contact-mock',
-    'common/mocks/services/api/option-group-mock'
+    'common/mocks/services/api/option-group-mock',
+    'common/mocks/services/file-uploader-mock'
   ]
 });

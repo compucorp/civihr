@@ -1,0 +1,278 @@
+$chr-leave-calendar-cell-height:                  35px;
+$chr-leave-calendar-cell-font-size:               10px;
+$chr-leave-calendar-item-requested-border-color:  #c7cbd0;
+$chr-leave-calendar-item-requested-border-height: 0.5em;
+$chr-leave-calendar-legend-size:                  20px;
+
+
+.chr_leave-calendar__dates-container {
+  .chr_leave-calendar {
+    @media (min-width: $screen-lg-min) {
+      table-layout: fixed;
+    }
+  }
+}
+
+.chr_leave-calendar__names-container {
+  .chr_leave-calendar {
+    table-layout: fixed;
+  }
+}
+
+.chr_leave-calendar__day {
+  font-size: $chr-leave-calendar-cell-font-size !important;
+  line-height: 1.4em !important;
+  padding: 10px !important;
+  text-align: center !important;
+
+  @media (min-width: $screen-lg-min) {
+    padding: 10px 0 !important;
+  }
+}
+
+.chr_leave-calendar__day--disabled {
+  opacity: 0.5;
+}
+
+.chr_leave-calendar__day--current {
+  color: $brand-primary !important;
+}
+
+
+.chr_leave-calendar__item {
+  color: #FFF;
+  display: block;
+  font-size: $chr-leave-calendar-cell-font-size;
+  height: 100%;
+  position: relative;
+  text-align: center;
+  text-transform: uppercase;
+  width: 100%;
+
+  > span {
+    @include absolute-centered();
+    height: 1.2em;
+  }
+
+  > a {
+    cursor: pointer;
+    @include absolute-centered();
+  }
+}
+
+.chr_leave-calendar__item--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+// Public Holiday, Weekend and Non Working day needs to be specified before other styles
+// to give other styles more priority
+.chr_leave-calendar__item--type--late {
+  background-color: #eca67e;
+  border-color: #eca67e;
+}
+
+.chr_leave-calendar__item--type--non-working {
+  background-color: #41afcb !important;
+  border-color: #41afcb;
+}
+
+.chr_leave-calendar__item--type--public-holiday {
+  background-color: #8ec68a !important;
+  border-color: #8ec68a;
+}
+
+.chr_leave-calendar__item--type--weekend {
+  background-color: #c7cbd0 !important;
+  border-color: #c7cbd0;
+}
+
+.chr_leave-calendar__item--alt {
+  background: #FFF !important;
+  border: 1px solid transparent;
+  color: $gray-darker;
+}
+
+.chr_leave-calendar__item--requested {
+
+  &:before {
+    background: $chr-leave-calendar-item-requested-border-color;
+    content: '';
+    display: block;
+    height: $chr-leave-calendar-item-requested-border-height;
+    position: absolute;
+    width: 100%;
+    top: 0;
+  }
+}
+
+.chr_leave-calendar__item--toil-requested {
+
+  &:before {
+    background: red;
+    content: '';
+    display: block;
+    height: $chr-leave-calendar-item-requested-border-height;
+    left: -1px;
+    position: absolute;
+    width: calc(100% + 2px);
+    top: -1px;
+  }
+}
+
+.chr_leave-calendar__items {
+
+  > td {
+    overflow: hidden;
+    height: $chr-leave-calendar-cell-height;
+    padding: 0 !important;
+  }
+
+  leave-calendar-day {
+    display: block;
+    height: 100%;
+  }
+}
+
+.chr_leave-calendar__legend__title {
+  font-size: $font-size-small;
+}
+
+.chr_leave-calendar__legend {
+
+  > .row:not(:first-child) {
+    margin-top: 20px;
+  }
+
+  .chr_leave-calendar__legend__entry {
+    margin-top: 10px;
+
+    @media (min-width: $screen-sm-min) {
+      margin-top: 0;
+    }
+  }
+}
+
+.chr_leave-calendar__legend__entry {
+  overflow: auto;
+
+  & + & {
+    margin-top: 10px;
+  }
+
+  > .chr_leave-calendar__item {
+    font-size: 8px;
+    height: $chr-leave-calendar-legend-size;
+    margin-right: 10px;
+    position: absolute;
+    width: $chr-leave-calendar-legend-size;
+  }
+}
+
+.chr_leave-calendar__legend__label {
+  display: inline-block;
+  font-size: $font-size-small;
+  margin-left: 26px;
+}
+
+
+.chr_leave-calendar__month-header {
+  background: $panel-default-heading-bg;
+
+  .panel-title {
+    font-size: 16px;
+  }
+}
+
+td.chr_leave-calendar__name,
+th.chr_leave-calendar__name {
+  font-size: $font-size-small !important;
+  line-height: 100%;
+  padding: 0 20px !important;
+  text-align: left;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+th.chr_leave-calendar__name, th.chr_leave-calendar__day {
+  height: 49px;
+}
+
+th.chr_leave-calendar__name {
+  padding-bottom: 10px !important;
+}
+
+td.chr_leave-calendar__name {
+  vertical-align: middle !important;
+}
+
+.chr_leave-calendar__pagination {
+  font-size: $chr-leave-calendar-cell-font-size;
+  text-align: center;
+
+  [class*="btn"] {
+    outline: none;
+    padding: 0;
+    line-height: 1em;
+
+    .fa {
+      color: $gray;
+    }
+
+    &[disabled] {
+
+      .fa {
+        opacity: 0.5;
+      }
+    }
+
+    &:hover:not([disabled]) {
+
+      .fa {
+        color: $gray-darker;
+      }
+    }
+  }
+}
+
+.chr_leave-calendar__pagination-next {
+  border-top: none;
+
+  th {
+    height: 24px;
+    padding: 4px 0 6px !important;
+  }
+
+  .chr_leave-calendar__pagination {
+    padding-right: 3px !important;
+  }
+}
+
+.chr_leave-calendar__month-container {
+  margin: 0;
+
+  > div {
+    padding: 0;
+  }
+}
+
+.chr_leave-calendar__dates-container {
+  overflow-x: auto;
+}
+
+.chr_leave-calendar__admin-filters-hint {
+  display: inline-block;
+  font-size: 20px;
+  vertical-align: middle;
+}
+
+.chr_leave-calendar__admin-filters-select {
+  width: calc(100% - 50px);
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.chr_leave-calendar__day-selector .ui-select-search {
+  display: inline;
+  width: 100px !important;
+}

@@ -1,0 +1,14 @@
+{
+  "scenarios": [
+    {
+      "label": "SSP Leave and Absences: Admin: Manager Leave: Leave Requests",
+      "url": "manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/admin/manager-leave-requests"
+    },
+    {
+      "label": "SSP Leave and Absences: Admin: Manager Leave: Leave Requests: All Requests",
+      "url": "manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/admin/manager-leave-requests-all-requests"
+    }
+  ]
+}

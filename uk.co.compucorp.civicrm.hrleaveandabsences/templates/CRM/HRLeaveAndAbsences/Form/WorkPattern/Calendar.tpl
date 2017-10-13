@@ -1,17 +1,19 @@
-<div class="form-layout work-pattern-calendar">
-  <div class="number-of-weeks">
-    <label for="number_of_weeks" class="label">{ts}No. of Weeks{/ts}: </label>
-    <select name="number_of_weeks" id="number_of_weeks" class="crm-form-select">
-      {section name=i start=1 loop="`$max_number_of_weeks+1`" step=1}
-        <option value="{$smarty.section.i.index}" {if $smarty.section.i.index eq $number_of_visible_weeks}selected{/if}>{$smarty.section.i.index}</option>
-      {/section}
-    </select>
+<div class="work-pattern-calendar no-select2">
+  <div class="number-of-weeks form-inline">
+    <div class="form-group">
+      <label for="number_of_weeks">{ts}No. of Weeks{/ts}: </label>
+      <select name="number_of_weeks" id="number_of_weeks">
+        {section name=i start=1 loop="`$max_number_of_weeks+1`" step=1}
+          <option value="{$smarty.section.i.index}" {if $smarty.section.i.index eq $number_of_visible_weeks}selected{/if}>{$smarty.section.i.index}</option>
+        {/section}
+      </select>
+    </div>
   </div>
   {section name=i start=0 loop=$max_number_of_weeks step=1}
     <div class="work-pattern-week{if $weeks_visibility[$smarty.section.i.index] eq false} hidden-week{/if}" >
       <div class="week-number">Week {"`$smarty.section.i.index+1`"}{$form.weeks[$smarty.section.i.index].is_visible.html}</div>
       <div class="week-hours">Total hours: <span class="number-of-hours">{$weeks_hours[$smarty.section.i.index]}</span></div>
-      <table class="week-days">
+      <table class="week-days table table-condensed table-responsive">
         <thead>
           <tr>
             <td></td>

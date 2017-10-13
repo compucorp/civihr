@@ -18,6 +18,19 @@ define([
     function($log, $q, Contract, ContractRevisionService, settings, UtilsService, DOMEventTrigger) {
       $log.debug('Service: ContractService');
 
+      /**
+       * The API returns values as strings, so we convert them to booleans to
+       * make it easy to use them inside conditions
+       *
+       * @param {Object} data
+       *   The data object as returned by the API
+       */
+      function adjustAddPublicHolidaysValue(data) {
+        angular.forEach(data.leave, function (value) {
+          value.add_public_holidays = !!parseInt(value.add_public_holidays);
+        });
+      }
+
       return {
         get: function(contactId) {
           var deffered = $q.defer(),
@@ -290,6 +303,7 @@ define([
               jobcontract_id: contractId
             }
           }, function(data) {
+            adjustAddPublicHolidaysValue(data);
             deferred.resolve(data);
           }, function() {
             deferred.reject('Could not fetch full details for contract ID:' + contractId);

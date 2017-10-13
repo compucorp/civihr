@@ -1,0 +1,2 @@
+<?php
+class CRM_HRComments_Exception_InvalidCommentException extends CRM_HRComments_Exception_EntityValidationException  {}

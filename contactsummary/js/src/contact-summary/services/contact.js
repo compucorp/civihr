@@ -2,7 +2,6 @@ define([
     'common/lodash',
     'contact-summary/modules/services',
     'contact-summary/services/model',
-    'contact-summary/services/leave',
     'contact-summary/services/contactDetails',
     'contact-summary/services/contract'
 ], function (_, services) {
@@ -11,14 +10,13 @@ define([
     /**
      * @param {ModelService} Model
      * @param ContactDetails
-     * @param {LeaveService} Leave
      * @param {ContractService} Contract
      * @param $q
      * @param $log
      * @returns {Object}
      * @constructor
      */
-    function ContactService($log, $q, Model, ContactDetails, Leave, Contract) {
+    function ContactService($log, $q, Model, ContactDetails, Contract) {
         $log.debug('Service: ContactService');
 
         ////////////////////
@@ -58,7 +56,6 @@ define([
             if (_.isEmpty(factory.getData())) {
                 initContactDetails()
                     .then(initContract)
-                    .then(initLeave)
                     .then(function () {
                         deferred.resolve();
                     });
@@ -84,14 +81,7 @@ define([
                     factory.setDataKey('contract', response);
                 });
         }
-
-        function initLeave() {
-            return Leave.get()
-                .then(function (response) {
-                    factory.setDataKey('leave', response);
-                });
-        }
     }
 
-    services.factory('ContactService', ['$log', '$q', 'ModelService', 'ContactDetailsService', 'LeaveService', 'ContractService', ContactService]);
+    services.factory('ContactService', ['$log', '$q', 'ModelService', 'ContactDetailsService', 'ContractService', ContactService]);
 });

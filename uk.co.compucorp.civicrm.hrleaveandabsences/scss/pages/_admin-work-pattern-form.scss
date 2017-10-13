@@ -1,0 +1,66 @@
+.crm-work-pattern-form-block {
+  .ui-tabs.ui-widget-content {
+    background: none;
+  }
+}
+
+.work-pattern-calendar {
+  .number-of-weeks {
+    padding: 15px 0 15px 0;
+  }
+
+  .work-pattern-week {
+    border-top: 1px solid rgba(0, 0, 0, .2);
+    padding: 15px 0 15px 0;
+    margin-bottom: 15px;
+
+    &.hidden-week {
+      display: none;
+    }
+
+    .week-number {
+      float: left;
+      font-weight: bold;
+      padding: 5px 0 15px 5px;
+    }
+
+    .week-days {
+      table-layout: fixed;
+    }
+
+    .week-hours {
+      float: right;
+      padding: 5px 5px 15px 0;
+
+      .number-of-hours {
+        font-weight: bold;
+      }
+    }
+
+    .week-days {
+      td {
+        padding: 5px 10px 5px 10px;
+      }
+
+      input {
+        min-width: 0;
+        text-align: center;
+      }
+
+      select {
+        min-width: 0;
+        width: 100% !important;
+      }
+    }
+
+    .hours-row td {
+      padding-top: 15px;
+      padding-bottom: 15px;
+
+      &:not(:first-child) {
+        border-top: 1px solid rgba(0, 0, 0, .2);
+        border-bottom: 1px solid rgba(0, 0, 0, .2);
+      }
+    }
+  }
+}

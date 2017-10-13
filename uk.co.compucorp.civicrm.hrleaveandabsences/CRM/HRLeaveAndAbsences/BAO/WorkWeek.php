@@ -1,5 +1,9 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_Exception_InvalidWorkWeekException as InvalidWorkWeekException;
+
 class CRM_HRLeaveAndAbsences_BAO_WorkWeek extends CRM_HRLeaveAndAbsences_DAO_WorkWeek {
 
   /**
@@ -43,7 +47,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeek extends CRM_HRLeaveAndAbsences_DAO_Wor
     }
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
-    $instance = new CRM_HRLeaveAndAbsences_BAO_WorkWeek();
+    $instance = new self();
     $instance->copyValues($params);
 
     $transaction = new CRM_Core_Transaction();
@@ -75,15 +79,15 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeek extends CRM_HRLeaveAndAbsences_DAO_Wor
    *
    * @param array $days An array of days. It must contain exactly 7 days
    *
-   * @throws \Exception
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidWorkWeekException
    */
   private function saveDays($days) {
     if(!$this->id) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkWeekException(ts('It is not possible to add days to an non-existing Work Week'));
+      throw new InvalidWorkWeekException(ts('It is not possible to add days to an non-existing Work Week'));
     }
 
     if(!is_array($days) || count($days) != 7) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkWeekException(ts('A Work Week must contain EXACTLY 7 days'));
+      throw new InvalidWorkWeekException(ts('A Work Week must contain EXACTLY 7 days'));
     }
 
     $this->deleteDays();
@@ -95,14 +99,14 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeek extends CRM_HRLeaveAndAbsences_DAO_Wor
         'type' => $day['type']
       ];
 
-      if($day['type'] == CRM_HRLeaveAndAbsences_BAO_WorkDay::WORK_DAY_OPTION_YES) {
+      if($day['type'] == WorkDay::getWorkingDayTypeValue()) {
         $workDayParams['time_from'] = $day['time_from'];
         $workDayParams['time_to'] = $day['time_to'];
         $workDayParams['break'] = $day['break'];
         $workDayParams['leave_days'] = $day['leave_days'];
       }
 
-      CRM_HRLeaveAndAbsences_BAO_WorkDay::create($workDayParams);
+      WorkDay::create($workDayParams);
       $dayOfTheWeek++;
     }
   }
@@ -110,9 +114,8 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeek extends CRM_HRLeaveAndAbsences_DAO_Wor
   /**
    * Deletes all the dasy related to this WorkWeek
    */
-  private function deleteDays()
-  {
-    $workWeekEntity = new CRM_HRLeaveAndAbsences_BAO_WorkDay();
+  private function deleteDays() {
+    $workWeekEntity = new WorkDay();
     $workWeekEntity->whereAdd('week_id = '. $this->id);
     $workWeekEntity->delete(true);
   }
@@ -126,8 +129,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeek extends CRM_HRLeaveAndAbsences_DAO_Wor
    * @return int the maximum week number
    *
    */
-  private static function getMaxWeekNumberForWorkPattern($workPatternId)
-  {
+  private static function getMaxWeekNumberForWorkPattern($workPatternId) {
     $tableName = self::getTableName();
     $query = "
       SELECT MAX(number) as max_number
@@ -141,10 +143,14 @@ class CRM_HRLeaveAndAbsences_BAO_WorkWeek extends CRM_HRLeaveAndAbsences_DAO_Wor
     return 0;
   }
 
-  public function links()
-  {
-    $workPatternTable = CRM_HRLeaveAndAbsences_BAO_WorkPattern::getTableName();
-    $workDayTable = CRM_HRLeaveAndAbsences_BAO_WorkDay::getTableName();
+  /**
+   * Declares the relationship between work patterns and work days
+   *
+   * @return array
+   */
+  public function links() {
+    $workPatternTable = WorkPattern::getTableName();
+    $workDayTable = WorkDay::getTableName();
     return [
       'pattern_id' => "{$workPatternTable}:id",
       'id' => "{$workDayTable}:week_id"

@@ -3,7 +3,7 @@ define([
     'common/angular',
     'common/angularAnimate',
     'common/angularBootstrap',
-    'common/angularFileUpload',
+    'common/angular-file-upload',
     'common/angularMocks',
     'common/angularResource',
     'common/angularRoute',

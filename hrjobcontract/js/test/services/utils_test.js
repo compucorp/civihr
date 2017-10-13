@@ -2,7 +2,7 @@ define([
   'common/angular',
   'common/angularMocks',
   'job-contract/app'
-], function (angular, Mock) {
+], function () {
   'use strict';
 
   describe('UtilsService', function () {
@@ -20,11 +20,11 @@ define([
 
     describe('getAbsenceType', function () {
       beforeEach(function () {
-        UtilsService.getAbsenceType();
+        UtilsService.getAbsenceTypes();
       });
 
       it("returns the id, name, and title of the absence types", function () {
-        expect(API.resource).toHaveBeenCalledWith('HRAbsenceType', 'get', { return: 'id,name,title' });
+        expect(API.resource).toHaveBeenCalledWith('AbsenceType', 'get', { return: 'id,title,default_entitlement,add_public_holiday_to_entitlement' });
       });
     });
 
@@ -45,6 +45,20 @@ define([
 
       it("returns only the active pay scale entries", function () {
         expect(API.resource).toHaveBeenCalledWith('HRPayScale', 'get', { sequential: 1, is_active: 1 });
+      });
+    });
+
+    describe('getManageEntitlementsPageURL', function() {
+
+      it('returns an URL to the Manage Entitlements page', function() {
+        var url = UtilsService.getManageEntitlementsPageURL(1);
+        expect(url).toContain('index.php?q=civicrm/admin/leaveandabsences/periods/manage_entitlements');
+      });
+
+      it('adds the contact ID to the cid parameter of the URL', function () {
+        var contactId = 1;
+        var url = UtilsService.getManageEntitlementsPageURL(contactId);
+        expect(url).toContain('&cid='+contactId);
       });
     });
   });
