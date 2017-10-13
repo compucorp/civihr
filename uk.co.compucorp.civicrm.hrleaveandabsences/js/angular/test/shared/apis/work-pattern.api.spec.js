@@ -1,10 +1,9 @@
 /* eslint-env amd, jasmine */
-/* global inject */
 
 define([
   'common/lodash',
   'mocks/data/work-pattern-data',
-  'leave-absences/shared/apis/work-pattern-api'
+  'leave-absences/shared/apis/work-pattern.api'
 ], function (_, workPatternMocked) {
   'use strict';
 

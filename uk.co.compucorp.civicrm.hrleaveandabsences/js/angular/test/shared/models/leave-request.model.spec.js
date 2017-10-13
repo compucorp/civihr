@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'leave-absences/shared/models/leave-request-model',
+  'leave-absences/shared/models/leave-request.model',
   'mocks/apis/leave-request-api-mock'
 ], function () {
   'use strict';
@@ -96,25 +96,6 @@ define([
       it('calls equivalent API method', function () {
         leaveRequestPromise.then(function () {
           expect(LeaveRequestAPI.balanceChangeByAbsenceType).toHaveBeenCalled();
-        });
-      });
-    });
-
-    describe('calculateBalanceChange()', function () {
-      var promise;
-
-      beforeEach(function () {
-        promise = LeaveRequest.calculateBalanceChange(jasmine.any(Object));
-      });
-
-      afterEach(function () {
-        // to excute the promise force an digest
-        $rootScope.$apply();
-      });
-
-      it('calls equivalent API method', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
         });
       });
     });

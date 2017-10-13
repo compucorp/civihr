@@ -8,13 +8,14 @@ define([
   'mocks/data/toil-leave-request-data',
   'mocks/data/comments-data',
   'mocks/helpers/helper',
-  'leave-absences/shared/apis/leave-request-api',
+  'leave-absences/shared/apis/leave-request.api',
   'leave-absences/shared/modules/shared-settings'
 ], function (_, moment, mockData, sicknessMockData, toilMockData, commentsData, helper) {
   'use strict';
 
   describe('LeaveRequestAPI', function () {
     var LeaveRequestAPI, $httpBackend, $rootScope, $q, promise;
+    var balanceChangeBreakdownMock = mockData.balanceChangeBreakdown();
 
     beforeEach(module('leave-absences.apis', 'leave-absences.settings'));
     beforeEach(inject(['$httpBackend', '$q', '$rootScope', 'LeaveRequestAPI',
@@ -182,6 +183,32 @@ define([
         it('throws an error if contact_id, from_date, or from_date_type are missing', function () {
           promise.catch(function (result) {
             expect(result).toBe('contact_id, from_date and from_date_type in params are mandatory');
+          });
+        });
+      });
+    });
+
+    describe('getBalanceChangeBreakdown()', function () {
+      describe('basic tests', function () {
+        var leaveRequestId = 1;
+
+        beforeEach(function () {
+          spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+          promise = LeaveRequestAPI.getBalanceChangeBreakdown(leaveRequestId);
+        });
+
+        afterEach(function () {
+          $httpBackend.flush();
+        });
+
+        it('calls the LeaveRequest.getBreakdown endpoint', function () {
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith(
+            'LeaveRequest', 'getBreakdown', { leave_request_id: leaveRequestId }, false);
+        });
+
+        it('returns the api data as is', function () {
+          promise.then(function (result) {
+            expect(result).toEqual(balanceChangeBreakdownMock);
           });
         });
       });
@@ -583,6 +610,10 @@ define([
       // Intercept backend calls for LeaveRequest.getAttachments
       $httpBackend.whenGET(/action=getattachments&entity=LeaveRequest/)
         .respond(mockData.getAttachments());
+
+      // Intercept backend calls for LeaveRequest.getBreakdown
+      $httpBackend.whenGET(/action=getBreakdown&entity=LeaveRequest/)
+        .respond(balanceChangeBreakdownMock);
 
       // Intercept backend calls for LeaveRequest.create in POST
       $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)

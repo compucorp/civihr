@@ -2,7 +2,7 @@
 
 define([
   'leave-absences/shared/modules/models',
-  'leave-absences/shared/apis/entitlement-api',
+  'leave-absences/shared/apis/entitlement.api',
   'common/models/model'
 ], function (models) {
   'use strict';

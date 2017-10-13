@@ -2,7 +2,7 @@
 
 define([
   'common/moment',
-  'leave-absences/shared/models/absence-type-model',
+  'leave-absences/shared/models/absence-type.model',
   'mocks/apis/absence-type-api-mock'
 ], function (moment) {
   'use strict';

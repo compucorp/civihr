@@ -3775,4 +3775,3 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     return $record;
   }
 }
-

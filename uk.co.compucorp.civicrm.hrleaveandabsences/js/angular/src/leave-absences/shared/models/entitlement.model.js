@@ -4,7 +4,7 @@ define([
   'common/lodash',
   'leave-absences/shared/modules/models',
   'common/models/model',
-  'leave-absences/shared/apis/entitlement-api',
+  'leave-absences/shared/apis/entitlement.api',
   'leave-absences/shared/instances/entitlement.instance'
 ], function (_, models) {
   'use strict';
