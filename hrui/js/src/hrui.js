@@ -148,15 +148,15 @@
    * Checks if the user has clicked outside of the quick search field
    * by analyzing the given click target
    *
-   * @param {object} target
+   * @param {Element} target
    * @return {boolean}
    */
   function hasUserClickedOutsideQuickSearchField (target) {
-    $target = $(target);
+    var $target = $(target);
 
     return !$target.is('#crm-qsearch') &&
       !$target.is('#root-menu-div') &&
-      !$target.parents('#crm-qsearch, #root-menu-div').length;
+      !$target.closest('#crm-qsearch, #root-menu-div').length;
   }
 
   /**
@@ -175,12 +175,12 @@
   }
 
   /**
-   * Checks if the quick search field itself has any current value
+   * Checks if the quick search field currently has any value
    *
    * @return {boolean}
    */
   function isQuickSearchOnGoing () {
-    return $('#sort_name_navigation').val().length;
+    return !!$('#sort_name_navigation').val().trim();
   }
 
   /**
@@ -238,9 +238,7 @@
    * @param {string} customClass
    */
   function removeCustomClassOnOutsideClick (customClass) {
-    $('body').on('click', function (event) {
-      $target = $(event.target);
-
+    $(document).on('click', function (event) {
       if (hasUserClickedOutsideQuickSearchField(event.target) && !isQuickSearchOnGoing()) {
         $('#crm-qsearch').removeClass(customClass);
       }
