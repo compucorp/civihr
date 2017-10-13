@@ -9,10 +9,11 @@ define([
   'use strict';
 
   describe('ContactService', function () {
-    var ContactDetailsServiceMock, ContactService,
-      LeaveServiceMock, ModelServiceMock, rootScope;
+    var ContactDetailsServiceMock, ContactService, ContractServiceMock,
+      ModelServiceMock, rootScope;
 
-    beforeEach(module('contactsummary', 'contactsummary.mocks'));
+    beforeEach(module('contactsummary', 'contactsummary.mocks',
+      'contact-summary.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('ModelService', function () {
@@ -23,15 +24,15 @@ define([
         return ContactDetailsServiceMock;
       });
 
-      $provide.factory('LeaveService', function () {
-        return LeaveServiceMock;
+      $provide.factory('ContractService', function () {
+        return ContractServiceMock;
       });
     }));
 
     beforeEach(inject(function ($injector) {
       ModelServiceMock = $injector.get('ModelServiceMock');
       ContactDetailsServiceMock = $injector.get('ContactDetailsServiceMock');
-      LeaveServiceMock = $injector.get('LeaveServiceMock');
+      ContractServiceMock = $injector.get('ContractServiceMock');
       rootScope = $injector.get('$rootScope');
     }));
 

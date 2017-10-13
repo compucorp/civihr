@@ -15,7 +15,8 @@ define([
     var ApiServiceMock, ContactDetailsService, ModelServiceMock, rootScope;
     var settingsMock = {};
 
-    beforeEach(module('contactsummary', 'contactsummary.mocks'));
+    beforeEach(module('contactsummary', 'contactsummary.mocks',
+      'contact-summary.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('ApiService', function () {
@@ -45,7 +46,7 @@ define([
     describe('get', function () {
       var details;
       var expectedDateOfBirth = '1970/01/01';
-      var expectedAge = moment(moment(expectedDateOfBirth, 'YYYY-MM-DD')).fromNow(true);
+      var expectedAge = moment().diff(moment(expectedDateOfBirth, 'YYYY-MM-DD'), 'years');
       var expectedResponse = {values: [{birth_date: expectedDateOfBirth}]};
       var expectedContactId = 123;
 
