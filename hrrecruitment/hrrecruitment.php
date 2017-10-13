@@ -99,7 +99,7 @@ function hrrecruitment_civicrm_install() {
   $vacancyNavigation = new CRM_Core_DAO_Navigation();
   $params = array (
     'domain_id' => CRM_Core_Config::domainID(),
-    'label' => ts('Vacancies'),
+    'label' => ts('Recruitment'),
     'name' => 'Vacancies',
     'url' => null,
     'operator' => null,

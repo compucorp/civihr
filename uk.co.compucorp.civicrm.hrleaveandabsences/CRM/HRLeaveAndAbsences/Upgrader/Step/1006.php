@@ -6,7 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 trait CRM_HRLeaveAndAbsences_Upgrader_Step_1006 {
 
   /**
-   * Renames the two "Leave and Absences" menu items to just "Absences"
+   * Moves the "leave_and_absences_dashboard" menu item before the "Vacancies" one
    *
    * @return bool
    */
