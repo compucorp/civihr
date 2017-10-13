@@ -1,11 +1,19 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_Service_WorkPattern as WorkPatternService;
+
 class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
 
   private $links = array();
 
+  /**
+   * @var \CRM_HRLeaveAndAbsences_Service_WorkPattern
+   */
+  private $workPatternService;
+
   public function run() {
     CRM_Utils_System::setTitle(ts('Work Patterns'));
+    $this->workPatternService = new WorkPatternService();
     parent::run();
   }
 
@@ -20,8 +28,12 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
 
       // we need to manually add these fields because, since they are not
       // real fields, storeValues will ignore them
-      $rows[$object->id]['number_of_hours'] = $object->number_of_hours ?: 0;
-      $rows[$object->id]['number_of_weeks'] = $object->number_of_weeks ?: 0;
+      $rows[$object->id]['number_of_weeks'] = (int)$object->number_of_weeks;
+      $rows[$object->id]['number_of_hours'] = (float)$object->number_of_hours;
+
+      if($object->number_of_weeks > 1) {
+        $rows[$object->id]['number_of_hours'] = ts('Various');
+      }
 
       $rows[$object->id]['action'] = CRM_Core_Action::formLink(
           $this->links(),
@@ -33,7 +45,9 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
     $returnURL = CRM_Utils_System::url('civicrm/admin/leaveandabsences/work_patterns', 'reset=1');
     CRM_Utils_Weight::addOrder($rows, 'CRM_HRLeaveAndAbsences_DAO_WorkPattern', 'id', $returnURL);
 
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/crm/hrleaveandabsences.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()->addScriptFile('civicrm', 'js/jquery/jquery.crmEditable.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
 
     $this->assign('rows', $rows);
   }
@@ -162,8 +176,24 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
 
     if($workPattern->is_default) {
       $mask -= CRM_Core_Action::BASIC;
+      $mask -= CRM_Core_Action::DISABLE;
+    }
+
+    if($this->canNotDelete($workPattern->id)) {
+      $mask -= CRM_Core_Action::DELETE;
     }
 
     return $mask;
+  }
+
+  /**
+   * Checks whether a WorkPattern object cannot be deleted.
+   *
+   * @param int $workPatternID
+   *
+   * @return bool
+   */
+  private function canNotDelete($workPatternID) {
+    return $this->workPatternService->workPatternHasEverBeenUsed($workPatternID);
   }
 }

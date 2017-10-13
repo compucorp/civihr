@@ -50,63 +50,6 @@ class CRM_Hrjobcontract_BAO_HRJobLeave extends CRM_Hrjobcontract_DAO_HRJobLeave 
       return parent::create($params);
   }
 
-  public static function getLeavesForPeriod($contactId, $startDate = null, $endDate = null) {
-    $data = CRM_Hrjobcontract_BAO_HRJobLeave::createAbsenceArray();
-    $jobContracts = civicrm_api3('HRJobContract', 'get', array(
-      'sequential' => 1,
-      'contact_id' => $contactId,
-      'deleted' => 0,
-    ));
-    foreach ($jobContracts['values'] as $jobContract) {
-      $jobContractDetails = civicrm_api3('HRJobDetails', 'get', array(
-        'sequential' => 1,
-        'jobcontract_id' => $jobContract['id'],
-      ));
-      if (empty($jobContractDetails['values'])) {
-        continue;
-      }
-      $details = CRM_Utils_Array::first($jobContractDetails['values']);
-      $details['period_start_date'] = isset($details['period_start_date']) ? date('Y-m-d H:i:s', strtotime($details['period_start_date'])) : null;
-      $details['period_end_date'] = isset($details['period_end_date']) ? date('Y-m-d H:i:s', strtotime($details['period_end_date'])) : null;
-      if (CRM_Hrjobcontract_BAO_HRJobLeave::isJobDetailsInPeriod($details, $startDate, $endDate)) {
-        $leaves = civicrm_api3('HRJobLeave', 'get', array(
-          'sequential' => 1,
-          'jobcontract_id' => $jobContract['id'],
-        ));
-        foreach ($leaves['values'] as $leave) {
-          $data[$leave['leave_type']] += $leave['leave_amount'];
-        }
-      }
-    }
-    return $data;
-  }
-
-  public static function isJobDetailsInPeriod($jobDetails, $startDate = null, $endDate = null) {
-    $result = true;
-    if ($startDate && !empty($jobDetails['period_end_date'])) {
-      if ($jobDetails['period_end_date'] < $startDate) {
-        $result = false;
-      }
-    }
-    if ($endDate && !empty($jobDetails['period_start_date'])) {
-      if ($jobDetails['period_start_date'] > $endDate) {
-        $result = false;
-      }
-    }
-    return $result;
-  }
-
-  public static function createAbsenceArray() {
-    $data = array();
-    $absenceTypes = civicrm_api3('HRAbsenceType', 'get', array(
-      'sequential' => 1,
-    ));
-    foreach ($absenceTypes['values'] as $absenceType) {
-      $data[$absenceType['id']] = 0;
-    }
-    return $data;
-  }
-
   /**
    * combine all the importable fields from the lower levels object
    *

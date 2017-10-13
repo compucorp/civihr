@@ -4,6 +4,20 @@ ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
 eval(cv('php:boot --level=full -t', 'phpcode'));
 
+//This will redirect all mails to the database.
+define('CIVICRM_MAILER_SPOOL', 1);
+
+require_once 'BaseHeadlessTest.php';
+require_once 'helpers/ContractHelpersTrait.php';
+require_once 'helpers/LeaveBalanceChangeHelpersTrait.php';
+require_once 'helpers/LeavePeriodEntitlementHelpersTrait.php';
+require_once 'helpers/LeaveRequestHelpersTrait.php';
+require_once 'helpers/LeaveManagerHelpersTrait.php';
+require_once 'helpers/SessionHelpersTrait.php';
+require_once 'helpers/LeaveRequestStatusMatrixHelpersTrait.php';
+require_once 'helpers/ApiHelpersTrait.php';
+require_once 'helpers/MailHelpersTrait.php';
+
 /**
  * Call the "cv" command.
  *

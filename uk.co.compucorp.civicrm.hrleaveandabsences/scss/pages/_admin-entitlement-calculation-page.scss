@@ -1,0 +1,18 @@
+#calculation-details {
+  background: $crm-white;
+
+  .base-contractual-entitlement { color: $brand-primary; }
+  .working-days-to-work { color: $brand-success; }
+  .working-days-in-period { color: $brand-warning; }
+  /*
+    It's unlikely that an employee will have more than 5 contracts
+    during a single period, but if that is the case, more
+    .contract-n-pro-rata classes will need to be added here
+   */
+  .contract-1-pro-rata { color: #E6807F; }
+  .contract-2-pro-rata { color: #797300; }
+  .contract-3-pro-rata { color: #904E1E; }
+  .contract-4-pro-rata { color: #0511B1; }
+  .contract-5-pro-rata { color: #4B9609; }
+  .calculation-pro-rata { color: #95c0ff  }
+}

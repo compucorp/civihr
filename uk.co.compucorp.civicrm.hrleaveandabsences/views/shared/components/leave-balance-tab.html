@@ -1,0 +1,55 @@
+<div class="chr_leave-balance-tab">
+  <crm-loading show="!leaveBalanceTab.loading.component">
+    <div class="panel panel-default">
+      <div class="panel-heading clearfix chr_leave-balance-tab__header">
+        <leave-balance-tab-filters
+          absence-periods="leaveBalanceTab.absencePeriods"
+          absence-types="leaveBalanceTab.absenceTypes"
+          logged-in-contact-id="leaveBalanceTab.loggedInContactId"
+          user-role="leaveBalanceTab.userRole">
+        </leave-balance-tab-filters>
+      </div>
+      <div class="panel-body chr_leave-balance-tab__body">
+        <crm-loading show="!leaveBalanceTab.loading.report">
+          <div class="table-responsive" ng-if="leaveBalanceTab.report.length > 0">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="chr_leave-balance-tab__name-column">Employee Name</th>
+                  <th ng-repeat-start="absenceTypes in leaveBalanceTab.selectedAbsenceTypes">Entitlement</th>
+                  <th>Used</th>
+                  <th>Balance</th>
+                  <th ng-repeat-end>Requested</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="record in leaveBalanceTab.report">
+                  <td>{{record.contact_display_name}}</td>
+                  <td ng-repeat-start="type in leaveBalanceTab.selectedAbsenceTypes">{{record.absence_types[type.id].entitlement}}</td>
+                  <td>{{record.absence_types[type.id].used}}</td>
+                  <td>{{record.absence_types[type.id].balance}}</td>
+                  <td ng-repeat-end>{{record.absence_types[type.id].requested}}</td>
+                </tr>
+                <tr ng-if="leaveBalanceTab.reportCount > leaveBalanceTab.pagination.size">
+                  <td colspan="6">
+                    <nav class="chr_leave-balance-report__pagination">
+                      <uib-pagination
+                        total-items="leaveBalanceTab.reportCount"
+                        items-per-page="leaveBalanceTab.pagination.size"
+                        ng-model="leaveBalanceTab.pagination.page"
+                        ng-change="leaveBalanceTab.loadReportCurrentPage()">
+                      </uib-pagination>
+                    </nav>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="text-center" ng-if="leaveBalanceTab.report.length === 0">
+            No records found
+          </div>
+        </crm-loading>
+      </div>
+    </div>
+  </crm-loading>
+</div>

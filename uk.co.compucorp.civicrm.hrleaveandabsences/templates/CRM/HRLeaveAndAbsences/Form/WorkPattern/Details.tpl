@@ -1,18 +1,18 @@
-<table class="form-layout">
-    <tr>
-        <td class="label">{$form.label.label}</td>
-        <td class="html-adjust">{$form.label.html}</td>
-    </tr>
-    <tr>
-        <td class="label">{$form.description.label}</td>
-        <td class="html-adjust">{$form.description.html}</td>
-    </tr>
-    <tr>
-        <td class="label">{$form.is_active.label}</td>
-        <td class="html-adjust">{$form.is_active.html}</td>
-    </tr>
-    <tr>
-        <td class="label">{$form.is_default.label}</td>
-        <td class="html-adjust">{$form.is_default.html}</td>
-    </tr>
-</table>
+<div class="work-pattern-details">
+  <div class="form-group row">
+    <div class="col-sm-3">{$form.label.label}</div>
+    <div class="col-sm-3">{$form.label.html}</div>
+  </div>
+  <div class="form-group row">
+    <div class="col-sm-3">{$form.description.label}</div>
+    <div class="col-sm-3">{$form.description.html}</div>
+  </div>
+  <div class="form-group row">
+    <div class="col-sm-3">{$form.is_active.label}</div>
+    <div class="col-sm-3">{$form.is_active.html}</div>
+  </div>
+  <div class="form-group row">
+    <div class="col-sm-3">{$form.is_default.label}</div>
+    <div class="col-sm-3">{$form.is_default.html}</div>
+  </div>
+</div>

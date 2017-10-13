@@ -13,12 +13,13 @@ define([
 ], function(moment, controllers) {
   'use strict';
 
-  controllers.controller('ContractCtrl', ['$scope', '$route', '$filter', '$uibModal', '$rootElement', '$q', 'settings',
+  controllers.controller('ContractCtrl', ['$scope', '$route', '$filter', '$uibModal', '$rootElement', '$q', '$window', 'settings',
     'API', 'ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
     'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'ContactService', 'ContractRevisionList', '$log',
-    function($scope, $route, $filter, $modal, $rootElement, $q, settings, API, ContractService, ContractDetailsService,
+    'UtilsService',
+    function($scope, $route, $filter, $modal, $rootElement, $q, $window, settings, API, ContractService, ContractDetailsService,
       ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
-      ContractPensionService, ContractFilesService, ContactService, ContractRevisionList, $log) {
+      ContractPensionService, ContractFilesService, ContactService, ContractRevisionList, $log, UtilsService) {
       $log.debug('Controller: ContractCtrl');
 
       var vm = this;
@@ -345,7 +346,7 @@ define([
           }
 
           CRM.refreshParent('#hrjobroles');
-
+          $window.location.assign(UtilsService.getManageEntitlementsPageURL($scope.contract.contact_id));
         });
       };
 

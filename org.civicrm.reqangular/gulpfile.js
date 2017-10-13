@@ -35,7 +35,7 @@ gulp.task('requirejs-bundle-mock', function (done) {
 });
 
 gulp.task('watch', function () {
-  gulp.watch('src/common/**/*.js', ['requirejs-bundle']).on('change', function (file) {
+  gulp.watch(['src/common/**/*.js', '!src/common/modules/templates.js'], ['requirejs-bundle']).on('change', function (file) {
     try { test.for(file.path); } catch (ex) { test.all(); }
   });
   gulp.watch('test/mocks/**/*.js', ['requirejs-bundle-mock']);

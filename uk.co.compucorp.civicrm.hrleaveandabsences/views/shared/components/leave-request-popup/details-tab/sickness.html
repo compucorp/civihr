@@ -1,0 +1,33 @@
+<div class="row">
+  <div class="col-xs-12 form-horizontal">
+  <hr>
+    <div class="form-group">
+      <label class="col-sm-4 control-label required-mark">Reason</label>
+      <div class="col-sm-8">
+        <div class="crm_custom-select crm_custom-select--full">
+          <select
+            class="no-select2"
+            name="reason"
+            ng-disabled="!detailsTab.isRole('admin') &&
+              (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isLeaveType('sickness')))"
+            ng-options="reason.value as reason.label for reason in detailsTab.sicknessReasons"
+            ng-model="detailsTab.request.sickness_reason">
+            <option value="">- select -</option>
+          </select>
+          <span class="crm_custom-select__arrow"></span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group chr_leave-request-modal__required-documents">
+      <div class="col-xs-12" ng-repeat="document in detailsTab.sicknessDocumentTypes">
+        <input
+          ng-disabled="detailsTab.isRole('staff') || detailsTab.isSelfRecord"
+          required type="checkbox" value="document.value"
+          ng-click="detailsTab.request.toggleDocument(document.value)"
+          ng-checked="detailsTab.isChecked(document.value)"
+          ng-selected="detailsTab.isDocumentInRequest(document.value)">
+        <span>{{document.label}}</span>
+      </div>
+    </div>
+  </div>
+</div>

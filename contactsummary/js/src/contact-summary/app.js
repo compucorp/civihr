@@ -6,8 +6,6 @@ define([
     'contact-summary/controllers/contactSummary',
     'contact-summary/controllers/keyDates',
     'contact-summary/controllers/keyDetails',
-    'contact-summary/controllers/leave',
-    'contact-summary/controllers/sickness',
     'contact-summary/directives/donutChart'
 ], function (angular) {
     var app = angular.module('contactsummary', [

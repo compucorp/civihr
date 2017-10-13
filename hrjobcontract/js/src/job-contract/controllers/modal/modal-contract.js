@@ -176,44 +176,12 @@ define([
             jobcontract_id: entity.contract.id
           }).then(function(result) {
             if (result.success) {
-              if (angular.equals(entity, $scope.entity) &&
-                angular.equals(files, $scope.files) &&
-                !$scope.uploader.details.contract_file.queue.length &&
-                !$scope.uploader.pension.evidence_file.queue.length) {
-                $scope.$broadcast('hrjc-loader-hide');
-                $modalInstance.dismiss('cancel');
-                return;
-              }
 
-              switch (action) {
-                case 'edit':
-                  if ($scope.entity.contract.is_primary == entity.contract.is_primary) {
-                    confirmEdit().then(function(confirmed) {
-                      switch (confirmed) {
-                        case 'edit':
-                          contractEdit();
-                          break;
-                        case 'change':
-                          changeReason().then(function(results) {
-                            contractChange(results.reasonId, results.date);
-                          });
-                          break;
-                      }
-                    });
-                  } else {
-                    contractEdit();
-                  }
-                  break;
-                case 'change':
-                  changeReason().then(function(results) {
-                    contractChange(results.reasonId, results.date);
-                  });
-                  break;
-                default:
-                  $scope.$broadcast('hrjc-loader-hide');
-                  $modalInstance.dismiss('cancel');
-                  return;
-              }
+              confirmUpdateEntitlements()
+                .then(function () {
+                  processContractUpdate();
+                });
+
             } else {
               CRM.alert(result.message, 'Error', 'error');
               $scope.$broadcast('hrjc-loader-hide');
@@ -221,6 +189,71 @@ define([
           }, function(reason) {});
           $scope.$broadcast('hrjc-loader-hide');
         }
+      }
+
+      function processContractUpdate() {
+        if (angular.equals(entity, $scope.entity) &&
+          angular.equals(files, $scope.files) &&
+          !$scope.uploader.details.contract_file.queue.length &&
+          !$scope.uploader.pension.evidence_file.queue.length) {
+          $scope.$broadcast('hrjc-loader-hide');
+          $modalInstance.dismiss('cancel');
+          return;
+        }
+
+        switch (action) {
+          case 'edit':
+            if ($scope.entity.contract.is_primary == entity.contract.is_primary) {
+              confirmEdit().then(function(confirmed) {
+                switch (confirmed) {
+                  case 'edit':
+                    contractEdit();
+                    break;
+                  case 'change':
+                    changeReason().then(function(results) {
+                      contractChange(results.reasonId, results.date);
+                    });
+                    break;
+                }
+              });
+            } else {
+              contractEdit();
+            }
+            break;
+          case 'change':
+            changeReason().then(function(results) {
+              contractChange(results.reasonId, results.date);
+            });
+            break;
+          default:
+            $scope.$broadcast('hrjc-loader-hide');
+            $modalInstance.dismiss('cancel');
+            return;
+        }
+      }
+
+      /**
+       * Shows a confirmation dialog warning the user that, if they proceed, the staff
+       * leave entitlement will be updated.
+       *
+       * @returns {*}
+       */
+      function confirmUpdateEntitlements() {
+        var modalUpdateEntitlements = $modal.open({
+          appendTo: $rootElement.find('div').eq(0),
+          size: 'sm',
+          templateUrl: settings.pathApp+'views/modalDialog.html?v='+(new Date()).getTime(),
+          controller: 'ModalDialogCtrl',
+          resolve: {
+            content: {
+              title: 'Update leave entitlements?',
+              msg: 'The system will now update the staff member leave entitlement.',
+              copyConfirm: 'Proceed'
+            }
+          }
+        });
+
+        return modalUpdateEntitlements.result;
       }
 
       /**

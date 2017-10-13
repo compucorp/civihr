@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+
+  <OptionGroups>
+    <OptionGroup>
+      <name>hrleaveandabsences_leave_request_required_document</name>
+      <title>Leave Request Required Documents</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+
+  <OptionValues>
+    <OptionValue>
+      <label>Self certification form required</label>
+      <value>1</value>
+      <name>self_certification_form_required</name>
+      <is_default>0</is_default>
+      <weight>0</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_required_document</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Back to work interview required</label>
+      <value>2</value>
+      <name>back_to_work_interview_required</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_required_document</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Return to work form required</label>
+      <value>3</value>
+      <name>return_to_work_form_required</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_request_required_document</option_group_name>
+    </OptionValue>
+
+  </OptionValues>
+</CustomData>

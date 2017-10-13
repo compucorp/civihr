@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+
+  <OptionGroups>
+    <OptionGroup>
+      <name>hrleaveandabsences_leave_balance_change_type</name>
+      <title>Leave Balance Change Types</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+
+  <OptionValues>
+    <OptionValue>
+      <label>Leave</label>
+      <value>1</value>
+      <name>leave</name>
+      <is_default>0</is_default>
+      <weight>0</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_balance_change_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Brought Forward</label>
+      <value>2</value>
+      <name>brought_forward</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_balance_change_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Public Holiday</label>
+      <value>3</value>
+      <name>public_holiday</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_balance_change_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Credit</label>
+      <value>4</value>
+      <name>credit</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_balance_change_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Debit</label>
+      <value>5</value>
+      <name>debit</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_balance_change_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Overridden</label>
+      <value>6</value>
+      <name>overridden</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_leave_balance_change_type</option_group_name>
+    </OptionValue>
+  </OptionValues>
+</CustomData>

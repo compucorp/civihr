@@ -1,0 +1,36 @@
+<div class="panel panel-default chr_annual-entitlements">
+  <div class="panel-heading">
+    <h3 class="panel-title">Annual Entitlements</h3>
+  </div>
+  <crm-loading show="!entitlements.loading.absencePeriods">
+    <div class="table-responsive" ng-show="entitlements.absencePeriods.length > 0">
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="chr_annual-entitlements__period">Period</th>
+            <th ng-repeat="absenceType in entitlements.absenceTypes">{{absenceType.title}}</th>
+            <th class="chr_annual-entitlements__edit-entitlements"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="absencePeriod in entitlements.absencePeriods">
+            <td>{{absencePeriod.period}}</td>
+            <td ng-repeat="entitlement in absencePeriod.entitlements">
+              {{entitlement.amount}}
+              <i
+                class="fa fa-exclamation-circle text-info pointer"
+                ng-if="entitlement.comment"
+                ng-click="entitlements.showComment(entitlement.comment)"
+                aria-hidden="true">
+              </i>
+            </td>
+            <td><a ng-href="{{entitlements.editEntitlementsPageUrl}}">Edit Entitlements</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel-body" ng-show="entitlements.absencePeriods.length === 0">
+      None found.
+    </div>
+  </crm-loading>
+</div>

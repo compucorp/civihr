@@ -8,8 +8,8 @@
     <author>Compucorp</author>
     <email>info@compucorp.com</email>
   </maintainer>
-  <releaseDate>2017-10-06</releaseDate>
-  <version>1.6.12</version>
+  <releaseDate>2017-10-10</releaseDate>
+  <version>1.7.0</version>
   <develStage>beta</develStage>
   <compatibility>
     <ver>4.7</ver>

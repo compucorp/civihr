@@ -28,6 +28,30 @@
     <path>civicrm/admin/leaveandabsences/periods/manage_entitlements</path>
     <page_callback>CRM_HRLeaveAndAbsences_Form_ManageEntitlements</page_callback>
     <title>ManageEntitlements</title>
-    <access_arguments>access CiviCRM</access_arguments>
+    <access_arguments>administer leave and absences</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/admin/leaveandabsences/periods/manage_entitlements/calculation_details</path>
+    <page_callback>CRM_HRLeaveAndAbsences_Page_EntitlementCalculationDetails</page_callback>
+    <title>Calculation details</title>
+    <access_arguments>administer leave and absences</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/admin/leaveandabsences/general_settings</path>
+    <page_callback>CRM_HRLeaveAndAbsences_Form_GeneralSettings</page_callback>
+    <title>General Settings</title>
+    <access_arguments>administer leave and absences</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/contact/view/absence</path>
+    <page_callback>CRM_HRLeaveAndAbsences_Page_AbsenceTab</page_callback>
+    <title>Absence</title>
+    <access_arguments>access leave and absences</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/leaveandabsences/dashboard</path>
+    <page_callback>CRM_HRLeaveAndAbsences_Page_Dashboard</page_callback>
+    <title>Dashboard</title>
+    <access_arguments>administer leave and absences</access_arguments>
   </item>
 </menu>

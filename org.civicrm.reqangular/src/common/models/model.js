@@ -14,7 +14,17 @@ define([
          * @return {string}
          */
         function apiDateFormat(date) {
-            return moment(date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+          return isStandardDateFormat(date) ? date : moment(date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+        }
+
+        /**
+         * Checks if the given date is in the standard YYYY-MM-DD format
+         *
+         * @param {string} date
+         * @return {boolean}
+         */
+        function isStandardDateFormat(date) {
+          return moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD') === date;
         }
 
         /**

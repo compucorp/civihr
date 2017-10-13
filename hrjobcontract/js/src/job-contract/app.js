@@ -21,6 +21,7 @@ define([
     'job-contract/controllers/form/form-health',
     'job-contract/controllers/form/form-pay',
     'job-contract/controllers/form/form-pension',
+    'job-contract/controllers/form/form-leave',
     'job-contract/directives/directives',
     'job-contract/directives/contact',
     'job-contract/directives/directives',

@@ -1,0 +1,128 @@
+<section>
+  <crm-loading show="!calendar.loading.page">
+    <div class="panel">
+      <div ng-if="calendar.showFilters" class="panel-heading chr_manager_calendar__header row">
+        <div class="col-md-4 col-lg-2">
+          <ui-select ng-change="calendar.refresh('contacts')" ng-model="calendar.filters.userSettings.contact">
+            <ui-select-match placeholder="Staff Member" allow-clear>
+              <span ng-bind="$select.selected.display_name"></span>
+            </ui-select-match>
+            <ui-select-choices repeat="user in (calendar.lookupContacts | filter: $select.search) track by user.id">
+              <span ng-bind="user.display_name"></span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="region.label for region in calendar.filters.optionValues.regions track by region.id"
+              ng-model="calendar.filters.userSettings.region"
+              ng-change="calendar.refresh('contacts')">
+              <option value="">Region</option>
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="department.label for department in calendar.filters.optionValues.departments track by department.id"
+              ng-model="calendar.filters.userSettings.department"
+              ng-change="calendar.refresh('contacts')">
+              <option value="">Department</option>
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="levelType.value for levelType in calendar.filters.optionValues.levelTypes track by levelType.id"
+              ng-model="calendar.filters.userSettings.level_type"
+              ng-change="calendar.refresh('contacts')">
+              <option value="">Level Type</option>
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="location.label for location in calendar.filters.optionValues.locations track by location.id"
+              ng-model="calendar.filters.userSettings.location"
+              ng-change="calendar.refresh('contacts')">
+              <option value="">Locations</option>
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+        </div>
+        <div class="col-md-4 col-lg-2">
+          <div class="checkbox">
+            <label>
+              <input
+                class="chr_leave-calendar__toggle-contacts-with-leaves"
+                type="checkbox" ng-model="calendar.filters.userSettings.contacts_with_leaves">
+                Show only those who are taking leave
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="chr_manager_calendar__sub-header row" ng-class="{ 'panel-heading': !calendar.showFilters, 'panel-subheading': calendar.showFilters }">
+        <div class="col-md-12" ng-class="{ 'col-lg-6': !!calendar.filtersByAssignee, 'col-lg-8': !calendar.filtersByAssignee }">
+          <ui-select class="chr_leave-calendar__day-selector" multiple ng-model="calendar.selectedMonths">
+            <ui-select-match placeholder="Select Months">
+              <span>{{$item.shortName}}</span>
+            </ui-select-match>
+            <ui-select-choices repeat="month.index as month in (calendar.months | filter: $select.search)">
+              <span>{{month.name}}</span>
+            </ui-select-choices>
+          </ui-select>
+        </div>
+        <div class="col-md-12 col-lg-3" ng-class="{ 'col-lg-offset-1': !calendar.filtersByAssignee }">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-options="period as calendar.labelPeriod(period) for period in calendar.absencePeriods track by period.id"
+              ng-model="calendar.selectedPeriod"
+              ng-change="calendar.refresh('period')">
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+        </div>
+        <div class="col-md-12 col-lg-3" ng-if="!!calendar.filtersByAssignee">
+          <div class="crm_custom-select crm_custom-select--full chr_leave-calendar__admin-filters-select">
+            <select
+              class="no-select2"
+              ng-options="filterByAssignee.label for filterByAssignee in calendar.filtersByAssignee"
+              ng-model="calendar.filters.userSettings.assignedTo"
+              ng-change="calendar.refresh('contacts')">
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+
+          <i class="fa fa-question-circle chr_leave-calendar__admin-filters-hint text-info pointer"
+             aria-hidden="true"
+             ng-click="calendar.showAdminFilteringHint()"></i>
+        </div>
+      </div>
+    </div>
+    <crm-loading show="!calendar.loading.calendar">
+      <div ng-if="calendar.injectMonths">
+        <leave-calendar-month ng-repeat="month in calendar.months track by $index"
+          contacts="calendar.contacts"
+          contact-ids-to-reduce-to="calendar.contactIdsToReduceTo"
+          month="month"
+          period="calendar.selectedPeriod"
+          show-contact-name="calendar.showContactName"
+          show-only-with-leave-requests="calendar.filters.userSettings.contacts_with_leaves"
+          support-data="calendar.supportData">
+        </leave-calendar-month>
+      </div>
+    </crm-loading>
+    <leave-calendar-legend absence-types="calendar.supportData.absenceTypes" ng-if="calendar.supportData.absenceTypes.length"></leave-calendar-legend>
+  </crm-loading>
+</section>

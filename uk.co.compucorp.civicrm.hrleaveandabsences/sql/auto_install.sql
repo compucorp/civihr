@@ -12,22 +12,23 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `color` varchar(7) NOT NULL   COMMENT 'The color hex value (including the #) used to display this type on a calendar',
      `is_default` tinyint   DEFAULT 0 COMMENT 'There can only be one default entity at any given time',
      `is_reserved` tinyint   DEFAULT 0 COMMENT 'Reserved entities are used by internal calculations and cannot be deleted.',
-     `max_consecutive_leave_days` int unsigned    ,
+     `max_consecutive_leave_days` decimal(20,2)    ,
      `allow_request_cancelation` int unsigned NOT NULL   COMMENT 'Can only be one of the values defined in AbsenceType::REQUEST_CANCELATION_OPTIONS',
      `allow_overuse` tinyint   DEFAULT 0 ,
      `must_take_public_holiday_as_leave` tinyint   DEFAULT 0 ,
-     `default_entitlement` int unsigned NOT NULL   COMMENT 'The number of days entitled for this type',
+     `default_entitlement` decimal(20,2) NOT NULL   COMMENT 'The number of days entitled for this type',
      `add_public_holiday_to_entitlement` tinyint   DEFAULT 0 ,
      `is_active` tinyint   DEFAULT 1 COMMENT 'Only enabled types can be requested',
      `allow_accruals_request` tinyint   DEFAULT 0 ,
-     `max_leave_accrual` int unsigned    COMMENT 'Value is the number of days that can be accrued. Null means unlimited',
+     `max_leave_accrual` decimal(20,2)    COMMENT 'Value is the number of days that can be accrued. Null means unlimited',
      `allow_accrue_in_the_past` tinyint   DEFAULT 0 ,
      `accrual_expiration_duration` int unsigned    COMMENT 'An amount of accrual_expiration_unit',
-     `accrual_expiration_unit` int unsigned    COMMENT 'The unit (year, month, etc) of accrual_expiration_duration of this type default expiry',
+     `accrual_expiration_unit` int unsigned    COMMENT 'The unit (months or days) of accrual_expiration_duration of this type default expiry',
      `allow_carry_forward` tinyint   DEFAULT 0 ,
-     `max_number_of_days_to_carry_forward` int unsigned    ,
+     `max_number_of_days_to_carry_forward` decimal(20,2)    ,
      `carry_forward_expiration_duration` int unsigned    COMMENT 'An amount of carry_forward_expiration_unit',
-     `carry_forward_expiration_unit` int unsigned    COMMENT 'The unit (year, month, etc) of carry_forward_expiration_duration of this type default expiry',
+     `carry_forward_expiration_unit` int unsigned    COMMENT 'The unit (months or days) of carry_forward_expiration_duration of this type default expiry',
+     `is_sick` tinyint   DEFAULT 0 COMMENT 'A flag which is used to determine if this Absence Type can be used for a Sickness Request',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `hrleaveandabsences_absence_type_title`(title)
 
@@ -67,8 +68,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   0,
   1,
   5,
-  1,
-  3, -- Years
+  12,
+  2, -- Months
   1,
   1,
   1
@@ -111,7 +112,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   allow_request_cancelation,
   allow_overuse,
   is_reserved,
-  weight
+  weight,
+  is_sick
 ) VALUES (
   3,
   'Sick',
@@ -121,7 +123,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   1, -- no
   1,
   1,
-  3
+  3,
+  1
 );
 
 -- /*******************************************************
@@ -195,11 +198,11 @@ CREATE TABLE `civicrm_hrleaveandabsences_work_day` (
 
      `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique WorkDay ID',
      `day_of_the_week` int unsigned NOT NULL   COMMENT 'A number between 1 and 7, following ISO-8601. 1 is Monday and 7 is Sunday',
-     `type` int unsigned NOT NULL   COMMENT 'The type of this day: yes (working day), no (non working day), weekend',
+     `type` varchar(512) NOT NULL   COMMENT 'The type of this day, according to the values on the Work Day Type Option Group',
      `time_from` char(5)    COMMENT 'The start time of this work day. This field is a char because CiviCRM can\'t handle TIME fields.',
      `time_to` char(5)    COMMENT 'The end time of this work day. This field is a char because CiviCRM can\'t handle TIME fields.',
      `break` decimal(20,2)    COMMENT 'The amount of break time (in hours) allowed for this day. ',
-     `leave_days` int unsigned    COMMENT 'The proportion of a days leave that will be deducted if this day is taken as leave.',
+     `leave_days` varchar(512)    COMMENT 'One of the values of the Leave Days Amount option group',
      `number_of_hours` decimal(20,2)    COMMENT 'This is the number of hours between time_from and time_to minus break',
      `week_id` int unsigned NOT NULL   COMMENT 'The Work Week this Day belongs to',
     PRIMARY KEY ( `id` ),
@@ -222,13 +225,13 @@ VALUES(1, 1, 1);
 
 INSERT INTO civicrm_hrleaveandabsences_work_day(week_id, day_of_the_week, type, time_from, time_to, break, leave_days, number_of_hours)
 VALUES
-  (1, 1, 2, '09:00', '17:30', 1, 1, 7.5),
-  (1, 2, 2, '09:00', '17:30', 1, 1, 7.5),
-  (1, 3, 2, '09:00', '17:30', 1, 1, 7.5),
-  (1, 4, 2, '09:00', '17:30', 1, 1, 7.5),
-  (1, 5, 2, '09:00', '17:30', 1, 1, 7.5),
-  (1, 6, 3, NULL, NULL, NULL, NULL, NULL),
-  (1, 7, 3, NULL, NULL, NULL, NULL, NULL);
+  (1, '1', 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, '2', 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, '3', 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, '4', 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, '5', 2, '09:00', '17:30', 1, 1, 7.5),
+  (1, '6', 3, NULL, NULL, NULL, NULL, NULL),
+  (1, '7', 3, NULL, NULL, NULL, NULL, NULL);
 
 -- /*******************************************************
 -- *
@@ -264,28 +267,120 @@ CREATE TABLE `civicrm_hrleaveandabsences_public_holiday` (
 
 -- /*******************************************************
 -- *
--- * civicrm_hrleaveandabsences_entitlement
+-- * civicrm_hrleaveandabsences_leave_period_entitlement
 -- *
--- * A proposed entitlement for an specific set of contract, absence type and absence period
+-- * A period entitlement for an specific set a contract and absence type
 -- *
 -- *******************************************************/
-CREATE TABLE `civicrm_hrleaveandabsences_entitlement` (
+CREATE TABLE `civicrm_hrleaveandabsences_leave_period_entitlement` (
 
-     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique Entitlement ID',
-     `period_id` int unsigned NOT NULL   COMMENT 'FK to AbsencePeriod',
-     `type_id` int unsigned NOT NULL   COMMENT 'FK to AbsenceType',
-     `contract_id` int unsigned NOT NULL   COMMENT 'FK to HRJobContract',
-     `proposed_entitlement` decimal(20,2) NOT NULL   COMMENT 'The number of days proposed for this entitlement',
-     `brought_forward_days` decimal(20,2)   DEFAULT 0 COMMENT 'The number of days brought forward from the previous period',
-     `brought_forward_expiration_date` date COMMENT 'The date the brought forward days will expire',
-     `pro_rata` decimal(20,2)   DEFAULT 0 COMMENT 'The pro rata calculated for this entitlement period',
-     `overridden` tinyint   DEFAULT false COMMENT 'Indicates if the proposed_entitlement was overridden',
-     `comment` text    COMMENT 'The comment added by the user about the calculation for this entitlement',
-     `comment_author_id` int unsigned  COMMENT 'FK to Contact. The contact that represents the used the added the comment to this entitlement',
-     `comment_updated_at` datetime    COMMENT 'The date and time the comment for this entitlement was added/updated',
+
+  `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique Leave Period Entitlement ID',
+  `period_id` int unsigned NOT NULL   COMMENT 'FK to AbsencePeriod',
+  `type_id` int unsigned NOT NULL   COMMENT 'FK to AbsenceType',
+  `contact_id` int unsigned NOT NULL   COMMENT 'FK to Contact (civicrm_contact)',
+  `overridden` tinyint   DEFAULT false COMMENT 'Indicates if the entitlement was overridden',
+  `comment` text    COMMENT 'The comment added by the user about the calculation for this entitlement',
+  `comment_author_id` int unsigned    COMMENT 'FK to Contact. The contact that represents the user who added the comment to this entitlement',
+  `comment_date` datetime    COMMENT 'The date and time the comment for this entitlement was added/updated',
+  PRIMARY KEY ( `id` ),
+  UNIQUE INDEX `unique_entitlement`(period_id, contact_id, type_id),
+  CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_period_id FOREIGN KEY (`period_id`) REFERENCES `civicrm_hrleaveandabsences_absence_period`(`id`) ON DELETE CASCADE,
+  CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
+  CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,
+  CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_comment_author_id FOREIGN KEY (`comment_author_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_leave_balance_change
+-- *
+-- * Store balance changes to a Leave Period Entitlement
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_leave_balance_change` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique LeaveBalanceChange ID',
+     `type_id` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Balance Type option group',
+     `amount` decimal(20,2) NOT NULL  DEFAULT 0 COMMENT 'The amount of days this change in balance represents to the entitlement',
+     `expiry_date` date    COMMENT 'Some balance changes can expire. This is the date it will expire.',
+     `expired_balance_change_id` int unsigned    COMMENT 'FK to LeaveBalanceChange. This is only used for a balance change that represents expired days, and it will be related to the balance change that has expired.',
+     `source_id` int unsigned    COMMENT 'Some balance changes are originated from an specific source (a leave request date, for example) and this field will have the ID of this source.' ,
+     `source_type` varchar(20)    COMMENT 'Some balance changes are originated from an specific source (a leave request date, for example) and this field will have text string to indicate what is the source.' ,
     PRIMARY KEY ( `id` ),
-    UNIQUE INDEX `unique_entitlement`(period_id, contract_id, type_id),
-    CONSTRAINT FK_civicrm_hrleaveandabsences_entitlement_period_id FOREIGN KEY (`period_id`) REFERENCES `civicrm_hrleaveandabsences_absence_period`(`id`) ON DELETE CASCADE,
-    CONSTRAINT FK_civicrm_hrleaveandabsences_entitlement_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
-    CONSTRAINT FK_civicrm_hrleaveandabsences_entitlement_comment_author_id FOREIGN KEY (`comment_author_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
+    UNIQUE INDEX `unique_expiry_record`(expired_balance_change_id),
+    INDEX `index_source_id`(source_id, source_type),
+    CONSTRAINT FK_civicrm_hrlaa_leave_balance_change_expired_balance_change_id FOREIGN KEY (`expired_balance_change_id`) REFERENCES `civicrm_hrleaveandabsences_leave_balance_change`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_leave_request
+-- *
+-- * Leave Requests
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_leave_request` (
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique LeaveRequest ID',
+     `type_id` int unsigned NOT NULL   COMMENT 'FK to AbsenceType',
+     `contact_id` int unsigned NOT NULL   COMMENT 'FK to Contact',
+     `status_id` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Request Status option group',
+     `from_date` date NOT NULL   COMMENT 'The date the leave request starts.',
+     `from_date_type` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Request Day Type option group',
+     `to_date` date NOT NULL   COMMENT 'The date the leave request ends',
+     `to_date_type` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Request Day Type option group',
+     `sickness_reason` varchar(512)    COMMENT 'One of the values of the Sickness Reason option group',
+     `sickness_required_documents` varchar(10)    COMMENT 'A list of values from the LeaveRequestRequiredDocument option group',
+     `toil_duration` int unsigned    COMMENT 'The duration of the overtime work in minutes',
+     `toil_to_accrue` varchar(512)    COMMENT 'The amount of days accrued for this toil request',
+     `toil_expiry_date` date    COMMENT 'The expiry date of this TOIL Request. When null, it means it never expires.',
+     `request_type` varchar(20) NOT NULL   COMMENT 'The type of this request (leave, toil, sickness etc)',
+     `is_deleted` tinyint   DEFAULT 0 COMMENT 'Whether this leave request has been deleted or not',
+    PRIMARY KEY ( `id` ),
+    CONSTRAINT FK_civicrm_hrlaa_leave_request_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
+    CONSTRAINT FK_civicrm_hrlaa_leave_request_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_leave_request_date
+-- *
+-- * The individual dates of a leave request
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_leave_request_date` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique LeaveRequestDate ID',
+     `date` date NOT NULL   COMMENT 'This date date',
+     `leave_request_id` int unsigned NOT NULL   COMMENT 'FK to LeaveRequest',
+     `type` varchar(512)    COMMENT 'The type of this day, according to the values on the Leave Request Day Types Option Group',
+    PRIMARY KEY ( `id` ),
+    UNIQUE INDEX `unique_leave_request_date`(date, leave_request_id),
+    CONSTRAINT FK_civicrm_hrlaa_leave_request_date_leave_request_id FOREIGN KEY (`leave_request_id`) REFERENCES `civicrm_hrleaveandabsences_leave_request`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_contact_work_pattern
+-- *
+-- * Represents the work patterns linked to an employee
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_contact_work_pattern` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique ContactWorkPattern ID',
+     `contact_id` int unsigned NOT NULL   COMMENT 'FK to the Contact representing the employee',
+     `pattern_id` int unsigned NOT NULL   COMMENT 'FK to the Work Pattern linked to an employee',
+     `effective_date` date NOT NULL   COMMENT 'The date this work pattern will start to be considered active',
+     `effective_end_date` date  COMMENT 'The date this work pattern will stop being considered active',
+     `change_reason` varchar(512)  COMMENT 'One of the values of the Job Contract Revision Change Reason option group',
+    PRIMARY KEY ( `id` ),
+    UNIQUE INDEX `unique_pattern_per_effective_date`(contact_id, effective_date),
+    CONSTRAINT FK_civicrm_hrlaa_contact_work_pattern_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,
+    CONSTRAINT FK_civicrm_hrlaa_contact_work_pattern_pattern_id FOREIGN KEY (`pattern_id`) REFERENCES `civicrm_hrleaveandabsences_work_pattern`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;

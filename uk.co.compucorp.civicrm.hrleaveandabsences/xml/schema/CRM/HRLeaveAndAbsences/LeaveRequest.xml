@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>LeaveRequest</class>
+  <name>civicrm_hrleaveandabsences_leave_request</name>
+  <comment>Leave Requests</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique LeaveRequest ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>type_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to AbsenceType</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>type_id</name>
+    <table>civicrm_hrleaveandabsences_absence_type</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to Contact</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>status_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>One of the values of the Leave Request Status option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_leave_request_status</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <field>
+    <name>from_date</name>
+    <type>date</type>
+    <required>true</required>
+    <comment>The date the leave request starts.</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>from_date_type</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>One of the values of the Leave Request Day Type option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_leave_request_day_type</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <field>
+    <name>to_date</name>
+    <type>date</type>
+    <required>true</required>
+    <comment>The date the leave request ends</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>to_date_type</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>One of the values of the Leave Request Day Type option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_leave_request_day_type</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <field>
+    <name>sickness_reason</name>
+    <type>varchar</type>
+    <length>512</length>
+    <label>Sickness Reason</label>
+    <comment>One of the values of the Sickness Reason option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_sickness_reason</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <field>
+    <name>sickness_required_documents</name>
+    <type>varchar</type>
+    <length>10</length>
+    <comment>A list of values from the LeaveRequestRequiredDocument option group</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>toil_duration</name>
+    <type>int unsigned</type>
+    <comment>The duration of the overtime work in minutes</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>toil_to_accrue</name>
+    <type>varchar</type>
+    <length>512</length>
+    <comment>The amount of days accrued for this toil request</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_toil_amounts</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <field>
+    <name>toil_expiry_date</name>
+    <type>date</type>
+    <comment>The expiry date of this TOIL Request. When null, it means it never expires.</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>request_type</name>
+    <type>varchar</type>
+    <length>20</length>
+    <required>true</required>
+    <comment>The type of this request (leave, toil, sickness etc)</comment>
+  </field>
+
+  <field>
+    <name>is_deleted</name>
+    <type>boolean</type>
+    <default>0</default>
+    <comment>Whether this leave request has been deleted or not</comment>
+    <add>4.4</add>
+  </field>
+
+</table>

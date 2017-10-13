@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>LeaveBalanceChange</class>
+  <name>civicrm_hrleaveandabsences_leave_balance_change</name>
+  <comment>Store balance changes to a Leave Period Entitlement</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique LeaveBalanceChange ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>type_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>One of the values of the Leave Balance Type option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_leave_balance_change_type</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <field>
+    <name>amount</name>
+    <type>decimal</type>
+    <required>true</required>
+    <default>0</default>
+    <comment>The amount of days this change in balance represents to the entitlement</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>expiry_date</name>
+    <type>date</type>
+    <comment>Some balance changes can expire. This is the date it will expire.</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>expired_balance_change_id</name>
+    <type>int unsigned</type>
+    <comment>FK to LeaveBalanceChange. This is only used for a balance change that represents expired days, and it will be related to the balance change that has expired.</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>expired_balance_change_id</name>
+    <table>civicrm_hrleaveandabsences_leave_balance_change</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>source_id</name>
+    <type>int unsigned</type>
+    <comment>Some balance changes are originated from an specific source (a leave request date, for example) and this field will have the ID of this source.</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>source_type</name>
+    <type>varchar</type>
+    <length>20</length>
+    <comment>Some balance changes are originated from an specific source (a leave request date, for example) and this field will have text string to indicate what is the source.</comment>
+    <add>4.4</add>
+  </field>
+
+  <index>
+    <name>unique_expiry_record</name>
+    <fieldName>expired_balance_change_id</fieldName>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
+
+  <!-- Since these are not real FKs, it's important to have an index for these field for a better performance in SQL JOINs -->
+  <index>
+    <name>index_source_id</name>
+    <fieldName>source_id</fieldName>
+    <fieldName>source_type</fieldName>
+    <add>4.4</add>
+  </index>
+</table>

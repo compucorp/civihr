@@ -1,0 +1,26 @@
+<div class="absence-tab-page">
+  <div class="container-fluid">
+    <leave-request-record-actions
+      btn-class="btn-primary"
+      contact-id="absence.contactId"
+      selected-contact-id="$root.settings.contactId">
+    </leave-request-record-actions>
+    <uib-tabset
+      active="active"
+      type="pills"
+      custom-header-class="nav-pills-horizontal nav-pills-horizontal-default">
+      <uib-tab heading="Report" data-tabname="report">
+        <staff-leave-report ng-if="active === 0" contact-id="$root.settings.contactId"></staff-leave-report>
+      </uib-tab>
+      <uib-tab heading="Calendar" data-tabname="calendar">
+        <leave-calendar ng-if="active === 1" contact-id="$root.settings.contactId" role-override="staff"></leave-calendar>
+      </uib-tab>
+      <uib-tab heading="Entitlements" data-tabname="entitlements">
+        <absence-tab-entitlements ng-if="active === 2" contact-id="$root.settings.contactId"></absence-tab-entitlements>
+      </uib-tab>
+      <uib-tab heading="Work Patterns" data-tabname="workpatterns">
+        <absence-tab-work-patterns ng-if="active === 3" contact-id="$root.settings.contactId"></absence-tab-work-patterns>
+      </uib-tab>
+    </uib-tabset>
+  </div>
+</div>

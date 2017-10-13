@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+
+  <OptionGroups>
+    <OptionGroup>
+      <name>hrleaveandabsences_work_day_type</name>
+      <title>Work Day Types</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+
+  <OptionValues>
+    <OptionValue>
+      <label>No</label>
+      <value>1</value>
+      <name>non_working_day</name>
+      <is_default>0</is_default>
+      <weight>0</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_work_day_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Yes</label>
+      <value>2</value>
+      <name>working_day</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_work_day_type</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Weekend</label>
+      <value>3</value>
+      <name>weekend</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_work_day_type</option_group_name>
+    </OptionValue>
+
+  </OptionValues>
+</CustomData>

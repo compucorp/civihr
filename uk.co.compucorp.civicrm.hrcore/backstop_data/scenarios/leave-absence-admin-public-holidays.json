@@ -1,0 +1,12 @@
+{
+  "scenarios": [
+    {
+      "label": "Public Holidays list",
+      "url": "civicrm/admin/leaveandabsences/public_holidays?action=browse"
+    },
+    {
+      "label": "Public Holidays form",
+      "url": "civicrm/admin/leaveandabsences/public_holidays?action=add"
+    }
+  ]
+}

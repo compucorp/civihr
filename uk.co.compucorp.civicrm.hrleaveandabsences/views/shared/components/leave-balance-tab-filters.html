@@ -1,0 +1,20 @@
+<div class="col-md-3 chr_leave-balance-tab__filter">
+  <div class="crm_custom-select crm_custom-select--full">
+    <select class="form-control no-select2"
+      ng-change="balanceFilters.submitFilters()"
+      ng-model="balanceFilters.filters.type_id"
+      ng-options="type.id as type.title for type in balanceFilters.absenceTypes | orderBy:'title'">
+    </select>
+    <span class="crm_custom-select__arrow"></span>
+  </div>
+</div>
+<div class="col-md-3 col-md-offset-6 chr_leave-balance-tab__filter">
+  <div class="crm_custom-select crm_custom-select--full">
+    <select class="form-control no-select2"
+      ng-change="balanceFilters.submitFilters()"
+      ng-model="balanceFilters.filters.period_id"
+      ng-options="period.id as balanceFilters.labelPeriod(period) for period in balanceFilters.absencePeriods | orderBy:'-start_date' ">
+    </select>
+    <span class="crm_custom-select__arrow"></span>
+  </div>
+</div>
