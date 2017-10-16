@@ -409,6 +409,6 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_period_entitlement_log` (
      `comment` text   COMMENT 'The comment added by the user about the calculation for this entitlement',
      `created_date` datetime   COMMENT 'The date and time this entitlement was updated',
     PRIMARY KEY (`id`),
-    CONSTRAINT FK_civicrm_hrleaveandabsences_leave_period_entitlement_log_entitlement_id FOREIGN KEY (`entitlement_id`) REFERENCES `civicrm_hrleaveandabsences_leave_period_entitlement`(`id`) ON DELETE CASCADE,
-    CONSTRAINT FK_civicrm_hrleaveandabsences_leave_period_entitlement_log_author_id FOREIGN KEY (`author_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
+    CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_log_entitlement_id FOREIGN KEY (`entitlement_id`) REFERENCES `civicrm_hrleaveandabsences_leave_period_entitlement`(`id`) ON DELETE CASCADE,
+    CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_log_author_id FOREIGN KEY (`author_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
