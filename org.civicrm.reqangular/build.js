@@ -70,6 +70,7 @@
     'common/bundles/apis',
     'common/bundles/services',
     'common/bundles/directives',
+    'common/bundles/filters',
     'common/bundles/angular-date',
     'common/bundles/routers',
     'common/bundles/models',
@@ -77,4 +78,4 @@
     'common/modules/templates',
     'common/modules/xeditable-civi'
   ]
-})
+});
