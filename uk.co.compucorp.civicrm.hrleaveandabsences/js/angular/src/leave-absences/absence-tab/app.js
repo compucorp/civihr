@@ -4,6 +4,7 @@ define([
   'common/angular',
   'common/angularBootstrap',
   'common/text-angular',
+  'common/filters/time-unit-applier.filter',
   'common/modules/dialog',
   'common/services/check-permissions',
   'common/services/angular-date/date-format',
@@ -51,6 +52,7 @@ define([
     'common.angularDate',
     'common.dialog',
     'common.directives',
+    'common.filters',
     'common.services',
     /*
      * @TODO Because the app requires Contact, which requires Group,
