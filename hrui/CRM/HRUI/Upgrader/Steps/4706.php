@@ -48,7 +48,7 @@ trait CRM_HRUI_Upgrader_Steps_4706 {
   }
 
   private function up4706_create_activity_type() {
-    $activityName = "Check on contact for NI/SSN";
+    $activityName = 'Check on contact for NI/SSN';
     $activityType = civicrm_api3('OptionValue', 'get', ['name' => $activityName]);
 
     if ($activityType['count'] > 0) {

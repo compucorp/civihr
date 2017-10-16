@@ -3,6 +3,8 @@
 trait CRM_Hremergency_Upgrader_Steps_1001 {
 
   /**
+   * Replace the label on the dependant flag custom field.
+   *
    * @return bool
    */
   public function upgrade_1001() {

@@ -3,6 +3,8 @@
 trait CRM_HRBank_Upgrader_Steps_1000 {
 
   /**
+   * Replace the label for the bank postcode custom field.
+   *
    * @return bool
    */
   public function upgrade_1000() {
