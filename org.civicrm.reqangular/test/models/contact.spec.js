@@ -172,9 +172,12 @@ define([
         });
 
         describe('when passing a mix of foreign model keys', function () {
-          var mixedFilters = { department: '1', group_id: '3' };
+          var mixedFilters = {};
 
           beforeEach(function () {
+            mixedFilters.department = contactJobRoles[0].department;
+            mixedFilters.group_id = groupContacts[0].group_id;
+
             Contact.all(_.assign({ display_name: 'foo' }, mixedFilters));
             $rootScope.$digest();
           });

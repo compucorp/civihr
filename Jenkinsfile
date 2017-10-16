@@ -359,7 +359,7 @@ def listCivihrExtensions() {
       name: 'Leave and Absences',
       shortName: 'hrleaveandabsences',
       folder: 'uk.co.compucorp.civicrm.hrleaveandabsences',
-      hasJSTests: false,
+      hasJSTests: true,
       hasPHPTests: true
     ],
     [
