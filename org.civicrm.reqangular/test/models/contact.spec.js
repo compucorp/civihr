@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/lodash',
   'common/angularMocks',
@@ -12,8 +14,9 @@ define([
   'use strict';
 
   describe('Contact', function () {
-    var $provide, $q, $rootScope, Contact, ContactInstanceMock, Group, ContactJobRole,
-      contactAPI, contactAPIMock, ContactJobRoleAPI, groupContactAPIMock, contacts, contactJobRoles, groupContacts;
+    var $provide, $rootScope, Contact, ContactInstanceMock, Group,
+      ContactJobRole, contactAPI, contactAPIMock, ContactJobRoleAPI,
+      groupContactAPIMock, contacts, contactJobRoles, groupContacts;
 
     beforeEach(function () {
       module('common.models', 'common.mocks', function (_$provide_) {
@@ -31,14 +34,13 @@ define([
     });
 
     beforeEach(inject([
-      '$rootScope', '$q', 'Contact', 'Group', 'ContactJobRole',
+      '$rootScope', 'Contact', 'Group', 'ContactJobRole',
       'ContactInstanceMock', 'ContactJobRoleAPI', 'api.contact',
       'api.group-contact.mock',
-      function (_$rootScope_, _$q_, _Contact_, _Group_, _ContactJobRole_,
+      function (_$rootScope_, _Contact_, _Group_, _ContactJobRole_,
         _ContactInstanceMock_, _ContactJobRoleAPI_, _contactAPI_,
         _groupContactAPIMock_) {
         $rootScope = _$rootScope_;
-        $q = _$q_;
         Contact = _Contact_;
         Group = _Group_;
         ContactJobRole = _ContactJobRole_;
@@ -93,12 +95,12 @@ define([
       });
 
       describe('contact api called with right parameters', function () {
-        var filter = {display_name: 'kri'},
-          pagination = 'page',
-          sort = 'display_name',
-          additionalParams = 'additionalParams';
+        var filter = {display_name: 'kri'};
+        var pagination = 'page';
+        var sort = 'display_name';
+        var additionalParams = 'additionalParams';
 
-        afterEach(function() {
+        afterEach(function () {
           $rootScope.$digest();
         });
 
@@ -110,7 +112,6 @@ define([
       });
 
       describe('filters', function () {
-
         describe('when called with filters', function () {
           var partialName = 'kri';
 
@@ -128,7 +129,7 @@ define([
           var jobRolesFilters = {
             department: '2',
             level_type: '1'
-          }, groupContactIds, jobRoleContactIds;
+          };
 
           beforeEach(function () {
             spyOn(ContactJobRole, 'all').and.callThrough();
@@ -136,18 +137,17 @@ define([
             $rootScope.$digest();
           });
 
-
           it('passes the filters to the JobRole model', function () {
             expect(ContactJobRole.all).toHaveBeenCalledWith(jasmine.objectContaining(jobRolesFilters));
           });
 
           it('does not pass the filters to its api', function () {
-            expect(contactAPI.all).not.toHaveBeenCalledWith(jasmine.objectContaining(jobRolesFilters), undefined)
+            expect(contactAPI.all).not.toHaveBeenCalledWith(jasmine.objectContaining(jobRolesFilters), undefined);
           });
         });
 
         describe('when called with a group id filter', function () {
-          var groupIdFilter = {group_id: '3'};
+          var groupIdFilter = { group_id: '3' };
 
           beforeEach(function () {
             spyOn(Group, 'contactIdsOf').and.callThrough();
@@ -155,13 +155,12 @@ define([
             $rootScope.$digest();
           });
 
-
           it('passes the filter to the Group model', function () {
             expect(Group.contactIdsOf).toHaveBeenCalledWith(groupIdFilter.group_id);
           });
 
           it('does not pass the filters to its api', function () {
-            expect(contactAPI.all).not.toHaveBeenCalledWith(jasmine.objectContaining(groupIdFilter), undefined)
+            expect(contactAPI.all).not.toHaveBeenCalledWith(jasmine.objectContaining(groupIdFilter), undefined);
           });
 
           it('passes to its api the ids of the contacts belonging to the group', function () {
@@ -173,7 +172,7 @@ define([
         });
 
         describe('when passing a mix of foreign model keys', function () {
-          var mixedFilters = { department: '859', group_id: '3' };
+          var mixedFilters = { department: '1', group_id: '3' };
 
           beforeEach(function () {
             Contact.all(_.assign({ display_name: 'foo' }, mixedFilters));
@@ -212,8 +211,8 @@ define([
       });
 
       describe('when called with pagination', function () {
-        var pagination = { page: 3, size: 2 };
         var response;
+        var pagination = { page: 3, size: 2 };
 
         beforeEach(function () {
           Contact.all(null, pagination).then(function (_response_) {
@@ -251,11 +250,11 @@ define([
     });
 
     describe('leaveManagees()', function () {
-      var contactID = "123";
+      var contactID = '123';
       var params = { key: 'value' };
 
-      afterEach(function() {
-        $rootScope.$digest()
+      afterEach(function () {
+        $rootScope.$digest();
       });
 
       it('calls leaveManagees function of contact API with same parameters', function () {
