@@ -160,9 +160,12 @@ define([
           'hrleaveandabsences_absence_type_calculation_unit');
       });
 
-      it('sets calculation unit property', function () {
+      it('sets calculation unit properties', function () {
         expect(result[0]).toEqual(
-          _.assign(absenceTypes[0], { calculation_unit_symbol: 'd' }));
+          _.assign(absenceTypes[0], {
+            calculation_unit_name: 'days',
+            calculation_unit_label: 'Days'
+          }));
       });
     });
   });

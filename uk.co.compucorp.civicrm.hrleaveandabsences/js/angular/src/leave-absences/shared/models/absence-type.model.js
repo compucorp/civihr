@@ -79,8 +79,10 @@ define([
               calculationUnits = _.indexBy(calculationUnits, 'value');
 
               return _.map(absenceTypes, function (absenceType) {
-                return _.assign(absenceType, { calculation_unit_symbol:
-                  calculationUnits[absenceType.calculation_unit].name[0]});
+                return _.assign(absenceType, {
+                  calculation_unit_label: calculationUnits[absenceType.calculation_unit].label,
+                  calculation_unit_name: calculationUnits[absenceType.calculation_unit].name
+                });
               });
             });
         }
