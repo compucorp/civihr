@@ -141,7 +141,7 @@
     </CustomField>
     <CustomField>
       <name>Bank_Post_Code</name>
-      <label>Bank Post Code</label>
+      <label>Bank Postcode</label>
       <data_type>String</data_type>
       <html_type>Text</html_type>
       <is_required>0</is_required>

@@ -6,6 +6,7 @@
 class CRM_Hremergency_Upgrader extends CRM_Hremergency_Upgrader_Base {
 
   use CRM_Hremergency_Upgrader_Steps_1000;
+  use CRM_Hremergency_Upgrader_Steps_1001;
 
   /**
    * Change the custom_group ID to 99999 as we have this exported through Drupal webforms so the ID needs to be always the same
