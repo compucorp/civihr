@@ -156,9 +156,8 @@ define([
         });
 
         it('stores the absence types', function () {
-          expect(ctrl.absenceTypes).toEqual(absenceTypeMock.all().values.map(function (absenceType) {
-            return _.assign(absenceType, { calculation_unit_symbol: 'd' });
-          }));
+          expect(ctrl.absenceTypes[0]).toEqual(
+            jasmine.objectContaining(absenceTypeMock.all().values[0]));
         });
       });
 
