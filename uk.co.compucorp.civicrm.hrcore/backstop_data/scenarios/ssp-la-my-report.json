@@ -1,5 +1,6 @@
 {
-  "scenarios": [{
+  "scenarios": [
+    {
       "label": "Leave and Absences: My report",
       "url": "my-leave#/my-leave/report",
       "onReadyScript": "ssp-leave-absences/staff/my-report"
