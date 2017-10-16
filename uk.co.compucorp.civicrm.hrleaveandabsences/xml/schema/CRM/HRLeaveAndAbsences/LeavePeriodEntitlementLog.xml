@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>LeavePeriodEntitlementLog</class>
+  <name>civicrm_hrleaveandabsences_leave_period_entitlement_log</name>
+  <comment>Leave Period Entitlement Log</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique LeavePeriodEntitlementLog ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>entitlement_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to LeavePeriodEntitlement</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>entitlement_id</name>
+    <table>civicrm_hrleaveandabsences_leave_period_entitlement</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>author_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to Contact. The contact that represents the user who made changes to this entitlement</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>author_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>entitlement_amount</name>
+    <type>decimal</type>
+    <required>true</required>
+    <comment>The entitlement amount for this Period Entitlement until created_date value</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>comment</name>
+    <type>text</type>
+    <comment>The comment added by the user about the calculation for this entitlement</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>created_date</name>
+    <type>datetime</type>
+    <comment>The date and time this entitlement was updated</comment>
+    <add>4.4</add>
+  </field>
+
+</table>
