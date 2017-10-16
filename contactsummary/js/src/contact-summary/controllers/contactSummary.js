@@ -15,15 +15,15 @@ define([
    */
   function ContactSummaryCtrl ($log, settings) {
     $log.debug('Controller: ContactSummaryCtrl');
-
     var templateDir = settings.pathBaseUrl + settings.pathTpl;
+    var vm = this;
 
-    this.partials = {
+    vm.contactId = settings.contactId;
+    vm.partials = {
       keyDetails: templateDir + '/include/keyDetails.html',
       keyDates: templateDir + '/include/keyDates.html'
     };
-
-    this.ready = false;
+    vm.ready = false;
   }
 
   controllers.controller('ContactSummaryCtrl', ['$log', 'settings', ContactSummaryCtrl]);

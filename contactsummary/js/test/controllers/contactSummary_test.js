@@ -9,27 +9,26 @@ define([
 ], function () {
   'use strict';
 
-  xdescribe('ContactSummaryCtrl', function () {
-    // var ctrlConstructor;
-    var settingsMock;
+  describe('ContactSummaryCtrl', function () {
+    var $provide, ctrl, settingsMock;
 
-    beforeEach(module('contactsummary', 'contactsummary.mocks'));
-
-    beforeEach(module(function ($provide) {
-      $provide.value('settings', function () {
-        return settingsMock;
-      });
+    beforeEach(module('contactsummary', 'contactsummary.mocks',
+    function (_$provide_) {
+      $provide = _$provide_;
     }));
 
-    beforeEach(inject(function ($injector) {
-      // Instantiating injector isn't allowed before calls to 'module()'. Due to this limitation, we're returning
-      // references to mock variables above, and injecting the actual mocks into them here, since they would be
-      // lazily loaded anyway.
-      settingsMock = $injector.get('settingsMock');
+    beforeEach(inject(function (_settingsMock_) {
+      settingsMock = _settingsMock_;
+
+      $provide.constant('settings', settingsMock);
     }));
 
-    beforeEach(inject(function (_$controller_) {
-      // ctrlConstructor = _$controller_;
+    beforeEach(inject(function ($controller) {
+      ctrl = $controller('ContactSummaryCtrl');
     }));
+
+    it('stores the contact id', function () {
+      expect(ctrl.contactId).toBe(settingsMock.contactId);
+    });
   });
 });

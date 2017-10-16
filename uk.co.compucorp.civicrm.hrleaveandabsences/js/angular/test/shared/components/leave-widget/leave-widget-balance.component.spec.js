@@ -8,7 +8,7 @@ define([
   describe('LeaveWidgetBalance', function () {
     var $componentController, $provide, $rootScope, $scope,
       currentAbsencePeriod, absenceTypes, ctrl, Entitlement;
-    var loggedInContactId = 101;
+    var contactId = 101;
 
     beforeEach(module('leave-absences.components', 'leave-absences.mocks',
     function (_$provide_) {
@@ -59,18 +59,18 @@ define([
     });
 
     describe('bindings', function () {
-      describe('when absence types, current absence period, and logged in contact id are binded', function () {
+      describe('when absence types, current absence period, and contact id are binded', function () {
         beforeEach(function () {
           controllerOnChanges('absenceTypes', absenceTypes);
           controllerOnChanges('currentAbsencePeriod', currentAbsencePeriod);
-          controllerOnChanges('loggedInContactId', loggedInContactId);
+          controllerOnChanges('contactId', contactId);
         });
 
         it('gets all entitlements for the contact in the current absence period', function () {
           expect(Entitlement.all).toHaveBeenCalledWith({
-            contact_id: loggedInContactId,
+            contact_id: contactId,
             period_id: currentAbsencePeriod.id
-          });
+          }, true);
         });
 
         describe('after getting all the entitlements', function () {
@@ -78,9 +78,9 @@ define([
 
           beforeEach(function () {
             Entitlement.all({
-              contact_id: loggedInContactId,
+              contact_id: contactId,
               period_id: currentAbsencePeriod.id
-            })
+            }, true)
             .then(function (entitlements) {
               expectedEntitlements = entitlements
                 .filter(function (entitlement) {
@@ -91,7 +91,7 @@ define([
                     return +entitlement.type_id === +type.id;
                   }) || {};
 
-                  absenceType.balance = entitlement.remainder.future;
+                  absenceType.balance = jasmine.any(Number);
                   return absenceType;
                 });
             });

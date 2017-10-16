@@ -1,13 +1,16 @@
 /* eslint-env amd */
 
 define([
+  'common/lodash',
   'leave-absences/shared/modules/components',
-  'common/models/session.model',
   'leave-absences/shared/models/absence-period.model',
   'leave-absences/shared/models/absence-type.model',
   './leave-widget-balance.component'
-], function (components) {
+], function (_, components) {
   components.component('leaveWidget', {
+    bindings: {
+      contactId: '='
+    },
     controller: leaveWidgetController,
     controllerAs: 'leaveWidget',
     templateUrl: ['shared-settings', function (sharedSettings) {
@@ -16,17 +19,15 @@ define([
   });
 
   leaveWidgetController.$inject = ['$log', '$scope', 'AbsencePeriod',
-    'AbsenceType', 'Session'];
+    'AbsenceType'];
 
-  function leaveWidgetController ($log, $scope, AbsencePeriod, AbsenceType,
-  Session) {
+  function leaveWidgetController ($log, $scope, AbsencePeriod, AbsenceType) {
     var childComponents = 0;
     var vm = this;
 
     vm.absenceTypes = [];
     vm.currentAbsencePeriod = null;
     vm.loading = { childComponents: false, component: true };
-    vm.loggedInContactId = null;
 
     /**
      * Initializes the component by watching for events, and loading
@@ -69,12 +70,11 @@ define([
     }
 
     /**
-     * Loads the session, absence types, and the current absence period. When
+     * Loads absence types and the current absence period. When
      * all dependencies are ready it sets loading component to false.
      */
     function loadDependencies () {
-      loadSession()
-        .then(loadAbsenceTypes)
+      loadAbsenceTypes()
         .then(loadCurrentAbsencePeriod)
         .finally(function () {
           vm.loading.component = false;
@@ -102,15 +102,6 @@ define([
         vm.currentAbsencePeriod = _.find(periods, function (period) {
           return period.current;
         });
-      });
-    }
-
-    /**
-     * Loads the session and stores the current user id.
-     */
-    function loadSession () {
-      return Session.get().then(function (value) {
-        vm.loggedInContactId = value.contactId;
       });
     }
   }

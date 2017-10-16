@@ -3,14 +3,12 @@
 define([
   'common/lodash',
   'leave-absences/shared/components/leave-widget/leave-widget.component',
-  'common/mocks/models/instances/session-mock',
   'mocks/apis/absence-period-api-mock',
   'mocks/apis/absence-type-api-mock'
 ], function (_) {
   describe('LeaveWidget', function () {
     var $componentController, $provide, $rootScope, $scope, AbsencePeriod,
-      AbsenceType, ctrl, Session;
-    var loggedInContactId = 101;
+      AbsenceType, ctrl;
 
     beforeEach(module('common.mocks', 'leave-absences.components',
     'leave-absences.mocks', function (_$provide_) {
@@ -18,16 +16,13 @@ define([
     }));
 
     beforeEach(inject(function (_AbsencePeriodAPIMock_,
-    _AbsenceTypeAPIMock_, _SessionMock_) {
-      Session = _SessionMock_;
-
-      $provide.value('Session', Session);
+    _AbsenceTypeAPIMock_) {
       $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
     }));
 
     beforeEach(inject(function (_$componentController_, $q, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_, Session) {
+    _AbsencePeriod_, _AbsenceType_) {
       $componentController = _$componentController_;
       $rootScope = _$rootScope_;
       $scope = $rootScope.$new();
@@ -35,8 +30,6 @@ define([
       AbsenceType = _AbsenceType_;
 
       spyOn($scope, '$on').and.callThrough();
-      spyOn(Session, 'get').and.returnValue($q.resolve({
-        contactId: loggedInContactId }));
       spyOn(AbsencePeriod, 'all').and.callThrough();
       spyOn(AbsenceType, 'all').and.callThrough();
     }));
@@ -66,10 +59,6 @@ define([
 
       it('sets current absence period to null', function () {
         expect(ctrl.currentAbsencePeriod).toBe(null);
-      });
-
-      it('sets the logged in contact id to null', function () {
-        expect(ctrl.loggedInContactId).toBe(null);
       });
 
       it('watches for child components loading and ready events', function () {
@@ -159,20 +148,6 @@ define([
 
           it('stores the current one', function () {
             expect(ctrl.currentAbsencePeriod).toEqual(expectedPeriod);
-          });
-        });
-      });
-
-      describe('session', function () {
-        beforeEach(function () { $rootScope.$digest(); });
-
-        it('loads the session', function () {
-          expect(Session.get).toHaveBeenCalled();
-        });
-
-        describe('when finishing loading the session', function () {
-          it('stores the currently logged in contact id', function () {
-            expect(ctrl.loggedInContactId).toBe(loggedInContactId);
           });
         });
       });
