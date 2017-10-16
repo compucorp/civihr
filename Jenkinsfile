@@ -260,7 +260,7 @@ def testJS(java.util.LinkedHashMap extension) {
   // workspace, where Jenkins will read it
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    gulp test --reporters junit || true
+    gulp test --reporters junit,progress || true
     mv test-reports/*.xml $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/ || true
   """
 }
