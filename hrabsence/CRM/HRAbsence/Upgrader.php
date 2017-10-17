@@ -634,4 +634,20 @@ class CRM_HRAbsence_Upgrader extends CRM_HRAbsence_Upgrader_Base {
 
     return TRUE;
   }
+
+  /**
+   * Rename "Absences" menu item to "Leave"
+   */
+  public function upgrade_1405() {
+    $default = [];
+    $paramsDashboard = ['name' => 'Absences'];
+
+    $menuItem = CRM_Core_BAO_Navigation::retrieve($paramsDashboard, $default);
+    $menuItem->label = 'Leave';
+    $menuItem->save();
+
+    CRM_Core_BAO_Navigation::resetNavigation();
+
+    return TRUE;
+  }
 }

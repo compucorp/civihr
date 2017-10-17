@@ -221,6 +221,28 @@ function hrcore_civicrm_pageRun($page) {
 }
 
 /**
+ * Implements hook_civicrm_navigationMenu().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu/
+ */
+function hrcore_civicrm_navigationMenu(&$params) {
+  _hrcore_renameMenuLabel($params, 'Contacts', 'Staff');
+  _hrcore_renameMenuLabel($params, 'Administer', 'Configure');
+}
+
+/**
+ * Renames a menu with the given new label
+ *
+ * @param array $params
+ * @param string $menuName
+ * @param string $newLabel
+ */
+function _hrcore_renameMenuLabel(&$params, $menuName, $newLabel) {
+  $menuItemID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $menuName, 'id', 'name');
+  $params[$menuItemID]['attributes']['label'] = $newLabel; 
+}
+
+/**
  * This function adds the session variable to CRM.vars object.
  */
 function _hrcore_add_js_session_vars() {

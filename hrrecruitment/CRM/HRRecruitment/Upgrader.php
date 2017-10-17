@@ -16,4 +16,21 @@ class CRM_HRRecruitment_Upgrader extends CRM_HRRecruitment_Upgrader_Base {
     return TRUE;
   }
 
+  /**
+   * Renames the main menu item "Vacancies" to "Recruitment"
+   *
+   * @return bool
+   */
+  public function upgrade_1401() {
+    $default = [];
+    $params = ['name' => 'Vacancies', 'url' => null];
+
+    $menuItem = CRM_Core_BAO_Navigation::retrieve($params, $default);
+    $menuItem->label = 'Recruitment';
+    $menuItem->save();
+
+    CRM_Core_BAO_Navigation::resetNavigation();
+
+    return TRUE;
+  }
 }
