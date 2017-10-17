@@ -228,6 +228,11 @@ function hrcore_civicrm_pageRun($page) {
 function hrcore_civicrm_navigationMenu(&$params) {
   _hrcore_renameMenuLabel($params, 'Contacts', 'Staff');
   _hrcore_renameMenuLabel($params, 'Administer', 'Configure');
+  _hrcore_civix_insert_navigation_menu($params, '', [
+    'name' => ts('ssp'),
+    'label' => ts('Self Service Portal'),
+    'url' => 'dashboard',
+  ]);
 }
 
 /**
@@ -239,7 +244,7 @@ function hrcore_civicrm_navigationMenu(&$params) {
  */
 function _hrcore_renameMenuLabel(&$params, $menuName, $newLabel) {
   $menuItemID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $menuName, 'id', 'name');
-  $params[$menuItemID]['attributes']['label'] = $newLabel; 
+  $params[$menuItemID]['attributes']['label'] = $newLabel;
 }
 
 /**
