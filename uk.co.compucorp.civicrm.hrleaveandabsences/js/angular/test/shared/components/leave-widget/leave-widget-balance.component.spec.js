@@ -11,9 +11,9 @@ define([
     var contactId = 101;
 
     beforeEach(module('leave-absences.components', 'leave-absences.mocks',
-    function (_$provide_) {
-      $provide = _$provide_;
-    }));
+      function (_$provide_) {
+        $provide = _$provide_;
+      }));
 
     beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_,
     _EntitlementAPIMock_) {
@@ -59,7 +59,7 @@ define([
     });
 
     describe('bindings', function () {
-      describe('when absence types, current absence period, and contact id are binded', function () {
+      describe('when absence types, current absence period, and contact id are bound', function () {
         beforeEach(function () {
           controllerOnChanges('absenceTypes', absenceTypes);
           controllerOnChanges('currentAbsencePeriod', currentAbsencePeriod);
@@ -113,6 +113,7 @@ define([
 
     function controllerOnChanges (bindingName, bindingValue) {
       var changes = {};
+
       ctrl[bindingName] = bindingValue;
       changes[bindingName] = {
         currentValue: bindingValue,

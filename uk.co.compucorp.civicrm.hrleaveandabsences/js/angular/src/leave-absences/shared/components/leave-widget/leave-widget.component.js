@@ -9,7 +9,7 @@ define([
 ], function (_, components) {
   components.component('leaveWidget', {
     bindings: {
-      contactId: '='
+      contactId: '<'
     },
     controller: leaveWidgetController,
     controllerAs: 'leaveWidget',
@@ -72,9 +72,12 @@ define([
     /**
      * Loads absence types and the current absence period. When
      * all dependencies are ready it sets loading component to false.
+     *
+     * @return {Promise} - Returns an empty promise when all dependencies have
+     * been loaded.
      */
     function loadDependencies () {
-      loadAbsenceTypes()
+      return loadAbsenceTypes()
         .then(loadCurrentAbsencePeriod)
         .finally(function () {
           vm.loading.component = false;
