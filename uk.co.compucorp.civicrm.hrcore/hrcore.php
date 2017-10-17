@@ -221,6 +221,20 @@ function hrcore_civicrm_pageRun($page) {
 }
 
 /**
+ * Implements hook_civicrm_navigationMenu().
+ *
+ * @param Array $params List of menu items
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
+ */
+function hrcore_civicrm_navigationMenu(&$menu) {
+  _hrcore_civix_insert_navigation_menu($menu, '', [
+    'name' => ts('ssp'),
+    'label' => ts('Self Service Portal'),
+    'url' => 'dashboard',
+  ]);
+}
+
+/**
  * This function adds the session variable to CRM.vars object.
  */
 function _hrcore_add_js_session_vars() {
