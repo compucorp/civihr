@@ -1,13 +1,15 @@
+/* eslint-env amd, jasmine */
+
 define([
-    'mocks/module'
+  'mocks/module'
 ], function (mocks) {
-    'use strict';
+  'use strict';
 
-    var settingsMock = {
-        pathBaseUrl: '',
-        pathTpl: '',
-        contactId: 123
-    };
+  var settingsMock = {
+    pathBaseUrl: '',
+    pathTpl: '',
+    contactId: 123
+  };
 
-    mocks.constant('settingsMock', settingsMock);
+  mocks.constant('settingsMock', settingsMock);
 });

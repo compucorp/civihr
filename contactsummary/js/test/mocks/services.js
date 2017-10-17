@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'mocks/module',
   'mocks/constants',
@@ -12,7 +14,7 @@ define([
    * @returns {Object}
    * @constructor
    */
-  function BaseServiceMock($q) {
+  function BaseServiceMock ($q) {
     var get = jasmine.createSpy('get').and.callFake(function () {
       var deferred = $q.defer();
 
@@ -54,7 +56,7 @@ define([
     return factory;
   }
 
-  function ItemServiceMock(Base) {
+  function ItemServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.data = {};
@@ -70,12 +72,12 @@ define([
     return factory;
   }
 
-  function ModelServiceMock(Base) {
+  function ModelServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.data = {};
 
-    var create = jasmine.createSpy('create').and.callFake(function () {
+    jasmine.createSpy('create').and.callFake(function () {
       return Object.create(this);
     });
 
@@ -93,7 +95,7 @@ define([
     return factory;
   }
 
-  function ApiServiceMock(Base, $q) {
+  function ApiServiceMock (Base, $q) {
     var factory = Base.createInstance();
 
     var post = jasmine.createSpy('post').and.callFake(function () {
@@ -139,20 +141,20 @@ define([
     return factory;
   }
 
-  function ContactDetailsServiceMock(Base) {
+  function ContactDetailsServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.response = {};
     factory.data = {
       item: {
-        prop: "val"
+        prop: 'val'
       }
     };
 
     return factory;
   }
 
-  function KeyDetailsServiceMock(Base) {
+  function KeyDetailsServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.response = {};
@@ -160,7 +162,7 @@ define([
     return factory;
   }
 
-  function KeyDatesServiceMock(Base) {
+  function KeyDatesServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.response = {};
@@ -168,21 +170,21 @@ define([
     return factory;
   }
 
-  function ContractServiceMock(Base) {
+  function ContractServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.response = {};
-    factory.resetContracts = jasmine.createSpy("");
+    factory.resetContracts = jasmine.createSpy('');
 
     return factory;
   }
 
-  function PubSubMock() {
+  function PubSubMock () {
     var factory = {
-      publish: jasmine.createSpy(""),
-      subscribe: jasmine.createSpy("")
+      publish: jasmine.createSpy(''),
+      subscribe: jasmine.createSpy('')
     };
-    factory.subscribe.and.callFake(function(topic, listener){
+    factory.subscribe.and.callFake(function (topic, listener) {
       listener();
     });
     factory.publish.and.callFake(factory.subscribe);

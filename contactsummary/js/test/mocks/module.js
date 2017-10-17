@@ -1,7 +1,9 @@
-define([
-    'common/angular'
-], function (angular) {
-    'use strict';
+/* eslint-env amd, jasmine */
 
-    return angular.module('contactsummary.mocks', []);
+define([
+  'common/angular'
+], function (angular) {
+  'use strict';
+
+  return angular.module('contactsummary.mocks', []);
 });

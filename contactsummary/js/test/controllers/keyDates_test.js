@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
   'contact-summary/app',
@@ -30,8 +32,8 @@ define([
     }));
 
     describe('constructor', function () {
-      it("Should subscribe for contract changes", function(){
-        spyOn(ContractServiceMock, "get").and.callThrough();
+      it('Should subscribe for contract changes', function () {
+        spyOn(ContractServiceMock, 'get').and.callThrough();
         controllerObj = ctrlConstructor('KeyDatesCtrl');
         expect(PubSubMock.subscribe).toHaveBeenCalledWith('contract-refresh', jasmine.any(Function));
         expect(controllerObj.dates).toEqual([]);
