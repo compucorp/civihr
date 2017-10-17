@@ -1,37 +1,17 @@
 ---
-layout: civihr-default
-title:  Welcome to CiviHR!
+layout: default
+subject:  Welcome to CiviHR!
 ---
 
 <container>
 
   <row>
     <columns bgcolor="#ffffff">
-      <spacer></spacer>
-      <h2>Please create a password</h2>
-      <spacer></spacer>
-      Hello, and welcome to CiviHR, the open-source HR solution for non-profit organisations.
-      <spacer></spacer>
-      You are receiving this email because a site administrator has setup a user account in your name. You will need to change the designated password to something private and secure before you begin using the system.
-      <spacer></spacer>
-      Please login by clicking the button below. This will take you to your user page where you can enter a new password. Once saved, this will be your password to login to the site.  If you forget your password, you can reset it at any time using the password reset link, available on the CiviHR login page.
-      <spacer></spacer>
-      After setting your password, you will be able to login to CiviHR  by using the following credentials:
-      <spacer></spacer>
-      Username: {$username}
-      <br/>
-      Password: (the password you have just created)
-      <spacer></spacer>
-      You system can be accessed through this address:[site address]. Please bookmark this page.
-      We hope you enjoy using CiviHR. For instructions on how to use the system, please read the online user guide.
-      <spacer></spacer>
-      Best wishes,
-      <br/>
-      The CiviHR Team
-      <spacer></spacer>
-      <button href="{$invitationLink}" class="expanded alert">Log In</button>
+      {$body}
+      <button href="{$invitationLink}" class="expanded alert end">
+        Log In
+      </button>
     </columns>
   </row>
-
   {{> default-footer}}
 </container>
