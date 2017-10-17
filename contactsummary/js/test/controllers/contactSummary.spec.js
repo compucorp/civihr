@@ -2,10 +2,10 @@
 
 define([
   'common/angularMocks',
+  'mocks/constants.mock',
+  'mocks/services.mock',
   'contact-summary/app',
-  'contact-summary/controllers/contactSummary',
-  'mocks/constants',
-  'mocks/services'
+  'contact-summary/controllers/contactSummary'
 ], function () {
   'use strict';
 

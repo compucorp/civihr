@@ -79,9 +79,9 @@ var test = (function () {
     /**
      * Runs the tests for a specific source file
      *
-     * Looks for a test file (*_test.js) in `test/`, using the same path
+     * Looks for a test file (*.spec.js) in `test/`, using the same path
      * of the source file in `src/contactsummary/`
-     *   i.e. src/contactsummary/models/model.js -> test/models/model_test.js
+     *   i.e. src/contactsummary/models/model.js -> test/models/model.spec.js
      *
      * @throw {Error}
      */
@@ -89,7 +89,7 @@ var test = (function () {
       var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
       var testFile = srcFile
         .replace('src/contactsummary/', 'test/')
-        .replace(srcFileNoExt + '.js', srcFileNoExt + '_test.js');
+        .replace(srcFileNoExt + '.js', srcFileNoExt + '.spec.js');
 
       fs.statSync(testFile).isFile() && this.single(testFile);
     },
@@ -106,7 +106,7 @@ var test = (function () {
       var configFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
       gulp.src(path.join(__dirname, '/js/karma.conf.js'))
-        .pipe(replace('*_test.js', path.basename(testFile)))
+        .pipe(replace('*.spec.js', path.basename(testFile)))
         .pipe(rename(configFile))
         .pipe(gulp.dest(path.join(__dirname, '/js')))
         .on('end', function () {

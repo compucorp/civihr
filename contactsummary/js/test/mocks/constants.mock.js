@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/module'
+  'mocks/module.mock'
 ], function (mocks) {
   'use strict';
 

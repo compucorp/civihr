@@ -1,10 +1,10 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/module',
-  'mocks/constants',
-  'common/angularMocks'
-], function (mocks) {
+  'common/angularMocks',
+  'mocks/constants.mock',
+  'mocks/module.mock'
+], function (angularMocks, constants, mocks) {
   'use strict';
 
   /**

@@ -5,10 +5,10 @@ define([
   'common/lodash',
   'common/moment',
   'common/angularMocks',
+  'mocks/constants.mock',
+  'mocks/services.mock',
   'contact-summary/app',
-  'contact-summary/services/leave',
-  'mocks/constants',
-  'mocks/services'
+  'contact-summary/services/leave'
 ], function (angular, _, moment) {
   'use strict';
 
