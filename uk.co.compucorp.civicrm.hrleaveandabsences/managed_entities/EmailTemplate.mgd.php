@@ -12,6 +12,30 @@ return [
       'msg_html' => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+{* Store all date (and optionally time) labels and captions for later re-use *}
+{if $calculationUnitName === \'days\'}
+  {assign var="dateLabel" value="Date"}
+{/if}
+{if $calculationUnitName === \'hours\'}
+  {assign var="dateLabel" value="Date/Time"}
+{/if}
+{capture name=\'fromDate\'}
+  {if $calculationUnitName === \'days\'}
+    <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+  {/if}
+  {if $calculationUnitName === \'hours\'}
+    <span>{$fromDate|truncate:16:\'\'|crmDate}</span>
+  {/if}
+{/capture}
+{capture name=\'toDate\'}
+  {if $calculationUnitName === \'days\'}
+    <span>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</span>
+  {/if}
+  {if $calculationUnitName === \'hours\'}
+    <span>{$toDate|truncate:16:\'\'|crmDate}</span>
+  {/if}
+{/capture}
+
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
   <head>
 
@@ -149,15 +173,15 @@ return [
                       </tr></tbody></table>
 
 
-                      {if $leaveRequest->from_date eq $leaveRequest->to_date}
+                      {if $fromDate eq $toDate}
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}Date:{/ts}
+                              {ts}{$dateLabel}:{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            {$smarty.capture.fromDate}
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -165,22 +189,22 @@ return [
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}From Date:{/ts}
+                              {ts}From {$dateLabel}:{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            {$smarty.capture.fromDate}
                           </th></tr></table></th>
                         </tr></tbody></table>
 
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 0 !important; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}To Date:{/ts}
+                              {ts}To {$dateLabel}:{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 0 !important; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</span>
+                            {$smarty.capture.toDate}
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -417,11 +441,11 @@ return [
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-4 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 33.33333%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}Date:{/ts}
+                              {ts}{$dateLabel}:{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            {$smarty.capture.fromDate}
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -429,22 +453,22 @@ return [
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-4 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 33.33333%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}From Date:{/ts}
+                              {ts}From {$dateLabel}:{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            {$smarty.capture.fromDate}
                           </th></tr></table></th>
                         </tr></tbody></table>
 
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-4 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 33.33333%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}To Date:{/ts}
+                              {ts}To {$dateLabel}:{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</span>
+                            {$smarty.capture.toDate}
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -692,11 +716,11 @@ return [
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}Date:{/ts}
+                              {ts}{$dateLabel}:{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            {$smarty.capture.fromDate}
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -704,22 +728,27 @@ return [
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}From Date:{/ts}
+                              {ts}From {$dateLabel}:{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            {$smarty.capture.fromDate}
                           </th></tr></table></th>
                         </tr></tbody></table>
 
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}To Date:{/ts}
+                              {ts}To {$dateLabel}:{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</span>
+                            {if $calculationUnitName === \'days\'}
+                              <span>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</span>
+                            {/if}
+                            {if $calculationUnitName === \'hours\'}
+                              <span>{$toDate|truncate:16:\'\'|crmDate}</span>
+                            {/if}
                           </th></tr></table></th>
                         </tr></tbody></table>
 
