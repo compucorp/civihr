@@ -2478,8 +2478,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->setContactAsLeaveApproverOf($manager1, $leaveContact);
 
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'calculation_unit' => '1'
+    ]);
+
     $params = [
-      'type_id' => 1,
+      'type_id' => $absenceType->id,
       'contact_id' => $leaveContact['id'],
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
