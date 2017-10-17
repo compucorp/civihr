@@ -39,7 +39,6 @@ trait CRM_HRUI_Upgrader_Steps_4706 {
       'label' => 'NI/SSN application in progress',
       'html_type' => 'Radio',
       'data_type' => 'Boolean',
-      'weight' => 2,
       'is_required' => 0,
       'is_searchable' => 1,
       'is_active' => 1
