@@ -40,7 +40,7 @@
     </CustomField>
     <CustomField>
       <name>Dependant_s_</name>
-      <label>Dependant(s)</label>
+      <label>Is a Dependant?</label>
       <data_type>String</data_type>
       <html_type>Radio</html_type>
       <is_required>0</is_required>
