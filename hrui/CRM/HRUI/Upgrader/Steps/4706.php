@@ -3,7 +3,7 @@
 trait CRM_HRUI_Upgrader_Steps_4706 {
 
   /**
-   * Adds "is applying for NI/SSN" field
+   * Adds "NI/SSN application in progress" field and reminder activity type.
    */
   public function upgrade_4706() {
     $this->up4706_create_ssn_applying_field();
@@ -32,11 +32,11 @@ trait CRM_HRUI_Upgrader_Steps_4706 {
       return;
     }
 
-    // Add "is applying" field
+    // Add "NI/SSN application in progress" field
     $fieldData = [
       'custom_group_id' => $customGroup['id'],
       'name' => $fieldName,
-      'label' => 'Applied for NI/SSN',
+      'label' => 'NI/SSN application in progress',
       'html_type' => 'Radio',
       'data_type' => 'Boolean',
       'weight' => 2,
