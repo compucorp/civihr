@@ -150,13 +150,14 @@ define([
           expect(ctrl.validateRole(formData)).toBe(true);
         });
 
-        it('should pass validation new Date()', function () {
-          formData.start_date.$viewValue = new Date();
+        it('should pass validation for new Date()', function () {
+          var contract = ctrl.contractsData[formData.contract.$viewValue];
+          formData.start_date.$viewValue = new Date(contract.end_date);
 
           expect(ctrl.validateRole(formData)).toBe(true);
         });
 
-        it('should pass validation new Date()', function () {
+        it('should pass validation yyyy-mm-dd', function () {
           formData.start_date.$viewValue = '2016-05-05';
 
           expect(ctrl.validateRole(formData)).toBe(true);

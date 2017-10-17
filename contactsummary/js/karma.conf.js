@@ -5,7 +5,7 @@ module.exports = function (config) {
 
   config.set({
     basePath: civicrmPath,
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
     frameworks: ['jasmine'],
     files: [
       // the global dependencies
@@ -36,7 +36,7 @@ module.exports = function (config) {
       { pattern: extPath + 'js/test/mocks/**/*.js', included: false },
 
       // the test files
-      { pattern: extPath + 'js/test/**/*_test.js', included: false },
+      { pattern: extPath + 'js/test/**/*.spec.js', included: false },
 
       // angular templates
       extPath + 'views/**/*.html',
@@ -55,6 +55,22 @@ module.exports = function (config) {
     ngHtml2JsPreprocessor: {
       prependPrefix: '/base/',
       moduleName: 'contact-summary.templates'
+    },
+    customLaunchers: {
+      ChromeHeadless: {
+        base: 'Chrome',
+        flags: [
+          '--headless',
+          '--disable-gpu',
+          // Without a remote debugging port, Google Chrome exits immediately.
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
+    junitReporter: {
+      outputDir: extPath + 'test-reports',
+      useBrowserName: false,
+      outputFile: 'contactsummary.xml'
     }
   });
 };

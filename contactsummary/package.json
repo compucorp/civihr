@@ -1,6 +1,12 @@
 {
   "name": "contact-summary",
   "version": "0.0.1",
+  "semistandard": {
+    "globals": [
+      "CRM",
+      "inject"
+    ]
+  },
   "devDependencies": {
     "civicrm-scssroot": "git://github.com/totten/civicrm-scssroot.git#v0.1.1",
     "gulp": "^3.9.0",
@@ -13,10 +19,12 @@
     "karma": "^0.13.15",
     "karma-chrome-launcher": "^0.2.2",
     "karma-jasmine": "^0.3.6",
+    "karma-junit-reporter": "^1.2.0",
     "karma-ng-html2js-preprocessor": "^0.2.0",
     "karma-requirejs": "^0.2.2",
     "path": "^0.12.7",
     "protractor": "1.4.0",
-    "requirejs": "^2.1.22"
+    "requirejs": "^2.1.22",
+    "yargs": "^9.0.1"
   }
 }
