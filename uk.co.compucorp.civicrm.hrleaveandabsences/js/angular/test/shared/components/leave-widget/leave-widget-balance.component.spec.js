@@ -10,8 +10,8 @@ define([
       currentAbsencePeriod, absenceTypes, ctrl, Entitlement;
     var contactId = 101;
 
-    beforeEach(module('leave-absences.components', 'leave-absences.mocks',
-      function (_$provide_) {
+    beforeEach(module('leave-absences.components.leave-widget',
+      'leave-absences.mocks', function (_$provide_) {
         $provide = _$provide_;
       }));
 
@@ -91,7 +91,10 @@ define([
                     return +entitlement.type_id === +type.id;
                   }) || {};
 
-                  absenceType.balance = jasmine.any(Number);
+                  absenceType = _.assign({
+                    balance: jasmine.any(Number)
+                  }, absenceType);
+
                   return absenceType;
                 });
             });

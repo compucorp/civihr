@@ -16,7 +16,7 @@ define([
     'ngResource',
     'ui.bootstrap',
     'common.services',
-    'leave-absences.components',
+    'leave-absences.components.leave-widget',
     'contactsummary.controllers',
     'contactsummary.directives',
     'contactsummary.filters',

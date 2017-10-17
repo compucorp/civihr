@@ -1,11 +1,16 @@
 /* eslint-env amd */
 
 define([
+  'common/angular',
   'common/lodash',
+  'common/filters/time-unit-applier.filter',
   'leave-absences/shared/modules/components',
   'leave-absences/shared/models/entitlement.model'
-], function (_, components) {
-  components.component('leaveWidgetBalance', {
+], function (angular, _) {
+  angular.module('leave-absences.components.leave-widget', [
+    'leave-absences.components',
+    'common.filters'
+  ]).component('leaveWidgetBalance', {
     bindings: {
       absenceTypes: '<',
       contactId: '<',

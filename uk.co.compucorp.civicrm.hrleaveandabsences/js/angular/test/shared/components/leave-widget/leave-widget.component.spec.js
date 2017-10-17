@@ -10,7 +10,7 @@ define([
     var $componentController, $provide, $rootScope, $scope, AbsencePeriod,
       AbsenceType, ctrl;
 
-    beforeEach(module('common.mocks', 'leave-absences.components',
+    beforeEach(module('common.mocks', 'leave-absences.components.leave-widget',
     'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
     }));
