@@ -288,14 +288,14 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_period_entitlement` (
   `contact_id` int unsigned NOT NULL   COMMENT 'FK to Contact (civicrm_contact)',
   `overridden` tinyint   DEFAULT false COMMENT 'Indicates if the entitlement was overridden',
   `comment` text    COMMENT 'The comment added by the user about the calculation for this entitlement',
-  `comment_author_id` int unsigned    COMMENT 'FK to Contact. The contact that represents the user who added the comment to this entitlement',
-  `comment_date` datetime    COMMENT 'The date and time the comment for this entitlement was added/updated',
+  `editor_id` int unsigned    COMMENT 'FK to Contact. The contact that represents the user who made changes to this entitlement',
+  `created_date` datetime    COMMENT 'The date and time this entitlement was added/updated',
   PRIMARY KEY ( `id` ),
   UNIQUE INDEX `unique_entitlement`(period_id, contact_id, type_id),
   CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_period_id FOREIGN KEY (`period_id`) REFERENCES `civicrm_hrleaveandabsences_absence_period`(`id`) ON DELETE CASCADE,
   CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
   CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,
-  CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_comment_author_id FOREIGN KEY (`comment_author_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
+  CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_editor_id FOREIGN KEY (`editor_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
 
 -- /*******************************************************

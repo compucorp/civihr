@@ -74,7 +74,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   public function testCommentsShouldHaveDate() {
     LeavePeriodEntitlement::create([
       'comment' => 'Lorem ipsum dolor sit....',
-      'comment_author_id' => 2
+      'editor_id' => 2
     ]);
   }
 
@@ -84,7 +84,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
    */
   public function testEmptyCommentsShouldNotHaveDate() {
     LeavePeriodEntitlement::create([
-      'comment_date' => date('YmdHis')
+      'created_date' => date('YmdHis')
     ]);
   }
 
@@ -94,7 +94,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
    */
   public function testEmptyCommentsShouldNotHaveAuthor() {
     LeavePeriodEntitlement::create([
-      'comment_author_id' => 2
+      'editor_id' => 2
     ]);
   }
 
@@ -570,8 +570,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
     $this->assertNotNull($periodEntitlement);
     $this->assertEquals($comment, $periodEntitlement->comment);
-    $this->assertEquals($dateTimeNow, new DateTime($periodEntitlement->comment_date), '', 10);
-    $this->assertEquals($userId, $periodEntitlement->comment_author_id);
+    $this->assertEquals($dateTimeNow, new DateTime($periodEntitlement->created_date), '', 10);
+    $this->assertEquals($userId, $periodEntitlement->editor_id);
 
     $this->unregisterCurrentLoggedInContactFromSession();
   }

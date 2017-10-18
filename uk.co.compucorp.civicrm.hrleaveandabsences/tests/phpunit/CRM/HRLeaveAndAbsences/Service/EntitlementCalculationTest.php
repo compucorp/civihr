@@ -971,8 +971,8 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
 
     if($comment) {
       $params['comment'] = $comment;
-      $params['comment_author_id'] = $this->contact['id'];
-      $params['comment_date'] = date('YmdHis');
+      $params['editor_id'] = $this->contact['id'];
+      $params['created_date'] = date('YmdHis');
     }
 
     $periodEntitlement = LeavePeriodEntitlement::create($params);

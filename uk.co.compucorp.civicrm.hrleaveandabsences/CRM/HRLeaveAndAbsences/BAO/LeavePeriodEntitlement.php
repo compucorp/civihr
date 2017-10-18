@@ -58,8 +58,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    */
   private static function validateComment($params) {
     $hasComment = !empty($params['comment']);
-    $hasCommentAuthor = !empty($params['comment_author_id']);
-    $hasCommentDate = !empty($params['comment_date']);
+    $hasCommentAuthor = !empty($params['editor_id']);
+    $hasCommentDate = !empty($params['created_date']);
 
     if($hasComment) {
       if(!$hasCommentAuthor) {
@@ -228,8 +228,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
     if ($calculationComment) {
       $params['comment']            = $calculationComment;
-      $params['comment_author_id']  = CRM_Core_Session::getLoggedInContactID();
-      $params['comment_date'] = date('YmdHis');
+      $params['editor_id']  = CRM_Core_Session::getLoggedInContactID();
+      $params['created_date'] = date('YmdHis');
     }
 
     return $params;

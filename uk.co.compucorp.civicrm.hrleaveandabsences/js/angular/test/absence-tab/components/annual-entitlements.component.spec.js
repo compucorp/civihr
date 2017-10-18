@@ -113,7 +113,7 @@ define([
           expect(entitlement.comment).toEqual({
             message: mockedEntitlement.comment,
             author_name: mockedContact.display_name,
-            date: mockedEntitlement.comment_date
+            date: mockedEntitlement.created_date
           });
         });
       });
