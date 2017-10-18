@@ -13,6 +13,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLog extends CRM_HRLeaveAn
   public static function create($params) {
     $entityName = 'LeavePeriodEntitlementLog';
     $hook = empty($params['id']) ? 'create' : 'edit';
+    self::validateUpdatesNotAllowed($params);
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
     self::validateParams($params);
@@ -41,7 +42,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLog extends CRM_HRLeaveAn
    */
   public static function validateParams($params) {
     self::validateMandatory($params);
-    self::validateUpdatesNotAllowed($params);
   }
 
   /**
