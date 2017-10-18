@@ -9,7 +9,7 @@
     'common/angular': 'common/vendor/angular/angular.min',
     'common/angularAnimate': 'common/vendor/angular/angular-animate.min',
     'common/angularBootstrap': 'common/vendor/angular/ui-bootstrap',
-    'common/angularFileUpload': 'common/vendor/angular/angular-file-upload',
+    'common/angular-file-upload': 'common/vendor/angular/angular-file-upload',
     'common/angularMocks': 'common/vendor/angular/angular-mocks',
     'common/angularResource': 'common/vendor/angular/angular-resource.min',
     'common/angularRoute': 'common/vendor/angular/angular-route.min',
@@ -70,6 +70,7 @@
     'common/bundles/apis',
     'common/bundles/services',
     'common/bundles/directives',
+    'common/bundles/filters',
     'common/bundles/angular-date',
     'common/bundles/routers',
     'common/bundles/models',
@@ -77,4 +78,4 @@
     'common/modules/templates',
     'common/modules/xeditable-civi'
   ]
-})
+});

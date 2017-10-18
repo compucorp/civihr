@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>LeaveRequestDate</class>
+  <name>civicrm_hrleaveandabsences_leave_request_date</name>
+  <comment>The individual dates of a leave request</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique LeaveRequestDate ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>date</name>
+    <type>date</type>
+    <required>true</required>
+    <comment>A date part of the Leave Request.</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>leave_request_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>FK to LeaveRequest</comment>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>leave_request_id</name>
+    <table>civicrm_hrleaveandabsences_leave_request</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>type</name>
+    <type>varchar</type>
+    <length>512</length>
+    <label>Type</label>
+    <comment>The type of this day, according to the values on the Leave Request Day Types Option Group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_leave_request_day_type</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <index>
+    <name>unique_leave_request_date</name>
+    <fieldName>date</fieldName>
+    <fieldName>leave_request_id</fieldName>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
+
+</table>

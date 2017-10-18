@@ -10,7 +10,7 @@ define([
   describe('ModelInstance', function () {
     var ModelInstance;
     var instanceInterface = ['attributes', 'defaultCustomData', 'extend',
-      'fromAPI', 'fromAPIFilter', 'init', 'toAPI', 'toAPIFilter'];
+      'fromAPI', 'fromAPIFilter', 'init', 'transformAttributes', 'toAPI', 'toAPIFilter'];
 
     beforeEach(module('common.models.instances'));
     beforeEach(inject(function (_ModelInstance_) {
@@ -61,7 +61,7 @@ define([
           bar: 'bar',
           fn: function () {}
         })
-                .attributes();
+        .attributes();
       });
 
       it('returns only the attributes, without the methods', function () {

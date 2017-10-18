@@ -8,12 +8,12 @@ define([
   'common/models/group',
   'common/models/job-role',
   'common/models/instances/contact-instance',
-  'common/mocks/services/api/contact-mock' // Temporary, necessary to use the mocked API data
+  'common/services/api/contact'
 ], function (_, models) {
   'use strict';
 
   models.factory('Contact', [
-    '$q', 'Model', 'api.contact.mock', 'Group', 'JobRole', 'ContactJobRole', 'ContactInstance',
+    '$q', 'Model', 'api.contact', 'Group', 'JobRole', 'ContactJobRole', 'ContactInstance',
     function ($q, Model, contactAPI, Group, JobRole, ContactJobRole, instance) {
       var groupFiltersKeys = ['group_id'];
       var jobRoleFiltersKeys = ['region', 'department', 'level_type', 'location'];
@@ -114,12 +114,19 @@ define([
          * @param {object} filters - Values the full list should be filtered by
          * @param {object} pagination
          *   `page` for the current page, `size` for number of items per page
+         * @param {string} sort
+         * @param {object} additionalParams
          * @return {Promise}
          */
-        all: function (filters, pagination) {
+        all: function (filters, pagination, sort, additionalParams) {
           return processContactFilters.call(this, filters)
             .then(function (filters) {
-              return contactAPI.all(filters, pagination);
+              // if ID is empty array directly resolve the promise without calling the API
+              if (filters && filters.id && !filters.id.IN.length) {
+                return {list: []};
+              } else {
+                return contactAPI.all(filters, pagination, sort, additionalParams);
+              }
             })
             .then(function (response) {
               response.list = response.list.map(function (contact) {
@@ -140,6 +147,25 @@ define([
           return contactAPI.find(id).then(function (contact) {
             return instance.init(contact, true);
           });
+        },
+
+        /**
+         * Finds all the contacts managed by the sent contact id
+         *
+         * @param {string} id - contact id
+         * @param {object} filters
+         * @return {Promise} - Resolves with found contacts/API Errors
+         */
+        leaveManagees: function (id, filters) {
+          return processContactFilters.call(this, filters)
+            .then(function (filters) {
+              // if ID is empty array directly resolve the promise without calling the API
+              if (filters && filters.id && !filters.id.IN.length) {
+                return [];
+              } else {
+                return contactAPI.leaveManagees(id, filters);
+              }
+            });
         }
       });
     }

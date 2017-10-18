@@ -1,22 +1,14 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
-use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 
 /**
  * Class api_v3_PublicHolidayTest
  *
  * @group headless
  */
-class api_v3_PublicHolidayTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface,
-  TransactionalInterface {
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()->installMe(__DIR__)->apply();
-  }
+class api_v3_PublicHolidayTest extends BaseHeadlessTest {
 
   public function testGetCountForCurrentPeriod() {
     AbsencePeriod::create([
@@ -28,16 +20,14 @@ class api_v3_PublicHolidayTest extends PHPUnit_Framework_TestCase implements
     $result = civicrm_api3('PublicHoliday', 'getcountforcurrentperiod');
     $this->assertEquals(0, $result);
 
-    PublicHoliday::create([
-      'title' => 'Public Holiday 1',
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('first monday of January'))
     ]);
 
     $result = civicrm_api3('PublicHoliday', 'getcountforcurrentperiod');
     $this->assertEquals(1, $result);
 
-    PublicHoliday::create([
-      'title' => 'Public Holiday 2',
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('first tuesday of February'))
     ]);
 
@@ -52,13 +42,11 @@ class api_v3_PublicHolidayTest extends PHPUnit_Framework_TestCase implements
       'end_date' => date('YmdHis', strtotime('last day of December')),
     ]);
 
-    PublicHoliday::create([
-      'title' => 'Public Holiday Weekday',
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('first monday of January'))
     ]);
 
-    PublicHoliday::create([
-      'title' => 'Public Holiday Weekend',
+    PublicHolidayFabricator::fabricateWithoutValidation([
       'date' => date('YmdHis', strtotime('first sunday of February'))
     ]);
 

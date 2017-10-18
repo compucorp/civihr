@@ -58,11 +58,38 @@ function _civicrm_api3_public_holiday_getcountforcurrentperiod_spec(&$spec) {
 /**
  * PublicHoliday.getcountforcurrentperiod API
  *
- * @param $params
  * @param array $params
  * @return array API result descriptor
  */
 function civicrm_api3_public_holiday_getcountforcurrentperiod($params) {
   $excludeWeekends = empty($params['exclude_weekends']) ? false : true;
-  return CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getNumberOfPublicHolidaysForCurrentPeriod($excludeWeekends);
+  return CRM_HRLeaveAndAbsences_BAO_PublicHoliday::getCountForCurrentPeriod($excludeWeekends);
+}
+
+/**
+ * PublicHoliday.process_public_holiday_leave_request_updates_queue API specification
+ *
+ * @param array $spec
+ *  Description of fields supported by this API call
+ *
+ * @return void
+ * @see http://wiki.civicrm.org/confluence/display/CRMDOC/API+Architecture+Standards
+ */
+function _civicrm_api3_public_holiday_process_public_holiday_leave_request_updates_queue_spec(&$spec) {
+}
+
+/**
+ * PublicHoliday.process_public_holiday_leave_request_updates_queue API
+ *
+ * Execute all the jobs added to the ProcessPublicHolidayLeaveRequestUpdates Queue
+ *
+ * @param array $params
+ *
+ * @return array
+ */
+function civicrm_api3_public_holiday_process_public_holiday_leave_request_updates_queue($params) {
+  return civicrm_api3_create_success(
+    CRM_HRLeaveAndAbsences_BAO_PublicHoliday::processPublicHolidayLeaveRequestUpdatesQueue(),
+    $params
+  );
 }

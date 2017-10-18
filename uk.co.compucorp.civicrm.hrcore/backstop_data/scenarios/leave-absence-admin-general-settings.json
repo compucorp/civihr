@@ -1,0 +1,8 @@
+{
+  "scenarios": [
+    {
+      "label": "General Settings",
+      "url": "civicrm/admin/leaveandabsences/general_settings"
+    }
+  ]
+}

@@ -109,9 +109,6 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
         'provider_life_insurance',
         'plan_type_life_insurance',
       ),
-//      'HRJobLeave' => array(
-//        'leave_type',
-//      ),
       'HRJobRole' => array(
         'location',
         'department',
@@ -127,9 +124,12 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
       }
     }
 
-    $absenceTypeResult = civicrm_api3('HRAbsenceType', 'get', array(
+    $absenceTypeResult = civicrm_api3('AbsenceType', 'get', array(
         'sequential' => 1,
         'is_active' => 1,
+        'options' => array(
+          'sort' => 'weight'
+        ),
         'return' => 'id,title',
     ));
 

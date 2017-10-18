@@ -1,0 +1,74 @@
+<div class="row">
+  <div class="col-xs-12 form-horizontal">
+    <div class="row">
+      <label class="col-sm-4 control-label">Duration</label>
+      <div class="col-xs-6 col-sm-4 chr_leave-request-modal__input-shift-left">
+        <div class="crm_custom-select crm_custom-select--full">
+          <select name="hours" ng-model="detailsTab.request.toilDurationHours"
+            class="no-select2"
+            ng-disabled="!detailsTab.isRole('admin') &&
+              (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create')))"
+            ng-change="detailsTab.request.updateDuration()">
+            <option value="0" selected="selected">Hours</option>
+            <option value="1">1h</option>
+            <option value="2">2h</option>
+            <option value="3">3h</option>
+            <option value="4">4h</option>
+            <option value="5">5h</option>
+            <option value="6">6h</option>
+            <option value="7">7h</option>
+            <option value="8">8h</option>
+            <option value="9">9h</option>
+            <option value="10">10h</option>
+            <option value="11">11h</option>
+            <option value="12">12h</option>
+          </select>
+          <span class="crm_custom-select__arrow"></span>
+        </div>
+      </div>
+      <div class="col-xs-6 col-sm-4">
+        <div class="crm_custom-select crm_custom-select--full">
+          <select name="minutes" ng-model="detailsTab.request.toilDurationMinutes"
+            class="no-select2"
+            ng-change="detailsTab.request.updateDuration()"
+            ng-disabled="!detailsTab.isRole('admin') &&
+              (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create')))">
+            <option value="0">Mins</option>
+            <option value="5">5m</option>
+            <option value="10">10m</option>
+            <option value="15">15m</option>
+            <option value="20">20m</option>
+            <option value="25">25m</option>
+            <option value="30">30m</option>
+            <option value="35">35m</option>
+            <option value="40">40m</option>
+            <option value="45">45m</option>
+            <option value="50">50m</option>
+            <option value="55">55m</option>
+          </select>
+          <span class="crm_custom-select__arrow"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-12 form-horizontal">
+    <hr>
+    <div class="row">
+      <div class="col-xs-12"><p>TOIL to be Accrued:</p></div>
+      <div class="col-xs-12">
+        <div class="crm_custom-select crm_custom-select--full">
+          <select
+            class="no-select2"
+            name="toilAmount"
+            ng-disabled="detailsTab.isMode('view')"
+            ng-options="amount.value as amount.label for amount in detailsTab.toilAmounts"
+            ng-model="detailsTab.request.toil_to_accrue"
+            ng-change="detailsTab.calculateBalanceChange()">
+            <option value="">- select -</option>
+          </select>
+          <span class="crm_custom-select__arrow"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<ng-include
+  src="sharedPathTpl + 'components/leave-request-popup/leave-request-popup-header.html'">
+</ng-include>
+
+<crm-loading show="!$ctrl.loading.absenceTypes">
+  <ng-include
+    src="sharedPathTpl + 'components/leave-request-popup/leave-request-popup-body.html'">
+  </ng-include>
+  <ng-include
+    src="sharedPathTpl + 'components/leave-request-popup/leave-request-popup-footer.html'">
+  </ng-include>
+</crm-loading>

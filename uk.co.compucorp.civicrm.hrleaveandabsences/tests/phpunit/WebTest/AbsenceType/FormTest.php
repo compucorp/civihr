@@ -60,6 +60,36 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase implements Headl
         $this->assertTrue($this->isVisible('allow_accrue_in_the_past'));
         $this->assertFalse($this->isVisible('accrual_expiration_duration'));
         $this->assertFalse($this->isVisible('s2id_accrual_expiration_unit'));
+
+        // If we submit the form with only the expire duration not empty,
+        // both duration fields should still be visible after the page reloads
+        // (it will reload because the other required fields have not been filled)
+        $this->click('accrual_never_expire');
+        $this->type('accrual_expiration_duration', 10);
+        $this->submitAndWait('AbsenceType');
+        $this->assertTrue($this->isVisible('accrual_expiration_duration'));
+        $this->assertTrue($this->isVisible('s2id_accrual_expiration_unit'));
+        $this->assertFalse($this->isChecked('accrual_never_expire'));
+
+        // If we submit the form with only the expire unit not empty,
+        // both duration fields should still be visible after the page reloads
+        // (it will reload because the other required fields have not been filled)
+        $this->type('accrual_expiration_duration', '');
+        $this->select('accrual_expiration_unit', 'label=Months');
+        $this->submitAndWait('AbsenceType');
+        $this->assertTrue($this->isVisible('accrual_expiration_duration'));
+        $this->assertTrue($this->isVisible('s2id_accrual_expiration_unit'));
+        $this->assertFalse($this->isChecked('accrual_never_expire'));
+
+        // If we submit the form with both the expire duration and unit not empty,
+        // the duration fields should still be visible after the page reloads
+        // (it will reload because the other required fields have not been filled)
+        $this->type('accrual_expiration_duration', 15);
+        $this->select('accrual_expiration_unit', 'label=Months');
+        $this->submitAndWait('AbsenceType');
+        $this->assertTrue($this->isVisible('accrual_expiration_duration'));
+        $this->assertTrue($this->isVisible('s2id_accrual_expiration_unit'));
+        $this->assertFalse($this->isChecked('accrual_never_expire'));
     }
 
     public function testCarryForwardFieldsVisibility()
@@ -97,6 +127,41 @@ class WebTest_AbsenceType_FormTest extends CiviSeleniumTestCase implements Headl
         $this->assertFalse($this->isVisible('s2id_carry_forward_expiration_unit'));
         $this->assertTrue($this->isChecked('carry_forward_never_expire'));
         $this->assertFalse($this->isChecked('carry_forward_expire_after_duration'));
+
+        // If we submit the form with only the expire duration not empty,
+        // both duration fields should still be visible after the page reloads
+        // (it will reload because the other required fields have not been filled)
+        $this->click('carry_forward_expire_after_duration');
+        $this->type('carry_forward_expiration_duration', 10);
+        $this->submitAndWait('AbsenceType');
+        $this->assertTrue($this->isVisible('carry_forward_expiration_duration'));
+        $this->assertTrue($this->isVisible('s2id_carry_forward_expiration_unit'));
+        $this->assertFalse($this->isChecked('carry_forward_never_expire'));
+        $this->assertTrue($this->isChecked('carry_forward_expire_after_duration'));
+
+        // If we submit the form with only the expire unit not empty,
+        // both duration fields should still be visible after the page reloads
+        // (it will reload because the other required fields have not been filled)
+        $this->click('carry_forward_expire_after_duration');
+        $this->type('carry_forward_expiration_duration', '');
+        $this->select('carry_forward_expiration_unit', 'label=Months');
+        $this->submitAndWait('AbsenceType');
+        $this->assertTrue($this->isVisible('carry_forward_expiration_duration'));
+        $this->assertTrue($this->isVisible('s2id_carry_forward_expiration_unit'));
+        $this->assertFalse($this->isChecked('carry_forward_never_expire'));
+        $this->assertTrue($this->isChecked('carry_forward_expire_after_duration'));
+
+        // If we submit the form with both the expire duration and unit not empty,
+        // the duration fields should still be visible after the page reloads
+        // (it will reload because the other required fields have not been filled)
+        $this->click('carry_forward_expire_after_duration');
+        $this->type('carry_forward_expiration_duration', 15);
+        $this->select('carry_forward_expiration_unit', 'label=Months');
+        $this->submitAndWait('AbsenceType');
+        $this->assertTrue($this->isVisible('carry_forward_expiration_duration'));
+        $this->assertTrue($this->isVisible('s2id_carry_forward_expiration_unit'));
+        $this->assertFalse($this->isChecked('carry_forward_never_expire'));
+        $this->assertTrue($this->isChecked('carry_forward_expire_after_duration'));
     }
 
     public function testAddAnEmptyType()

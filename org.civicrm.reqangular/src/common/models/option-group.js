@@ -1,12 +1,12 @@
 define([
     'common/modules/models',
     'common/models/model',
-    'common/mocks/services/api/option-group-mock' // Temporary, necessary to use the mocked API data
+    'common/services/api/option-group'
 ], function (models) {
     'use strict';
 
     models.factory('OptionGroup', [
-        'Model', 'api.optionGroup.mock',
+        'Model', 'api.optionGroup',
         function (Model, optionGroupAPI) {
 
             return Model.extend({
@@ -25,4 +25,4 @@ define([
             });
         }
     ]);
-})
+});

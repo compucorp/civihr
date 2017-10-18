@@ -1,11 +1,19 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
+
 class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
 
   private $links = array();
 
+  /**
+   * @var \CRM_HRLeaveAndAbsences_Service_AbsenceType
+   */
+  private $absenceTypeService;
+
   public function run() {
     CRM_Utils_System::setTitle(ts('Leave/Absence Types'));
+    $this->absenceTypeService = new AbsenceTypeService();
     parent::run();
   }
 
@@ -29,8 +37,9 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
     $returnURL = CRM_Utils_System::url('civicrm/admin/leaveandabsences/types', 'reset=1');
     CRM_Utils_Weight::addOrder($rows, 'CRM_HRLeaveAndAbsences_DAO_AbsenceType', 'id', $returnURL);
 
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/hrleaveandabsences.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
-
+    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/crm/hrleaveandabsences.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()->addScriptFile('civicrm', 'js/jquery/jquery.crmEditable.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
     $this->assign('rows', $rows);
   }
 
@@ -141,7 +150,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
   private function calculateLinksMask($absenceType) {
     $mask = array_sum(array_keys($this->links()));
 
-    if($absenceType->is_reserved) {
+    if($this->canNotDelete($absenceType)) {
       $mask -= CRM_Core_Action::DELETE;
     }
 
@@ -156,5 +165,17 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
     }
 
     return $mask;
+  }
+
+  /**
+   * Checks whether an AbsenceType object cannot be deleted.
+   *
+   * @param CRM_HRLeaveAndAbsences_BAO_AbsenceType $absenceType
+   *
+   * @return bool
+   */
+  private function canNotDelete($absenceType) {
+    return $this->absenceTypeService->absenceTypeHasEverBeenUsed($absenceType->id)
+           || $absenceType->is_reserved;
   }
 }

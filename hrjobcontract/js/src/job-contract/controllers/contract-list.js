@@ -14,10 +14,10 @@ define([
 
   controllers.controller('ContractListCtrl', ['$scope', '$rootElement', '$rootScope', '$uibModal', '$q', '$filter', '$sce',
     'contractList', 'ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService',
-    'ContractLeaveService', 'ContractHealthService', 'ContractPensionService', 'UtilsService', 'settings', '$log', 'pubSub',
+    'ContractLeaveService', 'ContractHealthService', 'ContractPensionService', 'UtilsService', 'settings', '$log', 'pubSub', '$window',
     function($scope, $rootElement, $rootScope, $modal, $q, $filter, $sce, contractList, ContractService, ContractDetailsService,
       ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
-      UtilsService, settings, $log, pubSub) {
+      UtilsService, settings, $log, pubSub, $window) {
       $log.debug('Controller: ContractListCtrl');
 
       var entityServices = {
@@ -30,7 +30,8 @@ define([
         },
         promiseUtils = {
           hoursLocation: UtilsService.getHoursLocation(),
-          payScaleGrade: UtilsService.getPayScaleGrade()
+          payScaleGrade: UtilsService.getPayScaleGrade(),
+          absenceTypes: UtilsService.getAbsenceTypes()
         },
         entityName, promiseFields = {},
         promiseModel = {};
@@ -157,6 +158,8 @@ define([
           if (+contract.is_primary) {
             $scope.toggleIsPrimary(contract.id);
           }
+
+          $window.location.assign(UtilsService.getManageEntitlementsPageURL(contract.contact_id));
         });
       }
 

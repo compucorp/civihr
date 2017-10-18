@@ -8,16 +8,26 @@ define([
   'use strict';
 
   describe('ContractCtrl', function () {
-    var $controller, $httpBackend, $q, $modal, $rootScope, $scope;
+    var $controller, $httpBackend, $modal, $q, $rootScope, $scope, $window,
+      UtilsService;
 
-    beforeEach(module('hrjc', 'job-contract.templates'));
-    beforeEach(inject(function (_$controller_, _$httpBackend_, _$q_,
-    _$uibModal_, _$rootScope_) {
+    beforeEach(module('hrjc', 'job-contract.templates', function ($provide) {
+      $window = { location: jasmine.createSpyObj('location', ['assign']) };
+
+      $provide.value('$window', $window);
+    }));
+
+    beforeEach(inject(function (_$controller_, _$rootScope_, _$uibModal_, _$q_,
+    _$httpBackend_, _$window_, _UtilsService_) {
       $controller = _$controller_;
-      $httpBackend = _$httpBackend_;
-      $q = _$q_;
-      $modal = _$uibModal_;
       $rootScope = _$rootScope_;
+      $q = _$q_;
+      $httpBackend = _$httpBackend_;
+      $modal = _$uibModal_;
+      $q = _$q_;
+      $rootScope = _$rootScope_;
+      $window = _$window_;
+      UtilsService = _UtilsService_;
 
       $httpBackend.whenGET(/action=getfulldetails&entity=HRJobContract/).respond({});
       $httpBackend.whenGET(/action=getcurrentcontract&entity=HRJobContract/).respond({});
@@ -76,6 +86,22 @@ define([
 
         it('Marks the contract as current', function () {
           expect($scope.$parent.contract.is_current).toBe('1');
+        });
+      });
+
+      describe('after updating the contract', function () {
+        var url;
+
+        beforeEach(function () {
+          url = UtilsService.getManageEntitlementsPageURL($scope.contract.contact_id);
+
+          createModalSpy();
+          $scope.modalContract('edit');
+          $rootScope.$digest();
+        });
+
+        it('changes the window location to the Manage Entitlements for the contact', function () {
+          expect($window.location.assign).toHaveBeenCalledWith(url);
         });
       });
     });

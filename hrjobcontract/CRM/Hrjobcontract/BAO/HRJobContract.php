@@ -497,14 +497,15 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
   }
 
   /**
-   * Returns a list of active contracts.
+   * Returns a list of active contracts, together with their details, for the
+   * given Period
    *
    * If no startDate is given, the current date will be used. If no endDate is
    * given, the startDate will be used for it.
    *
-   * A contract is active if:
+   * A contract will be returned if:
    * - The effective date of current revision is less or equal the startDate OR
-   *   it is starts someday between the start and end dates
+   *   it starts someday between the start and end dates
    * - The contract start date and end dates overlaps with the start and end
    *   dates passed to the period OR
    *   it doesn't have an end date and starts before the given start date OR
@@ -512,12 +513,21 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    *   dates
    * - The contract is not deleted
    *
-   * @param null $startDate
-   * @param null $endDate
+   * This method also accepts a Contact ID as a parameter which could be a single contact
+   * or an array of Contact(s). In that case, it will only return contracts for the given Contact(s).
+   *
+   *
+   * The contracts are returned ordered by their start date in ascending order.
+   *
+   * @param null|string $startDate
+   *  A date string in a format supported by strtotime
+   * @param null|string $endDate
+   *  A date string in a format supported by strtotime
+   * @param null|int|array $contactID
    *
    * @return array
    */
-  public static function getActiveContracts($startDate = null, $endDate = null)
+  public static function getContractsWithDetailsInPeriod($startDate = null, $endDate = null, $contactID = null)
   {
     if($startDate) {
       $startDate = CRM_Utils_Date::processDate($startDate, null, false, 'Y-m-d');
@@ -531,8 +541,32 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
       $endDate = $startDate;
     }
 
+    $whereContactID = '';
+    if(!empty($contactID)) {
+      if(!is_array($contactID)) {
+        $contactID = [$contactID];
+      }
+      array_walk($contactID, 'intval');
+      $whereContactID = ' AND c.contact_id IN('. implode(', ', $contactID) .')';
+    }
+
     $query = "
-      SELECT c.*
+      SELECT 
+        c.id as id,
+        c.contact_id as contact_id,
+        c.is_primary as is_primary,
+        c.deleted as deleted,
+        d.position as position,
+        d.title as title,
+        d.contract_type as contract_type,
+        d.period_start_date as period_start_date,
+        d.period_end_date as period_end_date,
+        d.end_reason as end_reason,
+        d.notice_amount as notice_amount,
+        d.notice_unit as notice_unit,
+        d.notice_amount_employee as notice_amount_employee,
+        d.notice_unit_employee as notice_unit_employee,
+        d.location as location
       FROM civicrm_hrjobcontract c
         INNER JOIN civicrm_hrjobcontract_revision r
           ON r.id = (SELECT id
@@ -549,7 +583,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
                      ORDER BY r2.effective_date DESC, r2.id DESC
                      LIMIT 1
         )
-        INNER JOIN civicrm_hrjobcontract_details d ON d.jobcontract_revision_id = r.id
+        INNER JOIN civicrm_hrjobcontract_details d ON d.jobcontract_revision_id = r.details_revision_id
       WHERE c.deleted = 0 AND
         (
           (d.period_end_date IS NOT NULL AND d.period_start_date <= '{$endDate}' AND d.period_end_date >= '{$startDate}')
@@ -562,7 +596,9 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
               d.period_start_date <= '{$endDate}'
             )
           )
-        );
+        )
+        {$whereContactID}
+      ORDER BY period_start_date ASC
     ";
 
     $dao = CRM_Core_DAO::executeQuery($query);
@@ -572,7 +608,101 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
         'id' => $dao->id,
         'contact_id' => $dao->contact_id,
         'id_primary' => $dao->is_primary,
-        'deleted' => $dao->deleted
+        'deleted' => $dao->deleted,
+        'period_start_date' => $dao->period_start_date,
+        'period_end_date' => $dao->period_end_date,
+        'position' => $dao->position,
+        'title' => $dao->title,
+        'contract_type' => $dao->contract_type,
+        'period_start_date' => $dao->period_start_date,
+        'period_end_date' => $dao->period_end_date,
+        'end_reason' => $dao->end_reason,
+        'notice_amount' => $dao->notice_amount,
+        'notice_unit' => $dao->notice_unit,
+        'notice_amount_employee' => $dao->notice_amount_employee,
+        'notice_unit_employee' => $dao->notice_unit_employee,
+        'location' => $dao->location
+      ];
+    }
+
+    return $contracts;
+  }
+
+  /**
+   * Returns an array of contacts with contracts during the given start
+   * and end dates. Each contact on the list has an ID and its display name.
+   *
+   * If no startDate is given, the current date will be used. If no endDate is
+   * given, the startDate will be used for it.
+   *
+   * The list is ordered by the contact's display name
+   *
+   * @param string|null $startDate
+   *  A date string in a format supported by strtotime
+   * @param string|null $endDate
+   *  A date string in a format supported by strtotime
+   *
+   * @return array
+   */
+  public static function getContactsWithContractsInPeriod($startDate = null, $endDate = null) {
+    if($startDate) {
+      $startDate = CRM_Utils_Date::processDate($startDate, null, false, 'Y-m-d');
+    } else {
+      $startDate = date('Y-m-d');
+    }
+
+    if($endDate) {
+      $endDate = CRM_Utils_Date::processDate($endDate, null, false, 'Y-m-d');
+    } else {
+      $endDate = $startDate;
+    }
+
+    $query = "
+      SELECT DISTINCT
+        contact.id as id,
+        contact.display_name as display_name
+      FROM civicrm_contact contact
+        INNER JOIN civicrm_hrjobcontract contract
+          ON contact.id = contract.contact_id
+        INNER JOIN civicrm_hrjobcontract_revision revision
+          ON revision.id = (
+             SELECT id
+             FROM civicrm_hrjobcontract_revision revision2
+             WHERE
+              revision2.jobcontract_id = contract.id AND
+              (
+                revision2.effective_date <= '{$startDate}'
+                 OR
+                ( revision2.effective_date >= '{$startDate}' AND
+                  revision2.effective_date <= '{$endDate}'
+                )
+              )
+             ORDER BY revision2.effective_date DESC, revision2.id DESC
+             LIMIT 1
+          )
+        INNER JOIN civicrm_hrjobcontract_details details ON details.jobcontract_revision_id = revision.details_revision_id
+      WHERE contract.deleted = 0 AND
+        (
+          (details.period_end_date IS NOT NULL AND details.period_start_date <= '{$endDate}' AND details.period_end_date >= '{$startDate}')
+            OR
+          (details.period_end_date IS NULL
+            AND
+            (
+              (details.period_start_date >= '{$startDate}' AND details.period_start_date <= '{$endDate}')
+              OR
+              details.period_start_date <= '{$endDate}'
+            )
+          )
+        )
+      ORDER BY contact.display_name ASC
+    ";
+
+    $dao = CRM_Core_DAO::executeQuery($query);
+    $contracts = [];
+    while($dao->fetch()) {
+      $contracts[] = [
+        'id' => $dao->id,
+        'display_name' => $dao->display_name,
       ];
     }
 

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>ContactWorkPattern</class>
+  <name>civicrm_hrleaveandabsences_contact_work_pattern</name>
+  <comment>Represents the work patterns linked to an employee</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique ContactWorkPattern ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>contact_id</name>
+    <type>int unsigned</type>
+    <comment>FK to the Contact representing the employee</comment>
+    <required>true</required>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>pattern_id</name>
+    <type>int unsigned</type>
+    <comment>FK to the Work Pattern linked to an employee</comment>
+    <required>true</required>
+    <add>4.4</add>
+  </field>
+  <foreignKey>
+    <name>pattern_id</name>
+    <table>civicrm_hrleaveandabsences_work_pattern</table>
+    <key>id</key>
+    <add>4.4</add>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+
+  <field>
+    <name>effective_date</name>
+    <type>date</type>
+    <comment>The date this work pattern will start to be considered active</comment>
+    <required>true</required>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>effective_end_date</name>
+    <type>date</type>
+    <comment>The date this work pattern will stop being considered active</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>change_reason</name>
+    <type>varchar</type>
+    <length>512</length>
+    <label>Change Reason</label>
+    <comment>One of the values of the Job Contract Revision Change Reason option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrjc_revision_change_reason</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <index>
+    <name>unique_pattern_per_effective_date</name>
+    <fieldName>contact_id</fieldName>
+    <fieldName>effective_date</fieldName>
+    <comment>An employee cannot have more than one work pattern</comment>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
+
+</table>

@@ -5,7 +5,7 @@ module.exports = function (config) {
 
   config.set({
     basePath: civicrmPath,
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
     frameworks: ['jasmine'],
     files: [
             // the global dependencies
@@ -18,30 +18,46 @@ module.exports = function (config) {
       'packages/jquery/plugins/jquery.blockUI.js',
       'js/Common.js',
 
-            // manual loading of requirejs as to avoid interference with the global dependencies above
+      // manual loading of requirejs as to avoid interference with the global dependencies above
       extPath + 'node_modules/requirejs/require.js',
       extPath + 'node_modules/karma-requirejs/lib/adapter.js',
 
-            // load test helpers
-            { pattern: extPath + 'test/helpers/**/*.helper.js', included: true },
+      // load test helpers
+      { pattern: extPath + 'test/helpers/**/*.helper.js', included: true },
 
-            // load vendor libraries
-            { pattern: extPath + 'src/common/vendor/*.min.js', included: false },
+      // load vendor libraries
+      { pattern: extPath + 'src/common/vendor/*.min.js', included: false },
 
-            // load modules
-            { pattern: extPath + 'src/common/**/*.js', included: false },
+      // load modules
+      { pattern: extPath + 'src/common/**/*.js', included: false },
 
-            // the mocked components files
-            { pattern: extPath + 'test/mocks/**/*.js', included: false },
+      // the mocked components files
+      { pattern: extPath + 'test/mocks/**/*.js', included: false },
 
-            // load tests
-            { pattern: extPath + 'test/**/*.spec.js', included: false },
+      // load tests
+      { pattern: extPath + 'test/**/*.spec.js', included: false },
 
-            // the requireJS config file that bootstraps the whole test suite
+      // the requireJS config file that bootstraps the whole test suite
       extPath + 'test/test-main.js'
     ],
     exclude: [
       extPath + 'src/common/angular-date/**/*.js'
-    ]
+    ],
+    customLaunchers: {
+      ChromeHeadless: {
+        base: 'Chrome',
+        flags: [
+          '--headless',
+          '--disable-gpu',
+          // Without a remote debugging port, Google Chrome exits immediately.
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
+    junitReporter: {
+      outputDir: extPath + 'test-reports',
+      useBrowserName: false,
+      outputFile: 'reqangular.xml'
+    }
   });
 };
