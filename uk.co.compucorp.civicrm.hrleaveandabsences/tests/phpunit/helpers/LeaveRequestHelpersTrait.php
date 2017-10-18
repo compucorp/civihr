@@ -31,10 +31,7 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
       foreach($leaveRequestStatusOptions  as $key => $label) {
         $name = CRM_Core_Pseudoconstant::getName(LeaveRequest::class, 'status_id', $key);
         $this->leaveRequestStatuses[$name] = [
-          'id' => $key,
-          'value' => $key,
-          'name' => $name,
-          'label' => $label
+          'id' => $key
         ];
       }
     }

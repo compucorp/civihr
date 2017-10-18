@@ -24,7 +24,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->registerCurrentLoggedInContactInSession($this->leaveContact);
     CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
 
-    $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
+    $this->leaveRequestStatuses = LeaveRequest::getStatuses();
   }
 
   public function testCanCreateAndUpdateForReturnsFalseWhenCurrentUserIsNotAnAdminOrLeaveManagerOrLeaveContact() {
@@ -175,7 +175,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertTrue(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $this->leaveContact,
-        $this->leaveRequestStatuses['more_information_required']['id']
+        $this->leaveRequestStatuses['more_information_required']
       )
     );
 
@@ -183,7 +183,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertTrue(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $this->leaveContact,
-        $this->leaveRequestStatuses['awaiting_approval']['id']
+        $this->leaveRequestStatuses['awaiting_approval']
       )
     );
   }
@@ -193,7 +193,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertFalse(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $this->leaveContact,
-        $this->leaveRequestStatuses['approved']['id']
+        $this->leaveRequestStatuses['approved']
       )
     );
 
@@ -201,7 +201,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertFalse(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $this->leaveContact,
-        $this->leaveRequestStatuses['admin_approved']['id']
+        $this->leaveRequestStatuses['admin_approved']
       )
     );
   }

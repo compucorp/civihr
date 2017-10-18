@@ -23,9 +23,6 @@ class CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplateTest 
     CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
     $leaveRequestCommentService = new LeaveRequestCommentService();
     $this->leaveRequestNotificationTemplate = new LeaveRequestNotificationTemplate($leaveRequestCommentService);
-
-    $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
-    $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
   public function testGetTemplateIDReturnsTheCorrectID() {
