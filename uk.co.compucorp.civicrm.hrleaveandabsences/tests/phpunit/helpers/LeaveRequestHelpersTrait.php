@@ -26,17 +26,14 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
   }
 
   protected function getLeaveRequestStatuses() {
-    if(empty($this->leaveRequestStatuses)) {
-      $leaveRequestStatusOptions = LeaveRequest::buildOptions('status_id');
-      foreach($leaveRequestStatusOptions  as $key => $label) {
-        $name = CRM_Core_Pseudoconstant::getName(LeaveRequest::class, 'status_id', $key);
-        $this->leaveRequestStatuses[$name] = [
-          'id' => $key
-        ];
-      }
-    }
-
-    return $this->leaveRequestStatuses;
+    return [
+      'approved' => ['id' => 1],
+      'admin_approved' => ['id' => 2],
+      'awaiting_approval' => ['id' => 3],
+      'more_information_required' => ['id' => 4],
+      'rejected' => ['id' => 5],
+      'cancelled' => ['id' => 6],
+    ];
   }
 
   public function openLeaveRequestStatusesDataProvider() {
