@@ -24,7 +24,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLogTest extends BaseHeadl
   public function testCreateEntitlementLogThrowsExceptionWhenEntitlementIdIsAbsent() {
     LeavePeriodEntitlementLog::create([
       'entitlement_amount' => 3,
-      'author_id' => 1,
+      'editor_id' => 1,
       'comment' => '',
     ]);
   }
@@ -36,14 +36,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLogTest extends BaseHeadl
   public function testCreateEntitlementLogThrowsExceptionWhenEntitlementAmountIsAbsent() {
     LeavePeriodEntitlementLog::create([
       'entitlement_id' => 2,
-      'author_id' => 1,
+      'editor_id' => 1,
       'comment' => 'Sample Comment',
     ]);
   }
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeavePeriodEntitlementLogException
-   * @expectedExceptionMessage The author_id field should not be empty
+   * @expectedExceptionMessage The editor_id field should not be empty
    */
   public function testCreateEntitlementLogThrowsExceptionWhenAuthorIdIsAbsent() {
     LeavePeriodEntitlementLog::create([
@@ -57,7 +57,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLogTest extends BaseHeadl
     $entitlementLog = LeavePeriodEntitlementLog::create([
       'entitlement_id' => 1,
       'entitlement_amount' => 3,
-      'author_id' => 1,
+      'editor_id' => 1,
       'comment' => '',
       'created_date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
@@ -75,7 +75,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLogTest extends BaseHeadl
     $params = [
       'entitlement_id' => 1,
       'entitlement_amount' => 3,
-      'author_id' => 1,
+      'editor_id' => 1,
       'comment' => 'Sample Comment'
     ];
 

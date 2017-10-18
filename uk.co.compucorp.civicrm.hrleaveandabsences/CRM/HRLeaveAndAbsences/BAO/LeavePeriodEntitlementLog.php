@@ -56,7 +56,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLog extends CRM_HRLeaveAn
   private static function validateMandatory($params) {
     $mandatoryFields = [
       'entitlement_id',
-      'author_id',
+      'editor_id',
       'entitlement_amount',
     ];
 
