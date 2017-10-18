@@ -2,9 +2,15 @@
 
 define([
   'common/angular',
-  './shared-settings'
+  'common/modules/directives',
+  'common/modules/models',
+  './shared-settings',
+  './models'
 ], function (angular) {
   return angular.module('leave-absences.components', [
-    'leave-absences.settings'
+    'common.directives',
+    'common.models',
+    'leave-absences.settings',
+    'leave-absences.models'
   ]);
 });

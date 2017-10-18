@@ -136,6 +136,8 @@ var buildFileManager = (function () {
   /**
    * Creates the temporary build file and replaces the extension names with
    * their full path.
+   *
+   * @return {Promise} - resolves to the temporary build file.
    */
   function createTempFile () {
     var outFilePath = './js/build.tmp.js';

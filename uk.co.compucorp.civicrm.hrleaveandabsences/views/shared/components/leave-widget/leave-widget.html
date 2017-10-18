@@ -3,112 +3,90 @@
     <h2 class="panel-title">Leave</h2>
   </header>
   <div class="panel-body">
-    <div class="leave-widget__types">
-      <table class="table-responsive">
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>
-              Available balance
-              <button class="info-button">
-                <i class="fa fa-info-circle"></i>
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="leave-widget__types-name">Holiday/Vacation</td>
-            <td class="leave-widget__types-balance">8d 5h</td>
-          </tr>
-          <tr>
-            <td class="leave-widget__types-name">Holiday/Vacation</td>
-            <td class="leave-widget__types-balance">8d 5h</td>
-          </tr>
-          <tr>
-            <td class="leave-widget__types-name">Holiday/Vacation</td>
-            <td class="leave-widget__types-balance">8d 5h</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <crm-loading show="!leaveWidget.loading.component && !leaveWidget.loading.childComponents">
+      <leave-widget-balance
+        absence-types="leaveWidget.absenceTypes"
+        contact-id="leaveWidget.contactId"
+        current-absence-period="leaveWidget.currentAbsencePeriod"
+      ></leave-widget-balance>
 
-    <hr />
+      <hr />
 
-    <div class="leave-widget__sickness">
-      <table class="table-responsive">
-        <thead>
-          <tr>
-            <th>Sickness</th>
-            <th>
-              Amount taken
-              <button class="info-button">
-                <i class="fa fa-info-circle"></i>
-              </button>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="leave-widget__sickness-type">Sick</td>
-            <td class="leave-widget__sickness-balance">8d 1h</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="leave-widget__sickness">
+        <table class="table-responsive">
+          <thead>
+            <tr>
+              <th>Sickness</th>
+              <th>
+                Amount taken
+                <button class="info-button">
+                  <i class="fa fa-info-circle"></i>
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="leave-widget__sickness-type">Sick</td>
+              <td class="leave-widget__sickness-balance">8d 1h</td>
+            </tr>
+          </tbody>
+        </table>
 
-      <h4>Sickness heatmap</h4>
+        <h4>Sickness heatmap</h4>
 
-      <ul class="week-heatmap">
-        <li class="week-heatmap__low" title="Monday">M</li>
-        <li class="week-heatmap__low" title="Tuesday">T</li>
-        <li class="week-heatmap__low" title="Wednesday">W</li>
-        <li class="week-heatmap__high" title="Thursday">T</li>
-        <li class="week-heatmap__medium" title="Friday">F</li>
-        <li class="week-heatmap__disabled" title="Saturday">S</li>
-        <li class="week-heatmap__disabled" title="Sunday">S</li>
-      </ul>
-    </div>
+        <ul class="week-heatmap">
+          <li class="week-heatmap__low" title="Monday">M</li>
+          <li class="week-heatmap__low" title="Tuesday">T</li>
+          <li class="week-heatmap__low" title="Wednesday">W</li>
+          <li class="week-heatmap__high" title="Thursday">T</li>
+          <li class="week-heatmap__medium" title="Friday">F</li>
+          <li class="week-heatmap__disabled" title="Saturday">S</li>
+          <li class="week-heatmap__disabled" title="Sunday">S</li>
+        </ul>
+      </div>
 
-    <hr />
+      <hr />
 
-    <div class="leave-widget__next-leave">
-      <table class="table-responsive">
-        <thead>
-          <tr>
-            <th>Next leave</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="leave-widget__next-leave__details">
-              <h3>Holiday/Vacation</h3>
+      <div class="leave-widget__next-leave">
+        <table class="table-responsive">
+          <thead>
+            <tr>
+              <th>Next leave</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="leave-widget__next-leave__details">
+                <h3>Holiday/Vacation</h3>
 
-              <div class="date-range-calendar">
-                <div class="date-range-calendar__from">
-                  <span class="date-range-calendar__day">14</span>
-                  <span class="date-range-calendar__month">Aug</span>
-                  <span class="date-range-calendar__year">2017</span>
-                  <span class="date-range-calendar__time text-muted">(11:00)</span>
+                <div class="date-range-calendar">
+                  <div class="date-range-calendar__from">
+                    <span class="date-range-calendar__day">14</span>
+                    <span class="date-range-calendar__month">Aug</span>
+                    <span class="date-range-calendar__year">2017</span>
+                    <span class="date-range-calendar__time text-muted">(11:00)</span>
+                  </div>
+                  <div class="date-range-calendar__to">
+                    <span class="date-range-calendar__day">18</span>
+                    <span class="date-range-calendar__month">Aug</span>
+                    <span class="date-range-calendar__year">2017</span>
+                    <span class="date-range-calendar__time text-muted">(11:00)</span>
+                  </div>
                 </div>
-                <div class="date-range-calendar__to">
-                  <span class="date-range-calendar__day">18</span>
-                  <span class="date-range-calendar__month">Aug</span>
-                  <span class="date-range-calendar__year">2017</span>
-                  <span class="date-range-calendar__time text-muted">(11:00)</span>
-                </div>
-              </div>
-            </td>
-            <td class="leave-widget__next-leave__status">
-              <span class="leave-status-approved">Approved</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+              <td class="leave-widget__next-leave__status">
+                <span class="leave-status-approved">Approved</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-      <h4>Deduction</h4>
+        <h4>Deduction</h4>
 
-      <span class="leave-widget__next-leave__deduction">4d 8h</span>
-    </div>
+        <span class="leave-widget__next-leave__deduction">4d 8h</span>
+      </div>
+    </crm-loading>
   </div>
 </div>
