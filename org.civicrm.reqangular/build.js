@@ -71,6 +71,7 @@
     'common/bundles/vendors',
     'common/bundles/apis',
     'common/bundles/services',
+    'common/bundles/components',
     'common/bundles/directives',
     'common/bundles/filters',
     'common/bundles/angular-date',

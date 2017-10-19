@@ -3,6 +3,7 @@
 define([
   'common/angular',
   'common/lodash',
+  'common/bundles/components',
   'common/modules/directives',
   'common/modules/models',
   'common/filters/time-unit-applier.filter',
@@ -14,6 +15,7 @@ define([
   './leave-widget-heatmap.component'
 ], function (angular, _) {
   angular.module('leave-absences.components.leave-widget', [
+    'common.components',
     'common.directives',
     'common.filters',
     'common.models',

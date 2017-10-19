@@ -139,12 +139,11 @@ define([
                   return +request.type_id === +absenceType.id;
                 })
                 .reduce(function (balance, request) {
-                  return Math.abs(balance + request.balance_change);
+                  return balance + request.balance_change;
                 }, 0);
+                balance = Math.abs(balance);
 
-                return _.assign({
-                  balance: balance
-                }, absenceType);
+                return _.assign({ balance: balance }, absenceType);
               });
             }
 
@@ -158,7 +157,7 @@ define([
                 return dates.concat(request.dates);
               }, [])
               .forEach(function (date) {
-                var dayOfTheWeek = moment(date.date).day();
+                var dayOfTheWeek = moment(date.date).isoWeekday() - 1;
 
                 if (!expectedHeatMap[dayOfTheWeek]) {
                   expectedHeatMap[dayOfTheWeek] = 0;

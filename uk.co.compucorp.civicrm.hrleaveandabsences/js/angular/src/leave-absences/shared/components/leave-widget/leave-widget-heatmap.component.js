@@ -123,15 +123,17 @@ define([
      */
     function mapAbsenceTypesBalance (requests) {
       vm.absenceTypes = vm.absenceTypes.map(function (absenceType) {
-        absenceType = _.assign({}, absenceType);
-        absenceType.balance = requests.filter(function (request) {
+        var balance;
+
+        balance = requests.filter(function (request) {
           return +request.type_id === +absenceType.id;
         })
         .reduce(function (balance, request) {
-          return Math.abs(balance + request.balance_change);
+          return balance + request.balance_change;
         }, 0);
+        balance = Math.abs(balance);
 
-        return absenceType;
+        return _.assign({ balance: balance }, absenceType);
       });
     }
 
@@ -147,7 +149,8 @@ define([
         return dates.concat(request.dates);
       }, [])
       .forEach(function (date) {
-        var dayOfTheWeek = moment(date.date).day();
+        // 0 = Monday, 6 = Sunday:
+        var dayOfTheWeek = moment(date.date).isoWeekday() - 1;
 
         if (!vm.weekHeatMap[dayOfTheWeek]) {
           vm.weekHeatMap[dayOfTheWeek] = 0;
