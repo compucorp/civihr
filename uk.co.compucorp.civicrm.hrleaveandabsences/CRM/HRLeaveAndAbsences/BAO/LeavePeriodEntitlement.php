@@ -3,8 +3,6 @@ use CRM_HRLeaveAndAbsences_Service_EntitlementCalculation as EntitlementCalculat
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
-use CRM_HRLeaveAndAbsences_Exception_InvalidLeavePeriodEntitlementException as InvalidPeriodEntitlementException;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 
 /**
@@ -24,7 +22,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $entityName = 'LeavePeriodEntitlement';
     $hook = empty($params['id']) ? 'create' : 'edit';
 
-    self::validateParams($params);
+    $params['editor_id']  = CRM_Core_Session::getLoggedInContactID();
+    $params['created_date'] = date('YmdHis');
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
     $instance = new self();
@@ -33,59 +32,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
     return $instance;
-  }
-
-  /**
-   * Validates the $params passed to the create method
-   *
-   * @param array $params
-   *
-   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidEntitlementException
-   */
-  private static function validateParams($params) {
-    self::validateComment($params);
-  }
-
-  /**
-   * Validates the comment fields on the $params array.
-   *
-   * If the comment is not empty, then the comment author and date are required.
-   * Otherwise, the author and the date should be empty.
-   *
-   * @param array $params
-   *
-   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeavePeriodEntitlementException
-   */
-  private static function validateComment($params) {
-    $hasComment = !empty($params['comment']);
-    $hasCommentAuthor = !empty($params['editor_id']);
-    $hasCommentDate = !empty($params['created_date']);
-
-    if($hasComment) {
-      if(!$hasCommentAuthor) {
-        throw new InvalidPeriodEntitlementException(
-          ts('The author of the comment cannot be null')
-        );
-      }
-
-      if(!$hasCommentDate) {
-        throw new InvalidPeriodEntitlementException(
-          ts('The date of the comment cannot be null')
-        );
-      }
-    }
-
-    if(!$hasComment && $hasCommentAuthor) {
-      throw new InvalidPeriodEntitlementException(
-        ts('The author of the comment should be null if the comment is empty')
-      );
-    }
-
-    if(!$hasComment && $hasCommentDate) {
-      throw new InvalidPeriodEntitlementException(
-        ts('The date of the comment should be null if the comment is empty')
-      );
-    }
   }
 
   /**

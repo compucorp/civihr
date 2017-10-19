@@ -963,17 +963,12 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
 
   private function createEntitlement($period, $type, $numberOfDays = 20, $overridden = null, $comment = null) {
     $params = [
-      'period_id'            => $period->id,
-      'contact_id'           => $this->contact['id'],
-      'type_id'              => $type->id,
-      'overridden'           => $overridden ? '1' : '0',
+      'period_id' => $period->id,
+      'contact_id' => $this->contact['id'],
+      'type_id' => $type->id,
+      'overridden' => $overridden ? '1' : '0',
+      'comment' => $comment ? $comment : ''
     ];
-
-    if($comment) {
-      $params['comment'] = $comment;
-      $params['editor_id'] = $this->contact['id'];
-      $params['created_date'] = date('YmdHis');
-    }
 
     $periodEntitlement = LeavePeriodEntitlement::create($params);
 
