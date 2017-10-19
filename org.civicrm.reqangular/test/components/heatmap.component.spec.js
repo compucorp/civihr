@@ -3,7 +3,7 @@
 define([
   'common/angular',
   'common/lodash',
-  'common/components/week-heatmap.component'
+  'common/components/heatmap.component'
 ], function (angular, _) {
   describe('Heatmap component', function () {
     var $componentController, cmp;
@@ -14,7 +14,7 @@ define([
         $componentController = _$componentController_;
       });
 
-      cmp = $componentController('weekHeatmap');
+      cmp = $componentController('heatmap');
     });
 
     it('must be defined', function () {

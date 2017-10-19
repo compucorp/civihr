@@ -5,11 +5,11 @@ define([
   'common/moment',
   'mocks/helpers/controller-on-changes',
   'mocks/apis/leave-request-api-mock',
-  'leave-absences/shared/components/leave-widget/leave-widget-heatmap.component'
+  'leave-absences/shared/components/leave-widget/leave-widget-absence-types-amount-taken.component'
 ], function (_, moment, controllerOnChanges) {
   describe('leaveWidgetHeatmap', function () {
     var $componentController, $provide, $rootScope, $scope, ctrl,
-      absenceTypes, currentAbsencePeriod, OptionGroup, LeaveRequest, statusIds;
+      absenceTypes, absencePeriod, OptionGroup, LeaveRequest, statusIds;
     var contactId = 101;
     var allowedLeaveStatuses = ['approved', 'admin_approved',
       'awaiting_approval', 'more_information_required'];
@@ -35,8 +35,7 @@ define([
       LeaveRequest = _LeaveRequest_;
 
       AbsencePeriod.all().then(function (periods) {
-        currentAbsencePeriod = periods[0];
-        currentAbsencePeriod.current = true;
+        absencePeriod = periods[0];
       });
       AbsenceType.all().then(function (_absenceTypes_) {
         absenceTypes = _absenceTypes_;
@@ -58,7 +57,7 @@ define([
     }));
 
     beforeEach(function () {
-      ctrl = $componentController('leaveWidgetHeatmap', {
+      ctrl = $componentController('leaveWidgetAbsenceTypesAmountTaken', {
         $scope: $scope
       });
       controllerOnChanges.setupController(ctrl);
@@ -70,7 +69,7 @@ define([
 
     describe('on init', function () {
       it('sets week heat map equal to an empty object', function () {
-        expect(ctrl.weekHeatMap).toEqual({});
+        expect(ctrl.heatmapValues).toEqual({});
       });
 
       it('fires a leave widget child is loading event', function () {
@@ -80,7 +79,7 @@ define([
     });
 
     describe('bindings and dependencies', function () {
-      describe('when contact id and current absence period are bound', function () {
+      describe('when contact id and absence period are bound', function () {
         var absenceTypeIds;
 
         beforeEach(function () {
@@ -89,7 +88,7 @@ define([
           });
           controllerOnChanges.mockChange('absenceTypes', absenceTypes);
           controllerOnChanges.mockChange('contactId', contactId);
-          controllerOnChanges.mockChange('currentAbsencePeriod', currentAbsencePeriod);
+          controllerOnChanges.mockChange('absencePeriod', absencePeriod);
           $rootScope.$digest();
         });
 
@@ -101,8 +100,8 @@ define([
         it('gets leave requests of the specified absence types', function () {
           expect(LeaveRequest.all).toHaveBeenCalledWith({
             contact_id: contactId,
-            from_date: { '>=': currentAbsencePeriod.start_date },
-            to_date: { '<=': currentAbsencePeriod.end_date },
+            from_date: { '>=': absencePeriod.start_date },
+            to_date: { '<=': absencePeriod.end_date },
             status_id: { IN: statusIds },
             type_id: { IN: absenceTypeIds }
           });
@@ -115,15 +114,15 @@ define([
           beforeEach(function () {
             LeaveRequest.all({
               contact_id: contactId,
-              from_date: { '>=': currentAbsencePeriod.start_date },
-              to_date: { '<=': currentAbsencePeriod.end_date },
+              from_date: { '>=': absencePeriod.start_date },
+              to_date: { '<=': absencePeriod.end_date },
               status_id: { IN: statusIds },
               type_id: { IN: absenceTypeIds }
             })
             .then(function (response) {
               var requests = response.list;
 
-              mapWeekHeatMap(requests);
+              mapHeatMapValues(requests);
               mapAbsenceTypeBalances(requests);
             });
             $rootScope.$digest();
@@ -152,7 +151,7 @@ define([
              *
              * @param {LeaveRequestInstance[]} requests - an array of leave requests.
              */
-            function mapWeekHeatMap (requests) {
+            function mapHeatMapValues (requests) {
               requests.reduce(function (dates, request) {
                 return dates.concat(request.dates);
               }, [])
@@ -169,7 +168,7 @@ define([
           });
 
           it('maps the leave requests days to the week heat map object', function () {
-            expect(ctrl.weekHeatMap).toEqual(expectedHeatMap);
+            expect(ctrl.heatmapValues).toEqual(expectedHeatMap);
           });
 
           it('maps the total balance for each absence type', function () {

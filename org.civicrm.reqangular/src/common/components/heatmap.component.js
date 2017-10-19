@@ -4,14 +4,14 @@ define([
   'common/lodash',
   'common/modules/components'
 ], function (_, components) {
-  return components.component('weekHeatmap', {
+  return components.component('heatmap', {
     bindings: {
       values: '<'
     },
     controller: heatmapController,
-    controllerAs: 'weekHeatmap',
+    controllerAs: 'heatmap',
     template: ['$templateCache', function ($templateCache) {
-      return $templateCache.get('components/week-heatmap.html');
+      return $templateCache.get('components/heatmap.html');
     }]
   });
 

@@ -4,20 +4,20 @@
   </header>
   <div class="panel-body">
     <crm-loading show="!leaveWidget.loading.component && !leaveWidget.loading.childComponents">
-      <leave-widget-balance
+      <leave-widget-absence-types-available-balance
         absence-types="leaveWidget.absenceTypes"
         contact-id="leaveWidget.contactId"
-        current-absence-period="leaveWidget.currentAbsencePeriod"
-      ></leave-widget-balance>
+        absence-period="leaveWidget.currentAbsencePeriod"
+      ></leave-widget-absence-types-available-balance>
 
       <hr />
 
-      <Leave-widget-heatmap
+      <leave-widget-absence-types-amount-taken
         title="Sickness"
         absence-types="leaveWidget.sicknessAbsenceTypes"
         contact-id="leaveWidget.contactId"
-        current-absence-period="leaveWidget.currentAbsencePeriod"
-      ></Leave-widget-heatmap>
+        absence-period="leaveWidget.currentAbsencePeriod"
+      ></leave-widget-absence-types-amount-taken>
 
       <hr />
 

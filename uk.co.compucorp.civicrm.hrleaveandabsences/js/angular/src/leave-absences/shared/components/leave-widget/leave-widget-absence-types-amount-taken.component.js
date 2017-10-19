@@ -6,30 +6,30 @@ define([
   'leave-absences/shared/modules/components',
   'leave-absences/shared/models/leave-request.model'
 ], function (_, moment, components) {
-  components.component('leaveWidgetHeatmap', {
+  components.component('leaveWidgetAbsenceTypesAmountTaken', {
     bindings: {
       title: '@',
       absenceTypes: '<',
       contactId: '<',
-      currentAbsencePeriod: '<'
+      absencePeriod: '<'
     },
-    controller: leaveWidgetHeatmapController,
-    controllerAs: 'leaveWidgetHeatmap',
+    controller: absenceTypesTakenController,
+    controllerAs: 'absenceTypesTaken',
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sharedPathTpl + 'components/leave-widget/leave-widget-heatmap.html';
+      return sharedSettings.sharedPathTpl + 'components/leave-widget/leave-widget-absence-types-amount-taken.html';
     }]
   });
 
-  leaveWidgetHeatmapController.$include = ['$scope', 'LeaveRequest',
+  absenceTypesTakenController.$include = ['$scope', 'LeaveRequest',
     'OptionGroup'];
 
-  function leaveWidgetHeatmapController ($scope, LeaveRequest, OptionGroup) {
+  function absenceTypesTakenController ($scope, LeaveRequest, OptionGroup) {
     var allowedLeaveStatuses = ['approved', 'admin_approved',
       'awaiting_approval', 'more_information_required'];
     var statusIds = [];
     var vm = this;
 
-    vm.weekHeatMap = {};
+    vm.heatmapValues = {};
 
     vm.$onChanges = $onChanges;
 
@@ -56,7 +56,7 @@ define([
      * @return {Boolean}
      */
     function areBindingsReady () {
-      return vm.absenceTypes && vm.contactId && vm.currentAbsencePeriod;
+      return vm.absenceTypes && vm.contactId && vm.absencePeriod;
     }
 
     /**
@@ -86,8 +86,8 @@ define([
 
       return LeaveRequest.all({
         contact_id: vm.contactId,
-        from_date: { '>=': vm.currentAbsencePeriod.start_date },
-        to_date: { '<=': vm.currentAbsencePeriod.end_date },
+        from_date: { '>=': vm.absencePeriod.start_date },
+        to_date: { '<=': vm.absencePeriod.end_date },
         status_id: { IN: statusIds },
         type_id: { IN: absenceTypeIds }
       })
@@ -95,7 +95,7 @@ define([
         var requests = response.list;
 
         mapAbsenceTypesBalance(requests);
-        mapRequestsToWeekHeatMap(requests);
+        mapRequestsToHeatmapValues(requests);
       });
     }
 
@@ -142,8 +142,8 @@ define([
      *
      * @param {LeaveRequestInstance[]} requests - an array of leave requests.
      */
-    function mapRequestsToWeekHeatMap (requests) {
-      vm.weekHeatMap = {};
+    function mapRequestsToHeatmapValues (requests) {
+      vm.heatmapValues = {};
 
       requests.reduce(function (dates, request) {
         return dates.concat(request.dates);
@@ -152,11 +152,11 @@ define([
         // 0 = Monday, 6 = Sunday:
         var dayOfTheWeek = moment(date.date).isoWeekday() - 1;
 
-        if (!vm.weekHeatMap[dayOfTheWeek]) {
-          vm.weekHeatMap[dayOfTheWeek] = 0;
+        if (!vm.heatmapValues[dayOfTheWeek]) {
+          vm.heatmapValues[dayOfTheWeek] = 0;
         }
 
-        vm.weekHeatMap[dayOfTheWeek]++;
+        vm.heatmapValues[dayOfTheWeek]++;
       });
     }
   }

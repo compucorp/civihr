@@ -1,7 +1,7 @@
 /* eslint-env amd */
 
 define([
-  'common/components/week-heatmap.component'
+  'common/components/heatmap.component'
 ], function () {
 
 });

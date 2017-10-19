@@ -5,16 +5,16 @@ define([
   'leave-absences/shared/modules/components',
   'leave-absences/shared/models/entitlement.model'
 ], function (_, components) {
-  components.component('leaveWidgetBalance', {
+  components.component('leaveWidgetAbsenceTypesAvailableBalance', {
     bindings: {
       absenceTypes: '<',
       contactId: '<',
-      currentAbsencePeriod: '<'
+      absencePeriod: '<'
     },
     controller: leaveWidgetBalanceController,
     controllerAs: 'leaveWidgetBalance',
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sharedPathTpl + 'components/leave-widget/leave-widget-balance.html';
+      return sharedSettings.sharedPathTpl + 'components/leave-widget/leave-widget-absence-types-available-balance.html';
     }]
   });
 
@@ -49,7 +49,7 @@ define([
      * @return {Boolean}
      */
     function areBindingsReady () {
-      return vm.absenceTypes && vm.currentAbsencePeriod && vm.contactId;
+      return vm.absenceTypes && vm.absencePeriod && vm.contactId;
     }
 
     /**
@@ -75,7 +75,7 @@ define([
     function loadEntitlements () {
       return Entitlement.all({
         contact_id: vm.contactId,
-        period_id: vm.currentAbsencePeriod.id
+        period_id: vm.absencePeriod.id
       }, true)
       .then(function (_entitlements_) {
         entitlements = _entitlements_;

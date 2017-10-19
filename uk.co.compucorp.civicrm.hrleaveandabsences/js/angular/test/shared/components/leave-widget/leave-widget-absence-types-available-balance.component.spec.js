@@ -4,11 +4,11 @@ define([
   'common/lodash',
   'mocks/helpers/controller-on-changes',
   'mocks/apis/entitlement-api-mock',
-  'leave-absences/shared/components/leave-widget/leave-widget-balance.component'
+  'leave-absences/shared/components/leave-widget/leave-widget-absence-types-available-balance.component'
 ], function (_, controllerOnChanges) {
-  describe('LeaveWidgetBalance', function () {
+  describe('leaveWidgetAbsenceTypesAvailableBalance', function () {
     var $componentController, $provide, $rootScope, $scope,
-      currentAbsencePeriod, absenceTypes, ctrl, Entitlement;
+      absencePeriod, absenceTypes, ctrl, Entitlement;
     var contactId = 101;
 
     beforeEach(module('leave-absences.components.leave-widget',
@@ -30,8 +30,7 @@ define([
       Entitlement = _Entitlement_;
 
       AbsencePeriod.all().then(function (periods) {
-        currentAbsencePeriod = periods[0];
-        currentAbsencePeriod.current = true;
+        absencePeriod = periods[0];
       });
       AbsenceType.all().then(function (types) {
         absenceTypes = types;
@@ -43,7 +42,7 @@ define([
     }));
 
     beforeEach(function () {
-      ctrl = $componentController('leaveWidgetBalance', {
+      ctrl = $componentController('leaveWidgetAbsenceTypesAvailableBalance', {
         $scope: $scope
       });
       controllerOnChanges.setupController(ctrl);
@@ -61,17 +60,17 @@ define([
     });
 
     describe('bindings', function () {
-      describe('when absence types, current absence period, and contact id are bound', function () {
+      describe('when absence types, absence period, and contact id are bound', function () {
         beforeEach(function () {
           controllerOnChanges.mockChange('absenceTypes', absenceTypes);
-          controllerOnChanges.mockChange('currentAbsencePeriod', currentAbsencePeriod);
+          controllerOnChanges.mockChange('absencePeriod', absencePeriod);
           controllerOnChanges.mockChange('contactId', contactId);
         });
 
-        it('gets all entitlements for the contact in the current absence period', function () {
+        it('gets all entitlements for the contact in the absence period', function () {
           expect(Entitlement.all).toHaveBeenCalledWith({
             contact_id: contactId,
-            period_id: currentAbsencePeriod.id
+            period_id: absencePeriod.id
           }, true);
         });
 
@@ -81,7 +80,7 @@ define([
           beforeEach(function () {
             Entitlement.all({
               contact_id: contactId,
-              period_id: currentAbsencePeriod.id
+              period_id: absencePeriod.id
             }, true)
             .then(function (entitlements) {
               expectedEntitlements = entitlements

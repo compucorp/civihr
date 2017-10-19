@@ -11,8 +11,8 @@ define([
   'leave-absences/shared/modules/components',
   'leave-absences/shared/models/absence-period.model',
   'leave-absences/shared/models/absence-type.model',
-  './leave-widget-balance.component',
-  './leave-widget-heatmap.component'
+  './leave-widget-absence-types-amount-taken.component',
+  './leave-widget-absence-types-available-balance.component'
 ], function (angular, _) {
   angular.module('leave-absences.components.leave-widget', [
     'common.components',
