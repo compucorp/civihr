@@ -36,4 +36,10 @@
     <title>Create User Account</title>
     <access_arguments>create users</access_arguments>
   </item>
+  <item>
+     <path>civicrm/hrcore/usermenu</path>
+     <title>User Menu</title>
+     <page_callback>CRM_HRCore_Page_UserMenu</page_callback>
+     <access_arguments>access AJAX API</access_arguments>
+  </item>
 </menu>
