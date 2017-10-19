@@ -4,6 +4,7 @@ use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
+use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLog as LeavePeriodEntitlementLog;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement
@@ -130,15 +131,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       $absencePeriodID = $calculation->getAbsencePeriod()->id;
       $absenceTypeID = $calculation->getAbsenceType()->id;
       $contactID = $calculation->getContact()['id'];
-      self::deleteBalanceChangesForLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contactID);
-      self::deleteLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contactID);
+      $params = [];
 
-      $periodEntitlement = self::create(self::buildLeavePeriodParamsFromCalculation(
+      $leavePeriodEntitlement = self::getPeriodEntitlementForContact(
+        $contactID,
+        $absencePeriodID,
+        $absenceTypeID
+      );
+
+      if ($leavePeriodEntitlement) {
+        self::logChanges($leavePeriodEntitlement);
+        $params['id'] = $leavePeriodEntitlement->id;
+      }
+
+      self::deleteBalanceChangesForLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contactID);
+
+      $leaveEntitlementParams = array_merge(self::buildLeavePeriodParamsFromCalculation(
         $calculation,
         $overriddenEntitlement,
         $calculationComment
-      ));
+      ), $params);
 
+      $periodEntitlement = self::create($leaveEntitlementParams);
       self::saveBroughtForwardBalanceChange($calculation, $periodEntitlement);
       self::savePublicHolidaysBalanceChanges($calculation, $periodEntitlement);
       self::saveLeaveBalanceChange($calculation, $periodEntitlement, $overriddenEntitlement);
@@ -161,22 +175,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $overriddenEntitlement,
     $calculationComment
   ) {
-    $absenceTypeID   = $calculation->getAbsenceType()->id;
-    $contactID      = $calculation->getContact()['id'];
+    $absenceTypeID = $calculation->getAbsenceType()->id;
+    $contactID = $calculation->getContact()['id'];
     $absencePeriodID = $calculation->getAbsencePeriod()->id;
 
     $params = [
-      'type_id'     => $absenceTypeID,
+      'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
-      'period_id'   => $absencePeriodID,
-      'overridden'  => (boolean)$overriddenEntitlement,
+      'period_id' => $absencePeriodID,
+      'overridden' => (boolean)$overriddenEntitlement,
+      'comment' => $calculationComment ? $calculationComment : ''
     ];
-
-    if ($calculationComment) {
-      $params['comment']            = $calculationComment;
-      $params['editor_id']  = CRM_Core_Session::getLoggedInContactID();
-      $params['created_date'] = date('YmdHis');
-    }
 
     return $params;
   }
@@ -782,5 +791,21 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
     CRM_Utils_Hook::selectWhereClause($this, $clauses);
     return $clauses;
+  }
+
+  /**
+   * Log changes to the LeavePeriod Entitlement using the Entitlement
+   * Log Entity.
+   *
+   * @param CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $leavePeriodEntitlement
+   */
+  private static function logChanges(LeavePeriodEntitlement $leavePeriodEntitlement) {
+    LeavePeriodEntitlementLog::create([
+      'entitlement_id' => $leavePeriodEntitlement->id,
+      'entitlement_amount' => $leavePeriodEntitlement->getEntitlement(),
+      'editor_id' => $leavePeriodEntitlement->editor_id,
+      'comment' => $leavePeriodEntitlement->comment,
+      'created_date' => $leavePeriodEntitlement->created_date
+    ]);
   }
 }
