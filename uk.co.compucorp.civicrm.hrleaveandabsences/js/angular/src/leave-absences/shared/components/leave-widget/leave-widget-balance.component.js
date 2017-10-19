@@ -1,16 +1,11 @@
 /* eslint-env amd */
 
 define([
-  'common/angular',
   'common/lodash',
-  'common/filters/time-unit-applier.filter',
   'leave-absences/shared/modules/components',
   'leave-absences/shared/models/entitlement.model'
-], function (angular, _) {
-  angular.module('leave-absences.components.leave-widget', [
-    'leave-absences.components',
-    'common.filters'
-  ]).component('leaveWidgetBalance', {
+], function (_, components) {
+  components.component('leaveWidgetBalance', {
     bindings: {
       absenceTypes: '<',
       contactId: '<',
@@ -103,11 +98,10 @@ define([
           var absenceType = _.find(vm.absenceTypes, function (type) {
             return +type.id === +entitlement.type_id;
           });
-          absenceType = _.assign({
+
+          return _.assign({
             balance: entitlement.remainder.future
           }, absenceType);
-
-          return absenceType;
         });
     }
   }

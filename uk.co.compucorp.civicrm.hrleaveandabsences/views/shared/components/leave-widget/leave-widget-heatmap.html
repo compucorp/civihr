@@ -1,0 +1,33 @@
+<div class="leave-widget__sickness">
+  <table class="table-responsive">
+    <thead>
+      <tr>
+        <th>{{leaveWidgetHeatmap.title}}</th>
+        <th>
+          Amount taken
+          <button class="info-button">
+            <i class="fa fa-info-circle"></i>
+          </button>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="absenceType in leaveWidgetHeatmap.absenceTypes">
+        <td class="leave-widget__sickness-type">{{absenceType.title}}</td>
+        <td class="leave-widget__sickness-balance">{{absenceType.balance | timeUnitApplier:'days'}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>{{leaveWidgetHeatmap.title}} heatmap</h4>
+
+  <ul class="week-heatmap">
+    <li class="week-heatmap__low" title="Monday">M</li>
+    <li class="week-heatmap__low" title="Tuesday">T</li>
+    <li class="week-heatmap__low" title="Wednesday">W</li>
+    <li class="week-heatmap__high" title="Thursday">T</li>
+    <li class="week-heatmap__medium" title="Friday">F</li>
+    <li class="week-heatmap__disabled" title="Saturday">S</li>
+    <li class="week-heatmap__disabled" title="Sunday">S</li>
+  </ul>
+</div>

@@ -61,6 +61,10 @@ define([
         expect(ctrl.currentAbsencePeriod).toBe(null);
       });
 
+      it('sets sickness absence types equal to an empty array', function () {
+        expect(ctrl.sicknessAbsenceTypes).toEqual([]);
+      });
+
       it('watches for child components loading and ready events', function () {
         expect($scope.$on).toHaveBeenCalledWith(
           'LeaveWidget::childIsLoading', jasmine.any(Function));
@@ -104,7 +108,9 @@ define([
       });
 
       describe('absence types', function () {
-        beforeEach(function () { $rootScope.$digest(); });
+        beforeEach(function () {
+          $rootScope.$digest();
+        });
 
         it('loads all absence types', function () {
           expect(AbsenceType.all).toHaveBeenCalled();
@@ -112,16 +118,24 @@ define([
 
         describe('after loading all absence types', function () {
           var expectedTypes;
+          var expectedSicknessTypes;
 
           beforeEach(function () {
             AbsenceType.all().then(function (types) {
               expectedTypes = types;
+              expectedSicknessTypes = types.filter(function (type) {
+                return +type.is_sick;
+              });
             });
             $rootScope.$digest();
           });
 
           it('stores all absence types', function () {
             expect(ctrl.absenceTypes).toEqual(expectedTypes);
+          });
+
+          it('stores all sickness absence types', function () {
+            expect(ctrl.sicknessAbsenceTypes).toEqual(expectedSicknessTypes);
           });
         });
       });

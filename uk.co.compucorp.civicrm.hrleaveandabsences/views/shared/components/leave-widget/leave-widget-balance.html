@@ -13,8 +13,8 @@
     </thead>
     <tbody>
       <tr ng-repeat="type in leaveWidgetBalance.absenceTypeEntitlements">
-        <td class="leave-widget__types-name">{{ type.title }}</td>
-        <td class="leave-widget__types-balance">{{ type.balance | timeUnitApplier:'days' }}</td>
+        <td class="leave-widget__types-name">{{type.title}}</td>
+        <td class="leave-widget__types-balance">{{type.balance | timeUnitApplier:'days'}}</td>
       </tr>
     </tbody>
   </table>

@@ -2,9 +2,10 @@
 
 define([
   'common/lodash',
-  'leave-absences/shared/components/leave-widget/leave-widget-balance.component',
-  'mocks/apis/entitlement-api-mock'
-], function (_) {
+  'mocks/helpers/controller-on-changes',
+  'mocks/apis/entitlement-api-mock',
+  'leave-absences/shared/components/leave-widget/leave-widget-balance.component'
+], function (_, controllerOnChanges) {
   describe('LeaveWidgetBalance', function () {
     var $componentController, $provide, $rootScope, $scope,
       currentAbsencePeriod, absenceTypes, ctrl, Entitlement;
@@ -45,6 +46,7 @@ define([
       ctrl = $componentController('leaveWidgetBalance', {
         $scope: $scope
       });
+      controllerOnChanges.setupController(ctrl);
     });
 
     it('should be defined', function () {
@@ -61,9 +63,9 @@ define([
     describe('bindings', function () {
       describe('when absence types, current absence period, and contact id are bound', function () {
         beforeEach(function () {
-          controllerOnChanges('absenceTypes', absenceTypes);
-          controllerOnChanges('currentAbsencePeriod', currentAbsencePeriod);
-          controllerOnChanges('contactId', contactId);
+          controllerOnChanges.mockChange('absenceTypes', absenceTypes);
+          controllerOnChanges.mockChange('currentAbsencePeriod', currentAbsencePeriod);
+          controllerOnChanges.mockChange('contactId', contactId);
         });
 
         it('gets all entitlements for the contact in the current absence period', function () {
@@ -113,17 +115,5 @@ define([
         });
       });
     });
-
-    function controllerOnChanges (bindingName, bindingValue) {
-      var changes = {};
-
-      ctrl[bindingName] = bindingValue;
-      changes[bindingName] = {
-        currentValue: bindingValue,
-        previousValue: undefined
-      };
-
-      ctrl.$onChanges(changes);
-    }
   });
 });
