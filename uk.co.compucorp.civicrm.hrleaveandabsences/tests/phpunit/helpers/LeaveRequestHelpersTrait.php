@@ -27,12 +27,12 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
 
   protected function getLeaveRequestStatuses() {
     return [
-      'approved' => ['id' => 1],
-      'admin_approved' => ['id' => 2],
-      'awaiting_approval' => ['id' => 3],
-      'more_information_required' => ['id' => 4],
-      'rejected' => ['id' => 5],
-      'cancelled' => ['id' => 6],
+      'approved' => 1,
+      'admin_approved' => 2,
+      'awaiting_approval' => 3,
+      'more_information_required' => 4,
+      'rejected' => 5,
+      'cancelled' => 6,
     ];
   }
 
@@ -40,8 +40,8 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
     $leaveRequestStatuses = $this->getLeaveRequestStatuses();
 
     return [
-      [$leaveRequestStatuses['more_information_required']['id']],
-      [$leaveRequestStatuses['awaiting_approval']['id']],
+      [$leaveRequestStatuses['more_information_required']],
+      [$leaveRequestStatuses['awaiting_approval']],
     ];
   }
 
@@ -49,10 +49,10 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
     $leaveRequestStatuses = $this->getLeaveRequestStatuses();
 
     return [
-      [$leaveRequestStatuses['cancelled']['id']],
-      [$leaveRequestStatuses['rejected']['id']],
-      [$leaveRequestStatuses['admin_approved']['id']],
-      [$leaveRequestStatuses['approved']['id']],
+      [$leaveRequestStatuses['cancelled']],
+      [$leaveRequestStatuses['rejected']],
+      [$leaveRequestStatuses['admin_approved']],
+      [$leaveRequestStatuses['approved']],
     ];
   }
 

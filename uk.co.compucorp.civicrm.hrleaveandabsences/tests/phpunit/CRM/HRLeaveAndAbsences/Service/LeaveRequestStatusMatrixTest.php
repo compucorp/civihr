@@ -170,7 +170,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
   }
 
   public function allPossibleStatusTransitionForStaffDataProvider() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $leaveRequestStatuses = $this->getLeaveRequestStatuses();
 
     return [
       [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['awaiting_approval']],
@@ -183,7 +183,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
   }
 
   public function allNonPossibleStatusTransitionForStaffDataProvider() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $leaveRequestStatuses = $this->getLeaveRequestStatuses();
 
     return [
       [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['more_information_required']],
@@ -214,7 +214,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
   }
 
   public function allPossibleStatusTransitionForLeaveApprover() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $leaveRequestStatuses = $this->getLeaveRequestStatuses();
 
     return [
       [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['more_information_required']],
@@ -244,7 +244,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
   }
 
   public function allNonPossibleStatusTransitionForLeaveApprover() {
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $leaveRequestStatuses = $this->getLeaveRequestStatuses();
 
     return [
       [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['awaiting_approval']],
