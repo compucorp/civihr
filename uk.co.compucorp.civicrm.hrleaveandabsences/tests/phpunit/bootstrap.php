@@ -1,5 +1,5 @@
 <?php
-
+define('CIVICRM_CONTAINER_CACHE', 'never');
 ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
 eval(cv('php:boot --level=full -t', 'phpcode'));
