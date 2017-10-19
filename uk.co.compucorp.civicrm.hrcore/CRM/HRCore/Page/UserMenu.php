@@ -19,6 +19,12 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
     return parent::run();
   }
 
+  /**
+   * Gets the currently logged in contact's data, including the
+   * her user id in the CMS
+   *
+   * @return array
+   */
   private function getContactData() {
     $rawContactData = civicrm_api('Contact', 'getsingle', array(
       'version' => 3,
@@ -27,9 +33,15 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
       'api.User.getsingle' => array('contact_id' => "\$value.contact_id")
     ));
 
-    $this->contactData = $this->normalizeContactData($rawContactData);
+    $this->contactData = $this->normalizeContactDataAPIResponse($rawContactData);
   }
 
+  /**
+   * Returns the path of the user's image, falling back to the CMS's default
+   * image if the user doesn't have one
+   *
+   * @return string
+   */
   private function getUserImagePath() {
     $defaultPath = $this->cmsPaths->getDefaultImagePath();
 
@@ -40,13 +52,23 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
     }
   }
 
+  /**
+   * Instantiates the paths class of the current CMS
+   */
   private function instantiateCmsPaths() {
     $cmsName = CRM_Core_Config::singleton()->userFramework;
 
     $this->cmsPaths = PathsFactory::create($cmsName, $this->contactData);
   }
 
-  private function normalizeContactData($rawData) {
+  /**
+   * Normalizes the given contact data, removing any odd structure
+   * related to the API response
+   *
+   * @param array $rawData
+   * @return array
+   */
+  private function normalizeContactDataAPIResponse($rawData) {
     $rawData['cmsId'] = $rawData['api.User.getsingle']['id'];
     unset($rawData['api.User.getsingle']);
 
