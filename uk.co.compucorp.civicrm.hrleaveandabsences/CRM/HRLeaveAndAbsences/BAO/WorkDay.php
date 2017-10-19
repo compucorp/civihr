@@ -7,7 +7,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
   /**
    * @var array|null
    *   Caches the list of option values for the type field.
-   *   When it is null, it means the values were not loaded yet
    */
   private static $workDayTypes;
 
@@ -54,7 +53,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
    * @return string
    */
   private static function getTypeValue($optionName) {
-    if(is_null(self::$workDayTypes)) {
+    if(empty(self::$workDayTypes)) {
       self::$workDayTypes = array_flip(self::buildOptions('type', 'validate'));
 
       // The option value values are stored as strings on the database, so we
@@ -204,6 +203,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
     if(!in_array($type, $validTypes)) {
       throw new InvalidWorkDayException(
         'Invalid Work Day Type'
+        //'Invalid Work Day Type: ' . $type . 'The valid types are: '.implode(', ', $validTypes)
       );
     }
   }
