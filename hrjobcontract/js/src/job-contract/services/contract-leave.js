@@ -7,8 +7,8 @@ define([
 ], function (_, services) {
   'use strict';
 
-  services.factory('ContractLeaveService', ['$resource', '$q', 'settings', 'UtilsService', '$log',
-    function ($resource, $q, settings, UtilsService, $log) {
+  services.factory('ContractLeaveService', ['$resource', '$q', 'settings', 'UtilsService', '$log', 'AbsenceType',
+    function ($resource, $q, settings, UtilsService, $log, AbsenceType) {
       $log.debug('Service: ContractLeaveService');
 
       var ContractLeave = $resource(settings.pathRest, {
@@ -26,6 +26,14 @@ define([
       function adjustAddPublicHolidaysValue (values) {
         _.each(values, function (value) {
           value.add_public_holidays = !!parseInt(value.add_public_holidays);
+        });
+      }
+
+      function getAbsenceTypes () {
+        return AbsenceType.all({ options: { sort: 'id ASC' } })
+        .then(AbsenceType.loadCalculationUnits)
+        .then(function (absenceTypes) {
+          return _.indexBy(absenceTypes, 'id');
         });
       }
 
@@ -149,7 +157,7 @@ define([
         },
         model: function (fields, leaveType) {
           var deffered = $q.defer();
-          var leaveTypePromise = !leaveType || typeof leaveType !== 'object' ? this.getOptions('leave_type') : leaveType;
+          var leaveTypePromise = !leaveType || typeof leaveType !== 'object' ? getAbsenceTypes() : leaveType;
 
           function createModel (leaveType, fields) {
             var i = 0;
@@ -198,8 +206,16 @@ define([
             };
 
             _.each(leaveType, function (type, typeId) {
-              modelEntry.leave_type = typeId;
+              if (type.calculation_unit_name === 'hours') {
+                modelEntry.add_public_holidays = false;
+              }
+
+              modelEntry.leave_type = type.id;
+              modelEntry.leave_type_title = type.title;
+              modelEntry.leave_calculation_unit_name = type.calculation_unit_name;
+              modelEntry.leave_calculation_unit_label = type.calculation_unit_label;
               modelEntry.leave_amount = 0;
+
               model.push(_.cloneDeep(modelEntry));
             });
 
