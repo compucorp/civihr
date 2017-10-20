@@ -184,7 +184,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       'contact_id' => $contactID,
       'period_id' => $absencePeriodID,
       'overridden' => (boolean)$overriddenEntitlement,
-      'comment' => $calculationComment ? $calculationComment : ''
+      'comment' => $calculationComment ?: ''
     ];
 
     return $params;
@@ -800,12 +800,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @param CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $leavePeriodEntitlement
    */
   private static function logChanges(LeavePeriodEntitlement $leavePeriodEntitlement) {
+    $editorId = !empty($leavePeriodEntitlement->editor_id) ?
+      $leavePeriodEntitlement->editor_id : CRM_Core_Session::getLoggedInContactID();
+    $createdDate = !empty($leavePeriodEntitlement->created_date) ?
+      $leavePeriodEntitlement->created_date : date('YmdHis');
+
     LeavePeriodEntitlementLog::create([
       'entitlement_id' => $leavePeriodEntitlement->id,
       'entitlement_amount' => $leavePeriodEntitlement->getEntitlement(),
-      'editor_id' => $leavePeriodEntitlement->editor_id,
+      'editor_id' => $editorId,
       'comment' => $leavePeriodEntitlement->comment,
-      'created_date' => $leavePeriodEntitlement->created_date
+      'created_date' => $createdDate
     ]);
   }
 }
