@@ -9,7 +9,7 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
    *
    * @var array
    */
-  private $contactData;
+  private $contactData = [];
 
   /**
    * An instance of a class implementing the CRM_HRCore_CMSData_PathsInterface
@@ -22,10 +22,9 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
    * {@inheritdoc}
    */
   public function run() {
-    $this->setContactData();
     $this->instantiateCmsPaths();
 
-    $this->assign('username', $this->contactData['display_name']);
+    $this->assign('username', $this->contactData()['display_name']);
     $this->assign('image', $this->getUserImagePath());
     $this->assign('editLink', $this->cmsPaths->getEditAccountPath());
     $this->assign('logoutLink', $this->cmsPaths->getLogoutPath());
@@ -34,19 +33,33 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
   }
 
   /**
-   * Sets the currently logged in contact's data, including the
-   * user id in the CMS
+   * Returns the contact data, or fetches it from the api if
+   * it's not yet available
    *
    * @return array
    */
-  private function setContactData() {
+  private function contactData() {
+    if (empty($this->contactData)) {
+       $this->contactData = $this->getContactDataFromApi();
+    }
+
+    return $this->contactData;
+  }
+
+  /**
+   * Fetches the contact data from the API and then
+   * normalizes the response
+   *
+   * @return array
+   */
+  private function getContactDataFromApi() {
     $rawContactData = civicrm_api3('Contact', 'getsingle', [
       'return' => ['id', 'display_name', 'image_URL'],
       'id' => CRM_Core_Session::getLoggedInContactID(),
       'api.User.getsingle' => ['contact_id' => '$value.contact_id']
     ]);
 
-    $this->contactData = $this->normalizeContactDataAPIResponse($rawContactData);
+    return $this->normalizeContactDataAPIResponse($rawContactData);
   }
 
   /**
@@ -71,13 +84,11 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
    * @return string
    */
   private function getUserImagePath() {
-    $defaultPath = $this->cmsPaths->getDefaultImagePath();
-
-    if (isset($this->contactData['image_URL']) && !empty($this->contactData['image_URL'])) {
-      return $this->contactData['image_URL'];
-    } else {
-      return $defaultPath;
+    if (!empty($this->contactData()['image_URL'])) {
+      return $this->contactData()['image_URL'];
     }
+
+    return $this->cmsPaths->getDefaultImagePath();
   }
 
   /**
@@ -86,6 +97,6 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
   private function instantiateCmsPaths() {
     $cmsName = CRM_Core_Config::singleton()->userFramework;
 
-    $this->cmsPaths = CMSPathsFactory::create($cmsName, $this->contactData);
+    $this->cmsPaths = CMSPathsFactory::create($cmsName, $this->contactData());
   }
 }
