@@ -4,9 +4,23 @@ use CRM_HRCore_CMSData_PathsFactory as PathsFactory;
 
 class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
 
+  /**
+   * The contact data used to build the menu
+   *
+   * @var array
+   */
   private $contactData;
+
+  /**
+   * An instance of a class implementing the CRM_HRCore_CMSData_PathsInterface
+   *
+   * @var CRM_HRCore_CMSData_PathsInterface
+   */
   private $cmsPaths;
 
+  /**
+   * {@inheritdoc}
+   */
   public function run() {
     $this->getContactData();
     $this->instantiateCmsPaths();
@@ -66,6 +80,7 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
    * related to the API response
    *
    * @param array $rawData
+   *
    * @return array
    */
   private function normalizeContactDataAPIResponse($rawData) {

@@ -5,8 +5,11 @@ class CRM_HRCore_CMSData_PathsFactory {
   /**
    * Instantiates a Paths class based on the given CMS name
    *
-   * @param string cmsName
+   * @param string $cmsName
+   * @param array $contactData
+   *
    * @return object
+   *
    * @throws Exception if the CMS is not recognized
    */
   public static function create($cmsName, $contactData) {
