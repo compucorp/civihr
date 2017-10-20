@@ -1,9 +1,9 @@
 define([
   'job-contract/services/services'
-], function(services) {
+], function (services) {
   'use strict';
 
-  services.factory('Contract', ['$resource', 'settings', '$log', function($resource, settings, $log) {
+  services.factory('Contract', ['$resource', 'settings', '$log', function ($resource, settings, $log) {
     $log.debug('Service: Contract');
 
     return $resource(settings.pathRest, {
@@ -15,7 +15,7 @@ define([
 
   services.factory('ContractService', [
     '$log', '$q', 'Contract', 'ContractRevisionService', 'settings', 'UtilsService', 'DOMEventTrigger',
-    function($log, $q, Contract, ContractRevisionService, settings, UtilsService, DOMEventTrigger) {
+    function ($log, $q, Contract, ContractRevisionService, settings, UtilsService, DOMEventTrigger) {
       $log.debug('Service: ContractService');
 
       /**
@@ -25,14 +25,14 @@ define([
        * @param {Object} data
        *   The data object as returned by the API
        */
-      function adjustAddPublicHolidaysValue(data) {
+      function adjustAddPublicHolidaysValue (data) {
         angular.forEach(data.leave, function (value) {
           value.add_public_holidays = !!parseInt(value.add_public_holidays);
         });
       }
 
       return {
-        get: function(contactId) {
+        get: function (contactId) {
           var deffered = $q.defer(),
             params = {};
 
@@ -43,20 +43,19 @@ define([
               deleted: 0
             };
 
-            if (contactId && typeof + contactId === 'number') {
+            if (contactId && typeof +contactId === 'number') {
               params.contact_id = contactId;
             }
 
             Contract.get({
               json: params
-            }, function(data) {
-
+            }, function (data) {
               if (UtilsService.errorHandler(data, 'Unable to fetch contract list', deffered)) {
-                return
+                return;
               }
 
               deffered.resolve(data.values);
-            }, function() {
+            }, function () {
               deffered.reject('Unable to fetch contract list');
             });
           } else {
@@ -73,7 +72,7 @@ define([
          *
          * @param contactId :the current contact ID
          */
-        getCurrentContract: function(contactId) {
+        getCurrentContract: function (contactId) {
           var deffered = $q.defer();
 
           Contract.get({
@@ -81,12 +80,12 @@ define([
             json: {
               'contact_id': contactId
             }
-          }, function(data) {
+          }, function (data) {
             if (data.is_error) {
               deffered.reject('Unable to fetch the current contract');
             }
             deffered.resolve(data.values);
-          }, function() {
+          }, function () {
             deffered.reject('Unable to fetch the current contract');
           });
 
@@ -97,20 +96,19 @@ define([
          * Triggers the update of the contact header via the `hrui` extension
          * by emitting a DOM event with the contract data
          */
-        updateHeaderInfo: function() {
+        updateHeaderInfo: function () {
           this.getCurrentContract(settings.contactId)
-            .then(function(currentContract) {
+            .then(function (currentContract) {
               DOMEventTrigger('updateContactHeader', {
                 contract: currentContract
               });
             })
-            .catch(function(error) {
+            .catch(function (error) {
               console.log(error);
             });
         },
-        getOne: function(contractId, contactId) {
-
-          if (!contractId || typeof + contractId !== 'number') {
+        getOne: function (contractId, contactId) {
+          if (!contractId || typeof +contractId !== 'number') {
             return null;
           }
 
@@ -123,24 +121,23 @@ define([
             },
             val;
 
-          if (contactId && typeof + contactId === 'number') {
+          if (contactId && typeof +contactId === 'number') {
             params.contact_id = contactId;
           }
 
           Contract.get({
             json: params
-          }, function(data) {
+          }, function (data) {
             val = data.values;
             deffered.resolve(val.length == 1 ? val[0] : null);
-          }, function() {
+          }, function () {
             deffered.reject('Unable to fetch contract data');
           });
 
           return deffered.promise;
         },
-        getRevision: function(contractId) {
-
-          if (!contractId || typeof + contractId !== 'number') {
+        getRevision: function (contractId) {
+          if (!contractId || typeof +contractId !== 'number') {
             return null;
           }
 
@@ -156,16 +153,15 @@ define([
 
           ContractRevisionService.get({
             json: params
-          }, function(data) {
+          }, function (data) {
             deffered.resolve(data.values);
-          }, function() {
+          }, function () {
             deffered.reject('Unable to fetch contract revisions');
           });
 
           return deffered.promise;
-
         },
-        getRevisionOptions: function(fieldName, callAPI) {
+        getRevisionOptions: function (fieldName, callAPI) {
           var deffered = $q.defer(),
             data;
 
@@ -178,15 +174,14 @@ define([
 
             deffered.resolve(data || {});
           } else {
-            //TODO call2API
+            // TODO call2API
           }
 
           return deffered.promise;
         },
-        save: function(contractDetails) {
-
+        save: function (contractDetails) {
           if ((!contractDetails || typeof contractDetails !== 'object') ||
-            (!contractDetails.id || typeof + contractDetails.id !== 'number')) {
+            (!contractDetails.id || typeof +contractDetails.id !== 'number')) {
             return null;
           }
 
@@ -200,20 +195,18 @@ define([
           Contract.save({
             action: 'create',
             json: params
-          }, null, function(data) {
+          }, null, function (data) {
             val = data.values;
             deffered.resolve(val.length == 1 ? val[0] : null);
-          }, function() {
+          }, function () {
             deffered.reject('Unable to fetch contract contract data');
           });
 
           return deffered.promise;
-
         },
-        saveRevision: function(revisionDetails) {
-
+        saveRevision: function (revisionDetails) {
           if ((!revisionDetails || typeof revisionDetails !== 'object') ||
-            (!revisionDetails.id || typeof + revisionDetails.id !== 'number')) {
+            (!revisionDetails.id || typeof +revisionDetails.id !== 'number')) {
             return null;
           }
 
@@ -227,19 +220,17 @@ define([
           ContractRevisionService.save({
             action: 'create',
             json: params
-          }, null, function(data) {
+          }, null, function (data) {
             val = data.values;
             deffered.resolve(val.length == 1 ? val[0] : null);
-          }, function() {
+          }, function () {
             deffered.reject('Unable to fetch contract revision');
           });
 
           return deffered.promise;
-
         },
-        delete: function(contractId) {
-
-          if (!contractId || typeof + contractId !== 'number') {
+        delete: function (contractId) {
+          if (!contractId || typeof +contractId !== 'number') {
             return null;
           }
 
@@ -250,17 +241,16 @@ define([
             json: {
               id: contractId
             }
-          }, function(data) {
+          }, function (data) {
             deffered.resolve(data);
-          }, function() {
+          }, function () {
             deffered.reject('Could not delete contract ID:' + contractId);
           });
 
           return deffered.promise;
         },
-        deleteRevision: function(revisionId) {
-
-          if (!revisionId || typeof + revisionId !== 'number') {
+        deleteRevision: function (revisionId) {
+          if (!revisionId || typeof +revisionId !== 'number') {
             return null;
           }
 
@@ -274,10 +264,10 @@ define([
               deleted: 1,
               id: revisionId
             }
-          }, null, function(data) {
+          }, null, function (data) {
             val = data.values;
             deffered.resolve(val.length == 1 ? val[0] : null);
-          }, function() {
+          }, function () {
             deffered.reject('Unable to delete contract revision id: ' + revisionId);
           });
 
@@ -290,8 +280,8 @@ define([
          * @param  {int} contractId
          * @return {Promise} resolves with the api response
          */
-        fullDetails: function(contractId) {
-          if (!contractId || typeof + contractId !== 'number') {
+        fullDetails: function (contractId) {
+          if (!contractId || typeof +contractId !== 'number') {
             return null;
           }
 
@@ -302,16 +292,16 @@ define([
             json: {
               jobcontract_id: contractId
             }
-          }, function(data) {
+          }, function (data) {
             adjustAddPublicHolidaysValue(data);
             deferred.resolve(data);
-          }, function() {
+          }, function () {
             deferred.reject('Could not fetch full details for contract ID:' + contractId);
           });
 
           return deferred.promise;
         }
-      }
+      };
     }
   ]);
 });
