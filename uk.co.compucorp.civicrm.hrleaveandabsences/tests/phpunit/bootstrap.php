@@ -8,6 +8,7 @@ eval(cv('php:boot --level=full -t', 'phpcode'));
 define('CIVICRM_MAILER_SPOOL', 1);
 
 require_once 'BaseHeadlessTest.php';
+require_once 'helpers/OptionGroupHelpersTrait.php';
 require_once 'helpers/ContractHelpersTrait.php';
 require_once 'helpers/LeaveBalanceChangeHelpersTrait.php';
 require_once 'helpers/LeavePeriodEntitlementHelpersTrait.php';
