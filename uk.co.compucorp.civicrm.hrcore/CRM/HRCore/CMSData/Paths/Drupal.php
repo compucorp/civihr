@@ -5,12 +5,12 @@ class CRM_HRCore_CMSData_Paths_Drupal implements CRM_HRCore_CMSData_PathsInterfa
   /**
    * @const string
    */
-  const DEFAULT_IMAGE_PATH = '/%{base}/images/profile-default.png';
+  const DEFAULT_USER_IMAGE_PATH = '/%{base}/images/profile-default.png';
 
   /**
    * @const string
    */
-  const EDIT_PATH = '/user/%{userId}/edit';
+  const EDIT_USER_PATH = '/user/%{userId}/edit';
 
   /**
    * @const string
@@ -37,14 +37,14 @@ class CRM_HRCore_CMSData_Paths_Drupal implements CRM_HRCore_CMSData_PathsInterfa
   public function getDefaultImagePath() {
     $modulePath = drupal_get_path('module', 'civihr_employee_portal');
 
-    return str_replace('%{base}', $modulePath, self::DEFAULT_IMAGE_PATH);
+    return str_replace('%{base}', $modulePath, self::DEFAULT_USER_IMAGE_PATH);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getEditAccountPath() {
-    return str_replace('%{userId}', $this->contactData['cmsId'], self::EDIT_PATH);
+    return str_replace('%{userId}', $this->contactData['cmsId'], self::EDIT_USER_PATH);
   }
 
   /**
