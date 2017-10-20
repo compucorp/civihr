@@ -1,7 +1,10 @@
+/* eslint-env amd */
+
 define([
+  'common/lodash',
   'job-contract/services/services',
   'job-contract/services/utils'
-], function (services) {
+], function (_, services) {
   'use strict';
 
   services.factory('ContractLeaveService', ['$resource', '$q', 'settings', 'UtilsService', '$log',
@@ -21,13 +24,15 @@ define([
        * @param {Object} values - The values object as returned by the API
        */
       function adjustAddPublicHolidaysValue (values) {
-        angular.forEach(values, function (value) {
+        _.each(values, function (value) {
           value.add_public_holidays = !!parseInt(value.add_public_holidays);
         });
       }
 
       return {
         getOne: function (params) {
+          var deffered = $q.defer();
+
           if ((!params || typeof params !== 'object') ||
             (!params.jobcontract_revision_id) ||
             (params.jobcontract_revision_id && typeof +params.jobcontract_revision_id !== 'number') ||
@@ -38,8 +43,6 @@ define([
 
           params.sequential = 1;
           params.debug = settings.debug;
-
-          var deffered = $q.defer();
 
           ContractLeave.get({
             json: params
@@ -60,11 +63,11 @@ define([
           return deffered.promise;
         },
         getOptions: function (fieldName, callAPI) {
-          var deffered = $q.defer(),
-            data;
+          var data;
+          var deffered = $q.defer();
 
           if (!callAPI) {
-            var data = settings.CRM.options.HRJobLeave || {};
+            data = settings.CRM.options.HRJobLeave || {};
 
             if (fieldName && typeof fieldName === 'string') {
               data = data[fieldName];
@@ -78,6 +81,9 @@ define([
           return deffered.promise;
         },
         getFields: function (params) {
+          var deffered = $q.defer();
+          var crmFields = settings.CRM.fields;
+
           if (params && typeof params !== 'object') {
             return null;
           }
@@ -85,9 +91,6 @@ define([
           if (!params || typeof params !== 'object') {
             params = {};
           }
-
-          var deffered = $q.defer(),
-            crmFields = settings.CRM.fields;
 
           if (crmFields && crmFields.HRJobLeave) {
             deffered.resolve(crmFields.HRJobLeave);
@@ -113,16 +116,16 @@ define([
           return deffered.promise;
         },
         save: function (contractLeave) {
+          var deffered = $q.defer();
+          var params = {
+            sequential: 1,
+            values: contractLeave,
+            debug: settings.debug
+          };
+
           if (!contractLeave || typeof contractLeave !== 'object') {
             return null;
           }
-
-          var deffered = $q.defer(),
-            params = {
-              sequential: 1,
-              values: contractLeave,
-              debug: settings.debug
-            };
 
           ContractLeave.save({
             action: 'replace',
@@ -145,14 +148,14 @@ define([
           return deffered.promise;
         },
         model: function (fields, leaveType) {
-          var deffered = $q.defer(),
-            leaveTypePromise = !leaveType || typeof leaveType !== 'object' ? this.getOptions('leave_type') : leaveType;
+          var deffered = $q.defer();
+          var leaveTypePromise = !leaveType || typeof leaveType !== 'object' ? this.getOptions('leave_type') : leaveType;
 
           function createModel (leaveType, fields) {
-            var i = 0,
-              len = fields.length,
-              model = [],
-              modelEntry = {};
+            var i = 0;
+            var len = fields.length;
+            var model = [];
+            var modelEntry = {};
 
             for (i; i < len; i++) {
               modelEntry[fields[i].name] = '';
@@ -194,10 +197,10 @@ define([
               return this.leave_amount;
             };
 
-            angular.forEach(leaveType, function (type, typeId) {
+            _.each(leaveType, function (type, typeId) {
               modelEntry.leave_type = typeId;
               modelEntry.leave_amount = 0;
-              model.push(angular.copy(modelEntry));
+              model.push(_.cloneDeep(modelEntry));
             });
 
             return model;
