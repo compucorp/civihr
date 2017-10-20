@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'common/angular',
   'common/ui-select',
@@ -6,6 +8,8 @@ define([
   'common/modules/routers/compu-ng-route',
   'common/modules/directives',
   'common/directives/angular-date/date-input',
+  'common/filters/time-unit-applier.filter',
+  'leave-absences/shared/models/absence-type.model',
   'job-contract/controllers/controllers',
   'job-contract/controllers/contract-list',
   'job-contract/controllers/contract',
@@ -51,6 +55,8 @@ define([
     'common.angularDate',
     'common.services',
     'common.directives',
+    'common.filters',
+    'leave-absences.models',
     'hrjc.controllers',
     'hrjc.directives',
     'hrjc.filters',
