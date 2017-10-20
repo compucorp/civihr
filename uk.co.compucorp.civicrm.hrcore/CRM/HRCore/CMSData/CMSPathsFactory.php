@@ -16,7 +16,7 @@ class CRM_HRCore_CMSData_CMSPathsFactory {
     $allowedCms = ['Drupal', 'WordPress', 'Joomla'];
 
     if (!in_array($cmsName, $allowedCms)) {
-      throw new Exception("CMS \"{$cmsName}\" not recognized", 1);
+      throw new Exception("CMS \"{$cmsName}\" not recognized");
     }
 
     $className = "CRM_HRCore_CMSData_Paths_${cmsName}";
