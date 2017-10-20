@@ -68,8 +68,8 @@ define([
     });
 
     describe('on init', function () {
-      it('sets week heat map equal to an empty object', function () {
-        expect(ctrl.heatmapValues).toEqual({});
+      it('sets leave requests equal to an empty array', function () {
+        expect(ctrl.leaveRequests).toEqual([]);
       });
 
       it('fires a leave widget child is loading event', function () {
@@ -110,6 +110,7 @@ define([
         describe('after loading dependencies', function () {
           var expectedHeatMap = {};
           var expectedAbsenceTypes = [];
+          var leaveRequests = [];
 
           beforeEach(function () {
             LeaveRequest.all({
@@ -120,21 +121,18 @@ define([
               type_id: { IN: absenceTypeIds }
             })
             .then(function (response) {
-              var requests = response.list;
+              leaveRequests = response.list;
 
-              mapHeatMapValues(requests);
-              mapAbsenceTypeBalances(requests);
+              mapAbsenceTypeBalances();
             });
             $rootScope.$digest();
 
             /**
              * Finds and stores the balance for each absence type.
-             *
-             * @param {LeaveRequestInstance[]} requests - an array of leave requests.
              */
-            function mapAbsenceTypeBalances (requests) {
+            function mapAbsenceTypeBalances () {
               expectedAbsenceTypes = absenceTypes.map(function (absenceType) {
-                var balance = requests.filter(function (request) {
+                var balance = leaveRequests.filter(function (request) {
                   return +request.type_id === +absenceType.id;
                 })
                 .reduce(function (balance, request) {
@@ -145,29 +143,13 @@ define([
                 return _.assign({ balance: balance }, absenceType);
               });
             }
-
-            /**
-             * Stores the total leave balance for each day of the week.
-             *
-             * @param {LeaveRequestInstance[]} requests - an array of leave requests.
-             */
-            function mapHeatMapValues (requests) {
-              requests.reduce(function (dates, request) {
-                return dates.concat(request.dates);
-              }, [])
-              .forEach(function (date) {
-                var dayOfTheWeek = moment(date.date).isoWeekday() - 1;
-
-                if (!expectedHeatMap[dayOfTheWeek]) {
-                  expectedHeatMap[dayOfTheWeek] = 0;
-                }
-
-                expectedHeatMap[dayOfTheWeek]++;
-              });
-            }
           });
 
-          it('maps the leave requests days to the week heat map object', function () {
+          it('stores the leave requests', function () {
+            expect(ctrl.leaveRequests).toEqual(leaveRequests);
+          });
+
+          xit('maps the leave requests days to the week heat map object', function () {
             expect(ctrl.heatmapValues).toEqual(expectedHeatMap);
           });
 

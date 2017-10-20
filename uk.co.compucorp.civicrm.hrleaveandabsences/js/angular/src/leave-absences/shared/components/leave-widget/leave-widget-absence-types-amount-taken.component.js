@@ -4,6 +4,7 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/components',
+  'leave-absences/shared/components/leave-requests-heatmap.component',
   'leave-absences/shared/models/leave-request.model'
 ], function (_, moment, components) {
   components.component('leaveWidgetAbsenceTypesAmountTaken', {
@@ -29,7 +30,7 @@ define([
     var statusIds = [];
     var vm = this;
 
-    vm.heatmapValues = {};
+    vm.leaveRequests = [];
 
     vm.$onChanges = $onChanges;
 
@@ -92,10 +93,9 @@ define([
         type_id: { IN: absenceTypeIds }
       })
       .then(function (response) {
-        var requests = response.list;
+        vm.leaveRequests = response.list;
 
-        mapAbsenceTypesBalance(requests);
-        mapRequestsToHeatmapValues(requests);
+        mapAbsenceTypesBalance();
       });
     }
 
@@ -118,14 +118,12 @@ define([
 
     /**
      * Finds and stores the balance for each absence type.
-     *
-     * @param {LeaveRequestInstance[]} requests - an array of leave requests.
      */
-    function mapAbsenceTypesBalance (requests) {
+    function mapAbsenceTypesBalance () {
       vm.absenceTypes = vm.absenceTypes.map(function (absenceType) {
         var balance;
 
-        balance = requests.filter(function (request) {
+        balance = vm.leaveRequests.filter(function (request) {
           return +request.type_id === +absenceType.id;
         })
         .reduce(function (balance, request) {
@@ -134,29 +132,6 @@ define([
         balance = Math.abs(balance);
 
         return _.assign({ balance: balance }, absenceType);
-      });
-    }
-
-    /**
-     * Stores the total leave balance for each day of the week.
-     *
-     * @param {LeaveRequestInstance[]} requests - an array of leave requests.
-     */
-    function mapRequestsToHeatmapValues (requests) {
-      vm.heatmapValues = {};
-
-      requests.reduce(function (dates, request) {
-        return dates.concat(request.dates);
-      }, [])
-      .forEach(function (date) {
-        // 0 = Monday, 6 = Sunday:
-        var dayOfTheWeek = moment(date.date).isoWeekday() - 1;
-
-        if (!vm.heatmapValues[dayOfTheWeek]) {
-          vm.heatmapValues[dayOfTheWeek] = 0;
-        }
-
-        vm.heatmapValues[dayOfTheWeek]++;
       });
     }
   }
