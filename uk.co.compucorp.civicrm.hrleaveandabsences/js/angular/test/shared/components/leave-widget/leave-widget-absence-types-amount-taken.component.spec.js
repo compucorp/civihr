@@ -81,8 +81,8 @@ define([
             return status.value;
           });
           controllerOnChanges.mockChange('absenceTypes', absenceTypes);
-          controllerOnChanges.mockChange('contactId', contactId);
           controllerOnChanges.mockChange('absencePeriod', absencePeriod);
+          controllerOnChanges.mockChange('contactId', contactId);
           controllerOnChanges.mockChange('leaveRequestStatuses',
             leaveRequestStatuses);
           $rootScope.$digest();

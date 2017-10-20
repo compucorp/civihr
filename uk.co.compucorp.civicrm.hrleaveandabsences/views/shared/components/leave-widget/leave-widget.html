@@ -18,42 +18,10 @@
         leave-request-statuses="leaveWidget.leaveRequestStatuses"
       ></leave-widget-absence-types-amount-taken>
       <hr />
-      <div class="leave-widget__next-leave">
-        <table class="table-responsive">
-          <thead>
-            <tr>
-              <th>Next leave</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="leave-widget__next-leave__details">
-                <h3>Holiday/Vacation</h3>
-                <div class="date-range-calendar">
-                  <div class="date-range-calendar__from">
-                    <span class="date-range-calendar__day">14</span>
-                    <span class="date-range-calendar__month">Aug</span>
-                    <span class="date-range-calendar__year">2017</span>
-                    <span class="date-range-calendar__time text-muted">(11:00)</span>
-                  </div>
-                  <div class="date-range-calendar__to">
-                    <span class="date-range-calendar__day">18</span>
-                    <span class="date-range-calendar__month">Aug</span>
-                    <span class="date-range-calendar__year">2017</span>
-                    <span class="date-range-calendar__time text-muted">(11:00)</span>
-                  </div>
-                </div>
-              </td>
-              <td class="leave-widget__next-leave__status">
-                <span class="leave-status-approved">Approved</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <h4>Deduction</h4>
-        <span class="leave-widget__next-leave__deduction">4d 8h</span>
-      </div>
+      <leave-widget-next-leave
+        contact-id="leaveWidget.contactId"
+        leave-request-statuses="leaveWidget.leaveRequestStatuses"
+      ></leave-widget-next-leave>
     </crm-loading>
   </div>
 </div>
