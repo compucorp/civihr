@@ -44,7 +44,7 @@ class CRM_HRCore_CMSData_Paths_DrupalTest extends \PHPUnit_Framework_TestCase im
 /**
  * Mock of the original drupal function
  *
- * @return string}
+ * @return string
  */
 function drupal_get_path() {
   return 'foo/bar';
