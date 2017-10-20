@@ -22,7 +22,7 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
    * {@inheritdoc}
    */
   public function run() {
-    $this->getContactData();
+    $this->setContactData();
     $this->instantiateCmsPaths();
 
     $this->assign('username', $this->contactData['display_name']);
@@ -34,20 +34,34 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
   }
 
   /**
-   * Gets the currently logged in contact's data, including the
-   * her user id in the CMS
+   * Sets the currently logged in contact's data, including the
+   * user id in the CMS
    *
    * @return array
    */
-  private function getContactData() {
-    $rawContactData = civicrm_api('Contact', 'getsingle', array(
-      'version' => 3,
-      'return' => array('id', 'display_name', 'image_URL'),
+  private function setContactData() {
+    $rawContactData = civicrm_api3('Contact', 'getsingle', [
+      'return' => ['id', 'display_name', 'image_URL'],
       'id' => CRM_Core_Session::getLoggedInContactID(),
-      'api.User.getsingle' => array('contact_id' => "\$value.contact_id")
-    ));
+      'api.User.getsingle' => ['contact_id' => '$value.contact_id']
+    ]);
 
     $this->contactData = $this->normalizeContactDataAPIResponse($rawContactData);
+  }
+
+  /**
+   * Normalizes the given contact data, removing any odd structure
+   * related to the API response
+   *
+   * @param array $rawData
+   *
+   * @return array
+   */
+  private function normalizeContactDataAPIResponse($rawData) {
+    $rawData['cmsId'] = $rawData['api.User.getsingle']['id'];
+    unset($rawData['api.User.getsingle']);
+
+    return $rawData;
   }
 
   /**
@@ -73,20 +87,5 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
     $cmsName = CRM_Core_Config::singleton()->userFramework;
 
     $this->cmsPaths = CMSPathsFactory::create($cmsName, $this->contactData);
-  }
-
-  /**
-   * Normalizes the given contact data, removing any odd structure
-   * related to the API response
-   *
-   * @param array $rawData
-   *
-   * @return array
-   */
-  private function normalizeContactDataAPIResponse($rawData) {
-    $rawData['cmsId'] = $rawData['api.User.getsingle']['id'];
-    unset($rawData['api.User.getsingle']);
-
-    return $rawData;
   }
 }
