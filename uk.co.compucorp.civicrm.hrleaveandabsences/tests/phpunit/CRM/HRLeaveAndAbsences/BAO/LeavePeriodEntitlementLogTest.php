@@ -24,8 +24,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLogTest extends BaseHeadl
   public function testCreateEntitlementLogThrowsExceptionWhenEntitlementIdIsAbsent() {
     LeavePeriodEntitlementLog::create([
       'entitlement_amount' => 3,
-      'author_id' => 1,
+      'editor_id' => 1,
       'comment' => '',
+      'created_date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
   }
 
@@ -36,47 +37,56 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLogTest extends BaseHeadl
   public function testCreateEntitlementLogThrowsExceptionWhenEntitlementAmountIsAbsent() {
     LeavePeriodEntitlementLog::create([
       'entitlement_id' => 2,
-      'author_id' => 1,
+      'editor_id' => 1,
       'comment' => 'Sample Comment',
+      'created_date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
   }
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeavePeriodEntitlementLogException
-   * @expectedExceptionMessage The author_id field should not be empty
+   * @expectedExceptionMessage The editor_id field should not be empty
    */
-  public function testCreateEntitlementLogThrowsExceptionWhenAuthorIdIsAbsent() {
+  public function testCreateEntitlementLogThrowsExceptionWhenEditorIdIsAbsent() {
     LeavePeriodEntitlementLog::create([
       'entitlement_id' => 2,
       'entitlement_amount' => 3,
       'comment' => 'Sample Comment',
+      'created_date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
   }
 
-  public function testCreatedDateForTheLeavePeriodEntitlementLogCannotBeSetInTheParams() {
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeavePeriodEntitlementLogException
+   * @expectedExceptionMessage The created_date field should not be empty
+   */
+  public function testCreateEntitlementLogThrowsExceptionWhenCreatedDateIsAbsent() {
+    LeavePeriodEntitlementLog::create([
+      'entitlement_id' => 2,
+      'entitlement_amount' => 3,
+      'editor_id' => 1,
+      'comment' => '',
+    ]);
+  }
+  public function testCreateEntitlementLogDoesNotThrowExceptionWhenEntitlementAmountIsZero() {
     $entitlementLog = LeavePeriodEntitlementLog::create([
       'entitlement_id' => 1,
-      'entitlement_amount' => 3,
-      'author_id' => 1,
+      'entitlement_amount' => 0,
+      'editor_id' => 1,
       'comment' => '',
       'created_date' => CRM_Utils_Date::processDate('2016-01-01')
     ]);
 
-    $entitlementLog = LeavePeriodEntitlementLog::findById($entitlementLog->id);
-    $now = new DateTime('now');
-    $entitlementLogCreatedDate = new DateTime($entitlementLog->created_date);
-
-    //The entitlement log created date cannot be set as a parameter to the
-    //create method.
-    $this->assertEquals($now, $entitlementLogCreatedDate, '', 5);
+    $this->assertNotNull($entitlementLog->id);
   }
 
   public function testUpdatesNotAllowedForTheEntitlementLogEntity() {
     $params = [
       'entitlement_id' => 1,
       'entitlement_amount' => 3,
-      'author_id' => 1,
-      'comment' => 'Sample Comment'
+      'editor_id' => 1,
+      'comment' => 'Sample Comment',
+      'created_date' => CRM_Utils_Date::processDate('2016-01-01')
     ];
 
     $entitlementLog = LeavePeriodEntitlementLog::create($params);

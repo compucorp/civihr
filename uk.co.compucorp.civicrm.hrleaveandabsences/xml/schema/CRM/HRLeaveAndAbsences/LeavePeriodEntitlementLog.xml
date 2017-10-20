@@ -36,14 +36,14 @@
   </foreignKey>
 
   <field>
-    <name>author_id</name>
+    <name>editor_id</name>
     <type>int unsigned</type>
     <required>true</required>
     <comment>FK to Contact. The contact that represents the user who made changes to this entitlement</comment>
     <add>4.4</add>
   </field>
   <foreignKey>
-    <name>author_id</name>
+    <name>editor_id</name>
     <table>civicrm_contact</table>
     <key>id</key>
     <add>4.4</add>

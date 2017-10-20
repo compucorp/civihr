@@ -20,11 +20,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLog extends CRM_HRLeaveAn
     $instance = new self();
     $instance->copyValues($params);
 
-    unset($params['created_date']);
-    if ($hook == 'create') {
-      $instance->created_date = CRM_Utils_Date::processDate('now');
-    }
-
     $instance->save();
     CRM_Utils_Hook::post($hook, $entityName, $instance->id, $instance);
 
@@ -56,8 +51,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLog extends CRM_HRLeaveAn
   private static function validateMandatory($params) {
     $mandatoryFields = [
       'entitlement_id',
-      'author_id',
-      'entitlement_amount',
+      'editor_id',
+      'created_date'
     ];
 
     foreach($mandatoryFields as $field) {
@@ -66,6 +61,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLog extends CRM_HRLeaveAn
           "The {$field} field should not be empty"
         );
       }
+    }
+
+    if(!isset($params['entitlement_amount'])) {
+      throw new InvalidLeavePeriodEntitlementLogException(
+        'The entitlement_amount field should not be empty'
+      );
     }
   }
 
