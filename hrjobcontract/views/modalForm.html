@@ -566,9 +566,9 @@
               </div>
               <div class="form-group" ng-repeat="leaveEntry in entity.leave">
                 <label for="{{prefix}}leave-{{leaveEntry.leave_type}}" class="col-sm-3 control-label">
-                {{options.leave.leave_type[leaveEntry.leave_type]}}
+                {{leaveEntry.leave_type_title}}
                 </label>
-                <div class="col-sm-3">
+                <div class="col-sm-2">
                   <input type="text" id="{{prefix}}leave-{{leaveEntry.leave_type}}"
                     name="leave-{{leaveEntry.leave_type}}"
                     class="form-control"
@@ -576,14 +576,16 @@
                     hrjc-number-float="true"
                     ng-model="leaveEntry.leave_amount" ng-disabled="isDisabled">
                 </div>
+                <div class="col-sm-1 form-control-static">{{leaveEntry.leave_calculation_unit_label}}</div>
                 <div class="col-sm-3">
+                  <div>{{leaveEntry.add_public_holidays}}</div>
                   <div class="btn-group">
                     <label class="btn btn-gray" ng-model="leaveEntry.add_public_holidays" uib-btn-radio="true">Yes</label>
                     <label class="btn btn-gray" ng-model="leaveEntry.add_public_holidays" uib-btn-radio="false">No</label>
                   </div>
                 </div>
-                <div class="col-sm-3">
-                  {{ leaveEntry.getEstimatedLeaveAmount(leaveCtrl.numberOfPublicHolidays) }} Days
+                <div class="col-sm-3 form-control-static">
+                  {{ leaveEntry.getEstimatedLeaveAmount(leaveCtrl.numberOfPublicHolidays) | timeUnitApplier : leaveEntry.leave_calculation_unit_name }}
                 </div>
               </div>
             </div>
