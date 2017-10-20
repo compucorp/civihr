@@ -1,6 +1,6 @@
 <?php
 
-use CRM_HRCore_CMSData_PathsFactory as PathsFactory;
+use CRM_HRCore_CMSData_CMSPathsFactory as CMSPathsFactory;
 
 class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
 
@@ -72,7 +72,7 @@ class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
   private function instantiateCmsPaths() {
     $cmsName = CRM_Core_Config::singleton()->userFramework;
 
-    $this->cmsPaths = PathsFactory::create($cmsName, $this->contactData);
+    $this->cmsPaths = CMSPathsFactory::create($cmsName, $this->contactData);
   }
 
   /**

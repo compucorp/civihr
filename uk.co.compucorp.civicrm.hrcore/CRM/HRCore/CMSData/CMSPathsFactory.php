@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRCore_CMSData_PathsFactory {
+class CRM_HRCore_CMSData_CMSPathsFactory {
 
   /**
    * Instantiates a Paths class based on the given CMS name
@@ -19,7 +19,7 @@ class CRM_HRCore_CMSData_PathsFactory {
       throw new Exception("CMS \"{$cmsName}\" not recognized", 1);
     }
 
-    $className = "CRM_HRCore_CMSData_Paths${cmsName}";
+    $className = "CRM_HRCore_CMSData_Paths_${cmsName}";
 
     return new $className($contactData);
   }
