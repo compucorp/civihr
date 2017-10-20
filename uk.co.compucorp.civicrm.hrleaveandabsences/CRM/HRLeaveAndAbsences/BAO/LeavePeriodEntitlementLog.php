@@ -52,6 +52,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLog extends CRM_HRLeaveAn
     $mandatoryFields = [
       'entitlement_id',
       'editor_id',
+      'created_date'
     ];
 
     foreach($mandatoryFields as $field) {
