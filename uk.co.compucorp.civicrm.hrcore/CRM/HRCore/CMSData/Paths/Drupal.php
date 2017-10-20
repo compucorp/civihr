@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRCore_CMSData_Paths_Drupal implements CRM_HRCore_CMSData_CMSPathsInterface {
+class CRM_HRCore_CMSData_Paths_Drupal implements CRM_HRCore_CMSData_PathsInterface {
 
   /**
    * @const string

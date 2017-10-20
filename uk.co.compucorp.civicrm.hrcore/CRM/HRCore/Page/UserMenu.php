@@ -1,6 +1,6 @@
 <?php
 
-use CRM_HRCore_CMSData_CMSPathsFactory as CMSPathsFactory;
+use CRM_HRCore_CMSData_PathsFactory as CMSPathsFactory;
 
 class CRM_HRCore_Page_UserMenu extends CRM_Core_Page {
 

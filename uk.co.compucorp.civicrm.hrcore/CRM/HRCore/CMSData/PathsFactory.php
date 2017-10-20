@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRCore_CMSData_CMSPathsFactory {
+class CRM_HRCore_CMSData_PathsFactory {
 
   /**
    * Instantiates a Paths class based on the given CMS name
@@ -13,7 +13,7 @@ class CRM_HRCore_CMSData_CMSPathsFactory {
    * @throws Exception if the CMS is not recognized
    */
   public static function create($cmsName, $contactData) {
-    $allowedCms = ['Drupal', 'WordPress', 'Joomla'];
+    $allowedCms = ['Drupal'];
 
     if (!in_array($cmsName, $allowedCms)) {
       throw new Exception("CMS \"{$cmsName}\" not recognized");
