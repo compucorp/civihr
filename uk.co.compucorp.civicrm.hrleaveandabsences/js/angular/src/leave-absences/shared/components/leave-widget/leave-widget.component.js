@@ -34,16 +34,20 @@ define([
     }]
   });
 
-  leaveWidgetController.$inject = ['$log', '$scope', 'AbsencePeriod',
-    'AbsenceType'];
+  leaveWidgetController.$inject = ['$log', '$q', '$scope', 'AbsencePeriod',
+    'AbsenceType', 'OptionGroup'];
 
-  function leaveWidgetController ($log, $scope, AbsencePeriod, AbsenceType) {
+  function leaveWidgetController ($log, $q, $scope, AbsencePeriod,
+    AbsenceType, OptionGroup) {
+    var allowedLeaveStatuses = ['approved', 'admin_approved',
+      'awaiting_approval', 'more_information_required'];
     var childComponents = 0;
     var vm = this;
 
     vm.absenceTypes = [];
     vm.currentAbsencePeriod = null;
     vm.loading = { childComponents: false, component: true };
+    vm.leaveRequestStatuses = [];
     vm.sicknessAbsenceTypes = [];
 
     /**
@@ -87,18 +91,22 @@ define([
     }
 
     /**
-     * Loads absence types and the current absence period. When
-     * all dependencies are ready it sets loading component to false.
+     * Loads absence types, the current absence period, and leave request
+     * statuses. When all dependencies are ready it sets loading component to
+     * false.
      *
      * @return {Promise} - Returns an empty promise when all dependencies have
      * been loaded.
      */
     function loadDependencies () {
-      return loadAbsenceTypes()
-        .then(loadCurrentAbsencePeriod)
-        .finally(function () {
-          vm.loading.component = false;
-        });
+      return $q.all([
+        loadAbsenceTypes(),
+        loadCurrentAbsencePeriod(),
+        loadLeaveRequestTypes()
+      ])
+      .finally(function () {
+        vm.loading.component = false;
+      });
     }
 
     /**
@@ -113,6 +121,20 @@ define([
           return +type.is_sick;
         });
       });
+    }
+
+    /**
+     * Loads the status ID for absence types and stores only the allowed ones.
+     *
+     * @return {Promise}
+     */
+    function loadLeaveRequestTypes () {
+      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
+        .then(function (statuses) {
+          vm.leaveRequestStatuses = statuses.filter(function (status) {
+            return _.includes(allowedLeaveStatuses, status.name);
+          });
+        });
     }
 
     /**

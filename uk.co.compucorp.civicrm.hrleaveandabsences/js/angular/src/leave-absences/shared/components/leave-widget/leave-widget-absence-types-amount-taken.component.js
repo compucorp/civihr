@@ -12,7 +12,8 @@ define([
       title: '@',
       absenceTypes: '<',
       contactId: '<',
-      absencePeriod: '<'
+      absencePeriod: '<',
+      leaveRequestStatuses: '<'
     },
     controller: absenceTypesTakenController,
     controllerAs: 'absenceTypesTaken',
@@ -25,9 +26,6 @@ define([
     'OptionGroup'];
 
   function absenceTypesTakenController ($scope, LeaveRequest, OptionGroup) {
-    var allowedLeaveStatuses = ['approved', 'admin_approved',
-      'awaiting_approval', 'more_information_required'];
-    var statusIds = [];
     var vm = this;
 
     vm.leaveRequests = [];
@@ -57,7 +55,8 @@ define([
      * @return {Boolean}
      */
     function areBindingsReady () {
-      return vm.absenceTypes && vm.contactId && vm.absencePeriod;
+      return vm.absenceTypes && vm.contactId && vm.absencePeriod &&
+        vm.leaveRequestStatuses && vm.leaveRequestStatuses.length;
     }
 
     /**
@@ -67,8 +66,7 @@ define([
      * @return {Promise}
      */
     function loadDependencies () {
-      return loadAbsenceTypeStatusIds()
-        .then(loadLeaveRequests)
+      return loadLeaveRequests()
         .finally(function () {
           $scope.$emit('LeaveWidget::childIsReady');
         });
@@ -84,6 +82,9 @@ define([
       var absenceTypeIds = vm.absenceTypes.map(function (absenceType) {
         return absenceType.id;
       });
+      var statusIds = vm.leaveRequestStatuses.map(function (status) {
+        return status.value;
+      });
 
       return LeaveRequest.all({
         contact_id: vm.contactId,
@@ -97,23 +98,6 @@ define([
 
         mapAbsenceTypesBalance();
       });
-    }
-
-    /**
-     * Loads the status ID for absence types and stores only the allowed ones.
-     *
-     * @return {Promise}
-     */
-    function loadAbsenceTypeStatusIds () {
-      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
-        .then(function (statuses) {
-          statusIds = statuses.filter(function (status) {
-            return _.includes(allowedLeaveStatuses, status.name);
-          })
-          .map(function (status) {
-            return status.value;
-          });
-        });
     }
 
     /**

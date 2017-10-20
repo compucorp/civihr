@@ -5,18 +5,19 @@
   <div class="panel-body">
     <crm-loading show="!leaveWidget.loading.component && !leaveWidget.loading.childComponents">
       <leave-widget-absence-types-available-balance
+        absence-period="leaveWidget.currentAbsencePeriod"
         absence-types="leaveWidget.absenceTypes"
         contact-id="leaveWidget.contactId"
-        absence-period="leaveWidget.currentAbsencePeriod"
       ></leave-widget-absence-types-available-balance>
 
       <hr />
 
       <leave-widget-absence-types-amount-taken
         title="Sickness"
+        absence-period="leaveWidget.currentAbsencePeriod"
         absence-types="leaveWidget.sicknessAbsenceTypes"
         contact-id="leaveWidget.contactId"
-        absence-period="leaveWidget.currentAbsencePeriod"
+        leave-request-statuses="leaveWidget.leaveRequestStatuses"
       ></leave-widget-absence-types-amount-taken>
 
       <hr />

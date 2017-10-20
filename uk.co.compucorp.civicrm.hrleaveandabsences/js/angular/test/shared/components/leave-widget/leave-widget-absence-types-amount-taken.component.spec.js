@@ -4,15 +4,14 @@ define([
   'common/lodash',
   'common/moment',
   'mocks/helpers/controller-on-changes',
+  'mocks/data/option-group-mock-data',
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/components/leave-widget/leave-widget-absence-types-amount-taken.component'
-], function (_, moment, controllerOnChanges) {
-  describe('leaveWidgetHeatmap', function () {
+], function (_, moment, controllerOnChanges, OptionGroupData) {
+  describe('leaveWidgetAbsenceTypesAmountTaken', function () {
     var $componentController, $provide, $rootScope, $scope, ctrl,
-      absenceTypes, absencePeriod, OptionGroup, LeaveRequest, statusIds;
+      absenceTypes, absencePeriod, LeaveRequest, leaveRequestStatuses;
     var contactId = 101;
-    var allowedLeaveStatuses = ['approved', 'admin_approved',
-      'awaiting_approval', 'more_information_required'];
 
     beforeEach(module('leave-absences.components.leave-widget',
       'leave-absences.mocks', function (_$provide_) {
@@ -24,15 +23,16 @@ define([
       $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
       $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
       $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
-      $provide.value('OptionGroup', OptionGroupAPIMock);
     }));
 
     beforeEach(inject(function (_$componentController_, _$rootScope_,
-    AbsencePeriod, AbsenceType, _OptionGroup_, _LeaveRequest_) {
+    AbsencePeriod, AbsenceType, _LeaveRequest_) {
       $componentController = _$componentController_;
       $rootScope = _$rootScope_;
-      OptionGroup = _OptionGroup_;
+      $scope = $rootScope.$new();
       LeaveRequest = _LeaveRequest_;
+      leaveRequestStatuses = OptionGroupData
+        .getCollection('hrleaveandabsences_leave_request_status');
 
       AbsencePeriod.all().then(function (periods) {
         absencePeriod = periods[0];
@@ -40,19 +40,9 @@ define([
       AbsenceType.all().then(function (_absenceTypes_) {
         absenceTypes = _absenceTypes_;
       });
-      OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
-        .then(function (statuses) {
-          statusIds = statuses.filter(function (status) {
-            return _.includes(allowedLeaveStatuses, status.name);
-          })
-          .map(function (status) {
-            return status.value;
-          });
-        });
+
       $rootScope.$digest();
-      $scope = $rootScope.$new();
       spyOn($scope, '$emit').and.callThrough();
-      spyOn(OptionGroup, 'valuesOf').and.callThrough();
       spyOn(LeaveRequest, 'all').and.callThrough();
     }));
 
@@ -80,21 +70,21 @@ define([
 
     describe('bindings and dependencies', function () {
       describe('when contact id and absence period are bound', function () {
-        var absenceTypeIds;
+        var absenceTypeIds, leaveRequestStatusIds;
 
         beforeEach(function () {
           absenceTypeIds = absenceTypes.map(function (absenceType) {
             return absenceType.id;
           });
+          leaveRequestStatusIds = leaveRequestStatuses.map(function (status) {
+            return status.value;
+          });
           controllerOnChanges.mockChange('absenceTypes', absenceTypes);
           controllerOnChanges.mockChange('contactId', contactId);
           controllerOnChanges.mockChange('absencePeriod', absencePeriod);
+          controllerOnChanges.mockChange('leaveRequestStatuses',
+            leaveRequestStatuses);
           $rootScope.$digest();
-        });
-
-        it('loads the leave requests statuses', function () {
-          expect(OptionGroup.valuesOf)
-            .toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
         });
 
         it('gets leave requests of the specified absence types', function () {
@@ -102,7 +92,7 @@ define([
             contact_id: contactId,
             from_date: { '>=': absencePeriod.start_date },
             to_date: { '<=': absencePeriod.end_date },
-            status_id: { IN: statusIds },
+            status_id: { IN: leaveRequestStatusIds },
             type_id: { IN: absenceTypeIds }
           });
         });
@@ -117,8 +107,8 @@ define([
               contact_id: contactId,
               from_date: { '>=': absencePeriod.start_date },
               to_date: { '<=': absencePeriod.end_date },
-              status_id: { IN: statusIds },
-              type_id: { IN: absenceTypeIds }
+              status_id: { IN: [1, 2, 3] },
+              type_id: { IN: [1, 2, 3] }
             })
             .then(function (response) {
               leaveRequests = response.list;

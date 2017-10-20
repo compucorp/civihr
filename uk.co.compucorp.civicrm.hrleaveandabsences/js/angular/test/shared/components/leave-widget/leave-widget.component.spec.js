@@ -8,30 +8,33 @@ define([
 ], function (_) {
   describe('LeaveWidget', function () {
     var $componentController, $provide, $rootScope, $scope, AbsencePeriod,
-      AbsenceType, ctrl;
+      AbsenceType, ctrl, OptionGroup;
 
     beforeEach(module('common.mocks', 'leave-absences.components.leave-widget',
     'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (_AbsencePeriodAPIMock_,
-    _AbsenceTypeAPIMock_) {
-      $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
-      $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
+    beforeEach(inject(function (AbsencePeriodAPIMock,
+    AbsenceTypeAPIMock, OptionGroupAPIMock) {
+      $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
+      $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
+      $provide.value('OptionGroup', OptionGroupAPIMock);
     }));
 
     beforeEach(inject(function (_$componentController_, $q, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_) {
+    _AbsencePeriod_, _AbsenceType_, _OptionGroup_) {
       $componentController = _$componentController_;
       $rootScope = _$rootScope_;
       $scope = $rootScope.$new();
       AbsencePeriod = _AbsencePeriod_;
       AbsenceType = _AbsenceType_;
+      OptionGroup = _OptionGroup_;
 
       spyOn($scope, '$on').and.callThrough();
       spyOn(AbsencePeriod, 'all').and.callThrough();
       spyOn(AbsenceType, 'all').and.callThrough();
+      spyOn(OptionGroup, 'valuesOf').and.callThrough();
     }));
 
     beforeEach(function () {
@@ -63,6 +66,10 @@ define([
 
       it('sets sickness absence types equal to an empty array', function () {
         expect(ctrl.sicknessAbsenceTypes).toEqual([]);
+      });
+
+      it('sets leave request statuses equal to an empty array', function () {
+        expect(ctrl.leaveRequestStatuses).toEqual([]);
       });
 
       it('watches for child components loading and ready events', function () {
@@ -162,6 +169,33 @@ define([
 
           it('stores the current one', function () {
             expect(ctrl.currentAbsencePeriod).toEqual(expectedPeriod);
+          });
+        });
+      });
+
+      describe('leave request statuses', function () {
+        it('loads the leave requests statuses', function () {
+          expect(OptionGroup.valuesOf)
+            .toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+        });
+
+        describe('after loadinv leave request statuses', function () {
+          var expectedStatuses;
+          var allowedLeaveStatuses = ['approved', 'admin_approved',
+            'awaiting_approval', 'more_information_required'];
+
+          beforeEach(function () {
+            OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
+              .then(function (statuses) {
+                expectedStatuses = statuses.filter(function (status) {
+                  return _.includes(allowedLeaveStatuses, status.name);
+                });
+              });
+            $rootScope.$digest();
+          });
+
+          it('sotres the leave request statuses', function () {
+            expect(ctrl.leaveRequestStatuses).toEqual(expectedStatuses);
           });
         });
       });
