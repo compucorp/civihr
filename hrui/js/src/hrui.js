@@ -11,10 +11,21 @@
       changeContactSourceFieldHelpText();
     })
     .ready(function () {
+      addUserSubMenuToMainMenu();
       amendApplicationForm();
       customizeQuickSearchField();
       useFontAwesomeArrowsInSubMenuItems();
     });
+
+  /**
+   * Adds the user sub menu by fetching it from the hrcore extension
+   */
+  function addUserSubMenuToMainMenu () {
+    $.ajax('/civicrm/hrcore/usermenu?snippet=4', {
+      dataType: 'html',
+      success: injectUserSubMenuInAMainMenuWrapper
+    });
+  }
 
   /**
    * Adds the Government ID field on the Personal Details page and on the Edit
@@ -157,6 +168,22 @@
     return !$target.is('#crm-qsearch') &&
       !$target.is('#root-menu-div') &&
       !$target.closest('#crm-qsearch, #root-menu-div').length;
+  }
+
+  /**
+   * Injects the given markup in a menu wrapper
+   * created to contain both the original menu and the user one
+   *
+   * @param {string} menuMarkup
+   */
+  function injectUserSubMenuInAMainMenuWrapper (menuMarkup) {
+    var $menuMarkup = $(menuMarkup);
+    var $menuWrapper = $('<div>');
+
+    $menuWrapper.attr('id', 'civihr-menu');
+    $menuWrapper.append($('#civicrm-menu'));
+    $menuWrapper.append($menuMarkup);
+    $menuWrapper.insertAfter('#page');
   }
 
   /**
