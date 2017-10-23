@@ -485,7 +485,7 @@
                             <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
                             <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
                               title="({{ absenceType.calculation_unit_label | lowercase }})">
-                              {{ +request.type_id === +absenceType.id ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '')}}
+                              {{ +request.type_id === +absenceType.id ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
                             </td>
                             <td>
                               <leave-request-actions
