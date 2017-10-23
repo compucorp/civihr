@@ -18,10 +18,13 @@ define([
     }]
   });
 
-  nextLeaveController.$inject = ['$scope', 'LeaveRequest', 'shared-settings'];
+  nextLeaveController.$inject = ['$scope', 'LeaveRequest', 'OptionGroup',
+    'shared-settings'];
 
-  function nextLeaveController ($scope, LeaveRequest, sharedSettings) {
+  function nextLeaveController ($scope, LeaveRequest, OptionGroup,
+  sharedSettings) {
     var childComponentName = 'leave-widget-next-leave';
+    var dayTypes = [];
     var vm = this;
 
     vm.nextLeaveRequest = null;
@@ -60,6 +63,43 @@ define([
     }
 
     /**
+     * Returns the label for the day type id provided.
+     *
+     * @param {String} dayTypeId - the id for the day type.
+     * @return {String}
+     */
+    function getDayTypeLabel (dayTypeId) {
+      var dayType = _.find(dayTypes, function (dayType) {
+        return +dayType.value === +dayTypeId;
+      });
+
+      return dayType.label;
+    }
+
+    /**
+     * Returns a list of status ids.
+     *
+     * @return {Array}
+     */
+    function getStatusIds () {
+      return vm.leaveRequestStatuses.map(function (status) {
+        return status.value;
+      });
+    }
+
+    /**
+     * Loads and stores all the possible day types for leave requests.
+     *
+     * @return {Promise}
+     */
+    function loadDayTypes () {
+      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
+        .then(function (_dayTypes_) {
+          dayTypes = _dayTypes_;
+        });
+    }
+
+    /**
      * Loads the next leave request for the contact that has been approved or
      * is under review.
      *
@@ -77,17 +117,21 @@ define([
       .then(function (response) {
         vm.nextLeaveRequest = response.list[0];
       })
+      .then(mapDateTypeLabels)
       .then(updateBalanceDeduction);
     }
 
     /**
-     * Returns a list of status ids.
+     * Maps the from and to date type labels for the next leave requests.
      *
-     * @return {Array}
+     * @return {Promise}
      */
-    function getStatusIds () {
-      return vm.leaveRequestStatuses.map(function (status) {
-        return status.value;
+    function mapDateTypeLabels () {
+      return loadDayTypes().then(function () {
+        vm.nextLeaveRequest = _.assign({
+          from_date_type_label: getDayTypeLabel(vm.nextLeaveRequest.from_date_type),
+          to_date_type_label: getDayTypeLabel(vm.nextLeaveRequest.to_date_type)
+        }, vm.nextLeaveRequest);
       });
     }
 

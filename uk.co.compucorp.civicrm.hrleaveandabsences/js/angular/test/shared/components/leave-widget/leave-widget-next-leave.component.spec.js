@@ -11,7 +11,7 @@ define([
 ], function (_, moment, controllerOnChanges, OptionGroupData) {
   describe('leaveWidgetNextLeave', function () {
     var $componentController, $provide, $rootScope, $scope, ctrl, LeaveRequest,
-      leaveRequestStatuses, sharedSettings;
+      leaveRequestStatuses, OptionGroup, sharedSettings;
     var childComponentName = 'leave-widget-next-leave';
     var contactId = 101;
 
@@ -20,21 +20,24 @@ define([
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (LeaveRequestAPIMock) {
+    beforeEach(inject(function (LeaveRequestAPIMock, OptionGroupAPIMock) {
       $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
+      $provide.value('OptionGroup', OptionGroupAPIMock);
     }));
 
     beforeEach(inject(['$componentController', '$rootScope', 'LeaveRequest',
-      'shared-settings', function (_$componentController_, _$rootScope_,
-      _LeaveRequest_, _sharedSettings_) {
+      'OptionGroup', 'shared-settings', function (_$componentController_,
+      _$rootScope_, _LeaveRequest_, _OptionGroup_, _sharedSettings_) {
         $componentController = _$componentController_;
         $rootScope = _$rootScope_;
         $scope = $rootScope.$new();
         LeaveRequest = _LeaveRequest_;
         leaveRequestStatuses = OptionGroupData.getCollection(
           'hrleaveandabsences_leave_request_status');
+        OptionGroup = _OptionGroup_;
         sharedSettings = _sharedSettings_;
         spyOn($scope, '$emit').and.callThrough();
+        spyOn(OptionGroup, 'valuesOf').and.callThrough();
         spyOn(LeaveRequest, 'all').and.callThrough();
       }]));
 
@@ -83,6 +86,10 @@ define([
           });
         });
 
+        it('loads the leave request day types', function () {
+          expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_day_type');
+        });
+
         describe('after loading dependencies', function () {
           var expectedNextLeave, expectedBalanceDeduction;
 
@@ -95,6 +102,10 @@ define([
             })
             .then(function (response) {
               expectedNextLeave = response.list[0];
+              expectedNextLeave = _.assign({
+                from_date_type_label: getDayTypeLabel(expectedNextLeave.from_date_type),
+                to_date_type_label: getDayTypeLabel(expectedNextLeave.to_date_type)
+              }, expectedNextLeave);
               expectedBalanceDeduction = Math.abs(expectedNextLeave.balance_change);
             });
             $rootScope.$digest();
@@ -112,6 +123,16 @@ define([
             expect($scope.$emit).toHaveBeenCalledWith(
               'LeaveWidget::childIsReady', childComponentName);
           });
+
+          function getDayTypeLabel (dayTypeId) {
+            var dayType = _.find(OptionGroupData.getCollection(
+              'hrleaveandabsences_leave_request_day_type'),
+              function (dayType) {
+                return +dayType.value === +dayTypeId;
+              });
+
+            return dayType.label;
+          }
         });
       });
     });
