@@ -3,22 +3,19 @@
 define([
   'common/angular',
   'common/lodash',
-  'common/bundles/components',
-  'common/modules/directives',
-  'common/modules/models',
+  'common/directives/loading',
   'common/filters/time-unit-applier.filter',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/modules/components',
   'leave-absences/shared/models/absence-period.model',
   'leave-absences/shared/models/absence-type.model',
-  './leave-widget-absence-types-amount-taken.component',
-  './leave-widget-absence-types-available-balance.component'
+  'leave-absences/shared/components/leave-widget/leave-widget-absence-types-amount-taken.component',
+  'leave-absences/shared/components/leave-widget/leave-widget-absence-types-available-balance.component'
 ], function (angular, _) {
   angular.module('leave-absences.components.leave-widget', [
     'common.components',
     'common.directives',
     'common.filters',
-    'common.models',
     'leave-absences.components',
     'leave-absences.models',
     'leave-absences.settings'

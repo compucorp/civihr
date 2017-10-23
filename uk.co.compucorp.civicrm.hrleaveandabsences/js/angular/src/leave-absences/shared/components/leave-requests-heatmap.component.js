@@ -2,8 +2,9 @@
 
 define([
   'common/moment',
+  'common/components/heatmap.component',
   'leave-absences/shared/modules/components'
-], function (moment, components) {
+], function (moment, heatmap, components) {
   components.component('leaveRequestsHeatmap', {
     bindings: {
       leaveRequests: '<'
