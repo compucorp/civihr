@@ -17,8 +17,8 @@ define([
   }]);
 
   services.factory('ContractService', [
-    '$log', '$q', 'Contract', 'ContractRevisionService', 'settings', 'UtilsService', 'DOMEventTrigger',
-    function ($log, $q, Contract, ContractRevisionService, settings, UtilsService, DOMEventTrigger) {
+    '$log', '$q', 'Contract', 'ContractRevisionService', 'settings', 'UtilsService', 'DOMEventTrigger', 'AbsenceType',
+    function ($log, $q, Contract, ContractRevisionService, settings, UtilsService, DOMEventTrigger, AbsenceType) {
       $log.debug('Service: ContractService');
 
       /**
@@ -28,9 +28,11 @@ define([
        * @param {Object} data
        *   The data object as returned by the API
        */
-      function adjustAddPublicHolidaysValue (data) {
-        _.each(data.leave, function (value) {
-          value.add_public_holidays = !!parseInt(value.add_public_holidays);
+      function adjustAddPublicHolidaysValue (contracts, absenceTypes) {
+        _.each(contracts.leave, function (leave) {
+          leave.add_public_holidays =
+            absenceTypes[leave.leave_type].calculation_unit_name !== 'hours' &&
+            !!parseInt(leave.add_public_holidays);
         });
       }
 
@@ -290,16 +292,20 @@ define([
             return null;
           }
 
-          Contract.get({
-            action: 'getfulldetails',
-            json: {
-              jobcontract_id: contractId
-            }
-          }, function (data) {
-            adjustAddPublicHolidaysValue(data);
-            deferred.resolve(data);
-          }, function () {
-            deferred.reject('Could not fetch full details for contract ID:' + contractId);
+          AbsenceType.all()
+          .then(AbsenceType.loadCalculationUnits)
+          .then(function (absenceTypes) {
+            Contract.get({
+              action: 'getfulldetails',
+              json: {
+                jobcontract_id: contractId
+              }
+            }, function (contracts) {
+              adjustAddPublicHolidaysValue(contracts, _.indexBy(absenceTypes, 'id'));
+              deferred.resolve(contracts);
+            }, function () {
+              deferred.reject('Could not fetch full details for contract ID:' + contractId);
+            });
           });
 
           return deferred.promise;

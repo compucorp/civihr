@@ -205,16 +205,19 @@ define([
               return this.leave_amount;
             };
 
-            _.each(leaveType, function (type, typeId) {
-              if (type.calculation_unit_name === 'hours') {
-                modelEntry.add_public_holidays = false;
+            /*modelEntry.adjustLeaveAmount = function () {
+              if (this.leave_calculation_unit_name === 'hours') {
+                this.leave_amount = 12;
               }
+            };*/
 
+            _.each(leaveType, function (type, typeId) {
               modelEntry.leave_type = type.id;
               modelEntry.leave_type_title = type.title;
               modelEntry.leave_calculation_unit_name = type.calculation_unit_name;
               modelEntry.leave_calculation_unit_label = type.calculation_unit_label;
               modelEntry.leave_amount = 0;
+              modelEntry.is_add_public_holidays_readonly = type.calculation_unit_name === 'hours'
 
               model.push(_.cloneDeep(modelEntry));
             });
