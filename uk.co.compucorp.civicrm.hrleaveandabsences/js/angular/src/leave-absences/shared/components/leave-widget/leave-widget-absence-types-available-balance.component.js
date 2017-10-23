@@ -21,6 +21,7 @@ define([
   leaveWidgetBalanceController.$inject = ['$scope', 'Entitlement'];
 
   function leaveWidgetBalanceController ($scope, Entitlement) {
+    var childComponentName = 'leave-widget-absence-type-available';
     var entitlements;
     var vm = this;
 
@@ -30,7 +31,7 @@ define([
      * Initializes the component by emiting a child is loading event.
      */
     (function init () {
-      $scope.$emit('LeaveWidget::childIsLoading');
+      $scope.$emit('LeaveWidget::childIsLoading', childComponentName);
     })();
 
     /**
@@ -61,7 +62,7 @@ define([
      */
     function loadDependencies () {
       return loadEntitlements().then(function () {
-        $scope.$emit('LeaveWidget::childIsReady');
+        $scope.$emit('LeaveWidget::childIsReady', childComponentName);
       });
     }
 

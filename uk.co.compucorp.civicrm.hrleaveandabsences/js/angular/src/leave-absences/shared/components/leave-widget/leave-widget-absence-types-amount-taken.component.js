@@ -26,6 +26,7 @@ define([
     'OptionGroup'];
 
   function absenceTypesTakenController ($scope, LeaveRequest, OptionGroup) {
+    var childComponentName = 'leave-wdiget-absence-types-amount-taken';
     var vm = this;
 
     vm.leaveRequests = [];
@@ -36,7 +37,7 @@ define([
      * Initializes the controller by emiting a child is loading event.
      */
     (function init () {
-      $scope.$emit('LeaveWidget::childIsLoading');
+      $scope.$emit('LeaveWidget::childIsLoading', childComponentName);
     })();
 
     /**
@@ -68,7 +69,7 @@ define([
     function loadDependencies () {
       return loadLeaveRequests()
         .finally(function () {
-          $scope.$emit('LeaveWidget::childIsReady');
+          $scope.$emit('LeaveWidget::childIsReady', childComponentName);
         });
     }
 
