@@ -2,17 +2,18 @@
 
 define([
   'common/angularMocks',
+  'mocks/services.mock',
   'contact-summary/app',
-  'contact-summary/services/contact',
-  'mocks/services'
+  'contact-summary/services/contact'
 ], function () {
   'use strict';
 
   describe('ContactService', function () {
-    var ContactService, ModelServiceMock, ContactDetailsServiceMock,
-      ContractServiceMock, rootScope;
+    var ContactDetailsServiceMock, ContactService, ContractServiceMock,
+      ModelServiceMock, rootScope;
 
-    beforeEach(module('contactsummary', 'contactsummary.mocks'));
+    beforeEach(module('contactsummary', 'contactsummary.mocks',
+      'contact-summary.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('ModelService', function () {
@@ -41,7 +42,7 @@ define([
 
     describe('get', function () {
       var contact;
-      var expectedDetails = { id: 123, dateOfBirth: '1970/01/01', age: 45 };
+      var expectedDetails = {id: 123, dateOfBirth: '1970/01/01', age: 45};
 
       beforeEach(function () {
         ContactDetailsServiceMock.respond('get', expectedDetails);

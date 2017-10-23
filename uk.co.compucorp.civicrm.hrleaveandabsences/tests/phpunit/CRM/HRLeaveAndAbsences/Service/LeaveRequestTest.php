@@ -37,8 +37,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->leaveContact = 1;
     $this->registerCurrentLoggedInContactInSession($this->leaveContact);
     CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
-
-    $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
   }
 
   public function testCreateAlsoCreateTheLeaveRequestBalanceChanges() {
@@ -161,14 +159,15 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   public function testCreateThrowsAnExceptionWhenTransitionStatusIsNotValidWhenUpdatingLeaveRequestStatus() {
     $params = $this->getDefaultParams();
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+    $leaveRequestStatuses = LeaveRequest::getStatuses();
 
     $this->setExpectedException(
       'RuntimeException', "You can't change the Leave Request status from ".
-      $this->getDefaultParams()['status_id']. " to {$this->leaveRequestStatuses['awaiting_approval']['id']}"
+      $this->getDefaultParams()['status_id']. " to {$leaveRequestStatuses['awaiting_approval']}"
     );
 
     $params['id'] = $leaveRequest->id;
-    $params['status_id'] = $this->leaveRequestStatuses['awaiting_approval']['id'];
+    $params['status_id'] = $leaveRequestStatuses['awaiting_approval'];
 
     $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create($params, false);
   }

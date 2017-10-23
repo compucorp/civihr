@@ -4,18 +4,19 @@ define([
   'common/angular',
   'common/moment',
   'common/angularMocks',
+  'mocks/constants.mock',
+  'mocks/services.mock',
   'contact-summary/app',
-  'contact-summary/services/contactDetails',
-  'mocks/constants',
-  'mocks/services'
+  'contact-summary/services/contactDetails'
 ], function (angular, moment) {
   'use strict';
 
   describe('ContactDetailsService', function () {
-    var ContactDetailsService, ApiServiceMock, ModelServiceMock, rootScope;
+    var ApiServiceMock, ContactDetailsService, ModelServiceMock, rootScope;
     var settingsMock = {};
 
-    beforeEach(module('contactsummary', 'contactsummary.mocks'));
+    beforeEach(module('contactsummary', 'contactsummary.mocks',
+      'contact-summary.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('ApiService', function () {
@@ -46,7 +47,7 @@ define([
       var details;
       var expectedDateOfBirth = '1970/01/01';
       var expectedAge = moment().diff(moment(expectedDateOfBirth, 'YYYY-MM-DD'), 'years');
-      var expectedResponse = { values: [{ birth_date: expectedDateOfBirth }] };
+      var expectedResponse = {values: [{birth_date: expectedDateOfBirth}]};
       var expectedContactId = 123;
 
       beforeEach(function () {

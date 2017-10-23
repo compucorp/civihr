@@ -4,9 +4,9 @@ define([
   'common/angular',
   'common/lodash',
   'common/angularMocks',
+  'mocks/services.mock',
   'contact-summary/app',
-  'contact-summary/services/contract',
-  'mocks/services'
+  'contact-summary/services/contract'
 ], function (angular, _) {
   'use strict';
 
@@ -15,7 +15,8 @@ define([
       ApiServiceMock, ContactDetailsServiceMock, ModelServiceMock,
       rootScope;
 
-    beforeEach(module('contactsummary', 'contactsummary.mocks'));
+    beforeEach(module('contactsummary', 'contactsummary.mocks',
+      'contact-summary.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('ApiService', function () {
@@ -51,8 +52,12 @@ define([
       };
       var expectedContractDetails = {
         values: [{
-          api_HRJobHour_get: { values: [] },
-          api_HRJobPay_get: { values: [] },
+          api_HRJobHour_get: {
+            values: []
+          },
+          api_HRJobPay_get: {
+            values: []
+          },
           title: 'Project Manager',
           period_start_date: '2015-01-31',
           period_end_date: '2015-11-01'
