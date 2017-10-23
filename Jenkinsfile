@@ -44,7 +44,13 @@ pipeline {
           def buildBranch = params.CIVIHR_BRANCH != '' ? params.CIVIHR_BRANCH : env.CHANGE_TARGET != null ? env.CHANGE_TARGET : env.BRANCH_NAME != null ? env.BRANCH_NAME : 'staging'
 
           // Build site with CV Buildkit
-          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr16 --civi-ver 4.7.22 --hr-ver ${buildBranch} --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.22 --hr-ver ${buildBranch} --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh """
+            cd $DRUPAL_MODULES_ROOT/civicrm
+            wget https://gist.githubusercontent.com/davialexandre/deafc6d4929fbf58b97105e54bfb300f/raw/2ec70492a8d5ce419337cc58097c1dfd3e2d4df6/attachments.patch
+            patch -p1 -i attachments.patch
+            rm attachments.patch
+          """
 
           // Change git remote of civihr ext to support dev version of Jenkins pipeline
           changeCivihrGitRemote()

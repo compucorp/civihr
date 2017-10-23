@@ -23,8 +23,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->leaveContact = 1;
     $this->registerCurrentLoggedInContactInSession($this->leaveContact);
     CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
-
-    $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
   }
 
   public function testCanCreateAndUpdateForReturnsFalseWhenCurrentUserIsNotAnAdminOrLeaveManagerOrLeaveContact() {
@@ -170,38 +168,26 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     );
   }
 
-  public function testCanChangeAbsenceTypeForReturnsTrueWhenCurrentUserIsLeaveContactAndStatusPassedIsInAllowedStatuses() {
-    //When user is leave request contact and status is 'More information Required'
+  /**
+   * @dataProvider openLeaveRequestStatusesDataProvider
+   */
+  public function testCanChangeAbsenceTypeForReturnsTrueWhenCurrentUserIsLeaveContactAndTheLeaveRequestIsOpen($status) {
     $this->assertTrue(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $this->leaveContact,
-        $this->leaveRequestStatuses['more_information_required']['id']
-      )
-    );
-
-    //When user is leave request contact and status is 'Awaiting Approval'
-    $this->assertTrue(
-      $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
-        $this->leaveContact,
-        $this->leaveRequestStatuses['awaiting_approval']['id']
+        $status
       )
     );
   }
 
-  public function testCanChangeAbsenceTypeForReturnsFalseWhenCurrentUserIsLeaveContactAndStatusPassedIsNotInAllowedStatuses() {
-    //When user is leave request contact and status is 'Approved'
+  /**
+   * @dataProvider approvedLeaveRequestStatusesDataProvider
+   */
+  public function testCanChangeAbsenceTypeForReturnsFalseWhenCurrentUserIsLeaveContactAndTheLeaveRequestIsApproved($status) {
     $this->assertFalse(
       $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
         $this->leaveContact,
-        $this->leaveRequestStatuses['approved']['id']
-      )
-    );
-
-    //When user is leave request contact and status is 'Admin Approved'
-    $this->assertFalse(
-      $this->getLeaveRightsService()->canChangeAbsenceTypeFor(
-        $this->leaveContact,
-        $this->leaveRequestStatuses['admin_approved']['id']
+        $status
       )
     );
   }
@@ -251,12 +237,12 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $leaveRequestStatuses =  $this->getLeaveRequestStatuses();
 
     return [
-      [$leaveRequestStatuses['more_information_required']['id']],
-      [$leaveRequestStatuses['awaiting_approval']['id']],
-      [$leaveRequestStatuses['cancelled']['id']],
-      [$leaveRequestStatuses['rejected']['id']],
-      [$leaveRequestStatuses['admin_approved']['id']],
-      [$leaveRequestStatuses['approved']['id']],
+      [$leaveRequestStatuses['more_information_required']],
+      [$leaveRequestStatuses['awaiting_approval']],
+      [$leaveRequestStatuses['cancelled']],
+      [$leaveRequestStatuses['rejected']],
+      [$leaveRequestStatuses['admin_approved']],
+      [$leaveRequestStatuses['approved']],
     ];
   }
 }
