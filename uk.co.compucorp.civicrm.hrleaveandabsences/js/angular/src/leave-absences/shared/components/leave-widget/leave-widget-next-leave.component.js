@@ -107,14 +107,13 @@ define([
      * @return {Promise}
      */
     function loadNextLeaveRequest () {
-      var statusIds = getStatusIds();
       var today = moment().format(sharedSettings.serverDateFormat);
 
       return LeaveRequest.all({
         contact_id: vm.contactId,
         from_date: { '>=': today },
         request_type: 'leave',
-        status_id: { IN: statusIds },
+        status_id: { IN: getStatusIds() },
         options: { limit: 1, sort: 'from_date DESC' }
       })
       .then(function (response) {
@@ -126,9 +125,8 @@ define([
      * Makes the next leave requst balance chance value absolute.
      */
     function makeBalanceChangeAbsolute () {
-      vm.nextLeaveRequest = _.defaults({
-        balance_change: Math.abs(vm.nextLeaveRequest.balance_change)
-      }, vm.nextLeaveRequest);
+      vm.nextLeaveRequest.balance_change = Math.abs(
+        vm.nextLeaveRequest.balance_change);
     }
 
     /**

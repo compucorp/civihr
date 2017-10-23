@@ -72,106 +72,102 @@ define([
       });
     });
 
-    describe('bindings and dependencies', function () {
-      describe('when bindings are ready', function () {
-        var leaveRequestStatusIds;
+    describe('when bindings are ready', function () {
+      var leaveRequestStatusIds;
+
+      beforeEach(function () {
+        leaveRequestStatusIds = leaveRequestStatuses.map(function (status) {
+          return status.value;
+        });
+        controllerOnChanges.mockChange('contactId', contactId);
+        controllerOnChanges.mockChange('leaveRequestStatuses',
+          leaveRequestStatuses);
+        $rootScope.$digest();
+      });
+
+      it('gets the next leave request for the contact, in the absence period, and with the specified statuses', function () {
+        expect(LeaveRequest.all).toHaveBeenCalledWith({
+          contact_id: contactId,
+          from_date: { '>=': moment().format(sharedSettings.serverDateFormat) },
+          request_type: 'leave',
+          status_id: { IN: leaveRequestStatusIds },
+          options: { limit: 1, sort: 'from_date DESC' }
+        });
+      });
+
+      it('loads the leave request day types', function () {
+        expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_day_type');
+      });
+
+      describe('after loading dependencies', function () {
+        var expectedDayTypes, expectedNextLeave, expectedRequestStatus;
 
         beforeEach(function () {
-          leaveRequestStatusIds = leaveRequestStatuses.map(function (status) {
-            return status.value;
-          });
-          controllerOnChanges.mockChange('contactId', contactId);
-          controllerOnChanges.mockChange('leaveRequestStatuses',
-            leaveRequestStatuses);
-          $rootScope.$digest();
-        });
+          expectedDayTypes = _.indexBy(OptionGroupData.getCollection(
+            'hrleaveandabsences_leave_request_day_type'), 'value');
 
-        it('gets the next leave request for the contact, in the absence period, and with the specified statuses', function () {
-          expect(LeaveRequest.all).toHaveBeenCalledWith({
+          LeaveRequest.all({
             contact_id: contactId,
             from_date: { '>=': moment().format(sharedSettings.serverDateFormat) },
             request_type: 'leave',
             status_id: { IN: leaveRequestStatusIds },
             options: { limit: 1, sort: 'from_date DESC' }
+          })
+          .then(function (response) {
+            expectedNextLeave = response.list[0];
+            expectedNextLeave.balance_change = Math.abs(expectedNextLeave.balance_change);
+            expectedRequestStatus = getExpectedRequestStatus(expectedNextLeave);
           });
+          $rootScope.$digest();
         });
 
-        it('loads the leave request day types', function () {
-          expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_day_type');
+        it('stores the leave request day types indexed by their value', function () {
+          expect(ctrl.dayTypes).toEqual(expectedDayTypes);
         });
 
-        describe('after loading dependencies', function () {
-          var expectedDayTypes, expectedNextLeave, expectedRequestStatus;
+        it('stores the next leave request', function () {
+          expect(ctrl.nextLeaveRequest).toEqual(expectedNextLeave);
+        });
 
+        it('stores the status for the request', function () {
+          expect(ctrl.requestStatus).toEqual(expectedRequestStatus);
+        });
+
+        it('fires a leave widget child is ready event', function () {
+          expect($scope.$emit).toHaveBeenCalledWith(
+            'LeaveWidget::childIsReady', childComponentName);
+        });
+
+        describe('when there are no next leave requests', function () {
           beforeEach(function () {
-            expectedDayTypes = _.indexBy(OptionGroupData.getCollection(
-              'hrleaveandabsences_leave_request_day_type'), 'value');
-
-            LeaveRequest.all({
-              contact_id: contactId,
-              from_date: { '>=': moment().format(sharedSettings.serverDateFormat) },
-              request_type: 'leave',
-              status_id: { IN: leaveRequestStatusIds },
-              options: { limit: 1, sort: 'from_date DESC' }
-            })
-            .then(function (response) {
-              expectedNextLeave = response.list[0];
-              expectedNextLeave = _.defaults({
-                balance_change: Math.abs(expectedNextLeave.balance_change)
-              }, expectedNextLeave);
-              expectedRequestStatus = getExpectedRequestStatus(expectedNextLeave);
-            });
+            LeaveRequest.all.and.returnValue($q.resolve({
+              list: []
+            }));
+            controllerOnChanges.mockChange('contactId', contactId);
+            controllerOnChanges.mockChange('leaveRequestStatuses',
+              leaveRequestStatuses);
             $rootScope.$digest();
           });
 
-          it('stores the leave request day types indexed by their value', function () {
-            expect(ctrl.dayTypes).toEqual(expectedDayTypes);
+          it('sets the next leave request equal to NULL', function () {
+            expect(ctrl.nextLeaveRequest).toBe(null);
           });
-
-          it('stores the next leave request', function () {
-            expect(ctrl.nextLeaveRequest).toEqual(expectedNextLeave);
-          });
-
-          it('stores the status for the request', function () {
-            expect(ctrl.requestStatus).toEqual(expectedRequestStatus);
-          });
-
-          it('fires a leave widget child is ready event', function () {
-            expect($scope.$emit).toHaveBeenCalledWith(
-              'LeaveWidget::childIsReady', childComponentName);
-          });
-
-          describe('when there are no next leave requests', function () {
-            beforeEach(function () {
-              LeaveRequest.all.and.returnValue($q.resolve({
-                list: []
-              }));
-              controllerOnChanges.mockChange('contactId', contactId);
-              controllerOnChanges.mockChange('leaveRequestStatuses',
-                leaveRequestStatuses);
-              $rootScope.$digest();
-            });
-
-            it('sets the next leave request equal to NULL', function () {
-              expect(ctrl.nextLeaveRequest).toBe(null);
-            });
-          });
-
-          /**
-           * Returns the status label and text color for the leave request
-           * provided.
-           *
-           * @param {LeaveRequestInstance} LeaveRequest - the leave request
-           * @return {Object}
-           */
-          function getExpectedRequestStatus (leaveRequest) {
-            return _.find(OptionGroupData.getCollection(
-              'hrleaveandabsences_leave_request_status'),
-              function (status) {
-                return +status.value === +leaveRequest.status_id;
-              });
-          }
         });
+
+        /**
+         * Returns the status label and text color for the leave request
+         * provided.
+         *
+         * @param {LeaveRequestInstance} LeaveRequest - the leave request
+         * @return {Object}
+         */
+        function getExpectedRequestStatus (leaveRequest) {
+          return _.find(OptionGroupData.getCollection(
+            'hrleaveandabsences_leave_request_status'),
+            function (status) {
+              return +status.value === +leaveRequest.status_id;
+            });
+        }
       });
     });
   });
