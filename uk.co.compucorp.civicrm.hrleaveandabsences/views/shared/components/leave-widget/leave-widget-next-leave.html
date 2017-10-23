@@ -15,13 +15,17 @@
               <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.from_date | date:'d'}}</span>
               <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.from_date | date:'MMM'}}</span>
               <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.from_date | date:'yyyy'}}</span>
-              <span class="date-range-calendar__time text-muted">({{nextLeave.nextLeaveRequest.from_date_type_label}})</span>
+              <span class="date-range-calendar__time text-muted">
+                ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.from_date_type].label}})
+              </span>
             </div>
             <div class="date-range-calendar__to" ng-if="nextLeave.nextLeaveRequest.to_date && nextLeave.nextLeaveRequest.to_date != nextLeave.nextLeaveRequest.from_date">
               <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.to_date | date:'d'}}</span>
               <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.to_date | date:'MMM'}}</span>
               <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.to_date | date:'yyyy'}}</span>
-              <span class="date-range-calendar__time text-muted">({{nextLeave.nextLeaveRequest.to_date_type_label}})</span>
+              <span class="date-range-calendar__time text-muted">
+                ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.to_date_type].label}})
+              </span>
             </div>
           </div>
         </td>

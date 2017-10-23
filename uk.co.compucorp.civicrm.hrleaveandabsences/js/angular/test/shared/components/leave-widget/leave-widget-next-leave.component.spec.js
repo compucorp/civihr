@@ -101,9 +101,13 @@ define([
         });
 
         describe('after loading dependencies', function () {
-          var expectedBalanceDeduction, expectedNextLeave, expectedRequestStatus;
+          var expectedBalanceDeduction, expectedDayTypes, expectedNextLeave,
+            expectedRequestStatus;
 
           beforeEach(function () {
+            expectedDayTypes = _.indexBy(OptionGroupData.getCollection(
+              'hrleaveandabsences_leave_request_day_type'), 'value');
+
             LeaveRequest.all({
               contact_id: contactId,
               from_date: { '>=': moment().format(sharedSettings.serverDateFormat) },
@@ -113,14 +117,14 @@ define([
             })
             .then(function (response) {
               expectedNextLeave = response.list[0];
-              expectedNextLeave = _.assign({
-                from_date_type_label: getDayTypeLabel(expectedNextLeave.from_date_type),
-                to_date_type_label: getDayTypeLabel(expectedNextLeave.to_date_type)
-              }, expectedNextLeave);
               expectedBalanceDeduction = Math.abs(expectedNextLeave.balance_change);
               expectedRequestStatus = getExpectedRequestStatus(expectedNextLeave);
             });
             $rootScope.$digest();
+          });
+
+          it('stores the leave request day types indexed by their value', function () {
+            expect(ctrl.dayTypes).toEqual(expectedDayTypes);
           });
 
           it('stores the balance deduction', function () {
@@ -155,22 +159,6 @@ define([
               expect(ctrl.nextLeaveRequest).toBe(null);
             });
           });
-
-          /**
-           * Returns the day type label for the day type id provided.
-           *
-           * @param {String} dayTypeId - the id for the day type.
-           * @return {String}
-           */
-          function getDayTypeLabel (dayTypeId) {
-            var dayType = _.find(OptionGroupData.getCollection(
-              'hrleaveandabsences_leave_request_day_type'),
-              function (dayType) {
-                return +dayType.value === +dayTypeId;
-              });
-
-            return dayType.label;
-          }
 
           /**
            * Returns the status label and text color for the leave request

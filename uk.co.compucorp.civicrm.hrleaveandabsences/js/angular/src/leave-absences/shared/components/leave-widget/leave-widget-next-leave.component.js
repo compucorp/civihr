@@ -24,9 +24,9 @@ define([
   function nextLeaveController ($q, $scope, LeaveRequest, OptionGroup,
   sharedSettings) {
     var childComponentName = 'leave-widget-next-leave';
-    var dayTypes = [];
     var vm = this;
 
+    vm.dayTypes = {};
     vm.balanceDeduction = 0;
     vm.nextLeaveRequest = null;
     vm.requestStatus = {};
@@ -76,20 +76,6 @@ define([
     }
 
     /**
-     * Returns the label for the day type id provided.
-     *
-     * @param {String} dayTypeId - the id for the day type.
-     * @return {String}
-     */
-    function getDayTypeLabel (dayTypeId) {
-      var dayType = _.find(dayTypes, function (dayType) {
-        return +dayType.value === +dayTypeId;
-      });
-
-      return dayType.label;
-    }
-
-    /**
      * Returns a list of status ids.
      *
      * @return {Array}
@@ -108,7 +94,7 @@ define([
     function loadDayTypes () {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
         .then(function (_dayTypes_) {
-          dayTypes = _dayTypes_;
+          vm.dayTypes = _.indexBy(_dayTypes_, 'value');
         });
     }
 
@@ -135,25 +121,10 @@ define([
     }
 
     /**
-     * Maps the from and to date type labels for the next leave requests.
-     *
-     * @return {Promise}
-     */
-    function mapDateTypeLabels () {
-      return loadDayTypes().then(function () {
-        vm.nextLeaveRequest = _.assign({
-          from_date_type_label: getDayTypeLabel(vm.nextLeaveRequest.from_date_type),
-          to_date_type_label: getDayTypeLabel(vm.nextLeaveRequest.to_date_type)
-        }, vm.nextLeaveRequest);
-      });
-    }
-
-    /**
      * Maps date types to the leave request, updates the balance deduction and
      * the leave request status.
      */
     function processNextLeaveRequestData () {
-      mapDateTypeLabels();
       updateBalanceDeduction();
       updateRequestStatus();
     }
