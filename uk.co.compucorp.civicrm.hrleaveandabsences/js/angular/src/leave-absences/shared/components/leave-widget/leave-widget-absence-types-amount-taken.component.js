@@ -29,6 +29,7 @@ define([
     var childComponentName = 'leave-widget-absence-types-amount-taken';
     var vm = this;
 
+    vm.absenceTypes = [];
     vm.leaveRequests = [];
 
     vm.$onChanges = $onChanges;

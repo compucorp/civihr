@@ -63,6 +63,10 @@ define([
         expect(ctrl.leaveRequests).toEqual([]);
       });
 
+      it('sets absence types equal to an empty array', function () {
+        expect(ctrl.absenceTypes).toEqual([]);
+      });
+
       it('fires a leave widget child is loading event', function () {
         expect($scope.$emit).toHaveBeenCalledWith(
           'LeaveWidget::childIsLoading', childComponentName);
@@ -99,7 +103,6 @@ define([
         });
 
         describe('after loading dependencies', function () {
-          var expectedHeatMap = {};
           var expectedAbsenceTypes = [];
           var leaveRequests = [];
 
@@ -129,19 +132,14 @@ define([
                 .reduce(function (balance, request) {
                   return balance + request.balance_change;
                 }, 0);
-                balance = Math.abs(balance);
 
-                return _.assign({ balance: balance }, absenceType);
+                return _.assign({ balance: Math.abs(balance) }, absenceType);
               });
             }
           });
 
           it('stores the leave requests', function () {
             expect(ctrl.leaveRequests).toEqual(leaveRequests);
-          });
-
-          xit('maps the leave requests days to the week heat map object', function () {
-            expect(ctrl.heatmapValues).toEqual(expectedHeatMap);
           });
 
           it('maps the total balance for each absence type', function () {
