@@ -61,18 +61,5 @@
       font-weight: $crm-font-weight-h1;
       color: $gray-darker;
     }
-
-    .leave-status-admin_approved,
-    .leave-status-approved {
-      color: $brand-success;
-    }
-
-    .leave-status-awaiting_approval {
-      color: $brand-warning;
-    }
-
-    .leave-status-more_information_required {
-      color: $brand-primary;
-    }
   }
 }

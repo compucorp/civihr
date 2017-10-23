@@ -30,7 +30,13 @@
           </div>
         </td>
         <td class="leave-widget__next-leave__status">
-          <span class="leave-status-{{nextLeave.requestStatus.name}}">{{nextLeave.requestStatus.label}}</span>
+          <span ng-class="{
+            'text-success': ['admin_approved', 'approved'].indexOf(nextLeave.requestStatus.name) >= 0,
+            'text-warning': nextLeave.requestStatus.name === 'awaiting_approval',
+            'text-primary': nextLeave.requestStatus.name === 'more_information_required'
+          }">
+            {{nextLeave.requestStatus.label}}
+          </span>
         </td>
       </tr>
       <tr ng-if="!nextLeave.nextLeaveRequest">
