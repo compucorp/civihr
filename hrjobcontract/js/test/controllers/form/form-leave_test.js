@@ -13,7 +13,7 @@ define([
       $rootScope = _$rootScope_;
       UtilsService = _UtilsService_;
 
-      spyOn(UtilsService, "getNumberOfPublicHolidaysInCurrentPeriod").and.callFake(function () {
+      spyOn(UtilsService, 'getNumberOfPublicHolidaysInCurrentPeriod').and.callFake(function () {
         var deferred = $q.defer();
         deferred.resolve(2);
         return deferred.promise;
@@ -23,13 +23,11 @@ define([
     }));
 
     describe('init', function () {
-
       it('loads the number of public holidays', function () {
         $scope.$digest();
         expect(UtilsService.getNumberOfPublicHolidaysInCurrentPeriod).toHaveBeenCalled();
         expect(ctrl.numberOfPublicHolidays).toBe(2);
       });
-
     });
 
     describe('Set a leave type to add public holidays', function () {
@@ -55,17 +53,15 @@ define([
           expect($scope.entity.leave[1].add_public_holidays).toBe(true);
           expect($scope.entity.leave[2].add_public_holidays).toBe(false);
         });
-      })
-
+      });
     });
 
     /**
      * Initializes the form controller
      */
-    function initController() {
+    function initController () {
       $scope = $rootScope.$new();
       ctrl = $controller('FormLeaveCtrl', { $scope: $scope});
     }
   });
 });
-

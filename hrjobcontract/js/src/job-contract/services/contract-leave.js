@@ -1,11 +1,11 @@
 define([
   'job-contract/services/services',
   'job-contract/services/utils'
-], function(services) {
+], function (services) {
   'use strict';
 
   services.factory('ContractLeaveService', ['$resource', '$q', 'settings', 'UtilsService', '$log',
-    function($resource, $q, settings, UtilsService, $log) {
+    function ($resource, $q, settings, UtilsService, $log) {
       $log.debug('Service: ContractLeaveService');
 
       var ContractLeave = $resource(settings.pathRest, {
@@ -20,20 +20,19 @@ define([
        *
        * @param {Object} values - The values object as returned by the API
        */
-      function adjustAddPublicHolidaysValue(values) {
+      function adjustAddPublicHolidaysValue (values) {
         angular.forEach(values, function (value) {
           value.add_public_holidays = !!parseInt(value.add_public_holidays);
         });
       }
 
       return {
-        getOne: function(params) {
-
+        getOne: function (params) {
           if ((!params || typeof params !== 'object') ||
             (!params.jobcontract_revision_id) ||
-            (params.jobcontract_revision_id && typeof + params.jobcontract_revision_id !== 'number') ||
-            (params.id && typeof + params.id !== 'number') ||
-            (params.leaveType && typeof + params.leaveType !== 'number')) {
+            (params.jobcontract_revision_id && typeof +params.jobcontract_revision_id !== 'number') ||
+            (params.id && typeof +params.id !== 'number') ||
+            (params.leaveType && typeof +params.leaveType !== 'number')) {
             return null;
           }
 
@@ -45,23 +44,22 @@ define([
           ContractLeave.get({
             json: params
           },
-          function(data) {
-
+          function (data) {
             if (UtilsService.errorHandler(data, 'Unable to fetch contract leave', deffered)) {
-              return
+              return;
             }
 
             adjustAddPublicHolidaysValue(data.values);
 
             deffered.resolve(data.values);
           },
-          function() {
+          function () {
             deffered.reject('Unable to fetch contract leave');
           });
 
           return deffered.promise;
         },
-        getOptions: function(fieldName, callAPI) {
+        getOptions: function (fieldName, callAPI) {
           var deffered = $q.defer(),
             data;
 
@@ -74,13 +72,12 @@ define([
 
             deffered.resolve(data || {});
           } else {
-            //TODO call2API
+            // TODO call2API
           }
 
           return deffered.promise;
         },
-        getFields: function(params) {
-
+        getFields: function (params) {
           if (params && typeof params !== 'object') {
             return null;
           }
@@ -101,23 +98,21 @@ define([
               action: 'getfields',
               json: params
             },
-            function(data) {
-
+            function (data) {
               if (!data.values) {
                 deffered.reject('Unable to fetch contract leave fields');
               }
 
               deffered.resolve(data.values);
             },
-            function() {
+            function () {
               deffered.reject('Unable to fetch contract leave fields');
             });
           }
 
           return deffered.promise;
         },
-        save: function(contractLeave) {
-
+        save: function (contractLeave) {
           if (!contractLeave || typeof contractLeave !== 'object') {
             return null;
           }
@@ -134,28 +129,26 @@ define([
             json: params
           },
           null,
-          function(data) {
-
+          function (data) {
             if (UtilsService.errorHandler(data, 'Unable to create contract leave', deffered)) {
-              return
+              return;
             }
 
             adjustAddPublicHolidaysValue(data.values);
 
             deffered.resolve(data.values);
           },
-          function() {
+          function () {
             deffered.reject('Unable to create contract details');
           });
 
           return deffered.promise;
         },
-        model: function(fields, leaveType) {
-
+        model: function (fields, leaveType) {
           var deffered = $q.defer(),
-            leaveTypePromise = !leaveType || typeof leaveType != 'object' ? this.getOptions('leave_type') : leaveType;
+            leaveTypePromise = !leaveType || typeof leaveType !== 'object' ? this.getOptions('leave_type') : leaveType;
 
-          function createModel(leaveType, fields) {
+          function createModel (leaveType, fields) {
             var i = 0,
               len = fields.length,
               model = [],
@@ -201,7 +194,7 @@ define([
               return this.leave_amount;
             };
 
-            angular.forEach(leaveType, function(type, typeId) {
+            angular.forEach(leaveType, function (type, typeId) {
               modelEntry.leave_type = typeId;
               modelEntry.leave_amount = 0;
               model.push(angular.copy(modelEntry));
@@ -211,20 +204,20 @@ define([
           }
 
           if (fields) {
-            $q.when(leaveTypePromise).then(function(options) {
+            $q.when(leaveTypePromise).then(function (options) {
               deffered.resolve(createModel(options, fields));
-            })
+            });
           } else {
-            this.getFields().then(function(fields) {
-              $q.when(leaveTypePromise).then(function(options) {
+            this.getFields().then(function (fields) {
+              $q.when(leaveTypePromise).then(function (options) {
                 deffered.resolve(createModel(options, fields));
-              })
-            }.bind(this));
+              });
+            });
           }
 
           return deffered.promise;
         }
-      }
+      };
     }
   ]);
 });
