@@ -53,6 +53,15 @@ trait CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait {
     ];
   }
 
+  public function approvedLeaveRequestStatusesDataProvider() {
+    $leaveRequestStatuses = $this->getLeaveRequestStatuses();
+
+    return [
+      [$leaveRequestStatuses['admin_approved']],
+      [$leaveRequestStatuses['approved']],
+    ];
+  }
+
   protected function createAttachmentForLeaveRequest($params) {
     $defaultParams = [
       'entity_table' => LeaveRequest::getTableName(),
