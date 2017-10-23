@@ -10,7 +10,8 @@ define([
   'leave-absences/shared/models/absence-period.model',
   'leave-absences/shared/models/absence-type.model',
   'leave-absences/shared/components/leave-widget/leave-widget-absence-types-amount-taken.component',
-  'leave-absences/shared/components/leave-widget/leave-widget-absence-types-available-balance.component'
+  'leave-absences/shared/components/leave-widget/leave-widget-absence-types-available-balance.component',
+  'leave-absences/shared/components/leave-widget/leave-widget-next-leave.component'
 ], function (angular, _) {
   angular.module('leave-absences.components.leave-widget', [
     'common.components',

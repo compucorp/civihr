@@ -1,0 +1,55 @@
+<div class="leave-widget__next-leave">
+  <table class="table-responsive">
+    <thead>
+      <tr>
+        <th>Next leave</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-if="nextLeave.nextLeaveRequest">
+        <td class="leave-widget__next-leave__details">
+          <h3>{{nextLeave.nextLeaveRequest.request_type}}</h3>
+          <div class="date-range-calendar">
+            <div class="date-range-calendar__from" ng-if="nextLeave.nextLeaveRequest.from_date">
+              <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.from_date | date:'d'}}</span>
+              <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.from_date | date:'MMM'}}</span>
+              <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.from_date | date:'yyyy'}}</span>
+              <span class="date-range-calendar__time text-muted">
+                ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.from_date_type].label}})
+              </span>
+            </div>
+            <div class="date-range-calendar__to" ng-if="nextLeave.nextLeaveRequest.to_date && nextLeave.nextLeaveRequest.to_date != nextLeave.nextLeaveRequest.from_date">
+              <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.to_date | date:'d'}}</span>
+              <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.to_date | date:'MMM'}}</span>
+              <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.to_date | date:'yyyy'}}</span>
+              <span class="date-range-calendar__time text-muted">
+                ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.to_date_type].label}})
+              </span>
+            </div>
+          </div>
+        </td>
+        <td class="leave-widget__next-leave__status">
+          <span ng-class="{
+            'text-success': ['admin_approved', 'approved'].indexOf(nextLeave.requestStatus.name) >= 0,
+            'text-warning': nextLeave.requestStatus.name === 'awaiting_approval',
+            'text-primary': nextLeave.requestStatus.name === 'more_information_required'
+          }">
+            {{nextLeave.requestStatus.label}}
+          </span>
+        </td>
+      </tr>
+      <tr ng-if="!nextLeave.nextLeaveRequest">
+        <td colspan="2">
+          <p class="text-muted">There are no leave requests to display</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div ng-if="nextLeave.nextLeaveRequest">
+    <h4>Deduction</h4>
+    <span class="leave-widget__next-leave__deduction">
+      {{nextLeave.nextLeaveRequest.balance_change | timeUnitApplier:'days'}}
+    </span>
+  </div>
+</div>
