@@ -70,7 +70,7 @@ define([
     });
 
     describe('bindings and dependencies', function () {
-      describe('when contact id and absence period are bound', function () {
+      describe('when contact id and absence period are passed', function () {
         var absenceTypeIds, leaveRequestStatusIds;
 
         beforeEach(function () {

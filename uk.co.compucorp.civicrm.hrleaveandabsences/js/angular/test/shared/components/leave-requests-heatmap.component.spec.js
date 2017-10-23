@@ -26,7 +26,7 @@ define([
       expect(ctrl).toBeDefined();
     });
 
-    describe('when leve requests are bound', function () {
+    describe('when the leave requests are passed', function () {
       var expectedHeatMap;
 
       beforeEach(function () {
@@ -47,7 +47,7 @@ define([
         });
       });
 
-      it('transform leave requests into heatmap values', function () {
+      it('transforms leave requests into heatmap values', function () {
         expect(ctrl.heatmapValues).toEqual(expectedHeatMap);
       });
     });

@@ -61,7 +61,7 @@ define([
     });
 
     describe('bindings', function () {
-      describe('when absence types, absence period, and contact id are bound', function () {
+      describe('when absence types, absence period, and contact id are passed', function () {
         beforeEach(function () {
           controllerOnChanges.mockChange('absenceTypes', absenceTypes);
           controllerOnChanges.mockChange('absencePeriod', absencePeriod);
