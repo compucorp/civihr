@@ -13,12 +13,6 @@ define([
       LeaveRequest, leaveRequestStatuses, OptionGroup, sharedSettings;
     var childComponentName = 'leave-widget-next-leave';
     var contactId = 101;
-    var statusColoursMap = {
-      'admin_approved': 'success',
-      'approved': 'success',
-      'awaiting_approval': 'warning',
-      'more_information_required': 'primary'
-    };
 
     beforeEach(module('leave-absences.components.leave-widget',
       'leave-absences.mocks', function (_$provide_) {
@@ -184,16 +178,11 @@ define([
            * @return {Object}
            */
           function getExpectedRequestStatus (leaveRequest) {
-            var status = _.find(OptionGroupData.getCollection(
+            return _.find(OptionGroupData.getCollection(
               'hrleaveandabsences_leave_request_status'),
               function (status) {
                 return +status.value === +leaveRequest.status_id;
               });
-
-            return {
-              label: status.label,
-              textColor: statusColoursMap[status.name]
-            };
           }
         });
       });
