@@ -134,11 +134,14 @@ define([
         options: { limit: 1, sort: 'from_date DESC' }
       })
       .then(function (response) {
-        vm.nextLeaveRequest = response.list[0];
-      })
-      .then(mapDateTypeLabels)
-      .then(updateBalanceDeduction)
-      .then(updateRequestStatus);
+        vm.nextLeaveRequest = response.list[0] || null;
+
+        if (vm.nextLeaveRequest) {
+          mapDateTypeLabels();
+          updateBalanceDeduction();
+          updateRequestStatus();
+        }
+      });
     }
 
     /**

@@ -9,8 +9,8 @@ define([
   'leave-absences/shared/components/leave-widget/leave-widget-next-leave.component'
 ], function (_, moment, controllerOnChanges, OptionGroupData) {
   describe('leaveWidgetNextLeave', function () {
-    var $componentController, $provide, $rootScope, $scope, ctrl, LeaveRequest,
-      leaveRequestStatuses, OptionGroup, sharedSettings;
+    var $componentController, $provide, $q, $rootScope, $scope, ctrl,
+      LeaveRequest, leaveRequestStatuses, OptionGroup, sharedSettings;
     var childComponentName = 'leave-widget-next-leave';
     var contactId = 101;
     var statusColoursMap = {
@@ -30,10 +30,12 @@ define([
       $provide.value('OptionGroup', OptionGroupAPIMock);
     }));
 
-    beforeEach(inject(['$componentController', '$rootScope', 'LeaveRequest',
-      'OptionGroup', 'shared-settings', function (_$componentController_,
-      _$rootScope_, _LeaveRequest_, _OptionGroup_, _sharedSettings_) {
+    beforeEach(inject(['$componentController', '$q', '$rootScope',
+      'LeaveRequest', 'OptionGroup', 'shared-settings',
+      function (_$componentController_, _$q_, _$rootScope_, _LeaveRequest_,
+      _OptionGroup_, _sharedSettings_) {
         $componentController = _$componentController_;
+        $q = _$q_;
         $rootScope = _$rootScope_;
         $scope = $rootScope.$new();
         LeaveRequest = _LeaveRequest_;
@@ -140,6 +142,22 @@ define([
           it('fires a leave widget child is ready event', function () {
             expect($scope.$emit).toHaveBeenCalledWith(
               'LeaveWidget::childIsReady', childComponentName);
+          });
+
+          describe('when there are no next leave requests', function () {
+            beforeEach(function () {
+              LeaveRequest.all.and.returnValue($q.resolve({
+                list: []
+              }));
+              controllerOnChanges.mockChange('contactId', contactId);
+              controllerOnChanges.mockChange('leaveRequestStatuses',
+                leaveRequestStatuses);
+              $rootScope.$digest();
+            });
+
+            it('sets the next leave request equal to NULL', function () {
+              expect(ctrl.nextLeaveRequest).toBe(null);
+            });
           });
 
           /**

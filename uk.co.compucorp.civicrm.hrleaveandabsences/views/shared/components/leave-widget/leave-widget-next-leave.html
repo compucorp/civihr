@@ -7,7 +7,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
+      <tr ng-if="nextLeave.nextLeaveRequest">
         <td class="leave-widget__next-leave__details">
           <h3>{{nextLeave.nextLeaveRequest.request_type}}</h3>
           <div class="date-range-calendar">
@@ -29,8 +29,15 @@
           <span class="leave-status-{{nextLeave.requestStatus.textColor}}">{{nextLeave.requestStatus.label}}</span>
         </td>
       </tr>
+      <tr ng-if="!nextLeave.nextLeaveRequest">
+        <td colspan="2">
+          <p class="text-muted">No new leaves requested</p>
+        </td>
+      </tr>
     </tbody>
   </table>
-  <h4>Deduction</h4>
-  <span class="leave-widget__next-leave__deduction">{{nextLeave.balanceDeduction | timeUnitApplier:'days'}}</span>
+  <div ng-if="nextLeave.nextLeaveRequest">
+    <h4>Deduction</h4>
+    <span class="leave-widget__next-leave__deduction">{{nextLeave.balanceDeduction | timeUnitApplier:'days'}}</span>
+  </div>
 </div>
