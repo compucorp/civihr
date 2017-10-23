@@ -11,19 +11,19 @@
       changeContactSourceFieldHelpText();
     })
     .ready(function () {
-      addUserSubMenuToMainMenu();
+      addUserMenuToMainMenu();
       amendApplicationForm();
       customizeQuickSearchField();
       useFontAwesomeArrowsInSubMenuItems();
     });
 
   /**
-   * Adds the user sub menu by fetching it from the hrcore extension
+   * Adds the user menu by fetching it from the hrcore extension
    */
-  function addUserSubMenuToMainMenu () {
+  function addUserMenuToMainMenu () {
     $.ajax('/civicrm/hrcore/usermenu?snippet=4', {
       dataType: 'html',
-      success: injectUserSubMenuInAMainMenuWrapper
+      success: injectUserMenuInAMainMenuWrapper
     });
   }
 
@@ -176,7 +176,7 @@
    *
    * @param {string} menuMarkup
    */
-  function injectUserSubMenuInAMainMenuWrapper (menuMarkup) {
+  function injectUserMenuInAMainMenuWrapper (menuMarkup) {
     var $menuMarkup = $(menuMarkup);
     var $menuWrapper = $('<div>');
 
