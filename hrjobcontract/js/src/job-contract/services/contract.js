@@ -1,9 +1,12 @@
+/* eslint-env amd */
+
 define([
+  'common/lodash',
   'job-contract/services/services'
-], function(services) {
+], function (_, services) {
   'use strict';
 
-  services.factory('Contract', ['$resource', 'settings', '$log', function($resource, settings, $log) {
+  services.factory('Contract', ['$resource', 'settings', '$log', function ($resource, settings, $log) {
     $log.debug('Service: Contract');
 
     return $resource(settings.pathRest, {
@@ -14,8 +17,8 @@ define([
   }]);
 
   services.factory('ContractService', [
-    '$log', '$q', 'Contract', 'ContractRevisionService', 'settings', 'UtilsService', 'DOMEventTrigger',
-    function($log, $q, Contract, ContractRevisionService, settings, UtilsService, DOMEventTrigger) {
+    '$log', '$q', 'Contract', 'ContractRevisionService', 'settings', 'UtilsService', 'DOMEventTrigger', 'AbsenceType',
+    function ($log, $q, Contract, ContractRevisionService, settings, UtilsService, DOMEventTrigger, AbsenceType) {
       $log.debug('Service: ContractService');
 
       /**
@@ -25,16 +28,18 @@ define([
        * @param {Object} data
        *   The data object as returned by the API
        */
-      function adjustAddPublicHolidaysValue(data) {
-        angular.forEach(data.leave, function (value) {
-          value.add_public_holidays = !!parseInt(value.add_public_holidays);
+      function adjustAddPublicHolidaysValue (contracts, absenceTypes) {
+        _.each(contracts.leave, function (leave) {
+          leave.add_public_holidays =
+            absenceTypes[leave.leave_type].calculation_unit_name !== 'hours' &&
+            !!parseInt(leave.add_public_holidays);
         });
       }
 
       return {
-        get: function(contactId) {
-          var deffered = $q.defer(),
-            params = {};
+        get: function (contactId) {
+          var deffered = $q.defer();
+          var params = {};
 
           if (!CRM || !CRM.jobContractTabApp || !CRM.jobContractTabApp.contractList) {
             params = {
@@ -43,20 +48,19 @@ define([
               deleted: 0
             };
 
-            if (contactId && typeof + contactId === 'number') {
+            if (contactId && typeof +contactId === 'number') {
               params.contact_id = contactId;
             }
 
             Contract.get({
               json: params
-            }, function(data) {
-
+            }, function (data) {
               if (UtilsService.errorHandler(data, 'Unable to fetch contract list', deffered)) {
-                return
+                return;
               }
 
               deffered.resolve(data.values);
-            }, function() {
+            }, function () {
               deffered.reject('Unable to fetch contract list');
             });
           } else {
@@ -73,7 +77,7 @@ define([
          *
          * @param contactId :the current contact ID
          */
-        getCurrentContract: function(contactId) {
+        getCurrentContract: function (contactId) {
           var deffered = $q.defer();
 
           Contract.get({
@@ -81,12 +85,12 @@ define([
             json: {
               'contact_id': contactId
             }
-          }, function(data) {
+          }, function (data) {
             if (data.is_error) {
               deffered.reject('Unable to fetch the current contract');
             }
             deffered.resolve(data.values);
-          }, function() {
+          }, function () {
             deffered.reject('Unable to fetch the current contract');
           });
 
@@ -97,175 +101,166 @@ define([
          * Triggers the update of the contact header via the `hrui` extension
          * by emitting a DOM event with the contract data
          */
-        updateHeaderInfo: function() {
+        updateHeaderInfo: function () {
           this.getCurrentContract(settings.contactId)
-            .then(function(currentContract) {
+            .then(function (currentContract) {
               DOMEventTrigger('updateContactHeader', {
                 contract: currentContract
               });
             })
-            .catch(function(error) {
+            .catch(function (error) {
               console.log(error);
             });
         },
-        getOne: function(contractId, contactId) {
+        getOne: function (contractId, contactId) {
+          var val;
+          var deffered = $q.defer();
+          var params = {
+            deleted: 0,
+            sequential: 1,
+            contact_id: settings.contactId,
+            id: contractId
+          };
 
-          if (!contractId || typeof + contractId !== 'number') {
+          if (!contractId || typeof +contractId !== 'number') {
             return null;
           }
 
-          var deffered = $q.defer(),
-            params = {
-              deleted: 0,
-              sequential: 1,
-              contact_id: settings.contactId,
-              id: contractId
-            },
-            val;
-
-          if (contactId && typeof + contactId === 'number') {
+          if (contactId && typeof +contactId === 'number') {
             params.contact_id = contactId;
           }
 
           Contract.get({
             json: params
-          }, function(data) {
+          }, function (data) {
             val = data.values;
-            deffered.resolve(val.length == 1 ? val[0] : null);
-          }, function() {
+            deffered.resolve(val.length === 1 ? val[0] : null);
+          }, function () {
             deffered.reject('Unable to fetch contract data');
           });
 
           return deffered.promise;
         },
-        getRevision: function(contractId) {
+        getRevision: function (contractId) {
+          var deffered = $q.defer();
+          var params = {
+            deleted: 0,
+            options: {
+              limit: 0
+            },
+            sequential: 1,
+            jobcontract_id: contractId
+          };
 
-          if (!contractId || typeof + contractId !== 'number') {
+          if (!contractId || typeof +contractId !== 'number') {
             return null;
           }
 
-          var deffered = $q.defer(),
-            params = {
-              deleted: 0,
-              options: {
-                limit: 0
-              },
-              sequential: 1,
-              jobcontract_id: contractId
-            };
-
           ContractRevisionService.get({
             json: params
-          }, function(data) {
+          }, function (data) {
             deffered.resolve(data.values);
-          }, function() {
+          }, function () {
             deffered.reject('Unable to fetch contract revisions');
           });
 
           return deffered.promise;
-
         },
-        getRevisionOptions: function(fieldName, callAPI) {
-          var deffered = $q.defer(),
-            data;
+        getRevisionOptions: function (fieldName, callAPI) {
+          var data;
+          var deffered = $q.defer();
 
           if (!callAPI) {
-            var data = settings.CRM.options.HRJobContractRevision || {};
+            data = settings.CRM.options.HRJobContractRevision || {};
 
             if (fieldName && typeof fieldName === 'string') {
-              data = data[optionGroup];
+              data = data[fieldName];
             }
 
             deffered.resolve(data || {});
           } else {
-            //TODO call2API
+            // TODO call2API
           }
 
           return deffered.promise;
         },
-        save: function(contractDetails) {
+        save: function (contractDetails) {
+          var deffered = $q.defer();
+          var params = _.extend({
+            deleted: 0,
+            sequential: 1
+          }, contractDetails);
+          var val;
 
           if ((!contractDetails || typeof contractDetails !== 'object') ||
-            (!contractDetails.id || typeof + contractDetails.id !== 'number')) {
+            (!contractDetails.id || typeof +contractDetails.id !== 'number')) {
             return null;
           }
-
-          var deffered = $q.defer(),
-            params = angular.extend({
-              deleted: 0,
-              sequential: 1
-            }, contractDetails),
-            val;
 
           Contract.save({
             action: 'create',
             json: params
-          }, null, function(data) {
+          }, null, function (data) {
             val = data.values;
-            deffered.resolve(val.length == 1 ? val[0] : null);
-          }, function() {
+            deffered.resolve(val.length === 1 ? val[0] : null);
+          }, function () {
             deffered.reject('Unable to fetch contract contract data');
           });
 
           return deffered.promise;
-
         },
-        saveRevision: function(revisionDetails) {
+        saveRevision: function (revisionDetails) {
+          var val;
+          var deffered = $q.defer();
+          var params = _.extend({
+            deleted: 0,
+            sequential: 1
+          }, revisionDetails);
 
           if ((!revisionDetails || typeof revisionDetails !== 'object') ||
-            (!revisionDetails.id || typeof + revisionDetails.id !== 'number')) {
+            (!revisionDetails.id || typeof +revisionDetails.id !== 'number')) {
             return null;
           }
-
-          var deffered = $q.defer(),
-            params = angular.extend({
-              deleted: 0,
-              sequential: 1
-            }, revisionDetails),
-            val;
 
           ContractRevisionService.save({
             action: 'create',
             json: params
-          }, null, function(data) {
+          }, null, function (data) {
             val = data.values;
-            deffered.resolve(val.length == 1 ? val[0] : null);
-          }, function() {
+            deffered.resolve(val.length === 1 ? val[0] : null);
+          }, function () {
             deffered.reject('Unable to fetch contract revision');
           });
 
           return deffered.promise;
-
         },
-        delete: function(contractId) {
+        delete: function (contractId) {
+          var deffered = $q.defer();
 
-          if (!contractId || typeof + contractId !== 'number') {
+          if (!contractId || typeof +contractId !== 'number') {
             return null;
           }
-
-          var deffered = $q.defer();
 
           Contract.delete({
             action: 'deletecontract',
             json: {
               id: contractId
             }
-          }, function(data) {
+          }, function (data) {
             deffered.resolve(data);
-          }, function() {
+          }, function () {
             deffered.reject('Could not delete contract ID:' + contractId);
           });
 
           return deffered.promise;
         },
-        deleteRevision: function(revisionId) {
+        deleteRevision: function (revisionId) {
+          var val;
+          var deffered = $q.defer();
 
-          if (!revisionId || typeof + revisionId !== 'number') {
+          if (!revisionId || typeof +revisionId !== 'number') {
             return null;
           }
-
-          var deffered = $q.defer(),
-            val;
 
           ContractRevisionService.save({
             action: 'create',
@@ -274,10 +269,10 @@ define([
               deleted: 1,
               id: revisionId
             }
-          }, null, function(data) {
+          }, null, function (data) {
             val = data.values;
-            deffered.resolve(val.length == 1 ? val[0] : null);
-          }, function() {
+            deffered.resolve(val.length === 1 ? val[0] : null);
+          }, function () {
             deffered.reject('Unable to delete contract revision id: ' + revisionId);
           });
 
@@ -290,28 +285,32 @@ define([
          * @param  {int} contractId
          * @return {Promise} resolves with the api response
          */
-        fullDetails: function(contractId) {
-          if (!contractId || typeof + contractId !== 'number') {
+        fullDetails: function (contractId) {
+          var deferred = $q.defer();
+
+          if (!contractId || typeof +contractId !== 'number') {
             return null;
           }
 
-          var deferred = $q.defer();
-
-          Contract.get({
-            action: 'getfulldetails',
-            json: {
-              jobcontract_id: contractId
-            }
-          }, function(data) {
-            adjustAddPublicHolidaysValue(data);
-            deferred.resolve(data);
-          }, function() {
-            deferred.reject('Could not fetch full details for contract ID:' + contractId);
+          AbsenceType.all()
+          .then(AbsenceType.loadCalculationUnits)
+          .then(function (absenceTypes) {
+            Contract.get({
+              action: 'getfulldetails',
+              json: {
+                jobcontract_id: contractId
+              }
+            }, function (contracts) {
+              adjustAddPublicHolidaysValue(contracts, _.indexBy(absenceTypes, 'id'));
+              deferred.resolve(contracts);
+            }, function () {
+              deferred.reject('Could not fetch full details for contract ID:' + contractId);
+            });
           });
 
           return deferred.promise;
         }
-      }
+      };
     }
   ]);
 });

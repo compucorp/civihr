@@ -1,0 +1,69 @@
+.leave-widget {
+  @mixin heading-style () {
+    color: $crm-copy;
+    font-size: $font-size-base;
+    font-weight: normal;
+    margin-bottom: 0;
+    padding-bottom: $font-size-base;
+  }
+
+  h4 {
+    @include heading-style();
+  }
+
+  &__types > table,
+  &__sickness > table,
+  &__next-leave > table {
+    border: none;
+
+    thead tr th {
+      @include heading-style();
+
+      background: none;
+    }
+
+    tbody tr td {
+      color: $brand-primary;
+      font-size: $font-size-h3;
+      font-weight: $crm-font-weight-h1;
+      padding-bottom: 9px;
+      width: 35%;
+    }
+
+    tbody tr td:first-child {
+      color: $gray-darker;
+      width: 65%;
+    }
+  }
+
+  hr {
+    border-color: #DEE4ED;
+    margin-bottom: 25px;
+    margin-top: 25px;
+  }
+
+  &__sickness {
+    h4 {
+      margin-top: 18px;
+    }
+  }
+
+  &__next-leave {
+
+    h3 {
+      font-size: $font-size-h3;
+      margin-bottom: $font-size-h3;
+      margin-top: 0;
+    }
+
+    &__deduction {
+      font-size: $font-size-h3;
+      font-weight: $crm-font-weight-h1;
+      color: $gray-darker;
+    }
+
+    .leave-status-approved {
+      color: $brand-success;
+    }
+  }
+}
