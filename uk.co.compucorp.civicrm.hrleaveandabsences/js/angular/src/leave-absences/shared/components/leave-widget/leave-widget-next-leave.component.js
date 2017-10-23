@@ -26,8 +26,16 @@ define([
     var childComponentName = 'leave-widget-next-leave';
     var dayTypes = [];
     var vm = this;
+    var statusColoursMap = {
+      'admin_approved': 'success',
+      'approved': 'success',
+      'awaiting_approval': 'warning',
+      'more_information_required': 'primary'
+    };
 
+    vm.balanceDeduction = 0;
     vm.nextLeaveRequest = null;
+    vm.requestStatus = {};
 
     vm.$onChanges = $onChanges;
 
@@ -77,6 +85,17 @@ define([
     }
 
     /**
+     * Returns the status for the next leave request.
+     *
+     * @return {Object}
+     */
+    function getNextLeaveRequestStatus () {
+      return _.find(vm.leaveRequestStatuses, function (status) {
+        return +status.value === +vm.nextLeaveRequest.status_id;
+      });
+    }
+
+    /**
      * Returns a list of status ids.
      *
      * @return {Array}
@@ -118,7 +137,8 @@ define([
         vm.nextLeaveRequest = response.list[0];
       })
       .then(mapDateTypeLabels)
-      .then(updateBalanceDeduction);
+      .then(updateBalanceDeduction)
+      .then(updateRequestStatus);
     }
 
     /**
@@ -141,6 +161,15 @@ define([
      */
     function updateBalanceDeduction () {
       vm.balanceDeduction = Math.abs(vm.nextLeaveRequest.balance_change);
+    }
+
+    function updateRequestStatus () {
+      var status = getNextLeaveRequestStatus();
+
+      vm.requestStatus = {
+        label: status.label,
+        textColor: statusColoursMap[status.name]
+      };
     }
   }
 });

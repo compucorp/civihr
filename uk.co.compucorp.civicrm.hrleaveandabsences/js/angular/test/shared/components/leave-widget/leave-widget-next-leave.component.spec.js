@@ -5,7 +5,6 @@ define([
   'common/moment',
   'mocks/helpers/controller-on-changes',
   'mocks/data/option-group-mock-data',
-  'mocks/data/absence-period-data',
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/components/leave-widget/leave-widget-next-leave.component'
 ], function (_, moment, controllerOnChanges, OptionGroupData) {
@@ -14,6 +13,12 @@ define([
       leaveRequestStatuses, OptionGroup, sharedSettings;
     var childComponentName = 'leave-widget-next-leave';
     var contactId = 101;
+    var statusColoursMap = {
+      'admin_approved': 'success',
+      'approved': 'success',
+      'awaiting_approval': 'warning',
+      'more_information_required': 'primary'
+    };
 
     beforeEach(module('leave-absences.components.leave-widget',
       'leave-absences.mocks', function (_$provide_) {
@@ -53,8 +58,16 @@ define([
     });
 
     describe('on init', function () {
+      it('sets balance deduction equal to 0', function () {
+        expect(ctrl.balanceDeduction).toBe(0);
+      });
+
       it('sets next leave request to NULL', function () {
         expect(ctrl.nextLeaveRequest).toBe(null);
+      });
+
+      it('sets request status equal to an empty object', function () {
+        expect(ctrl.requestStatus).toEqual({});
       });
 
       it('fires a leave widget child is loading event', function () {
@@ -91,7 +104,7 @@ define([
         });
 
         describe('after loading dependencies', function () {
-          var expectedNextLeave, expectedBalanceDeduction;
+          var expectedBalanceDeduction, expectedNextLeave, expectedRequestStatus;
 
           beforeEach(function () {
             LeaveRequest.all({
@@ -107,16 +120,21 @@ define([
                 to_date_type_label: getDayTypeLabel(expectedNextLeave.to_date_type)
               }, expectedNextLeave);
               expectedBalanceDeduction = Math.abs(expectedNextLeave.balance_change);
+              expectedRequestStatus = getExpectedRequestStatus(expectedNextLeave);
             });
             $rootScope.$digest();
+          });
+
+          it('stores the balance deduction', function () {
+            expect(ctrl.balanceDeduction).toBe(expectedBalanceDeduction);
           });
 
           it('stores the next leave request', function () {
             expect(ctrl.nextLeaveRequest).toEqual(expectedNextLeave);
           });
 
-          it('stores the balance deduction', function () {
-            expect(ctrl.balanceDeduction).toBe(expectedBalanceDeduction);
+          it('stores the status for the request', function () {
+            expect(ctrl.requestStatus).toEqual(expectedRequestStatus);
           });
 
           it('fires a leave widget child is ready event', function () {
@@ -124,6 +142,12 @@ define([
               'LeaveWidget::childIsReady', childComponentName);
           });
 
+          /**
+           * Returns the day type label for the day type id provided.
+           *
+           * @param {String} dayTypeId - the id for the day type.
+           * @return {String}
+           */
           function getDayTypeLabel (dayTypeId) {
             var dayType = _.find(OptionGroupData.getCollection(
               'hrleaveandabsences_leave_request_day_type'),
@@ -132,6 +156,26 @@ define([
               });
 
             return dayType.label;
+          }
+
+          /**
+           * Returns the status label and text color for the leave request
+           * provided.
+           *
+           * @param {LeaveRequestInstance} LeaveRequest - the leave request
+           * @return {Object}
+           */
+          function getExpectedRequestStatus (leaveRequest) {
+            var status = _.find(OptionGroupData.getCollection(
+              'hrleaveandabsences_leave_request_status'),
+              function (status) {
+                return +status.value === +leaveRequest.status_id;
+              });
+
+            return {
+              label: status.label,
+              textColor: statusColoursMap[status.name]
+            };
           }
         });
       });
