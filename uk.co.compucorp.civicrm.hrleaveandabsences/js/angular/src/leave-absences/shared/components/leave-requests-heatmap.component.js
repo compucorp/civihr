@@ -43,7 +43,7 @@ define([
     function mapLeaveRequestsToHeatmapValues () {
       vm.heatmapValues = {};
 
-      datesOfLeaveRequests().forEach(function (date) {
+      leaveRequestsDates().forEach(function (date) {
         var dayOfTheWeek = moment(date.date).isoWeekday();
 
         if (!vm.heatmapValues[dayOfTheWeek]) {
@@ -58,9 +58,9 @@ define([
      * Returns a single array of dates, extracted from each leave request
      * dates.
      *
-     * @return {String[]}
+     * @return {Array}
      */
-    function datesOfLeaveRequests () {
+    function leaveRequestsDates () {
       return vm.leaveRequests.reduce(function (dates, request) {
         return dates.concat(request.dates);
       }, []);
