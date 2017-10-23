@@ -101,8 +101,7 @@ define([
         });
 
         describe('after loading dependencies', function () {
-          var expectedBalanceDeduction, expectedDayTypes, expectedNextLeave,
-            expectedRequestStatus;
+          var expectedDayTypes, expectedNextLeave, expectedRequestStatus;
 
           beforeEach(function () {
             expectedDayTypes = _.indexBy(OptionGroupData.getCollection(
@@ -117,7 +116,9 @@ define([
             })
             .then(function (response) {
               expectedNextLeave = response.list[0];
-              expectedBalanceDeduction = Math.abs(expectedNextLeave.balance_change);
+              expectedNextLeave = _.defaults({
+                balance_change: Math.abs(expectedNextLeave.balance_change)
+              }, expectedNextLeave);
               expectedRequestStatus = getExpectedRequestStatus(expectedNextLeave);
             });
             $rootScope.$digest();
@@ -125,10 +126,6 @@ define([
 
           it('stores the leave request day types indexed by their value', function () {
             expect(ctrl.dayTypes).toEqual(expectedDayTypes);
-          });
-
-          it('stores the balance deduction', function () {
-            expect(ctrl.balanceDeduction).toBe(expectedBalanceDeduction);
           });
 
           it('stores the next leave request', function () {

@@ -35,13 +35,15 @@
       </tr>
       <tr ng-if="!nextLeave.nextLeaveRequest">
         <td colspan="2">
-          <p class="text-muted">No new leaves requested</p>
+          <p class="text-muted">There are no leave requests to display</p>
         </td>
       </tr>
     </tbody>
   </table>
   <div ng-if="nextLeave.nextLeaveRequest">
     <h4>Deduction</h4>
-    <span class="leave-widget__next-leave__deduction">{{nextLeave.balanceDeduction | timeUnitApplier:'days'}}</span>
+    <span class="leave-widget__next-leave__deduction">
+      {{nextLeave.nextLeaveRequest.balance_change | timeUnitApplier:'days'}}
+    </span>
   </div>
 </div>

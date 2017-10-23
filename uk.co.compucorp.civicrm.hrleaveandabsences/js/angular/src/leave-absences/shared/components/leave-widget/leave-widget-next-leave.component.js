@@ -56,7 +56,8 @@ define([
       ])
       .then(function () {
         if (vm.nextLeaveRequest) {
-          processNextLeaveRequestData();
+          makeBalanceChangeAbsolute();
+          storeStatusForNextRequest();
         }
       })
       .finally(function () {
@@ -87,7 +88,8 @@ define([
     }
 
     /**
-     * Loads and stores all the possible day types for leave requests.
+     * Loads and stores all the possible day types for leave requests indexed
+     * by value.
      *
      * @return {Promise}
      */
@@ -121,26 +123,18 @@ define([
     }
 
     /**
-     * Maps date types to the leave request, updates the balance deduction and
-     * the leave request status.
+     * Makes the next leave requst balance chance value absolute.
      */
-    function processNextLeaveRequestData () {
-      updateBalanceDeduction();
-      updateRequestStatus();
+    function makeBalanceChangeAbsolute () {
+      vm.nextLeaveRequest = _.defaults({
+        balance_change: Math.abs(vm.nextLeaveRequest.balance_change)
+      }, vm.nextLeaveRequest);
     }
 
     /**
-     * Updates the balance deduction using the leave request balance change.
-     * Math.abs is used because the balance change is negative.
+     * Finds and Stores the leave request status for the next leave request.
      */
-    function updateBalanceDeduction () {
-      vm.balanceDeduction = Math.abs(vm.nextLeaveRequest.balance_change);
-    }
-
-    /**
-     * Updates the leave request status
-     */
-    function updateRequestStatus () {
+    function storeStatusForNextRequest () {
       vm.requestStatus = _.find(vm.leaveRequestStatuses, function (status) {
         return +status.value === +vm.nextLeaveRequest.status_id;
       });
