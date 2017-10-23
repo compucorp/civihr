@@ -1,16 +1,21 @@
 ---
 layout: default
 subject:  Welcome to CiviHR!
+title:  Welcome to CiviHR!
 ---
 
-<container>
-  <row>
-    <columns bgcolor="#ffffff">
-      {$body}
+<div class="request">
+  <row class="collapse">
+    <columns>
+      {{> callout-header title="Please create a password" }}
+      <callout class="request-data">
+        {$body}
+      </callout>
+      <spacer></spacer>
       <button href="{$invitationLink}" class="expanded alert end">
         Log In
       </button>
     </columns>
   </row>
   {{> default-footer}}
-</container>
+</div>
