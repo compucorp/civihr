@@ -124,21 +124,30 @@ define([
    * Given heat levels and values, it will return the expected heat map array
    * of objects.
    *
-   * @param {Object[]} heatLevelsAndValues - An array of heat level and values
+   * @param {Array} heatLevelsAndValues - An array of heat level and values
    */
   function getExpectedHeatmap (heatLevelsAndValues) {
     var days = [
-      { shortDayLabel: 'M', dayLabel: 'Monday' },
-      { shortDayLabel: 'T', dayLabel: 'Tuesday' },
-      { shortDayLabel: 'W', dayLabel: 'Wednesday' },
-      { shortDayLabel: 'T', dayLabel: 'Thursday' },
-      { shortDayLabel: 'F', dayLabel: 'Friday' },
-      { shortDayLabel: 'S', dayLabel: 'Saturday' },
-      { shortDayLabel: 'S', dayLabel: 'Sunday' }
+      { shortName: 'M', longName: 'Monday' },
+      { shortName: 'T', longName: 'Tuesday' },
+      { shortName: 'W', longName: 'Wednesday' },
+      { shortName: 'T', longName: 'Thursday' },
+      { shortName: 'F', longName: 'Friday' },
+      { shortName: 'S', longName: 'Saturday' },
+      { shortName: 'S', longName: 'Sunday' }
     ];
 
     return days.map(function (day, index) {
-      return _.assign(day, heatLevelsAndValues[index]);
+      return {
+        name: {
+          long: day.longName,
+          short: day.shortName
+        },
+        heat: {
+          level: heatLevelsAndValues[index].heatLevel,
+          value: heatLevelsAndValues[index].heatValue
+        }
+      };
     });
   }
 });

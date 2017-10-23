@@ -17,6 +17,7 @@ define([
   });
 
   function heatmapController () {
+    var heatLevelRanges = [];
     var vm = this;
 
     vm.heatmapDays = [];
@@ -29,16 +30,18 @@ define([
      */
     function $onChanges (changes) {
       if (changes.values) {
+        resetHeatmapDays();
+        calculateHeatLevelRanges();
         mapValuesToHeatmapDays();
       }
     }
 
     /**
-     * Returns a clean copy of the heatmap values that are not false.
+     * Returns a copy of the heatmap values that are not false.
      *
      * @return {Array}
      */
-    function getCleanHeatValues () {
+    function filterOutFalseHeatValues () {
       return Object.values(vm.values).filter(function (value) {
         return value !== false;
       });
@@ -46,16 +49,19 @@ define([
 
     /**
      * Given a range of heat levels and a value, it will return the closest
-     * heat level for the value.
+     * heat level for the value given.
      *
-     * @param {Object[]} heatLevelRanges - An array of heat levels and their values.
+     * @param {Array} heatLevelRanges - An array of heat levels and their values.
      * @param {Number} heatValue - The value to compare against heat levels.
      *
      * @param {String}
      */
-    function getHeatLevelForValue (heatLevelRanges, heatValue) {
+    function calculateHeatLevelForValue (heatLevelRanges, heatValue) {
       var heatRange = heatLevelRanges.reduce(function (previous, current) {
-        return Math.abs(current.value - heatValue) < Math.abs(previous.value - heatValue)
+        var distanceToCurrentValue = Math.abs(current.value - heatValue);
+        var distanceToPreviousValue = Math.abs(previous.value - heatValue);
+
+        return distanceToCurrentValue < distanceToPreviousValue
           ? current
           : previous;
       });
@@ -64,24 +70,46 @@ define([
     }
 
     /**
-     * Returns the heat low, medium, and high ranges for the heatmap.
-     * For the *low* and *high* range the minimum and maximum values are used.
-     * For the *medium* range the average for all the values is selected.
+     * Given an array of heat values, it returns the highest one.
      *
-     * @return {Object[]}
+     * @param {Array} heatValues - An array of heat values.
+     * @return {Number}
      */
-    function getHeatLevelRanges () {
-      var average, minimum;
-      var heatValues = getCleanHeatValues();
+    function getHighHeatRange (heatValues) {
+      return _.max(heatValues);
+    }
 
-      average = Math.floor(_.sum(heatValues) / heatValues.length);
-      // Minimum is the lowest value of the 7 days, or 0 if less than 7 days:
-      minimum = heatValues.length < 7 ? 0 : _.min(heatValues);
+    /**
+     * Given an array of heat values, it returns the lowest one. If less than
+     * 7 days are provided, the minimum value is 0.
+     *
+     * @param {Array} heatValues - An array of heat values.
+     * @return {Number}
+     */
+    function getLowHeatRange (heatValues) {
+      return heatValues.length < 7 ? 0 : _.min(heatValues);
+    }
 
-      return [
-        { level: 'low', value: minimum },
-        { level: 'medium', value: average },
-        { level: 'high', value: _.max(heatValues) }
+    /**
+     * Given an array of heat values, it returns the average between all values.
+     *
+     * @param {Array} heatValues - An array of heat values.
+     * @return {Number}
+     */
+    function getMediumHeatRange (heatValues) {
+      return Math.floor(_.sum(heatValues) / heatValues.length);
+    }
+
+    /**
+     * Calculates the heat low, medium, and high ranges for the heatmap.
+     */
+    function calculateHeatLevelRanges () {
+      var heatValues = filterOutFalseHeatValues();
+
+      heatLevelRanges = [
+        { level: 'low', value: getLowHeatRange(heatValues) },
+        { level: 'medium', value: getMediumHeatRange(heatValues) },
+        { level: 'high', value: getHighHeatRange(heatValues) }
       ];
     }
 
@@ -93,13 +121,17 @@ define([
      */
     function resetHeatmapDays () {
       vm.heatmapDays = _.range(1, 8).map(function (dayNumber) {
-        var dayLabel = moment().isoWeekday(dayNumber).format('dddd');
+        var dayName = moment().isoWeekday(dayNumber).format('dddd');
 
         return {
-          dayLabel: dayLabel,
-          shortDayLabel: dayLabel[0],
-          heatLevel: 'low',
-          heatValue: 0
+          name: {
+            long: dayName,
+            short: dayName[0]
+          },
+          heat: {
+            level: 'low',
+            value: 0
+          }
         };
       });
     }
@@ -111,20 +143,15 @@ define([
      * A value of *false* is treated as *disabled*.
      */
     function mapValuesToHeatmapDays () {
-      var heatLevelRanges = getHeatLevelRanges();
-
-      resetHeatmapDays();
-
       _.forEach(vm.values, function (heatValue, isoWeekDayIndex) {
         var heatmapDay = vm.heatmapDays[isoWeekDayIndex - 1];
 
         if (heatValue === false) {
-          heatmapDay.heatLevel = 'disabled';
-          return;
+          heatmapDay.heat.level = 'disabled';
+        } else {
+          heatmapDay.heat.value = heatValue;
+          heatmapDay.heat.level = calculateHeatLevelForValue(heatLevelRanges, heatValue);
         }
-
-        heatmapDay.heatValue = heatValue;
-        heatmapDay.heatLevel = getHeatLevelForValue(heatLevelRanges, heatValue);
       });
     }
   }
