@@ -1,13 +1,26 @@
 /* eslint-env amd */
 
 define([
+  'common/angular',
   'common/lodash',
+  'common/directives/loading',
+  'common/filters/time-unit-applier.filter',
+  'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/modules/components',
   'leave-absences/shared/models/absence-period.model',
   'leave-absences/shared/models/absence-type.model',
-  './leave-widget-balance.component'
-], function (_, components) {
-  components.component('leaveWidget', {
+  'leave-absences/shared/components/leave-widget/leave-widget-absence-types-amount-taken.component',
+  'leave-absences/shared/components/leave-widget/leave-widget-absence-types-available-balance.component'
+], function (angular, _) {
+  angular.module('leave-absences.components.leave-widget', [
+    'common.components',
+    'common.directives',
+    'common.filters',
+    'leave-absences.components',
+    'leave-absences.models',
+    'leave-absences.settings'
+  ])
+  .component('leaveWidget', {
     bindings: {
       contactId: '<'
     },
@@ -18,16 +31,21 @@ define([
     }]
   });
 
-  leaveWidgetController.$inject = ['$log', '$scope', 'AbsencePeriod',
-    'AbsenceType'];
+  leaveWidgetController.$inject = ['$log', '$q', '$scope', 'AbsencePeriod',
+    'AbsenceType', 'OptionGroup'];
 
-  function leaveWidgetController ($log, $scope, AbsencePeriod, AbsenceType) {
+  function leaveWidgetController ($log, $q, $scope, AbsencePeriod,
+    AbsenceType, OptionGroup) {
+    var allowedLeaveStatuses = ['approved', 'admin_approved',
+      'awaiting_approval', 'more_information_required'];
     var childComponents = 0;
     var vm = this;
 
     vm.absenceTypes = [];
     vm.currentAbsencePeriod = null;
     vm.loading = { childComponents: false, component: true };
+    vm.leaveRequestStatuses = [];
+    vm.sicknessAbsenceTypes = [];
 
     /**
      * Initializes the component by watching for events, and loading
@@ -70,18 +88,22 @@ define([
     }
 
     /**
-     * Loads absence types and the current absence period. When
-     * all dependencies are ready it sets loading component to false.
+     * Loads absence types, the current absence period, and leave request
+     * statuses. When all dependencies are ready it sets loading component to
+     * false.
      *
      * @return {Promise} - Returns an empty promise when all dependencies have
      * been loaded.
      */
     function loadDependencies () {
-      return loadAbsenceTypes()
-        .then(loadCurrentAbsencePeriod)
-        .finally(function () {
-          vm.loading.component = false;
-        });
+      return $q.all([
+        loadAbsenceTypes(),
+        loadCurrentAbsencePeriod(),
+        loadLeaveRequestTypes()
+      ])
+      .finally(function () {
+        vm.loading.component = false;
+      });
     }
 
     /**
@@ -92,7 +114,24 @@ define([
     function loadAbsenceTypes () {
       return AbsenceType.all().then(function (types) {
         vm.absenceTypes = types;
+        vm.sicknessAbsenceTypes = types.filter(function (type) {
+          return +type.is_sick;
+        });
       });
+    }
+
+    /**
+     * Loads the status ID for absence types and stores only the allowed ones.
+     *
+     * @return {Promise}
+     */
+    function loadLeaveRequestTypes () {
+      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
+        .then(function (statuses) {
+          vm.leaveRequestStatuses = statuses.filter(function (status) {
+            return _.includes(allowedLeaveStatuses, status.name);
+          });
+        });
     }
 
     /**

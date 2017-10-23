@@ -2,12 +2,14 @@
 
 define([
   'common/lodash',
-  'leave-absences/shared/components/leave-widget/leave-widget-balance.component',
-  'mocks/apis/entitlement-api-mock'
-], function (_) {
-  describe('LeaveWidgetBalance', function () {
+  'mocks/helpers/controller-on-changes',
+  'mocks/apis/entitlement-api-mock',
+  'leave-absences/shared/components/leave-widget/leave-widget-absence-types-available-balance.component'
+], function (_, controllerOnChanges) {
+  describe('leaveWidgetAbsenceTypesAvailableBalance', function () {
     var $componentController, $provide, $rootScope, $scope,
-      currentAbsencePeriod, absenceTypes, ctrl, Entitlement;
+      absencePeriod, absenceTypes, ctrl, Entitlement;
+    var childComponentName = 'leave-widget-absence-types-available-balance';
     var contactId = 101;
 
     beforeEach(module('leave-absences.components.leave-widget',
@@ -29,8 +31,7 @@ define([
       Entitlement = _Entitlement_;
 
       AbsencePeriod.all().then(function (periods) {
-        currentAbsencePeriod = periods[0];
-        currentAbsencePeriod.current = true;
+        absencePeriod = periods[0];
       });
       AbsenceType.all().then(function (types) {
         absenceTypes = types;
@@ -42,9 +43,10 @@ define([
     }));
 
     beforeEach(function () {
-      ctrl = $componentController('leaveWidgetBalance', {
+      ctrl = $componentController('leaveWidgetAbsenceTypesAvailableBalance', {
         $scope: $scope
       });
+      controllerOnChanges.setupController(ctrl);
     });
 
     it('should be defined', function () {
@@ -54,22 +56,22 @@ define([
     describe('on init', function () {
       it('fires a leave widget child is loading event', function () {
         expect($scope.$emit).toHaveBeenCalledWith(
-          'LeaveWidget::childIsLoading');
+          'LeaveWidget::childIsLoading', childComponentName);
       });
     });
 
     describe('bindings', function () {
-      describe('when absence types, current absence period, and contact id are bound', function () {
+      describe('when absence types, absence period, and contact id are passed', function () {
         beforeEach(function () {
-          controllerOnChanges('absenceTypes', absenceTypes);
-          controllerOnChanges('currentAbsencePeriod', currentAbsencePeriod);
-          controllerOnChanges('contactId', contactId);
+          controllerOnChanges.mockChange('absenceTypes', absenceTypes);
+          controllerOnChanges.mockChange('absencePeriod', absencePeriod);
+          controllerOnChanges.mockChange('contactId', contactId);
         });
 
-        it('gets all entitlements for the contact in the current absence period', function () {
+        it('gets all entitlements for the contact in the absence period', function () {
           expect(Entitlement.all).toHaveBeenCalledWith({
             contact_id: contactId,
-            period_id: currentAbsencePeriod.id
+            period_id: absencePeriod.id
           }, true);
         });
 
@@ -79,7 +81,7 @@ define([
           beforeEach(function () {
             Entitlement.all({
               contact_id: contactId,
-              period_id: currentAbsencePeriod.id
+              period_id: absencePeriod.id
             }, true)
             .then(function (entitlements) {
               expectedEntitlements = entitlements
@@ -108,22 +110,10 @@ define([
 
           it('fires a leave widget child is ready event', function () {
             expect($scope.$emit).toHaveBeenCalledWith(
-              'LeaveWidget::childIsReady');
+              'LeaveWidget::childIsReady', childComponentName);
           });
         });
       });
     });
-
-    function controllerOnChanges (bindingName, bindingValue) {
-      var changes = {};
-
-      ctrl[bindingName] = bindingValue;
-      changes[bindingName] = {
-        currentValue: bindingValue,
-        previousValue: undefined
-      };
-
-      ctrl.$onChanges(changes);
-    }
   });
 });

@@ -1,31 +1,27 @@
 /* eslint-env amd */
 
 define([
-  'common/angular',
   'common/lodash',
-  'common/filters/time-unit-applier.filter',
   'leave-absences/shared/modules/components',
   'leave-absences/shared/models/entitlement.model'
-], function (angular, _) {
-  angular.module('leave-absences.components.leave-widget', [
-    'leave-absences.components',
-    'common.filters'
-  ]).component('leaveWidgetBalance', {
+], function (_, components) {
+  components.component('leaveWidgetAbsenceTypesAvailableBalance', {
     bindings: {
       absenceTypes: '<',
       contactId: '<',
-      currentAbsencePeriod: '<'
+      absencePeriod: '<'
     },
     controller: leaveWidgetBalanceController,
     controllerAs: 'leaveWidgetBalance',
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sharedPathTpl + 'components/leave-widget/leave-widget-balance.html';
+      return sharedSettings.sharedPathTpl + 'components/leave-widget/leave-widget-absence-types-available-balance.html';
     }]
   });
 
   leaveWidgetBalanceController.$inject = ['$scope', 'Entitlement'];
 
   function leaveWidgetBalanceController ($scope, Entitlement) {
+    var childComponentName = 'leave-widget-absence-types-available-balance';
     var entitlements;
     var vm = this;
 
@@ -35,7 +31,7 @@ define([
      * Initializes the component by emiting a child is loading event.
      */
     (function init () {
-      $scope.$emit('LeaveWidget::childIsLoading');
+      $scope.$emit('LeaveWidget::childIsLoading', childComponentName);
     })();
 
     /**
@@ -54,7 +50,7 @@ define([
      * @return {Boolean}
      */
     function areBindingsReady () {
-      return vm.absenceTypes && vm.currentAbsencePeriod && vm.contactId;
+      return vm.absenceTypes && vm.absencePeriod && vm.contactId;
     }
 
     /**
@@ -66,7 +62,7 @@ define([
      */
     function loadDependencies () {
       return loadEntitlements().then(function () {
-        $scope.$emit('LeaveWidget::childIsReady');
+        $scope.$emit('LeaveWidget::childIsReady', childComponentName);
       });
     }
 
@@ -80,7 +76,7 @@ define([
     function loadEntitlements () {
       return Entitlement.all({
         contact_id: vm.contactId,
-        period_id: vm.currentAbsencePeriod.id
+        period_id: vm.absencePeriod.id
       }, true)
       .then(function (_entitlements_) {
         entitlements = _entitlements_;
@@ -103,11 +99,10 @@ define([
           var absenceType = _.find(vm.absenceTypes, function (type) {
             return +type.id === +entitlement.type_id;
           });
-          absenceType = _.assign({
+
+          return _.assign({
             balance: entitlement.remainder.future
           }, absenceType);
-
-          return absenceType;
         });
     }
   }

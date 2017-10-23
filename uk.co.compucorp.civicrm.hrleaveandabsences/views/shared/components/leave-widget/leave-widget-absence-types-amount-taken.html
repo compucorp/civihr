@@ -1,0 +1,29 @@
+<div class="leave-widget__sickness">
+  <table class="table-responsive">
+    <thead>
+      <tr>
+        <th>{{absenceTypesTaken.title}}</th>
+        <th>
+          Amount taken
+          <button class="info-button">
+            <i class="fa fa-info-circle"></i>
+          </button>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="absenceType in absenceTypesTaken.absenceTypes">
+        <td class="leave-widget__sickness-type">
+          {{absenceType.title}}
+        </td>
+        <td class="leave-widget__sickness-balance">
+          {{absenceType.balance | timeUnitApplier:'days'}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h4>{{absenceTypesTaken.title}} heatmap</h4>
+  <leave-requests-heatmap
+    leave-requests="absenceTypesTaken.leaveRequests"
+  ></leave-requests-heatmap>
+</div>
