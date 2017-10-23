@@ -1,12 +1,12 @@
 .chr_user-menu {
-  color: $user-menu-color;
+  color: $chr-user-menu-color;
   cursor: default;
-  line-height: $user-menu-line-height;
+  line-height: $chr-user-menu-line-height;
   padding: 0 10px;
   position: relative;
 
   &:hover {
-    background: $user-menu-bg-hover;
+    background: $chr-user-menu-bg-hover;
 
     > .chr_user-menu__dropdown {
       display: block;
@@ -24,7 +24,7 @@
     vertical-align: top;
   }
 
-  @media(max-width: $user-menu-minify-breakpoint) {
+  @media(max-width: $chr-user-menu-minify-breakpoint) {
     > .chr_user-menu__arrow,
     > .chr_user-menu__name {
       display: none;
@@ -33,7 +33,7 @@
 }
 
 .chr_user-menu__dropdown {
-  background: $user-menu-dropdown-bg;
+  background: $chr-user-menu-dropdown-bg;
   display: none;
   position: absolute;
   right: 0;
@@ -45,15 +45,15 @@
   }
 
   a {
-    color: $user-menu-dropdown-link-color;
+    color: $chr-user-menu-dropdown-link-color;
     display: block;
     line-height: 50px;
     padding: 0 30px 0 20px;
     white-space: nowrap;
 
     &:hover {
-      background: $user-menu-dropdown-link-bg-hover;
-      color: $user-menu-dropdown-link-color-hover;
+      background: $chr-user-menu-dropdown-link-bg-hover;
+      color: $chr-user-menu-dropdown-link-color-hover;
       text-decoration: none;
     }
 
