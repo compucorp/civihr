@@ -26,7 +26,7 @@ define([
     'OptionGroup'];
 
   function absenceTypesTakenController ($scope, LeaveRequest, OptionGroup) {
-    var childComponentName = 'leave-wdiget-absence-types-amount-taken';
+    var childComponentName = 'leave-widget-absence-types-amount-taken';
     var vm = this;
 
     vm.leaveRequests = [];
@@ -42,11 +42,14 @@ define([
 
     /**
      * Implements the $onChanges method for angular controllers. When bindings
-     * are ready for use, it loads all dependencies.
+     * are ready for use, it loads leave requests and then emits the child
+     * is ready event.
      */
     function $onChanges () {
       if (areBindingsReady()) {
-        loadDependencies();
+        loadLeaveRequests().finally(function () {
+          $scope.$emit('LeaveWidget::childIsReady', childComponentName);
+        });
       }
     }
 
@@ -61,31 +64,14 @@ define([
     }
 
     /**
-     * Loads the status ids for absence types and leave requests for the contact.
-     * After loading the dependencies, it emits a child is ready event.
-     *
-     * @return {Promise}
-     */
-    function loadDependencies () {
-      return loadLeaveRequests()
-        .finally(function () {
-          $scope.$emit('LeaveWidget::childIsReady', childComponentName);
-        });
-    }
-
-    /**
      * Loads all leave requests for the contact, in the current period, of the
      * allowed statuses, and of the specific absence types.
      *
      * @return {Promise}
      */
     function loadLeaveRequests () {
-      var absenceTypeIds = vm.absenceTypes.map(function (absenceType) {
-        return absenceType.id;
-      });
-      var statusIds = vm.leaveRequestStatuses.map(function (status) {
-        return status.value;
-      });
+      var absenceTypeIds = getAbsenceTypeIds();
+      var statusIds = getStatusIds();
 
       return LeaveRequest.all({
         contact_id: vm.contactId,
@@ -96,13 +82,36 @@ define([
       })
       .then(function (response) {
         vm.leaveRequests = response.list;
+      })
+      .then(mapAbsenceTypesBalance);
+    }
 
-        mapAbsenceTypesBalance();
+    /**
+     * Returns an array of absence type ids.
+     *
+     * @return {Number[]}
+     */
+    function getAbsenceTypeIds () {
+      return vm.absenceTypes.map(function (absenceType) {
+        return absenceType.id;
+      });
+    }
+
+    /**
+     * Return an array of status ids.
+     *
+     * @return {Number[]}
+     */
+    function getStatusIds () {
+      return vm.leaveRequestStatuses.map(function (status) {
+        return status.value;
       });
     }
 
     /**
      * Finds and stores the balance for each absence type.
+     *
+     * Math.abs is used because the balance change is negative.
      */
     function mapAbsenceTypesBalance () {
       vm.absenceTypes = vm.absenceTypes.map(function (absenceType) {
@@ -114,9 +123,8 @@ define([
         .reduce(function (balance, request) {
           return balance + request.balance_change;
         }, 0);
-        balance = Math.abs(balance);
 
-        return _.assign({ balance: balance }, absenceType);
+        return _.assign({ balance: Math.abs(balance) }, absenceType);
       });
     }
   }

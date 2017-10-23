@@ -9,6 +9,7 @@ define([
   describe('leaveWidgetAbsenceTypesAvailableBalance', function () {
     var $componentController, $provide, $rootScope, $scope,
       absencePeriod, absenceTypes, ctrl, Entitlement;
+    var childComponentName = 'leave-widget-absence-types-available-balance';
     var contactId = 101;
 
     beforeEach(module('leave-absences.components.leave-widget',
@@ -55,7 +56,7 @@ define([
     describe('on init', function () {
       it('fires a leave widget child is loading event', function () {
         expect($scope.$emit).toHaveBeenCalledWith(
-          'LeaveWidget::childIsLoading');
+          'LeaveWidget::childIsLoading', childComponentName);
       });
     });
 
@@ -109,7 +110,7 @@ define([
 
           it('fires a leave widget child is ready event', function () {
             expect($scope.$emit).toHaveBeenCalledWith(
-              'LeaveWidget::childIsReady');
+              'LeaveWidget::childIsReady', childComponentName);
           });
         });
       });

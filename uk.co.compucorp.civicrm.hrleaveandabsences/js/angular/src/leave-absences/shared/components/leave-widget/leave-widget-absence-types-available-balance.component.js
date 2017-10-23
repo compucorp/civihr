@@ -21,7 +21,7 @@ define([
   leaveWidgetBalanceController.$inject = ['$scope', 'Entitlement'];
 
   function leaveWidgetBalanceController ($scope, Entitlement) {
-    var childComponentName = 'leave-widget-absence-type-available';
+    var childComponentName = 'leave-widget-absence-types-available-balance';
     var entitlements;
     var vm = this;
 
