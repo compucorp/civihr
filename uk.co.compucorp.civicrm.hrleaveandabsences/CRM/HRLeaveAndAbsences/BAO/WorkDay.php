@@ -203,7 +203,6 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDay extends CRM_HRLeaveAndAbsences_DAO_Work
     if(!in_array($type, $validTypes)) {
       throw new InvalidWorkDayException(
         'Invalid Work Day Type'
-        //'Invalid Work Day Type: ' . $type . 'The valid types are: '.implode(', ', $validTypes)
       );
     }
   }

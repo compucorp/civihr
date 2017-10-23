@@ -1,11 +1,12 @@
 <?php
+
 define('CIVICRM_CONTAINER_CACHE', 'never');
+//This will redirect all mails to the database.
+define('CIVICRM_MAILER_SPOOL', 1);
+
 ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
 eval(cv('php:boot --level=full -t', 'phpcode'));
-
-//This will redirect all mails to the database.
-define('CIVICRM_MAILER_SPOOL', 1);
 
 require_once 'BaseHeadlessTest.php';
 require_once 'helpers/OptionGroupHelpersTrait.php';

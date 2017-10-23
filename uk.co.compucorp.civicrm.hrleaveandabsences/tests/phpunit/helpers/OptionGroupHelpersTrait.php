@@ -35,7 +35,7 @@ trait CRM_HRLeaveAndAbsences_OptionGroupHelpersTrait {
    * Important note: It assumes that the XML represents a single Option Group,
    * and that all the Option Values in belong to the same Group.
    *
-   * @param $xml
+   * @param string $xml
    *   The name of a file inside the xml/option_groups folder
    *
    * @return array
