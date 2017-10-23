@@ -40,11 +40,13 @@ class CRM_HRCore_UserMenuMarkup {
   }
 
   /**
+   * Replaces the placholders with actual data and then returns
+   * the processed markup
    *
-   *
+   * @return {string}
    */
   public function getMarkup() {
-    $this->smarty->assign('username', $this->contactData()['display_name']);
+    $this->smarty->assign('username', $this->getUserName());
     $this->smarty->assign('image', $this->getUserImagePath());
     $this->smarty->assign('editLink', $this->cmsPaths->getEditAccountPath());
     $this->smarty->assign('logoutLink', $this->cmsPaths->getLogoutPath());
@@ -118,6 +120,20 @@ class CRM_HRCore_UserMenuMarkup {
     unset($rawData['api.User.getsingle']);
 
     return $rawData;
+  }
+
+  /**
+   * Returns the user name, falling back to a generic name if the user
+   * doesn't have one
+   *
+   * @return string
+   */
+  private function getUserName() {
+    if (!empty($this->contactData()['display_name'])) {
+      return $this->contactData()['display_name'];
+    }
+
+    return 'Anonymus';
   }
 
   /**
