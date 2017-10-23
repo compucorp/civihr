@@ -1,5 +1,5 @@
 <ul class="week-heatmap">
-  <li ng-repeat="day in heatmap.days" class="week-heatmap__{{day.heat}}" title="{{day.label}}: {{day.value}}">
-    {{day.shortLabel}}
+  <li ng-repeat="day in heatmap.heatmapDays" class="week-heatmap__{{day.heatLevel}}" title="{{day.dayLabel}}: {{day.heatValue}}">
+    {{day.shortDayLabel}}
   </li>
 </ul>

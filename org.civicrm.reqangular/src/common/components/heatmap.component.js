@@ -2,8 +2,9 @@
 
 define([
   'common/lodash',
+  'common/moment',
   'common/modules/components'
-], function (_, components) {
+], function (_, moment, components) {
   return components.component('heatmap', {
     bindings: {
       values: '<'
@@ -16,78 +17,114 @@ define([
   });
 
   function heatmapController () {
-    var dayLabels = [
-      { label: 'Monday', shortLabel: 'M' },
-      { label: 'Tuesday', shortLabel: 'T' },
-      { label: 'Wednesday', shortLabel: 'W' },
-      { label: 'Thursday', shortLabel: 'T' },
-      { label: 'Friday', shortLabel: 'F' },
-      { label: 'Saturday', shortLabel: 'S' },
-      { label: 'Sunday', shortLabel: 'S' }
-    ];
     var vm = this;
 
-    vm.days = [];
+    vm.heatmapDays = [];
 
     vm.$onChanges = $onChanges;
 
     /**
      * Implementes the $onChanges method for angular controllers. When the
-     * values binding is ready, it maps the values to the days and heat ranges.
+     * values binding is ready, it maps the values to the heatmap.
      */
-    function $onChanges () {
-      if (vm.values) {
-        mapValuesToDaysAndHeatRanges();
+    function $onChanges (changes) {
+      if (changes.values) {
+        mapValuesToHeatmapDays();
       }
     }
 
     /**
-     * Transform a list of week day values into another list with their
-     * heat range equivalent.
+     * Returns a clean copy of the heatmap values that are not false.
      *
-     * The values are categorized into *low*, *medium*, *high*, and *disabled*
-     * (in case the value is a strict *false*). For the *low* and *high* range
-     * the minimum and maxim values are used. For the *medium* range the average
-     * for all the values is selected.
-     *
-     * A value of *false* is treated as *disabled*.
+     * @return {Array}
      */
-    function mapValuesToDaysAndHeatRanges () {
-      var average, heatRanges, minimum;
-      var arrayValues = _.toArray(vm.values).filter(function (value) {
+    function getCleanHeatValues () {
+      return Object.values(vm.values).filter(function (value) {
         return value !== false;
       });
+    }
 
-      average = Math.floor(_.sum(arrayValues) / arrayValues.length);
+    /**
+     * Given a range of heat levels and a value, it will return the closest
+     * heat level for the value.
+     *
+     * @param {Object[]} heatLevelRanges - An array of heat levels and their values.
+     * @param {Number} heatValue - The value to compare against heat levels.
+     *
+     * @param {String}
+     */
+    function getHeatLevelForValue (heatLevelRanges, heatValue) {
+      var heatRange = heatLevelRanges.reduce(function (previous, current) {
+        return Math.abs(current.value - heatValue) < Math.abs(previous.value - heatValue)
+          ? current
+          : previous;
+      });
+
+      return heatRange.level;
+    }
+
+    /**
+     * Returns the heat low, medium, and high ranges for the heatmap.
+     * For the *low* and *high* range the minimum and maximum values are used.
+     * For the *medium* range the average for all the values is selected.
+     *
+     * @return {Object[]}
+     */
+    function getHeatLevelRanges () {
+      var average, minimum;
+      var heatValues = getCleanHeatValues();
+
+      average = Math.floor(_.sum(heatValues) / heatValues.length);
       // Minimum is the lowest value of the 7 days, or 0 if less than 7 days:
-      minimum = arrayValues.length === 7 ? _.min(arrayValues) : 0;
-      heatRanges = [
-        { label: 'low', value: minimum },
-        { label: 'medium', value: average },
-        { label: 'high', value: _.max(arrayValues) }
+      minimum = heatValues.length < 7 ? 0 : _.min(heatValues);
+
+      return [
+        { level: 'low', value: minimum },
+        { level: 'medium', value: average },
+        { level: 'high', value: _.max(heatValues) }
       ];
+    }
 
-      vm.days = dayLabels.map(function (dayLabel, day) {
-        var heat;
-        var value = vm.values[day];
+    /**
+     * Resets the heatmap days to their default values. This is done for each
+     * day of the week.
+     * _.range(1, 8) returns an array with the numbers from 1 to 7.
+     * .isoWeekday(1) will return Monday, 7 will return Sunday.
+     */
+    function resetHeatmapDays () {
+      vm.heatmapDays = _.range(1, 8).map(function (dayNumber) {
+        var dayLabel = moment().isoWeekday(dayNumber).format('dddd');
 
-        if (value === false) {
-          return _.assign({ value: 0, heat: 'disabled' }, dayLabel);
+        return {
+          dayLabel: dayLabel,
+          shortDayLabel: dayLabel[0],
+          heatLevel: 'low',
+          heatValue: 0
+        };
+      });
+    }
+
+    /**
+     * Maps a list of week day values into the days for the heatmap.
+     *
+     * The values are categorized into *low*, *medium*, *high*, and *disabled*.
+     * A value of *false* is treated as *disabled*.
+     */
+    function mapValuesToHeatmapDays () {
+      var heatLevelRanges = getHeatLevelRanges();
+
+      resetHeatmapDays();
+
+      _.forEach(vm.values, function (heatValue, isoWeekDayIndex) {
+        var heatmapDay = vm.heatmapDays[isoWeekDayIndex - 1];
+
+        if (heatValue === false) {
+          heatmapDay.heatLevel = 'disabled';
+          return;
         }
 
-        value = value || 0;
-
-        // returns the closest heat range:
-        heat = heatRanges.reduce(function (previous, current) {
-          return Math.abs(current.value - value) < Math.abs(previous.value - value)
-            ? current
-            : previous;
-        });
-
-        return _.assign({
-          value: value,
-          heat: heat.label
-        }, dayLabel);
+        heatmapDay.heatValue = heatValue;
+        heatmapDay.heatLevel = getHeatLevelForValue(heatLevelRanges, heatValue);
       });
     }
   }

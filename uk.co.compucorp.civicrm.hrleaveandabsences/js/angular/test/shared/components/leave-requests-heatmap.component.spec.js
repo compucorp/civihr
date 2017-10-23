@@ -37,7 +37,7 @@ define([
           return dates.concat(request.dates);
         }, [])
         .forEach(function (date) {
-          var dayOfTheWeek = moment(date.date).isoWeekday() - 1;
+          var dayOfTheWeek = moment(date.date).isoWeekday();
 
           if (!expectedHeatMap[dayOfTheWeek]) {
             expectedHeatMap[dayOfTheWeek] = 0;

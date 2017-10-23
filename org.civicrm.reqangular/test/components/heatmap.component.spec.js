@@ -2,28 +2,30 @@
 
 define([
   'common/angular',
+  'common/angularMocks',
   'common/lodash',
   'common/components/heatmap.component'
-], function (angular, _) {
+], function (angular, angularMocks, _) {
   describe('Heatmap component', function () {
-    var $componentController, cmp;
+    var $componentController, ctrl;
+
+    beforeEach(module('common.components'));
+
+    beforeEach(inject(function (_$componentController_) {
+      $componentController = _$componentController_;
+    }));
 
     beforeEach(function () {
-      module('common.components');
-      inject(function (_$componentController_) {
-        $componentController = _$componentController_;
-      });
-
-      cmp = $componentController('heatmap');
+      ctrl = $componentController('heatmap');
     });
 
     it('must be defined', function () {
-      expect(cmp).toBeDefined();
+      expect(ctrl).toBeDefined();
     });
 
     describe('on init', function () {
-      it('sets days equal to an empty array', function () {
-        expect(cmp.days).toEqual([]);
+      it('sets heatmap days equal to an empty array', function () {
+        expect(ctrl.heatmapDays).toEqual([]);
       });
     });
 
@@ -32,31 +34,31 @@ define([
 
       beforeEach(function () {
         var values = {
-          0: 0,
-          1: 2,
-          2: 2,
-          3: 10,
-          4: 6,
-          5: false,
-          6: false
+          1: 1,
+          2: 3,
+          3: 3,
+          4: 20,
+          5: 12,
+          6: 3,
+          7: 0
         };
 
-        expectedDays = getExpectedDays([
-          { value: 0, heat: 'low' },
-          { value: 2, heat: 'low' },
-          { value: 2, heat: 'low' },
-          { value: 10, heat: 'high' },
-          { value: 6, heat: 'medium' },
-          { value: 0, heat: 'disabled' },
-          { value: 0, heat: 'disabled' }
+        expectedDays = getExpectedHeatmap([
+          { heatValue: 1, heatLevel: 'low' },
+          { heatValue: 3, heatLevel: 'low' },
+          { heatValue: 3, heatLevel: 'low' },
+          { heatValue: 20, heatLevel: 'high' },
+          { heatValue: 12, heatLevel: 'medium' },
+          { heatValue: 3, heatLevel: 'low' },
+          { heatValue: 0, heatLevel: 'low' }
         ]);
 
-        cmp.values = values;
-        cmp.$onChanges({ values: { currentValue: values } });
+        ctrl.values = values;
+        ctrl.$onChanges({ values: { currentValue: values } });
       });
 
       it('converts the values to days and heat range', function () {
-        expect(cmp.days).toEqual(expectedDays);
+        expect(ctrl.heatmapDays).toEqual(expectedDays);
       });
     });
 
@@ -65,44 +67,78 @@ define([
 
       beforeEach(function () {
         var values = {
-          2: 2,
-          3: 9,
-          4: 3
+          3: 2,
+          4: 9,
+          5: 3
         };
 
-        expectedDays = getExpectedDays([
-          { value: 0, heat: 'low' },
-          { value: 0, heat: 'low' },
-          { value: 2, heat: 'low' },
-          { value: 9, heat: 'high' },
-          { value: 3, heat: 'medium' },
-          { value: 0, heat: 'low' },
-          { value: 0, heat: 'low' }
+        expectedDays = getExpectedHeatmap([
+          { heatValue: 0, heatLevel: 'low' },
+          { heatValue: 0, heatLevel: 'low' },
+          { heatValue: 2, heatLevel: 'low' },
+          { heatValue: 9, heatLevel: 'high' },
+          { heatValue: 3, heatLevel: 'medium' },
+          { heatValue: 0, heatLevel: 'low' },
+          { heatValue: 0, heatLevel: 'low' }
         ]);
 
-        cmp.values = values;
-        cmp.$onChanges({ values: { currentValue: values } });
+        ctrl.values = values;
+        ctrl.$onChanges({ values: { currentValue: values } });
       });
 
       it('sets the values to 0 and heat to low for missing days', function () {
-        expect(cmp.days).toEqual(expectedDays);
+        expect(ctrl.heatmapDays).toEqual(expectedDays);
+      });
+    });
+
+    describe('disabled values', function () {
+      var expectedDays;
+
+      beforeEach(function () {
+        var values = {
+          6: false,
+          7: false
+        };
+
+        expectedDays = getExpectedHeatmap([
+          { heatValue: 0, heatLevel: 'low' },
+          { heatValue: 0, heatLevel: 'low' },
+          { heatValue: 0, heatLevel: 'low' },
+          { heatValue: 0, heatLevel: 'low' },
+          { heatValue: 0, heatLevel: 'low' },
+          { heatValue: 0, heatLevel: 'disabled' },
+          { heatValue: 0, heatLevel: 'disabled' }
+        ]);
+
+        ctrl.values = values;
+        ctrl.$onChanges({ values: { currentValue: values } });
+      });
+
+      it('marks false day values as disabled', function () {
+        expect(ctrl.heatmapDays).toEqual(expectedDays);
       });
     });
   });
 
-  function getExpectedDays (valuesAndHeats) {
+  /**
+   * Given heat levels and values, it will return the expected heat map array
+   * of objects.
+   *
+   * @param {Object[]} heatLevelsAndValues - An array of heat level and values
+   */
+  function getExpectedHeatmap (heatLevelsAndValues) {
     var days = [
-      { shortLabel: 'M', label: 'Monday' },
-      { shortLabel: 'T', label: 'Tuesday' },
-      { shortLabel: 'W', label: 'Wednesday' },
-      { shortLabel: 'T', label: 'Thursday' },
-      { shortLabel: 'F', label: 'Friday' },
-      { shortLabel: 'S', label: 'Saturday' },
-      { shortLabel: 'S', label: 'Sunday' }
+      { shortDayLabel: 'M', dayLabel: 'Monday' },
+      { shortDayLabel: 'T', dayLabel: 'Tuesday' },
+      { shortDayLabel: 'W', dayLabel: 'Wednesday' },
+      { shortDayLabel: 'T', dayLabel: 'Thursday' },
+      { shortDayLabel: 'F', dayLabel: 'Friday' },
+      { shortDayLabel: 'S', dayLabel: 'Saturday' },
+      { shortDayLabel: 'S', dayLabel: 'Sunday' }
     ];
 
     return days.map(function (day, index) {
-      return _.assign(day, valuesAndHeats[index]);
+      return _.assign(day, heatLevelsAndValues[index]);
     });
   }
 });

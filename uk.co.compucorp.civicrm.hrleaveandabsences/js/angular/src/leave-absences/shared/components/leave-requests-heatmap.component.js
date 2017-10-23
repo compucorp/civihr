@@ -18,13 +18,15 @@ define([
   function LeaveRequestsHeatmapController () {
     var vm = this;
 
+    vm.heatmapValues = {};
+
     vm.$onChanges = $onChanges;
 
     /**
      * Implemenents the $onChanges method for Angular controllers.
      * When leaveRequests are bound, it maps them to heat map values.
      *
-     * @param {OnChangesObject} changes - it has the previous and current value
+     * @param {Object} changes - it has the previous and current value
      * for each bindings change. This value is passed by angular.
      */
     function $onChanges (changes) {
@@ -34,17 +36,14 @@ define([
     }
 
     /**
-     * Stores the total leave balance for each day of the week.
+     * Stores the total leave balance for each day of the week. The heatmap
+     * values are cleared to avoid displaying previous values.
      */
     function mapLeaveRequestsToHeatmapValues () {
       vm.heatmapValues = {};
 
-      vm.leaveRequests.reduce(function (dates, request) {
-        return dates.concat(request.dates);
-      }, [])
-      .forEach(function (date) {
-        // 0 = Monday, 6 = Sunday:
-        var dayOfTheWeek = moment(date.date).isoWeekday() - 1;
+      datesOfLeaveRequests().forEach(function (date) {
+        var dayOfTheWeek = moment(date.date).isoWeekday();
 
         if (!vm.heatmapValues[dayOfTheWeek]) {
           vm.heatmapValues[dayOfTheWeek] = 0;
@@ -52,6 +51,18 @@ define([
 
         vm.heatmapValues[dayOfTheWeek]++;
       });
+    }
+
+    /**
+     * Returns a single array of dates, extracted from each leave request
+     * dates.
+     *
+     * @return {String[]}
+     */
+    function datesOfLeaveRequests () {
+      return vm.leaveRequests.reduce(function (dates, request) {
+        return dates.concat(request.dates);
+      }, []);
     }
   }
 });
