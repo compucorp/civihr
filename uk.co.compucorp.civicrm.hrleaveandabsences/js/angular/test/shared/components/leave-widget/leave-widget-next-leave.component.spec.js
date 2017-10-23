@@ -90,6 +90,7 @@ define([
           expect(LeaveRequest.all).toHaveBeenCalledWith({
             contact_id: contactId,
             from_date: { '>=': moment().format(sharedSettings.serverDateFormat) },
+            request_type: 'leave',
             status_id: { IN: leaveRequestStatusIds },
             options: { limit: 1, sort: 'from_date DESC' }
           });
@@ -106,6 +107,7 @@ define([
             LeaveRequest.all({
               contact_id: contactId,
               from_date: { '>=': moment().format(sharedSettings.serverDateFormat) },
+              request_type: 'leave',
               status_id: { IN: leaveRequestStatusIds },
               options: { limit: 1, sort: 'from_date DESC' }
             })

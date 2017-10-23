@@ -18,10 +18,10 @@ define([
     }]
   });
 
-  nextLeaveController.$inject = ['$scope', 'LeaveRequest', 'OptionGroup',
+  nextLeaveController.$inject = ['$q', '$scope', 'LeaveRequest', 'OptionGroup',
     'shared-settings'];
 
-  function nextLeaveController ($scope, LeaveRequest, OptionGroup,
+  function nextLeaveController ($q, $scope, LeaveRequest, OptionGroup,
   sharedSettings) {
     var childComponentName = 'leave-widget-next-leave';
     var dayTypes = [];
@@ -46,11 +46,22 @@ define([
      * emits a child is ready event.
      */
     function $onChanges () {
-      if (bindingsAreReady()) {
-        loadNextLeaveRequest().finally(function () {
-          $scope.$emit('LeaveWidget::childIsReady', childComponentName);
-        });
+      if (!bindingsAreReady()) {
+        return;
       }
+
+      $q.all([
+        loadDayTypes(),
+        loadNextLeaveRequest()
+      ])
+      .then(function () {
+        if (vm.nextLeaveRequest) {
+          processNextLeaveRequestData();
+        }
+      })
+      .finally(function () {
+        $scope.$emit('LeaveWidget::childIsReady', childComponentName);
+      });
     }
 
     /**
@@ -109,21 +120,17 @@ define([
      */
     function loadNextLeaveRequest () {
       var statusIds = getStatusIds();
+      var today = moment().format(sharedSettings.serverDateFormat);
 
       return LeaveRequest.all({
         contact_id: vm.contactId,
-        from_date: { '>=': moment().format(sharedSettings.serverDateFormat) },
+        from_date: { '>=': today },
+        request_type: 'leave',
         status_id: { IN: statusIds },
         options: { limit: 1, sort: 'from_date DESC' }
       })
       .then(function (response) {
         vm.nextLeaveRequest = response.list[0] || null;
-
-        if (vm.nextLeaveRequest) {
-          mapDateTypeLabels();
-          updateBalanceDeduction();
-          updateRequestStatus();
-        }
       });
     }
 
@@ -139,6 +146,16 @@ define([
           to_date_type_label: getDayTypeLabel(vm.nextLeaveRequest.to_date_type)
         }, vm.nextLeaveRequest);
       });
+    }
+
+    /**
+     * Maps date types to the leave request, updates the balance deduction and
+     * the leave request status.
+     */
+    function processNextLeaveRequestData () {
+      mapDateTypeLabels();
+      updateBalanceDeduction();
+      updateRequestStatus();
     }
 
     /**
