@@ -1,15 +1,21 @@
 /* eslint-env amd, jasmine */
 
 define([
+  'common/lodash',
   'common/moment',
+  'mocks/data/contract',
   'common/angularMocks',
   'job-contract/app'
-], function (moment) {
+], function (_, moment, contractMock) {
   'use strict';
 
   describe('ContractCtrl', function () {
     var $controller, $httpBackend, $modal, $q, $rootScope, $scope, $window,
-      UtilsService;
+      AbsenceType, UtilsService;
+    var calculationUnitsMock = [{ value: 1, name: 'days' }, { value: 2, name: 'hours' }];
+
+    // Populate contract mock leaves with values
+    contractMock.contractEntity.leave = contractMock.contractLeaves.values;
 
     beforeEach(module('hrjc', 'job-contract.templates', function ($provide) {
       $window = { location: jasmine.createSpyObj('location', ['assign']) };
@@ -18,7 +24,7 @@ define([
     }));
 
     beforeEach(inject(function (_$controller_, _$rootScope_, _$uibModal_, _$q_,
-    _$httpBackend_, _$window_, _UtilsService_) {
+    _$httpBackend_, _$window_, _AbsenceType_, _UtilsService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $q = _$q_;
@@ -27,14 +33,42 @@ define([
       $q = _$q_;
       $rootScope = _$rootScope_;
       $window = _$window_;
+      AbsenceType = _AbsenceType_;
       UtilsService = _UtilsService_;
 
-      $httpBackend.whenGET(/action=getfulldetails&entity=HRJobContract/).respond({});
-      $httpBackend.whenGET(/action=getcurrentcontract&entity=HRJobContract/).respond({});
-      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});
+      $httpBackend.whenGET(/action=getfulldetails&entity=HRJobContract/).respond(contractMock.contractEntity);
+      $httpBackend.whenGET(/action=getcurrentcontract&entity=HRJobContract/).respond({ 'values': [] });
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(contractMock.contract);
+      $httpBackend.whenGET(/action=getsingle&entity=HRJobContractRevision/).respond({ 'values': [] });
+      $httpBackend.whenGET(/hrjobcontract\/file\/list/).respond({ 'values': [] });
+      // @NOTE This is a temporary solution until we can import mocks
+      // from other extensions such as Leave and Absebce extension
+      $httpBackend.whenGET(/action=get&entity=AbsenceType/).respond({ 'values':
+        _.map(contractMock.contractEntity.leave, function (leave, index) {
+          return { id: leave.leave_type, calculation_unit: _.sample(calculationUnitsMock).value };
+        })
+      });
+      $httpBackend.whenGET(/action=get&entity=OptionValue/).respond({ 'values': calculationUnitsMock });
+      spyOn(AbsenceType, 'all').and.callThrough();
+      spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
 
       makeController();
     }));
+
+    describe('when loads', function () {
+      beforeEach(function () {
+        $httpBackend.flush();
+        $rootScope.$digest();
+      });
+
+      it('retrieves Absence Types', function () {
+        expect(AbsenceType.all).toHaveBeenCalled();
+      });
+
+      it('populates Absence Types with calculation units names', function () {
+        expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
+      });
+    });
 
     describe('Update contract based on new end date', function () {
       describe('When end date is past', function () {
@@ -152,7 +186,7 @@ define([
             },
             'pay': {},
             'hour': {},
-            'leave': [],
+            'leave': ['ses'],
             'details': {
               'period_end_date': newEndDate
             },

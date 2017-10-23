@@ -249,7 +249,12 @@ function hrjobcontract_civicrm_pageRun($page) {
     $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
     $gid = array_search('HRJobContract_Summary', $groups);
 
-    CRM_Core_Resources::singleton()->addSetting(array('grID' => $gid));
+    CRM_Core_Resources::singleton()
+      ->addSetting(array('grID' => $gid))
+      ->addVars('leaveAndAbsences', [
+        'baseURL' => CRM_Core_Resources::singleton()->getUrl('uk.co.compucorp.civicrm.hrleaveandabsences'),
+        'attachmentToken' => CRM_Core_Page_AJAX_Attachment::createToken()
+      ]);
   }
 }
 
