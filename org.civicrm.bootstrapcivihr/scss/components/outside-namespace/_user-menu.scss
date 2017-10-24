@@ -1,0 +1,64 @@
+.chr_user-menu {
+  color: $chr-user-menu-color;
+  cursor: default;
+  line-height: $chr-user-menu-line-height;
+  padding: 0 10px;
+  position: relative;
+
+  &:hover {
+    background: $chr-user-menu-bg-hover;
+
+    > .chr_user-menu__dropdown {
+      display: block;
+    }
+  }
+}
+
+.chr_user-menu__data {
+  > .chr_user-menu__name {
+    float: left;
+  }
+
+  > .chr_profile-card {
+    margin: -2px 8px 0 8px; // To improve, the vertical margin is just to vertically align the card
+    vertical-align: top;
+  }
+
+  @media(max-width: $chr-user-menu-minify-breakpoint) {
+    > .chr_user-menu__arrow,
+    > .chr_user-menu__name {
+      display: none;
+    }
+  }
+}
+
+.chr_user-menu__dropdown {
+  background: $chr-user-menu-dropdown-bg;
+  display: none;
+  position: absolute;
+  right: 0;
+  z-index: 99;
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+  }
+
+  a {
+    color: $chr-user-menu-dropdown-link-color;
+    display: block;
+    line-height: 50px;
+    padding: 0 30px 0 20px;
+    white-space: nowrap;
+
+    &:hover {
+      background: $chr-user-menu-dropdown-link-bg-hover;
+      color: $chr-user-menu-dropdown-link-color-hover;
+      text-decoration: none;
+    }
+
+    > i {
+      margin-right: 10px;
+    }
+  }
+}

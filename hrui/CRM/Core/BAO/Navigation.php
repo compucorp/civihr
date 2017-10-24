@@ -665,22 +665,17 @@ ORDER BY parent_id, weight";
         $homeLabel = $homeNav['label'];
         // CRM-6804 (we need to special-case this as we don’t ts()-tag variables)
         if ($homeLabel == 'Home') {
-          $homeLabel = ts('CiviCRM Home');
+          $homeLabel = ts('Home');
         }
       }
       else {
         $homeURL = CRM_Utils_System::url('civicrm/dashboard', 'reset=1');
-        $homeLabel = ts('CiviCRM Home');
+        $homeLabel = ts('Home');
       }
 
-      $hideLabel = ts('Self Service Portal');//ts('Drupal Menu');
-
+      $hideLabel = ts('Hide Menu');
       $prepandString = "
-        <li class='menumain crm-link-home'>$homeIcon
-          <ul id='civicrm-home'>
-            <li><a href='$homeURL'>$homeLabel</a></li>
-            <li><a href='$logoutURL' class='crm-logout-link'>". ts('Logout') ."</a></li>
-          </ul>";
+        <li class='menumain crm-link-home'><a href='$homeURL'>$homeIcon $homeLabel</a>";
       // <li> tag doesn't need to be closed
     }
     return $prepandString . $navigation;

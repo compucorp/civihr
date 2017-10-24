@@ -11,10 +11,22 @@
       changeContactSourceFieldHelpText();
     })
     .ready(function () {
+      toggleActiveClassOnHoverOnAnyMainMenuItem();
+      addUserMenuToMainMenu();
       amendApplicationForm();
       customizeQuickSearchField();
       useFontAwesomeArrowsInSubMenuItems();
     });
+
+  /**
+   * Adds the user menu by fetching it from the hrcore extension
+   */
+  function addUserMenuToMainMenu () {
+    $.ajax('/civicrm/hrcore/usermenu?snippet=4', {
+      dataType: 'html',
+      success: injectUserMenuInAMainMenuWrapper
+    });
+  }
 
   /**
    * Adds the Government ID field on the Personal Details page and on the Edit
@@ -160,6 +172,22 @@
   }
 
   /**
+   * Injects the given markup in a menu wrapper
+   * created to contain both the original menu and the user one
+   *
+   * @param {string} menuMarkup
+   */
+  function injectUserMenuInAMainMenuWrapper (menuMarkup) {
+    var $menuMarkup = $(menuMarkup);
+    var $menuWrapper = $('<div>');
+
+    $menuWrapper.attr('id', 'civihr-menu');
+    $menuWrapper.append($('#civicrm-menu'));
+    $menuWrapper.append($menuMarkup);
+    $menuWrapper.insertAfter('#page');
+  }
+
+  /**
    * Insert a DOM node after input[type="file"]
    * with the filename
    */
@@ -254,6 +282,23 @@
 
     $('#js-uploaded-file').remove();
     $input.val('');
+  }
+
+  /**
+   * CiviCRM by default applies on hover the .activetarget class
+   * only to main menu items with a submenu
+   *
+   * This functions makes sure that any item gets the class applied,
+   * even those with just a direct link
+   */
+  function toggleActiveClassOnHoverOnAnyMainMenuItem () {
+    var className = 'activetarget';
+
+    $('.menumain:not(.crm-Self_Service_Portal').hover(function () {
+      $(this).addClass(className);
+    }, function () {
+      $(this).removeClass(className);
+    });
   }
 
   /**
