@@ -11,6 +11,7 @@
       changeContactSourceFieldHelpText();
     })
     .ready(function () {
+      toggleActiveClassOnHoverOnAnyMainMenuItem();
       addUserMenuToMainMenu();
       amendApplicationForm();
       customizeQuickSearchField();
@@ -281,6 +282,23 @@
 
     $('#js-uploaded-file').remove();
     $input.val('');
+  }
+
+  /**
+   * CiviCRM by default applies on hover the .activetarget class
+   * only to main menu items with a submenu
+   *
+   * This functions makes sure that any item gets the class applied,
+   * even those with just a direct link
+   */
+  function toggleActiveClassOnHoverOnAnyMainMenuItem () {
+    var className = 'activetarget';
+
+    $('.menumain:not(.crm-Self_Service_Portal').hover(function () {
+      $(this).addClass(className);
+    }, function () {
+      $(this).removeClass(className);
+    });
   }
 
   /**
