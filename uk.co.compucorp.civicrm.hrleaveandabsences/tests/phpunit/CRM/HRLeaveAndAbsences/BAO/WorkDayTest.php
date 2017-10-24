@@ -12,6 +12,8 @@ use CRM_HRLeaveAndAbsences_Exception_InvalidWorkDayException as InvalidWorkDayEx
  */
 class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
 
+  use CRM_HRLeaveAndAbsences_WorkDayHelpersTrait;
+
   protected $workPattern = null;
   protected $workWeek = null;
 
@@ -365,11 +367,12 @@ class CRM_HRLeaveAndAbsences_BAO_WorkDayTest extends BaseHeadlessTest {
   }
 
   public function workDayTypeDataProvider() {
+    $workDayTypes = $this->getWorkDayTypes();
     return [
       [0, true],
-      [WorkDay::getWorkingDayTypeValue(), false],
-      [WorkDay::getNonWorkingDayTypeValue(), false],
-      [WorkDay::getWeekendTypeValue(), false],
+      [$workDayTypes['working_day']['value'], false],
+      [$workDayTypes['non_working_day']['value'], false],
+      [$workDayTypes['weekend']['value'], false],
       ['adasdsa', true],
       [rand(4, PHP_INT_MAX), true],
     ];
