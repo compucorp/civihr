@@ -17,7 +17,9 @@ define([
 
       spyOn(UtilsService, 'getNumberOfPublicHolidaysInCurrentPeriod').and.callFake(function () {
         var deferred = $q.defer();
+
         deferred.resolve(2);
+
         return deferred.promise;
       });
 
@@ -25,8 +27,11 @@ define([
     }));
 
     describe('init', function () {
-      it('loads the number of public holidays', function () {
+      beforeEach(function () {
         $scope.$digest();
+      });
+
+      it('loads the number of public holidays', function () {
         expect(UtilsService.getNumberOfPublicHolidaysInCurrentPeriod).toHaveBeenCalled();
         expect(ctrl.numberOfPublicHolidays).toBe(2);
       });
@@ -41,32 +46,21 @@ define([
             { add_public_holidays: true, leave_type: '3' }
           ]
         };
+
+        $scope.$digest();
       });
 
       describe('when a leave type is set to add public holidays', function () {
         beforeEach(function () {
-          $scope.$digest();
           $scope.entity.leave[1].add_public_holidays = true;
+
+          $scope.$digest();
         });
 
         it('sets the other leave types to not add public holidays', function () {
-          $scope.$digest();
           expect($scope.entity.leave[0].add_public_holidays).toBe(false);
           expect($scope.entity.leave[1].add_public_holidays).toBe(true);
           expect($scope.entity.leave[2].add_public_holidays).toBe(false);
-        });
-      });
-
-      describe('kek', function () {
-        beforeEach(function () {
-          $scope.$digest();
-          $scope.entity.leave[0].add_public_holidays = true;
-          $scope.entity.leave[0].leave_calculation_unit_name = 'hours';
-        });
-
-        it('sets the other leave types to not add public holidays', function () {
-          $scope.$digest();
-          expect($scope.entity.leave[0].add_public_holidays).toBe(true);
         });
       });
     });

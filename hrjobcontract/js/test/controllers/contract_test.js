@@ -36,22 +36,9 @@ define([
       AbsenceType = _AbsenceType_;
       UtilsService = _UtilsService_;
 
-      $httpBackend.whenGET(/action=getfulldetails&entity=HRJobContract/).respond(contractMock.contractEntity);
-      $httpBackend.whenGET(/action=getcurrentcontract&entity=HRJobContract/).respond({ 'values': [] });
-      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(contractMock.contract);
-      $httpBackend.whenGET(/action=getsingle&entity=HRJobContractRevision/).respond({ 'values': [] });
-      $httpBackend.whenGET(/hrjobcontract\/file\/list/).respond({ 'values': [] });
-      // @NOTE This is a temporary solution until we can import mocks
-      // from other extensions such as Leave and Absebce extension
-      $httpBackend.whenGET(/action=get&entity=AbsenceType/).respond({ 'values':
-        _.map(contractMock.contractEntity.leave, function (leave, index) {
-          return { id: leave.leave_type, calculation_unit: _.sample(calculationUnitsMock).value };
-        })
-      });
-      $httpBackend.whenGET(/action=get&entity=OptionValue/).respond({ 'values': calculationUnitsMock });
+      mockBackendCalls();
       spyOn(AbsenceType, 'all').and.callThrough();
       spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
-
       makeController();
     }));
 
@@ -186,7 +173,7 @@ define([
             },
             'pay': {},
             'hour': {},
-            'leave': ['ses'],
+            'leave': [],
             'details': {
               'period_end_date': newEndDate
             },
@@ -194,6 +181,25 @@ define([
           })
         };
       });
+    }
+
+    /**
+     * Mocks back-end API calls
+     */
+    function mockBackendCalls () {
+      $httpBackend.whenGET(/action=getfulldetails&entity=HRJobContract/).respond(contractMock.contractEntity);
+      $httpBackend.whenGET(/action=getcurrentcontract&entity=HRJobContract/).respond({ 'values': [] });
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(contractMock.contract);
+      $httpBackend.whenGET(/action=getsingle&entity=HRJobContractRevision/).respond({ 'values': [] });
+      $httpBackend.whenGET(/hrjobcontract\/file\/list/).respond({ 'values': [] });
+      // @NOTE This is a temporary solution until we can import mocks
+      // from other extensions such as Leave and Absence extension
+      $httpBackend.whenGET(/action=get&entity=AbsenceType/).respond({ 'values':
+        _.map(contractMock.contractEntity.leave, function (leave, index) {
+          return { id: leave.leave_type, calculation_unit: _.sample(calculationUnitsMock).value };
+        })
+      });
+      $httpBackend.whenGET(/action=get&entity=OptionValue/).respond({ 'values': calculationUnitsMock });
     }
   });
 });

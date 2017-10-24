@@ -25,8 +25,8 @@ define([
        * The API returns values as strings, so we convert them to booleans to
        * make it easy to use them inside conditions
        *
-       * @param {Object} data
-       *   The data object as returned by the API
+       * @param {Object} contracts as returned by the API
+       * @param {Object} absenceTypes indexed by their IDs
        */
       function adjustAddPublicHolidaysValue (contracts, absenceTypes) {
         _.each(contracts.leave, function (leave) {
@@ -185,12 +185,12 @@ define([
           return deffered.promise;
         },
         save: function (contractDetails) {
+          var val;
           var deffered = $q.defer();
           var params = _.extend({
             deleted: 0,
             sequential: 1
           }, contractDetails);
-          var val;
 
           if ((!contractDetails || typeof contractDetails !== 'object') ||
             (!contractDetails.id || typeof +contractDetails.id !== 'number')) {

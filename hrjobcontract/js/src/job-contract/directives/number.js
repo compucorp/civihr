@@ -13,6 +13,7 @@ define([
       link: function ($scope, el, attrs, modelCtrl) {
         var toFixedVal = 2;
         var notToFixed = attrs.hrjcNumberFloat || false;
+        // in Leave in Hours we break hours to 15 minutes intervals (0.25 of an hour)
         var toHoursRound = 0.25;
         var toHours = attrs.hrjcToHours || false;
         var notNegative = attrs.hrjcNotNegative || false;
