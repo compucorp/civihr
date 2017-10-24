@@ -63,10 +63,6 @@ define([
         expect(ctrl.leaveRequests).toEqual([]);
       });
 
-      it('sets absence types equal to an empty array', function () {
-        expect(ctrl.absenceTypes).toEqual([]);
-      });
-
       it('fires a leave widget child is loading event', function () {
         expect($scope.$emit).toHaveBeenCalledWith(
           'LeaveWidget::childIsLoading', childComponentName);
