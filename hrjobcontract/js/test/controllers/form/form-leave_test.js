@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'job-contract/app'
 ], function () {
@@ -13,9 +15,11 @@ define([
       $rootScope = _$rootScope_;
       UtilsService = _UtilsService_;
 
-      spyOn(UtilsService, "getNumberOfPublicHolidaysInCurrentPeriod").and.callFake(function () {
+      spyOn(UtilsService, 'getNumberOfPublicHolidaysInCurrentPeriod').and.callFake(function () {
         var deferred = $q.defer();
+
         deferred.resolve(2);
+
         return deferred.promise;
       });
 
@@ -23,13 +27,14 @@ define([
     }));
 
     describe('init', function () {
+      beforeEach(function () {
+        $scope.$digest();
+      });
 
       it('loads the number of public holidays', function () {
-        $scope.$digest();
         expect(UtilsService.getNumberOfPublicHolidaysInCurrentPeriod).toHaveBeenCalled();
         expect(ctrl.numberOfPublicHolidays).toBe(2);
       });
-
     });
 
     describe('Set a leave type to add public holidays', function () {
@@ -41,31 +46,31 @@ define([
             { add_public_holidays: true, leave_type: '3' }
           ]
         };
+
+        $scope.$digest();
       });
 
       describe('when a leave type is set to add public holidays', function () {
         beforeEach(function () {
-          $scope.$digest();
           $scope.entity.leave[1].add_public_holidays = true;
+
+          $scope.$digest();
         });
 
         it('sets the other leave types to not add public holidays', function () {
-          $scope.$digest();
           expect($scope.entity.leave[0].add_public_holidays).toBe(false);
           expect($scope.entity.leave[1].add_public_holidays).toBe(true);
           expect($scope.entity.leave[2].add_public_holidays).toBe(false);
         });
-      })
-
+      });
     });
 
     /**
      * Initializes the form controller
      */
-    function initController() {
+    function initController () {
       $scope = $rootScope.$new();
-      ctrl = $controller('FormLeaveCtrl', { $scope: $scope});
+      ctrl = $controller('FormLeaveCtrl', { $scope: $scope });
     }
   });
 });
-
