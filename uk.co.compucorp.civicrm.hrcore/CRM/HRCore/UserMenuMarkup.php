@@ -43,7 +43,7 @@ class CRM_HRCore_UserMenuMarkup {
    * Replaces the placholders with actual data and then returns
    * the processed markup
    *
-   * @return {string}
+   * @return string
    */
   public function getMarkup() {
     $this->smarty->assign('username', $this->getUserName());
@@ -69,11 +69,8 @@ class CRM_HRCore_UserMenuMarkup {
    */
   private function setTemplatePath() {
     $this->tplPath = strtr(
-      CRM_Utils_System::getClassName($this),
-      array(
-        '_' => DIRECTORY_SEPARATOR,
-        '\\' => DIRECTORY_SEPARATOR,
-      )
+      self::class,
+      ['_' => DIRECTORY_SEPARATOR, '\\' => DIRECTORY_SEPARATOR]
     ) . '.tpl';
   }
 
