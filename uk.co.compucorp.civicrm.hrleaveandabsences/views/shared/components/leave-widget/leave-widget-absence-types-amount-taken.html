@@ -5,9 +5,18 @@
         <th>{{absenceTypesTaken.title}}</th>
         <th>
           Amount taken
-          <button class="info-button">
-            <i class="fa fa-info-circle"></i>
-          </button>
+          <help-text title="Amount taken">
+            <p>This table displays the amount of {{absenceTypesTaken.leaveName || 'leaves'}} taken in the current period.
+            The total amount is in days/hours by default. Admin users can change the display options if needed.
+            The {{absenceTypesTaken.title}} Heatmap shows the most common days of the week for recorded {{absenceTypesTaken.title | lowercase}}.
+            The Heatmap uses three colours:</p>
+
+            <ul>
+              <li><strong>Green:</strong> indicates days with the lowest incidence of reported {{absenceTypesTaken.title | lowercase}}</li>
+              <li><strong>Yellow:</strong> indicates days with medium rates of reported {{absenceTypesTaken.title | lowercase}}</li>
+              <li><strong>Red:</strong> indicates days with highest rates of reported {{absenceTypesTaken.title | lowercase}}</li>
+            </ul>
+          </help-text>
         </th>
       </tr>
     </thead>

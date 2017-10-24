@@ -10,6 +10,7 @@ define([
   components.component('leaveWidgetAbsenceTypesAmountTaken', {
     bindings: {
       title: '@',
+      leaveName: '@?',
       absenceTypes: '<',
       contactId: '<',
       absencePeriod: '<',
