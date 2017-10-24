@@ -5,7 +5,7 @@ define([
   'common/moment',
   'common/modules/components'
 ], function (_, moment, components) {
-  return components.component('heatmap', {
+  components.component('heatmap', {
     bindings: {
       values: '<'
     },
