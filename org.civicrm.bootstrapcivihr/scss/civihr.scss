@@ -3,6 +3,7 @@
 @import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/mixins/ALL";
 @import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/mixins";
 
+@import "overrides/crm/*";
 @import "overrides/style/*";
 @import "components/*";
 @import "common/*"
