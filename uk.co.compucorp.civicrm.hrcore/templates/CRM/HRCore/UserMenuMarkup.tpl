@@ -16,11 +16,6 @@
         </a>
       </li>
       <li>
-        <a href="http://civihr-documentation.readthedocs.io/en/latest/self-service-portal/login-screen/" target="_blank">
-          <i class="fa fa-book"></i>{ts}User guide{/ts}
-        </a>
-      </li>
-      <li>
         <a href="{$logoutLink}">
           <i class="fa fa-sign-out"></i>{ts}Log Out{/ts}
         </a>
