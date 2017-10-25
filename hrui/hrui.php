@@ -997,28 +997,32 @@ function _hrui_createHelpMenu(&$menu) {
 function _hrui_createDeveloperMenu(&$menu) {
   _hrui_civix_insert_navigation_menu($menu, '', [
     'name' => ts('Developer'),
-    'permission' => 'access CiviCRM'
+    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
+    'operator' => 'AND'
   ]);
 
   _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('API Explorer'),
     'url' => 'civicrm/api',
     'target' => '_blank',
-    'permission' => 'access CiviCRM'
+    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
+    'operator' => 'AND'
   ]);
 
   _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('Developer Docs'),
     'target' => '_blank',
     'url' => 'https://civihr.atlassian.net/wiki/spaces/CIV/pages',
-    'permission' => 'access CiviCRM'
+    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
+    'operator' => 'AND'
   ]);
 
   _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('Style Guide'),
     'target' => '_blank',
     'url' => 'https://www.civihr.org/support',
-    'permission' => 'access CiviCRM'
+    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
+    'operator' => 'AND'
   ]);
 
   // Adds sub menu under Style Guide menu
@@ -1027,7 +1031,8 @@ function _hrui_createDeveloperMenu(&$menu) {
       'label' => $styleGuide['label'],
       'name' => $styleGuide['name'],
       'url' => 'civicrm/styleguide/' . $styleGuide['name'],
-      'permission' => 'access CiviCRM',
+      'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
+      'operator' => 'AND'
     ]);
   }
 }
