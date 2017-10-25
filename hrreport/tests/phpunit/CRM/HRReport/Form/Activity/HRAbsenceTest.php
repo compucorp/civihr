@@ -23,6 +23,7 @@ class CRM_HRReport_Form_Activity_HRAbsenceTest extends CiviReportTestCase implem
     return \Civi\Test::headless()
       ->installMe(__DIR__)
       ->install('org.civicrm.hrabsence')
+      ->install('org.civicrm.hrjobcontract')
       ->apply();
   }
 

@@ -15,6 +15,7 @@ class CRM_HRReport_Form_Contact_HRDetailTest extends CiviReportTestCase implemen
     return \Civi\Test::headless()
       ->installMe(__DIR__)
       ->install('org.civicrm.hrabsence')
+      ->install('org.civicrm.hrjobcontract')
       ->apply();
   }
 
@@ -59,7 +60,7 @@ class CRM_HRReport_Form_Contact_HRDetailTest extends CiviReportTestCase implemen
     if (!parent::_populateDB($perClass, $object)) {
       return FALSE;
     }
-    _hrjob_phpunit_populateDB();
+
     return TRUE;
   }
 
