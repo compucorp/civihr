@@ -21,7 +21,7 @@ define([
     };
   }]);
 
-  timepickerSelectController.$inject = ['$scope', 'notificationService'];
+  timepickerSelectController.$inject = ['$scope'];
 
   function timepickerSelectController ($scope) {
     var vm = this;

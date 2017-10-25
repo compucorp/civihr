@@ -26,6 +26,10 @@ define([
         it('builds correct amount of options', function () {
           expect(vm.options.length).toBe(24 * 60); // 00:00 - 23:59
         });
+
+        it('does not set a placeholder', function () {
+          expect(!!vm.placeholder).toBeFalsy();
+        });
       });
 
       describe('when "timepicker-select-time-from" attribute is passed', function () {
