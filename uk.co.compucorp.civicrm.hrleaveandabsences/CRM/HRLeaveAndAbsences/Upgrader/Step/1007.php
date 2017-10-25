@@ -58,11 +58,29 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1007 {
     ];
 
     foreach ($subMenu as $key => $subMenuItem) {
+      if ($this->up1007_doesMenuItemExist($subMenuItem['name'])) {
+        continue;
+      }
+
       $subMenuItem['parent_id'] = $menuItem->id;
       $subMenuItem['weight'] = $key;
       $subMenuItem['is_active'] = 1;
 
       CRM_Core_BAO_Navigation::add($subMenuItem);
     }
+  }
+
+  /**
+   * Checks if the menu item with the given name already exists
+   *
+   * @param string $subMenuItem
+   *
+   * @return bool
+   */
+  private function up1007_doesMenuItemExist($subMenuItemName) {
+    $default = [];
+    $subMenuItemParams = ['name' => $subMenuItemName];
+
+    return CRM_Core_BAO_Navigation::retrieve($subMenuItemParams, $default) != NULL;
   }
 }
