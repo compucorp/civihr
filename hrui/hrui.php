@@ -590,6 +590,17 @@ function hrui_civicrm_managed(&$entities) {
 }
 
 /**
+ * Implements hook_civicrm_alterMenu().
+ *
+ * @param Array $items List of http routes
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterMenu
+ */
+function hrui_civicrm_alterMenu(&$items) {
+  $items['civicrm/api']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
+  $items['civicrm/styleguide']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
+}
+
+/**
  * Implements hook_civicrm_navigationMenu().
  *
  * @param Array $params List of menu items
