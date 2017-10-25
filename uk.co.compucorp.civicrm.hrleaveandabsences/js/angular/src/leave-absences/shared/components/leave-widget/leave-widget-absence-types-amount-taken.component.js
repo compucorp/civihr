@@ -10,6 +10,7 @@ define([
   components.component('leaveWidgetAbsenceTypesAmountTaken', {
     bindings: {
       title: '@',
+      leaveName: '@?',
       absenceTypes: '<',
       contactId: '<',
       absencePeriod: '<',
@@ -29,7 +30,6 @@ define([
     var childComponentName = 'leave-widget-absence-types-amount-taken';
     var vm = this;
 
-    vm.absenceTypes = [];
     vm.leaveRequests = [];
 
     vm.$onChanges = $onChanges;

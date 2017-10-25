@@ -4,6 +4,7 @@ define([
   'common/angular',
   'common/lodash',
   'common/directives/loading',
+  'common/directives/help-text.directive',
   'common/filters/time-unit-applier.filter',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/modules/components',
