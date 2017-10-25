@@ -30,7 +30,7 @@ define([
 
       describe('when "timepicker-select-time-from" attribute is passed', function () {
         beforeEach(function () {
-          buildDirective({ 'timepicker-select-time-from': '23:50' });
+          buildDirective([{ key: 'timepicker-select-time-from', value: '23:50', bind: '<' }]);
         });
 
         it('contains expected options', function () {
@@ -51,7 +51,7 @@ define([
 
       describe('when "timepicker-select-time-to" attribute is passed', function () {
         beforeEach(function () {
-          buildDirective({ 'timepicker-select-time-to': '00:09' });
+          buildDirective([{ key: 'timepicker-select-time-to', value: '00:09', bind: '<' }]);
         });
 
         it('contains expected options', function () {
@@ -72,7 +72,7 @@ define([
 
       describe('when "timepicker-select-interval" attribute is passed', function () {
         beforeEach(function () {
-          buildDirective({ 'timepicker-select-interval': '15' });
+          buildDirective([{ key: 'timepicker-select-interval', value: '15', bind: '<' }]);
         });
 
         it('contains expected options', function () {
@@ -91,34 +91,73 @@ define([
           // 00:00 - 23:45 with a 15 minutes interval
           expect(vm.options.length).toBe(96);
         });
+
+        describe('when "timepicker-select-interval" attribute is not a divider of 60', function () {
+          beforeEach(function () {
+            buildDirective([{ key: 'timepicker-select-interval', value: '17', bind: '<' }]);
+          });
+
+          it('contains expected options', function () {
+            expect(_.contains(vm.options, '00:00')).toBeTruthy();
+            expect(_.contains(vm.options, '00:17')).toBeTruthy();
+            expect(_.contains(vm.options, '23:31')).toBeTruthy();
+            expect(_.contains(vm.options, '23:48')).toBeTruthy();
+          });
+
+          it('contains expected amount of options', function () {
+            // 00:00, 00:17 ..., 23:31, 23:48
+            expect(vm.options.length).toBe(85);
+          });
+        });
       });
 
-      describe('when "timepicker-select-default-option" attribute is passed', function () {
+      describe('when "timepicker-select-placeholder" attribute is passed', function () {
+        var placeholder = 'Please select time';
+
         beforeEach(function () {
-          buildDirective({ 'timepicker-select-default-option': 'Default option' });
+          buildDirective([{ key: 'timepicker-select-placeholder', value: placeholder, bind: '@' }]);
         });
 
-        it('sets the default option', function () {
-          expect(vm.defaultOption).toBe('Default option');
+        it('sets the placeholder', function () {
+          // need to add '"' because the binder is "@"
+          expect(vm.placeholder).toBe(placeholder);
         });
       });
     });
 
-    function buildDirective (options) {
-      var element, scopeKey;
-      var attributes = '';
-      var $scope = $rootScope.$new();
-
-      options = options || {};
-
-      _.each(options, function (optionValue, optionKey) {
-        scopeKey = optionKey.replace(/-/g, '');
-        $scope[scopeKey] = optionValue;
-        attributes += ' ' + optionKey + '="' + scopeKey + '"';
+    describe('when "timepicker-select-time-from" attribute is greater than "timepicker-select-time-to"', function () {
+      beforeEach(function () {
+        buildDirective([
+          { key: 'timepicker-select-time-from', value: '14:00', bind: '<' },
+          { key: 'timepicker-select-time-to', value: '9:00', bind: '<' }
+        ]);
       });
 
-      element = angular.element(
-        '<select timepicker-select' + attributes + '></select>');
+      it('simply does not have any options', function () {
+        expect(vm.options.length).toBe(0);
+      });
+    });
+
+    /**
+     * Builds a directive
+     *
+     * @param {Array} options objects of attributes keys, values and binding types
+     *   [{ key: 'key', value: 'value', bind: '<|@' }, {...}, ...]
+     */
+    function buildDirective (options) {
+      var attrWrapper = '';
+      var element = angular.element('<select timepicker-select></select>');
+      var $scope = $rootScope.$new();
+
+      options = options || [];
+
+      _.each(options, function (option) {
+        // Depending on a binding type a wrapper might be needed
+        attrWrapper = option.bind === '<' ? '"' : '';
+
+        element.attr(option.key, attrWrapper + option.value + attrWrapper);
+      });
+
       vm = $compile(element)($scope).controller('timepickerSelect');
 
       $scope.$digest();

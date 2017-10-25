@@ -1,14 +1,15 @@
 /* eslint-env amd */
 
 define([
+  'common/moment',
   'common/modules/directives'
-], function (directives) {
+], function (moment, directives) {
   'use strict';
 
   directives.directive('timepickerSelect', ['$templateCache', function ($templateCache) {
     return {
       scope: {
-        timepickerSelectDefaultOption: '<',
+        timepickerSelectPlaceholder: '@',
         timepickerSelectTimeFrom: '<',
         timepickerSelectTimeTo: '<',
         timepickerSelectInterval: '<'
@@ -25,47 +26,25 @@ define([
   function timepickerSelectController ($scope) {
     var vm = this;
 
-    vm.defaultOption = $scope.timepickerSelectDefaultOption;
+    vm.placeholder = $scope.timepickerSelectPlaceholder;
     vm.options = [];
 
     /**
      * Builds options for the selector
      */
     function buildOptions () {
-      var hour, minute;
       var interval = +$scope.timepickerSelectInterval || 1;
-      var timeFrom = calculateLimit($scope.timepickerSelectTimeFrom || '00:00');
-      var timeTo = calculateLimit($scope.timepickerSelectTimeTo || '23:59');
+      var timeFrom = moment.duration($scope.timepickerSelectTimeFrom || '00:00');
+      var timeTo = moment.duration($scope.timepickerSelectTimeTo || '23:59');
 
       vm.options = [];
 
-      for (var minutes = timeFrom; minutes <= timeTo; minutes += interval) {
-        hour = addTrailingZero(Math.floor(minutes / 60));
-        minute = addTrailingZero(minutes % 60);
+      while (timeFrom.asMinutes() <= timeTo.asMinutes()) {
+        var time = moment.utc(timeFrom.asMilliseconds());
 
-        vm.options.push(hour + ':' + minute);
+        vm.options.push(time.format('HH:mm'));
+        timeFrom.add(interval, 'minutes');
       }
-    }
-
-    /**
-     * Calculates a limit in minutes by a given time
-     *
-     * @param  {String} time in "HH:MM" format
-     * @return {Integer}
-     */
-    function calculateLimit (time) {
-      time = time.split(':');
-
-      return (+time[0]) * 60 + (+time[1]);
-    }
-
-    /**
-     * Adds a trailing zero if a number is less than 10
-     */
-    function addTrailingZero (number) {
-      number += '';
-
-      return (number.length === 1 ? '0' : '') + number;
     }
 
     $scope.$watchGroup([
