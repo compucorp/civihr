@@ -9,6 +9,10 @@
 #contactsummary {
   padding: 20px;
 
+  > .container-fluid {
+    max-width: $container-large-desktop;
+  }
+
   .panel--key-dates {
 
     > .panel-body {

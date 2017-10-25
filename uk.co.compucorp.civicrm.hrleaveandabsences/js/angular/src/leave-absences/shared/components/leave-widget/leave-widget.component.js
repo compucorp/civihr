@@ -119,7 +119,6 @@ define([
         vm.sicknessAbsenceTypes = types.filter(function (type) {
           return +type.is_sick;
         });
-        console.log('nein, nein, nein', types, vm.sicknessAbsenceTypes);
       });
     }
 
