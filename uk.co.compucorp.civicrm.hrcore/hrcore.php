@@ -236,6 +236,17 @@ function hrcore_civicrm_navigationMenu(&$params) {
 }
 
 /**
+ * Implements hook_civicrm_permission().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_permission/
+ */
+function hrcore_civicrm_permission(&$permissions) {
+  $permissions += [
+    'access CiviCRM developer menu and tools' => ts('Access CiviCRM developer menu and tools')
+  ];
+}
+
+/**
  * Renames a menu with the given new label
  *
  * @param array $params
