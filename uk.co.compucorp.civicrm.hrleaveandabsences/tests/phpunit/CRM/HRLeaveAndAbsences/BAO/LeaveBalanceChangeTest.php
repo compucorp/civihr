@@ -26,16 +26,22 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   use CRM_HRLeaveAndAbsences_ContractHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
+  use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
 
-  private $defaultDeductionFactory;
+  private $dateAmountDeductionService;
+
+  private $hoursAmountDeductionService;
 
   public function setUp() {
     // In order to make tests simpler, we disable the foreign key checks,
     // as a way to allow the creation of leave request records related
     // to a non-existing leave period entitlement
     CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
-    $absenceType = AbsenceTypeFabricator::fabricate();
-    $this->defaultDeductionFactory = LeaveDateAmountDeductionFactory::createForAbsenceType($absenceType->id);
+    $absenceTypeInDays = AbsenceTypeFabricator::fabricate();
+    $absenceTypeInHours = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $this->dateAmountDeductionService = LeaveDateAmountDeductionFactory::createForAbsenceType($absenceTypeInDays->id);
+    $this->hoursAmountDeductionService = LeaveDateAmountDeductionFactory::createForAbsenceType($absenceTypeInHours->id);
+    $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
   public function tearDown() {
@@ -2717,28 +2723,40 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest->contact_id = $contract['contact_id'];
 
     //(2016-07-29) is a friday on first week and a working day
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-07-29'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-07-29'));
     $this->assertEquals(-1, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-07-29'));
+    $this->assertEquals(-7.5, $amount);
 
     //(2016-07-31) is a Sunday on first week and non-working day
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-07-31'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-07-31'));
+    $this->assertEquals(0, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-07-31'));
     $this->assertEquals(0, $amount);
 
     //(2016-08-01) is on the monday of the second week and not a working day
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-08-01'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-01'));
+    $this->assertEquals(0, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-01'));
     $this->assertEquals(0, $amount);
 
     //(2016-08-02) is a tuesday, which is a working day on the second week.
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-08-02'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-02'));
     $this->assertEquals(-1, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-02'));
+    $this->assertEquals(-4.5, $amount);
 
     //(2016-08-03) is a Wednesday which is not a working day on the second week
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-08-03'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-03'));
+    $this->assertEquals(0, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-03'));
     $this->assertEquals(0, $amount);
 
     //(2016-08-04) is a thursday which is a working day on the second week but there's a public holiday
     //existing on that particular date.
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-08-04'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-04'));
+    $this->assertEquals(0, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-04'));
     $this->assertEquals(0, $amount);
   }
 
@@ -2772,23 +2790,33 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest->contact_id = $contract['contact_id'];
 
     //(2016-07-29) is a friday and a working day
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-07-29'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-07-29'));
     $this->assertEquals(-1, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-07-29'));
+    $this->assertEquals(-8, $amount);
 
     //(2016-07-31) is a Sunday  and a non-working day
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-07-31'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-07-31'));
+    $this->assertEquals(0, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-07-31'));
     $this->assertEquals(0, $amount);
 
     //(2016-08-01) is a monday and a working day
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-08-01'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-01'));
     $this->assertEquals(-1, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-01'));
+    $this->assertEquals(-8, $amount);
 
     //(2016-08-02) is a tuesday which is a working day.
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-08-02'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-02'));
     $this->assertEquals(-1, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-02'));
+    $this->assertEquals(-8, $amount);
 
     //(2016-08-03) is a Wednesday which is  a working day but a public holiday was created on this date
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-08-03'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-03'));
+    $this->assertEquals(0, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-03'));
     $this->assertEquals(0, $amount);
   }
 
@@ -2817,23 +2845,71 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest->contact_id = $contract['contact_id'];
 
     //(2016-07-29) is a friday and a working day
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-07-29'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-07-29'));
     $this->assertEquals(-1, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-07-29'));
+    $this->assertEquals(-8, $amount);
 
     //(2016-07-31) is a Sunday and a non-working day
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-07-31'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-07-31'));
+    $this->assertEquals(0, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-07-31'));
     $this->assertEquals(0, $amount);
 
     //(2016-08-01) is a monday and a working day
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-08-01'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-01'));
     $this->assertEquals(-1, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-01'));
+    $this->assertEquals(-8, $amount);
 
     //(2016-08-02) is a tuesday which is a working day.
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-08-02'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-02'));
     $this->assertEquals(-1, $amount);
+    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-02'));
+    $this->assertEquals(-8, $amount);
 
     //(2016-08-03) is a Wednesday which is a working day but a public holiday was created on this date
-    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-08-03'));
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-03'));
+    $this->assertEquals(0, $amount);
+        $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-03'));
+    $this->assertEquals(0, $amount);
+  }
+
+  public function testCalculateAmountForDateWhenLeaveDateIsHalfDayAndAmountIsCalculatedInDays() {
+    $periodStartDate = new DateTime('2016-01-01');
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [ 'period_start_date' => $periodStartDate->format('Y-m-d') ]
+    );
+
+    // Working days: monday through friday
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->contact_id = $contract['contact_id'];
+    $leaveRequest->from_date = CRM_Utils_Date::processDate('2016-07-28');
+    $leaveRequest->to_date = CRM_Utils_Date::processDate('2016-08-30');
+    $leaveRequest->from_date_type = $this->leaveRequestDayTypes['half_day_pm']['value'];
+    $leaveRequest->to_date_type = $this->leaveRequestDayTypes['half_day_am']['value'];
+
+    //(2016-07-28) is a thursday and a working day, First day is half PM for leave request
+    //0.5 will be deducted as amount in days
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-07-28'));
+    $this->assertEquals(-0.5, $amount);
+
+    //(2016-07-29) is a friday and a working day
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-07-29'));
+    $this->assertEquals(-1, $amount);
+
+    //(2016-07-30) is a Saturday and a non-working day so 0 will be deducted even though
+    //its a half day.
+    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-07-30'));
     $this->assertEquals(0, $amount);
   }
 
@@ -3781,7 +3857,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     return $record;
   }
 
-  private function calculateAmountForDate($leaveRequest, DateTime $date) {
-    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date, $this->defaultDeductionFactory);
+  private function calculateAmountForDateInDays($leaveRequest, DateTime $date) {
+    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date, $this->dateAmountDeductionService);
+  }
+
+  private function calculateAmountForDateInHours($leaveRequest, DateTime $date) {
+    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date, $this->hoursAmountDeductionService);
   }
 }
