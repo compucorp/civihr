@@ -1,5 +1,7 @@
 <?php
 
+define('REQUEST_TIME', time());
+
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
@@ -61,3 +63,18 @@ class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
   }
 
 }
+
+function user_password() {}
+
+function user_load_by_mail($email) {}
+
+function user_save($user, $params) {
+  $user = new stdClass();
+  foreach($params as $key => $value) {
+    $user->$key = $value;
+  }
+
+  return $user;
+}
+
+function drupal_anonymous_user() {}
