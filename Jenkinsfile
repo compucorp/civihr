@@ -338,7 +338,7 @@ def listCivihrExtensions() {
       shortName: 'hrui',
       folder: 'hrui',
       hasJSTests: false,
-      hasPHPTests: true
+      hasPHPTests: false
     ],
     [
       name: 'HR Visa',

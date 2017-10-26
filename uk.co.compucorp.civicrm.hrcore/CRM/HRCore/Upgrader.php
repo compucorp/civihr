@@ -40,11 +40,42 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     'Validate Email Address from Mailings.'
   ];
 
+  /**
+   * Callback called when the extension is installed
+   */
   public function install() {
     $this->setScheduledJobsDefaultStatus();
     $this->deleteLocationTypes();
     $this->deleteUnneededCustomGroups();
+    $this->createDefaultRelationshipTypes();
     $this->runAllUpgraders();
+  }
+
+  /**
+   * Callback method called when the extension is uninstalled.
+   *
+   * It should cleanup anything created by the extension installation and
+   * upgraders. Note that things like Option Values and Option Groups might
+   * be in use by other extensions and removing them might result in rendering
+   * those extensions useless, so we should only remove things that are safe to
+   * delete.
+   */
+  public function uninstall() {
+    $this->removeDefaultRelationshipTypes();
+  }
+
+  /**
+   * Callback method called when the extension is disabled
+   */
+  public function disable() {
+    $this->toggleRelationshipTypes(0);
+  }
+
+  /**
+   * Callback method called when the extension is enabled
+   */
+  public function enable() {
+    $this->toggleRelationshipTypes(1);
   }
 
   /**
@@ -123,4 +154,96 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     }
   }
 
+  /**
+   * Create all the default relationship types
+   */
+  private function createDefaultRelationshipTypes() {
+    foreach($this->defaultRelationshipsTypes() as $relationshipType) {
+      civicrm_api3('RelationshipType', 'create', [
+        'name_a_b' => $relationshipType['name_a_b'],
+        'label_a_b' => $relationshipType['name_b_a'],
+        'name_b_a' => $relationshipType['name_b_a'],
+        'label_b_a' => $relationshipType['name_b_a'],
+        'contact_type_a' => 'Individual',
+        'contact_type_b' => 'Individual',
+        'is_reserved' => 0,
+        'is_active' => 1,
+      ]);
+    }
+  }
+
+  /**
+   * Removes default relationship types
+   */
+  private function removeDefaultRelationshipTypes() {
+    foreach($this->defaultRelationshipsTypes() as $relationshipType) {
+      // chained API call to delete the relationship type
+      civicrm_api3('RelationshipType', 'get', [
+        'name_b_a' => $relationshipType['name_b_a'],
+        'api.RelationshipType.delete' => ['id' => '$value.id'],
+      ]);
+    }
+  }
+
+  /**
+   * Enables/Disables a defined list of relationship types
+   *
+   * @param int $setActive
+   *   0: disable , 1: enable
+   */
+  public function toggleRelationshipTypes($setActive) {
+    foreach($this->defaultRelationshipsTypes() as $relationshipType) {
+      // chained API call to activate/disable the relationship type
+      civicrm_api3('RelationshipType', 'get', [
+        'name_b_a' => $relationshipType['name_b_a'],
+        'api.RelationshipType.create' => [
+          'id' => '$value.id',
+          'name_a_b' => '$value.name_a_b',
+          'name_b_a' => '$value.name_b_a',
+          'is_active' => $setActive
+        ],
+      ]);
+    }
+  }
+
+  /**
+   * A list of relationship types to be managed by this extension.
+   *
+   * @return array
+   */
+  public function defaultRelationshipsTypes() {
+    $list = [
+      ['name_a_b' => 'HR Manager is', 'name_b_a' => 'HR Manager', 'description' => 'HR Manager'],
+      ['name_a_b' => 'Line Manager is', 'name_b_a' => 'Line Manager', 'description' => 'Line Manager'],
+    ];
+
+    // (Recruiting Manager) should be included only if hrrecruitment extension is disabled.
+    if (!$this->isExtensionEnabled('org.civicrm.hrrecruitment')) {
+      $list[] = [
+        'name_a_b' => 'Recruiting Manager is',
+        'name_b_a' => 'Recruiting Manager',
+        'description' => 'Recruiting Manager'
+      ];
+    }
+
+    return $list;
+  }
+
+  /**
+   * Checks if an extension is installed or enabled
+   *
+   * @param string $key
+   *   Extension unique key
+   *
+   * @return boolean
+   */
+  private function isExtensionEnabled($key)  {
+    $isEnabled = CRM_Core_DAO::getFieldValue(
+      'CRM_Core_DAO_Extension',
+      $key,
+      'is_active',
+      'full_name'
+    );
+    return  !empty($isEnabled) ? true : false;
+  }
 }
