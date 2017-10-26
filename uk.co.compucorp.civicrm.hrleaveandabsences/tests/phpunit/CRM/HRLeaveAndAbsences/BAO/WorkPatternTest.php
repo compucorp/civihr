@@ -107,17 +107,18 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
   }
 
   public function testCanCreateWorkPatternWithWeeksAndDays() {
+    $defaultParams = ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'number_of_hours' => 1];
     $params = [
       'weeks' => [
         [
           'days' => [
-            ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 1],
-            ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 2],
-            ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 3],
-            ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 4],
-            ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 5],
+            array_merge($defaultParams, ['day_of_the_week' => 1]),
+            array_merge($defaultParams, ['day_of_the_week' => 2]),
+            array_merge($defaultParams, ['day_of_the_week' => 3]),
+            array_merge($defaultParams, ['day_of_the_week' => 4]),
+            array_merge($defaultParams, ['day_of_the_week' => 5]),
             ['type' => 3, 'day_of_the_week' => 6],
-            ['type' => 3, 'day_of_the_week' => 7],
+            ['type' => 3, 'day_of_the_week' => 7]
           ]
         ]
       ]
@@ -143,6 +144,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
   }
 
   public function testCanUpdateWorkPatternWithWeeksAndDays() {
+    $defaultParams = ['type' => 2, 'break' => 1, 'leave_days' => 1, 'number_of_hours' => 1];
     $workPattern = WorkPatternFabricator::fabricate();
     $this->assertNotEmpty($workPattern->id);
     $values = WorkPattern::getValuesArray($workPattern->id);
@@ -152,11 +154,11 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
       'weeks' => [
         [
           'days' => [
-            ['type' => 2, 'time_from' => '15:00', 'time_to' => '22:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 1],
-            ['type' => 2, 'time_from' => '13:00', 'time_to' => '23:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 2],
-            ['type' => 2, 'time_from' => '09:00', 'time_to' => '18:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 3],
-            ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 4],
-            ['type' => 2, 'time_from' => '10:00', 'time_to' => '19:00', 'break' => 1, 'leave_days' => 1, 'day_of_the_week' => 5],
+            array_merge($defaultParams, ['time_from' => '15:00', 'time_to' => '22:00', 'day_of_the_week' => 1]),
+            array_merge($defaultParams, ['time_from' => '13:00', 'time_to' => '23:00', 'day_of_the_week' => 2]),
+            array_merge($defaultParams, ['time_from' => '09:00', 'time_to' => '18:00', 'day_of_the_week' => 3]),
+            array_merge($defaultParams, ['time_from' => '10:00', 'time_to' => '19:00', 'day_of_the_week' => 4]),
+            array_merge($defaultParams, ['time_from' => '10:00', 'time_to' => '19:00', 'day_of_the_week' => 5]),
             ['type' => 3, 'day_of_the_week' => 6],
             ['type' => 3, 'day_of_the_week' => 7],
           ]

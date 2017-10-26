@@ -94,7 +94,7 @@
        */
       function loadCommentsAuthors () {
         var authorsIDs = _.uniq(_.map(allEntitlements, function (entitlement) {
-          return entitlement.comment_author_id;
+          return entitlement.editor_id;
         }));
 
         return Contact.all({ id: { 'IN': authorsIDs } })
@@ -143,8 +143,8 @@
               amount: leave.value,
               comment: leave.comment ? {
                 message: leave.comment,
-                author_name: contacts[leave.comment_author_id].display_name,
-                date: leave.comment_date
+                author_name: contacts[leave.editor_id].display_name,
+                date: leave.created_date
               } : null
             } : null;
           });

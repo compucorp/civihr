@@ -29,6 +29,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `carry_forward_expiration_duration` int unsigned    COMMENT 'An amount of carry_forward_expiration_unit',
      `carry_forward_expiration_unit` int unsigned    COMMENT 'The unit (months or days) of carry_forward_expiration_duration of this type default expiry',
      `is_sick` tinyint   DEFAULT 0 COMMENT 'A flag which is used to determine if this Absence Type can be used for a Sickness Request',
+     `calculation_unit` varchar(512) NOT NULL   COMMENT 'One of the values of the Absence type calculation units option group',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `hrleaveandabsences_absence_type_title`(title)
 
@@ -56,7 +57,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   carry_forward_expiration_unit,
   is_reserved,
   is_default,
-  weight
+  weight,
+  calculation_unit
 ) VALUES (
   1,
   'Holiday / Vacation',
@@ -70,6 +72,7 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   5,
   12,
   2, -- Months
+  1,
   1,
   1,
   1
@@ -87,7 +90,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   accrual_expiration_duration,
   accrual_expiration_unit,
   is_reserved,
-  weight
+  weight,
+  calculation_unit
 ) VALUES (
   2,
   'TOIL',
@@ -100,7 +104,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   3,
   2, -- months
   1,
-  2
+  2,
+  1
 );
 
 INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
@@ -113,7 +118,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   allow_overuse,
   is_reserved,
   weight,
-  is_sick
+  is_sick,
+  calculation_unit
 ) VALUES (
   3,
   'Sick',
@@ -124,6 +130,7 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   1,
   1,
   3,
+  1,
   1
 );
 
@@ -281,14 +288,14 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_period_entitlement` (
   `contact_id` int unsigned NOT NULL   COMMENT 'FK to Contact (civicrm_contact)',
   `overridden` tinyint   DEFAULT false COMMENT 'Indicates if the entitlement was overridden',
   `comment` text    COMMENT 'The comment added by the user about the calculation for this entitlement',
-  `comment_author_id` int unsigned    COMMENT 'FK to Contact. The contact that represents the user who added the comment to this entitlement',
-  `comment_date` datetime    COMMENT 'The date and time the comment for this entitlement was added/updated',
+  `editor_id` int unsigned    COMMENT 'FK to Contact. The contact that represents the user who made changes to this entitlement',
+  `created_date` datetime    COMMENT 'The date and time this entitlement was added/updated',
   PRIMARY KEY ( `id` ),
   UNIQUE INDEX `unique_entitlement`(period_id, contact_id, type_id),
   CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_period_id FOREIGN KEY (`period_id`) REFERENCES `civicrm_hrleaveandabsences_absence_period`(`id`) ON DELETE CASCADE,
   CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_type_id FOREIGN KEY (`type_id`) REFERENCES `civicrm_hrleaveandabsences_absence_type`(`id`) ON DELETE CASCADE,
   CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,
-  CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_comment_author_id FOREIGN KEY (`comment_author_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
+  CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_editor_id FOREIGN KEY (`editor_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ;
 
 -- /*******************************************************
@@ -383,4 +390,25 @@ CREATE TABLE `civicrm_hrleaveandabsences_contact_work_pattern` (
     UNIQUE INDEX `unique_pattern_per_effective_date`(contact_id, effective_date),
     CONSTRAINT FK_civicrm_hrlaa_contact_work_pattern_contact_id FOREIGN KEY (`contact_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE,
     CONSTRAINT FK_civicrm_hrlaa_contact_work_pattern_pattern_id FOREIGN KEY (`pattern_id`) REFERENCES `civicrm_hrleaveandabsences_work_pattern`(`id`) ON DELETE CASCADE
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_leave_period_entitlement_log
+-- *
+-- * Leave Period Entitlement Log
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_leave_period_entitlement_log` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique LeavePeriodEntitlementLog ID',
+     `entitlement_id` int unsigned NOT NULL   COMMENT 'FK to LeavePeriodEntitlement',
+     `editor_id` int unsigned NOT NULL   COMMENT 'FK to Contact. The contact that represents the user who made changes to this entitlement',
+     `entitlement_amount` decimal(20,2) NOT NULL   COMMENT 'The entitlement amount for this Period Entitlement until created_date value',
+     `comment` text   COMMENT 'The comment added by the user about the calculation for this entitlement',
+     `created_date` datetime   COMMENT 'The date and time this entitlement was updated',
+    PRIMARY KEY (`id`),
+    CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_log_entitlement_id FOREIGN KEY (`entitlement_id`) REFERENCES `civicrm_hrleaveandabsences_leave_period_entitlement`(`id`) ON DELETE CASCADE,
+    CONSTRAINT FK_civicrm_hrlaa_leave_period_entitlement_log_editor_id FOREIGN KEY (`editor_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE CASCADE
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;

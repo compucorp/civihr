@@ -50,9 +50,11 @@
         $provide.value('checkPermissions', function () { return $q.resolve(isUserAdmin); });
       }));
 
-      beforeEach(inject(['shared-settings', 'HR_settingsMock', function (_sharedSettings_, HRSettingsMock) {
+      beforeEach(inject(['shared-settings', 'HR_settingsMock', 'api.optionGroup.mock', function (_sharedSettings_, HRSettingsMock, _OptionGroupAPIMock_) {
         sharedSettings = _sharedSettings_;
+
         $provide.value('HR_settings', HRSettingsMock);
+        $provide.value('api.optionGroup', _OptionGroupAPIMock_);
         HRSettings = HRSettingsMock;
       }]));
 
@@ -66,6 +68,7 @@
 
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
+        spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
         spyOn(Entitlement, 'all').and.callThrough();
         spyOn(Entitlement, 'breakdown').and.callThrough();
         spyOn(LeaveRequest, 'all').and.callThrough();
@@ -117,6 +120,7 @@
 
             it('has fetched the absence types', function () {
               expect(AbsenceType.all).toHaveBeenCalled();
+              expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
               expect(controller.absenceTypes.length).not.toBe(0);
             });
 

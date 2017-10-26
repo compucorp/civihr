@@ -67,8 +67,9 @@ define([
      */
     function loadAbsenceTypes () {
       return AbsenceType.all({ options: { sort: 'title ASC' } })
-      .then(function (response) {
-        vm.absenceTypes = response;
+      .then(AbsenceType.loadCalculationUnits)
+      .then(function (absenceTypes) {
+        vm.absenceTypes = absenceTypes;
       });
     }
 

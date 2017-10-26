@@ -176,6 +176,7 @@ define([
      */
     function loadAbsenceTypes () {
       return AbsenceType.all()
+        .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
           vm.absenceTypes = _.indexBy(absenceTypes, 'id');
         });

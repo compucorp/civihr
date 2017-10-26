@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 require_once 'CRM/Core/Form.php';
 
@@ -28,7 +29,8 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
         $this->defaultValues = [
           'allow_request_cancelation' => CRM_HRLeaveAndAbsences_BAO_AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE,
           'add_public_holiday_to_entitlement' => 0,
-          'must_take_public_holiday_as_leave' => 0
+          'must_take_public_holiday_as_leave' => 0,
+          'calculation_unit' => $this->getDefaultCalculationUnitValue()
         ];
       }
     }
@@ -52,6 +54,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
     $this->assign('canDeleteType', $this->canDelete());
     $this->assign('deleteUrl', $this->getDeleteUrl());
     $this->assign('availableColors', json_encode(CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors()));
+    $this->assign('hoursUnitValue', $this->getHoursCalculationUnitValue());
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/spectrum.css');
@@ -82,6 +85,10 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
 
       if(!empty($params['notification_receivers_ids'])) {
         $params['notification_receivers_ids'] = explode(',', $params['notification_receivers_ids']);
+      }
+
+      if(!array_key_exists('add_public_holiday_to_entitlement', $params)) {
+        $params['add_public_holiday_to_entitlement'] = 0;
       }
 
       $actionDescription = ($this->_action & CRM_Core_Action::UPDATE) ? 'updated' : 'created';
@@ -140,6 +147,15 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
         ['disabled' => 'disabled']
       );
     }
+    $this->addSelect(
+      'calculation_unit',
+      [
+        'options' => $this->getCalculationUnitOptions(),
+        'option_url' => NULL,
+        'label' => ts('Calculate Leave in')
+      ],
+      TRUE
+    );
     $this->addYesNo(
       'must_take_public_holiday_as_leave',
       ts('Must staff take public holiday as leave?')
@@ -195,7 +211,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
     $this->add(
       'checkbox',
       'allow_accruals_request',
-      ts('Allow staff to request to accrue additional days leave of this type during the period')
+      ts('Allow staff to request to accrue additional leave of this type during the period')
     );
     $this->add(
       'text',
@@ -231,7 +247,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
     $this->add(
       'text',
       'max_number_of_days_to_carry_forward',
-      ts('Maximum number of days that can be carried forward to a new period? (Leave blank for unlimited)'),
+      ts('Maximum amount of leave that can be carried forward to a new period? (Leave blank for unlimited)'),
       $this->getDAOFieldAttributes('max_number_of_days_to_carry_forward')
     );
     $this->add(
@@ -402,5 +418,71 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
   private function canDelete() {
     $absenceTypeService = new AbsenceTypeService();
     return !$absenceTypeService->absenceTypeHasEverBeenUsed($this->_id);
+  }
+
+  /**
+   * Get the option values for the calculation_unit
+   * select field.
+   * When the Absence Type has been used, the only option
+   * returned is the current value of the calculation unit for the
+   * absence type.
+   *
+   * @return array
+   */
+  private function getCalculationUnitOptions() {
+    $options = AbsenceType::buildOptions('calculation_unit');
+    $selectOptions = [];
+    $absenceTypeHasBeenUsed = $this->absenceTypeHasEverBeenUsed();
+    $calculationUnitValue = false;
+
+    if($absenceTypeHasBeenUsed) {
+      $calculationUnitValue = AbsenceType::getFieldValue(AbsenceType::class, $this->_id, 'calculation_unit');
+    }
+
+    foreach($options as $value => $label) {
+      if($calculationUnitValue && $value != $calculationUnitValue) {
+        continue;
+      }
+      $selectOptions[$value] = ts($label);
+    }
+
+    return $selectOptions;
+  }
+
+  /**
+   * Gets the default calculation_unit value for the calculation_unit
+   * field for new Absence types.
+   *
+   * @return mixed
+   */
+  private function getDefaultCalculationUnitValue() {
+    $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
+
+    return $calculationUnitOptions['days'];
+  }
+
+  /**
+   * Gets the value for the hours calculation_unit
+   *
+   * @return mixed
+   */
+  private function getHoursCalculationUnitValue() {
+    $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
+
+    return $calculationUnitOptions['hours'];
+  }
+
+  /** Checks if the Absence Type record has ever been used.
+   *
+   * @return bool
+   */
+  private function absenceTypeHasEverBeenUsed() {
+    $absenceTypeService = new AbsenceTypeService();
+
+    if(!$this->_id) {
+      return false;
+    }
+
+    return $absenceTypeService->absenceTypeHasEverBeenUsed($this->_id);
   }
 }

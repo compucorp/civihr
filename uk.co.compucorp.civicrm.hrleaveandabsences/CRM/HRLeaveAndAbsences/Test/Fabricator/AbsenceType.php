@@ -6,10 +6,11 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType extends
   CRM_HRLeaveAndAbsences_Test_Fabricator_SequentialTitle {
 
   private static $defaultParams = [
-    'color'                     => '#000000',
-    'default_entitlement'       => 20,
+    'color' => '#000000',
+    'default_entitlement' => 20,
     'allow_request_cancelation' => 1,
-    'allow_carry_forward'       => 1,
+    'allow_carry_forward' => 1,
+    'calculation_unit' => 1
   ];
 
   public static function fabricate($params = []) {
