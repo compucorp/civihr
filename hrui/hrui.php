@@ -1049,6 +1049,12 @@ function _hrui_createDeveloperMenu(&$menu) {
   }
 }
 
+/**
+ * Adds icons to dynamically defined menu items
+ *
+ * @param array $menu
+ *   List of available menu items
+ */
 function _hui_setDynamicMenuIcons(&$menu) {
   $menuToIcons = [
     'Help' => 'fa fa-question-circle',

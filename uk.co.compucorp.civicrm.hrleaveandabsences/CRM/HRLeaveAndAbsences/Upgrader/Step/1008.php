@@ -1,12 +1,9 @@
 <?php
 
-use CRM_Core_BAO_SchemaHandler as SchemaHandler;
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
-
 trait CRM_HRLeaveAndAbsences_Upgrader_Step_1008 {
 
   /**
-   * Upgrader to set icon for top-level 'Leave' menu item
+   * Sets icon for top-level 'Leave' menu item
    *
    * @return bool
    */

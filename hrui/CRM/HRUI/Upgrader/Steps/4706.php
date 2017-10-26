@@ -3,7 +3,7 @@
 trait CRM_HRUI_Upgrader_Steps_4706 {
 
   /**
-   * Upgrader set icons for civicrm core menus
+   * Sets icons for civicrm core menus
    *
    * @return bool
    */
