@@ -611,6 +611,7 @@ function hrui_civicrm_navigationMenu(&$params) {
   _hrui_coreMenuChanges($params);
   _hrui_createHelpMenu($params);
   _hrui_createDeveloperMenu($params);
+  _hui_setDynamicMenuIcons($params);
 }
 
 /**
@@ -1045,6 +1046,26 @@ function _hrui_createDeveloperMenu(&$menu) {
       'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
       'operator' => 'AND'
     ]);
+  }
+}
+
+/**
+ * Adds icons to dynamically defined menu items
+ *
+ * @param array $menu
+ *   List of available menu items
+ */
+function _hui_setDynamicMenuIcons(&$menu) {
+  $menuToIcons = [
+    'Help' => 'fa fa-question-circle',
+    'Developer'=> 'fa fa-code',
+  ];
+
+  foreach ($menu as $key => $item) {
+    $menuName = $item['attributes']['name'];
+    if (array_key_exists($menuName, $menuToIcons)) {
+      $menu[$key]['attributes']['icon'] = $menuToIcons[$menuName];
+    }
   }
 }
 

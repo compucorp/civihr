@@ -33,4 +33,20 @@ class CRM_HRRecruitment_Upgrader extends CRM_HRRecruitment_Upgrader_Base {
 
     return TRUE;
   }
+
+  /**
+   * Sets icon for top-level 'Recruitment' menu item
+   *
+   * @return bool
+   */
+  public function upgrade_1402() {
+    $params = [
+      'name' => 'Vacancies',
+      'api.Navigation.create' => ['id' => '$value.id', 'icon' => 'fa fa-user-plus'],
+      'parent_id' => ['IS NULL' => true],
+    ];
+    civicrm_api3('Navigation', 'get', $params);
+
+    return TRUE;
+  }
 }
