@@ -20,6 +20,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveDateHoursAmountDeduction
    */
   public function calculate(DateTime $leaveDateTime, $workDay, LeaveRequest $leaveRequest) {
 
-    return $workDay['number_of_hours'];
+    return empty($workDay['number_of_hours']) ? 0 : (float)$workDay['number_of_hours'];
   }
 }

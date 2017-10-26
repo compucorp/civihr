@@ -29,7 +29,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveDateDaysAmountDeduction
   public function calculate(DateTime $leaveDateTime, $workDay, LeaveRequest $leaveRequest) {
     $isHalfDay = false;
 
-    $workDayAmount = (float)$workDay['leave_days'];
+    $workDayAmount = empty($workDay['leave_days']) ? 0 : (float)$workDay['leave_days'];
 
     if($leaveDateTime == new DateTime($leaveRequest->from_date)) {
       $isHalfDay = $this->isHalfDay($leaveRequest->from_date_type);
