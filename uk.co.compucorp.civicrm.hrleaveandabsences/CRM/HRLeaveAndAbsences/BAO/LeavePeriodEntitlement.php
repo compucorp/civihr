@@ -800,8 +800,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    * @param CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $leavePeriodEntitlement
    */
   private static function logChanges(LeavePeriodEntitlement $leavePeriodEntitlement) {
-    $editorId = !empty($leavePeriodEntitlement->editor_id) ?: CRM_Core_Session::getLoggedInContactID();
-    $createdDate = !empty($leavePeriodEntitlement->created_date) ?: date('YmdHis');
+    $editorId = $leavePeriodEntitlement->editor_id ?: CRM_Core_Session::getLoggedInContactID();
+    $createdDate = $leavePeriodEntitlement->created_date ?: date('YmdHis');
 
     LeavePeriodEntitlementLog::create([
       'entitlement_id' => $leavePeriodEntitlement->id,
