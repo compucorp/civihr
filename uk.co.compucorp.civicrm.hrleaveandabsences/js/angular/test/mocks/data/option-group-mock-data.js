@@ -10,6 +10,30 @@ define([
    * Mocked option values, grouped by option group
    */
   var mockedOptionValues = {
+    hrleaveandabsences_absence_type_calculation_unit: [
+      {
+        'id': '1168',
+        'option_group_id': '149',
+        'name': 'days',
+        'label': 'Days',
+        'value': '1',
+        'weight': '1',
+        'is_active': '1',
+        'is_reserved': '1',
+        'option_group_name': 'hrleaveandabsences_absence_type_calculation_unit'
+      },
+      {
+        'id': '1169',
+        'option_group_id': '149',
+        'name': 'hours',
+        'label': 'Hours',
+        'value': '2',
+        'weight': '2',
+        'is_active': '1',
+        'is_reserved': '1',
+        'option_group_name': 'hrleaveandabsences_absence_type_calculation_unit'
+      }
+    ],
     hrleaveandabsences_work_day_type: [
       {
         'id': '1065',

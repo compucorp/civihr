@@ -113,11 +113,34 @@
           expect(PublicHoliday.all).toHaveBeenCalled();
         });
 
-        it('loads the OptionValues of the leave request statuses and day types', function () {
+        it('loads the OptionValues of the leave request statuses, day types, and calculation units', function () {
           expect(OptionGroup.valuesOf).toHaveBeenCalledWith([
-            'hrleaveandabsences_leave_request_status',
-            'hrleaveandabsences_leave_request_day_type'
+            'hrleaveandabsences_absence_type_calculation_unit',
+            'hrleaveandabsences_leave_request_day_type',
+            'hrleaveandabsences_leave_request_status'
           ]);
+        });
+
+        describe('after loading support data', function () {
+          it('stores absence types', function () {
+            expect(controller.supportData.absenceTypes.length).not.toBe(0);
+          });
+
+          it('stores calculation units', function () {
+            expect(controller.supportData.calculationUnits.length).not.toBe(0);
+          });
+
+          it('stores day types', function () {
+            expect(controller.supportData.dayTypes.length).not.toBe(0);
+          });
+
+          it('stores public holidays', function () {
+            expect(controller.supportData.publicHolidays.length).not.toBe(0);
+          });
+
+          it('stores leave request statuses', function () {
+            expect(controller.supportData.leaveRequestStatuses.length).not.toBe(0);
+          });
         });
 
         describe('taking leave filter', function () {
