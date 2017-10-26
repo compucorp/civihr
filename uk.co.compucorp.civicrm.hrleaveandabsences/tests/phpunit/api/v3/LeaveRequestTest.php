@@ -2023,6 +2023,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testCalculateBalanceChangeWithAllRequiredParameters() {
     $periodStartDate = date('Y-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate();
 
     $contract = HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
@@ -2089,7 +2090,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate,
       'from_date_type' => $fromType,
       'to_date' => $toDate,
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'type_id' => $absenceType->id
     ]);
     $this->assertEquals($expectedResultsBreakdown, $result['values']);
   }

@@ -215,7 +215,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testCalculateBalanceChangeForALeaveRequestForAContact() {
     $periodStartDate = date('Y-01-01');
-
+    $absenceType = AbsenceTypeFabricator::fabricate();
     $contract = HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
       ['period_start_date' => $periodStartDate]
@@ -274,13 +274,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResultsBreakdown['amount'] *= -1;
 
-    $result = LeaveRequest::calculateBalanceChange($contract['contact_id'], $fromDate, $fromType, $toDate, $toType);
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      $fromType,
+      $toDate,
+      $toType,
+      $absenceType->id
+    );
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
 
   public function testCalculateBalanceChangeWhenOneOfTheRequestedLeaveDaysIsAPublicHoliday() {
     $periodStartDate = date('2016-01-01');
-
+    $absenceType = AbsenceTypeFabricator::fabricate();
     $contract = HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
       ['period_start_date' => $periodStartDate]
@@ -340,12 +347,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResultsBreakdown['amount'] *= -1;
 
-    $result = LeaveRequest::calculateBalanceChange($periodEntitlement->contact_id, $fromDate, $fromType, $toDate, $toType);
+    $result = LeaveRequest::calculateBalanceChange(
+      $periodEntitlement->contact_id,
+      $fromDate,
+      $fromType,
+      $toDate,
+      $toType,
+      $absenceType->id
+    );
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
 
   public function testCalculateBalanceChangeForALeaveRequestForAContactWithMultipleWeeks() {
     $periodStartDate = new DateTime('2016-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate();
 
     $contract = HRJobContractFabricator::fabricate(
       [ 'contact_id' => 1 ],
@@ -556,7 +571,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
     $expectedResultsBreakdown['amount'] *= -1;
 
-    $result = LeaveRequest::calculateBalanceChange($contract['contact_id'], $fromDate, $fromType, $toDate, $toType);
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      $fromType,
+      $toDate,
+      $toType,
+      $absenceType->id
+    );
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
 

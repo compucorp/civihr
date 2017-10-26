@@ -10,6 +10,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 
 /**
@@ -30,11 +31,14 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
   private $leaveContact;
 
+  private $absenceType;
+
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
     $this->leaveBalanceChangeService = new LeaveBalanceChangeService();
 
     $this->leaveContact = 1;
+    $this->absenceType = AbsenceTypeFabricator::fabricate();
     $this->registerCurrentLoggedInContactInSession($this->leaveContact);
     CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
   }
@@ -355,7 +359,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
   private function getDefaultParams($params = []) {
     $defaultParams =  [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => $this->leaveContact,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
@@ -406,7 +410,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       new DateTime($params['from_date']),
       $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type']
+      $params['to_date_type'],
+      $params['type_id']
     );
 
     $newBalance = $result['amount'];
@@ -467,7 +472,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       new DateTime($params['from_date']),
       $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type']
+      $params['to_date_type'],
+      $params['type_id']
     );
     $newBalance = $result['amount'];
 
@@ -528,7 +534,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       new DateTime($params['from_date']),
       $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type']
+      $params['to_date_type'],
+      $params['type_id']
     );
 
     $newBalance = $result['amount'];
@@ -547,7 +554,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       new DateTime($params['from_date']),
       $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type']
+      $params['to_date_type'],
+      $params['type_id']
     );
     $balanceAfterDateChange = $result['amount'];
 
@@ -600,7 +608,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       new DateTime($params['from_date']),
       $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type']
+      $params['to_date_type'],
+      $params['type_id']
     );
 
     $newBalance = $result['amount'];
@@ -619,7 +628,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       new DateTime($params['from_date']),
       $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type']
+      $params['to_date_type'],
+      $params['type_id']
     );
     $balanceAfterDateChange = $result['amount'];
 
