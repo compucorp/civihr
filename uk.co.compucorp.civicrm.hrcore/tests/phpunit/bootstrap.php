@@ -5,10 +5,6 @@ ini_set('safe_mode', 0);
 
 eval(cv('php:boot --level=full -t', 'phpcode'));
 
-define('DRUPAL_ROOT', realpath($GLOBALS["civicrm_root"] . '../../../..'));
-require_once DRUPAL_ROOT . '/includes/bootstrap.inc';
-drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
-
 /**
  * Call the "cv" command.
  *
