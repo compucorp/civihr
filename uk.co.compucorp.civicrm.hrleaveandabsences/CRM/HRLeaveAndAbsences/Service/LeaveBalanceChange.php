@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Factory_LeaveDateAmountDeduction as LeaveDateAmountDeductionFactory;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
 
@@ -55,7 +56,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
       new DateTime($leaveRequest->from_date),
       $leaveRequest->from_date_type,
       !empty($leaveRequest->to_date) ? new DateTime($leaveRequest->to_date) : null,
-      $leaveRequest->to_date_type
+      $leaveRequest->to_date_type,
+      $leaveRequest->type_id
     );
   }
 
@@ -115,6 +117,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
    * @return float
    */
   public function calculateAmountToBeDeductedForDate(LeaveRequest $leaveRequest, DateTime $date) {
-    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date);
+    $dateDeductionFactory = LeaveDateAmountDeductionFactory::createForAbsenceType($leaveRequest->type_id);
+    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date, $dateDeductionFactory);
   }
 }

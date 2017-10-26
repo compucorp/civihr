@@ -8,6 +8,7 @@ use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_Hrjobcontract_BAO_HRJobContract as HRJobContract;
 use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
 use CRM_Hrjobcontract_BAO_HRJobDetails as HRJobDetails;
+use CRM_HRLeaveAndAbsences_Service_LeaveDateAmountDeduction as LeaveDateAmountDeduction;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
 
@@ -514,10 +515,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    *  The LeaveRequest which the $date belongs to
    * @param \DateTime $date
+   * @param CRM_HRLeaveAndAbsences_Service_LeaveDateAmountDeduction $dateDeduction
    *
    * @return float
    */
-  public static function calculateAmountForDate(LeaveRequest $leaveRequest, DateTime $date) {
+  public static function calculateAmountForDate(LeaveRequest $leaveRequest, DateTime $date, LeaveDateAmountDeduction $dateDeduction) {
     if(self::thereIsAPublicHolidayLeaveRequest($leaveRequest, $date)) {
       return 0.0;
     }
@@ -529,7 +531,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       return 0.0;
     }
 
-    return $workPattern->getLeaveDaysForDate($date, $startDate) * -1;
+    $workDay = $workPattern->getWorkDayForDate($date, $startDate);
+
+    return $dateDeduction->calculate($date, $workDay, $leaveRequest) * -1;
   }
 
   /**

@@ -12,6 +12,7 @@ use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException as InvalidLeaveRequestException;
 use \CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
+use CRM_HRLeaveAndAbsences_Factory_LeaveDateAmountDeduction as LeaveDateAmountDeductionFactory;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
 
@@ -510,7 +511,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       new DateTime($params['from_date']),
       $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type']
+      $params['to_date_type'],
+      $params['type_id']
     );
 
     return $leaveRequestBalance['amount'];
@@ -832,24 +834,26 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @param string $fromDateType
    * @param \DateTime $toDate
    * @param string $toDateType
+   * @param int $absenceTypeID
    *
    * @return array
    *   An array of formatted results
    */
-  public static function calculateBalanceChange($contactId, DateTime $fromDate, $fromDateType, DateTime $toDate, $toDateType) {
+  public static function calculateBalanceChange($contactId, DateTime $fromDate, $fromDateType, DateTime $toDate, $toDateType, $absenceTypeID) {
+    $params = [
+      'contact_id' => $contactId,
+      'type_id' => $absenceTypeID,
+      'from_date_type' => $fromDateType,
+      'to_date_type' => $toDateType,
+      'from_date' => $fromDate->format('YmdHis'),
+      'to_date' => $toDate->format('YmdHis'),
+    ];
+
     $leaveRequest = new self();
-    $leaveRequest->contact_id = $contactId;
+    $leaveRequest->copyValues($params);
 
     $datePeriod = new BasicDatePeriod($fromDate, $toDate);
-
     $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
-
-    $halfDayTypesValues = [
-      $leaveRequestDayTypes['half_day_am'],
-      $leaveRequestDayTypes['half_day_pm'],
-    ];
-    $fromDateIsHalfDay = in_array($fromDateType, $halfDayTypesValues);
-    $toDateIsHalfDay = in_array($toDateType, $halfDayTypesValues);
 
     $resultsBreakdown = [
       'amount' => 0,
@@ -858,27 +862,33 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $leaveRequestDayTypeOptionsGroup = self::getLeaveRequestDayTypeOptionsGroup();
 
+    $isCalculationUnitInHours = AbsenceType::isCalculationUnitInHours($leaveRequest->type_id);
+    $dateDeductionFactory = LeaveDateAmountDeductionFactory::createForAbsenceType($leaveRequest->type_id);
+
     foreach ($datePeriod as $date) {
-      if (self::publicHolidayLeaveRequestExists($contactId, $date)) {
+      $publicHolidayLeaveRequestExists = self::publicHolidayLeaveRequestExists($contactId, $date);
+
+      if ($publicHolidayLeaveRequestExists) {
         $amount = 0.0;
         $dayType = $leaveRequestDayTypes['public_holiday'];
       }
-      else {
-        $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date);
+
+      if(!$publicHolidayLeaveRequestExists){
         $type = ContactWorkPattern::getWorkDayType($contactId, $date);
         $dayType = self::getLeaveRequestDayTypeFromWorkDayType($type);
-      }
+        $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date, $dateDeductionFactory);
 
-      //since its an half day, 0.5 will be deducted irrespective of the amount returned from the work pattern
-      if($fromDateIsHalfDay && $date == $fromDate && $amount != 0) {
-        $amount = -0.5;
-        $dayType = $fromDateType;
-      }
+        if(!$isCalculationUnitInHours) {
+          if($amount == -0.5) {
+            if ($date == $fromDate) {
+              $dayType = $fromDateType;
+            }
 
-      //since its an half day, 0.5 will be deducted irrespective of the amount returned from the work pattern
-      if($toDateIsHalfDay && $date == $toDate && $amount !=0) {
-        $amount = -0.5;
-        $dayType = $toDateType;
+            if($date == $toDate) {
+              $dayType = $toDateType;
+            }
+          }
+        }
       }
 
       $result = [

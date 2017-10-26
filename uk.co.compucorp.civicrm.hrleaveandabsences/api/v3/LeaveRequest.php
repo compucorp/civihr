@@ -241,6 +241,13 @@ function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
       'optionEditPath'  => 'civicrm/admin/options/hrleaveandabsences_leave_request_day_type',
     ]
   ];
+
+  $spec['type_id'] = [
+    'name' => 'type_id',
+    'title' => 'Absence Type ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1
+  ];
 }
 
 /**
@@ -256,7 +263,8 @@ function civicrm_api3_leave_request_calculateBalanceChange($params) {
     new DateTime($params['from_date']),
     $params['from_date_type'],
     new DateTime($params['to_date']),
-    $params['to_date_type']
+    $params['to_date_type'],
+    $params['type_id']
   );
 
   return civicrm_api3_create_success($result);
