@@ -9,10 +9,10 @@ define([
   directives.directive('timeAmountPicker', ['$templateCache', function ($templateCache) {
     return {
       scope: {
-        timeAmountPickerMinAmount: '<',
-        timeAmountPickerMaxAmount: '<',
-        timeAmountPickerInterval: '<',
-        timeAmountPickerValue: '='
+        minAmount: '<timeAmountPickerMinAmount',
+        maxAmount: '<timeAmountPickerMaxAmount',
+        interval: '<timeAmountPickerInterval',
+        value: '=timeAmountPickerValue'
       },
       restrict: 'E',
       controllerAs: 'picker',
@@ -37,7 +37,7 @@ define([
 
     (function init () {
       parseInitialValue();
-      startWatching();
+      watchTimeAmountPickerOptions();
     })();
 
     /**
@@ -57,17 +57,20 @@ define([
 
     /**
      * Builds minutes options
+     * Skips minutes if the are out of bounds for edge hours,
+     *   for example minutes 0-29 will be skipped for an hour of 9
+     *   if minimum time allowed is 9:30
      */
     function buildMinutesOptions () {
+      var skip, isLessThanLowerBound, isMoreThanUpperBound;
       var minute = 0;
 
       vm.minutesOptions = [];
 
       while (minute < 60) {
-        var skip =
-          vm.selectedHours !== '' &&
-          ((+vm.selectedHours === Math.floor(minAmount) && minute < minAmount % 1 * 60) ||
-           (+vm.selectedHours === Math.floor(maxAmount) && minute > maxAmount % 1 * 60));
+        isLessThanLowerBound = +vm.selectedHours === Math.floor(minAmount) && minute < minAmount % 1 * 60;
+        isMoreThanUpperBound = +vm.selectedHours === Math.floor(maxAmount) && minute > maxAmount % 1 * 60;
+        skip = vm.selectedHours !== '' && (isLessThanLowerBound || isMoreThanUpperBound);
 
         (!skip) && vm.minutesOptions.push(minute);
 
@@ -81,34 +84,30 @@ define([
      * Builds hours and minutes options
      */
     function buildOptions () {
-      interval = +$scope.timeAmountPickerInterval || 1;
-      minAmount = +$scope.timeAmountPickerMinAmount || 0;
-      maxAmount = +$scope.timeAmountPickerMaxAmount || 24;
+      interval = +$scope.interval || 1;
+      minAmount = +$scope.minAmount || 0;
+      maxAmount = +$scope.maxAmount || 24;
 
       buildHoursOptions();
       buildMinutesOptions();
     }
 
     /**
-     * Calculates the output humber in hours (float) and sets to the scope
+     * Calculates the output number in hours (float) and sets to the scope
      */
     function calculateSelectedValue () {
       if (vm.selectedHours === '' || vm.selectedMinutes === '') {
         return null;
       }
 
-      $scope.timeAmountPickerValue = +vm.selectedHours + vm.selectedMinutes / 60;
+      $scope.value = +vm.selectedHours + vm.selectedMinutes / 60;
     }
 
     /**
      * Starts watching inbound attributes for changes
      */
-    function startWatching () {
-      $scope.$watchGroup([
-        'timeAmountPickerMinAmount',
-        'timeAmountPickerMaxAmount',
-        'timeAmountPickerInterval'
-      ], function () {
+    function watchTimeAmountPickerOptions () {
+      $scope.$watchGroup(['minAmount', 'maxAmount', 'interval'], function () {
         buildOptions();
       });
     }
@@ -117,9 +116,9 @@ define([
      * Parses initially passed variable
      */
     function parseInitialValue () {
-      if ($scope.timeAmountPickerValue) {
-        vm.selectedHours = '' + Math.floor($scope.timeAmountPickerValue);
-        vm.selectedMinutes = '' + Math.floor($scope.timeAmountPickerValue % 1 * 60);
+      if ($scope.value !== undefined) {
+        vm.selectedHours = '' + Math.floor($scope.value);
+        vm.selectedMinutes = '' + Math.floor($scope.value % 1 * 60);
       }
 
       calculateSelectedValue();
@@ -127,6 +126,10 @@ define([
 
     /**
      * Resets minutes if they appear out of bounds
+     * For example, if the maximum time allowed is 9:30,
+     *   currently selected time is 5:45, then by changing hours
+     *   from 5 to 9 will reset minutes from 45 to 30, otherwise,
+     *   a not-allowed time could be selected (9:45)
      */
     function resetMinutesIfOutOfBounds () {
       if (vm.selectedMinutes < vm.minutesOptions[0]) {

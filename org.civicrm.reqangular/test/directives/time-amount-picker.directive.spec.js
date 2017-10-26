@@ -122,7 +122,7 @@ define([
           });
 
           it('sets the result value back', function () {
-            expect($scope.$$childTail.timeAmountPickerValue).toBe(8.75);
+            expect($scope.$$childTail.value).toBe(8.75);
           });
         });
       });
