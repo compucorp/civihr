@@ -331,7 +331,7 @@ def listCivihrExtensions() {
       shortName: 'hrreport',
       folder: 'hrreport',
       hasJSTests: false,
-      hasPHPTests: true
+      hasPHPTests: false
     ],
     [
       name: 'HR UI',
