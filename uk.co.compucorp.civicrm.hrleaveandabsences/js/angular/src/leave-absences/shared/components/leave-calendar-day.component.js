@@ -183,7 +183,7 @@ define([
      */
     function watchForLeaveRequestReady () {
       $scope.$watch('day.contactData.leaveRequest', function () {
-        if (vm.contactData.leaveRequest) {
+        if (vm.contactData && vm.contactData.leaveRequest) {
           mapLeaveRequestFields();
           findAbsenceTypeCalculationUnit();
           resolveDayLabel();
