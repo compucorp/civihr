@@ -63,9 +63,9 @@
 
   <field>
     <name>from_date</name>
-    <type>date</type>
+    <type>datetime</type>
     <required>true</required>
-    <comment>The date the leave request starts.</comment>
+    <comment>The date and time the leave request starts.</comment>
     <add>4.4</add>
   </field>
 
@@ -82,9 +82,9 @@
 
   <field>
     <name>to_date</name>
-    <type>date</type>
+    <type>datetime</type>
     <required>true</required>
-    <comment>The date the leave request ends</comment>
+    <comment>The date and time the leave request ends</comment>
     <add>4.4</add>
   </field>
 
