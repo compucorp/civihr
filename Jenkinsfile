@@ -18,6 +18,7 @@ pipeline {
     WEBURL = "http://jenkins.compucorp.co.uk:8900"
     ADMIN_PASS = credentials('CVHR_ADMIN_PASS')
     KARMA_TESTS_REPORT_FOLDER = "reports/js-karma"
+    PHPUNIT_TESTS_REPORT_FOLDER = "reports/phpunit"
   }
 
   stages {
@@ -31,6 +32,12 @@ pipeline {
 
         // Test build tools
         sh 'amp test'
+
+        // Cleanup old Karma test reports
+        sh "rm -f $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/* || true"
+
+        // Cleanup old PHPUnit test reports
+        sh "rm -f $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/* || true"
       }
     }
 
@@ -114,7 +121,7 @@ pipeline {
             tools: [
               [
                 $class: 'JUnitType',
-                pattern: 'reports/phpunit/*.xml'
+                pattern: env.PHPUNIT_TESTS_REPORT_FOLDER + '/*.xml'
               ]
             ]
           ])
@@ -238,7 +245,8 @@ def testPHPUnit(java.util.LinkedHashMap extension) {
 
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    phpunit4 --testsuite="Unit Tests" --log-junit $WORKSPACE/reports/phpunit/result-phpunit_${extension.shortName}.xml
+    phpunit4 --testsuite="Unit Tests" --log-junit $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/result-phpunit_${extension
+    .shortName}.xml
   """
 }
 
