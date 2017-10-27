@@ -1,186 +1,186 @@
 <div class="{{prefix}}summary">
-    <form class="form-horizontal" role="form">
-        <div class="row">
-            <div class="col-xs-6">
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Position</label>
-                    <div class="col-sm-6">
-                        <p class="form-control-static">{{details.position}}</p>
-                    </div>
-                    <div class="col-sm-2">
-                        <a class="btn" role="button" ng-click="modalRevision('details')">
-                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Title</label>
-                    <div class="col-sm-6">
-                        <p class="form-control-static">{{details.title}}</p>
-                    </div>
-                    <div class="col-sm-2">
-                        <a class="btn" role="button" ng-click="modalRevision('details')">
-                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Contract Type</label>
-                    <div class="col-sm-6">
-                        <p class="form-control-static">{{options.details.contract_type[details.contract_type]}}</p>
-                    </div>
-                    <div class="col-sm-2">
-                        <a class="btn" role="button" ng-click="modalRevision('details')">
-                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Normal Place of Work</label>
-                    <div class="col-sm-6">
-                        <p class="form-control-static">{{options.details.location[details.location]}}</p>
-                    </div>
-                    <div class="col-sm-2">
-                        <a class="btn" role="button" ng-click="modalRevision('details')">
-                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Contract Dates</label>
-                    <div class="col-sm-6">
-                        <p class="form-control-static">
-                            <span class="subfield">({{details.period_start_date | formatDate}} - {{details.period_end_date | formatDate}})</span>
-                            <span ng-if="details.notice_amount && details.notice_amount != 0" class="subfield"><strong>Notice <span ng-if="details.notice_amount_employee">(From Employer)</span>:</strong> {{details.notice_amount}} {{options.details.notice_unit[details.notice_unit]}}(s)</span>
-                            <span ng-if="details.notice_amount_employee && details.notice_amount != 0" class="subfield"><strong>Notice <span>(From Employee)</span>:</strong> {{details.notice_amount_employee}} {{options.details.notice_unit_employee[details.notice_unit_employee]}}(s)</span>
-                            <span ng-if="details.end_reason" class="subfield"><strong>End Reason:</strong> {{options.details.end_reason[details.end_reason]}}</span>
-                        </p>
-                    </div>
-                    <div class="col-sm-2">
-                        <a class="btn" role="button" ng-click="modalRevision('details')">
-                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Funding</label>
-                    <div class="col-sm-6">
-                        <p class="form-control-static">
-                            <!--<strong>Tied to funding</strong><br />
-                            <strong>Funding organization:</strong> <a href="#">Jackson
-                            Wellness Partnership</a>-->
-                            <span ng-if="details.funding_notes" class="subfield"><strong>Notes:</strong> {{details.funding_notes}}</span>
-                        </p>
-                    </div>
-                    <div class="col-sm-2">
-                        <a class="btn" role="button" ng-click="modalRevision('details')">
-                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xs-6">
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Health Insurance</label>
-                    <div class="col-sm-6">
-                        <p class="form-control-static">
-                                    <span ng-if="health.plan_type || health.provider" class="subfield">
-                                        <span ng-if="health.plan_type">{{health.healthplan_type_label}} </span>
-                                        <span ng-if="health.provider">(with <span hrjc-contact="health.provider" hrjc-contact-link="true"></span>)</span>
-                                    </span>
-                            <span ng-if="health.description" class="subfield"><strong>Description:</strong> {{health.description}}</span>
-                            <span ng-if="health.dependents" class="subfield"><strong>Dependents:</strong> {{health.dependents}}</span>
-                        </p>
-                    </div>
-                    <div class="col-sm-2">
-                        <a class="btn" role="button" ng-click="modalRevision('health')">
-                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Life Insurance</label>
-                    <div class="col-sm-6">
-                        <p class="form-control-static">
-                                    <span ng-if="health.plan_type_life_insurance || health.provider_life_insurance" class="subfield">
-                                        <span ng-if="health.plan_type_life_insurance">{{health.lifeplan_type_label}} </span>
-                                        <span ng-if="health.provider_life_insurance">(with <span hrjc-contact="health.provider_life_insurance" hrjc-contact-link="true"></span>)</span>
-                                    </span>
-                            <span ng-if="health.description_life_insurance" class="subfield"><strong>Description:</strong> {{health.description_life_insurance}}</span>
-                            <span ng-if="health.dependents_life_insurance" class="subfield"><strong>Dependents:</strong> {{health.dependents_life_insurance}}</span>
-                        </p>
-                    </div>
-                    <div class="col-sm-2">
-                        <a class="btn" role="button" ng-click="modalRevision('health')">
-                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Hours</label>
-                    <div class="col-sm-6">
-                        <p class="form-control-static">{{options.hour.hours_type[hour.hours_type]}}<span ng-if="hour.hours_amount > 0 && hour.hours_unit"> ({{hour.hours_amount}}h per {{hour.hours_unit}})</span> <span ng-if="hour.fte_num > 0 && hour.fte_denom > 0">({{hour.fte_num}}/{{hour.fte_denom}}FTE)</span></p>
-                    </div>
-                    <div class="col-sm-2">
-                        <a class="btn" role="button" ng-click="modalRevision('hour')">
-                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                </div>
-                <div ng-controller="FormLeaveCtrl as leaveCtrl">
-                    <div class="form-group">
-                        <label class="col-sm-4 control-label">Leave</label>
-                        <div class="col-sm-6">
-                            <p class="form-control-static">
-                                <span ng-repeat="leaveEntry in leave" ng-if="leaveEntry.leave_amount" class="subfield"><strong>{{options.leave.leave_type[leaveEntry.leave_type]}}:</strong> {{leaveEntry.getEstimatedLeaveAmount(leaveCtrl.numberOfPublicHolidays)}} Days day(s)<br></span>
-                            </p>
-                        </div>
-                        <div class="col-sm-2">
-                            <a class="btn" role="button" ng-click="modalRevision('leave')">
-                                <span class="glyphicon glyphicon-time" aria-hidden="true"></span><br>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Pay</label>
-                    <div class="col-sm-6">
-                        <p class="form-control-static">{{options.pay.is_paid[pay.is_paid]}} <span ng-if="pay.is_paid">({{options.pay.pay_currency[pay.pay_currency]}} {{pay.pay_amount}} {{options.pay.pay_unit[pay.pay_unit]}})</span></p>
-                    </div>
-                    <div class="col-sm-2">
-                        <a class="btn" role="button" ng-click="modalRevision('pay')">
-                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Pension</label>
-                    <div class="col-sm-6">
-                        <p class="form-control-static">
-                            <span ng-if="pension.is_enrolled !== ''" class="subfield">{{pension.is_enrolled == '2' ? 'Opted out' : pension.is_enrolled == '1' ? 'Enrolled' : 'Not Enrolled'}}</span>
-                            <span ng-if="pension.pension_type" class="subfield"><strong>Pension Type:</strong> <span hrjc-contact="pension.pension_type" hrjc-contact-link="true"></span></span>
-                            <span ng-if="pension.er_contrib_pct" class="subfield"><strong>Employer Contribution (%):</strong> {{pension.er_contrib_pct}}</span>
-                            <span ng-if="pension.ee_contrib_pct" class="subfield"><strong>Employee Contribution (%):</strong> {{pension.ee_contrib_pct}}</span>
-                            <span ng-if="pension.ee_contrib_abs | parseInt" class="subfield"><strong>Employee Contribution (absolute amount):</strong> {{pension.ee_contrib_abs | formatAmount}}</span>
-                        </p>
-                    </div>
-                    <div class="col-sm-2">
-                        <a class="btn" role="button" ng-click="modalRevision('pension')">
-                            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
-                        </a>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">Contract</label>
-                    <div class="col-sm-8">
-                        <p class="form-control-static">
-                            <a class="subfield"
-                               ng-href="{{file.url}}"
-                               ng-repeat="file in files.details">{{file.name}}</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
+  <form class="form-horizontal" role="form">
+    <div class="row">
+      <div class="col-xs-6">
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Position</label>
+          <div class="col-sm-6">
+            <p class="form-control-static">{{details.position}}</p>
+          </div>
+          <div class="col-sm-2">
+            <a class="btn" role="button" ng-click="modalRevision('details')">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            </a>
+          </div>
         </div>
-    </form>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Title</label>
+          <div class="col-sm-6">
+            <p class="form-control-static">{{details.title}}</p>
+          </div>
+          <div class="col-sm-2">
+            <a class="btn" role="button" ng-click="modalRevision('details')">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Contract Type</label>
+          <div class="col-sm-6">
+            <p class="form-control-static">{{options.details.contract_type[details.contract_type]}}</p>
+          </div>
+          <div class="col-sm-2">
+            <a class="btn" role="button" ng-click="modalRevision('details')">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Normal Place of Work</label>
+          <div class="col-sm-6">
+            <p class="form-control-static">{{options.details.location[details.location]}}</p>
+          </div>
+          <div class="col-sm-2">
+            <a class="btn" role="button" ng-click="modalRevision('details')">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Contract Dates</label>
+          <div class="col-sm-6">
+            <p class="form-control-static">
+              <span class="subfield">({{details.period_start_date | formatDate}} - {{details.period_end_date | formatDate}})</span>
+              <span ng-if="details.notice_amount && details.notice_amount != 0" class="subfield"><strong>Notice <span ng-if="details.notice_amount_employee">(From Employer)</span>:</strong> {{details.notice_amount}} {{options.details.notice_unit[details.notice_unit]}}(s)</span>
+              <span ng-if="details.notice_amount_employee && details.notice_amount != 0" class="subfield"><strong>Notice <span>(From Employee)</span>:</strong> {{details.notice_amount_employee}} {{options.details.notice_unit_employee[details.notice_unit_employee]}}(s)</span>
+              <span ng-if="details.end_reason" class="subfield"><strong>End Reason:</strong> {{options.details.end_reason[details.end_reason]}}</span>
+            </p>
+          </div>
+          <div class="col-sm-2">
+            <a class="btn" role="button" ng-click="modalRevision('details')">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Funding</label>
+          <div class="col-sm-6">
+            <p class="form-control-static">
+              <!--<strong>Tied to funding</strong><br />
+                <strong>Funding organization:</strong> <a href="#">Jackson
+                Wellness Partnership</a>-->
+              <span ng-if="details.funding_notes" class="subfield"><strong>Notes:</strong> {{details.funding_notes}}</span>
+            </p>
+          </div>
+          <div class="col-sm-2">
+            <a class="btn" role="button" ng-click="modalRevision('details')">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-6">
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Health Insurance</label>
+          <div class="col-sm-6">
+            <p class="form-control-static">
+              <span ng-if="health.plan_type || health.provider" class="subfield">
+              <span ng-if="health.plan_type">{{health.healthplan_type_label}} </span>
+              <span ng-if="health.provider">(with <span hrjc-contact="health.provider" hrjc-contact-link="true"></span>)</span>
+              </span>
+              <span ng-if="health.description" class="subfield"><strong>Description:</strong> {{health.description}}</span>
+              <span ng-if="health.dependents" class="subfield"><strong>Dependents:</strong> {{health.dependents}}</span>
+            </p>
+          </div>
+          <div class="col-sm-2">
+            <a class="btn" role="button" ng-click="modalRevision('health')">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Life Insurance</label>
+          <div class="col-sm-6">
+            <p class="form-control-static">
+              <span ng-if="health.plan_type_life_insurance || health.provider_life_insurance" class="subfield">
+              <span ng-if="health.plan_type_life_insurance">{{health.lifeplan_type_label}} </span>
+              <span ng-if="health.provider_life_insurance">(with <span hrjc-contact="health.provider_life_insurance" hrjc-contact-link="true"></span>)</span>
+              </span>
+              <span ng-if="health.description_life_insurance" class="subfield"><strong>Description:</strong> {{health.description_life_insurance}}</span>
+              <span ng-if="health.dependents_life_insurance" class="subfield"><strong>Dependents:</strong> {{health.dependents_life_insurance}}</span>
+            </p>
+          </div>
+          <div class="col-sm-2">
+            <a class="btn" role="button" ng-click="modalRevision('health')">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Hours</label>
+          <div class="col-sm-6">
+            <p class="form-control-static">{{options.hour.hours_type[hour.hours_type]}}<span ng-if="hour.hours_amount > 0 && hour.hours_unit"> ({{hour.hours_amount}}h per {{hour.hours_unit}})</span> <span ng-if="hour.fte_num > 0 && hour.fte_denom > 0">({{hour.fte_num}}/{{hour.fte_denom}}FTE)</span></p>
+          </div>
+          <div class="col-sm-2">
+            <a class="btn" role="button" ng-click="modalRevision('hour')">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+        <div ng-controller="FormLeaveCtrl as leaveCtrl">
+          <div class="form-group">
+            <label class="col-sm-4 control-label">Leave</label>
+            <div class="col-sm-6">
+              <p class="form-control-static">
+                <span ng-repeat="leaveEntry in leave" ng-if="leaveEntry.leave_amount" class="subfield"><strong>{{options.leave.leave_type[leaveEntry.leave_type]}}:</strong> {{leaveEntry.getEstimatedLeaveAmount(leaveCtrl.numberOfPublicHolidays)}} Days day(s)<br></span>
+              </p>
+            </div>
+            <div class="col-sm-2">
+              <a class="btn" role="button" ng-click="modalRevision('leave')">
+              <span class="glyphicon glyphicon-time" aria-hidden="true"></span><br>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Pay</label>
+          <div class="col-sm-6">
+            <p class="form-control-static">{{options.pay.is_paid[pay.is_paid]}} <span ng-if="pay.is_paid">({{options.pay.pay_currency[pay.pay_currency]}} {{pay.pay_amount}} {{options.pay.pay_unit[pay.pay_unit]}})</span></p>
+          </div>
+          <div class="col-sm-2">
+            <a class="btn" role="button" ng-click="modalRevision('pay')">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Pension</label>
+          <div class="col-sm-6">
+            <p class="form-control-static">
+              <span ng-if="pension.is_enrolled !== ''" class="subfield">{{pension.is_enrolled == '2' ? 'Opted out' : pension.is_enrolled == '1' ? 'Enrolled' : 'Not Enrolled'}}</span>
+              <span ng-if="pension.pension_type" class="subfield"><strong>Pension Type:</strong> <span hrjc-contact="pension.pension_type" hrjc-contact-link="true"></span></span>
+              <span ng-if="pension.er_contrib_pct" class="subfield"><strong>Employer Contribution (%):</strong> {{pension.er_contrib_pct}}</span>
+              <span ng-if="pension.ee_contrib_pct" class="subfield"><strong>Employee Contribution (%):</strong> {{pension.ee_contrib_pct}}</span>
+              <span ng-if="pension.ee_contrib_abs | parseInt" class="subfield"><strong>Employee Contribution (absolute amount):</strong> {{pension.ee_contrib_abs | formatAmount}}</span>
+            </p>
+          </div>
+          <div class="col-sm-2">
+            <a class="btn" role="button" ng-click="modalRevision('pension')">
+            <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-4 control-label">Contract</label>
+          <div class="col-sm-8">
+            <p class="form-control-static">
+              <a class="subfield"
+                ng-href="{{file.url}}"
+                ng-repeat="file in files.details">{{file.name}}</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
 </div>
