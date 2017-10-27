@@ -31,14 +31,4 @@ class DrupalRoleServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
 }
 
-function user_role_save($role) {
-  $role->rid = 1;
-}
 
-function user_roles() {
-  return [1 => 'Fake Role'];
-}
-
-function user_role_delete() {
-
-}

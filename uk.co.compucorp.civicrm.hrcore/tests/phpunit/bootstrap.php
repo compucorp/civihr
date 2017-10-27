@@ -5,6 +5,8 @@ ini_set('safe_mode', 0);
 
 eval(cv('php:boot --level=full -t', 'phpcode'));
 
+require_once 'drupal_function_mocks.php';
+
 /**
  * Call the "cv" command.
  *

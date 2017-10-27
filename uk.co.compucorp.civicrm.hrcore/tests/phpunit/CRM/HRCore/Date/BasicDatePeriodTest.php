@@ -1,8 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\HookInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_HRCore_Date_BasicDatePeriod as BasicDatePeriod;
 
 /**

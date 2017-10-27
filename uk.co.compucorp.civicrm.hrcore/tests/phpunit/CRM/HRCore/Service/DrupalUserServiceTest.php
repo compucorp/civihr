@@ -63,18 +63,3 @@ class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
   }
 
 }
-
-function user_password() {}
-
-function user_load_by_mail($email) {}
-
-function user_save($user, $params) {
-  $user = new stdClass();
-  foreach($params as $key => $value) {
-    $user->$key = $value;
-  }
-
-  return $user;
-}
-
-function drupal_anonymous_user() {}
