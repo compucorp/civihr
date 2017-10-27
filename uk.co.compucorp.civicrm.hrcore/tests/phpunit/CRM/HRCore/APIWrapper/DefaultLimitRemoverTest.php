@@ -1,8 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
-
 use CRM_HRCore_APIWrapper_DefaultLimitRemover as DefaultLimitRemover;
 
 /**
