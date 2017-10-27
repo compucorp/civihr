@@ -4,14 +4,15 @@ define([
   'common/lodash',
   'mocks/data/absence-type-data',
   'mocks/data/leave-request-data',
+  'mocks/data/option-group-mock-data',
   'leave-absences/shared/components/leave-calendar-day.component',
   'leave-absences/manager-leave/app'
-], function (_, absenceTypeData, leaveRequestData) {
+], function (_, absenceTypeData, leaveRequestData, optionGroupData) {
   'use strict';
 
   describe('leaveCalendarDay', function () {
     var $componentController, $log, $rootScope, absenceTypes, controller,
-      LeavePopup, leaveRequest;
+      dayTypes, LeavePopup, leaveRequest;
 
     beforeEach(module('manager-leave'));
     beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_,
@@ -20,6 +21,8 @@ define([
       $log = _$log_;
       $rootScope = _$rootScope_;
       absenceTypes = absenceTypeData.all().values;
+      dayTypes = optionGroupData.getCollection(
+        'hrleaveandabsences_leave_request_day_type');
       LeavePopup = _LeavePopup_;
       leaveRequest = leaveRequestData.all().values[0];
 
@@ -32,18 +35,33 @@ define([
     });
 
     describe('when leave request is ready', function () {
-      var absenceType;
+      var absenceType, fromDateType, toDateType;
 
       beforeEach(function () {
         controller.contactData.leaveRequest = leaveRequest;
         absenceType = _.find(absenceTypes, function (type) {
           return +type.id === +leaveRequest.type_id;
         });
+        fromDateType = optionGroupData.specificObject(
+          'hrleaveandabsences_leave_request_day_type', 'value',
+          leaveRequest.from_date_type);
+        toDateType = optionGroupData.specificObject(
+          'hrleaveandabsences_leave_request_day_type', 'value',
+          leaveRequest.from_date_type);
+
         $rootScope.$digest();
       });
 
-      it('stores the absence type title', function () {
+      it('maps the absence type title', function () {
         expect(leaveRequest['type_id.title']).toEqual(absenceType.title);
+      });
+
+      it('maps the from date type label', function () {
+        expect(leaveRequest['from_date_type.label']).toEqual(fromDateType.label);
+      });
+
+      it('maps the to date type label', function () {
+        expect(leaveRequest['from_date_type.label']).toEqual(toDateType.label);
       });
     });
 
@@ -81,7 +99,8 @@ define([
       }, {
         contactData: {},
         supportData: {
-          absenceTypes: absenceTypes
+          absenceTypes: absenceTypes,
+          dayTypes: dayTypes
         }
       });
     }

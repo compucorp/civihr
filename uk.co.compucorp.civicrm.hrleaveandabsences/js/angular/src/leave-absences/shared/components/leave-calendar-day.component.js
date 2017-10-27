@@ -22,6 +22,7 @@ define([
     'use strict';
     $log.debug('Component: leave-calendar-day');
 
+    var absenceType, fromDateType, toDateType;
     var vm = this;
 
     vm.openLeavePopup = openLeavePopup;
@@ -31,22 +32,51 @@ define([
     })();
 
     /**
+     * Given an array of records, finds and returns the one that matches the
+     * id field with the comparison value.
+     *
+     * @param {Array} records - An array of objects to filter.
+     * @param {String} idFieldName - the name for the ID field.
+     * @param {any} value - The comparison value to match against the ID.
+     *
+     * @return {Object}
+     */
+    function findRecordByIdFieldValue (records, idFieldName, value) {
+      return _.find(records, function (record) {
+        return +record[idFieldName] === +value;
+      });
+    }
+
+    /**
      * Maps the absence type title to the leave request.
      */
     function mapLeaveRequestAbsenceType () {
-      var absenceType = _.find(vm.supportData.absenceTypes, function (type) {
-        return +type.id === +vm.contactData.leaveRequest.type_id;
-      });
+      absenceType = findRecordByIdFieldValue(vm.supportData.absenceTypes,
+        'id', vm.contactData.leaveRequest.type_id);
 
       vm.contactData.leaveRequest['type_id.title'] = absenceType.title;
     }
 
     /**
-     * Maps missing fields from the leave request to use them in the tooltip
+     * Maps the from and to date type labels to the leave request.
+     */
+    function mapLeaveRequestDateTypes () {
+      fromDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
+        'value', vm.contactData.leaveRequest.from_date_type);
+      toDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
+        'value', vm.contactData.leaveRequest.to_date_type);
+
+      vm.contactData.leaveRequest['from_date_type.label'] = fromDateType.label;
+      vm.contactData.leaveRequest['to_date_type.label'] = toDateType.label;
+    }
+
+    /**
+     * Maps missing fields from the leave request to use them in the tooltip's
      * template.
      */
     function mapLeaveRequestFields () {
       mapLeaveRequestAbsenceType();
+      mapLeaveRequestDateTypes();
     }
 
     /**
@@ -73,7 +103,9 @@ define([
      */
     function watchForLeaveRequestReady () {
       $scope.$watch('day.contactData.leaveRequest', function () {
-        vm.contactData.leaveRequest && mapLeaveRequestFields();
+        if (vm.contactData.leaveRequest) {
+          mapLeaveRequestFields();
+        }
       });
     }
   }
