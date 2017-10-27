@@ -8,9 +8,14 @@
     'chr_leave-calendar__item--alt': day.contactData.isAccruedTOIL,
     'chr_leave-calendar__item--toil-requested': day.contactData.isRequested && day.contactData.isAccruedTOIL
   }">
-  <span ng-if="day.contactData.isAM">AM</span>
-  <span ng-if="day.contactData.isPM">PM</span>
   <span ng-if="day.contactData.isAccruedTOIL">AT</span>
+  <span ng-if="day.calculationUnit.name === 'days'">
+    <span ng-if="day.contactData.isAM">AM</span>
+    <span ng-if="day.contactData.isPM">PM</span>
+  </span>
+  <span class="chr_leave-calendar__item__label">
+    {{day.label}}
+  </span>
   <a ng-if="day.contactData.leaveRequest"
     uib-tooltip-template="day.tooltipTemplate"
     tooltip-append-to-body="true"

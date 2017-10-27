@@ -8,6 +8,7 @@ define([
   components.component('leaveCalendarDay', {
     bindings: {
       contactData: '<',
+      date: '<',
       supportData: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
@@ -26,6 +27,7 @@ define([
     var absenceType, calculationUnit, fromDateType, toDateType;
     var vm = this;
 
+    vm.label = '';
     vm.tooltipTemplate = null;
 
     vm.openLeavePopup = openLeavePopup;
@@ -110,6 +112,55 @@ define([
     }
 
     /**
+     * Determines the label for the day depending on the calculation unit or if
+     * it's an accrued TOIL request.
+     */
+    function resolveDayLabel () {
+      if (vm.contactData.isAccruedTOIL) {
+        vm.label = 'AT';
+      } else if (calculationUnit.name === 'days') {
+        resolveDayLabelForDaysCalculationUnit();
+      } else {
+        resolveDayLabelForHoursCalculationUnit();
+      }
+    }
+
+    /**
+     * Determines the label for the day when calculation units are set to days.
+     *
+     * AM: leave requests for half day AM
+     * PM: leave requests for half day PM
+     * Otherwise leave empty.
+     */
+    function resolveDayLabelForDaysCalculationUnit () {
+      vm.label = vm.contactData.isAM ? 'AM'
+        : vm.contactData.isPM ? 'PM'
+        : '';
+    }
+
+    /**
+     * Determines the label for the day when calculation units are set to hours.
+     *
+     * If the date is the same as the start date of the request, the start time
+     * is displayed.
+     * If the date is the same as the end date of the request, the end time is
+     * displayed.
+     * Otherwise the label is empty.
+     */
+    function resolveDayLabelForHoursCalculationUnit () {
+      var sameDateAsFromDate = moment(vm.contactData.leaveRequest.from_date)
+        .isSame(vm.date, 'day');
+      var sameDateAsToDate = moment(vm.contactData.leaveRequest.to_date)
+        .isSame(vm.date, 'day');
+
+      vm.label = sameDateAsFromDate
+        ? moment(vm.contactData.leaveRequest.from_date).format('HH:mm')
+        : sameDateAsToDate
+        ? moment(vm.contactData.leaveRequest.to_date).format('HH:mm')
+        : '';
+    }
+
+    /**
      * Selects the tooltip template to use to display the leave
      * request information.
      *
@@ -135,6 +186,7 @@ define([
         if (vm.contactData.leaveRequest) {
           mapLeaveRequestFields();
           findAbsenceTypeCalculationUnit();
+          resolveDayLabel();
           selectTooltipTemplate();
         }
       });
