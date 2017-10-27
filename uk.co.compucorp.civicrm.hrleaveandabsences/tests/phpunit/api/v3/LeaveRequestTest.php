@@ -595,12 +595,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     PublicHolidayLeaveRequestFabricator::fabricate(1, $publicHoliday);
 
     $result = civicrm_api3('LeaveRequest', 'get', ['public_holiday' => true, 'sequential' => 1]);
+    $fromDate = new DateTime( $result['values'][0]['from_date']);
     $this->assertCount(1, $result['values']);
     $this->assertNotEquals($leaveRequest1->contact_id, $result['values'][0]['id']);
     $this->assertNotEquals($leaveRequest2->contact_id, $result['values'][0]['id']);
     $this->assertEquals(1, $result['values'][0]['contact_id']);
     $this->assertEquals($absenceType->id, $result['values'][0]['type_id']);
-    $this->assertEquals($publicHoliday->date, $result['values'][0]['from_date']);
+    $this->assertEquals($publicHoliday->date, $fromDate->format('Y-m-d'));
   }
 
   public function testGetIncludesLeaveRequestsForAllRequestTypes() {
@@ -1952,6 +1953,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
       'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'type_id' => 1
     ]);
   }
 
@@ -1965,6 +1967,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
       'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'type_id' => 1
     ]);
   }
 
@@ -1978,6 +1981,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => '2016-11-05',
       'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'type_id' => 1
     ]);
   }
 
@@ -1991,6 +1995,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => '2016-11-05',
       'from_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'type_id' => 1
     ]);
   }
 
@@ -2004,6 +2009,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => '2016-11-05',
       'from_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
       'to_date' => '2016-11-05',
+      'type_id' => 1
     ]);
   }
 
@@ -2017,7 +2023,22 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => '2016-19-05',
       'from_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
       'to_date' => '2016-11-10',
-      'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value']
+      'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'type_id' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: type_id
+   */
+  public function testCalculateBalanceChangeShouldAllowParamsWithoutTypeID() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => '2016-19-05',
+      'from_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
+      'to_date' => '2016-11-10',
+      'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
     ]);
   }
 

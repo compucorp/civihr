@@ -201,8 +201,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
 
     $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+    $leaveFromDate = new DateTime($leaveRequest->from_date);
     $this->assertInstanceOf(LeaveRequest::class, $leaveRequest);
-    $this->assertEquals($publicHoliday->date, $leaveRequest->from_date);
+    $this->assertEquals($publicHoliday->date, $leaveFromDate->format('Y-m-d'));
     $this->assertEquals($contactID, $leaveRequest->contact_id);
   }
 

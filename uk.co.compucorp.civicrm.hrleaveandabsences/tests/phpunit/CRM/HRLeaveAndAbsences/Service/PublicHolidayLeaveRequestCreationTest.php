@@ -345,10 +345,13 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $leaveRequestContact1 = LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday);
     $leaveRequestContact2 = LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday);
 
+    $leaveRequestContact1FromDate = new DateTime($leaveRequestContact1->from_date);
+    $leaveRequestContact2FromDate = new DateTime($leaveRequestContact2->from_date);
+
     $this->assertInstanceOf(LeaveRequest::class, $leaveRequestContact1);
-    $this->assertEquals($publicHoliday->date, $leaveRequestContact1->from_date);
+    $this->assertEquals($publicHoliday->date, $leaveRequestContact1FromDate->format('Y-m-d'));
     $this->assertInstanceOf(LeaveRequest::class, $leaveRequestContact2);
-    $this->assertEquals($publicHoliday->date, $leaveRequestContact2->from_date);
+    $this->assertEquals($publicHoliday->date, $leaveRequestContact2FromDate->format('Y-m-d'));
   }
 
   public function testItDoesntCreatesLeaveRequestsForAllContactsWithoutContractsOverlappingTheGivenPublicHoliday() {
