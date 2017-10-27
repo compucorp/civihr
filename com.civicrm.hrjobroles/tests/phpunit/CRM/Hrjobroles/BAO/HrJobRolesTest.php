@@ -1,29 +1,15 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
-
 /**
  * Class CRM_Hrjobroles_BAO_HrJobRolesTest
  *
  * @group headless
  */
-class CRM_Hrjobroles_BAO_HrJobRolesTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
+class CRM_Hrjobroles_BAO_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
 
   use HrJobRolesTestTrait;
 
-  public function setUpHeadless() {
-    // job contract is installed before job roles since job roles is depend on it
-    // otherwise the installation of job roles will fail.
-    return \Civi\Test::headless()
-      ->install('org.civicrm.hrjobcontract')
-      ->installMe(__DIR__)
-      ->apply();
-    $jobContractUpgrader = CRM_Hrjobcontract_Upgrader::instance();
-    $jobContractUpgrader->install();
-  }
-
-  function testCreateJobRoleWithBasicData() {
+  public function testCreateJobRoleWithBasicData() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -46,14 +32,14 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends \PHPUnit_Framework_TestCase impl
    * @expectedException PEAR_Exception
    * @expectedExceptionMessage DB Error: unknown error
    */
-  function testCreateJobRoleWithoutContractID() {
+  public function testCreateJobRoleWithoutContractID() {
     $roleParams = [
       'title' => 'test role'
     ];
     $this->createJobRole($roleParams);
   }
 
-  function testCreateJobRoleWithOptionValueFields() {
+  public function testCreateJobRoleWithOptionValueFields() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -79,7 +65,7 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends \PHPUnit_Framework_TestCase impl
     $this->assertEquals($roleParams['title'], $roleEntity->title);
   }
 
-  function testGetContactRoles() {
+  public function testGetContactRoles() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
