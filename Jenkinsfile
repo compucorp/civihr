@@ -238,7 +238,7 @@ def testPHPUnit(java.util.LinkedHashMap extension) {
 
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    phpunit4 --log-junit $WORKSPACE/reports/phpunit/result-phpunit_${extension.shortName}.xml
+    phpunit4 --testsuite="Unit Tests" --log-junit $WORKSPACE/reports/phpunit/result-phpunit_${extension.shortName}.xml
   """
 }
 
