@@ -2,8 +2,9 @@
 
 define([
   'common/lodash',
+  'common/moment',
   'leave-absences/shared/modules/components'
-], function (_, components) {
+], function (_, moment, components) {
   components.component('leaveCalendarDay', {
     bindings: {
       contactData: '<',
@@ -22,14 +23,25 @@ define([
     'use strict';
     $log.debug('Component: leave-calendar-day');
 
-    var absenceType, fromDateType, toDateType;
+    var absenceType, calculationUnit, fromDateType, toDateType;
     var vm = this;
+
+    vm.tooltipTemplate = null;
 
     vm.openLeavePopup = openLeavePopup;
 
     (function init () {
       watchForLeaveRequestReady();
     })();
+
+    /**
+     * Finds and stores the calculation unit for the leave request's
+     * absence type
+     */
+    function findAbsenceTypeCalculationUnit () {
+      calculationUnit = findRecordByIdFieldValue(
+        vm.supportData.calculationUnits, 'value', absenceType.calculation_unit);
+    }
 
     /**
      * Given an array of records, finds and returns the one that matches the
@@ -98,6 +110,23 @@ define([
     }
 
     /**
+     * Selects the tooltip template to use to display the leave
+     * request information.
+     *
+     * The pattern is `type-[days|hours]-on-[single-date|multiple-dates]-tooltip`
+     */
+    function selectTooltipTemplate () {
+      var dateRangeType, isSameDay;
+
+      isSameDay = moment(vm.contactData.leaveRequest.from_date)
+        .isSame(vm.contactData.leaveRequest.to_date, 'day');
+      dateRangeType = isSameDay ? 'single-date' : 'multiple-dates';
+
+      vm.tooltipTemplate = 'type-' + calculationUnit.name + '-on-' +
+        dateRangeType + '-tooltip';
+    }
+
+    /**
      * Waits for the leave request to be accesible before mapping the necessary
      * leave request fields to it.
      */
@@ -105,6 +134,8 @@ define([
       $scope.$watch('day.contactData.leaveRequest', function () {
         if (vm.contactData.leaveRequest) {
           mapLeaveRequestFields();
+          findAbsenceTypeCalculationUnit();
+          selectTooltipTemplate();
         }
       });
     }
