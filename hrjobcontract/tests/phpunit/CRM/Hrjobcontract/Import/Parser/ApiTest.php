@@ -1,7 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRHoursLocation as HRHoursLocationFabicator;
@@ -12,7 +10,7 @@ use CRM_Hrjobcontract_Test_Fabricator_HRPayScale as HRPayScaleFabricator;
  *
  * @group headless
  */
-class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implements HeadlessInterface, TransactionalInterface {
+class CRM_Hrjobcontract_Import_Parser_ApiTest extends CRM_Hrjobcontract_Test_BaseHeadlessTest {
 
   public $_contractTypeID;
   private $_defaultImportData = [];
@@ -20,15 +18,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   private $_hoursLocation = [];
   private $_payScale = [];
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('uk.co.compucorp.civicrm.hrcore')
-      ->install('uk.co.compucorp.civicrm.hrleaveandabsences')
-      ->installMe(__DIR__)
-      ->apply();
-  }
-
-  function setUp() {
+  public function setUp() {
     $session = CRM_Core_Session::singleton();
     $session->set('dateTypes', 1);
 
@@ -53,7 +43,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     ];
   }
 
-  function createPayScale() {
+  public function createPayScale() {
     $this->_payScale = HRPayScaleFabricator::fabricate();
     $this->_payScale['importLabel'] = $this->_payScale['pay_scale'] . ' - '
       . $this->_payScale['currency'] . ' '
@@ -61,18 +51,14 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     ;
   }
 
-  function createHoursLocation() {
+  public function createHoursLocation() {
     $this->_hoursLocation = HRHoursLocationFabicator::fabricate(['standard_hours' => '36.00']);
     $this->_hoursLocation['importLabel'] = $this->_hoursLocation['location']
       . ' - ' . $this->_hoursLocation['standard_hours']
       .  ' hours per ' . $this->_hoursLocation['periodicity'];
   }
 
-  function tearDown() {
-
-  }
-
-  function testMandatoryFieldsImportWithContactID() {
+  public function testMandatoryFieldsImportWithContactID() {
     $contact2Params = array(
       'first_name' => 'John_1',
       'last_name' => 'Snow_1',
@@ -94,7 +80,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateResult($contactID);
   }
 
-  function testMandatoryFieldsImportWithContactExternalIdentifier() {
+  public function testMandatoryFieldsImportWithContactExternalIdentifier() {
     $contact2Params = array(
       'first_name' => 'John_2',
       'last_name' => 'Snow_2',
@@ -117,7 +103,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateResult($contactID);
   }
 
-  function testMandatoryFieldsImportWithContactEmail() {
+  public function testMandatoryFieldsImportWithContactEmail() {
     $contact2Params = array(
       'first_name' => 'John_3',
       'last_name' => 'Snow_3',
@@ -139,7 +125,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateResult($contactID);
   }
 
-  function testJobDetailsImport() {
+  public function testJobDetailsImport() {
     $contact2Params = array(
       'first_name' => 'John_4',
       'last_name' => 'Snow_4',
@@ -169,7 +155,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateResult($contactID);
   }
 
-  function testHourImport() {
+  public function testHourImport() {
     $contact2Params = array(
       'first_name' => 'John_5',
       'last_name' => 'Snow_5',
@@ -194,7 +180,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateResult($contactID, 'HRJobHour');
   }
 
-  function testHourAutoPopulatedFields() {
+  public function testHourAutoPopulatedFields() {
     $contact2Params = array(
       'first_name' => 'John_55',
       'last_name' => 'Snow_55',
@@ -300,7 +286,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     return array_merge($this->_defaultImportData, $params);
   }
 
-  function testPayImport() {
+  public function testPayImport() {
     $contact2Params = array(
       'first_name' => 'John_6',
       'last_name' => 'Snow_6',
@@ -329,7 +315,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateResult($contactID, 'HRJobPay');
   }
 
-  function testPayAutoPopulatedFields() {
+  public function testPayAutoPopulatedFields() {
     $contact2Params = array(
       'first_name' => 'John_66',
       'last_name' => 'Snow_66',
@@ -416,7 +402,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
-  function testPensionImport() {
+  public function testPensionImport() {
     $contact2Params = array(
       'first_name' => 'John_9',
       'last_name' => 'Snow_9',
@@ -458,7 +444,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     return $provider['id'];
   }
 
-  function testImportingContractWithEndDateWithoutEndReason() {
+  public function testImportingContractWithEndDateWithoutEndReason() {
     $contact2Params = array(
       'first_name' => 'John_54',
       'last_name' => 'Snow_54',
@@ -479,7 +465,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
-  function testImportingContractWithEndDateAndEndReason() {
+  public function testImportingContractWithEndDateAndEndReason() {
     $contact2Params = array(
       'first_name' => 'John_54',
       'last_name' => 'Snow_54',
@@ -503,7 +489,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->validateResult($contactID);
   }
 
-  function testImportingContractWithEndDateAndInvalidEndReason() {
+  public function testImportingContractWithEndDateAndInvalidEndReason() {
     $contact2Params = array(
       'first_name' => 'John_54',
       'last_name' => 'Snow_54',
@@ -524,7 +510,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
-  function testImportingContractWithoutEndDateWithEndReason() {
+  public function testImportingContractWithoutEndDateWithEndReason() {
     $contact2Params = array(
       'first_name' => 'John_54',
       'last_name' => 'Snow_54',
@@ -545,7 +531,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
-  function testMandatoryFieldsImportOnlyWillCreateRevisionForAllOtherEntities() {
+  public function testMandatoryFieldsImportOnlyWillCreateRevisionForAllOtherEntities() {
     $contact2Params = [
       'first_name' => 'John_3',
       'last_name' => 'Snow_3',
@@ -622,8 +608,8 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   }
 
   private function createTestContact($params)  {
-    $contactID = $this->individualCreate($params);
-    return $contactID;
+    $contact = ContactFabricator::fabricate($params);
+    return $contact['id'];
   }
 
   private function createTestContractType() {
@@ -644,7 +630,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CiviUnitTestCase implement
   /**
    * Creates sample insurance plan types as option values to be used in tests.
    */
-  function createInsurancePlanTypes() {
+  public function createInsurancePlanTypes() {
     for ($i = 1; $i < 3; $i++) {
       $this->_insurancePlanTypes[] = OptionValueFabricator::fabricate([
         'option_group_id' => 'hrjc_insurance_plantype',
