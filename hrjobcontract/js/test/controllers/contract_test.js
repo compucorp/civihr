@@ -11,7 +11,7 @@ define([
 
   describe('ContractCtrl', function () {
     var $controller, $httpBackend, $modal, $q, $rootScope, $scope, $window,
-      AbsenceType, UtilsService;
+      AbsenceType, ContractService, UtilsService;
     var calculationUnitsMock = [{ value: 1, name: 'days' }, { value: 2, name: 'hours' }];
 
     // Populate contract mock leaves with values
@@ -24,7 +24,7 @@ define([
     }));
 
     beforeEach(inject(function (_$controller_, _$rootScope_, _$uibModal_, _$q_,
-    _$httpBackend_, _$window_, _AbsenceType_, _UtilsService_) {
+    _$httpBackend_, _$window_, _AbsenceType_, _ContractService_, _UtilsService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $q = _$q_;
@@ -34,11 +34,13 @@ define([
       $rootScope = _$rootScope_;
       $window = _$window_;
       AbsenceType = _AbsenceType_;
+      ContractService = _ContractService_;
       UtilsService = _UtilsService_;
 
       mockBackendCalls();
       spyOn(AbsenceType, 'all').and.callThrough();
       spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
+      spyOn(ContractService, 'fullDetails').and.callThrough();
       makeController();
     }));
 
@@ -48,12 +50,8 @@ define([
         $rootScope.$digest();
       });
 
-      it('retrieves Absence Types', function () {
-        expect(AbsenceType.all).toHaveBeenCalled();
-      });
-
-      it('populates Absence Types with calculation units names', function () {
-        expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
+      it('retrieves contract full details', function () {
+        expect(ContractService.fullDetails).toHaveBeenCalled();
       });
     });
 
