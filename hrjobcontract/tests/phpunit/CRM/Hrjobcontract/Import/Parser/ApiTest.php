@@ -606,7 +606,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CRM_Hrjobcontract_Test_Bas
         default:
           $result = civicrm_api3($entity, 'getsingle', ['jobcontract_revision_id' => $revisionID]);
           $this->assertNotEmpty($result);
-          $this->assertFalse(array_key_exists('is_error', $result));
+          $this->assertArrayNotHasKey('is_error', $result);
       }
     }
   }
