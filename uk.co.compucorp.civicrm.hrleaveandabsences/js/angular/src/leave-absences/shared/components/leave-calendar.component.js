@@ -176,8 +176,9 @@ define([
      */
     function loadBasicOptionValues () {
       return OptionGroup.valuesOf([
-        'hrleaveandabsences_leave_request_status',
-        'hrleaveandabsences_leave_request_day_type'
+        'hrleaveandabsences_absence_type_calculation_unit',
+        'hrleaveandabsences_leave_request_day_type',
+        'hrleaveandabsences_leave_request_status'
       ]);
     }
 
@@ -235,8 +236,9 @@ define([
       .then(function (results) {
         vm.supportData.absenceTypes = results[0];
         vm.supportData.publicHolidays = results[1];
-        vm.supportData.leaveRequestStatuses = results[2].hrleaveandabsences_leave_request_status;
+        vm.supportData.calculationUnits = results[2].hrleaveandabsences_absence_type_calculation_unit;
         vm.supportData.dayTypes = results[2].hrleaveandabsences_leave_request_day_type;
+        vm.supportData.leaveRequestStatuses = results[2].hrleaveandabsences_leave_request_status;
       });
     }
 
