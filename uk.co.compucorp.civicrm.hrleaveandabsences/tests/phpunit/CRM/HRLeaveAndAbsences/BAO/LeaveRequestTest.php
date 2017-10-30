@@ -657,9 +657,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage The to_date_type field should not be empty
+   * @expectedExceptionMessage The to_date_type can not be empty when absence type calculation unit is in days
    */
-  public function testALeaveRequestShouldNotBeCreatedWithoutToDateType() {
+  public function testALeaveRequestShouldNotBeCreatedWithoutToDateTypeWhenAbsenceTypeCalculationUnitIsInDays() {
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
@@ -673,9 +673,119 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage The from_date_type field should not be empty
+   * @expectedExceptionMessage The to_date_amount should be empty when absence type calculation unit is in days
    */
-  public function testALeaveRequestShouldNotBeCreatedWithoutFromDateType() {
+  public function testALeaveRequestShouldNotBeCreatedWithToDateAmountTypeWhenAbsenceTypeCalculationUnitIsInDays() {
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'to_date_amount' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The from_date_amount should be empty when absence type calculation unit is in days
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithFromDateAmountTypeWhenAbsenceTypeCalculationUnitIsInDays() {
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'from_date_amount' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The to_date_amount can not be empty when absence type calculation unit is in hours
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithoutToDateAmountWhenAbsenceTypeCalculationUnitIsInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'from_date_amount' => 2
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The from_date_amount can not be empty when absence type calculation unit is in hours
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithoutFromDateAmountWhenAbsenceTypeCalculationUnitIsInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'to_date_amount' => 2
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The from_date_type should be empty when absence type calculation unit is in hours
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithFromDateTypeWhenAbsenceTypeCalculationUnitIsInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'to_date_amount' => 2,
+      'from_date_amount' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The to_date_type should be empty when absence type calculation unit is in hours
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithToDateTypeWhenAbsenceTypeCalculationUnitIsInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'to_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'to_date_amount' => 2,
+      'from_date_amount' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The from_date_type can not be empty when absence type calculation unit is in days
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithoutFromDateTypeWhenAbsenceTypeCalculationUnitIsInDays() {
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
@@ -2459,7 +2569,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $params = [
       'id' => 1,
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
       'to_date_type' => 1,

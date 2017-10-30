@@ -82,6 +82,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
     self::validateMandatory($params);
+    self::validateLeaveRequestFieldsBasedOnAbsenceTypeCalculationUnit($params);
     self::validateLeaveRequestSoftDeleteDuringUpdate($params);
     self::validateRequestType($params);
     self::validateTOILFieldsBasedOnRequestType($params);
@@ -116,12 +117,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private static function validateMandatory($params) {
     $mandatoryFields = [
       'from_date',
-      'from_date_type',
       'contact_id',
       'type_id',
       'status_id',
       'to_date',
-      'to_date_type',
       'request_type'
     ];
 
@@ -205,6 +204,65 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         if(!empty($params[$field])) {
           throw new InvalidLeaveRequestException(
             "The {$field} should be empty when request_type is not toil",
+            "leave_request_non_empty_{$field}",
+            $field
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * Validates the required fields depending on the Absence Type calculation unit.
+   * Also validates for fields that are not supposed to be present based on the
+   * Absence Type calculation unit.
+   *
+   * @param array $params
+   *
+   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   */
+  private static function validateLeaveRequestFieldsBasedOnAbsenceTypeCalculationUnit($params) {
+    $isCalculationUnitInHours = AbsenceType::isCalculationUnitInHours($params['type_id']);
+    $hoursUnitRequiredFields = ['from_date_amount', 'to_date_amount'];
+    $daysUnitRequiredFields = ['from_date_type', 'to_date_type'];
+
+    if($isCalculationUnitInHours) {
+      foreach($hoursUnitRequiredFields as $requiredField) {
+        if(empty($params[$requiredField])) {
+          throw new InvalidLeaveRequestException(
+            "The {$requiredField} can not be empty when absence type calculation unit is in hours",
+            "leave_request_empty_{$requiredField}",
+            $requiredField
+          );
+        }
+      }
+
+      foreach($daysUnitRequiredFields as $field) {
+        if(!empty($params[$field])) {
+          throw new InvalidLeaveRequestException(
+            "The {$field} should be empty when absence type calculation unit is in hours",
+            "leave_request_non_empty_{$field}",
+            $field
+          );
+        }
+      }
+    }
+
+    if(!$isCalculationUnitInHours) {
+      foreach($daysUnitRequiredFields as $requiredField) {
+        if(empty($params[$requiredField])) {
+          throw new InvalidLeaveRequestException(
+            "The {$requiredField} can not be empty when absence type calculation unit is in days",
+            "leave_request_empty_{$requiredField}",
+            $requiredField
+          );
+        }
+      }
+
+      foreach($hoursUnitRequiredFields as $field) {
+        if(!empty($params[$field])) {
+          throw new InvalidLeaveRequestException(
+            "The {$field} should be empty when absence type calculation unit is in days",
             "leave_request_non_empty_{$field}",
             $field
           );
