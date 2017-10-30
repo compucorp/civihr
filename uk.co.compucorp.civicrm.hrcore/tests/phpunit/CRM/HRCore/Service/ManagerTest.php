@@ -30,14 +30,14 @@ class CRM_HRCore_Service_ManagerTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $this->setContactAsLineManagerOf($contactB, $contactA);
     $managers = $managerService->getLineManagersFor($contactA['id']);
 
-    $this->assertContains('hisoka morou', $managers);
+    $this->assertContains($contactB['display_name'], $managers);
     $this->assertCount(1, $managers);
 
     $this->setContactAsLineManagerOf($contactC, $contactA);
     $managers = $managerService->getLineManagersFor($contactA['id']);
 
-    $this->assertContains('illumi zoldyck', $managers);
-    $this->assertContains('hisoka morou', $managers);
+    $this->assertContains($contactC['display_name'], $managers);
+    $this->assertContains($contactB['display_name'], $managers);
     $this->assertCount(2, $managers);
   }
 
@@ -53,6 +53,5 @@ class CRM_HRCore_Service_ManagerTest extends CRM_HRCore_Test_BaseHeadlessTest {
       'relationship_type_id' => $relationshipType['id'],
     ]);
   }
-
 
 }
