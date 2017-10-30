@@ -5,40 +5,40 @@
 // http://wiki.civicrm.org/confluence/display/CRMDOC/Hook+Reference
 return array (
   array (
-    'name' => 'WordReplacement People Management',
+    'name' => 'WordReplacement CiviCase -> Workflow',
     'entity' => 'WordReplacement',
     'params' =>
     array (
       'version' => 3,
       'find_word' => 'CiviCase',
-      'replace_word'=>'People Management',
+      'replace_word'=>'Workflow',
       'is_active' => 1,
     ),
   ),
   array (
-    'name' => 'WordReplacement Assignment',
+    'name' => 'WordReplacement Case -> Workflow',
     'entity' => 'WordReplacement',
     'params' =>
     array (
       'version' => 3,
       'find_word' => 'Case',
-      'replace_word'=>'Assignment',
+      'replace_word'=>'Workflow',
       'is_active' => 1,
     ),
   ),
   array (
-    'name' => 'WordReplacement Assignments',
+    'name' => 'WordReplacement Cases -> Workflows',
     'entity' => 'WordReplacement',
     'params' =>
     array (
       'version' => 3,
       'find_word' => 'Cases',
-      'replace_word'=>'Assignments',
+      'replace_word'=>'Workflows',
       'is_active' => 1,
     ),
   ),
   array (
-    'name' => 'WordReplacement Client',
+    'name' => 'WordReplacement Client -> Contact',
     'entity' => 'WordReplacement',
     'params' =>
     array (
@@ -49,13 +49,24 @@ return array (
     ),
   ),
   array (
-    'name' => 'WordReplacement case',
+    'name' => 'WordReplacement case -> workflow',
     'entity' => 'WordReplacement',
     'params' =>
     array (
       'version' => 3,
       'find_word' => 'case',
-      'replace_word'=>'assignment',
+      'replace_word'=>'workflow',
+      'is_active' => 1,
+    ),
+  ),
+  array (
+    'name' => 'WordReplacement cases -> workflows',
+    'entity' => 'WordReplacement',
+    'params' =>
+    array (
+      'version' => 3,
+      'find_word' => 'cases',
+      'replace_word'=>'workflows',
       'is_active' => 1,
     ),
   )
