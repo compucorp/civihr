@@ -34,6 +34,7 @@ function civicrm_api3_leave_request_create($params) {
   $bao = _civicrm_api3_get_BAO(__FUNCTION__);
   _civicrm_api3_check_edit_permissions($bao, $params);
   _civicrm_api3_format_params_for_create($params, null);
+  _civicrm_api3_leave_request_set_time_for_leave_dates($params);
 
   $service = CRM_HRLeaveAndAbsences_Factory_LeaveRequestService::create();
 
@@ -217,7 +218,7 @@ function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
     'name' => 'from_date_type',
     'title' => 'Starting Day Type',
     'type' => CRM_Utils_Type::T_STRING,
-    'api.required' => 1,
+    'api.required' => 0,
     'pseudoconstant' => [
       'optionGroupName' => 'hrleaveandabsences_leave_request_day_type',
       'optionEditPath'  => 'civicrm/admin/options/hrleaveandabsences_leave_request_day_type',
@@ -235,7 +236,7 @@ function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
     'name' => 'to_date_type',
     'title' => 'Ending Day Type',
     'type' => CRM_Utils_Type::T_STRING,
-    'api.required' => 1,
+    'api.required' => 0,
     'pseudoconstant' => [
       'optionGroupName' => 'hrleaveandabsences_leave_request_day_type',
       'optionEditPath'  => 'civicrm/admin/options/hrleaveandabsences_leave_request_day_type',
@@ -256,8 +257,28 @@ function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
  * @param array $params
  *
  * @return array
+ *
+ * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_leave_request_calculateBalanceChange($params) {
+  $calculationUnitInHours = CRM_HRLeaveAndAbsences_BAO_AbsenceType::isCalculationUnitInHours($params['type_id']);
+
+  if(!$calculationUnitInHours) {
+    if(empty($params['from_date_type']) || empty($params['to_date_type'])) {
+      throw new InvalidArgumentException(
+        'The from_date_type and to_date_type is required when Absence Type calculation unit is in days'
+      );
+    }
+  }
+
+  if($calculationUnitInHours) {
+    if(!empty($params['from_date_type']) || !empty($params['to_date_type'])) {
+      throw new InvalidArgumentException(
+        'The from_date_type and to_date_type is not required when Absence Type calculation unit is in hours'
+      );
+    }
+  }
+
   $result = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::calculateBalanceChange(
     $params['contact_id'],
     new DateTime($params['from_date']),
@@ -738,4 +759,30 @@ function civicrm_api3_leave_request_getbreakdown($params) {
   $breakdown = $leaveRequestService->getBreakdown($leaveRequest['id']);
 
   return civicrm_api3_create_success($breakdown);
+}
+
+/**
+ * Sets the time for the from_date and to_date of a leave
+ * request whose balance change is to be calculated in days.
+ * It sets the time of the from_date as '00:00' and the
+ * time for the to_date as '23:59'
+ *
+ * @param array $params
+ */
+function _civicrm_api3_leave_request_set_time_for_leave_dates(&$params) {
+  if(empty($params['from_date']) || empty($params['to_date']) || empty($params['type_id'])) {
+    return;
+  }
+
+  if(CRM_HRLeaveAndAbsences_BAO_AbsenceType::isCalculationUnitInHours($params['type_id'])) {
+    return;
+  }
+
+  $fromDate = new DateTime($params['from_date']);
+  $fromDate->setTime(00, 00);
+  $toDate = new DateTime($params['to_date']);
+  $toDate->setTime(23, 59);
+
+  $params['from_date'] = $fromDate->format('YmdHis');
+  $params['to_date'] = $toDate->format('YmdHis');
 }

@@ -3877,4 +3877,71 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertNull(LeaveRequest::toilToAccrueChanged($params));
   }
+
+  public function testCalculateBalanceChangeForLeaveRequestWithBalanceCalculatedInHours() {
+    $periodStartDate = date('2016-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-13 13:00');
+    $toDate = new DateTime('2016-11-15 15:00');
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    // Start date is a sunday, Weekend
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-13',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
+      ]
+    ];
+
+    // The next day is a monday, which is a working day
+    $expectedResultsBreakdown['amount'] += 8;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-14',
+      'amount' => 8.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
+      ]
+    ];
+
+    // last day is a tuesday, which is a working day, half day will be deducted
+    $expectedResultsBreakdown['amount'] += 8;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-15',
+      'amount' => 8.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
+      ]
+    ];
+
+    $expectedResultsBreakdown['amount'] *= -1;
+
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      null,
+      $toDate,
+      null,
+      $absenceType->id
+    );
+
+    $this->assertEquals($expectedResultsBreakdown, $result);
+  }
 }

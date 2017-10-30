@@ -831,15 +831,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param int $contactId
    * @param \DateTime $fromDate
-   * @param string $fromDateType
+   * @param string|null $fromDateType
    * @param \DateTime $toDate
-   * @param string $toDateType
+   * @param string|null $toDateType
    * @param int $absenceTypeID
    *
    * @return array
    *   An array of formatted results
    */
-  public static function calculateBalanceChange($contactId, DateTime $fromDate, $fromDateType, DateTime $toDate, $toDateType, $absenceTypeID) {
+  public static function calculateBalanceChange($contactId, DateTime $fromDate, $fromDateType = null, DateTime $toDate, $toDateType = null, $absenceTypeID) {
     $params = [
       'contact_id' => $contactId,
       'type_id' => $absenceTypeID,
