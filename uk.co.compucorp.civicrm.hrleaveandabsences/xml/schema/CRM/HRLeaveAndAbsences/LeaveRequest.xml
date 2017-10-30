@@ -160,4 +160,18 @@
     <add>4.4</add>
   </field>
 
+  <field>
+    <name>from_date_amount</name>
+    <type>decimal</type>
+    <comment>The balance change amount to be deducted for the leave request from date</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>to_date_amount</name>
+    <type>decimal</type>
+    <comment>The balance change amount to be deducted for the leave request to date</comment>
+    <add>4.4</add>
+  </field>
+
 </table>
