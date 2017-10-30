@@ -1,24 +1,11 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
-
 /**
  * Class api_v3_HrJobRolesTest
  *
  * @group headless
  */
-class api_v3_HrJobRolesTest extends PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('org.civicrm.hrjobcontract')
-      ->installMe(__DIR__)
-      ->apply();
-
-    $jobContractUpgrader = CRM_Hrjobcontract_Upgrader::instance();
-    $jobContractUpgrader->install();
-  }
+class api_v3_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
 
   /**
    * @expectedException CiviCRM_API3_Exception

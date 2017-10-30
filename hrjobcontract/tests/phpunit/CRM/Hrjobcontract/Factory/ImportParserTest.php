@@ -1,7 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_Hrjobcontract_Factory_ImportParser as ImportParserFactory;
 use CRM_Hrjobcontract_Import_Parser_EntitlementUpdate as EntitlementUpdateParser;
 use CRM_Hrjobcontract_Import_Parser_Api as ApiParser;
@@ -12,13 +10,7 @@ use CRM_Hrjobcontract_Import_Parser as ImportParser;
  *
  * @group headless
  */
-class CRM_Hrjobcontract_Factory_ImportParserTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface,
-  TransactionalInterface {
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()->installMe(__DIR__)->apply();
-  }
+class CRM_Hrjobcontract_Factory_ImportParserTest extends CRM_Hrjobcontract_Test_BaseHeadlessTest {
 
   public function testItCreatesAnApiParserWhenTheUpdateModeIsImportContracts() {
     $importMode = ImportParser::IMPORT_CONTRACTS;

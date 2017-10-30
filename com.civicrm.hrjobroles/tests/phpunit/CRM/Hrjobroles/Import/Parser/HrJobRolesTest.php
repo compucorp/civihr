@@ -1,27 +1,13 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
-
 /**
  * Class CRM_Hrjobroles_Import_Parser_HrJobRolesTest
  *
  * @group headless
  */
-class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
+class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
 
   use HrJobRolesTestTrait;
-
-  public function setUpHeadless() {
-    // job contract is installed before job roles since job roles is depend on it
-    // otherwise the installation of job roles will fail.
-    return \Civi\Test::headless()
-      ->install('org.civicrm.hrjobcontract')
-      ->installMe(__DIR__)
-      ->apply();
-    $jobContractUpgrader = CRM_Hrjobcontract_Upgrader::instance();
-    $jobContractUpgrader->install();
-  }
 
   public function setUp() {
     $session = CRM_Core_Session::singleton();
@@ -30,7 +16,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->createSampleOptionGroupsAndValues();
   }
 
-  function testBasicImport() {
+  public function testBasicImport() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -50,7 +36,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals($importParams['title'], $roleEntity->title);
   }
 
-  function testImportWithoutMandatoryFields() {
+  public function testImportWithoutMandatoryFields() {
     // run importer
     $importParams = [
       'title' => 'test import role'
@@ -59,7 +45,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
-  function testImportWithValidOptionValues() {
+  public function testImportWithValidOptionValues() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -87,7 +73,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals($importParams['hrjc_level_type'], $roleEntity->level_type);
   }
 
-  function testImportWithInvalidOptionValues() {
+  public function testImportWithInvalidOptionValues() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -108,7 +94,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);;
   }
 
-  function testImportWithEmptyOptionValues() {
+  public function testImportWithEmptyOptionValues() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -132,7 +118,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals($importParams['title'], $roleEntity->title);
   }
 
-  function testImportFunderByIDAndPercent() {
+  public function testImportFunderByIDAndPercent() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -162,7 +148,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals($importParams['hrjc_role_percent_pay_funder'], $roleEntity->percent_pay_funder);
   }
 
-  function testImportFunderByIDAndAmount() {
+  public function testImportFunderByIDAndAmount() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -192,7 +178,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals($importParams['hrjc_role_amount_pay_funder'], $roleEntity->amount_pay_funder);
   }
 
-  function testImportFunderByDisplayNameAndAmount() {
+  public function testImportFunderByDisplayNameAndAmount() {
     // create contact
     $contactParams = [
       'first_name'=>'walter',
@@ -226,7 +212,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals($importParams['hrjc_role_amount_pay_funder'], $roleEntity->amount_pay_funder);
   }
 
-  function testImportFunderWithInvalidID() {
+  public function testImportFunderWithInvalidID() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -252,7 +238,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
 
   // I commented out these tests because I didn't had the chance to run them before the release
   // and I run and uncomment them if the passed in other PR later
-  function testImportFunderWithInvalidDisplayName() {
+  public function testImportFunderWithInvalidDisplayName() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -276,7 +262,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
-  function testImportFunderWithInvalidValueType() {
+  public function testImportFunderWithInvalidValueType() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -300,7 +286,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
-  function testImportFunderWithInvalidPercentPay() {
+  public function testImportFunderWithInvalidPercentPay() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -324,7 +310,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
-  function testImportFunderWithInvalidAmountPay() {
+  public function testImportFunderWithInvalidAmountPay() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
@@ -348,7 +334,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends \PHPUnit_Framework_Tes
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
-  function testImportFunderWithoutValueType() {
+  public function testImportFunderWithoutValueType() {
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
