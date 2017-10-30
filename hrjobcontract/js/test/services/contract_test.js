@@ -1,10 +1,11 @@
 /* eslint-env amd, jasmine */
 
 define([
+  'common/lodash',
   'common/angular',
   'mocks/data/contract',
   'job-contract/app'
-], function (angular, contractMock) {
+], function (_, angular, contractMock) {
   'use strict';
 
   describe('ContractLeaveService', function () {

@@ -25,9 +25,9 @@ define([
       ContractPensionService, ContractFilesService, ContactService, ContractRevisionList, $log, UtilsService) {
       $log.debug('Controller: ContractCtrl');
 
+      var promiseFiles;
+      var contractId = $scope.contract.id;
       var vm = this;
-      var contractId = $scope.contract.id,
-        promiseFiles;
 
       $scope.contractLoaded = false;
       $scope.revisionsShown = false;
@@ -52,7 +52,7 @@ define([
 
         if (newScope.health &&
           newScope.health.provider &&
-          newScope.health.provider != $scope.health.provider) {
+          newScope.health.provider !== $scope.health.provider) {
           ContactService.getOne(newScope.health.provider).then(function (contact) {
             $scope.health.provider_contact = contact;
           });
@@ -60,7 +60,7 @@ define([
 
         if (newScope.health &&
           newScope.health.provider_life_insurance &&
-          newScope.health.provider_life_insurance != $scope.health.provider_life_insurance) {
+          newScope.health.provider_life_insurance !== $scope.health.provider_life_insurance) {
           ContactService.getOne(newScope.health.provider_life_insurance).then(function (contact) {
             $scope.health.provider_life_insurance_contact = contact;
           });
@@ -82,12 +82,12 @@ define([
        * @param {string || date} newEndDate the date specified by the user
        */
       function updateContractList (newEndDate) {
-        var isCurrentContract = !newEndDate ? true : (moment().diff(newEndDate, 'day') <= 0),
-          contract = $scope.$parent.contract,
-          currentContracts = $scope.$parent.contractCurrent,
-          pastContracts = $scope.$parent.contractPast,
-          currentContractIndex = currentContracts.indexOf(contract),
-          pastContractIndex = pastContracts.indexOf(contract);
+        var isCurrentContract = !newEndDate ? true : (moment().diff(newEndDate, 'day') <= 0);
+        var contract = $scope.$parent.contract;
+        var currentContracts = $scope.$parent.contractCurrent;
+        var pastContracts = $scope.$parent.contractPast;
+        var currentContractIndex = currentContracts.indexOf(contract);
+        var pastContractIndex = pastContracts.indexOf(contract);
 
         if (isCurrentContract) {
           contract.is_current = '1';
@@ -148,6 +148,8 @@ define([
        * @return {object}
        */
       vm.fetchRevisionDetails = function (revision) {
+        var entity, revisionDetails;
+
         return $q.all([
           ContractDetailsService.getOne({
             jobcontract_revision_id: revision.details_revision_id
@@ -169,7 +171,7 @@ define([
           })
         ])
         .then(function (results) {
-          var revisionDetails = {
+          revisionDetails = {
             'details': results[0],
             'hour': results[1],
             'health': results[2],
@@ -177,9 +179,7 @@ define([
             'pension': results[4],
             'leave': results[5]
           };
-          var entity = {
-            contract: $scope.contract
-          };
+          entity = { contract: $scope.contract };
           _.extend(entity, _.cloneDeep($scope.model));
           _.extend(entity.details, revisionDetails.details);
           _.extend(entity.hour, revisionDetails.hour);
@@ -195,52 +195,54 @@ define([
       };
 
       $scope.modalContract = function (action, revisionEntityIdObj) {
-        $scope.$broadcast('hrjc-loader-show');
-
-        var modalInstance,
-          options = {
-            controller: 'ModalContractCtrl',
-            appendTo: $rootElement.find('div').eq(0),
-            templateUrl: settings.pathApp + 'views/modalForm.html?v=4448',
-            windowClass: 'modal-contract',
-            size: 'lg',
-            resolve: {
-              action: function () {
-                return action || 'view';
-              },
-              content: function () {
-                return null;
-              },
-              entity: function () {
-                if (!revisionEntityIdObj) {
-                  return {
-                    contract: $scope.contract,
-                    details: $scope.details,
-                    hour: $scope.hour,
-                    pay: $scope.pay,
-                    leave: $scope.leave,
-                    health: $scope.health,
-                    pension: $scope.pension
-                  };
-                }
-
-                return vm.fetchRevisionDetails(revisionEntityIdObj);
-              },
-              files: function () {
-                if (!revisionEntityIdObj) {
-                  return promiseFiles;
-                }
-
-                return $q.all({
-                  details: ContractFilesService.get(revisionEntityIdObj.details_revision_id, 'civicrm_hrjobcontract_details'),
-                  pension: ContractFilesService.get(revisionEntityIdObj.pension_revision_id, 'civicrm_hrjobcontract_pension')
-                });
-              },
-              utils: function () {
-                return $scope.utils;
+        var modalInstance, dateEffectiveRevisionCreated, dateEffectiveRevisionCurrent,
+          dateToday, revisionData, isCurrentRevision, i, objExt;
+        var revisionListEntitiesView = ['details', 'hour', 'pay'];
+        var options = {
+          controller: 'ModalContractCtrl',
+          appendTo: $rootElement.find('div').eq(0),
+          templateUrl: settings.pathApp + 'views/modalForm.html?v=4448',
+          windowClass: 'modal-contract',
+          size: 'lg',
+          resolve: {
+            action: function () {
+              return action || 'view';
+            },
+            content: function () {
+              return null;
+            },
+            entity: function () {
+              if (!revisionEntityIdObj) {
+                return {
+                  contract: $scope.contract,
+                  details: $scope.details,
+                  hour: $scope.hour,
+                  pay: $scope.pay,
+                  leave: $scope.leave,
+                  health: $scope.health,
+                  pension: $scope.pension
+                };
               }
+
+              return vm.fetchRevisionDetails(revisionEntityIdObj);
+            },
+            files: function () {
+              if (!revisionEntityIdObj) {
+                return promiseFiles;
+              }
+
+              return $q.all({
+                details: ContractFilesService.get(revisionEntityIdObj.details_revision_id, 'civicrm_hrjobcontract_details'),
+                pension: ContractFilesService.get(revisionEntityIdObj.pension_revision_id, 'civicrm_hrjobcontract_pension')
+              });
+            },
+            utils: function () {
+              return $scope.utils;
             }
-          };
+          }
+        };
+
+        $scope.$broadcast('hrjc-loader-show');
 
         switch (action) {
           case 'edit':
@@ -283,16 +285,16 @@ define([
           updateContractList(results.details.period_end_date);
 
           if (results.revisionCreated) {
-            var dateEffectiveRevisionCreated = moment(new Date(results.revisionCreated.effective_date)),
-              dateEffectiveRevisionCurrent = moment(new Date($scope.revisionCurrent.effective_date)),
-              dateToday = moment(),
-              revisionData = {
-                revisionEntityIdObj: results.revisionCreated,
-                details: results.details,
-                hour: results.hour,
-                pay: results.pay
-              },
-              isCurrentRevision = dateEffectiveRevisionCurrent.diff(dateToday, 'day') <= 0 || dateEffectiveRevisionCurrent.diff(dateEffectiveRevisionCreated, 'day') <= 0;
+            dateEffectiveRevisionCreated = moment(new Date(results.revisionCreated.effective_date));
+            dateEffectiveRevisionCurrent = moment(new Date($scope.revisionCurrent.effective_date));
+            dateToday = moment();
+            revisionData = {
+              revisionEntityIdObj: results.revisionCreated,
+              details: results.details,
+              hour: results.hour,
+              pay: results.pay
+            };
+            isCurrentRevision = dateEffectiveRevisionCurrent.diff(dateToday, 'day') <= 0 || dateEffectiveRevisionCurrent.diff(dateEffectiveRevisionCreated, 'day') <= 0;
 
             if (results.files) {
               if (isCurrentRevision) {
@@ -311,10 +313,7 @@ define([
             $scope.revisionList.unshift(results.revisionCreated);
             $scope.revisionDataList.unshift(revisionData);
           } else {
-            var revisionListEntitiesView = ['details', 'hour', 'pay'],
-              i, objExt;
-
-            if ($scope.contract.is_primary != results.contract.is_primary) {
+            if ($scope.contract.is_primary !== results.contract.is_primary) {
               $scope.$parent.$parent.toggleIsPrimary($scope.contract.id);
             }
 
@@ -322,11 +321,11 @@ define([
               i = 0;
               objExt = {};
               while (revisionListEntitiesView[i]) {
-                if (revisionData.revisionEntityIdObj[revisionListEntitiesView[i] + '_revision_id'] ==
+                if (revisionData.revisionEntityIdObj[revisionListEntitiesView[i] + '_revision_id'] ===
                   $scope.revisionCurrent[revisionListEntitiesView[i] + '_revision_id']) {
                   objExt[revisionListEntitiesView[i]] = results[revisionListEntitiesView[i]];
 
-                  if (revisionListEntitiesView[i] == 'details' && results.files) {
+                  if (revisionListEntitiesView[i] === 'details' && results.files) {
                     updateContractFiles().then(function (files) {
                       objExt.files = files;
                       _.extend(revisionData, objExt);
@@ -353,15 +352,16 @@ define([
       };
 
       $scope.modalRevision = function (entity) {
+        var options;
+        var promiseEntityRevisionDataList = [];
+        var apiMethod = entity !== 'leave' ? 'getOne' : 'get';
+        var i = 0;
+        var len = $scope.revisionList.length;
+
         $scope.$broadcast('hrjc-loader-show');
         if (!entity) {
           return null;
         }
-
-        var promiseEntityRevisionDataList = [],
-          apiMethod = entity != 'leave' ? 'getOne' : 'get',
-          i = 0,
-          len = $scope.revisionList.length;
 
         for (i; i < len; i++) {
           promiseEntityRevisionDataList.push(API[apiMethod]('HRJob' + $filter('capitalize')(entity), {
@@ -369,7 +369,7 @@ define([
           }));
         }
 
-        var options = {
+        options = {
           appendTo: $rootElement.find('div').eq(0),
           size: 'lg',
           controller: 'ModalRevisionCtrl',
