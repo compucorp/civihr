@@ -2,5 +2,10 @@
   {ts}Leave Days{/ts}
 {/htxt}
 {htxt id="id-leave-days"}
-{ts}This is the number of days of leave that will be deducted if the staff member is absent for this day within the work pattern.{/ts}
+<p>
+  {ts}If leave entitlement for selected leave type is calculated in days, this is the number of days of leave that will be deducted if the staff member is absent for this day within the work pattern.{/ts}
+</p>
+<p>
+  {ts}If leave entitlement is calculated in hours, the 'Hours' field will be used instead to calculate deduction for the requested day(s).{/ts}
+</p>
 {/htxt}
