@@ -6,6 +6,7 @@ define([
   'common/directives/loading',
   'common/directives/help-text.directive',
   'common/filters/time-unit-applier.filter',
+  'common/models/contract',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/modules/components',
   'leave-absences/shared/models/absence-period.model',
@@ -18,6 +19,7 @@ define([
     'common.components',
     'common.directives',
     'common.filters',
+    'common.models',
     'leave-absences.components',
     'leave-absences.models',
     'leave-absences.settings'
@@ -34,10 +36,10 @@ define([
   });
 
   leaveWidgetController.$inject = ['$log', '$q', '$scope', 'AbsencePeriod',
-    'AbsenceType', 'OptionGroup'];
+    'AbsenceType', 'Contract', 'OptionGroup'];
 
   function leaveWidgetController ($log, $q, $scope, AbsencePeriod,
-    AbsenceType, OptionGroup) {
+    AbsenceType, Contract, OptionGroup) {
     var allowedLeaveStatuses = ['approved', 'admin_approved',
       'awaiting_approval', 'more_information_required'];
     var childComponents = 0;
@@ -45,6 +47,7 @@ define([
 
     vm.absenceTypes = [];
     vm.currentAbsencePeriod = null;
+    vm.jobContract = null;
     vm.loading = { childComponents: false, component: true };
     vm.leaveRequestStatuses = [];
     vm.sicknessAbsenceTypes = [];
@@ -90,7 +93,8 @@ define([
     }
 
     /**
-     * Loads absence types, the current absence period, and leave request
+     * Loads the contact's job contract and if the contact has a job contract
+     * it then loads absence types, the current absence period, and leave request
      * statuses. When all dependencies are ready it sets loading component to
      * false.
      *
@@ -98,11 +102,13 @@ define([
      * been loaded.
      */
     function loadDependencies () {
-      return $q.all([
-        loadAbsenceTypes(),
-        loadCurrentAbsencePeriod(),
-        loadLeaveRequestTypes()
-      ])
+      loadCurrentJobContract().then(function () {
+        return $q.all([
+          loadAbsenceTypes(),
+          loadCurrentAbsencePeriod(),
+          loadLeaveRequestTypes()
+        ]);
+      })
       .finally(function () {
         vm.loading.component = false;
       });
@@ -119,6 +125,29 @@ define([
         vm.sicknessAbsenceTypes = types.filter(function (type) {
           return +type.is_sick;
         });
+      });
+    }
+
+    /**
+     * Loads the current job contract for the contact. If there are no job
+     * contracts, it will reject the promise.
+     *
+     * @return {Promise}
+     */
+    function loadCurrentJobContract () {
+      return Contract.all({
+        contact_id: vm.contactId,
+        deleted: false
+      })
+      .then(function (contracts) {
+        vm.jobContract = _.find(contracts, function (contract) {
+          return +contract.is_current === 1;
+        });
+      })
+      .then(function () {
+        if (!vm.jobContract) {
+          return $q.reject();
+        }
       });
     }
 
