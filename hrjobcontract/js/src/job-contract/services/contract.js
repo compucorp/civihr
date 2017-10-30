@@ -25,14 +25,30 @@ define([
        * The API returns values as strings, so we convert them to booleans to
        * make it easy to use them inside conditions
        *
-       * @param {Object} contracts as returned by the API
+       * @param {Object} contract as returned by the API
        * @param {Object} absenceTypes indexed by their IDs
        */
-      function adjustAddPublicHolidaysValue (contracts, absenceTypes) {
-        _.each(contracts.leave, function (leave) {
+      function adjustAddPublicHolidaysValue (contract, absenceTypes) {
+        _.each(contract.leave, function (leave) {
           leave.add_public_holidays =
             absenceTypes[leave.leave_type].calculation_unit_name !== 'hours' &&
             !!parseInt(leave.add_public_holidays);
+        });
+      }
+
+      /**
+       * Filters out disabled or non-existing anymore Absence Types
+       * from the contract leave details
+       *
+       * @param  {Object} contractLeaves leave property of contract (as returned by the API)
+       * @param  {Array}  absenceTypes as returned by API
+       * @return {Array}  filtered out contract leave details
+       */
+      function filterOutDisabledAbsenceTypes (contractLeaves, absenceTypes) {
+        return _.filter(contractLeaves, function (leave) {
+          if (_.find(absenceTypes, { id: leave.leave_type })) {
+            return leave;
+          }
         });
       }
 
@@ -295,14 +311,16 @@ define([
           AbsenceType.all()
           .then(AbsenceType.loadCalculationUnits)
           .then(function (absenceTypes) {
-            Contract.get({
+            return Contract.get({
               action: 'getfulldetails',
               json: {
                 jobcontract_id: contractId
               }
-            }, function (contracts) {
-              adjustAddPublicHolidaysValue(contracts, _.indexBy(absenceTypes, 'id'));
-              deferred.resolve(contracts);
+            }, function (contract) {
+              contract.leave = filterOutDisabledAbsenceTypes(contract.leave, absenceTypes);
+
+              adjustAddPublicHolidaysValue(contract, _.indexBy(absenceTypes, 'id'));
+              deferred.resolve(contract);
             }, function () {
               deferred.reject('Could not fetch full details for contract ID:' + contractId);
             });

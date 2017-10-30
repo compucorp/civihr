@@ -1,4 +1,7 @@
+/* eslint-env amd */
+
 define([
+  'common/lodash',
   'common/moment',
   'job-contract/controllers/controllers',
   'job-contract/services/contract-details',
@@ -10,7 +13,7 @@ define([
   'job-contract/services/contact',
   'job-contract/services/utils',
   'common/filters/angular-date/format-date'
-], function (moment, controllers) {
+], function (_, moment, controllers) {
   'use strict';
 
   controllers.controller('ContractCtrl', ['$scope', '$route', '$filter', '$uibModal', '$rootElement', '$q', '$window', 'settings',
@@ -34,7 +37,7 @@ define([
       $scope.revisionList = [];
       $scope.revisionDataList = [];
 
-      angular.extend($scope, angular.copy($scope.model));
+      _.extend($scope, _.cloneDeep($scope.model));
 
       function updateContractView (newScope) {
         var contractRevisionIdObj = {
@@ -43,9 +46,9 @@ define([
           jobcontract_revision_id: newScope.details.jobcontract_revision_id
         };
 
-        angular.extend($scope.details, newScope.details);
-        angular.extend($scope.hour, newScope.hour || contractRevisionIdObj);
-        angular.extend($scope.pay, newScope.pay || contractRevisionIdObj);
+        _.extend($scope.details, newScope.details);
+        _.extend($scope.hour, newScope.hour || contractRevisionIdObj);
+        _.extend($scope.pay, newScope.pay || contractRevisionIdObj);
 
         if (newScope.health &&
           newScope.health.provider &&
@@ -63,11 +66,11 @@ define([
           });
         }
 
-        angular.extend($scope.health, newScope.health || contractRevisionIdObj);
-        angular.extend($scope.pension, newScope.pension || contractRevisionIdObj);
+        _.extend($scope.health, newScope.health || contractRevisionIdObj);
+        _.extend($scope.pension, newScope.pension || contractRevisionIdObj);
 
-        angular.forEach($scope.leave, function (leaveType, leaveTypeId) {
-          angular.extend(leaveType, newScope.leave ? newScope.leave[leaveTypeId] || contractRevisionIdObj : contractRevisionIdObj);
+        _.each($scope.leave, function (leaveType, leaveTypeId) {
+          _.extend(leaveType, newScope.leave ? newScope.leave[leaveTypeId] || contractRevisionIdObj : contractRevisionIdObj);
         });
       }
 
@@ -89,7 +92,7 @@ define([
         if (isCurrentContract) {
           contract.is_current = '1';
           if (currentContractIndex + 1) {
-            angular.extend(currentContracts[currentContractIndex], contract);
+            _.extend(currentContracts[currentContractIndex], contract);
           } else {
             pastContracts.splice(pastContractIndex);
             currentContracts.push(contract);
@@ -97,7 +100,7 @@ define([
         } else {
           contract.is_current = '0';
           if (pastContractIndex + 1) {
-            angular.extend(pastContracts[pastContractIndex], contract);
+            _.extend(pastContracts[pastContractIndex], contract);
           } else {
             pastContracts.push(contract);
             currentContracts.splice(currentContractIndex);
@@ -177,14 +180,14 @@ define([
           var entity = {
             contract: $scope.contract
           };
-          angular.extend(entity, angular.copy($scope.model));
-          angular.extend(entity.details, revisionDetails.details);
-          angular.extend(entity.hour, revisionDetails.hour);
-          angular.extend(entity.health, revisionDetails.health);
-          angular.extend(entity.pay, revisionDetails.pay);
-          angular.extend(entity.pension, revisionDetails.pension);
-          angular.forEach(entity.leave, function (leaveType, leaveTypeId) {
-            angular.extend(leaveType, revisionDetails.leave ? revisionDetails.leave[leaveTypeId] : '');
+          _.extend(entity, _.cloneDeep($scope.model));
+          _.extend(entity.details, revisionDetails.details);
+          _.extend(entity.hour, revisionDetails.hour);
+          _.extend(entity.health, revisionDetails.health);
+          _.extend(entity.pay, revisionDetails.pay);
+          _.extend(entity.pension, revisionDetails.pension);
+          _.each(entity.leave, function (leaveType, leaveTypeId) {
+            _.extend(leaveType, revisionDetails.leave ? revisionDetails.leave[leaveTypeId] : '');
           });
 
           return entity;
@@ -315,7 +318,7 @@ define([
               $scope.$parent.$parent.toggleIsPrimary($scope.contract.id);
             }
 
-            angular.forEach($scope.revisionDataList, function (revisionData) {
+            _.each($scope.revisionDataList, function (revisionData) {
               i = 0;
               objExt = {};
               while (revisionListEntitiesView[i]) {
@@ -326,11 +329,11 @@ define([
                   if (revisionListEntitiesView[i] == 'details' && results.files) {
                     updateContractFiles().then(function (files) {
                       objExt.files = files;
-                      angular.extend(revisionData, objExt);
+                      _.extend(revisionData, objExt);
                     });
                   }
 
-                  angular.extend(revisionData, objExt);
+                  _.extend(revisionData, objExt);
                 }
                 i++;
               }

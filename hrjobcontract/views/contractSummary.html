@@ -132,12 +132,16 @@
             <label class="col-sm-4 control-label">Leave</label>
             <div class="col-sm-6">
               <p class="form-control-static">
-                <span ng-repeat="leaveEntry in leave" ng-if="leaveEntry.leave_amount" class="subfield"><strong>{{options.leave.leave_type[leaveEntry.leave_type]}}:</strong> {{leaveEntry.getEstimatedLeaveAmount(leaveCtrl.numberOfPublicHolidays)}} Days day(s)<br></span>
+                <span ng-repeat="leaveEntry in leave" ng-if="leaveEntry.leave_amount" class="subfield">
+                  <strong>{{ leaveEntry.leave_type_title }}:</strong>
+                  {{ leaveEntry.getEstimatedLeaveAmount(leaveCtrl.numberOfPublicHolidays) | timeUnitApplier : leaveEntry.leave_calculation_unit_name }}
+                  <br/>
+                </span>
               </p>
             </div>
             <div class="col-sm-2">
               <a class="btn" role="button" ng-click="modalRevision('leave')">
-              <span class="glyphicon glyphicon-time" aria-hidden="true"></span><br>
+              <span class="glyphicon glyphicon-time" aria-hidden="true"></span><br/>
               </a>
             </div>
           </div>
