@@ -583,47 +583,48 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CRM_Hrjobcontract_Test_Bas
   }
 
   private function validateResult($contactID, $entity = NULL)  {
-    $contract = $this->callAPISuccessGetSingle('HRJobContract', array('contact_id'=>$contactID));
+    $contract = civicrm_api3('HRJobContract', 'getsingle', ['contact_id' => $contactID]);
     $contractID = $contract['id'];
-    $revision = $this->callAPISuccessGetSingle('HRJobContractRevision', array('jobcontract_id'=>$contractID));
+    $revision = civicrm_api3('HRJobContractRevision', 'getsingle', ['jobcontract_id' => $contractID]);
     $revisionID = $revision['details_revision_id'];
-    $this->callAPISuccessGetSingle('HRJobDetails', array('jobcontract_revision_id'=>$revisionID));
+    $jobDetails = civicrm_api3('HRJobDetails', 'get', ['jobcontract_revision_id' => $revisionID]);
+    $this->assertNotEmpty($jobDetails['values']);
 
     if ($entity !== NULl)  {
       switch ($entity) {
         case 'HRJobLeave':
-          $this->callAPISuccess($entity, 'getcount', array('jobcontract_revision_id'=>$revisionID), 5);
+          $jobLeaves = civicrm_api3($entity, 'get', ['jobcontract_revision_id' => $revisionID]);
+          $this->assertCount(5, $jobLeaves['values']);
           break;
 
         case 'HRJobHealth':
-          $result = $this->callAPISuccessGetSingle($entity, array('jobcontract_revision_id'=>$revisionID));
-          $this->assertEquals($this->_insurancePlanTypes[0]['value'], $result['plan_type']);
-          $this->assertEquals($this->_insurancePlanTypes[1]['value'], $result['plan_type_life_insurance']);
+          $jobHealth = civicrm_api3($entity, 'getsingle', ['jobcontract_revision_id' => $revisionID]);
+          $this->assertEquals($this->_insurancePlanTypes[0]['value'], $jobHealth['plan_type']);
+          $this->assertEquals($this->_insurancePlanTypes[1]['value'], $jobHealth['plan_type_life_insurance']);
           break;
 
         default:
-          $this->callAPISuccessGetSingle($entity, array('jobcontract_revision_id'=>$revisionID));
+          $result = civicrm_api3($entity, 'getsingle', ['jobcontract_revision_id' => $revisionID]);
+          $this->assertNotEmpty($result);
+          $this->assertFalse(array_key_exists('is_error', $result));
       }
     }
   }
 
   private function createTestContact($params)  {
     $contact = ContactFabricator::fabricate($params);
+
     return $contact['id'];
   }
 
   private function createTestContractType() {
-    $contractTypeGroup = $this->callAPISuccess('OptionGroup', 'get', array(
-      'sequential' => 1,
-      'name' => "hrjc_contract_type",
-    ), 'unable to find contract type option group');
-
-    $contractType = $this->callAPISuccess('option_value', 'create', array(
-      'option_group_id' => $contractTypeGroup['id'],
+    $contractType = OptionValueFabricator::fabricate([
+      'option_group_id' => 'hrjc_contract_type',
       'name' => 'Test Contract Type',
       'label' => 'Test Contract Type',
       'sequential' => 1
-    ), 'unable to create contract type');
+    ]);
+
     return  $contractType['id'];
   }
 
@@ -642,27 +643,38 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CRM_Hrjobcontract_Test_Bas
   }
 
   private function validateHourAutoFields($contactID, $expected)  {
-    $result = $this->callAPISuccessGetSingle('HRJobContract', array('contact_id'=>$contactID));
-    $contractID = $result['id'];
-    $result = $this->callAPISuccessGetSingle('HRJobContractRevision', array('jobcontract_id'=>$contractID));
-    $revisionID = $result['details_revision_id'];
-    $this->callAPISuccessGetSingle('HRJobDetails', array('jobcontract_revision_id'=>$revisionID));
-    $result = $this->callAPISuccessGetSingle('HRJobHour', array('jobcontract_revision_id'=>$revisionID));
+    $contract = civicrm_api3('HRJobContract', 'getsingle', [
+      'contact_id' => $contactID
+    ]);
+
+    $revision = civicrm_api3('HRJobContractRevision', 'getsingle', [
+      'jobcontract_id'=> $contract['id']
+    ]);
+
+    $jobHours = civicrm_api3('HRJobHour', 'getsingle', [
+      'jobcontract_revision_id' => $revision['details_revision_id']
+    ]);
 
     foreach($expected as $key => $value)  {
-      $this->assertEquals($value, $result[$key], "Failed asserting {$result[$key]} matches expected $value for field $key");
+      $this->assertEquals($value, $jobHours[$key], "Failed asserting {$jobHours[$key]} matches expected $value for field $key");
     }
   }
 
   private function validatePayAutoFields($contactID, $expected)  {
-    $result = $this->callAPISuccessGetSingle('HRJobContract', array('contact_id'=>$contactID));
-    $contractID = $result['id'];
-    $result = $this->callAPISuccessGetSingle('HRJobContractRevision', array('jobcontract_id'=>$contractID));
-    $revisionID = $result['details_revision_id'];
-    $this->callAPISuccessGetSingle('HRJobDetails', array('jobcontract_revision_id'=>$revisionID));
-    $result = $this->callAPISuccessGetSingle('HRJobPay', array('jobcontract_revision_id'=>$revisionID));
+    $contract = civicrm_api3('HRJobContract', 'getsingle', [
+      'contact_id' => $contactID
+    ]);
+
+    $revision = civicrm_api3('HRJobContractRevision', 'getsingle', [
+      'jobcontract_id'=> $contract['id']
+    ]);
+
+    $jobPay = civicrm_api3('HRJobPay', 'getsingle', [
+      'jobcontract_revision_id' => $revision['details_revision_id']
+    ]);
+
     foreach($expected as $key => $value)  {
-      $this->assertEquals($value, $result[$key]);
+      $this->assertEquals($value, $jobPay[$key]);
     }
   }
 
