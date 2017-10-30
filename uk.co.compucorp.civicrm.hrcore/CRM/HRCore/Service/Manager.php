@@ -57,7 +57,6 @@ class CRM_HRCore_Service_Manager {
   private function getRelationshipTypeID($relationshipTypeName) {
     try {
       $result = civicrm_api3('RelationshipType', 'getsingle', [
-        'sequential' => 1,
         'return' => ['id'],
         'name_a_b' => $relationshipTypeName,
       ]);
