@@ -5,6 +5,17 @@
 // http://wiki.civicrm.org/confluence/display/CRMDOC/Hook+Reference
 return [
   [
+    'name' => 'WordReplacement Client -> Contact',
+    'entity' => 'WordReplacement',
+    'params' =>
+    [
+      'version' => 3,
+      'find_word' => 'Client',
+      'replace_word'=>'Contact',
+      'is_active' => 1,
+    ],
+  ],
+  [
     'name' => 'WordReplacement CiviCase -> Workflow',
     'entity' => 'WordReplacement',
     'params' =>
@@ -27,28 +38,6 @@ return [
     ],
   ],
   [
-    'name' => 'WordReplacement Cases -> Workflows',
-    'entity' => 'WordReplacement',
-    'params' =>
-    [
-      'version' => 3,
-      'find_word' => 'Cases',
-      'replace_word'=>'Workflows',
-      'is_active' => 1,
-    ],
-  ],
-  [
-    'name' => 'WordReplacement Client -> Contact',
-    'entity' => 'WordReplacement',
-    'params' =>
-    [
-      'version' => 3,
-      'find_word' => 'Client',
-      'replace_word'=>'Contact',
-      'is_active' => 1,
-    ],
-  ],
-  [
     'name' => 'WordReplacement case -> workflow',
     'entity' => 'WordReplacement',
     'params' =>
@@ -56,6 +45,17 @@ return [
       'version' => 3,
       'find_word' => 'case',
       'replace_word'=>'workflow',
+      'is_active' => 1,
+    ],
+  ],
+  [
+    'name' => 'WordReplacement Cases -> Workflows',
+    'entity' => 'WordReplacement',
+    'params' =>
+    [
+      'version' => 3,
+      'find_word' => 'Cases',
+      'replace_word'=>'Workflows',
       'is_active' => 1,
     ],
   ],
