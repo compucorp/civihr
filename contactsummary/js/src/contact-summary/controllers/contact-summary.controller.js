@@ -1,18 +1,11 @@
 /* eslint-env amd */
 
-define([
-  'contact-summary/modules/contact-summary.controllers',
-  'contact-summary/modules/contact-summary.constants'
-], function (controllers) {
+define(function () {
   'use strict';
 
-  /**
-   * @ngdoc controller
-   * @name ContactSummaryCtrl
-   * @param $log
-   * @param settings
-   * @constructor
-   */
+  ContactSummaryCtrl.__name = 'ContactSummaryCtrl';
+  ContactSummaryCtrl.$inject = ['$log', 'settings'];
+
   function ContactSummaryCtrl ($log, settings) {
     $log.debug('Controller: ContactSummaryCtrl');
 
@@ -26,5 +19,5 @@ define([
     this.ready = false;
   }
 
-  controllers.controller('ContactSummaryCtrl', ['$log', 'settings', ContactSummaryCtrl]);
+  return ContactSummaryCtrl;
 });

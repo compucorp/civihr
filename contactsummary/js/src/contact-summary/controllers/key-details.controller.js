@@ -2,23 +2,13 @@
 
 define([
   'common/lodash',
-  'common/moment',
-  'contact-summary/modules/contact-summary.controllers',
-  'contact-summary/services/contact-details.service',
-  'contact-summary/services/contract.service',
-  'common/services/pub-sub'
-], function (_, moment, controllers) {
+  'common/moment'
+], function (_, moment) {
   'use strict';
 
-  /**
-   * @ngdoc controller
-   * @name KeyDetailsCtrl
-   * @param $log
-   * @param {ContactDetailsService} ContactDetails
-   * @param {ContractService} Contract
-   * @param {pubSub} pubSub
-   * @constructor
-   */
+  KeyDetailsCtrl.__name = 'KeyDetailsCtrl';
+  KeyDetailsCtrl.$inject = ['$log', 'ContactDetailsService', 'ContractService', 'pubSub'];
+
   function KeyDetailsCtrl ($log, ContactDetails, Contract, pubSub) {
     $log.debug('Controller: KeyDetailsCtrl');
 
@@ -67,5 +57,5 @@ define([
     pubSub.subscribe('contract-refresh', resetKeyDetails);
   }
 
-  controllers.controller('KeyDetailsCtrl', ['$log', 'ContactDetailsService', 'ContractService', 'pubSub', KeyDetailsCtrl]);
+  return KeyDetailsCtrl;
 });

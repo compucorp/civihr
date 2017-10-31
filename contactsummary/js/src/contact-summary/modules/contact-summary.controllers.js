@@ -1,9 +1,15 @@
 /* eslint-env amd */
 
 define([
-  'common/angular'
-], function (angular) {
+  'common/angular',
+  'contact-summary/controllers/contact-summary.controller',
+  'contact-summary/controllers/key-dates.controller',
+  'contact-summary/controllers/key-details.controller'
+], function (angular, ContactSummaryCtrl, KeyDatesCtrl, KeyDetailsCtrl) {
   'use strict';
 
-  return angular.module('contactsummary.controllers', []);
+  angular.module('contactsummary.controllers', [])
+    .controller(ContactSummaryCtrl.__name, ContactSummaryCtrl)
+    .controller(KeyDatesCtrl.__name, KeyDatesCtrl)
+    .controller(KeyDetailsCtrl.__name, KeyDetailsCtrl);
 });

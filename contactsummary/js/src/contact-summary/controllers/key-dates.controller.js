@@ -2,12 +2,8 @@
 
 define([
   'common/angular',
-  'common/moment',
-  'contact-summary/modules/contact-summary.controllers',
-  'contact-summary/services/contract.service',
-  'contact-summary/services/job-role.service',
-  'common/services/pub-sub'
-], function (angular, moment, controllers) {
+  'common/moment'
+], function (angular, moment) {
   'use strict';
 
   /**
@@ -41,15 +37,9 @@ define([
     return moment().diff(date) < 0;
   }
 
-  /**
-   * @ngdoc controller
-   * @name KeyDatesCtrl
-   * @param $log
-   * @param {ContractService} Contract
-   * @param {JobRoleService} JobRole
-   * @param {pubSub} pubSub
-   * @constructor
-   */
+  KeyDatesCtrl.__name = 'KeyDatesCtrl';
+  KeyDatesCtrl.$inject = ['$log', 'ContractService', 'JobRoleService', 'pubSub'];
+
   function KeyDatesCtrl ($log, Contract, JobRole, pubSub) {
     $log.debug('Controller: KeyDatesCtrl');
 
@@ -103,5 +93,5 @@ define([
     pubSub.subscribe('contract-refresh', resetKeyDates);
   }
 
-  controllers.controller('KeyDatesCtrl', ['$log', 'ContractService', 'JobRoleService', 'pubSub', KeyDatesCtrl]);
+  return KeyDatesCtrl;
 });
