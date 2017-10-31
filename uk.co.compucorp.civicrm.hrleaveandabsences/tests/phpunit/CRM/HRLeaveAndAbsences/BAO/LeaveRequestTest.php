@@ -13,6 +13,8 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatt
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
+use CRM_HRLeaveAndAbsences_Factory_LeaveBalanceChangeCalculation as LeaveBalanceChangeCalculationFactory;
+
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest
@@ -239,7 +241,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Start date is a sunday, Weekend
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-13'] = [
       'date' => '2016-11-13',
       'amount' => 0,
       'type' => [
@@ -251,7 +253,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // The next day is a monday, which is a working day
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
       'date' => '2016-11-14',
       'amount' => 1.0,
       'type' => [
@@ -263,7 +265,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // last day is a tuesday, which is a working day, half day will be deducted
     $expectedResultsBreakdown['amount'] += 0.5;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-15'] = [
       'date' => '2016-11-15',
       'amount' => 0.5,
       'type' => [
@@ -324,7 +326,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // Starting date is a monday, but a public holiday
     $expectedResultsBreakdown['amount'] += 0;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
       'date' => '2016-11-14',
       'amount' => 0,
       'type' => [
@@ -336,7 +338,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // last day is a tuesday, which is a working day
     $expectedResultsBreakdown['amount'] += 1.0;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-15'] = [
       'date' => '2016-11-15',
       'amount' => 1.0,
       'type' => [
@@ -388,7 +390,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Start day (2016-07-31), a sunday
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-07-31'] = [
       'date' => '2016-07-31',
       'amount' => 0,
       'type' => [
@@ -401,7 +403,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     // Since the start date is a sunday, the end of the week, the following day
     // (2016-08-01) should be on the second week. Monday of the second week is
     // not a working day
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-01'] = [
       'date' => '2016-08-01',
       'amount' => 0,
       'type' => [
@@ -413,7 +415,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // The next day is a tuesday, which is a working day on the second week, so
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-02'] = [
       'date' => '2016-08-02',
       'amount' => 1.0,
       'type' => [
@@ -424,7 +426,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Wednesday is not a working day on the second week
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-03'] = [
       'date' => '2016-08-03',
       'amount' => 0,
       'type' => [
@@ -436,7 +438,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // Thursday is a working day on the second week
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-04'] = [
       'date' => '2016-08-04',
       'amount' => 1.0,
       'type' => [
@@ -447,7 +449,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Friday, Saturday and Sunday are not working days on the second week,
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-05'] = [
       'date' => '2016-08-05',
       'amount' => 0,
       'type' => [
@@ -457,7 +459,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       ]
     ];
 
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-06'] = [
       'date' => '2016-08-06',
       'amount' => 0,
       'type' => [
@@ -467,7 +469,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       ]
     ];
 
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-07'] = [
       'date' => '2016-08-07',
       'amount' => 0,
       'type' => [
@@ -483,7 +485,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // Monday is a working day on the first week
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-08'] = [
       'date' => '2016-08-08',
       'amount' => 1.0,
       'type' => [
@@ -494,7 +496,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Tuesday is not a working day on the first week
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-09'] = [
       'date' => '2016-08-09',
       'amount' => 0,
       'type' => [
@@ -505,7 +507,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
     // Wednesday is a working day on the first week
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-10'] = [
       'date' => '2016-08-10',
       'amount' => 1.0,
       'type' => [
@@ -515,7 +517,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       ]
     ];
     // Thursday is not a working day on the first week
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-11'] = [
       'date' => '2016-08-11',
       'amount' => 0,
       'type' => [
@@ -527,7 +529,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // Friday is a working day on the first week
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-12'] = [
       'date' => '2016-08-12',
       'amount' => 1.0,
       'type' => [
@@ -538,7 +540,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Saturday and Sunday are not working days on the first week
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-13'] = [
       'date' => '2016-08-13',
       'amount' => 0,
       'type' => [
@@ -548,7 +550,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       ]
     ];
 
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-14'] = [
       'date' => '2016-08-14',
       'amount' => 0,
       'type' => [
@@ -561,7 +563,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     // The work pattern will rotate and use the week 2
 
     // Monday is not a working day on week 2
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-15'] = [
       'date' => '2016-08-15',
       'amount' => 0,
       'type' => [
@@ -3766,7 +3768,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //We need to use the balance change service here so that it will create balance changes
     //using leave day amount from the work pattern
     $balanceChangeService = new LeaveBalanceChangeService();
-    $balanceChangeService->createForLeaveRequest($leaveRequest);
+    $balanceCalculationFactory = LeaveBalanceChangeCalculationFactory::create($leaveRequest);
+    $balanceChangeService->createForLeaveRequest($leaveRequest, $balanceCalculationFactory);
 
     $this->assertNotNull($leaveRequest->id);
     //Entitlement balance is Zero. The three leave days have been deducted.
@@ -3836,7 +3839,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //We need to use the balance change service here so that it will create balance changes
     //using leave day amount from the work pattern
     $balanceChangeService = new LeaveBalanceChangeService();
-    $balanceChangeService->createForLeaveRequest($leaveRequest);
+    $balanceCalculationFactory = LeaveBalanceChangeCalculationFactory::create($leaveRequest);
+    $balanceChangeService->createForLeaveRequest($leaveRequest, $balanceCalculationFactory);
 
     $this->assertNotNull($leaveRequest->id);
     //Entitlement balance is Zero. The three leave days have been deducted.
@@ -4007,7 +4011,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Start date is a sunday, Weekend
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-13'] = [
       'date' => '2016-11-13',
       'amount' => 0,
       'type' => [
@@ -4019,7 +4023,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // The next day is a monday, which is a working day
     $expectedResultsBreakdown['amount'] += 8;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
       'date' => '2016-11-14',
       'amount' => 8.0,
       'type' => [
@@ -4031,7 +4035,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // last day is a tuesday, which is a working day
     $expectedResultsBreakdown['amount'] += 8;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-15'] = [
       'date' => '2016-11-15',
       'amount' => 8.0,
       'type' => [
@@ -4077,7 +4081,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // The next day is a monday, which is a working day
     $expectedResultsBreakdown['amount'] += 8;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
       'date' => '2016-11-14',
       'amount' => 8.0,
       'type' => [
@@ -4089,7 +4093,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // next day is a tuesday, which is a working day
     $expectedResultsBreakdown['amount'] += 8;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-15'] = [
       'date' => '2016-11-15',
       'amount' => 8.0,
       'type' => [

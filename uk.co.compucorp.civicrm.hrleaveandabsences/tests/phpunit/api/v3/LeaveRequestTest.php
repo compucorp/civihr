@@ -2106,7 +2106,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Start date is a sunday, Weekend
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-13'] = [
       'date' => '2016-11-13',
       'amount' => 0,
       'type' => [
@@ -2118,7 +2118,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     // The next day is a monday, which is a working day
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
       'date' => '2016-11-14',
       'amount' => 1.0,
       'type' => [
@@ -2130,7 +2130,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     // last day is a tuesday, which is a working day, half day will be deducted
     $expectedResultsBreakdown['amount'] += 0.5;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-15'] = [
       'date' => '2016-11-15',
       'amount' => 0.5,
       'type' => [
@@ -2175,7 +2175,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     // The next day is a monday, which is a working day
     $expectedResultsBreakdown['amount'] += 8;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
       'date' => '2016-11-14',
       'amount' => 8.0,
       'type' => [

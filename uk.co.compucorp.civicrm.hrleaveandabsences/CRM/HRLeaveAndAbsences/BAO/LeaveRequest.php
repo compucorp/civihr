@@ -564,16 +564,51 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @return float
    */
   private static function calculateBalanceChangeFromCreateParams($params) {
+    $excludeStartAndEndDates = false;
+    $extraAmount = 0;
+    $fromDate = new DateTime($params['from_date']);
+    $toDate = new DateTime($params['to_date']);
+    if(!empty($params['from_date_amount']) && !empty($params['to_date_amount'])) {
+      $excludeStartAndEndDates = true;
+      $extraAmount = self::getExtraAmountForLeaveRequest(
+        $fromDate,
+        $params['from_date_amount'],
+        $toDate,
+        $params['to_date_amount']
+      );
+    }
+
     $leaveRequestBalance = self::calculateBalanceChange(
       $params['contact_id'],
-      new DateTime($params['from_date']),
-      $params['from_date_type'],
-      new DateTime($params['to_date']),
-      $params['to_date_type'],
-      $params['type_id']
+      $fromDate,
+      !empty($params['from_date_type']) ? $params['from_date_type'] : null,
+      $toDate,
+      !empty($params['to_date_type']) ? $params['to_date_type'] : null,
+      $params['type_id'],
+      $excludeStartAndEndDates
     );
 
-    return $leaveRequestBalance['amount'];
+    return $leaveRequestBalance['amount'] + $extraAmount;
+  }
+
+  /**
+   * Returns Amount deducted for leave start and end dates in total
+   * for a leave request in hours. Also makes sure that we do not
+   * have double deduction for a single day leave request.
+   *
+   * @param \DateTime $fromDate
+   * @param float $fromDateAmount
+   * @param \DateTime $toDate
+   * @param float $toDateAmount
+   *
+   * @return float
+   */
+  private static function getExtraAmountForLeaveRequest(DateTime $fromDate, $fromDateAmount, DateTime $toDate, $toDateAmount) {
+    if($fromDate->format('Y-m-d') == $toDate->format('Y-m-d')) {
+      return $fromDateAmount;
+    }
+
+    return $fromDateAmount + $toDateAmount;
   }
 
   /**
@@ -865,7 +900,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $this->deleteDatesAndBalanceChanges();
 
-    $datePeriod = new BasicDatePeriod($this->from_date, $this->to_date);
+    $datePeriod = new BasicDatePeriod(new DateTime($this->from_date), new DateTime($this->to_date));
 
     foreach ($datePeriod as $date) {
       LeaveRequestDate::create([
@@ -972,7 +1007,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         'type' => $leaveRequestDayTypeOptionsGroup[$dayType]
       ];
       $resultsBreakdown['amount'] += $amount;
-      $resultsBreakdown['breakdown'][] = $result;
+      $resultsBreakdown['breakdown'][$result['date']] = $result;
     }
 
     return $resultsBreakdown;
