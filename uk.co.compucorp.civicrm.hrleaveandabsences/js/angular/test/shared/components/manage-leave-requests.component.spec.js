@@ -12,6 +12,7 @@ define([
   'mocks/apis/absence-type-api-mock',
   'mocks/apis/leave-request-api-mock',
   'mocks/apis/option-group-api-mock',
+  'common/services/pub-sub',
   'leave-absences/shared/config',
   'leave-absences/manager-leave/app'
 ], function (angular, _, optionGroupMock, absencePeriodData, absenceTypeData, leaveRequestData) {
@@ -20,12 +21,14 @@ define([
   describe('manageLeaveRequests', function () {
     var $componentController, $log, $q, $provide, $rootScope, controller,
       OptionGroup, AbsenceType, AbsencePeriod, LeaveRequest,
-      Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock, LeavePopup;
+      Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock, LeavePopup,
+      pubSub;
     var contactId = '204';
     var role = 'admin'; // change this value to set other roles
 
-    beforeEach(module('leave-absences.templates', 'manager-leave',
-      'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
+    beforeEach(module('common.services', 'leave-absences.templates',
+      'manager-leave', 'leave-absences.mocks', 'leave-absences.settings',
+      function (_$provide_) {
         $provide = _$provide_;
       }));
 
@@ -54,7 +57,8 @@ define([
 
     beforeEach(inject(function (
       _$componentController_, _$log_, _$rootScope_, _$q_, _OptionGroup_,
-      _OptionGroupAPIMock_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_, _LeavePopup_) {
+      _OptionGroupAPIMock_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_,
+      _Contact_, _LeavePopup_, _pubSub_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -66,6 +70,7 @@ define([
       LeaveRequest = _LeaveRequest_;
       LeavePopup = _LeavePopup_;
       Contact = _Contact_;
+      pubSub = _pubSub_;
     }));
 
     beforeEach(function () {
@@ -831,7 +836,7 @@ define([
 
     describe('when new leave request is created', function () {
       beforeEach(function () {
-        $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
+        pubSub.publish('LeaveRequest::new', jasmine.any(Object));
       });
 
       it('calls related contact API to update', function () {
@@ -841,7 +846,7 @@ define([
 
     describe('when new leave request is updated', function () {
       beforeEach(function () {
-        $rootScope.$emit('LeaveRequest::updatedByManager', jasmine.any(Object));
+        pubSub.publish('LeaveRequest::updatedByManager', jasmine.any(Object));
       });
 
       it('calls related contact API to update', function () {
