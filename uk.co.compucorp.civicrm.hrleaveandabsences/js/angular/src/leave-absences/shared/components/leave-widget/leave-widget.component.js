@@ -87,16 +87,26 @@ define([
     }
 
     /**
-     * Watches for child components loading and ready events. Also watches
-     * for leave request interactions.
+     * Initializes watchers for child components and events that make the leave
+     * widget refresh.
      */
     function initWatchers () {
       $scope.$on('LeaveWidget::childIsLoading', childComponentIsLoading);
       $scope.$on('LeaveWidget::childIsReady', childComponentIsReady);
-      pubSub.subscribe('LeaveRequest::new', loadDependencies);
-      pubSub.subscribe('LeaveRequest::edit', loadDependencies);
-      pubSub.subscribe('LeaveRequest::deleted', loadDependencies);
-      pubSub.subscribe('LeaveRequest::updatedByManager', loadDependencies);
+      initWatchersForWidgetRefresh();
+    }
+
+    /**
+     * Watches for events that make the leave widget refresh.
+     */
+    function initWatchersForWidgetRefresh () {
+      var listOfEvents = ['LeaveRequest::new', 'LeaveRequest::edit',
+        'LeaveRequest::deleted', 'LeaveRequest::updatedByManager',
+        'contract:created', 'contract:deleted', 'contract-refresh'];
+
+      listOfEvents.forEach(function (eventName) {
+        pubSub.subscribe(eventName, loadDependencies);
+      });
     }
 
     /**

@@ -175,6 +175,39 @@ define([
             expect(Contract.all).toHaveBeenCalled();
           });
         });
+
+        describe('when a contract is created', function () {
+          beforeEach(function () {
+            pubSub.publish('contract:created');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when a contract is deleted', function () {
+          beforeEach(function () {
+            pubSub.publish('contract:deleted');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when a contract is updated', function () {
+          beforeEach(function () {
+            pubSub.publish('contract-refresh');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
       });
 
       describe('job contract', function () {
