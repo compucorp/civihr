@@ -132,7 +132,7 @@ define([
     }
 
     /**
-     * Maps the absence type title to the leave request.
+     * Maps the absence type title to the next leave request.
      */
     function mapAbsenceTypeToNextLeaveRequest () {
       var absenceType = _.find(vm.absenceTypes, function (absenceType) {

@@ -158,7 +158,7 @@ define([
       })
       .then(function (contracts) {
         vm.jobContract = _.find(contracts, function (contract) {
-          return +contract.is_current === 1;
+          return +contract.is_current;
         });
       })
       .then(function () {
