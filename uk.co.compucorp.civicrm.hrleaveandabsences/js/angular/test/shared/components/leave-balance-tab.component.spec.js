@@ -9,18 +9,19 @@ define([
   'mocks/apis/entitlement-api-mock',
   'leave-absences/shared/models/entitlement.model',
   'leave-absences/shared/components/leave-balance-tab.component',
-  'leave-absences/shared/config'
+  'leave-absences/shared/config',
+  'common/services/pub-sub'
 ], function (_, absencePeriodMock, absenceTypeMock, reportMockData) {
   describe('LeaveBalanceReport.component', function () {
     var $componentController, $provide, $q, $rootScope, $scope, AbsencePeriod,
-      AbsenceType, ctrl, leaveBalanceReport, notificationService, Session,
-      sharedSettings;
+      AbsenceType, ctrl, leaveBalanceReport, notificationService, pubSub,
+      Session, sharedSettings;
     var loggedInContactId = 101;
     var filters = { any_filter: 'any value' };
     var userRole = 'admin';
 
-    beforeEach(module('leave-absences.mocks', 'leave-absences.models',
-    'leave-absences.components', function (_$provide_) {
+    beforeEach(module('common.services', 'leave-absences.mocks',
+    'leave-absences.models', 'leave-absences.components', function (_$provide_) {
       $provide = _$provide_;
     }));
 
@@ -48,7 +49,7 @@ define([
     }]));
 
     beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_, _LeaveBalanceReport_, _Session_,
+    _AbsencePeriod_, _AbsenceType_, _LeaveBalanceReport_, _pubSub_, _Session_,
     _notificationService_) {
       $componentController = _$componentController_;
       $q = _$q_;
@@ -57,6 +58,7 @@ define([
       AbsenceType = _AbsenceType_;
       leaveBalanceReport = _LeaveBalanceReport_;
       notificationService = _notificationService_;
+      pubSub = _pubSub_;
       Session = _Session_;
 
       spyOn(AbsencePeriod, 'all').and.callThrough();
@@ -302,7 +304,7 @@ define([
         setupController();
         spyOn(ctrl, 'loadReportCurrentPage');
         $rootScope.$digest();
-        $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
+        pubSub.publish('LeaveRequest::new', jasmine.any(Object));
         $rootScope.$digest();
       });
 

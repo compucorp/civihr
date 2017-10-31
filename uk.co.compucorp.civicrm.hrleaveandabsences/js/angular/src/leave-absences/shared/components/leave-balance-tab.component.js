@@ -6,7 +6,8 @@ define([
   'leave-absences/shared/modules/components',
   'leave-absences/shared/components/leave-balance-tab-filters.component',
   'leave-absences/shared/models/leave-balance-report.model',
-  'common/services/notification.service'
+  'common/services/notification.service',
+  'common/services/pub-sub'
 ], function (angular, _, components) {
   components.component('leaveBalanceTab', {
     controller: LeaveBalanceTabController,
@@ -17,11 +18,11 @@ define([
   });
 
   LeaveBalanceTabController.$inject = ['$q', '$rootScope', 'AbsencePeriod',
-    'AbsenceType', 'LeaveBalanceReport', 'notificationService', 'Session',
-    'shared-settings', 'checkPermissions'];
+    'AbsenceType', 'LeaveBalanceReport', 'notificationService', 'pubSub',
+    'Session', 'shared-settings', 'checkPermissions'];
 
   function LeaveBalanceTabController ($q, $rootScope, AbsencePeriod,
-    AbsenceType, LeaveBalanceReport, notification, Session,
+    AbsenceType, LeaveBalanceReport, notification, pubSub, Session,
     sharedSettings, checkPermissions) {
     var filters = {};
     var vm = this;
@@ -148,7 +149,7 @@ define([
      */
     function initWatchers () {
       $rootScope.$on('LeaveBalanceFilters::update', updateReportFilters);
-      $rootScope.$on('LeaveRequest::new', refresh);
+      pubSub.subscribe('LeaveRequest::new', refresh);
     }
 
     /**
