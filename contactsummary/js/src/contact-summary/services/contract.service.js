@@ -1,9 +1,9 @@
 define([
   'common/lodash',
-  'contact-summary/modules/services',
-  'contact-summary/services/api',
-  'contact-summary/services/contactDetails',
-  'contact-summary/services/model',
+  'contact-summary/modules/contact-summary.services',
+  'contact-summary/services/api.service',
+  'contact-summary/services/contact-details.service',
+  'contact-summary/services/model.service',
 ], function (_, services) {
   'use strict';
 

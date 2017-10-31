@@ -1,12 +1,12 @@
 define([
     'common/angular',
-    'contact-summary/modules/filters',
-    'contact-summary/modules/services',
-    'contact-summary/modules/settings',
-    'contact-summary/controllers/contactSummary',
-    'contact-summary/controllers/keyDates',
-    'contact-summary/controllers/keyDetails',
-    'contact-summary/directives/donutChart'
+    'contact-summary/modules/contact-summary.filters',
+    'contact-summary/modules/contact-summary.services',
+    'contact-summary/modules/contact-summary.settings',
+    'contact-summary/controllers/contact-summary.controller',
+    'contact-summary/controllers/key-dates.controller',
+    'contact-summary/controllers/key-details.controller',
+    'contact-summary/directives/donut-chart.directive'
 ], function (angular) {
     var app = angular.module('contactsummary', [
         'ngRoute',

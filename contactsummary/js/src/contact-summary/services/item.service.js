@@ -1,6 +1,6 @@
 define([
     'common/moment',
-    'contact-summary/modules/services'
+    'contact-summary/modules/contact-summary.services'
 ], function (moment, services) {
     'use strict';
 

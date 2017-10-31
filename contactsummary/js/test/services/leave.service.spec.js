@@ -7,8 +7,7 @@ define([
   'common/angularMocks',
   'mocks/constants.mock',
   'mocks/services.mock',
-  'contact-summary/app',
-  'contact-summary/services/leave'
+  'contact-summary/app'
 ], function (angular, _, moment) {
   'use strict';
 

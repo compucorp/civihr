@@ -1,6 +1,6 @@
 define([
-    'contact-summary/modules/services',
-    'contact-summary/services/item'
+    'contact-summary/modules/contact-summary.services',
+    'contact-summary/services/item.service'
 ], function (services) {
     'use strict';
 

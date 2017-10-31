@@ -1,6 +1,6 @@
 define([
     'common/d3',
-    'contact-summary/modules/directives'
+    'contact-summary/modules/contact-summary.directives'
 ], function (d3, directives) {
     'use strict';
 

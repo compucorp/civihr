@@ -1,10 +1,10 @@
 define([
     'common/lodash',
     'common/moment',
-    'contact-summary/modules/services',
-    'contact-summary/modules/settings',
-    'contact-summary/services/api',
-    'contact-summary/services/model'
+    'contact-summary/modules/contact-summary.services',
+    'contact-summary/modules/contact-summary.settings',
+    'contact-summary/services/api.service',
+    'contact-summary/services/model.service'
 ], function (_, moment, services) {
     'use strict';
 

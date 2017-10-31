@@ -1,5 +1,5 @@
 define([
-    'contact-summary/modules/services'
+    'contact-summary/modules/contact-summary.services'
 ], function (services) {
     'use strict';
 

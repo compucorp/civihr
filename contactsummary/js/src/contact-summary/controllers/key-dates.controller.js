@@ -1,8 +1,8 @@
 define([
   'common/moment',
-  'contact-summary/modules/controllers',
-  'contact-summary/services/contract',
-  'contact-summary/services/jobRole',
+  'contact-summary/modules/contact-summary.controllers',
+  'contact-summary/services/contract.service',
+  'contact-summary/services/job-role.service',
   'common/services/pub-sub',
 ], function (moment, controllers) {
   'use strict';

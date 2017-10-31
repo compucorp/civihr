@@ -4,11 +4,11 @@
 define([
   'common/angular',
   'common/lodash',
-  'contact-summary/modules/services',
+  'contact-summary/modules/contact-summary.services',
   'common/moment',
-  'contact-summary/services/api',
-  'contact-summary/services/model',
-  'contact-summary/services/contactDetails'
+  'contact-summary/services/api.service',
+  'contact-summary/services/model.service',
+  'contact-summary/services/contact-details.service'
 ], function (angular, _, services, moment) {
   'use strict';
 
