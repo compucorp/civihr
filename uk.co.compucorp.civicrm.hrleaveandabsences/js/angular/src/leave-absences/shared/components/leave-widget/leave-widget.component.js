@@ -6,6 +6,8 @@ define([
   'common/directives/loading',
   'common/directives/help-text.directive',
   'common/filters/time-unit-applier.filter',
+  'common/models/contract',
+  'common/services/pub-sub',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/modules/components',
   'leave-absences/shared/models/absence-period.model',
@@ -18,6 +20,8 @@ define([
     'common.components',
     'common.directives',
     'common.filters',
+    'common.models',
+    'common.services',
     'leave-absences.components',
     'leave-absences.models',
     'leave-absences.settings'
@@ -34,10 +38,10 @@ define([
   });
 
   leaveWidgetController.$inject = ['$log', '$q', '$scope', 'AbsencePeriod',
-    'AbsenceType', 'OptionGroup'];
+    'AbsenceType', 'Contract', 'OptionGroup', 'pubSub'];
 
   function leaveWidgetController ($log, $q, $scope, AbsencePeriod,
-    AbsenceType, OptionGroup) {
+    AbsenceType, Contract, OptionGroup, pubSub) {
     var allowedLeaveStatuses = ['approved', 'admin_approved',
       'awaiting_approval', 'more_information_required'];
     var childComponents = 0;
@@ -45,6 +49,7 @@ define([
 
     vm.absenceTypes = [];
     vm.currentAbsencePeriod = null;
+    vm.jobContract = null;
     vm.loading = { childComponents: false, component: true };
     vm.leaveRequestStatuses = [];
     vm.sicknessAbsenceTypes = [];
@@ -82,15 +87,31 @@ define([
     }
 
     /**
-     * Watches for child components loading and ready events.
+     * Initializes watchers for child components and events that make the leave
+     * widget refresh.
      */
     function initWatchers () {
       $scope.$on('LeaveWidget::childIsLoading', childComponentIsLoading);
       $scope.$on('LeaveWidget::childIsReady', childComponentIsReady);
+      initWatchersForWidgetRefresh();
     }
 
     /**
-     * Loads absence types, the current absence period, and leave request
+     * Watches for events that make the leave widget refresh.
+     */
+    function initWatchersForWidgetRefresh () {
+      var listOfEvents = ['LeaveRequest::new', 'LeaveRequest::edit',
+        'LeaveRequest::deleted', 'LeaveRequest::updatedByManager',
+        'contract:created', 'contract:deleted', 'contract-refresh'];
+
+      listOfEvents.forEach(function (eventName) {
+        pubSub.subscribe(eventName, loadDependencies);
+      });
+    }
+
+    /**
+     * Loads the contact's job contract and if the contact has a job contract
+     * it then loads absence types, the current absence period, and leave request
      * statuses. When all dependencies are ready it sets loading component to
      * false.
      *
@@ -98,11 +119,13 @@ define([
      * been loaded.
      */
     function loadDependencies () {
-      return $q.all([
-        loadAbsenceTypes(),
-        loadCurrentAbsencePeriod(),
-        loadLeaveRequestTypes()
-      ])
+      loadCurrentJobContract().then(function () {
+        return $q.all([
+          loadAbsenceTypes(),
+          loadCurrentAbsencePeriod(),
+          loadLeaveRequestTypes()
+        ]);
+      })
       .finally(function () {
         vm.loading.component = false;
       });
@@ -119,6 +142,29 @@ define([
         vm.sicknessAbsenceTypes = types.filter(function (type) {
           return +type.is_sick;
         });
+      });
+    }
+
+    /**
+     * Loads the current job contract for the contact. If there are no job
+     * contracts, it will reject the promise.
+     *
+     * @return {Promise}
+     */
+    function loadCurrentJobContract () {
+      return Contract.all({
+        contact_id: vm.contactId,
+        deleted: false
+      })
+      .then(function (contracts) {
+        vm.jobContract = _.find(contracts, function (contract) {
+          return +contract.is_current;
+        });
+      })
+      .then(function () {
+        if (!vm.jobContract) {
+          return $q.reject();
+        }
       });
     }
 

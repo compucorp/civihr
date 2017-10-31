@@ -20,6 +20,11 @@
       @include heading-style();
 
       background: none;
+      width: 35%;
+    }
+
+    thead tr th:first-child {
+      width: 65%;
     }
 
     tbody tr td {
@@ -27,12 +32,10 @@
       font-size: $font-size-h3;
       font-weight: $crm-font-weight-h1;
       padding-bottom: 9px;
-      width: 35%;
     }
 
     tbody tr td:first-child {
       color: $gray-darker;
-      width: 65%;
     }
   }
 

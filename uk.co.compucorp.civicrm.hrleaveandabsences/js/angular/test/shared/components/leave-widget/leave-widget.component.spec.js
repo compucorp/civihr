@@ -4,43 +4,52 @@ define([
   'common/lodash',
   'leave-absences/shared/components/leave-widget/leave-widget.component',
   'mocks/apis/absence-period-api-mock',
-  'mocks/apis/absence-type-api-mock'
+  'mocks/apis/absence-type-api-mock',
+  'common/mocks/services/api/contract-mock',
+  'common/services/pub-sub'
 ], function (_) {
   describe('LeaveWidget', function () {
     var $componentController, $provide, $rootScope, $scope, AbsencePeriod,
-      AbsenceType, ctrl, OptionGroup;
+      AbsenceType, Contract, ctrl, OptionGroup, pubSub;
+    var contactId = 208;
 
     beforeEach(module('common.mocks', 'leave-absences.components.leave-widget',
     'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (AbsencePeriodAPIMock,
-    AbsenceTypeAPIMock, OptionGroupAPIMock) {
-      $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
-      $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
-      $provide.value('OptionGroup', OptionGroupAPIMock);
-    }));
+    beforeEach(inject(['AbsencePeriodAPIMock', 'AbsenceTypeAPIMock',
+      'api.contract.mock', 'OptionGroupAPIMock', function (AbsencePeriodAPIMock,
+      AbsenceTypeAPIMock, ContractMock, OptionGroupAPIMock) {
+        $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
+        $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
+        $provide.value('Contract', ContractMock);
+        $provide.value('OptionGroup', OptionGroupAPIMock);
+      }]));
 
     beforeEach(inject(function (_$componentController_, $q, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_, _OptionGroup_) {
+    _AbsencePeriod_, _AbsenceType_, _Contract_, _OptionGroup_, _pubSub_) {
       $componentController = _$componentController_;
       $rootScope = _$rootScope_;
       $scope = $rootScope.$new();
       AbsencePeriod = _AbsencePeriod_;
       AbsenceType = _AbsenceType_;
+      Contract = _Contract_;
       OptionGroup = _OptionGroup_;
+      pubSub = _pubSub_;
 
       spyOn($scope, '$on').and.callThrough();
       spyOn(AbsencePeriod, 'all').and.callThrough();
       spyOn(AbsenceType, 'all').and.callThrough();
+      spyOn(Contract, 'all').and.callThrough();
       spyOn(OptionGroup, 'valuesOf').and.callThrough();
     }));
 
     beforeEach(function () {
-      ctrl = $componentController('leaveWidget', {
-        $scope: $scope
-      });
+      ctrl = $componentController('leaveWidget',
+        { $scope: $scope },
+        { contactId: contactId }
+      );
     });
 
     it('should be defined', function () {
@@ -62,6 +71,10 @@ define([
 
       it('sets current absence period to null', function () {
         expect(ctrl.currentAbsencePeriod).toBe(null);
+      });
+
+      it('sets job contract to null', function () {
+        expect(ctrl.jobContract).toBe(null);
       });
 
       it('sets sickness absence types equal to an empty array', function () {
@@ -114,6 +127,119 @@ define([
         });
       });
 
+      describe('Leave requests updated', function () {
+        beforeEach(function () {
+          Contract.all.calls.reset();
+        });
+
+        describe('when a leave request is created', function () {
+          beforeEach(function () {
+            pubSub.publish('LeaveRequest::new');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when a leave request is edited', function () {
+          beforeEach(function () {
+            pubSub.publish('LeaveRequest::edit');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when a leave request is deleted', function () {
+          beforeEach(function () {
+            pubSub.publish('LeaveRequest::deleted');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when a leave request is updated by a manager', function () {
+          beforeEach(function () {
+            pubSub.publish('LeaveRequest::updatedByManager');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when a contract is created', function () {
+          beforeEach(function () {
+            pubSub.publish('contract:created');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when a contract is deleted', function () {
+          beforeEach(function () {
+            pubSub.publish('contract:deleted');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when a contract is updated', function () {
+          beforeEach(function () {
+            pubSub.publish('contract-refresh');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe('job contract', function () {
+        it('loads the contact\'s current job contract', function () {
+          expect(Contract.all).toHaveBeenCalledWith({
+            contact_id: contactId,
+            deleted: false
+          });
+        });
+
+        describe('after loading the job contract', function () {
+          var expectedJobContract;
+
+          beforeEach(function () {
+            Contract.all({
+              contact_id: contactId,
+              deleted: false
+            })
+            .then(function (contracts) {
+              expectedJobContract = _.find(contracts, function (contract) {
+                return +contract.is_current === 1;
+              });
+            });
+            $rootScope.$digest();
+          });
+
+          it('stores the job contract', function () {
+            expect(ctrl.jobContract).toEqual(expectedJobContract);
+          });
+        });
+      });
+
       describe('absence types', function () {
         beforeEach(function () {
           $rootScope.$digest();
@@ -148,7 +274,9 @@ define([
       });
 
       describe('current absence period', function () {
-        beforeEach(function () { $rootScope.$digest(); });
+        beforeEach(function () {
+          $rootScope.$digest();
+        });
 
         it('loads the absence periods', function () {
           expect(AbsencePeriod.all).toHaveBeenCalled();
@@ -174,6 +302,10 @@ define([
       });
 
       describe('leave request statuses', function () {
+        beforeEach(function () {
+          $rootScope.$digest();
+        });
+
         it('loads the leave requests statuses', function () {
           expect(OptionGroup.valuesOf)
             .toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');

@@ -80,7 +80,7 @@ define([
         to_date: { '<=': vm.absencePeriod.end_date },
         status_id: { IN: statusIds },
         type_id: { IN: absenceTypeIds }
-      })
+      }, null, null, null, false) // No Cache
       .then(function (response) {
         vm.leaveRequests = response.list;
       })

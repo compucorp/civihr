@@ -7,9 +7,10 @@ define([
 ], function (_, components) {
   components.component('leaveWidgetAbsenceTypesAvailableBalance', {
     bindings: {
+      absencePeriod: '<',
       absenceTypes: '<',
       contactId: '<',
-      absencePeriod: '<'
+      jobContract: '<'
     },
     controller: leaveWidgetBalanceController,
     controllerAs: 'leaveWidgetBalance',
@@ -50,7 +51,17 @@ define([
      * @return {Boolean}
      */
     function areBindingsReady () {
-      return vm.absenceTypes && vm.absencePeriod && vm.contactId;
+      return vm.absenceTypes && vm.absencePeriod && vm.contactId &&
+        vm.jobContract;
+    }
+
+    /**
+     * Returns a list of IDs of absence types the contact has entitlements for
+     *
+     * @return {Array}
+     */
+    function getContractEntitlementsIds () {
+      return _.pluck(vm.jobContract.info.leave, 'leave_type');
     }
 
     /**
@@ -76,7 +87,8 @@ define([
     function loadEntitlements () {
       return Entitlement.all({
         contact_id: vm.contactId,
-        period_id: vm.absencePeriod.id
+        period_id: vm.absencePeriod.id,
+        type_id: { IN: getContractEntitlementsIds() }
       }, true)
       .then(function (_entitlements_) {
         entitlements = _entitlements_;
@@ -91,19 +103,15 @@ define([
      * is used to display the current balance for approved and open requestes.
      */
     function mapAbsenceTypesWithTheirEntitlements () {
-      vm.absenceTypeEntitlements = entitlements
-        .filter(function (entitlement) {
-          return entitlement.value > 0;
-        })
-        .map(function (entitlement) {
-          var absenceType = _.find(vm.absenceTypes, function (type) {
-            return +type.id === +entitlement.type_id;
-          });
-
-          return _.assign({
-            balance: entitlement.remainder.future
-          }, absenceType);
+      vm.absenceTypeEntitlements = entitlements.map(function (entitlement) {
+        var absenceType = _.find(vm.absenceTypes, function (type) {
+          return +type.id === +entitlement.type_id;
         });
+
+        return _.assign({
+          balance: entitlement.remainder.future
+        }, absenceType);
+      });
     }
   }
 });

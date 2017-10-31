@@ -95,7 +95,7 @@ define([
             to_date: { '<=': absencePeriod.end_date },
             status_id: { IN: leaveRequestStatusIds },
             type_id: { IN: absenceTypeIds }
-          });
+          }, null, null, null, false);
         });
 
         describe('after loading dependencies', function () {
@@ -109,7 +109,7 @@ define([
               to_date: { '<=': absencePeriod.end_date },
               status_id: { IN: [1, 2, 3] },
               type_id: { IN: [1, 2, 3] }
-            })
+            }, null, null, null, false)
             .then(function (response) {
               leaveRequests = response.list;
 
