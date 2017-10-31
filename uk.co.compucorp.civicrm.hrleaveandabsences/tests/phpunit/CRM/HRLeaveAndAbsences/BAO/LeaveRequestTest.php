@@ -1561,6 +1561,107 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
   }
 
+  public function testLeaveRequestCannotBeCreatedWhenBalanceChangeGreaterThanEntitlementBalanceAndLeaveRequestInHoursAndAllowOveruseFalse() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_overuse' => 0,
+      'calculation_unit' => 2
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $entitlementBalanceChange = 19;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-14 13:00');
+    $toDate = new DateTime('2016-11-17 15:00');
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'There are only '. $entitlementBalanceChange. ' days leave available. This request cannot be made or approved'
+    );
+
+    //four working days which will create a balance change of
+    //2.5(first day) + 8 + 8 + 1.5(last day) = 20 hours
+    //Entitlement balance is 18 hours, so leave request cannot be created.
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_amount' => 2.5,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_amount' => 1.5,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  public function testLeaveRequestCanBeCreatedWhenBalanceChangeIsNotGreaterThanEntitlementBalanceAndLeaveRequestInHoursAndAllowOveruseFalse() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_overuse' => 0,
+      'calculation_unit' => 2
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $entitlementBalanceChange = 20;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-14 13:00');
+    $toDate = new DateTime('2016-11-17 15:00');
+
+    //four working days which will create a balance change of
+    //2.5(first day) + 8 + 8 + 1.5(last day) = 20 hours
+    //Entitlement balance is 20 hours, so leave request will be created.
+    $leaveRequest = LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_amount' => 2.5,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_amount' => 1.5,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+
+    $this->assertNotNull($leaveRequest->id);
+  }
+
   public function testLeaveRequestWithHalfDaysCanBeCreatedWhenBalanceChangeIsEqualToTheRemainingBalanceWhenAbsenceTypeDoesntAllowOveruse() {
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),

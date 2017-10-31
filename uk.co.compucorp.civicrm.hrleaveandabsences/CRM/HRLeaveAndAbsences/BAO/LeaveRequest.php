@@ -605,10 +605,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    */
   private static function getExtraAmountForLeaveRequest(DateTime $fromDate, $fromDateAmount, DateTime $toDate, $toDateAmount) {
     if($fromDate->format('Y-m-d') == $toDate->format('Y-m-d')) {
-      return $fromDateAmount;
+      return $fromDateAmount * -1;
     }
 
-    return $fromDateAmount + $toDateAmount;
+    return ($fromDateAmount + $toDateAmount) * -1;
   }
 
   /**

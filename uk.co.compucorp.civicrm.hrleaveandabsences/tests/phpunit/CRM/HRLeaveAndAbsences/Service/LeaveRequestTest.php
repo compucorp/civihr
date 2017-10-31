@@ -74,6 +74,101 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(7, $balanceChanges);
   }
 
+  public function testCreateAlsoCreateTheLeaveRequestBalanceChangesForLeaveInHours() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    // a 5 days leave request, from monday to sunday
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $leaveRequest = $this->getleaveRequestService()->create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $this->leaveContact,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04 15:00'),
+      'from_date_amount' => 1.5,
+      'to_date' => CRM_Utils_Date::processDate('2016-01-08 16:45'),
+      'to_date_amount' => 2.4,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], false);
+
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    // Since the 40 hours work pattern was used, and it this is a week long
+    //i.e 5 working days. 1.5 + 2.4  = 3.9 hours for the first and end dates.
+    //8x3 = 24hrs for the dates in between.
+    //Total 24 + 3.9 = 27.9 hours
+    $this->assertEquals(-27.9, $balance);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    $this->assertCount(5, $balanceChanges);
+  }
+
+  public function testCreateAlsoCreatesTheBalanceChangesForTheLeaveDatesCorrectlyForLeaveInHours() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    // a 5 days leave request, from monday to friday
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $leaveRequest = $this->getleaveRequestService()->create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $this->leaveContact,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04 15:00'),
+      'from_date_amount' => 1.5,
+      'to_date' => CRM_Utils_Date::processDate('2016-01-08 16:45'),
+      'to_date_amount' => 2.4,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], false);
+
+    $amountInHours = 8.0;
+    $expectedBreakdown = $this->getExpectedBreakdownForLeaveRequest($leaveRequest, $amountInHours);
+    $expectedBreakdown[0]['amount'] = -1.5; //amount deducted for first date
+    $expectedBreakdown[4]['amount'] = -2.4; //amount deducted for last date
+    $breakdown = $this->getLeaveRequestService()->getBreakdown($leaveRequest->id);
+
+    $this->assertEquals($expectedBreakdown, $breakdown);
+  }
+
+  public function testCreateAlsoCreateTheLeaveRequestBalanceChangesProperlyForLeaveInHoursWhenWhenEndDateIsNotWorkingDate() {
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    // a 6 days leave request, from monday to saturday
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $leaveRequest = $this->getleaveRequestService()->create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $this->leaveContact,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04 15:00'),
+      'from_date_amount' => 1.5,
+      'to_date' => CRM_Utils_Date::processDate('2016-01-09 16:45'),
+      'to_date_amount' => 2.4,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], false);
+
+    $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    // Since the 40 hours work pattern was used, and it this is a week long
+    //i.e 5 working days. 1.4 + 0  = 1.4 hours for the first and end dates(weekend).
+    //8x4 = 32hrs for the dates in between.
+    //Total 1.4 + 32 = 33.5 hours
+    $this->assertEquals(-33.5, $balance);
+
+    $balanceChanges = LeaveBalanceChange::getBreakdownForLeaveRequest($leaveRequest);
+    //6 days leave request
+    $this->assertCount(6, $balanceChanges);
+  }
+
   public function testCreateDoesNotDuplicateLeaveBalanceChangesOnUpdate() {
     HRJobContractFabricator::fabricate(
       ['contact_id' => $this->leaveContact],
@@ -945,7 +1040,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedBreakdown, $breakdown);
   }
 
-  private function getExpectedBreakdownForLeaveRequest(LeaveRequest $leaveRequest) {
+  private function getExpectedBreakdownForLeaveRequest(LeaveRequest $leaveRequest, $amount = false) {
     $leaveRequestDayTypes = LeaveRequest::buildOptions('from_date_type');
 
     $dates = $leaveRequest->getDates();
@@ -956,7 +1051,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
         'date' => date('Y-m-d', strtotime($date->date)),
         'type' => $date->type,
         'label' => $leaveRequestDayTypes[$date->type],
-        'amount' => -1
+        'amount' => $amount ? $amount * -1 : -1
       ];
     }
 

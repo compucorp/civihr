@@ -24,14 +24,16 @@ class CRM_HRLeaveAndAbsences_Service_LeaveHoursBalanceChangeCalculation
     $fromDate = new DateTime($leaveRequest->from_date);
     $toDate = new DateTime($leaveRequest->to_date);
 
-    if($leaveDate->format('Y-m-d') == $fromDate->format('Y-m-d')) {
+    $amount = $balanceChanges['breakdown'][$leaveDate->format('Y-m-d')]['amount'];
+    
+    if($leaveDate->format('Y-m-d') == $fromDate->format('Y-m-d') && $amount != 0) {
       return $leaveRequest->from_date_amount;
     }
 
-    if($leaveDate->format('Y-m-d') == $toDate->format('Y-m-d')) {
+    if($leaveDate->format('Y-m-d') == $toDate->format('Y-m-d') && $amount != 0) {
       return $leaveRequest->to_date_amount;
     }
-
-    return $balanceChanges['breakdown'][$leaveDate->format('Y-m-d')]['amount'];
+    
+    return $amount;
   }
 }
