@@ -675,7 +675,9 @@ ORDER BY parent_id, weight";
 
       $hideLabel = ts('Hide Menu');
       $prepandString = "
-        <li class='menumain crm-link-home'><a href='$homeURL'>$homeIcon $homeLabel</a>";
+        <li class='menumain crm-link-home'><a href='$homeURL'>
+          <span class=\"menumain-icon\">$homeIcon</span>
+          <span class=\"menumain-label\">$homeLabel</span></a>";
       // <li> tag doesn't need to be closed
     }
     return $prepandString . $navigation;
