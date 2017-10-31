@@ -2,7 +2,7 @@ define([
     'common/lodash',
     'common/moment',
     'contact-summary/modules/contact-summary.services',
-    'contact-summary/modules/contact-summary.settings',
+    'contact-summary/modules/contact-summary.constants',
     'contact-summary/services/api.service',
     'contact-summary/services/model.service'
 ], function (_, moment, services) {

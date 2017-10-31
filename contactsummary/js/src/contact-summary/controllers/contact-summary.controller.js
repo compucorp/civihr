@@ -1,6 +1,6 @@
 define([
     'contact-summary/modules/contact-summary.controllers',
-    'contact-summary/modules/contact-summary.settings'
+    'contact-summary/modules/contact-summary.constants'
 ], function (controllers) {
     'use strict';
 
