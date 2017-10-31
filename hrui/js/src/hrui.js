@@ -14,7 +14,6 @@
       toggleActiveClassOnHoverOnAnyMainMenuItem();
       addUserMenuToMainMenu();
       amendApplicationForm();
-      customizeQuickSearchField();
       useFontAwesomeArrowsInSubMenuItems();
     });
 
@@ -127,13 +126,6 @@
   }
 
   /**
-   * Changes the placeholder text of the quicksearch field
-   */
-  function changeQuickSearchFieldPlaceholder () {
-    $('#crm-qsearch .ui-autocomplete-input').attr('placeholder', 'Quick Search');
-  }
-
-  /**
    * Changes of sorce help text
    */
   function changeContactSourceFieldHelpText () {
@@ -146,29 +138,6 @@
 
       $('#crm-notification-container .crm-help').append('<p>Source is a useful field where data has been migrated to CiviHR from one or a number of other legacy systems. The Source field will indicate which legacy system the contact has come from.</p>');
     });
-  }
-
-  /**
-   * Customizes the quick search field
-   */
-  function customizeQuickSearchField () {
-    changeQuickSearchFieldPlaceholder();
-    manageCustomClassOfQuickSearchField();
-  }
-
-  /**
-   * Checks if the user has clicked outside of the quick search field
-   * by analyzing the given click target
-   *
-   * @param {Element} target
-   * @return {boolean}
-   */
-  function hasUserClickedOutsideQuickSearchField (target) {
-    var $target = $(target);
-
-    return !$target.is('#crm-qsearch') &&
-      !$target.is('#root-menu-div') &&
-      !$target.closest('#crm-qsearch, #root-menu-div').length;
   }
 
   /**
@@ -203,32 +172,12 @@
   }
 
   /**
-   * Checks if the quick search field currently has any value
-   *
-   * @return {boolean}
-   */
-  function isQuickSearchOnGoing () {
-    return !!$('#sort_name_navigation').val().trim();
-  }
-
-  /**
    * Update label 'for' attr to works with the datepicker
    *
    * @param  {jQuery object} $line [datepicker's line parent]
    */
   function linkLabelToDatepickerInput ($line) {
     $line.find('label').attr('for', $line.find('.crm-form-date').attr('id'));
-  }
-
-  /**
-   * Manages handlers that deals with the custom class
-   * that is used on the quick search field
-   */
-  function manageCustomClassOfQuickSearchField () {
-    var customClass = 'search-ongoing';
-
-    toggleCustomClassToQuickSearchFieldOnHover(customClass);
-    removeCustomClassOnOutsideClick(customClass);
   }
 
   /**
@@ -260,20 +209,6 @@
   }
 
   /**
-   * Removes the given custom class when the user clicks
-   * outside the quick search field (if there is no ongoing search)
-   *
-   * @param {string} customClass
-   */
-  function removeCustomClassOnOutsideClick (customClass) {
-    $(document).on('click', function (event) {
-      if (hasUserClickedOutsideQuickSearchField(event.target) && !isQuickSearchOnGoing()) {
-        $('#crm-qsearch').removeClass(customClass);
-      }
-    });
-  }
-
-  /**
    * Remove the #js-uploaded-file DIV and
    * clean input[type="file"] value
    */
@@ -299,30 +234,6 @@
     }, function () {
       $(this).removeClass(className);
     });
-  }
-
-  /**
-   * Toggles the given custom class to the quicksearch field
-   * so that custom behaviour can be applied to it
-   *
-   * The class is removed only when the element
-   * loses the hover AND it is empty (= there is no ongoing search)
-   *
-   * @param {string} customClass
-   */
-  function toggleCustomClassToQuickSearchFieldOnHover (customClass) {
-    $('#crm-qsearch').hover(
-      function () {
-        $(this).addClass(customClass);
-      },
-      function () {
-        var isSearchCriteriaPanelOpen = $('.crm-quickSearchField:visible', '#root-menu-div').length;
-
-        if (!isQuickSearchOnGoing() && !isSearchCriteriaPanelOpen) {
-          $(this).removeClass(customClass);
-        }
-      }
-    );
   }
 
   /**
