@@ -88,14 +88,14 @@ define([
         $rootScope.$digest();
       });
 
-      it('gets the next leave request for the contact, in the absence period, and with the specified statuses', function () {
+      it('gets the next leave request for the contact, in the absence period, with the specified statuses, and no cache', function () {
         expect(LeaveRequest.all).toHaveBeenCalledWith({
           contact_id: contactId,
           from_date: { '>=': moment().format(sharedSettings.serverDateFormat) },
           request_type: 'leave',
           status_id: { IN: leaveRequestStatusIds },
           options: { limit: 1, sort: 'from_date DESC' }
-        });
+        }, null, null, null, false);
       });
 
       it('loads the leave request day types', function () {
@@ -115,7 +115,7 @@ define([
             request_type: 'leave',
             status_id: { IN: leaveRequestStatusIds },
             options: { limit: 1, sort: 'from_date DESC' }
-          })
+          }, null, null, null, false)
           .then(function (response) {
             expectedNextLeave = response.list[0];
             expectedNextLeave['type_id.title'] = getAbsenceTypeTitleFor(expectedNextLeave);
