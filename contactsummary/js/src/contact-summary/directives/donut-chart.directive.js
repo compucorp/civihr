@@ -2,9 +2,8 @@
 
 define([
   'common/angular',
-  'common/d3',
-  'contact-summary/modules/contact-summary.directives'
-], function (angular, d3, directives) {
+  'common/d3'
+], function (angular, d3) {
   'use strict';
 
   function init ($element) {
@@ -52,7 +51,10 @@ define([
     .attr('transform', 'translate(' + this.width / 2 + ',' + this.height / 2 + ')');
   }
 
-  directives.directive('csDonutChart', ['$log', function ($log) {
+  csDonutChart.__name = 'csDonutChart';
+  csDonutChart.$inject = ['$log'];
+
+  function csDonutChart ($log) {
     $log.debug('Directive: csDonutChart');
 
     return {
@@ -89,5 +91,7 @@ define([
         });
       }
     };
-  }]);
+  }
+
+  return csDonutChart;
 });
