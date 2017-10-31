@@ -4029,7 +4029,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       ]
     ];
 
-    // last day is a tuesday, which is a working day, half day will be deducted
+    // last day is a tuesday, which is a working day
     $expectedResultsBreakdown['amount'] += 8;
     $expectedResultsBreakdown['breakdown'][] = [
       'date' => '2016-11-15',
@@ -4050,6 +4050,134 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       $toDate,
       null,
       $absenceType->id
+    );
+
+    $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  public function testCalculateBalanceChangeForLeaveRequestWhenStartAndEndDatesAreExcluded() {
+    $periodStartDate = date('2016-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-13 13:00');
+    $toDate = new DateTime('2016-11-16 15:00');
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    // Start date is a sunday, Weekend (2016-11-13) will be excluded
+
+    // The next day is a monday, which is a working day
+    $expectedResultsBreakdown['amount'] += 8;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-14',
+      'amount' => 8.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
+      ]
+    ];
+
+    // next day is a tuesday, which is a working day
+    $expectedResultsBreakdown['amount'] += 8;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-15',
+      'amount' => 8.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
+      ]
+    ];
+
+    // End date is a wednesday(2016-11-16) Working day, will be excluded
+
+    $expectedResultsBreakdown['amount'] *= -1;
+
+    $excludeStartAndEndDates = true;
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      null,
+      $toDate,
+      null,
+      $absenceType->id,
+      $excludeStartAndEndDates
+    );
+
+    $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  public function testCalculateBalanceChangeForSingleDayLeaveRequestWhenStartAndEndDatesAreExcluded() {
+    $periodStartDate = date('2016-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-13 13:00');
+    $toDate = new DateTime('2016-11-13 15:00');
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    //The date (2016-11-13) is excluded.
+    $excludeStartAndEndDates = true;
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      null,
+      $toDate,
+      null,
+      $absenceType->id,
+      $excludeStartAndEndDates
+    );
+
+    $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  public function testCalculateBalanceChangeForTwoDaysLeaveRequestWhenStartAndEndDatesAreExcluded() {
+    $periodStartDate = date('2016-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-13 13:00');
+    $toDate = new DateTime('2016-11-14 15:00');
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    //The start and end dates (2016-11-13 and 2016-11-14) are excluded.
+    $excludeStartAndEndDates = true;
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      null,
+      $toDate,
+      null,
+      $absenceType->id,
+      $excludeStartAndEndDates
     );
 
     $this->assertEquals($expectedResultsBreakdown, $result);

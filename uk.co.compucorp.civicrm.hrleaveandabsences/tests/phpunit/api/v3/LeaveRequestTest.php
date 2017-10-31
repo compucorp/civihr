@@ -2153,6 +2153,50 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResultsBreakdown, $result['values']);
   }
 
+  public function testCalculateBalanceChangeWithStartAndEndDatesExcluded() {
+    $periodStartDate = '2016-01-01';
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = date('2016-11-13 13:00');
+    $toDate = date('2016-11-15 15:00');
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+    //Start and End Dates (2016-11-13 and 2016-11-15) are excluded.
+
+    // The next day is a monday, which is a working day
+    $expectedResultsBreakdown['amount'] += 8;
+    $expectedResultsBreakdown['breakdown'][] = [
+      'date' => '2016-11-14',
+      'amount' => 8.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
+      ]
+    ];
+
+    $expectedResultsBreakdown['amount'] *= -1;
+
+    $result = civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => $contract['contact_id'],
+      'from_date' => $fromDate,
+      'to_date' => $toDate,
+      'type_id' => $absenceType->id,
+      'exclude_start_end_dates' => true
+    ]);
+    $this->assertEquals($expectedResultsBreakdown, $result['values']);
+  }
+
   public function testLeaveRequestIsValidShouldReturnErrorWhenStartDateIsEmpty() {
     $params = $this->mergeWithDefaultLeaveRequestParams(['from_date' => '']);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);

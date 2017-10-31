@@ -893,11 +893,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @param \DateTime $toDate
    * @param string|null $toDateType
    * @param int $absenceTypeID
+   * @param bool $excludeStartAndEndDates
+   *   When true start and end dates are not included in the
+   *   balance change calculation. Useful especially for leave
+   *   in hours.
    *
    * @return array
    *   An array of formatted results
    */
-  public static function calculateBalanceChange($contactId, DateTime $fromDate, $fromDateType = null, DateTime $toDate, $toDateType = null, $absenceTypeID) {
+  public static function calculateBalanceChange(
+    $contactId,
+    DateTime $fromDate,
+    $fromDateType = null,
+    DateTime $toDate,
+    $toDateType = null,
+    $absenceTypeID,
+    $excludeStartAndEndDates = false)
+  {
     $params = [
       'contact_id' => $contactId,
       'type_id' => $absenceTypeID,
@@ -924,6 +936,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $dateDeductionService = LeaveDateAmountDeductionFactory::createForAbsenceType($leaveRequest->type_id);
 
     foreach ($datePeriod as $date) {
+      if($excludeStartAndEndDates) {
+        if(in_array($date->format('Y-m-d'), [$fromDate->format('Y-m-d'), $toDate->format('Y-m-d')])) {
+          continue;
+        }
+      }
       $publicHolidayLeaveRequestExists = self::publicHolidayLeaveRequestExists($contactId, $date);
 
       if ($publicHolidayLeaveRequestExists) {
