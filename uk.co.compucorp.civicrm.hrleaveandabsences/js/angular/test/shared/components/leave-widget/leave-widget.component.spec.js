@@ -5,11 +5,12 @@ define([
   'leave-absences/shared/components/leave-widget/leave-widget.component',
   'mocks/apis/absence-period-api-mock',
   'mocks/apis/absence-type-api-mock',
-  'common/mocks/services/api/contract-mock'
+  'common/mocks/services/api/contract-mock',
+  'common/services/pub-sub'
 ], function (_) {
   describe('LeaveWidget', function () {
     var $componentController, $provide, $rootScope, $scope, AbsencePeriod,
-      AbsenceType, Contract, ctrl, OptionGroup;
+      AbsenceType, Contract, ctrl, OptionGroup, pubSub;
     var contactId = 208;
 
     beforeEach(module('common.mocks', 'leave-absences.components.leave-widget',
@@ -27,7 +28,7 @@ define([
       }]));
 
     beforeEach(inject(function (_$componentController_, $q, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_, _Contract_, _OptionGroup_) {
+    _AbsencePeriod_, _AbsenceType_, _Contract_, _OptionGroup_, _pubSub_) {
       $componentController = _$componentController_;
       $rootScope = _$rootScope_;
       $scope = $rootScope.$new();
@@ -35,6 +36,7 @@ define([
       AbsenceType = _AbsenceType_;
       Contract = _Contract_;
       OptionGroup = _OptionGroup_;
+      pubSub = _pubSub_;
 
       spyOn($scope, '$on').and.callThrough();
       spyOn(AbsencePeriod, 'all').and.callThrough();
@@ -121,6 +123,56 @@ define([
                 expect(ctrl.loading.childComponents).toBe(false);
               });
             });
+          });
+        });
+      });
+
+      describe('Leave requests updated', function () {
+        beforeEach(function () {
+          Contract.all.calls.reset();
+        });
+
+        describe('when a leave request is created', function () {
+          beforeEach(function () {
+            pubSub.publish('LeaveRequest::new');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when a leave request is edited', function () {
+          beforeEach(function () {
+            pubSub.publish('LeaveRequest::edit');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when a leave request is deleted', function () {
+          beforeEach(function () {
+            pubSub.publish('LeaveRequest::deleted');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when a leave request is updated by a manager', function () {
+          beforeEach(function () {
+            pubSub.publish('LeaveRequest::updatedByManager');
+            $rootScope.$digest();
+          });
+
+          it('reloads the dependencies', function () {
+            expect(Contract.all).toHaveBeenCalled();
           });
         });
       });

@@ -7,6 +7,7 @@ define([
   'common/directives/help-text.directive',
   'common/filters/time-unit-applier.filter',
   'common/models/contract',
+  'common/services/pub-sub',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/modules/components',
   'leave-absences/shared/models/absence-period.model',
@@ -20,6 +21,7 @@ define([
     'common.directives',
     'common.filters',
     'common.models',
+    'common.services',
     'leave-absences.components',
     'leave-absences.models',
     'leave-absences.settings'
@@ -36,10 +38,10 @@ define([
   });
 
   leaveWidgetController.$inject = ['$log', '$q', '$scope', 'AbsencePeriod',
-    'AbsenceType', 'Contract', 'OptionGroup'];
+    'AbsenceType', 'Contract', 'OptionGroup', 'pubSub'];
 
   function leaveWidgetController ($log, $q, $scope, AbsencePeriod,
-    AbsenceType, Contract, OptionGroup) {
+    AbsenceType, Contract, OptionGroup, pubSub) {
     var allowedLeaveStatuses = ['approved', 'admin_approved',
       'awaiting_approval', 'more_information_required'];
     var childComponents = 0;
@@ -85,11 +87,16 @@ define([
     }
 
     /**
-     * Watches for child components loading and ready events.
+     * Watches for child components loading and ready events. Also watches
+     * for leave request interactions.
      */
     function initWatchers () {
       $scope.$on('LeaveWidget::childIsLoading', childComponentIsLoading);
       $scope.$on('LeaveWidget::childIsReady', childComponentIsReady);
+      pubSub.subscribe('LeaveRequest::new', loadDependencies);
+      pubSub.subscribe('LeaveRequest::edit', loadDependencies);
+      pubSub.subscribe('LeaveRequest::deleted', loadDependencies);
+      pubSub.subscribe('LeaveRequest::updatedByManager', loadDependencies);
     }
 
     /**
