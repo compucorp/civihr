@@ -228,7 +228,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if($isCalculationUnitInHours) {
       foreach($hoursUnitRequiredFields as $requiredField) {
-        if(empty($params[$requiredField])) {
+        if(!isset($params[$requiredField])) {
           throw new InvalidLeaveRequestException(
             "The {$requiredField} can not be empty when absence type calculation unit is in hours",
             "leave_request_empty_{$requiredField}",
@@ -568,7 +568,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $extraAmount = 0;
     $fromDate = new DateTime($params['from_date']);
     $toDate = new DateTime($params['to_date']);
-    if(!empty($params['from_date_amount']) && !empty($params['to_date_amount'])) {
+    if(!empty($params['from_date_amount']) || !empty($params['to_date_amount'])) {
       $excludeStartAndEndDates = true;
       $extraAmount = self::getExtraAmountForLeaveRequest(
         $fromDate,
@@ -1279,9 +1279,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     if(!empty($params['id'])) {
       $leaveRequest = self::findById($params['id']);
       $fromDate = new DateTime($params['from_date']);
-      $fromDateType = $params['from_date_type'];
+      $fromDateType = !empty($params['from_date_type']) ? $params['from_date_type'] : null;
       $toDate = new DateTime($params['to_date']);
-      $toDateType = $params['to_date_type'];
+      $toDateType = !empty($params['to_date_type']) ? $params['to_date_type'] : null;
       $leaveRequestFromDate = new DateTime($leaveRequest->from_date);
       $leaveRequestFromDateType = $leaveRequest->from_date_type;
       $leaveRequestToDate = new DateTime($leaveRequest->to_date);
