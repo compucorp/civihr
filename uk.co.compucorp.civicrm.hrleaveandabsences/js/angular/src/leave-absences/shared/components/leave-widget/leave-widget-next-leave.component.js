@@ -8,6 +8,7 @@ define([
 ], function (_, moment, components) {
   components.component('leaveWidgetNextLeave', {
     bindings: {
+      absenceTypes: '<',
       contactId: '<',
       leaveRequestStatuses: '<'
     },
@@ -56,6 +57,7 @@ define([
       ])
       .then(function () {
         if (vm.nextLeaveRequest) {
+          mapAbsenceTypeToNextLeaveRequest();
           makeBalanceChangeAbsolute();
           storeStatusForNextRequest();
         }
@@ -72,8 +74,8 @@ define([
      * @return {Boolean}
      */
     function bindingsAreReady () {
-      return vm.contactId && vm.leaveRequestStatuses &&
-        vm.leaveRequestStatuses.length;
+      return vm.absenceTypes && vm.absenceTypes.length && vm.contactId &&
+        vm.leaveRequestStatuses && vm.leaveRequestStatuses.length;
     }
 
     /**
@@ -127,6 +129,17 @@ define([
     function makeBalanceChangeAbsolute () {
       vm.nextLeaveRequest.balance_change = Math.abs(
         vm.nextLeaveRequest.balance_change);
+    }
+
+    /**
+     * Maps the absence type title to the leave request.
+     */
+    function mapAbsenceTypeToNextLeaveRequest () {
+      var absenceType = _.find(vm.absenceTypes, function (absenceType) {
+        return +absenceType.id === +vm.nextLeaveRequest.type_id;
+      }) || {};
+
+      vm.nextLeaveRequest['type_id.title'] = absenceType.title;
     }
 
     /**

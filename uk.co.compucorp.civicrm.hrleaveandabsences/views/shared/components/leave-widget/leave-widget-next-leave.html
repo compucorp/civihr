@@ -9,7 +9,7 @@
     <tbody>
       <tr ng-if="nextLeave.nextLeaveRequest">
         <td class="leave-widget__next-leave__details">
-          <h3>{{nextLeave.nextLeaveRequest.request_type}}</h3>
+          <h3>{{nextLeave.nextLeaveRequest['type_id.title']}}</h3>
           <div class="date-range-calendar">
             <div class="date-range-calendar__from" ng-if="nextLeave.nextLeaveRequest.from_date">
               <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.from_date | date:'d'}}</span>

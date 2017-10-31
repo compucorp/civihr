@@ -4,13 +4,14 @@ define([
   'common/lodash',
   'common/moment',
   'mocks/helpers/controller-on-changes',
+  'mocks/data/absence-type-data',
   'mocks/data/option-group-mock-data',
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/components/leave-widget/leave-widget-next-leave.component'
-], function (_, moment, controllerOnChanges, OptionGroupData) {
+], function (_, moment, controllerOnChanges, absenceTypesData, OptionGroupData) {
   describe('leaveWidgetNextLeave', function () {
-    var $componentController, $provide, $q, $rootScope, $scope, ctrl,
-      LeaveRequest, leaveRequestStatuses, OptionGroup, sharedSettings;
+    var $componentController, $provide, $q, $rootScope, $scope, absenceTypes,
+      ctrl, LeaveRequest, leaveRequestStatuses, OptionGroup, sharedSettings;
     var childComponentName = 'leave-widget-next-leave';
     var contactId = 101;
 
@@ -32,6 +33,7 @@ define([
         $q = _$q_;
         $rootScope = _$rootScope_;
         $scope = $rootScope.$new();
+        absenceTypes = absenceTypesData.all().values;
         LeaveRequest = _LeaveRequest_;
         leaveRequestStatuses = OptionGroupData.getCollection(
           'hrleaveandabsences_leave_request_status');
@@ -79,6 +81,7 @@ define([
         leaveRequestStatusIds = leaveRequestStatuses.map(function (status) {
           return status.value;
         });
+        controllerOnChanges.mockChange('absenceTypes', absenceTypes);
         controllerOnChanges.mockChange('contactId', contactId);
         controllerOnChanges.mockChange('leaveRequestStatuses',
           leaveRequestStatuses);
@@ -115,6 +118,7 @@ define([
           })
           .then(function (response) {
             expectedNextLeave = response.list[0];
+            expectedNextLeave['type_id.title'] = getAbsenceTypeTitleFor(expectedNextLeave);
             expectedNextLeave.balance_change = Math.abs(expectedNextLeave.balance_change);
             expectedRequestStatus = getExpectedRequestStatus(expectedNextLeave);
           });
@@ -170,5 +174,19 @@ define([
         }
       });
     });
+
+    /**
+     * Returns the absence type title related to the leave request.
+     *
+     * @param {LeaveRequestInstance} leaveRequest
+     * @return {String}
+     */
+    function getAbsenceTypeTitleFor (leaveRequest) {
+      var absenceType = _.find(absenceTypes, function (type) {
+        return +type.id === +leaveRequest.type_id;
+      });
+
+      return absenceType.title;
+    }
   });
 });
