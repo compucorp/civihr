@@ -6,6 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix as LeaveRequestStatusMatrixService;
+use CRM_HRLeaveAndAbsences_Factory_LeaveBalanceChangeCalculation as LeaveBalanceChangeCalculationFactory;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
 
@@ -272,7 +273,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     $leaveRequest = LeaveRequest::create($params, LeaveRequest::VALIDATIONS_OFF);
 
     if(!$skipBalanceChangeUpdate) {
-      $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
+      $balanceCalculationService = LeaveBalanceChangeCalculationFactory::create($leaveRequest);
+      $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest, $balanceCalculationService);
     }
     $this->recalculateExpiredBalanceChange($leaveRequest);
 
