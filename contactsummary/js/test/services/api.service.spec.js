@@ -2,7 +2,7 @@
 
 define([
   'common/angularMocks',
-  'contact-summary/app'
+  'contact-summary/modules/contact-summary.module'
 ], function () {
   'use strict';
 

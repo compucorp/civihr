@@ -6,7 +6,7 @@
     }
   });
 
-  require(['contact-summary/app'], function () {
+  require(['contact-summary/modules/contact-summary.module'], function () {
     document.dispatchEvent(typeof window.CustomEvent == "function" ? new CustomEvent('contactsummaryReady') : (function () {
       var e = document.createEvent('Event');
       e.initEvent('contactsummaryReady', true, true);
