@@ -1,10 +1,13 @@
+/* eslint-env amd */
+
 define([
+  'common/lodash',
   'common/moment',
   'contact-summary/modules/contact-summary.controllers',
   'contact-summary/services/contact-details.service',
   'contact-summary/services/contract.service',
-  'common/services/pub-sub',
-], function (moment, controllers) {
+  'common/services/pub-sub'
+], function (_, moment, controllers) {
   'use strict';
 
   /**
@@ -16,11 +19,10 @@ define([
    * @param {pubSub} pubSub
    * @constructor
    */
-  function KeyDetailsCtrl($log, ContactDetails, Contract, pubSub) {
+  function KeyDetailsCtrl ($log, ContactDetails, Contract, pubSub) {
     $log.debug('Controller: KeyDetailsCtrl');
 
     this.ready = false;
-
 
     /**
      * Fetch Contacts from Server
@@ -29,7 +31,7 @@ define([
      * @methodOf KeyDetailsCtrl
      * @returns void
      */
-    var getContacts = function(){
+    var getContacts = function () {
       ContactDetails.get()
         .then(function (response) {
           this.contactDetails = response;
@@ -54,7 +56,7 @@ define([
         }.bind(this));
     }.bind(this);
 
-    var resetKeyDetails = function() {
+    var resetKeyDetails = function () {
       Contract.resetContracts();
       ContactDetails.data.item = {};
       getContacts();
@@ -62,12 +64,8 @@ define([
 
     getContacts();
 
-    pubSub.subscribe('contract-refresh',  resetKeyDetails);
+    pubSub.subscribe('contract-refresh', resetKeyDetails);
   }
-
-  /////////////////////
-  // Private Members //
-  /////////////////////
 
   controllers.controller('KeyDetailsCtrl', ['$log', 'ContactDetailsService', 'ContractService', 'pubSub', KeyDetailsCtrl]);
 });

@@ -1,10 +1,13 @@
+/* eslint-env amd */
+
 define([
+  'common/angular',
   'common/moment',
   'contact-summary/modules/contact-summary.controllers',
   'contact-summary/services/contract.service',
   'contact-summary/services/job-role.service',
-  'common/services/pub-sub',
-], function (moment, controllers) {
+  'common/services/pub-sub'
+], function (angular, moment, controllers) {
   'use strict';
 
   /**
@@ -12,7 +15,7 @@ define([
    *
    * @param {Object} contract
    */
-  function addContractDates(contract) {
+  function addContractDates (contract) {
     this.dates.push({
       title: contract.title + ' (Start)',
       date: contract.start_date,
@@ -34,7 +37,7 @@ define([
    * @param {string} date
    * @return {boolean}
    */
-  function isDateInFuture(date) {
+  function isDateInFuture (date) {
     return moment().diff(date) < 0;
   }
 
@@ -47,7 +50,7 @@ define([
    * @param {pubSub} pubSub
    * @constructor
    */
-  function KeyDatesCtrl($log, Contract, JobRole, pubSub) {
+  function KeyDatesCtrl ($log, Contract, JobRole, pubSub) {
     $log.debug('Controller: KeyDatesCtrl');
 
     var self = this;
@@ -63,7 +66,7 @@ define([
      * @methodOf KeyDatesCtrl
      * @returns void
      */
-    var getContacts = function(){
+    var getContacts = function () {
       Contract.get()
         .then(function (response) {
           angular.forEach(response, function (contract) {
@@ -71,7 +74,7 @@ define([
 
             if (contract.is_current === '1') {
               self.activeContracts++;
-            };
+            }
           });
 
           return JobRole.get();
@@ -88,17 +91,17 @@ define([
         .finally(function () {
           self.ready = true;
         });
-    }.bind(this);
+    };
 
-    var resetKeyDates = function() {
-      this.dates= [];
+    var resetKeyDates = function () {
+      this.dates = [];
       getContacts();
     }.bind(this);
 
     getContacts();
 
-    pubSub.subscribe('contract-refresh',  resetKeyDates);
+    pubSub.subscribe('contract-refresh', resetKeyDates);
   }
 
-  controllers.controller('KeyDatesCtrl', ['$log', 'ContractService', 'JobRoleService','pubSub', KeyDatesCtrl]);
+  controllers.controller('KeyDatesCtrl', ['$log', 'ContractService', 'JobRoleService', 'pubSub', KeyDatesCtrl]);
 });

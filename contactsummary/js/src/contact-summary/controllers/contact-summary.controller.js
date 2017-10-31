@@ -1,28 +1,30 @@
+/* eslint-env amd */
+
 define([
-    'contact-summary/modules/contact-summary.controllers',
-    'contact-summary/modules/contact-summary.constants'
+  'contact-summary/modules/contact-summary.controllers',
+  'contact-summary/modules/contact-summary.constants'
 ], function (controllers) {
-    'use strict';
+  'use strict';
 
-    /**
-     * @ngdoc controller
-     * @name ContactSummaryCtrl
-     * @param $log
-     * @param settings
-     * @constructor
-     */
-    function ContactSummaryCtrl($log, settings) {
-        $log.debug('Controller: ContactSummaryCtrl');
+  /**
+   * @ngdoc controller
+   * @name ContactSummaryCtrl
+   * @param $log
+   * @param settings
+   * @constructor
+   */
+  function ContactSummaryCtrl ($log, settings) {
+    $log.debug('Controller: ContactSummaryCtrl');
 
-        var templateDir = settings.pathBaseUrl + settings.pathTpl;
+    var templateDir = settings.pathBaseUrl + settings.pathTpl;
 
-        this.partials = {
-            keyDetails: templateDir + '/include/keyDetails.html',
-            keyDates: templateDir + '/include/keyDates.html'
-        };
+    this.partials = {
+      keyDetails: templateDir + '/include/keyDetails.html',
+      keyDates: templateDir + '/include/keyDates.html'
+    };
 
-        this.ready = false;
-    }
+    this.ready = false;
+  }
 
-    controllers.controller('ContactSummaryCtrl', ['$log', 'settings', ContactSummaryCtrl]);
+  controllers.controller('ContactSummaryCtrl', ['$log', 'settings', ContactSummaryCtrl]);
 });
