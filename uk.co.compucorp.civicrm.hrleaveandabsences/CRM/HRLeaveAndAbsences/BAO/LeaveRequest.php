@@ -82,11 +82,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
     self::validateMandatory($params);
-    self::validateLeaveRequestFieldsBasedOnAbsenceTypeCalculationUnit($params);
     self::validateLeaveRequestSoftDeleteDuringUpdate($params);
     self::validateRequestType($params);
     self::validateTOILFieldsBasedOnRequestType($params);
     self::validateSicknessFieldsBasedOnRequestType($params);
+    self::validateLeaveRequestFieldsBasedOnAbsenceTypeCalculationUnit($params);
     self::validateStartDateNotGreaterThanEndDate($params);
     self::validateNoOverlappingLeaveRequests($params);
     self::validateLeaveDatesDoesNotOverlapContractsWithLapses($params);

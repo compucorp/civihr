@@ -2189,12 +2189,83 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateTypeIsEmpty() {
-    $params = $this->mergeWithDefaultLeaveRequestParams(['to_date_type' => '']);
+  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateTypeIsEmptyAndAbsenceTypeIsCalculatedInDays() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $params = $this->mergeWithDefaultLeaveRequestParams(['to_date_type' => '', 'type_id' => $absenceType->id]);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $errorMessage = 'The to_date_type field should not be empty';
+    $errorMessage = 'The to_date_type can not be empty when absence type calculation unit is in days';
     $expectedResult = $this->getExpectedArrayForIsValidError('to_date_type', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenFromDateTypeIsEmptyAndAbsenceTypeIsCalculatedInDays() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $params = $this->mergeWithDefaultLeaveRequestParams(['from_date_type' => '', 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The from_date_type can not be empty when absence type calculation unit is in days';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date_type', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenFromDateAmountIsNotEmptyAndAbsenceTypeIsCalculatedInDays() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $params = $this->mergeWithDefaultLeaveRequestParams(['from_date_amount' => 2.5, 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The from_date_amount should be empty when absence type calculation unit is in days';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date_amount', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateAmountIsNotEmptyAndAbsenceTypeIsCalculatedInDays() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $params = $this->mergeWithDefaultLeaveRequestParams(['to_date_amount' => 2.5, 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The to_date_amount should be empty when absence type calculation unit is in days';
+    $expectedResult = $this->getExpectedArrayForIsValidError('to_date_amount', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenFromDateAmountIsEmptyAndAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $params = $this->mergeWithDefaultLeaveRequestParams(['from_date_amount' => '', 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The from_date_amount can not be empty when absence type calculation unit is in hours';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date_amount', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateAmountIsEmptyAndAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $params = $this->mergeWithDefaultLeaveRequestInHoursParams(['to_date_amount' => '', 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The to_date_amount can not be empty when absence type calculation unit is in hours';
+    $expectedResult = $this->getExpectedArrayForIsValidError('to_date_amount', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateTypeIsNotEmptyAndAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $params = $this->mergeWithDefaultLeaveRequestInHoursParams(['to_date_type' => 1, 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The to_date_type should be empty when absence type calculation unit is in hours';
+    $expectedResult = $this->getExpectedArrayForIsValidError('to_date_type', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenFromDateTypeIsNotEmptyAndAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $params = $this->mergeWithDefaultLeaveRequestInHoursParams(['from_date_type' => 1, 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The from_date_type should be empty when absence type calculation unit is in hours';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date_type', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -3988,6 +4059,19 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], $params);
   }
 
+  private function mergeWithDefaultLeaveRequestInHoursParams($params) {
+    $leaveParams = $this->mergeWithDefaultLeaveRequestParams([]);
+
+    $leaveInHoursParams = [
+      'from_date_amount' => 1.5,
+      'to_date_amount' => 3,
+      'from_date_type' => null,
+      'to_date_type' => null
+    ];
+
+    return array_merge($leaveParams, $leaveInHoursParams, $params);
+  }
+
   private function mergeWithDefaultTOILRequestParams($params) {
     $toilParams = $this->mergeWithDefaultLeaveRequestParams([
       'toil_to_accrue' => 1,
@@ -4083,11 +4167,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contract['contact_id'],
       'type_id' => $absenceType->id,
       'from_date' => $fromDate->format('Y-m-d H:i:s'),
-      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => $toDate->format('Y-m-d H:i:s'),
-      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'status_id' => 3,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'from_date_amount' => 2,
+      'to_date_amount' => 1,
       'sequential' => 1,
     ]);
 
