@@ -349,7 +349,8 @@
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               from_date: { from: newPeriod.start_date },
               to_date: { to: newPeriod.end_date },
-              status_id: valueOfRequestStatus('approved')
+              status_id: valueOfRequestStatus('approved'),
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
               period_id: newPeriod.id
@@ -448,7 +449,8 @@
 
           it('fetches all leave requests linked to a public holiday', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              public_holiday: true
+              public_holiday: true,
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
           });
 
@@ -464,7 +466,8 @@
 
           it('fetches all approved leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              status_id: valueOfRequestStatus('approved')
+              status_id: valueOfRequestStatus('approved'),
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
           });
 
@@ -483,7 +486,8 @@
               status_id: { in: [
                 valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
                 valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
-              ] }
+              ] },
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }));
           });
 
@@ -502,7 +506,8 @@
               status_id: { in: [
                 valueOfRequestStatus(sharedSettings.statusNames.rejected),
                 valueOfRequestStatus(sharedSettings.statusNames.cancelled)
-              ] }
+              ] },
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
           });
 
@@ -585,6 +590,7 @@
                 from_date: {from: controller.selectedPeriod.start_date},
                 to_date: {to: controller.selectedPeriod.end_date},
                 request_type: 'toil',
+                type_id: { IN: _.keys(controller.absenceTypes) },
                 expired: true
               }, null, requestSortParam, null, false);
             });
