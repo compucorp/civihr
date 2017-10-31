@@ -142,6 +142,12 @@
               }));
             });
 
+            it('loads leave requests for *enabled* absence types only', function () {
+              expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
+                type_id: { 'IN': _.pluck(controller.supportData.absenceTypes, 'id') }
+              }));
+            });
+
             it('loads only the leave requests belonging to the loaded contacts', function () {
               expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                 contact_id: { 'IN': controller.contacts.map(function (contact) {

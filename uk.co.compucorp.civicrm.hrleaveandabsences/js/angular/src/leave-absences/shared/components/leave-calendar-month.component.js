@@ -354,7 +354,8 @@ define([
         ]},
         contact_id: { 'IN': vm.contacts.map(function (contact) {
           return contact.id;
-        })}
+        })},
+        type_id: { IN: _.pluck(vm.supportData.absenceTypes, 'id') }
       }, null, null, null, false)
       .then(function (leaveRequestsData) {
         return indexLeaveRequests(leaveRequestsData.list);
