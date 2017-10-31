@@ -1,13 +1,16 @@
+/* eslint-env amd */
+
 define([
+  'common/angular',
   'common/lodash',
   'contact-summary/modules/contact-summary.services',
   'contact-summary/services/api.service',
   'contact-summary/services/contact-details.service',
-  'contact-summary/services/model.service',
-], function (_, services) {
+  'contact-summary/services/model.service'
+], function (angular, _, services) {
   'use strict';
 
-    var promiseCache = {};
+  var promiseCache = {};
 
   /**
    * @param {ApiService} Api
@@ -18,12 +21,8 @@ define([
    * @returns {ModelService|Object|ItemService|*}
    * @constructor
    */
-  function ContractService($q, $log, Api, Model, ContactDetails) {
+  function ContractService ($q, $log, Api, Model, ContactDetails) {
     $log.debug('Service: Contract Service');
-
-    ////////////////////
-    // Public Members //
-    ////////////////////
 
     /**
      * TODO: Implement a collection and extend it instead
@@ -31,7 +30,6 @@ define([
      * @ngdoc service
      * @name ContractService
      */
-    //var factory = Model.createInstance();
     var factory = {};
 
     initializeCollection();
@@ -51,7 +49,7 @@ define([
       var self = this;
 
       return init().then(function () {
-        //return self.getData();
+        // return self.getData();
         return self.getCollection();
       });
     };
@@ -160,22 +158,22 @@ define([
       };
 
       if (!promiseCache.getContractDetails) {
-            promiseCache.getContractDetails = Api.post('HRJobDetails', data, 'get')
-              .then(function (response) {
-                if (response.values.length === 0) {
-                  return $q.reject('No details found for contract revision with ID ' + id);
-                }
+        promiseCache.getContractDetails = Api.post('HRJobDetails', data, 'get')
+          .then(function (response) {
+            if (response.values.length === 0) {
+              return $q.reject('No details found for contract revision with ID ' + id);
+            }
 
-                var details = response.values[0];
+            var details = response.values[0];
 
-                addPay(details);
-                addHours(details);
+            addPay(details);
+            addHours(details);
 
-                return details;
-              });
-          }
+            return details;
+          });
+      }
 
-          return promiseCache.getContractDetails;
+      return promiseCache.getContractDetails;
     };
 
     /**
@@ -202,7 +200,7 @@ define([
               contact_id: response.id
             },
             'getlengthofserviceymd'
-          )
+          );
         })
         .then(function (response) {
           if (!response.is_error) {
@@ -218,13 +216,9 @@ define([
       return deferred.promise;
     };
 
-    /////////////////////
-    // Private Members //
-    /////////////////////
-
     var contracts = [];
 
-    function initializeCollection() {
+    function initializeCollection () {
       factory.collection = {
         items: {},
         insertItem: function (key, item) {
@@ -242,14 +236,14 @@ define([
       };
     }
 
-    function init() {
+    function init () {
       var deferred = $q.defer();
       if (_.isEmpty(factory.collection.get())) {
         factory.getContracts()
-                .then(assembleContracts)
-                .finally(function () {
-                  deferred.resolve();
-                });
+          .then(assembleContracts)
+          .finally(function () {
+            deferred.resolve();
+          });
       } else {
         deferred.resolve();
       }
@@ -257,8 +251,9 @@ define([
       return deferred.promise;
     }
 
-    function assembleContracts() {
-      var deferred = $q.defer(), promises = [];
+    function assembleContracts () {
+      var deferred = $q.defer();
+      var promises = [];
 
       angular.forEach(contracts, function (contract) {
         var assembledContract = {};

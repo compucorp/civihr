@@ -1,4 +1,3 @@
-/* eslint valid-jsdoc: 0, "require-jsdoc": 0, no-implicit-coercion: 0 */
 /* eslint-env amd */
 
 define([

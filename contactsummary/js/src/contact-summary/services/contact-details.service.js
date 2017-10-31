@@ -1,103 +1,98 @@
+/* eslint-env amd */
+
 define([
-    'common/lodash',
-    'common/moment',
-    'contact-summary/modules/contact-summary.services',
-    'contact-summary/modules/contact-summary.constants',
-    'contact-summary/services/api.service',
-    'contact-summary/services/model.service'
+  'common/lodash',
+  'common/moment',
+  'contact-summary/modules/contact-summary.services',
+  'contact-summary/modules/contact-summary.constants',
+  'contact-summary/services/api.service',
+  'contact-summary/services/model.service'
 ], function (_, moment, services) {
-    'use strict';
+  'use strict';
+
+  /**
+   * @param Api
+   * @param {ModelService} Model
+   * @param settings
+   * @param $q
+   * @param $log
+   * @returns {*|Object|ModelService}
+   * @constructor
+   */
+  function ContactDetailsService ($q, $log, Api, Model, settings) {
+    $log.debug('Service: ContactDetailsService');
 
     /**
-     * @param Api
-     * @param {ModelService} Model
-     * @param settings
-     * @param $q
-     * @param $log
-     * @returns {*|Object|ModelService}
-     * @constructor
+     * @ngdoc service
+     * @name ContactDetailsService
      */
-    function ContactDetailsService($q, $log, Api, Model, settings) {
-        $log.debug('Service: ContactDetailsService');
+    var factory = Model.createInstance();
 
-        ////////////////////
-        // Public Members //
-        ////////////////////
+    /**
+     * @ngdoc method
+     * @name get
+     * @methodOf ContactDetailsService
+     * @this ContactDetailsService
+     * @returns {*}
+     */
+    factory.get = function () {
+      /** @type {(ContactDetailsService|ModelService)} */
+      var self = this;
+      var deferred = $q.defer();
 
-        /**
-         * @ngdoc service
-         * @name ContactDetailsService
-         */
-        var factory = Model.createInstance();
+      init().then(function () {
+        deferred.resolve(self.getData());
+      });
 
-        /**
-         * @ngdoc method
-         * @name get
-         * @methodOf ContactDetailsService
-         * @this ContactDetailsService
-         * @returns {*}
-         */
-        factory.get = function () {
-            /** @type {(ContactDetailsService|ModelService)} */
-            var self = this;
-            var deferred = $q.defer();
+      return deferred.promise;
+    };
 
-            init().then(function () {
-                deferred.resolve(self.getData());
-            });
+    function init () {
+      var deferred = $q.defer();
 
-            return deferred.promise;
-        };
+      if (_.isEmpty(factory.getData())) {
+        var contactId = settings.contactId;
 
-        /////////////////////
-        // Private Members //
-        /////////////////////
-
-        function init() {
-            var deferred = $q.defer();
-
-            if (_.isEmpty(factory.getData())) {
-                var contactId = settings.contactId;
-
-                Api.get('Contact', {contact_id: contactId, return: 'birth_date'})
-                    .then(function (response) {
-                        if (response.values.length === 0) {
-                            throw new Error('Contact with ID ' + contactId + ' not found');
-                        }
-
-                        var dob = response.values[0].birth_date;
-                        var age = moment(dob, 'YYYY-MM-DD').isValid()
-                            ? calculateAge(dob)
-                            : '';
-
-                        factory.setDataKey('id', contactId);
-                        factory.setDataKey('dateOfBirth', dob);
-                        factory.setDataKey('age', age);
-
-                        deferred.resolve();
-                    })
-                    .catch(function (response) {
-                        deferred.reject(response);
-                    });
-            } else {
-                deferred.resolve();
+        Api
+          .get('Contact', {contact_id: contactId, return: 'birth_date'})
+          .then(function (response) {
+            if (response.values.length === 0) {
+              throw new Error('Contact with ID ' + contactId + ' not found');
             }
 
-            return deferred.promise;
-        }
+            var dob = response.values[0].birth_date;
+            var age = moment(dob, 'YYYY-MM-DD').isValid()
+            ? calculateAge(dob)
+            : '';
 
-      /**
-       * Calculate age from birth date
-       *
-       * @param {string} dateOfBirth Date of birth in a YYYY-MM-DD format
-       * @returns {string}
-       */
-        function calculateAge(dateOfBirth) {
-            return moment().diff(moment(dateOfBirth, 'YYYY-MM-DD'), 'years');
-        }
+            factory.setDataKey('id', contactId);
+            factory.setDataKey('dateOfBirth', dob);
+            factory.setDataKey('age', age);
 
-        return factory;
+            deferred.resolve();
+          })
+          .catch(function (response) {
+            deferred.reject(response);
+          });
+      } else {
+        deferred.resolve();
+      }
+
+      return deferred.promise;
     }
 
-    services.factory('ContactDetailsService', ['$q', '$log', 'ApiService', 'ModelService', 'settings', ContactDetailsService]);
+    /**
+     * Calculate age from birth date
+     *
+     * @param {string} dateOfBirth Date of birth in a YYYY-MM-DD format
+     * @returns {string}
+     */
+    function calculateAge (dateOfBirth) {
+      return moment().diff(moment(dateOfBirth, 'YYYY-MM-DD'), 'years');
+    }
+
+    return factory;
+  }
+
+  services.factory('ContactDetailsService', ['$q', '$log', 'ApiService', 'ModelService', 'settings', ContactDetailsService]);
 });
