@@ -1,24 +1,26 @@
+/* eslint-env amd */
+
 define([
-    'common/angular'
+  'common/angular'
 ], function (angular) {
-    'use strict';
+  'use strict';
 
-    return angular.module('contactsummary.config', ['contactsummary.constants']).config(['settings', '$routeProvider', '$resourceProvider', '$httpProvider', '$logProvider',
-        function (settings, $routeProvider, $resourceProvider, $httpProvider, $logProvider) {
-            $logProvider.debugEnabled(settings.debug);
+  return angular.module('contactsummary.config', ['contactsummary.constants']).config(['settings', '$routeProvider', '$resourceProvider', '$httpProvider', '$logProvider',
+    function (settings, $routeProvider, $resourceProvider, $httpProvider, $logProvider) {
+      $logProvider.debugEnabled(settings.debug);
 
-            $routeProvider.
-                when('/', {
-                    controller: 'ContactSummaryCtrl',
-                    controllerAs: 'ContactSummaryCtrl',
-                    templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
-                    resolve: {}
-                }
-            ).otherwise({redirectTo: '/'});
+      $routeProvider
+        .when('/', {
+          controller: 'ContactSummaryCtrl',
+          controllerAs: 'ContactSummaryCtrl',
+          templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
+          resolve: {}
+        })
+        .otherwise({redirectTo: '/'});
 
-            $resourceProvider.defaults.stripTrailingSlashes = false;
+      $resourceProvider.defaults.stripTrailingSlashes = false;
 
-            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-        }
-    ]);
-})
+      $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    }
+  ]);
+});

@@ -1,7 +1,9 @@
-define([
-    'common/angular'
-], function (angular) {
-    'use strict';
+/* eslint-env amd */
 
-    return angular.module('contactsummary.controllers', []);
+define([
+  'common/angular'
+], function (angular) {
+  'use strict';
+
+  return angular.module('contactsummary.controllers', []);
 });
