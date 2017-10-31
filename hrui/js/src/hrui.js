@@ -229,7 +229,7 @@
   function toggleActiveClassOnHoverOnAnyMainMenuItem () {
     var className = 'activetarget';
 
-    $('.menumain:not(.crm-Self_Service_Portal').hover(function () {
+    $('.menumain').not('.crm-Self_Service_Portal').hover(function () {
       $(this).addClass(className);
     }, function () {
       $(this).removeClass(className);
