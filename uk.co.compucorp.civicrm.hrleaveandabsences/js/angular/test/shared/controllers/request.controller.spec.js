@@ -18,6 +18,7 @@
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
     'common/mocks/services/api/contact-mock',
+    'common/services/pub-sub',
     'leave-absences/shared/modules/shared-settings'
   ], function (_, moment, optionGroupMock, mockData) {
     'use strict';
@@ -25,11 +26,13 @@
     describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, controller, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
-        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, WorkPatternAPI;
+        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, pubSub,
+        WorkPatternAPI;
       var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
-        'leave-absences.mocks', 'common.mocks', 'common.dialog', 'leave-absences.settings',
+        'leave-absences.mocks', 'common.mocks', 'common.dialog', 'common.services',
+        'leave-absences.settings',
         function (_$provide_, $exceptionHandlerProvider) {
           $provide = _$provide_;
           // this will consume all throw
@@ -67,7 +70,8 @@
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_, _dialog_,
         _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_, _Entitlement_,
-        _LeaveRequestInstance_, _LeaveRequest_, _LeaveRequestAPI_, _WorkPatternAPI_) {
+        _LeaveRequestInstance_, _LeaveRequest_, _LeaveRequestAPI_, _pubSub_,
+        _WorkPatternAPI_) {
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
@@ -80,6 +84,7 @@
         WorkPatternAPI = _WorkPatternAPI_;
         AbsenceTypeAPI = _AbsenceTypeAPI_;
         AbsencePeriodAPI = _AbsencePeriodAPI_;
+        pubSub = _pubSub_;
 
         LeaveRequestInstance = _LeaveRequestInstance_;
 
@@ -94,6 +99,8 @@
         spyOn(LeaveRequestAPI, 'create').and.callThrough();
         spyOn(LeaveRequestAPI, 'update').and.callThrough();
         spyOn(LeaveRequestAPI, 'isValid').and.callThrough();
+        spyOn(pubSub, 'subscribe').and.callThrough();
+        spyOn(pubSub, 'publish').and.callThrough();
         spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
         spyOn(EntitlementAPI, 'all').and.callThrough();
 
@@ -215,7 +222,6 @@
 
           describe('when submit with valid fields', function () {
             beforeEach(function () {
-              spyOn($rootScope, '$emit');
               LeaveRequestAPI.isValid.and.returnValue($q.resolve());
               LeaveRequestAPI.create.and.returnValue($q.resolve({ id: '1' }));
               controller.balance.closing = 1;
@@ -235,7 +241,7 @@
             });
 
             it('sends event', function () {
-              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::new', controller.request);
+              expect(pubSub.publish).toHaveBeenCalledWith('LeaveRequest::new', controller.request);
             });
           });
         });
@@ -338,7 +344,6 @@
 
             describe('and submits', function () {
               beforeEach(function () {
-                spyOn($rootScope, '$emit');
                 spyOn(controller.request, 'update').and.callThrough();
 
                 // entitlements are randomly generated so resetting them to positive here
@@ -359,7 +364,7 @@
               });
 
               it('sends edit event', function () {
-                expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::edit', controller.request);
+                expect(pubSub.publish).toHaveBeenCalledWith('LeaveRequest::edit', controller.request);
               });
 
               it('has no error', function () {
@@ -484,7 +489,7 @@
             });
 
             it('sends update event', function () {
-              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::updatedByManager', controller.request);
+              expect(pubSub.publish).toHaveBeenCalledWith('LeaveRequest::updatedByManager', controller.request);
             });
           });
 
@@ -729,7 +734,6 @@
 
           beforeEach(function () {
             spyOn(controller, 'dismissModal');
-            spyOn($rootScope, '$emit');
             controller.request = jasmine.createSpyObj(['delete']);
             controller.request.delete.and.returnValue($q.resolve([]));
             promise = confirmFunction();
@@ -751,7 +755,7 @@
 
           it('publishes a delete event', function () {
             promise.then(function () {
-              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequest::deleted', controller.directiveOptions.leaveRequest);
+              expect(pubSub.publish).toHaveBeenCalledWith('LeaveRequest::deleted', controller.directiveOptions.leaveRequest);
             });
           });
         });
