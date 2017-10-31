@@ -8,13 +8,16 @@ define([
   'mocks/data/absence-type-data',
   'mocks/data/leave-request-data',
   'common/services/notification.service',
+  'common/services/pub-sub',
   'leave-absences/shared/config',
   'leave-absences/manager-leave/app'
 ], function (angular, _, moment, optionGroupMock, absenceTypeData, leaveRequestData) {
   'use strict';
 
   describe('leaveRequestActions', function () {
-    var $componentController, $log, $q, $rootScope, controller, LeaveRequestInstance, dialog, sharedSettings, role, leaveRequest, LeavePopup, notification;
+    var $componentController, $log, $q, $rootScope, controller,
+      LeaveRequestInstance, dialog, sharedSettings, role, leaveRequest,
+      LeavePopup, notification, pubSub;
     var absenceTypes = _.indexBy(absenceTypeData.all().values, 'id');
     var leaveRequestStatuses = _.indexBy(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), 'value');
 
@@ -24,7 +27,9 @@ define([
       sharedSettings = _sharedSettings_;
     }]));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_, _dialog_, _LeaveRequestInstance_, _LeavePopup_, _notificationService_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$q_,
+    _$rootScope_, _dialog_, _LeaveRequestInstance_, _LeavePopup_,
+    _notificationService_, _pubSub_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -33,12 +38,14 @@ define([
       LeaveRequestInstance = _LeaveRequestInstance_;
       LeavePopup = _LeavePopup_;
       notification = _notificationService_;
+      pubSub = _pubSub_;
     }));
 
     beforeEach(function () {
       window.alert = function () {}; // prevent alert from being logged in console
 
       spyOn($log, 'debug');
+      spyOn(pubSub, 'publish').and.callThrough();
     });
 
     beforeEach(function () {
@@ -477,7 +484,8 @@ define([
           });
 
           it('emits an event', function () {
-            expect($rootScope.$emit).toHaveBeenCalled();
+            expect(pubSub.publish)
+              .toHaveBeenCalledWith('LeaveRequest::edit', leaveRequest);
           });
         });
 
@@ -491,7 +499,7 @@ define([
           });
 
           it('does not emit an event', function () {
-            expect($rootScope.$emit).not.toHaveBeenCalled();
+            expect(pubSub.publish).not.toHaveBeenCalled();
           });
 
           it('shows a notification', function () {
