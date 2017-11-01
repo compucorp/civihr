@@ -16,7 +16,8 @@ define([
       function (_SettingsInstance_, _ModelInstance_) {
         SettingsInstance = _SettingsInstance_;
         ModelInstance = _ModelInstance_;
-      }]));
+      }
+    ]));
 
     it('inherits from ModelInstance', function () {
       expect(_.functions(SettingsInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));

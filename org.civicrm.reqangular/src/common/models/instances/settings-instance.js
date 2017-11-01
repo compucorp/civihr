@@ -6,7 +6,8 @@ define([
 ], function (instances) {
   'use strict';
 
-  instances.factory('SettingsInstance', ['ModelInstance',
+  instances.factory('SettingsInstance', [
+    'ModelInstance',
     function (ModelInstance) {
       return ModelInstance.extend({});
     }]);

@@ -11,12 +11,11 @@ define([
     $log.debug('api.settings');
 
     return api.extend({
-
       /**
-       * Returns all settings.
+       * Returns all settings
        *
-       * @param  {Object} params  matches the api endpoint params (ex. contact_id)
-       * @return {Promise}
+       * @param  {Object} params matches the api endpoint params (ex. contact_id)
+       * @return {Promise} resolves settings data from backend as array of objects
        */
       get: function (params) {
         $log.debug('api.settings.get');
@@ -24,9 +23,9 @@ define([
         params = params || {};
 
         return api.sendGET('Setting', 'get', params, false)
-        .then(function (data) {
-          return data.values;
-        });
+          .then(function (data) {
+            return data.values;
+          });
       }
     });
   }]);

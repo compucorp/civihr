@@ -9,6 +9,11 @@ define([
 
   mocks.factory('api.settings.mock', ['$q', function ($q) {
     return {
+      /**
+       * Returns settings
+       *
+       * @return {Promise}
+       */
       get: function (params) {
         return $q(function (resolve, reject) {
           resolve(SettingsData.get.values);
@@ -18,7 +23,7 @@ define([
       /**
        * Returns mocked settings
        *
-       * @return {object}
+       * @return {Object}
        */
       mockedSettings: function () {
         return SettingsData.get.values;

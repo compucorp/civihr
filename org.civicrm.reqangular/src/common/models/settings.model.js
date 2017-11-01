@@ -16,13 +16,11 @@ define([
       var promise;
 
       return Model.extend({
-
         /**
-         * Calls the get() method of the Settings API, and returns a
-         * SettingsInstance for each setting.
+         * Returns settings
          *
-         * @param  {Object} params
-         * @return {Promise}
+         * @param {Object} params
+         * @return {Promise} resolved with an array of Settings Instances
          */
         get: function (params) {
           return SettingsAPI.get(params)
@@ -34,9 +32,9 @@ define([
         },
 
         /**
-         * Fetched the thousand and decimal seperators form backend
+         * Returns defined separators (decimal and thousand)
          *
-         * @return {promise}
+         * @return {Promise} resolved with the object containing separators
          */
         fetchSeparators: function () {
           promise = promise || this.get();
