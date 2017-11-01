@@ -12,11 +12,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveDateHoursAmountDeductionTest extends B
 
   private $leaveHoursAmountDeductionService;
 
-  private $leaveRequest;
-
   public function setUp() {
     $this->leaveHoursAmountDeductionService = new LeaveDateHoursAmountDeduction();
-    $this->leaveRequest = new LeaveRequest();
   }
 
   public function testCalculateReturnsTheCorrectAmountForFromDate() {
@@ -56,7 +53,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveDateHoursAmountDeductionTest extends B
   private function getLeaveRequestInstance($params = []) {
     $defaultParams = [
       'from_date' => '2016-01-01 ',
-      'to_date' => '2026-01-04',
+      'to_date' => '2016-01-04',
     ];
 
     $params = array_merge($defaultParams, $params);

@@ -12,12 +12,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveDateDaysAmountDeductionTest extends Ba
 
   private $leaveDaysAmountDeductionService;
 
-  private $leaveRequest;
-
   public function setUp() {
     $this->leaveDaysAmountDeductionService = new LeaveDateDaysAmountDeduction();
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
-    $this->leaveRequest = new LeaveRequest();
   }
 
   public function testCalculateReturnsTheCorrectAmountWhenFromDateTypeIsHalfDay() {
@@ -81,7 +78,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveDateDaysAmountDeductionTest extends Ba
   private function getLeaveRequestInstance($params = []) {
     $defaultParams = [
       'from_date' => '2016-01-01',
-      'to_date' => '2026-01-04',
+      'to_date' => '2016-01-04',
       'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date_type' => $this->leaveRequestDayTypes['all_day']['value']
     ];
