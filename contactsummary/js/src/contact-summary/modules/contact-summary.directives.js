@@ -6,6 +6,6 @@ define([
 ], function (angular, csDonutChart) {
   'use strict';
 
-  return angular.module('contactsummary.directives', [])
+  angular.module('contactsummary.directives', [])
     .directive(csDonutChart.__name, csDonutChart);
 });

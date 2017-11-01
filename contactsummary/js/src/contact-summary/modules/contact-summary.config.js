@@ -5,22 +5,28 @@ define([
 ], function (angular) {
   'use strict';
 
-  return angular.module('contactsummary.config', ['contactsummary.constants']).config(['settings', '$routeProvider', '$resourceProvider', '$httpProvider', '$logProvider',
-    function (settings, $routeProvider, $resourceProvider, $httpProvider, $logProvider) {
-      $logProvider.debugEnabled(settings.debug);
+  angular.module('contactsummary.config', ['contactsummary.constants']).config(config);
 
-      $routeProvider
-        .when('/', {
-          controller: 'ContactSummaryController',
-          controllerAs: 'ContactSummaryCtrl',
-          templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
-          resolve: {}
-        })
-        .otherwise({redirectTo: '/'});
+  config.$inject = [
+    'settings', '$routeProvider', '$resourceProvider', '$httpProvider',
+    '$logProvider'
+  ];
 
-      $resourceProvider.defaults.stripTrailingSlashes = false;
+  function config (settings, $routeProvider, $resourceProvider, $httpProvider,
+    $logProvider) {
+    $logProvider.debugEnabled(settings.debug);
 
-      $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-    }
-  ]);
+    $routeProvider
+      .when('/', {
+        controller: 'ContactSummaryController',
+        controllerAs: 'ContactSummaryCtrl',
+        templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
+        resolve: {}
+      })
+      .otherwise({redirectTo: '/'});
+
+    $resourceProvider.defaults.stripTrailingSlashes = false;
+
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+  }
 });

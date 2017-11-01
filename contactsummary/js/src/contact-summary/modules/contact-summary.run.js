@@ -5,12 +5,14 @@ define([
 ], function (angular) {
   'use strict';
 
-  return angular.module('contactsummary.run', ['contactsummary.constants']).run(['settings', '$rootScope', '$q', '$log',
-    function (settings, $rootScope, $q, $log) {
-      $log.debug('app.run');
+  angular.module('contactsummary.run', ['contactsummary.constants']).run(run);
 
-      $rootScope.pathTpl = settings.pathTpl;
-      $rootScope.prefix = settings.classNamePrefix;
-    }
-  ]);
+  run.$inject = ['settings', '$rootScope', '$q', '$log'];
+
+  function run (settings, $rootScope, $q, $log) {
+    $log.debug('app.run');
+
+    $rootScope.pathTpl = settings.pathTpl;
+    $rootScope.prefix = settings.classNamePrefix;
+  }
 });
