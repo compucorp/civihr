@@ -4,26 +4,23 @@ define([
   'common/lodash',
   'common/moment',
   'common/angular',
+  'mocks/data/absence-type-data',
   'common/angularMocks',
   'leave-absences/shared/config',
   'leave-absences/absence-tab/app',
   'common/mocks/services/api/contract-mock',
   'mocks/apis/absence-type-api-mock',
   'common/mocks/services/hr-settings-mock'
-], function (_, moment, angular) {
+], function (_, moment, angular, absenceTypeMocked) {
   'use strict';
 
   describe('contactEntitlements', function () {
     var contactId = 202;
     var $componentController, $log, $rootScope, controller, $provide,
-      ContractAPIMock, HRSettingsMock;
+      absenceTypes, ContractAPIMock, HRSettingsMock;
 
     beforeEach(module('leave-absences.templates', 'absence-tab', 'common.mocks', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
-    }));
-
-    beforeEach(inject(function (AbsenceTypeAPIMock) {
-      $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
     }));
 
     beforeEach(inject(['api.contract.mock', 'HR_settings', function (_ContractAPIMock_, _HRSettingsMock_) {
@@ -90,6 +87,10 @@ define([
         it('has amount', function () {
           expect(absence.amount).toEqual(mockedAbsence.leave_amount);
         });
+
+        it('has the calculation unit name', function () {
+          expect(absence.calculation_unit).toBe('days');
+        });
       });
     });
 
@@ -97,8 +98,26 @@ define([
      * Compiles the controller
      */
     function compileComponent () {
-      controller = $componentController('contractEntitlements', null, { contactId: contactId });
+      absenceTypes = getAbsenceTypeMocks();
+
+      controller = $componentController('contractEntitlements', null, {
+        absenceTypes: absenceTypes,
+        contactId: contactId
+      });
       $rootScope.$digest();
+    }
+
+    /**
+     * Returns a list of absence types mocks that have a calculation unit name.
+     *
+     * @return {Array}
+     */
+    function getAbsenceTypeMocks () {
+      return absenceTypeMocked.all().values.map(function (absenceType) {
+        return _.extend({
+          'calculation_unit.name': 'days'
+        }, absenceType);
+      });
     }
 
     /**

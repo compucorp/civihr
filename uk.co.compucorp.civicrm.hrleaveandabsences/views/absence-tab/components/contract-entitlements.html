@@ -18,7 +18,9 @@
             <td>{{contract.position}}</td>
             <td>{{contract.start_date}}</td>
             <td>{{contract.end_date}}</td>
-            <td ng-repeat="absence in contract.absences">{{absence.amount}}</td>
+            <td ng-repeat="absence in contract.absences">
+              {{absence.amount | timeUnitApplier:absence.calculation_unit}}
+            </td>
           </tr>
         </tbody>
       </table>
