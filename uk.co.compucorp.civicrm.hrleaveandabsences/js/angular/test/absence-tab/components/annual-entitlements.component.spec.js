@@ -19,8 +19,8 @@ define([
 
   describe('annualEntitlements', function () {
     var contactId = 202;
-    var $componentController, $log, $provide, $rootScope, absenceTypes,
-      controller, ContactAPIMock, notification;
+    var $componentController, $log, $provide, $rootScope, $uibModal,
+      absenceTypes, controller, ContactAPIMock, notification;
 
     beforeEach(module('leave-absences.templates', 'absence-tab', 'common.mocks', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -38,10 +38,12 @@ define([
         ContactAPIMock = _ContactAPIMock_;
       }]));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _notificationService_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_,
+    _$uibModal_, _notificationService_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
+      $uibModal = _$uibModal_;
       notification = _notificationService_;
       window.alert = function () {}; // prevent alert from being logged in console
 
@@ -80,8 +82,12 @@ define([
         mockedEntitlements = absenceEntitlementMocked.all().values.map(storeEntitlementValue);
       });
 
-      it('has period', function () {
-        expect(absencePeriod.period).toEqual(moment(mockedAbsencePeriod.start_date).format('YYYY'));
+      it('has period id', function () {
+        expect(absencePeriod.id).toBe(mockedAbsencePeriod.id);
+      });
+
+      it('has period title', function () {
+        expect(absencePeriod.title).toEqual(moment(mockedAbsencePeriod.start_date).format('YYYY'));
       });
 
       it('has entitlements', function () {
@@ -127,6 +133,17 @@ define([
 
       it('shows the notification with a comment', function () {
         expect(notification.info).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(String));
+      });
+    });
+
+    describe('when opening the change log', function () {
+      beforeEach(function () {
+        spyOn($uibModal, 'open').and.callThrough();
+        controller.openAnnualEntitlementChangeLog();
+      });
+
+      it('opens a uib modal', function () {
+        expect($uibModal.open).toHaveBeenCalled();
       });
     });
 

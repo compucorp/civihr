@@ -16,10 +16,13 @@
         return settings.pathTpl + 'components/annual-entitlements.html';
       }],
       controllerAs: 'entitlements',
-      controller: ['$log', '$q', 'AbsenceType', 'AbsencePeriod', 'Entitlement', 'Contact', 'notificationService', controller]
+      controller: ['$log', '$q', '$rootElement', '$uibModal', 'AbsenceType',
+        'AbsencePeriod', 'Entitlement', 'Contact', 'notificationService',
+        controller]
     });
 
-    function controller ($log, $q, AbsenceType, AbsencePeriod, Entitlement, Contact, notification) {
+    function controller ($log, $q, $rootElement, $uibModal, AbsenceType, AbsencePeriod,
+      Entitlement, Contact, notification) {
       $log.debug('Component: annual-entitlements');
 
       var vm = this;
@@ -29,6 +32,8 @@
       vm.absencePeriods = [];
       vm.loading = { absencePeriods: true };
       vm.editEntitlementsPageUrl = getEditEntitlementsPageURL(vm.contactId);
+
+      vm.openAnnualEntitlementChangeLog = openAnnualEntitlementChangeLog;
 
       (function init () {
         loadEntitlements().then(loadCommentsAuthors)
@@ -96,6 +101,29 @@
       }
 
       /**
+       * Opens the Anual entitlement change log modal for the current
+       * contact and the given period.
+       */
+      function openAnnualEntitlementChangeLog (periodId) {
+        var template = '<annual-entitlement-change-log' +
+          ' contact-id="modal.contactId"' +
+          ' dismiss-modal="modal.dismiss()"' +
+          ' period-id="modal.periodId"' +
+          '></annual-entitlement-change-log>';
+
+        $uibModal.open({
+          appendTo: $rootElement.children().eq(0),
+          template: template,
+          controller: ['$uibModalInstance', function ($modalInstance) {
+            this.contactId = vm.contactId;
+            this.dismiss = $modalInstance.dismiss;
+            this.periodId = periodId;
+          }],
+          controllerAs: 'modal'
+        });
+      }
+
+      /**
        * Processes entitlements from data and sets them to the controller
        *
        * @param {Object} absencePeriods
@@ -131,7 +159,8 @@
           });
 
           return {
-            period: absencePeriod.title,
+            id: absencePeriod.id,
+            title: absencePeriod.title,
             entitlements: entitlements
           };
         });
