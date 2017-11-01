@@ -10,52 +10,53 @@ class CRM_HRLeaveAndAbsences_Service_LeaveHoursBalanceChangeCalculationTest exte
 
   use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
 
+  private $leaveHoursCalculationService;
+
+  public function setUp() {
+    $this->leaveHoursCalculationService = new LeaveHoursBalanceChangeCalculation();
+  }
+
   public function testGetAmountReturnsCorrectlyForFromDate() {
-    $leaveDaysCalculationService = new leaveHoursBalanceChangeCalculation();
     $leaveRequest = $this->getLeaveRequestInstance();
     $balanceChanges = $this->getBalanceChanges();
-    $amount = $leaveDaysCalculationService->getAmount($leaveRequest, new DateTime('2016-06-01'), $balanceChanges);
+    $amount = $this->leaveHoursCalculationService->getAmount($leaveRequest, new DateTime($leaveRequest->from_date), $balanceChanges);
 
     $this->assertEquals($leaveRequest->from_date_amount, $amount);
   }
 
   public function testGetAmountReturnsCorrectlyForToDate() {
-    $leaveDaysCalculationService = new leaveHoursBalanceChangeCalculation();
     $leaveRequest = $this->getLeaveRequestInstance();
     $balanceChanges = $this->getBalanceChanges();
-    $amount = $leaveDaysCalculationService->getAmount($leaveRequest, new DateTime('2016-06-04'), $balanceChanges);
+    $amount = $this->leaveHoursCalculationService->getAmount($leaveRequest, new DateTime($leaveRequest->to_date), $balanceChanges);
 
     $this->assertEquals($leaveRequest->to_date_amount, $amount);
   }
 
   public function testGetAmountReturnsCorrectlyForDatesInBetweenFromAndToDates() {
-    $leaveDaysCalculationService = new leaveHoursBalanceChangeCalculation();
     $leaveRequest = $this->getLeaveRequestInstance();
     $balanceChanges = $this->getBalanceChanges();
-    $amount = $leaveDaysCalculationService->getAmount($leaveRequest, new DateTime('2016-06-02'), $balanceChanges);
+    $amount = $this->leaveHoursCalculationService->getAmount($leaveRequest, new DateTime('2016-06-02'), $balanceChanges);
     $this->assertEquals($balanceChanges['breakdown']['2016-06-02']['amount'], $amount);
 
-    $amount = $leaveDaysCalculationService->getAmount($leaveRequest, new DateTime('2016-06-03'), $balanceChanges);
+    $amount = $this->leaveHoursCalculationService->getAmount($leaveRequest, new DateTime('2016-06-03'), $balanceChanges);
     $this->assertEquals($balanceChanges['breakdown']['2016-06-03']['amount'], $amount);
   }
 
   public function testGetAmountReturnsZeroForFromDateWhenDeductionNotAllowedForFromDate() {
-    $leaveDaysCalculationService = new leaveHoursBalanceChangeCalculation();
     $leaveRequest = $this->getLeaveRequestInstance();
     $balanceChanges = $this->getBalanceChanges();
     $balanceChanges['breakdown']['2016-06-01']['amount'] = 0;
 
-    $amount = $leaveDaysCalculationService->getAmount($leaveRequest, new DateTime('2016-06-01'), $balanceChanges);
+    $amount = $this->leaveHoursCalculationService->getAmount($leaveRequest, new DateTime('2016-06-01'), $balanceChanges);
     $this->assertEquals(0, $amount);
   }
 
   public function testGetAmountReturnsZeroForToDateWhenDeductionNotAllowedForToDate() {
-    $leaveDaysCalculationService = new leaveHoursBalanceChangeCalculation();
     $leaveRequest = $this->getLeaveRequestInstance();
     $balanceChanges = $this->getBalanceChanges();
     $balanceChanges['breakdown']['2016-06-04']['amount'] = 0;
 
-    $amount = $leaveDaysCalculationService->getAmount($leaveRequest, new DateTime('2016-06-04'), $balanceChanges);
+    $amount = $this->leaveHoursCalculationService->getAmount($leaveRequest, new DateTime('2016-06-04'), $balanceChanges);
     $this->assertEquals(0, $amount);
   }
 
