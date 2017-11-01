@@ -19,14 +19,14 @@ define([
 
   describe('annualEntitlements', function () {
     var contactId = 202;
-    var $componentController, $log, $rootScope, controller, $provide, ContactAPIMock, notification;
+    var $componentController, $log, $provide, $rootScope, absenceTypes,
+      controller, ContactAPIMock, notification;
 
     beforeEach(module('leave-absences.templates', 'absence-tab', 'common.mocks', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (AbsenceTypeAPIMock, AbsencePeriodAPIMock, EntitlementAPIMock) {
-      $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
+    beforeEach(inject(function (AbsencePeriodAPIMock, EntitlementAPIMock) {
       $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
       $provide.value('EntitlementAPI', EntitlementAPIMock);
     }));
@@ -55,10 +55,6 @@ define([
 
     it('has a contact to load for', function () {
       expect(controller.contactId).toEqual(contactId);
-    });
-
-    it('has absence types', function () {
-      expect(JSON.parse(angular.toJson(controller.absenceTypes))).toEqual(absenceTypeMocked.all().values);
     });
 
     it('has absence periods', function () {
@@ -109,6 +105,10 @@ define([
           expect(entitlement.amount).toEqual(mockedEntitlement.value);
         });
 
+        it('has the calculation unit name', function () {
+          expect(entitlement.calculation_unit).toBe('days');
+        });
+
         it('has comment', function () {
           expect(entitlement.comment).toEqual({
             message: mockedEntitlement.comment,
@@ -134,8 +134,26 @@ define([
      * Compiles the controller
      */
     function compileComponent () {
-      controller = $componentController('annualEntitlements', null, { contactId: contactId });
+      absenceTypes = getAbsenceTypeMocks();
+
+      controller = $componentController('annualEntitlements', null, {
+        contactId: contactId,
+        absenceTypes: absenceTypes
+      });
       $rootScope.$digest();
+    }
+
+    /**
+     * Returns a list of absence types mocks that have a calculation unit name.
+     *
+     * @return {Array}
+     */
+    function getAbsenceTypeMocks () {
+      return absenceTypeMocked.all().values.map(function (absenceType) {
+        return _.extend({
+          'calculation_unit.name': 'days'
+        }, absenceType);
+      });
     }
 
     /**

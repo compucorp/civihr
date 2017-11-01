@@ -9,6 +9,7 @@
   ], function (_, moment, components) {
     components.component('annualEntitlements', {
       bindings: {
+        absenceTypes: '<',
         contactId: '<'
       },
       templateUrl: ['settings', function (settings) {
@@ -26,21 +27,12 @@
       var allEntitlements = [];
 
       vm.absencePeriods = [];
-      vm.absenceTypes = [];
       vm.loading = { absencePeriods: true };
       vm.editEntitlementsPageUrl = getEditEntitlementsPageURL(vm.contactId);
 
       (function init () {
-        return $q.all([
-          loadAbsenceTypes(),
-          loadEntitlements()
-        ])
-        .then(function () {
-          return loadCommentsAuthors();
-        })
-        .then(function () {
-          return loadAbsencePeriods();
-        })
+        loadEntitlements().then(loadCommentsAuthors)
+        .then(loadAbsencePeriods)
         .finally(function () {
           vm.loading.absencePeriods = false;
         });
@@ -73,18 +65,6 @@
        */
       function loadAbsencePeriods () {
         return AbsencePeriod.all().then(setAbsencePeriodsProps);
-      }
-
-      /**
-       * Loads absence types
-       *
-       * @return {Promise}
-       */
-      function loadAbsenceTypes () {
-        return AbsenceType.all()
-          .then(function (data) {
-            vm.absenceTypes = data;
-          });
       }
 
       /**
@@ -141,6 +121,7 @@
 
             return leave ? {
               amount: leave.value,
+              calculation_unit: absenceType['calculation_unit.name'],
               comment: leave.comment ? {
                 message: leave.comment,
                 author_name: contacts[leave.editor_id].display_name,

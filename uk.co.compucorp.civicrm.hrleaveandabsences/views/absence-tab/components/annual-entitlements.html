@@ -16,7 +16,9 @@
           <tr ng-repeat="absencePeriod in entitlements.absencePeriods">
             <td>{{absencePeriod.period}}</td>
             <td ng-repeat="entitlement in absencePeriod.entitlements">
-              {{entitlement.amount}}
+              <span ng-if="entitlement">
+                {{entitlement.amount | timeUnitApplier:entitlement.calculation_unit}}
+              </span>
               <i
                 class="fa fa-exclamation-circle text-info pointer"
                 ng-if="entitlement.comment"
