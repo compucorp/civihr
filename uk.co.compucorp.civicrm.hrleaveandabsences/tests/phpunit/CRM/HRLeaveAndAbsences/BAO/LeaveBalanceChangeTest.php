@@ -2714,11 +2714,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'effective_date' => $periodStartDate->format('YmdHis')
     ]);
 
-    //create a public holiday on a working day ('2016-08-04'), thursday of second week
-    $publicHoliday = new PublicHoliday();
-    $publicHoliday->date = date('2016-08-04');
-    PublicHolidayLeaveRequestFabricator::fabricate($contract['contact_id'], $publicHoliday);
-
     $leaveRequest = new LeaveRequest();
     $leaveRequest->contact_id = $contract['contact_id'];
 
@@ -2752,12 +2747,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-03'));
     $this->assertEquals(0, $amount);
 
-    //(2016-08-04) is a thursday which is a working day on the second week but there's a public holiday
-    //existing on that particular date.
+    //(2016-08-04) is a thursday which is a working day on the second week
     $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-04'));
-    $this->assertEquals(0, $amount);
+    $this->assertEquals(-1, $amount);
     $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-04'));
-    $this->assertEquals(0, $amount);
+    $this->assertEquals(-4.5, $amount);
   }
 
   public function testCalculateAmountForDateForAContactWithWorkPatternHavingOneWeek() {
@@ -2780,11 +2774,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'pattern_id' => $pattern->id,
       'effective_date' => $periodStartDate->format('YmdHis')
     ]);
-
-    //create a public holiday on a working day ('2016-08-03')
-    $publicHoliday = new PublicHoliday();
-    $publicHoliday->date = date('2016-08-03');
-    PublicHolidayLeaveRequestFabricator::fabricate($contract['contact_id'], $publicHoliday);
 
     $leaveRequest = new LeaveRequest();
     $leaveRequest->contact_id = $contract['contact_id'];
@@ -2813,11 +2802,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-02'));
     $this->assertEquals(-8, $amount);
 
-    //(2016-08-03) is a Wednesday which is  a working day but a public holiday was created on this date
     $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-03'));
-    $this->assertEquals(0, $amount);
+    $this->assertEquals(-1, $amount);
     $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-03'));
-    $this->assertEquals(0, $amount);
+    $this->assertEquals(-8, $amount);
   }
 
   public function testCalculateAmountForDateForAContactUsingTheDefaultWorkPattern() {
@@ -2835,11 +2823,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     // Working days: monday through friday
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
-
-    //create a public holidays on on of the days
-    $publicHoliday = new PublicHoliday();
-    $publicHoliday->date = date('2016-08-03');
-    PublicHolidayLeaveRequestFabricator::fabricate($contract['contact_id'], $publicHoliday);
 
     $leaveRequest = new LeaveRequest();
     $leaveRequest->contact_id = $contract['contact_id'];
@@ -2868,11 +2851,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-02'));
     $this->assertEquals(-8, $amount);
 
-    //(2016-08-03) is a Wednesday which is a working day but a public holiday was created on this date
+    //(2016-08-03) is a Wednesday which is a working day
     $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-08-03'));
-    $this->assertEquals(0, $amount);
+    $this->assertEquals(-1, $amount);
         $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-08-03'));
-    $this->assertEquals(0, $amount);
+    $this->assertEquals(-8, $amount);
   }
 
   public function testCalculateAmountForDateWhenLeaveDateIsHalfDayAndAmountIsCalculatedInDays() {
