@@ -31,14 +31,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
   private $leaveContact;
 
-  private $absenceType;
-
   public function setUp() {
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
     $this->leaveBalanceChangeService = new LeaveBalanceChangeService();
 
     $this->leaveContact = 1;
-    $this->absenceType = AbsenceTypeFabricator::fabricate();
     $this->registerCurrentLoggedInContactInSession($this->leaveContact);
     CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
   }
@@ -453,8 +450,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     return $this->getLeaveRequestService(true, false, true, true);
   }
   private function getDefaultParams($params = []) {
+    $absenceType = AbsenceTypeFabricator::fabricate();
     $defaultParams =  [
-      'type_id' => $this->absenceType->id,
+      'type_id' => $absenceType->id,
       'contact_id' => $this->leaveContact,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
