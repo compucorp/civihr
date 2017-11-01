@@ -2,15 +2,14 @@
 
 define([
   'common/angular',
+  'common/services/pub-sub',
   'contact-summary/modules/contact-summary.config',
   'contact-summary/modules/contact-summary.constants',
+  'contact-summary/modules/contact-summary.controllers',
+  'contact-summary/modules/contact-summary.directives',
   'contact-summary/modules/contact-summary.filters',
   'contact-summary/modules/contact-summary.run',
-  'contact-summary/modules/contact-summary.services',
-  'contact-summary/controllers/contact-summary.controller',
-  'contact-summary/controllers/key-dates.controller',
-  'contact-summary/controllers/key-details.controller',
-  'contact-summary/directives/donut-chart.directive'
+  'contact-summary/modules/contact-summary.services'
 ], function (angular) {
   angular.module('contactsummary', [
     'ngRoute',
@@ -18,8 +17,8 @@ define([
     'ui.bootstrap',
     'common.services',
     'contactsummary.config',
-    'contactsummary.constants',
     'contactsummary.run',
+    'contactsummary.constants',
     'contactsummary.controllers',
     'contactsummary.directives',
     'contactsummary.filters',
