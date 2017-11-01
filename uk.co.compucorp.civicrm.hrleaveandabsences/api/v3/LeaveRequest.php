@@ -282,7 +282,7 @@ function civicrm_api3_leave_request_calculateBalanceChange($params) {
   if($calculationUnitInHours) {
     if(!empty($params['from_date_type']) || !empty($params['to_date_type'])) {
       throw new InvalidArgumentException(
-        'The from_date_type and to_date_type is not required when Absence Type calculation unit is in hours'
+        'The from_date_type and to_date_type should not be used when Absence Type calculation unit is in hours'
       );
     }
   }

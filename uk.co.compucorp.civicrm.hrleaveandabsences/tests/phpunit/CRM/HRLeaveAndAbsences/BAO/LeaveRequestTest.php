@@ -677,7 +677,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage The to_date_amount should be empty when absence type calculation unit is in days
    */
-  public function testALeaveRequestShouldNotBeCreatedWithToDateAmountTypeWhenAbsenceTypeCalculationUnitIsInDays() {
+  public function testALeaveRequestShouldNotBeCreatedWithToDateAmountWhenAbsenceTypeCalculationUnitIsInDays() {
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
@@ -695,7 +695,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    * @expectedExceptionMessage The from_date_amount should be empty when absence type calculation unit is in days
    */
-  public function testALeaveRequestShouldNotBeCreatedWithFromDateAmountTypeWhenAbsenceTypeCalculationUnitIsInDays() {
+  public function testALeaveRequestShouldNotBeCreatedWithFromDateAmountWhenAbsenceTypeCalculationUnitIsInDays() {
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,

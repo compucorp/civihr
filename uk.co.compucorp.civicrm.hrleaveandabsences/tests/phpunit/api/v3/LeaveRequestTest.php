@@ -2019,7 +2019,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage The from_date_type and to_date_type is not required when Absence Type calculation unit is in hours
+   * @expectedExceptionMessage The from_date_type and to_date_type should not be used when Absence Type calculation unit is in hours
    */
   public function testCalculateBalanceChangeShouldNotAllowParamsWithToDateTypeWhenAbsenceTypeIsInHours() {
     $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
@@ -2035,7 +2035,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage The from_date_type and to_date_type is not required when Absence Type calculation unit is in hours
+   * @expectedExceptionMessage The from_date_type and to_date_type should not be used when Absence Type calculation unit is in hours
    */
   public function testCalculateBalanceChangeShouldNotAllowParamsWithFromDateTypeWhenAbsenceTypeIsInHours() {
     $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
