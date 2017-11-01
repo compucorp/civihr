@@ -6,10 +6,10 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
  * Class CRM_HRLeaveAndAbsences_Service_LeaveHoursBalanceChangeCalculation
  */
 class CRM_HRLeaveAndAbsences_Service_LeaveHoursBalanceChangeCalculation
-  extends CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeCalculation {
+  implements CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeCalculation {
 
   /**
-   * Returns the balance change amount in hours for a leave request in
+   * Returns the balance change amount in hours for a leave request
    * date
    *
    * @param CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
@@ -25,7 +25,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveHoursBalanceChangeCalculation
     $toDate = new DateTime($leaveRequest->to_date);
 
     $amount = $balanceChanges['breakdown'][$leaveDate->format('Y-m-d')]['amount'];
-    
+
     if($leaveDate->format('Y-m-d') == $fromDate->format('Y-m-d') && $amount != 0) {
       return $leaveRequest->from_date_amount;
     }
@@ -33,7 +33,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveHoursBalanceChangeCalculation
     if($leaveDate->format('Y-m-d') == $toDate->format('Y-m-d') && $amount != 0) {
       return $leaveRequest->to_date_amount;
     }
-    
+
     return $amount;
   }
 }

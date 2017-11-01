@@ -3,9 +3,9 @@
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
 /**
- * Class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeCalculation
+ * Interface CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeCalculation
  */
-abstract class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeCalculation {
+interface CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeCalculation {
 
   /**
    * Returns the balance change amount for a leave request
@@ -19,5 +19,5 @@ abstract class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeCalculation {
    *
    * @return float
    */
-  abstract public function getAmount(LeaveRequest $leaveRequest, DateTime $leaveDate, $balanceChanges);
+  public function getAmount(LeaveRequest $leaveRequest, DateTime $leaveDate, $balanceChanges);
 }

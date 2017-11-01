@@ -6,7 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
  * Class leaveDateDaysAmountDeduction
  */
 class CRM_HRLeaveAndAbsences_Service_LeaveDateDaysAmountDeduction
-  extends CRM_HRLeaveAndAbsences_Service_LeaveDateAmountDeduction {
+  implements CRM_HRLeaveAndAbsences_Service_LeaveDateAmountDeduction {
 
   /**
    * @var array
