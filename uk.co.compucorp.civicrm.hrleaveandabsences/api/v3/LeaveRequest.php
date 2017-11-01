@@ -246,8 +246,11 @@ function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
   $spec['type_id'] = [
     'name' => 'type_id',
     'title' => 'Absence Type ID',
+    'description' => 'Absence Type ID for the calculation',
     'type' => CRM_Utils_Type::T_INT,
-    'api.required' => 1
+    'api.required' => 1,
+    'FKClassName' => 'CRM_HRLeaveAndAbsences_BAO_AbsenceType',
+    'FKApiName' => 'AbsenceType',
   ];
 
   $spec['exclude_start_end_dates'] = [

@@ -1595,7 +1595,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->setExpectedException(
       'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
-      'There are only '. $entitlementBalanceChange. ' days leave available. This request cannot be made or approved'
+      'There are only '. $entitlementBalanceChange. ' hours leave available. This request cannot be made or approved'
     );
 
     //four working days which will create a balance change of
