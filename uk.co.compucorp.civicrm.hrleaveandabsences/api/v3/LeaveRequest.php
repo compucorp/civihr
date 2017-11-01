@@ -290,10 +290,10 @@ function civicrm_api3_leave_request_calculateBalanceChange($params) {
   $result = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::calculateBalanceChange(
     $params['contact_id'],
     new DateTime($params['from_date']),
-    !empty($params['from_date_type']) ? $params['from_date_type'] : null,
     new DateTime($params['to_date']),
-    !empty($params['to_date_type']) ? $params['to_date_type'] : null,
     $params['type_id'],
+    !empty($params['from_date_type']) ? $params['from_date_type'] : null,
+    !empty($params['to_date_type']) ? $params['to_date_type'] : null,
     !empty($params['exclude_start_end_dates']) ? true : false
   );
 

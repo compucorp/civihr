@@ -10,7 +10,7 @@ use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException as InvalidLeaveRequestException;
-use \CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 use CRM_HRLeaveAndAbsences_Factory_LeaveDateAmountDeduction as LeaveDateAmountDeductionFactory;
 
@@ -228,8 +228,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if($isCalculationUnitInHours) {
       foreach($hoursUnitRequiredFields as $requiredField) {
-        $fieldNotEmpty = !empty($params[$requiredField]) || (isset($params[$requiredField]) && $params[$requiredField] === 0);
-        if(!$fieldNotEmpty) {
+        $fieldIsEmpty = !isset($params[$requiredField]) || strlen($params[$requiredField]) == 0;
+        if($fieldIsEmpty) {
           throw new InvalidLeaveRequestException(
             "The {$requiredField} can not be empty when absence type calculation unit is in hours",
             "leave_request_empty_{$requiredField}",
@@ -582,10 +582,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $leaveRequestBalance = self::calculateBalanceChange(
       $params['contact_id'],
       $fromDate,
-      !empty($params['from_date_type']) ? $params['from_date_type'] : null,
       $toDate,
-      !empty($params['to_date_type']) ? $params['to_date_type'] : null,
       $params['type_id'],
+      !empty($params['from_date_type']) ? $params['from_date_type'] : null,
+      !empty($params['to_date_type']) ? $params['to_date_type'] : null,
       $excludeStartAndEndDates
     );
 
@@ -940,10 +940,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   public static function calculateBalanceChange(
     $contactId,
     DateTime $fromDate,
-    $fromDateType = null,
     DateTime $toDate,
-    $toDateType = null,
     $absenceTypeID,
+    $fromDateType = null,
+    $toDateType = null,
     $excludeStartAndEndDates = false)
   {
     $params = [

@@ -280,10 +280,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $result = LeaveRequest::calculateBalanceChange(
       $contract['contact_id'],
       $fromDate,
-      $fromType,
       $toDate,
-      $toType,
-      $absenceType->id
+      $absenceType->id,
+      $fromType,
+      $toType
     );
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
@@ -353,10 +353,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $result = LeaveRequest::calculateBalanceChange(
       $periodEntitlement->contact_id,
       $fromDate,
-      $fromType,
       $toDate,
-      $toType,
-      $absenceType->id
+      $absenceType->id,
+      $fromType,
+      $toType
     );
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
@@ -577,10 +577,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $result = LeaveRequest::calculateBalanceChange(
       $contract['contact_id'],
       $fromDate,
-      $fromType,
       $toDate,
-      $toType,
-      $absenceType->id
+      $absenceType->id,
+      $fromType,
+      $toType
     );
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
@@ -4151,9 +4151,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $result = LeaveRequest::calculateBalanceChange(
       $contract['contact_id'],
       $fromDate,
-      null,
       $toDate,
-      null,
       $absenceType->id
     );
 
@@ -4212,10 +4210,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $result = LeaveRequest::calculateBalanceChange(
       $contract['contact_id'],
       $fromDate,
-      null,
       $toDate,
-      null,
       $absenceType->id,
+      null,
+      null,
       $excludeStartAndEndDates
     );
 
@@ -4245,10 +4243,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $result = LeaveRequest::calculateBalanceChange(
       $contract['contact_id'],
       $fromDate,
-      null,
       $toDate,
-      null,
       $absenceType->id,
+      null,
+      null,
       $excludeStartAndEndDates
     );
 
@@ -4278,10 +4276,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $result = LeaveRequest::calculateBalanceChange(
       $contract['contact_id'],
       $fromDate,
-      null,
       $toDate,
-      null,
       $absenceType->id,
+      null,
+      null,
       $excludeStartAndEndDates
     );
 

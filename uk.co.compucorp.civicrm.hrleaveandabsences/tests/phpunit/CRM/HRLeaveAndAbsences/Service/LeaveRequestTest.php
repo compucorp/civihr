@@ -503,10 +503,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     //If the leave request is to be updated with new balance change, the balance would have changed.
     $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
       new DateTime($params['from_date']),
-      $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type'],
-      $params['type_id']
+      $params['type_id'],
+      $params['from_date_type'],
+      $params['to_date_type']
     );
 
     $newBalance = $result['amount'];
@@ -565,10 +565,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     //If the leave request is to be updated with new balance change, the balance would have changed.
     $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
       new DateTime($params['from_date']),
-      $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type'],
-      $params['type_id']
+      $params['type_id'],
+      $params['from_date_type'],
+      $params['to_date_type']
     );
     $newBalance = $result['amount'];
 
@@ -627,10 +627,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     //If the leave request is to be updated with new balance change, the balance would have changed.
     $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
       new DateTime($params['from_date']),
-      $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type'],
-      $params['type_id']
+      $params['type_id'],
+      $params['from_date_type'],
+      $params['to_date_type']
     );
 
     $newBalance = $result['amount'];
@@ -647,10 +647,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     //The expected balance change after changing the dates.
     $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
       new DateTime($params['from_date']),
-      $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type'],
-      $params['type_id']
+      $params['type_id'],
+      $params['from_date_type'],
+      $params['to_date_type']
     );
     $balanceAfterDateChange = $result['amount'];
 
@@ -701,10 +701,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     //If the leave request is to be updated with new balance change, the balance would have changed.
     $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
       new DateTime($params['from_date']),
-      $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type'],
-      $params['type_id']
+      $params['type_id'],
+      $params['from_date_type'],
+      $params['to_date_type']
     );
 
     $newBalance = $result['amount'];
@@ -721,10 +721,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     //The expected balance change after changing the dates.
     $result = LeaveRequest::calculateBalanceChange($this->leaveContact,
       new DateTime($params['from_date']),
-      $params['from_date_type'],
       new DateTime($params['to_date']),
-      $params['to_date_type'],
-      $params['type_id']
+      $params['type_id'],
+      $params['from_date_type'],
+      $params['to_date_type']
     );
     $balanceAfterDateChange = $result['amount'];
 
