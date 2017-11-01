@@ -2,23 +2,13 @@
 
 define([
   'common/angular',
-  'common/lodash',
-  'contact-summary/modules/contact-summary.services',
-  'contact-summary/services/api.service',
-  'contact-summary/services/contract.service',
-  'contact-summary/services/model.service'
-], function (angular, _, services) {
+  'common/lodash'
+], function (angular, _) {
   'use strict';
 
-  /**
-   * @param {ApiService} Api
-   * @param {ModelService} Model
-   * @param {ContractService} Contract
-   * @param $q
-   * @param $log
-   * @returns {ModelService|Object|*}
-   * @constructor
-   */
+  JobRoleService.__name = 'JobRoleService';
+  JobRoleService.$inject = ['$q', '$log', 'ApiService', 'ModelService', 'ContractService'];
+
   function JobRoleService ($q, $log, Api, Model, Contract) {
     $log.debug('Service: JobRoleService');
 
@@ -111,5 +101,5 @@ define([
     return factory;
   }
 
-  services.factory('JobRoleService', ['$q', '$log', 'ApiService', 'ModelService', 'ContractService', JobRoleService]);
+  return JobRoleService;
 });

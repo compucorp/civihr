@@ -2,25 +2,15 @@
 
 define([
   'common/angular',
-  'common/lodash',
-  'contact-summary/modules/contact-summary.services',
-  'contact-summary/services/api.service',
-  'contact-summary/services/contact-details.service',
-  'contact-summary/services/model.service'
-], function (angular, _, services) {
+  'common/lodash'
+], function (angular, _) {
   'use strict';
 
   var promiseCache = {};
 
-  /**
-   * @param {ApiService} Api
-   * @param {ModelService} Model
-   * @param {ContactDetailsService} ContactDetails
-   * @param $q
-   * @param $log
-   * @returns {ModelService|Object|ItemService|*}
-   * @constructor
-   */
+  ContractService.__name = 'ContractService';
+  ContractService.$inject = ['$q', '$log', 'ApiService', 'ModelService', 'ContactDetailsService'];
+
   function ContractService ($q, $log, Api, Model, ContactDetails) {
     $log.debug('Service: Contract Service');
 
@@ -297,5 +287,5 @@ define([
     return factory;
   }
 
-  services.factory('ContractService', ['$q', '$log', 'ApiService', 'ModelService', 'ContactDetailsService', ContractService]);
+  return ContractService;
 });

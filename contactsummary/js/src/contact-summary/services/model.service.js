@@ -1,19 +1,13 @@
 /* eslint-env amd */
 
 define([
-  'contact-summary/modules/contact-summary.services',
-  'contact-summary/services/item.service'
+  'contact-summary/modules/contact-summary.services'
 ], function (services) {
   'use strict';
 
-  /**
-   * Base service to extend.
-   *
-   * This will have common functionality to avoid duplication of functionality between services.
-   *
-   * @param {ItemService} Item
-   * @constructor
-   */
+  ModelService.__name = 'ModelService';
+  ModelService.$inject = ['ItemService'];
+
   function ModelService (Item) {
     /**
      * @ngdoc service
@@ -80,5 +74,5 @@ define([
     return factory;
   }
 
-  services.factory('ModelService', ['ItemService', ModelService]);
+  return ModelService;
 });

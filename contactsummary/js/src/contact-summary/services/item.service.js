@@ -2,14 +2,12 @@
 
 define([
   'common/angular',
-  'common/moment',
-  'contact-summary/modules/contact-summary.services'
-], function (angular, moment, services) {
+  'common/moment'
+], function (angular, moment) {
   'use strict';
 
-  /**
-   * @constructor
-   */
+  ItemService.__name = 'ItemService';
+
   function ItemService () {
     /**
      * @ngdoc service
@@ -68,5 +66,5 @@ define([
     return factory;
   }
 
-  services.factory('ItemService', ItemService);
+  return ItemService;
 });

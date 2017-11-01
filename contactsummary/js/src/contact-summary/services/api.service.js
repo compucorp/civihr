@@ -2,12 +2,14 @@
 
 (function ($) {
   define([
-    'common/angular',
-    'contact-summary/modules/contact-summary.services'
-  ], function (angular, services) {
+    'common/angular'
+  ], function (angular) {
     'use strict';
 
-    services.factory('ApiService', ['$http', '$q', function ($http, $q) {
+    ApiService.__name = 'ApiService';
+    ApiService.$inject = ['$http', '$q'];
+
+    function ApiService ($http, $q) {
       /**
        * @ngdoc function
        * @param entityName
@@ -113,6 +115,8 @@
           // todo
         }
       };
-    }]);
+    }
+
+    return ApiService;
   });
 }(CRM.$));

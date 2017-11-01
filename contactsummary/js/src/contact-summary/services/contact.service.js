@@ -1,23 +1,13 @@
 /* eslint-env amd */
 
 define([
-  'common/lodash',
-  'contact-summary/modules/contact-summary.services',
-  'contact-summary/services/model.service',
-  'contact-summary/services/contact-details.service',
-  'contact-summary/services/contract.service'
-], function (_, services) {
+  'common/lodash'
+], function (_) {
   'use strict';
 
-  /**
-   * @param {ModelService} Model
-   * @param ContactDetails
-   * @param {ContractService} Contract
-   * @param $q
-   * @param $log
-   * @returns {Object}
-   * @constructor
-   */
+  ContactService.__name = 'ContactService';
+  ContactService.$inject = ['$log', '$q', 'ModelService', 'ContactDetailsService', 'ContractService'];
+
   function ContactService ($log, $q, Model, ContactDetails, Contract) {
     $log.debug('Service: ContactService');
 
@@ -77,5 +67,5 @@ define([
     }
   }
 
-  services.factory('ContactService', ['$log', '$q', 'ModelService', 'ContactDetailsService', 'ContractService', ContactService]);
+  return ContactService;
 });

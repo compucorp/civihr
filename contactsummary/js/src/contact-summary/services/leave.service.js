@@ -3,25 +3,15 @@
 define([
   'common/angular',
   'common/lodash',
-  'contact-summary/modules/contact-summary.services',
-  'common/moment',
-  'contact-summary/services/api.service',
-  'contact-summary/services/model.service',
-  'contact-summary/services/contact-details.service'
-], function (angular, _, services, moment) {
+  'common/moment'
+], function (angular, _, moment) {
   'use strict';
 
   var promiseCache = {};
 
-  /**
-   * @param {ApiService} Api
-   * @param {ModelService} Model
-   * @param {ContactDetailsService} ContactDetails
-   * @param $q
-   * @param $log
-   * @returns {ModelService|Object|*}
-   * @constructor
-   */
+  LeaveService.__name = 'LeaveService';
+  LeaveService.$inject = ['$q', '$log', '$filter', 'ApiService', 'ModelService', 'ContactDetailsService'];
+
   function LeaveService ($q, $log, $filter, Api, Model, ContactDetails) {
     $log.debug('Service: LeaveService');
 
@@ -452,5 +442,5 @@ define([
     return factory;
   }
 
-  services.factory('LeaveService', ['$q', '$log', '$filter', 'ApiService', 'ModelService', 'ContactDetailsService', LeaveService]);
+  return LeaveService;
 });

@@ -2,23 +2,13 @@
 
 define([
   'common/lodash',
-  'common/moment',
-  'contact-summary/modules/contact-summary.services',
-  'contact-summary/modules/contact-summary.constants',
-  'contact-summary/services/api.service',
-  'contact-summary/services/model.service'
-], function (_, moment, services) {
+  'common/moment'
+], function (_, moment) {
   'use strict';
 
-  /**
-   * @param Api
-   * @param {ModelService} Model
-   * @param settings
-   * @param $q
-   * @param $log
-   * @returns {*|Object|ModelService}
-   * @constructor
-   */
+  ContactDetailsService.__name = 'ContactDetailsService';
+  ContactDetailsService.$inject = ['$q', '$log', 'ApiService', 'ModelService', 'settings'];
+
   function ContactDetailsService ($q, $log, Api, Model, settings) {
     $log.debug('Service: ContactDetailsService');
 
@@ -94,5 +84,5 @@ define([
     return factory;
   }
 
-  services.factory('ContactDetailsService', ['$q', '$log', 'ApiService', 'ModelService', 'settings', ContactDetailsService]);
+  return ContactDetailsService;
 });
