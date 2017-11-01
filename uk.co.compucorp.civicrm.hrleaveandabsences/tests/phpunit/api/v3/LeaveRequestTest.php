@@ -2275,7 +2275,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenFromDateAmountIsEmptyAndAbsenceTypeIsCalculatedInHours() {
     $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
-    $params = $this->mergeWithDefaultLeaveRequestParams(['from_date_amount' => '', 'type_id' => $absenceType->id]);
+    $params = $this->mergeWithDefaultLeaveRequestInHoursParams(['from_date_amount' => '', 'type_id' => $absenceType->id]);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
     $errorMessage = 'The from_date_amount can not be empty when absence type calculation unit is in hours';

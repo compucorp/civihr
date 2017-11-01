@@ -228,7 +228,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     if($isCalculationUnitInHours) {
       foreach($hoursUnitRequiredFields as $requiredField) {
-        if(!isset($params[$requiredField])) {
+        $fieldNotEmpty = !empty($params[$requiredField]) || (isset($params[$requiredField]) && $params[$requiredField] === 0);
+        if(!$fieldNotEmpty) {
           throw new InvalidLeaveRequestException(
             "The {$requiredField} can not be empty when absence type calculation unit is in hours",
             "leave_request_empty_{$requiredField}",
