@@ -3628,7 +3628,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertNotNull($balanceChanges[$dates[0]->id]);
   }
 
-  public function testCalculateAmountForDateReturnsCorrectlyForDateAndHoursDeduction() {
+  public function testCalculateAmountForDateReturnsCorrectly() {
     $periodStartDate = new DateTime('2016-01-01');
 
     AbsencePeriodFabricator::fabricate([
@@ -3649,19 +3649,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $leaveRequest->contact_id = 1;
 
     $amountToReturn = -2;
-    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-07-28'), $amountToReturn);
+    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-07-28'), $amountToReturn);
     $this->assertEquals($amountToReturn, $amount);
 
     $amountToReturn = -1;
-    $amount = $this->calculateAmountForDateInDays($leaveRequest, new DateTime('2016-07-29'), $amountToReturn);
+    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-07-29'), $amountToReturn);
     $this->assertEquals($amountToReturn, $amount);
 
     $amountToReturn = -8;
-    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-07-29 14:00'), $amountToReturn);
+    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-07-29 14:00'), $amountToReturn);
     $this->assertEquals($amountToReturn, $amount);
 
     $amountToReturn = -4.5;
-    $amount = $this->calculateAmountForDateInHours($leaveRequest, new DateTime('2016-07-29 13:00'), $amountToReturn);
+    $amount = $this->calculateAmountForDate($leaveRequest, new DateTime('2016-07-29 13:00'), $amountToReturn);
     $this->assertEquals($amountToReturn, $amount);
   }
 
@@ -3673,13 +3673,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     return $record;
   }
 
-  private function calculateAmountForDateInDays(LeaveRequest $leaveRequest, DateTime $date, $amount) {
-    $dayAmountDeductionService = $this->createLeaveDateDaysAmountDeductionServiceMock($amount);
+  private function calculateAmountForDate(LeaveRequest $leaveRequest, DateTime $date, $amount) {
+    $dayAmountDeductionService = $this->createLeaveDateAmountDeductionServiceMock($amount);
     return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date, $dayAmountDeductionService);
-  }
-
-  private function calculateAmountForDateInHours(LeaveRequest $leaveRequest, DateTime $date, $amount) {
-    $hoursAmountDeductionService = $this->createLeaveDateHoursAmountDeductionServiceMock($amount);
-    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date, $hoursAmountDeductionService);
   }
 }

@@ -258,20 +258,8 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
     PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday, $balanceChangeServiceMock);
   }
 
-  public function createLeaveDateDaysAmountDeductionServiceMock($amount) {
-    $dateAmountDeductionService = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Service_LeaveDateDaysAmountDeduction::class)
-      ->setMethods(['calculate'])
-      ->getMock();
-
-    $dateAmountDeductionService->expects($this->once())
-      ->method('calculate')
-      ->will($this->returnValue($amount * -1));
-
-    return $dateAmountDeductionService;
-  }
-
-  public function createLeaveDateHoursAmountDeductionServiceMock($amount) {
-    $dateAmountDeductionService = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Service_LeaveDateHoursAmountDeduction::class)
+  public function createLeaveDateAmountDeductionServiceMock($amount) {
+    $dateAmountDeductionService = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Service_LeaveDateAmountDeduction::class)
       ->setMethods(['calculate'])
       ->getMock();
 
