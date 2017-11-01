@@ -11,37 +11,37 @@ define([
 ], function (angular, _, moment) {
   'use strict';
 
-  xdescribe('LeaveService', function () {
-    var LeaveService,
-      ApiServiceMock, ModelServiceMock, ContactDetailsServiceMock,
+  xdescribe('leaveService', function () {
+    var leaveService,
+      apiServiceMock, modelServiceMock, contactDetailsServiceMock,
       rootScope;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks',
       'contact-summary.templates'));
 
     beforeEach(module(function ($provide) {
-      $provide.factory('ApiService', function () {
-        return ApiServiceMock;
+      $provide.factory('apiService', function () {
+        return apiServiceMock;
       });
 
-      $provide.factory('ModelService', function () {
-        return ModelServiceMock;
+      $provide.factory('modelService', function () {
+        return modelServiceMock;
       });
 
-      $provide.factory('ContactDetailsService', function () {
-        return ContactDetailsServiceMock;
+      $provide.factory('contactDetailsService', function () {
+        return contactDetailsServiceMock;
       });
     }));
 
     beforeEach(inject(function ($injector) {
-      ApiServiceMock = $injector.get('ApiServiceMock');
-      ModelServiceMock = $injector.get('ModelServiceMock');
-      ContactDetailsServiceMock = $injector.get('ContactDetailsServiceMock');
+      apiServiceMock = $injector.get('apiServiceMock');
+      modelServiceMock = $injector.get('modelServiceMock');
+      contactDetailsServiceMock = $injector.get('contactDetailsServiceMock');
       rootScope = $injector.get('$rootScope');
     }));
 
-    beforeEach(inject(function (_LeaveService_) {
-      LeaveService = _LeaveService_;
+    beforeEach(inject(function (_leaveService_) {
+      leaveService = _leaveService_;
     }));
 
     describe('get()', function () {
@@ -76,19 +76,19 @@ define([
       };
 
       beforeEach(function () {
-        ApiServiceMock.respondGet('HRAbsenceType', expectedAbsenceTypes);
-        ApiServiceMock.respondPost('Activity', 'getabsences', expectedAbsences);
-        ApiServiceMock.respondGet('HRAbsenceEntitlement', expectedEntitlement);
-        ContactDetailsServiceMock.respond('get', {id: 123});
+        apiServiceMock.respondGet('HRAbsenceType', expectedAbsenceTypes);
+        apiServiceMock.respondPost('Activity', 'getabsences', expectedAbsences);
+        apiServiceMock.respondGet('HRAbsenceEntitlement', expectedEntitlement);
+        contactDetailsServiceMock.respond('get', {id: 123});
 
-        LeaveService.getCurrent().then(function (response) {
+        leaveService.getCurrent().then(function (response) {
           leaves = response;
         });
 
         rootScope.$digest();
 
-        ApiServiceMock.flush();
-        ContactDetailsServiceMock.flush();
+        apiServiceMock.flush();
+        contactDetailsServiceMock.flush();
       });
 
       it('should return leaves', function () {

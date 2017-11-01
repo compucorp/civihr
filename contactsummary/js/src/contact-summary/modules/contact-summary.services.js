@@ -10,16 +10,16 @@ define([
   'contact-summary/services/job-role.service',
   'contact-summary/services/leave.service',
   'contact-summary/services/model.service'
-], function (angular, ApiService, ContactDetailsService, ContactService, ContractService, ItemService, JobRoleService, LeaveService, ModelService) {
+], function (angular, apiService, contactDetailsService, contactService, contractService, itemService, jobRoleService, leaveService, modelService) {
   'use strict';
 
   return angular.module('contactsummary.services', [])
-    .factory(ApiService.__name, ApiService)
-    .factory(ContactDetailsService.__name, ContactDetailsService)
-    .factory(ContactService.__name, ContactService)
-    .factory(ContractService.__name, ContractService)
-    .factory(ItemService.__name, ItemService)
-    .factory(JobRoleService.__name, JobRoleService)
-    .factory(LeaveService.__name, LeaveService)
-    .factory(ModelService.__name, ModelService);
+    .factory(apiService.__name, apiService)
+    .factory(contactDetailsService.__name, contactDetailsService)
+    .factory(contactService.__name, contactService)
+    .factory(contractService.__name, contractService)
+    .factory(itemService.__name, itemService)
+    .factory(jobRoleService.__name, jobRoleService)
+    .factory(leaveService.__name, leaveService)
+    .factory(modelService.__name, modelService);
 });

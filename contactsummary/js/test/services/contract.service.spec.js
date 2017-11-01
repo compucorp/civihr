@@ -9,37 +9,37 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  describe('ContractService', function () {
-    var ContractService,
-      ApiServiceMock, ContactDetailsServiceMock, ModelServiceMock,
+  describe('contractService', function () {
+    var contractService,
+      apiServiceMock, contactDetailsServiceMock, modelServiceMock,
       rootScope;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks',
       'contact-summary.templates'));
 
     beforeEach(module(function ($provide) {
-      $provide.factory('ApiService', function () {
-        return ApiServiceMock;
+      $provide.factory('apiService', function () {
+        return apiServiceMock;
       });
 
-      $provide.factory('ModelService', function () {
-        return ModelServiceMock;
+      $provide.factory('modelService', function () {
+        return modelServiceMock;
       });
 
-      $provide.factory('ContactDetailsService', function () {
-        return ContactDetailsServiceMock;
+      $provide.factory('contactDetailsService', function () {
+        return contactDetailsServiceMock;
       });
     }));
 
     beforeEach(inject(function ($injector) {
-      ApiServiceMock = $injector.get('ApiServiceMock');
-      ContactDetailsServiceMock = $injector.get('ContactDetailsServiceMock');
-      ModelServiceMock = $injector.get('ModelServiceMock');
+      apiServiceMock = $injector.get('apiServiceMock');
+      contactDetailsServiceMock = $injector.get('contactDetailsServiceMock');
+      modelServiceMock = $injector.get('modelServiceMock');
       rootScope = $injector.get('$rootScope');
     }));
 
-    beforeEach(inject(function (_ContractService_) {
-      ContractService = _ContractService_;
+    beforeEach(inject(function (_contractService_) {
+      contractService = _contractService_;
     }));
 
     describe('get()', function () {
@@ -64,18 +64,18 @@ define([
       };
 
       beforeEach(function () {
-        ApiServiceMock.respondGet('HRJobContract', expectedContracts);
-        ApiServiceMock.respondGet('HRJobDetails', expectedContractDetails);
-        ContactDetailsServiceMock.respond('get', {id: 123});
+        apiServiceMock.respondGet('HRJobContract', expectedContracts);
+        apiServiceMock.respondGet('HRJobDetails', expectedContractDetails);
+        contactDetailsServiceMock.respond('get', {id: 123});
 
-        ContractService.get().then(function (response) {
+        contractService.get().then(function (response) {
           contracts = response;
         });
 
         rootScope.$digest();
 
-        ApiServiceMock.flush();
-        ContactDetailsServiceMock.flush();
+        apiServiceMock.flush();
+        contactDetailsServiceMock.flush();
       });
 
       it('should return contracts', function () {

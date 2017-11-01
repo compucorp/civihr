@@ -5,26 +5,19 @@ define([
 ], function (_) {
   'use strict';
 
-  ContactService.__name = 'ContactService';
-  ContactService.$inject = ['$log', '$q', 'ModelService', 'ContactDetailsService', 'ContractService'];
+  contactService.__name = 'contactService';
+  contactService.$inject = ['$log', '$q', 'modelService', 'contactDetailsService', 'contractService'];
 
-  function ContactService ($log, $q, Model, ContactDetails, Contract) {
-    $log.debug('Service: ContactService');
+  function contactService ($log, $q, Model, ContactDetails, Contract) {
+    $log.debug('Service: contactService');
 
-    /**
-     * @ngdoc service
-     * @name ContactService
-     */
     var factory = Model.createInstance();
 
     /**
-     * @ngdoc method
-     * @name get
-     * @methodOf ContactService
      * @returns {*}
      */
     factory.get = function () {
-      /** @type {(ContactService|ModelService)} */
+      /** @type {(contactService|ModelService)} */
       var self = this;
 
       return init().then(function () {
@@ -67,5 +60,5 @@ define([
     }
   }
 
-  return ContactService;
+  return contactService;
 });

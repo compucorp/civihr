@@ -8,18 +8,12 @@ define([
 
   var promiseCache = {};
 
-  ContractService.__name = 'ContractService';
-  ContractService.$inject = ['$q', '$log', 'ApiService', 'ModelService', 'ContactDetailsService'];
+  contractService.__name = 'contractService';
+  contractService.$inject = ['$q', '$log', 'apiService', 'modelService', 'contactDetailsService'];
 
-  function ContractService ($q, $log, Api, Model, ContactDetails) {
+  function contractService ($q, $log, Api, Model, ContactDetails) {
     $log.debug('Service: Contract Service');
 
-    /**
-     * TODO: Implement a collection and extend it instead
-     *
-     * @ngdoc service
-     * @name ContractService
-     */
     var factory = {};
 
     initializeCollection();
@@ -29,13 +23,10 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name get
-     * @methodOf ContractService
      * @returns {*}
      */
     factory.get = function () {
-      /** @type {(ContractService|ModelService)} */
+      /** @type {(contractService|ModelService)} */
       var self = this;
 
       return init().then(function () {
@@ -48,10 +39,6 @@ define([
      * A primary contract is:
      * 1. (If exists) a contract with is_primary=1 that is active, or
      * 2. The most recent contract that is active
-     *
-     * @ngdoc method
-     * @name getPrimary
-     * @methodOf ContractService
      */
     factory.getPrimary = function () {
       return this.get().then(function (response) {
@@ -65,10 +52,6 @@ define([
 
     /**
      * Reset contracts and promiseCache to initial state
-     * @ngdoc method
-     * @name resetContracts
-     * @methodOf ContractService
-     * @returns void
      */
     factory.resetContracts = function () {
       contracts = [];
@@ -112,9 +95,6 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name getContractDetails
-     * @methodOf ContractService
      * @param id
      * @returns {*}
      */
@@ -174,10 +154,6 @@ define([
      *   months: 2,
      *   years: 0
      * }
-     *
-     * @name getLengthOfService
-     * @methodOf ContractService
-     * @returns {*}
      */
     factory.getLengthOfService = function () {
       var deferred = $q.defer();
@@ -287,5 +263,5 @@ define([
     return factory;
   }
 
-  return ContractService;
+  return contractService;
 });

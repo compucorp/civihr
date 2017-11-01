@@ -6,16 +6,12 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  JobRoleService.__name = 'JobRoleService';
-  JobRoleService.$inject = ['$q', '$log', 'ApiService', 'ModelService', 'ContractService'];
+  jobRoleService.__name = 'jobRoleService';
+  jobRoleService.$inject = ['$q', '$log', 'apiService', 'modelService', 'contractService'];
 
-  function JobRoleService ($q, $log, Api, Model, Contract) {
-    $log.debug('Service: JobRoleService');
+  function jobRoleService ($q, $log, Api, Model, Contract) {
+    $log.debug('Service: jobRoleService');
 
-    /**
-     * @ngdoc service
-     * @name JobRoleService
-     */
     var factory = {};
 
     factory.collection = {
@@ -39,13 +35,9 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name get
-     * @methodOf JobRoleService
      * @returns {*}
      */
     factory.get = function () {
-      /** @type {(JobRoleService|ModelService)} */
       var self = this;
 
       return init().then(function () {
@@ -101,5 +93,5 @@ define([
     return factory;
   }
 
-  return JobRoleService;
+  return jobRoleService;
 });

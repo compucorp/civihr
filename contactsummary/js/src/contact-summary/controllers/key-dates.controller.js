@@ -7,7 +7,7 @@ define([
   'use strict';
 
   KeyDatesController.__name = 'KeyDatesController';
-  KeyDatesController.$inject = ['$log', 'ContractService', 'JobRoleService', 'pubSub'];
+  KeyDatesController.$inject = ['$log', 'contractService', 'jobRoleService', 'pubSub'];
 
   function KeyDatesController ($log, Contract, JobRole, pubSub) {
     $log.debug('Controller: KeyDatesController');

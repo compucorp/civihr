@@ -6,27 +6,19 @@ define([
 ], function (_, moment) {
   'use strict';
 
-  ContactDetailsService.__name = 'ContactDetailsService';
-  ContactDetailsService.$inject = ['$q', '$log', 'ApiService', 'ModelService', 'settings'];
+  contactDetailsService.__name = 'contactDetailsService';
+  contactDetailsService.$inject = ['$q', '$log', 'apiService', 'modelService', 'settings'];
 
-  function ContactDetailsService ($q, $log, Api, Model, settings) {
-    $log.debug('Service: ContactDetailsService');
+  function contactDetailsService ($q, $log, Api, Model, settings) {
+    $log.debug('Service: contactDetailsService');
 
-    /**
-     * @ngdoc service
-     * @name ContactDetailsService
-     */
     var factory = Model.createInstance();
 
     /**
-     * @ngdoc method
-     * @name get
-     * @methodOf ContactDetailsService
-     * @this ContactDetailsService
      * @returns {*}
      */
     factory.get = function () {
-      /** @type {(ContactDetailsService|ModelService)} */
+      /** @type {(contactDetailsService|ModelService)} */
       var self = this;
       var deferred = $q.defer();
 
@@ -84,5 +76,5 @@ define([
     return factory;
   }
 
-  return ContactDetailsService;
+  return contactDetailsService;
 });

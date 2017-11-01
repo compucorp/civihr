@@ -9,20 +9,12 @@ define([
 
   var promiseCache = {};
 
-  LeaveService.__name = 'LeaveService';
-  LeaveService.$inject = ['$q', '$log', '$filter', 'ApiService', 'ModelService', 'ContactDetailsService'];
+  leaveService.__name = 'leaveService';
+  leaveService.$inject = ['$q', '$log', '$filter', 'apiService', 'modelService', 'contactDetailsService'];
 
-  function LeaveService ($q, $log, $filter, Api, Model, ContactDetails) {
-    $log.debug('Service: LeaveService');
+  function leaveService ($q, $log, $filter, Api, Model, ContactDetails) {
+    $log.debug('Service: leaveService');
 
-    // /////////////////
-    // Public Members //
-    // /////////////////
-
-    /**
-     * @ngdoc service
-     * @name LeaveService
-     */
     var factory = {};
 
     factory.collection = {
@@ -65,13 +57,9 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name get
-     * @methodOf LeaveService
      * @returns {*}
      */
     factory.get = function () {
-      /** @type {(LeaveService|ModelService)} */
       var self = this;
       var periodId;
 
@@ -81,7 +69,6 @@ define([
     };
 
     factory.getCurrent = function () {
-      /** @type {(LeaveService|ModelService)} */
       var self = this;
       var deferred = $q.defer();
       var periodId;
@@ -107,7 +94,6 @@ define([
     };
 
     factory.getPrevious = function () {
-      /** @type {(LeaveService|ModelService)} */
       var self = this;
       var deferred = $q.defer();
       var periodId;
@@ -129,9 +115,7 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name getEntitlement
-     * @methodOf LeaveService
+     *
      */
     factory.getEntitlement = function (periodId) {
       var deferred = $q.defer();
@@ -158,9 +142,6 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name getAbsences
-     * @methodOf LeaveService
      * @returns {*}
      */
     factory.getAbsences = function (periodId) {
@@ -191,9 +172,7 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name getAbsenceTypes
-     * @methodOf LeaveService
+     *
      */
     factory.getAbsenceTypes = function () {
       var deferred = $q.defer();
@@ -216,9 +195,6 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name getStaffAverage
-     * @methodOf LeaveService
      * @returns {*}
      */
     factory.getStaffAverage = function (type) {
@@ -255,10 +231,6 @@ define([
     factory.getDepartmentAverage = function () {
       // todo: need to revisit this once it has been decided which department to show the average for.
     };
-
-    // ///////////////////
-    // Private Members //
-    // ///////////////////
 
     var absenceTypes = [];
     var absences;
@@ -391,8 +363,6 @@ define([
       });
 
       factory.collection.insertItem(periodId, data);
-
-      // if (_.size(data)) factory.setData(data); // todo
     }
 
     function assembleAbsences (periodId) {
@@ -435,12 +405,10 @@ define([
       });
 
       factory.collection.insertItem(periodId, data);
-
-      // if (_.size(data)) factory.setData(data); // todo
     }
 
     return factory;
   }
 
-  return LeaveService;
+  return leaveService;
 });

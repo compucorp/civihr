@@ -10,7 +10,7 @@ define([
 
   describe('KeyDetailsController', function () {
     var ctrlConstructor,
-      PubSubMock, ContractServiceMock, ContactDetailsServiceMock;
+      PubSubMock, contractServiceMock, contactDetailsServiceMock;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks'));
 
@@ -19,30 +19,30 @@ define([
         return PubSubMock;
       });
 
-      $provide.factory('ContractService', function () {
-        return ContractServiceMock;
+      $provide.factory('contractService', function () {
+        return contractServiceMock;
       });
 
-      $provide.factory('ContactDetailsService', function () {
-        return ContactDetailsServiceMock;
+      $provide.factory('contactDetailsService', function () {
+        return contactDetailsServiceMock;
       });
     }));
 
     beforeEach(inject(function ($injector, _$controller_) {
       PubSubMock = $injector.get('PubSubMock');
-      ContractServiceMock = $injector.get('ContractServiceMock');
-      ContactDetailsServiceMock = $injector.get('ContactDetailsServiceMock');
+      contractServiceMock = $injector.get('contractServiceMock');
+      contactDetailsServiceMock = $injector.get('contactDetailsServiceMock');
       ctrlConstructor = _$controller_;
     }));
 
     describe('constructor', function () {
       it('Should subscribe for contract changes', function () {
-        spyOn(ContactDetailsServiceMock, 'get').and.callThrough();
+        spyOn(contactDetailsServiceMock, 'get').and.callThrough();
         ctrlConstructor('KeyDetailsController');
         expect(PubSubMock.subscribe).toHaveBeenCalledWith('contract-refresh', jasmine.any(Function));
-        expect(ContractServiceMock.resetContracts).toHaveBeenCalled();
-        expect(ContactDetailsServiceMock.data.item).toEqual({});
-        expect(ContactDetailsServiceMock.get).toHaveBeenCalled();
+        expect(contractServiceMock.resetContracts).toHaveBeenCalled();
+        expect(contactDetailsServiceMock.data.item).toEqual({});
+        expect(contactDetailsServiceMock.get).toHaveBeenCalled();
       });
     });
   });

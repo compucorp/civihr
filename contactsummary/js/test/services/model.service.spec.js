@@ -7,32 +7,32 @@ define([
 ], function () {
   'use strict';
 
-  describe('ModelService', function () {
-    var ModelService,
-      ItemServiceMock;
+  describe('modelService', function () {
+    var modelService,
+      itemServiceMock;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks'));
 
     beforeEach(module(function ($provide) {
-      $provide.factory('ItemService', function () {
-        return ItemServiceMock;
+      $provide.factory('itemService', function () {
+        return itemServiceMock;
       });
     }));
 
     beforeEach(inject(function ($injector) {
-      ItemServiceMock = $injector.get('ItemServiceMock');
+      itemServiceMock = $injector.get('itemServiceMock');
     }));
 
-    beforeEach(inject(function (_ModelService_) {
-      ModelService = _ModelService_;
+    beforeEach(inject(function (_modelService_) {
+      modelService = _modelService_;
     }));
 
     describe('createInstance', function () {
       it('should create the expected instance', function () {
-        var instance = ModelService.createInstance();
+        var instance = modelService.createInstance();
 
         // Because 'instanceof' isn't allowed for instances created from object literals
-        expect(ModelService.isPrototypeOf(instance)).toBe(true);
+        expect(modelService.isPrototypeOf(instance)).toBe(true);
       });
     });
 
@@ -41,14 +41,14 @@ define([
       var expectedData = {id: 123, dateOfBirth: '1970/01/01'};
 
       beforeEach(function () {
-        ItemServiceMock.get.and.returnValue(expectedData);
+        itemServiceMock.get.and.returnValue(expectedData);
 
-        instance = ModelService.createInstance();
+        instance = modelService.createInstance();
         data = instance.getData();
       });
 
-      it('should call "get()" on ItemService', function () {
-        expect(ItemServiceMock.get).toHaveBeenCalled();
+      it('should call "get()" on itemService', function () {
+        expect(itemServiceMock.get).toHaveBeenCalled();
       });
 
       it('should return the expected data', function () {
@@ -61,13 +61,13 @@ define([
       var expectedId = 123;
 
       beforeEach(function () {
-        instance = ModelService.createInstance();
+        instance = modelService.createInstance();
 
         instance.setDataKey('id', expectedId);
       });
 
-      it('should call "setKey()" on ItemService', function () {
-        expect(ItemServiceMock.setKey).toHaveBeenCalledWith('id', expectedId);
+      it('should call "setKey()" on itemService', function () {
+        expect(itemServiceMock.setKey).toHaveBeenCalledWith('id', expectedId);
       });
     });
   });

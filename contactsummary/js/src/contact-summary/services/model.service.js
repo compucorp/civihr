@@ -5,30 +5,16 @@ define([
 ], function (services) {
   'use strict';
 
-  ModelService.__name = 'ModelService';
-  ModelService.$inject = ['ItemService'];
+  modelService.__name = 'modelService';
+  modelService.$inject = ['itemService'];
 
-  function ModelService (Item) {
-    /**
-     * @ngdoc service
-     * @name ModelService
-     * @type {Object}
-     */
+  function modelService (Item) {
     var factory = {};
 
-    /**
-     * @name data
-     * @propertyOf ModelService
-     * @type {ItemService}
-     */
     factory.data = {};
 
     /**
-     * @ngdoc method
-     * @name createInstance
-     * @methodOf ModelService
-     * @returns {(ModelService|Object)}
-     * @constructs
+     * @returns {(modelService|Object)}
      */
     factory.createInstance = function () {
       var instance = Object.create(this);
@@ -38,10 +24,6 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name getData
-     * @methodOf ModelService
-     * @this factory
      * @returns {Object}
      */
     factory.getData = function () {
@@ -49,10 +31,6 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name setData
-     * @methodOf ModelService
-     * @this factory
      * @param value
      */
     factory.setData = function (value) {
@@ -60,10 +38,6 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name setDataKey
-     * @methodOf ModelService
-     * @this factory
      * @param key
      * @param value
      */
@@ -74,5 +48,5 @@ define([
     return factory;
   }
 
-  return ModelService;
+  return modelService;
 });

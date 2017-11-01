@@ -6,20 +6,13 @@ define([
 ], function (angular, moment) {
   'use strict';
 
-  ItemService.__name = 'ItemService';
+  itemService.__name = 'itemService';
 
-  function ItemService () {
-    /**
-     * @ngdoc service
-     * @name ItemService
-     */
+  function itemService () {
     var factory = {};
 
     /**
-     * @ngdoc method
-     * @name createInstance
-     * @methodOf ItemService
-     * @returns {(Object|ItemService)}
+     * @returns {(Object|itemService)}
      */
     factory.createInstance = function () {
       var instance = Object.create(this);
@@ -29,9 +22,6 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name get
-     * @methodOf ItemService
      * @returns {Object}
      */
     factory.get = function () {
@@ -39,9 +29,6 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name set
-     * @methodOf ItemService
      * @param data
      */
     factory.set = function (data) {
@@ -53,9 +40,6 @@ define([
     };
 
     /**
-     * @ngdoc method
-     * @name setKey
-     * @methodOf ItemService
      * @param key
      * @param value
      */
@@ -66,5 +50,5 @@ define([
     return factory;
   }
 
-  return ItemService;
+  return itemService;
 });

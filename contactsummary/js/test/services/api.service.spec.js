@@ -6,13 +6,13 @@ define([
 ], function () {
   'use strict';
 
-  describe('ApiService', function () {
+  describe('apiService', function () {
     var service, httpBackend;
 
     beforeEach(module('contactsummary'));
 
-    beforeEach(inject(function (ApiService, $httpBackend) {
-      service = ApiService;
+    beforeEach(inject(function (apiService, $httpBackend) {
+      service = apiService;
       httpBackend = $httpBackend;
     }));
 

@@ -6,72 +6,12 @@
   ], function (angular) {
     'use strict';
 
-    ApiService.__name = 'ApiService';
-    ApiService.$inject = ['$http', '$q'];
+    apiService.__name = 'apiService';
+    apiService.$inject = ['$http', '$q'];
 
-    function ApiService ($http, $q) {
-      /**
-       * @ngdoc function
-       * @param entityName
-       * @param data
-       * @param action
-       * @param stringify
-       * @returns {*}
-       * @private
-       */
-      function buildData (entityName, data, action, stringify) {
-        if (!angular.isDefined(entityName)) {
-          throw new Error('Entity name not provided');
-        }
-
-        if (!angular.isDefined(action)) {
-          throw new Error('Action not provided');
-        }
-
-        data = angular.extend({
-          entity: entityName,
-          action: action,
-          sequential: 1,
-          json: 1,
-          rowCount: 0
-        }, data);
-
-        // Because data needs to be sent as string for CiviCRM to accept
-        return (stringify ? $.param(data) : data);
-      }
-
-      /**
-       * @ngdoc function
-       * @param method
-       * @param data
-       * @param config
-       * @returns {HttpPromise}
-       * @private
-       */
-      function sendRequest (method, data, config) {
-        config = angular.extend({
-          method: method,
-          url: '/civicrm/ajax/rest'
-        }, (method === 'post' ? { data: data } : { params: data }), config);
-
-        return $http(config)
-          .then(function (response) {
-            if (response.is_error) {
-              return $q.reject(response);
-            }
-
-            return response.data;
-          })
-          .catch(function (response) {
-            return response;
-          });
-      }
-
+    function apiService ($http, $q) {
       return {
         /**
-         * @ngdoc method
-         * @name get
-         * @methodOf ApiService
          * @param entityName
          * @param data
          * @param config
@@ -82,9 +22,6 @@
         },
 
         /**
-         * @ngdoc method
-         * @name post
-         * @methodOf ApiService
          * @param entityName
          * @param data
          * @param action
@@ -115,8 +52,61 @@
           // todo
         }
       };
+
+      /**
+       * @param entityName
+       * @param data
+       * @param action
+       * @param stringify
+       * @returns {*}
+       */
+      function buildData (entityName, data, action, stringify) {
+        if (!angular.isDefined(entityName)) {
+          throw new Error('Entity name not provided');
+        }
+
+        if (!angular.isDefined(action)) {
+          throw new Error('Action not provided');
+        }
+
+        data = angular.extend({
+          entity: entityName,
+          action: action,
+          sequential: 1,
+          json: 1,
+          rowCount: 0
+        }, data);
+
+        // Because data needs to be sent as string for CiviCRM to accept
+        return (stringify ? $.param(data) : data);
+      }
+
+      /**
+       * @param method
+       * @param data
+       * @param config
+       * @returns {HttpPromise}
+       */
+      function sendRequest (method, data, config) {
+        config = angular.extend({
+          method: method,
+          url: '/civicrm/ajax/rest'
+        }, (method === 'post' ? { data: data } : { params: data }), config);
+
+        return $http(config)
+          .then(function (response) {
+            if (response.is_error) {
+              return $q.reject(response);
+            }
+
+            return response.data;
+          })
+          .catch(function (response) {
+            return response;
+          });
+      }
     }
 
-    return ApiService;
+    return apiService;
   });
 }(CRM.$));
