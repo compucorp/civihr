@@ -1,28 +1,28 @@
 <section class="panel panel-default panel-default-plain-inverted panel--key-dates" ng-controller="KeyDatesController as KeyDates">
-    <header class="panel-heading">
-        <h2 class="panel-title">Key Dates</h2>
-        <hr>
-    </header>
-    <div class="panel-body">
-        <div class="panel-body-section">
-            <ul class="list-unstyled chr_timeline">
-                <li class="chr_timeline__entry"
-                  ng-class="{ 'chr_timeline__entry--past': !value.future, 'chr_timeline__entry--future': value.future }"
-                  ng-repeat="(key, value) in dates = (KeyDates.dates | orderBy: 'date')">
-                    <span class="chr_timeline__entry__name">{{value.title}}</span>
-                    <span class="chr_timeline__entry__date">{{value.date}}</span>
-                </li>
-            </ul>
-        </div>
+  <header class="panel-heading">
+    <h2 class="panel-title">Key Dates</h2>
+    <hr>
+  </header>
+  <div class="panel-body">
+    <div class="panel-body-section">
+      <ul class="list-unstyled chr_timeline">
+        <li class="chr_timeline__entry"
+          ng-class="{ 'chr_timeline__entry--past': !value.future, 'chr_timeline__entry--future': value.future }"
+          ng-repeat="(key, value) in dates = (KeyDates.dates | orderBy: 'date')">
+          <span class="chr_timeline__entry__name">{{value.title}}</span>
+          <span class="chr_timeline__entry__date">{{value.date}}</span>
+        </li>
+      </ul>
     </div>
-    <footer class="panel-footer text-center">
-        <div class="row">
-            <div class="col-md-6">
-                <strong>{{KeyDates.activeContracts}} Active Job Contracts</strong>
-            </div>
-            <div class="col-md-6">
-                <strong>{{KeyDates.activeRoles}} Active Roles or Projects</strong>
-            </div>
-        </div>
-    </footer>
+  </div>
+  <footer class="panel-footer text-center">
+    <div class="row">
+      <div class="col-md-6">
+        <strong>{{KeyDates.activeContracts}} Active Job Contracts</strong>
+      </div>
+      <div class="col-md-6">
+        <strong>{{KeyDates.activeRoles}} Active Roles or Projects</strong>
+      </div>
+    </div>
+  </footer>
 </section>
