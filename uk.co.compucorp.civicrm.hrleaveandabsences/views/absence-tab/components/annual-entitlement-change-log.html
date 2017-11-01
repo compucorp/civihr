@@ -7,7 +7,11 @@
 
     <h3 class="panel-title">Anual entitlement change log</h3>
 
-    <p>Period 2017 - from xxx to xxxxx</p>
+    <p>
+      Period {{changeLog.absencePeriod.title}} -
+      from {{changeLog.absencePeriod.start_date | date:'MMM dd, yyyy'}}
+      to {{changeLog.absencePeriod.end_date | date:'MMM dd, yyyy'}}
+    </p>
   </div>
 
   <div class="panel-body table-responsive">
