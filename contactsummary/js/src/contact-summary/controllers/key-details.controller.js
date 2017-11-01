@@ -6,56 +6,57 @@ define([
 ], function (_, moment) {
   'use strict';
 
-  KeyDetailsCtrl.__name = 'KeyDetailsCtrl';
-  KeyDetailsCtrl.$inject = ['$log', 'ContactDetailsService', 'ContractService', 'pubSub'];
+  KeyDetailsController.__name = 'KeyDetailsController';
+  KeyDetailsController.$inject = ['$log', 'ContactDetailsService', 'ContractService', 'pubSub'];
 
-  function KeyDetailsCtrl ($log, ContactDetails, Contract, pubSub) {
-    $log.debug('Controller: KeyDetailsCtrl');
+  function KeyDetailsController ($log, ContactDetails, Contract, pubSub) {
+    $log.debug('Controller: KeyDetailsController');
 
-    this.ready = false;
+    var vm = this;
+
+    vm.ready = false;
+
+    (function init () {
+      getContacts();
+      pubSub.subscribe('contract-refresh', resetKeyDetails);
+    }());
 
     /**
      * Fetch Contacts from Server
-     * @ngdoc method
-     * @name getContacts
-     * @methodOf KeyDetailsCtrl
-     * @returns void
      */
-    var getContacts = function () {
+    function getContacts () {
       ContactDetails.get()
         .then(function (response) {
-          this.contactDetails = response;
+          vm.contactDetails = response;
           return Contract.getPrimary();
-        }.bind(this))
+        })
         .then(function (response) {
           if (_.isEmpty(response)) {
-            this.primaryContract = null;
+            vm.primaryContract = null;
             return;
           }
-          this.primaryContract = response;
-        }.bind(this))
+          vm.primaryContract = response;
+        })
         .then(function (response) {
           return Contract.getLengthOfService();
         })
         .then(function (response) {
-          this.lengthOfService = response;
-        }
-          .bind(this))
+          vm.lengthOfService = response;
+        })
         .finally(function () {
-          this.ready = true;
-        }.bind(this));
-    }.bind(this);
+          vm.ready = true;
+        });
+    }
 
-    var resetKeyDetails = function () {
+    /**
+     * Resets the details
+     */
+    function resetKeyDetails () {
       Contract.resetContracts();
       ContactDetails.data.item = {};
       getContacts();
-    };
-
-    getContacts();
-
-    pubSub.subscribe('contract-refresh', resetKeyDetails);
+    }
   }
 
-  return KeyDetailsCtrl;
+  return KeyDetailsController;
 });

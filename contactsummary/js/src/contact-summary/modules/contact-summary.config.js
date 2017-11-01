@@ -11,7 +11,7 @@ define([
 
       $routeProvider
         .when('/', {
-          controller: 'ContactSummaryCtrl',
+          controller: 'ContactSummaryController',
           controllerAs: 'ContactSummaryCtrl',
           templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
           resolve: {}

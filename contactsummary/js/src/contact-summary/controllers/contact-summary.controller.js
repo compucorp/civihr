@@ -3,21 +3,21 @@
 define(function () {
   'use strict';
 
-  ContactSummaryCtrl.__name = 'ContactSummaryCtrl';
-  ContactSummaryCtrl.$inject = ['$log', 'settings'];
+  ContactSummaryController.__name = 'ContactSummaryController';
+  ContactSummaryController.$inject = ['$log', 'settings'];
 
-  function ContactSummaryCtrl ($log, settings) {
-    $log.debug('Controller: ContactSummaryCtrl');
+  function ContactSummaryController ($log, settings) {
+    $log.debug('Controller: ContactSummaryController');
 
     var templateDir = settings.pathBaseUrl + settings.pathTpl;
+    var vm = this;
 
-    this.partials = {
+    vm.ready = false;
+    vm.partials = {
       keyDetails: templateDir + '/include/keyDetails.html',
       keyDates: templateDir + '/include/keyDates.html'
     };
-
-    this.ready = false;
   }
 
-  return ContactSummaryCtrl;
+  return ContactSummaryController;
 });

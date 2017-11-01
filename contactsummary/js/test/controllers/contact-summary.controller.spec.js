@@ -8,7 +8,7 @@ define([
 ], function () {
   'use strict';
 
-  xdescribe('ContactSummaryCtrl', function () {
+  xdescribe('ContactSummaryController', function () {
     var settingsMock;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks'));

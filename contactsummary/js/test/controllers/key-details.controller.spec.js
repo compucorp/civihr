@@ -8,7 +8,7 @@ define([
 ], function () {
   'use strict';
 
-  describe('KeyDetailsCtrl', function () {
+  describe('KeyDetailsController', function () {
     var ctrlConstructor,
       PubSubMock, ContractServiceMock, ContactDetailsServiceMock;
 
@@ -38,7 +38,7 @@ define([
     describe('constructor', function () {
       it('Should subscribe for contract changes', function () {
         spyOn(ContactDetailsServiceMock, 'get').and.callThrough();
-        ctrlConstructor('KeyDetailsCtrl');
+        ctrlConstructor('KeyDetailsController');
         expect(PubSubMock.subscribe).toHaveBeenCalledWith('contract-refresh', jasmine.any(Function));
         expect(ContractServiceMock.resetContracts).toHaveBeenCalled();
         expect(ContactDetailsServiceMock.data.item).toEqual({});
