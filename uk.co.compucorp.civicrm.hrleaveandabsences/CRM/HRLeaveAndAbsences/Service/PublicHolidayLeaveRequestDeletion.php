@@ -7,6 +7,7 @@ use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_HRLeaveAndAbsences_Factory_LeaveDateAmountDeduction as LeaveDateAmountDeductionFactory;
+use CRM_HRLeaveAndAbsences_Service_ContactWorkPattern as ContactWorkPatternService;
 
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
 
@@ -121,12 +122,14 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
   private function recalculateDeductionForOverlappingLeaveRequestDate(LeaveRequest $leaveRequest, DateTime $date) {
     $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $date);
     $dateDeductionFactory = LeaveDateAmountDeductionFactory::createForAbsenceType($leaveRequest->type_id);
+    $contactWorkPatternService = new ContactWorkPatternService();
 
     if($leaveBalanceChange) {
       $deduction = LeaveBalanceChange::calculateAmountForDate(
         $leaveRequest,
         $date,
-        $dateDeductionFactory
+        $dateDeductionFactory,
+        $contactWorkPatternService
       );
 
       LeaveBalanceChange::create([

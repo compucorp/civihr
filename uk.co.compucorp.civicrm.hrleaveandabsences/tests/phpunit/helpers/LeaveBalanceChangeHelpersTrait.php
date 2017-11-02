@@ -269,4 +269,16 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
 
     return $dateAmountDeductionService;
   }
+
+  public function createContractWorkPatternServiceMock() {
+    $contractWorkPatternService = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Service_ContactWorkPattern::class)
+      ->setMethods(['getContactWorkDayForDate'])
+      ->getMock();
+
+    $contractWorkPatternService->expects($this->once())
+      ->method('getContactWorkDayForDate')
+      ->will($this->returnValue(true));
+
+    return $contractWorkPatternService;
+  }
 }

@@ -3629,22 +3629,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
   }
 
   public function testCalculateAmountForDateReturnsCorrectly() {
-    $periodStartDate = new DateTime('2016-01-01');
-
-    AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
-    ]);
-
-    $contract = HRJobContractFabricator::fabricate(
-      [ 'contact_id' => 1 ],
-      [ 'period_start_date' => $periodStartDate->format('Y-m-d') ]
-    );
-
-    $pattern = WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
-
-    $leaveRequest = new LeaveRequest();
-    $leaveRequest->contact_id = $contract['contact_id'];
     $leaveRequest = new LeaveRequest();
     $leaveRequest->contact_id = 1;
 
@@ -3675,6 +3659,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   private function calculateAmountForDate(LeaveRequest $leaveRequest, DateTime $date, $amount) {
     $dayAmountDeductionService = $this->createLeaveDateAmountDeductionServiceMock($amount);
-    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date, $dayAmountDeductionService);
+    $contactWorkPatternService = $this->createContractWorkPatternServiceMock();
+    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date, $dayAmountDeductionService, $contactWorkPatternService);
   }
 }
