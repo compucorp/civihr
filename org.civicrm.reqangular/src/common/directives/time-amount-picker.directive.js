@@ -36,7 +36,7 @@ define([
     vm.calculateSelectedValue = calculateSelectedValue;
 
     (function init () {
-      parseInitialValue();
+      parseCurrentValue();
       watchTimeAmountPickerOptions();
     })();
 
@@ -107,6 +107,9 @@ define([
      * Starts watching inbound attributes for changes
      */
     function watchTimeAmountPickerOptions () {
+      $scope.$watchGroup(['value'], function () {
+        parseCurrentValue();
+      });
       $scope.$watchGroup(['minAmount', 'maxAmount', 'interval'], function () {
         buildOptions();
       });
@@ -115,7 +118,7 @@ define([
     /**
      * Parses initially passed variable
      */
-    function parseInitialValue () {
+    function parseCurrentValue () {
       if ($scope.value !== undefined) {
         vm.selectedHours = '' + Math.floor($scope.value);
         vm.selectedMinutes = '' + Math.floor($scope.value % 1 * 60);
