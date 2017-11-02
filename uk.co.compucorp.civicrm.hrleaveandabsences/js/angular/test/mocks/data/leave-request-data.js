@@ -486,6 +486,14 @@ define([
     all: function () {
       return mockData.allData;
     },
+    hoursTypeLeaveRequests: function () {
+      return _.map(mockData.allData, function (request) {
+        return _.assign(request, {
+          from_date: request.from_date + ' 12:45:00',
+          to_date: request.to_date + ' 16:15:00'
+        });
+      });
+    },
     singleDataSuccess: function () {
       return mockData.singleDataSuccess;
     },
