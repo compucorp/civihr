@@ -13,19 +13,19 @@ define([
 
     var factory = Model.createInstance();
 
+    factory.get = get;
+
+    return factory;
+
     /**
      * @returns {*}
      */
-    factory.get = function () {
+    function get () {
       /** @type {(contactService|ModelService)} */
-      var self = this;
-
       return init().then(function () {
-        return self.getData();
+        return factory.getData();
       });
-    };
-
-    return factory;
+    }
 
     function init () {
       var deferred = $q.defer();

@@ -29,21 +29,23 @@ define([
         return this.items;
       }
     };
+    factory.get = get;
+    factory.getCollection = getCollection;
 
-    factory.getCollection = function () {
-      return this.collection.get();
-    };
+    return factory;
 
     /**
      * @returns {*}
      */
-    factory.get = function () {
-      var self = this;
-
+    function get () {
       return init().then(function () {
-        return self.getCollection();
+        return factory.getCollection();
       });
-    };
+    }
+
+    function getCollection () {
+      return factory.collection.get();
+    }
 
     function init () {
       var deferred = $q.defer();
@@ -89,8 +91,6 @@ define([
 
       return deferred.promise;
     }
-
-    return factory;
   }
 
   return jobRoleService;

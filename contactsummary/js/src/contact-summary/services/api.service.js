@@ -11,46 +11,8 @@
 
     function apiService ($http, $q) {
       return {
-        /**
-         * @param entityName
-         * @param data
-         * @param config
-         * @returns {*}
-         */
-        get: function (entityName, data, config) {
-          return sendRequest('get', buildData(entityName, data, 'get'), config);
-        },
-
-        /**
-         * @param entityName
-         * @param data
-         * @param action
-         * @param config
-         * @returns {HttpPromise}
-         */
-        post: function (entityName, data, action, config) {
-          config = angular.extend({
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-          }, config);
-
-          return sendRequest('post', buildData(entityName, data, action, true), config);
-        },
-
-        getValue: function (entityName, data) {
-            // todo
-        },
-
-        create: function (entityName, data) {
-          // todo
-        },
-
-        update: function (entityName, data) {
-          // todo
-        },
-
-        delete: function (entityName, data) {
-          // todo
-        }
+        get: get,
+        post: post
       };
 
       /**
@@ -82,6 +44,31 @@
       }
 
       /**
+       * @param entityName
+       * @param data
+       * @param config
+       * @returns {*}
+       */
+      function get (entityName, data, config) {
+        return sendRequest('get', buildData(entityName, data, 'get'), config);
+      }
+
+      /**
+       * @param entityName
+       * @param data
+       * @param action
+       * @param config
+       * @returns {HttpPromise}
+       */
+      function post (entityName, data, action, config) {
+        config = angular.extend({
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }, config);
+
+        return sendRequest('post', buildData(entityName, data, action, true), config);
+      }
+
+      /**
        * @param method
        * @param data
        * @param config
@@ -95,11 +82,7 @@
 
         return $http(config)
           .then(function (response) {
-            if (response.is_error) {
-              return $q.reject(response);
-            }
-
-            return response.data;
+            return response.is_error ? $q.reject(response) : response.data;
           })
           .catch(function (response) {
             return response;

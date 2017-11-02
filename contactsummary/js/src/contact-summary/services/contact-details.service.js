@@ -14,20 +14,33 @@ define([
 
     var factory = Model.createInstance();
 
+    factory.get = get;
+
+    return factory;
+
     /**
      * @returns {*}
      */
-    factory.get = function () {
+    function get () {
       /** @type {(contactDetailsService|ModelService)} */
-      var self = this;
       var deferred = $q.defer();
 
       init().then(function () {
-        deferred.resolve(self.getData());
+        deferred.resolve(factory.getData());
       });
 
       return deferred.promise;
-    };
+    }
+
+    /**
+     * Calculate age from birth date
+     *
+     * @param {string} dateOfBirth Date of birth in a YYYY-MM-DD format
+     * @returns {string}
+     */
+    function calculateAge (dateOfBirth) {
+      return moment().diff(moment(dateOfBirth, 'YYYY-MM-DD'), 'years');
+    }
 
     function init () {
       var deferred = $q.defer();
@@ -62,18 +75,6 @@ define([
 
       return deferred.promise;
     }
-
-    /**
-     * Calculate age from birth date
-     *
-     * @param {string} dateOfBirth Date of birth in a YYYY-MM-DD format
-     * @returns {string}
-     */
-    function calculateAge (dateOfBirth) {
-      return moment().diff(moment(dateOfBirth, 'YYYY-MM-DD'), 'years');
-    }
-
-    return factory;
   }
 
   return contactDetailsService;
