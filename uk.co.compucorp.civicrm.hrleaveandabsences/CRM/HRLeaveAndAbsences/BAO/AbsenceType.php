@@ -702,4 +702,19 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   private function loadOldAbsenceType($id) {
     $this->oldAbsenceType = self::findById($id);
   }
+
+  /**
+   * Whether the calculation unit for the Absence Type is in
+   * Hours or not.
+   *
+   * @param int $absenceTypeID
+   *
+   * @return bool
+   */
+  public static function isCalculationUnitInHours($absenceTypeID) {
+    $absenceType = self::findById($absenceTypeID);
+    $calculationUnitOptions = array_flip(self::buildOptions('calculation_unit', 'validate'));
+
+    return $absenceType->calculation_unit == $calculationUnitOptions['hours'];
+  }
 }

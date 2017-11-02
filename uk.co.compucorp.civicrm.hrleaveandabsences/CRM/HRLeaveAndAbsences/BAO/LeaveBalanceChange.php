@@ -8,6 +8,7 @@ use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_Hrjobcontract_BAO_HRJobContract as HRJobContract;
 use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
 use CRM_Hrjobcontract_BAO_HRJobDetails as HRJobDetails;
+use CRM_HRLeaveAndAbsences_Service_LeaveDateAmountDeduction as LeaveDateAmountDeduction;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
 
@@ -514,14 +515,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    *  The LeaveRequest which the $date belongs to
    * @param \DateTime $date
+   * @param CRM_HRLeaveAndAbsences_Service_LeaveDateAmountDeduction $dateDeduction
    *
    * @return float
    */
-  public static function calculateAmountForDate(LeaveRequest $leaveRequest, DateTime $date) {
-    if(self::thereIsAPublicHolidayLeaveRequest($leaveRequest, $date)) {
-      return 0.0;
-    }
-
+  public static function calculateAmountForDate(LeaveRequest $leaveRequest, DateTime $date, LeaveDateAmountDeduction $dateDeduction) {
     $workPattern = ContactWorkPattern::getWorkPattern($leaveRequest->contact_id, $date);
     $startDate = ContactWorkPattern::getStartDate($leaveRequest->contact_id, $date);
 
@@ -529,28 +527,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       return 0.0;
     }
 
-    return $workPattern->getLeaveDaysForDate($date, $startDate) * -1;
-  }
+    $workDay = $workPattern->getWorkDayForDate($date, $startDate);
 
-  /**
-   * Returns if there is a Public Holiday Leave Request for the given
-   * $date and with the same contact_id and type_id as the given $leaveRequest
-   *
-   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
-   * @param \DateTime $date
-   *
-   * @return bool
-   */
-  private static function thereIsAPublicHolidayLeaveRequest(LeaveRequest $leaveRequest, DateTime $date) {
-    $balanceChange = self::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $date);
-
-    if(is_null($balanceChange)) {
-      return false;
-    }
-
-    $balanceChangeTypes = array_flip(self::buildOptions('type_id'));
-
-    return $balanceChange->type_id == $balanceChangeTypes['Public Holiday'];
+    return $dateDeduction->calculate($date, $workDay, $leaveRequest) * -1;
   }
 
   /**

@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Factory_LeaveDateAmountDeduction as LeaveDateAmountDeductionFactory;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
 
@@ -11,8 +12,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
    * values returned by the Balance Change calculation.
    *
    * @param CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   * @param CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeCalculation $balanceCalculationService
    */
-  public function createForLeaveRequest(LeaveRequest $leaveRequest) {
+  public function createForLeaveRequest(LeaveRequest $leaveRequest, $balanceCalculationService) {
     LeaveBalanceChange::deleteAllForLeaveRequest($leaveRequest);
 
     if($leaveRequest->request_type == LeaveRequest::REQUEST_TYPE_TOIL) {
@@ -26,19 +28,16 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
 
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
     foreach($dates as $date) {
-      foreach($balanceChanges['breakdown'] as $balanceChange) {
-        if($balanceChange['date'] == $date->date) {
-          LeaveBalanceChange::create([
-            'source_id' => $date->id,
-            'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
-            'amount' => $balanceChange['amount'] * -1,
-            'type_id' => $balanceChangeTypes['debit']
-          ]);
+      $amount = $balanceCalculationService->getAmount($leaveRequest, new DateTime($date->date), $balanceChanges);
+      LeaveBalanceChange::create([
+        'source_id' => $date->id,
+        'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
+        'amount' => $amount * -1,
+        'type_id' => $balanceChangeTypes['debit']
+      ]);
 
-          $date->type = $balanceChange['type']['value'];
-          $date->save();
-        }
-      }
+      $date->type = $balanceChanges['breakdown'][$date->date]['type']['value'];
+      $date->save();
     }
   }
 
@@ -53,9 +52,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
     return LeaveRequest::calculateBalanceChange(
       $leaveRequest->contact_id,
       new DateTime($leaveRequest->from_date),
-      $leaveRequest->from_date_type,
-      !empty($leaveRequest->to_date) ? new DateTime($leaveRequest->to_date) : null,
-      $leaveRequest->to_date_type
+      new DateTime($leaveRequest->to_date),
+      $leaveRequest->type_id,
+      !empty($leaveRequest->from_date_type) ? $leaveRequest->from_date_type : null,
+      !empty($leaveRequest->to_date_type) ? $leaveRequest->to_date_type : null
     );
   }
 
@@ -115,6 +115,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
    * @return float
    */
   public function calculateAmountToBeDeductedForDate(LeaveRequest $leaveRequest, DateTime $date) {
-    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date);
+    $dateDeductionFactory = LeaveDateAmountDeductionFactory::createForAbsenceType($leaveRequest->type_id);
+    return LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date, $dateDeductionFactory);
   }
 }

@@ -10,6 +10,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabrica
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
+use CRM_HRLeaveAndAbsences_Factory_LeaveBalanceChangeCalculation as LeaveBalanceChangeCalculationFactory;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest
@@ -50,7 +51,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadless
       'to_date_type' => $leaveRequestDateTypes['all_day'],
     ]);
 
-    $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
+    $balanceCalculationFactory = LeaveBalanceChangeCalculationFactory::create($leaveRequest);
+    $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest, $balanceCalculationFactory);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // Since the 40 hours work pattern was used and there are 3 weekend days on the
@@ -105,7 +107,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadless
       $this->assertNull($date->type);
     }
 
-    $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
+    $balanceCalculationFactory = LeaveBalanceChangeCalculationFactory::create($leaveRequest);
+    $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest, $balanceCalculationFactory);
 
     $dates = $leaveRequest->getDates();
     // According to the work pattern, monday is a working day, but a half day
@@ -146,7 +149,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeTest extends BaseHeadless
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
 
-    $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest);
+    $balanceCalculationFactory = LeaveBalanceChangeCalculationFactory::create($leaveRequest);
+    $this->leaveBalanceChangeService->createForLeaveRequest($leaveRequest, $balanceCalculationFactory);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // It should be the same as the toil_to_accrue amount

@@ -13,6 +13,8 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatt
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
+use CRM_HRLeaveAndAbsences_Factory_LeaveBalanceChangeCalculation as LeaveBalanceChangeCalculationFactory;
+
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest
@@ -201,8 +203,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
 
     $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+    $leaveFromDate = new DateTime($leaveRequest->from_date);
     $this->assertInstanceOf(LeaveRequest::class, $leaveRequest);
-    $this->assertEquals($publicHoliday->date, $leaveRequest->from_date);
+    $this->assertEquals($publicHoliday->date, $leaveFromDate->format('Y-m-d'));
     $this->assertEquals($contactID, $leaveRequest->contact_id);
   }
 
@@ -215,7 +218,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testCalculateBalanceChangeForALeaveRequestForAContact() {
     $periodStartDate = date('Y-01-01');
-
+    $absenceType = AbsenceTypeFabricator::fabricate();
     $contract = HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
       ['period_start_date' => $periodStartDate]
@@ -238,7 +241,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Start date is a sunday, Weekend
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-13'] = [
       'date' => '2016-11-13',
       'amount' => 0,
       'type' => [
@@ -250,7 +253,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // The next day is a monday, which is a working day
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
       'date' => '2016-11-14',
       'amount' => 1.0,
       'type' => [
@@ -262,7 +265,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // last day is a tuesday, which is a working day, half day will be deducted
     $expectedResultsBreakdown['amount'] += 0.5;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-15'] = [
       'date' => '2016-11-15',
       'amount' => 0.5,
       'type' => [
@@ -274,13 +277,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResultsBreakdown['amount'] *= -1;
 
-    $result = LeaveRequest::calculateBalanceChange($contract['contact_id'], $fromDate, $fromType, $toDate, $toType);
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      $toDate,
+      $absenceType->id,
+      $fromType,
+      $toType
+    );
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
 
   public function testCalculateBalanceChangeWhenOneOfTheRequestedLeaveDaysIsAPublicHoliday() {
     $periodStartDate = date('2016-01-01');
-
+    $absenceType = AbsenceTypeFabricator::fabricate();
     $contract = HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
       ['period_start_date' => $periodStartDate]
@@ -316,7 +326,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // Starting date is a monday, but a public holiday
     $expectedResultsBreakdown['amount'] += 0;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
       'date' => '2016-11-14',
       'amount' => 0,
       'type' => [
@@ -328,7 +338,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // last day is a tuesday, which is a working day
     $expectedResultsBreakdown['amount'] += 1.0;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-15'] = [
       'date' => '2016-11-15',
       'amount' => 1.0,
       'type' => [
@@ -340,12 +350,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $expectedResultsBreakdown['amount'] *= -1;
 
-    $result = LeaveRequest::calculateBalanceChange($periodEntitlement->contact_id, $fromDate, $fromType, $toDate, $toType);
+    $result = LeaveRequest::calculateBalanceChange(
+      $periodEntitlement->contact_id,
+      $fromDate,
+      $toDate,
+      $absenceType->id,
+      $fromType,
+      $toType
+    );
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
 
   public function testCalculateBalanceChangeForALeaveRequestForAContactWithMultipleWeeks() {
     $periodStartDate = new DateTime('2016-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate();
 
     $contract = HRJobContractFabricator::fabricate(
       [ 'contact_id' => 1 ],
@@ -372,7 +390,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Start day (2016-07-31), a sunday
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-07-31'] = [
       'date' => '2016-07-31',
       'amount' => 0,
       'type' => [
@@ -385,7 +403,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     // Since the start date is a sunday, the end of the week, the following day
     // (2016-08-01) should be on the second week. Monday of the second week is
     // not a working day
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-01'] = [
       'date' => '2016-08-01',
       'amount' => 0,
       'type' => [
@@ -397,7 +415,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // The next day is a tuesday, which is a working day on the second week, so
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-02'] = [
       'date' => '2016-08-02',
       'amount' => 1.0,
       'type' => [
@@ -408,7 +426,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Wednesday is not a working day on the second week
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-03'] = [
       'date' => '2016-08-03',
       'amount' => 0,
       'type' => [
@@ -420,7 +438,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // Thursday is a working day on the second week
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-04'] = [
       'date' => '2016-08-04',
       'amount' => 1.0,
       'type' => [
@@ -431,7 +449,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Friday, Saturday and Sunday are not working days on the second week,
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-05'] = [
       'date' => '2016-08-05',
       'amount' => 0,
       'type' => [
@@ -441,7 +459,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       ]
     ];
 
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-06'] = [
       'date' => '2016-08-06',
       'amount' => 0,
       'type' => [
@@ -451,7 +469,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       ]
     ];
 
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-07'] = [
       'date' => '2016-08-07',
       'amount' => 0,
       'type' => [
@@ -467,7 +485,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // Monday is a working day on the first week
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-08'] = [
       'date' => '2016-08-08',
       'amount' => 1.0,
       'type' => [
@@ -478,7 +496,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Tuesday is not a working day on the first week
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-09'] = [
       'date' => '2016-08-09',
       'amount' => 0,
       'type' => [
@@ -489,7 +507,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
     // Wednesday is a working day on the first week
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-10'] = [
       'date' => '2016-08-10',
       'amount' => 1.0,
       'type' => [
@@ -499,7 +517,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       ]
     ];
     // Thursday is not a working day on the first week
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-11'] = [
       'date' => '2016-08-11',
       'amount' => 0,
       'type' => [
@@ -511,7 +529,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // Friday is a working day on the first week
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-12'] = [
       'date' => '2016-08-12',
       'amount' => 1.0,
       'type' => [
@@ -522,7 +540,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Saturday and Sunday are not working days on the first week
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-13'] = [
       'date' => '2016-08-13',
       'amount' => 0,
       'type' => [
@@ -532,7 +550,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       ]
     ];
 
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-14'] = [
       'date' => '2016-08-14',
       'amount' => 0,
       'type' => [
@@ -545,7 +563,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     // The work pattern will rotate and use the week 2
 
     // Monday is not a working day on week 2
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-08-15'] = [
       'date' => '2016-08-15',
       'amount' => 0,
       'type' => [
@@ -556,7 +574,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
     $expectedResultsBreakdown['amount'] *= -1;
 
-    $result = LeaveRequest::calculateBalanceChange($contract['contact_id'], $fromDate, $fromType, $toDate, $toType);
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      $toDate,
+      $absenceType->id,
+      $fromType,
+      $toType
+    );
     $this->assertEquals($expectedResultsBreakdown, $result);
   }
 
@@ -634,9 +659,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage The to_date_type field should not be empty
+   * @expectedExceptionMessage The to_date_type can not be empty when absence type calculation unit is in days
    */
-  public function testALeaveRequestShouldNotBeCreatedWithoutToDateType() {
+  public function testALeaveRequestShouldNotBeCreatedWithoutToDateTypeWhenAbsenceTypeCalculationUnitIsInDays() {
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
@@ -650,9 +675,119 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   * @expectedExceptionMessage The from_date_type field should not be empty
+   * @expectedExceptionMessage The to_date_amount should be empty when absence type calculation unit is in days
    */
-  public function testALeaveRequestShouldNotBeCreatedWithoutFromDateType() {
+  public function testALeaveRequestShouldNotBeCreatedWithToDateAmountWhenAbsenceTypeCalculationUnitIsInDays() {
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'to_date_amount' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The from_date_amount should be empty when absence type calculation unit is in days
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithFromDateAmountWhenAbsenceTypeCalculationUnitIsInDays() {
+    LeaveRequest::create([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'from_date_amount' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The to_date_amount can not be empty when absence type calculation unit is in hours
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithoutToDateAmountWhenAbsenceTypeCalculationUnitIsInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'from_date_amount' => 2
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The from_date_amount can not be empty when absence type calculation unit is in hours
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithoutFromDateAmountWhenAbsenceTypeCalculationUnitIsInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'to_date_amount' => 2
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The from_date_type should be empty when absence type calculation unit is in hours
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithFromDateTypeWhenAbsenceTypeCalculationUnitIsInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'to_date_amount' => 2,
+      'from_date_amount' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The to_date_type should be empty when absence type calculation unit is in hours
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithToDateTypeWhenAbsenceTypeCalculationUnitIsInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('now'),
+      'to_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'to_date_amount' => 2,
+      'from_date_amount' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
+   * @expectedExceptionMessage The from_date_type can not be empty when absence type calculation unit is in days
+   */
+  public function testALeaveRequestShouldNotBeCreatedWithoutFromDateTypeWhenAbsenceTypeCalculationUnitIsInDays() {
     LeaveRequest::create([
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
@@ -1424,6 +1559,107 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => $toType,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
+  }
+
+  public function testLeaveRequestCannotBeCreatedWhenBalanceChangeGreaterThanEntitlementBalanceAndLeaveRequestInHoursAndAllowOveruseFalse() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_overuse' => 0,
+      'calculation_unit' => 2
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $entitlementBalanceChange = 19;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-14 13:00');
+    $toDate = new DateTime('2016-11-17 15:00');
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'There are only '. $entitlementBalanceChange. ' hours leave available. This request cannot be made or approved'
+    );
+
+    //four working days which will create a balance change of
+    //2.5(first day) + 8 + 8 + 1.5(last day) = 20 hours
+    //Entitlement balance is 18 hours, so leave request cannot be created.
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_amount' => 2.5,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_amount' => 1.5,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  public function testLeaveRequestCanBeCreatedWhenBalanceChangeIsNotGreaterThanEntitlementBalanceAndLeaveRequestInHoursAndAllowOveruseFalse() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'title' => 'Type 1',
+      'allow_overuse' => 0,
+      'calculation_unit' => 2
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $entitlementBalanceChange = 20;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-14 13:00');
+    $toDate = new DateTime('2016-11-17 15:00');
+
+    //four working days which will create a balance change of
+    //2.5(first day) + 8 + 8 + 1.5(last day) = 20 hours
+    //Entitlement balance is 20 hours, so leave request will be created.
+    $leaveRequest = LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => $fromDate->format('YmdHis'),
+      'from_date_amount' => 2.5,
+      'to_date' => $toDate->format('YmdHis'),
+      'to_date_amount' => 1.5,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+
+    $this->assertNotNull($leaveRequest->id);
   }
 
   public function testLeaveRequestWithHalfDaysCanBeCreatedWhenBalanceChangeIsEqualToTheRemainingBalanceWhenAbsenceTypeDoesntAllowOveruse() {
@@ -2436,7 +2672,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $params = [
       'id' => 1,
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
       'to_date_type' => 1,
@@ -3633,7 +3869,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //We need to use the balance change service here so that it will create balance changes
     //using leave day amount from the work pattern
     $balanceChangeService = new LeaveBalanceChangeService();
-    $balanceChangeService->createForLeaveRequest($leaveRequest);
+    $balanceCalculationFactory = LeaveBalanceChangeCalculationFactory::create($leaveRequest);
+    $balanceChangeService->createForLeaveRequest($leaveRequest, $balanceCalculationFactory);
 
     $this->assertNotNull($leaveRequest->id);
     //Entitlement balance is Zero. The three leave days have been deducted.
@@ -3703,7 +3940,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //We need to use the balance change service here so that it will create balance changes
     //using leave day amount from the work pattern
     $balanceChangeService = new LeaveBalanceChangeService();
-    $balanceChangeService->createForLeaveRequest($leaveRequest);
+    $balanceCalculationFactory = LeaveBalanceChangeCalculationFactory::create($leaveRequest);
+    $balanceChangeService->createForLeaveRequest($leaveRequest, $balanceCalculationFactory);
 
     $this->assertNotNull($leaveRequest->id);
     //Entitlement balance is Zero. The three leave days have been deducted.
@@ -3853,5 +4091,198 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $this->assertNull(LeaveRequest::toilToAccrueChanged($params));
+  }
+
+  public function testCalculateBalanceChangeForLeaveRequestWithBalanceCalculatedInHours() {
+    $periodStartDate = date('2016-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-13 13:00');
+    $toDate = new DateTime('2016-11-15 15:00');
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    // Start date is a sunday, Weekend
+    $expectedResultsBreakdown['breakdown']['2016-11-13'] = [
+      'date' => '2016-11-13',
+      'amount' => 0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['weekend']['id'],
+        'value' => $this->leaveRequestDayTypes['weekend']['value'],
+        'label' => $this->leaveRequestDayTypes['weekend']['label']
+      ]
+    ];
+
+    // The next day is a monday, which is a working day
+    $expectedResultsBreakdown['amount'] += 8;
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
+      'date' => '2016-11-14',
+      'amount' => 8.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
+      ]
+    ];
+
+    // last day is a tuesday, which is a working day
+    $expectedResultsBreakdown['amount'] += 8;
+    $expectedResultsBreakdown['breakdown']['2016-11-15'] = [
+      'date' => '2016-11-15',
+      'amount' => 8.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
+      ]
+    ];
+
+    $expectedResultsBreakdown['amount'] *= -1;
+
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      $toDate,
+      $absenceType->id
+    );
+
+    $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  public function testCalculateBalanceChangeForLeaveRequestWhenStartAndEndDatesAreExcluded() {
+    $periodStartDate = date('2016-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-13 13:00');
+    $toDate = new DateTime('2016-11-16 15:00');
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    // Start date is a sunday, Weekend (2016-11-13) will be excluded
+
+    // The next day is a monday, which is a working day
+    $expectedResultsBreakdown['amount'] += 8;
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
+      'date' => '2016-11-14',
+      'amount' => 8.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
+      ]
+    ];
+
+    // next day is a tuesday, which is a working day
+    $expectedResultsBreakdown['amount'] += 8;
+    $expectedResultsBreakdown['breakdown']['2016-11-15'] = [
+      'date' => '2016-11-15',
+      'amount' => 8.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
+      ]
+    ];
+
+    // End date is a wednesday(2016-11-16) Working day, will be excluded
+
+    $expectedResultsBreakdown['amount'] *= -1;
+
+    $excludeStartAndEndDates = true;
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      $toDate,
+      $absenceType->id,
+      null,
+      null,
+      $excludeStartAndEndDates
+    );
+
+    $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  public function testCalculateBalanceChangeForSingleDayLeaveRequestWhenStartAndEndDatesAreExcluded() {
+    $periodStartDate = date('2016-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-13 13:00');
+    $toDate = new DateTime('2016-11-13 15:00');
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    //The date (2016-11-13) is excluded.
+    $excludeStartAndEndDates = true;
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      $toDate,
+      $absenceType->id,
+      null,
+      null,
+      $excludeStartAndEndDates
+    );
+
+    $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  public function testCalculateBalanceChangeForTwoDaysLeaveRequestWhenStartAndEndDatesAreExcluded() {
+    $periodStartDate = date('2016-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = new DateTime('2016-11-13 13:00');
+    $toDate = new DateTime('2016-11-14 15:00');
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+
+    //The start and end dates (2016-11-13 and 2016-11-14) are excluded.
+    $excludeStartAndEndDates = true;
+    $result = LeaveRequest::calculateBalanceChange(
+      $contract['contact_id'],
+      $fromDate,
+      $toDate,
+      $absenceType->id,
+      null,
+      null,
+      $excludeStartAndEndDates
+    );
+
+    $this->assertEquals($expectedResultsBreakdown, $result);
   }
 }
