@@ -67,6 +67,7 @@ define([
       spyOn(LeaveRequestAPI, 'getBalanceChangeBreakdown').and.callThrough();
       spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
       spyOn(AbsenceType, 'canExpire').and.callThrough();
+      spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
       spyOn(EntitlementAPI, 'all').and.callThrough();
       spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
       spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {

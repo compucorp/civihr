@@ -5,7 +5,6 @@ define([
   'leave-absences/shared/modules/models-instances',
   'common/models/option-group',
   'common/models/instances/instance'
-
 ], function (_, instances) {
   'use strict';
 
@@ -131,9 +130,8 @@ define([
          *   a balance change amount and a detailed breakdown
          */
         calculateBalanceChange: function () {
-          return LeaveRequestAPI.calculateBalanceChange(
-            _.pick(this, ['contact_id', 'from_date',
-              'from_date_type', 'to_date', 'to_date_type']));
+          return LeaveRequestAPI.calculateBalanceChange(_.pick(this,
+            ['contact_id', 'from_date', 'to_date', 'type_id', 'from_date_type', 'to_date_type']));
         },
 
         /**

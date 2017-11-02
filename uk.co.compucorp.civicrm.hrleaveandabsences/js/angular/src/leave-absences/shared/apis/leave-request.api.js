@@ -89,12 +89,17 @@ define([
           $log.debug('LeaveRequestAPI.calculateBalanceChange', params);
           var deferred = $q.defer();
 
-          if (params && (!params.contact_id || !params.from_date || !params.from_date_type)) {
+          if (params && (!params.contact_id || !params.from_date /* || !params.from_date_type */)) {
             deferred.reject('contact_id, from_date and from_date_type in params are mandatory');
           }
 
           this.sendPOST('LeaveRequest', 'calculatebalancechange', params)
           .then(function (data) {
+            // The breakdown property in the API response has been changed
+            // from an array collection to an indexed collection (object),
+            // so a transformation is needed to support the current code
+            data.values.breakdown = _.values(data.values.breakdown);
+
             deferred.resolve(data.values);
           });
 
@@ -128,13 +133,13 @@ define([
           $log.debug('LeaveRequestAPI.create', params);
           var deferred = $q.defer();
 
-          if (params) {
+          /* if (params) {
             if (params.to_date && !params.to_date_type) {
               deferred.reject('to_date_type is mandatory');
             } else if (!params.contact_id || !params.from_date || !params.from_date_type || !params.status_id) {
               deferred.reject('contact_id, from_date, status_id and from_date_type params are mandatory');
             }
-          }
+          } */
 
           this.sendPOST('LeaveRequest', 'create', params)
           .then(function (data) {

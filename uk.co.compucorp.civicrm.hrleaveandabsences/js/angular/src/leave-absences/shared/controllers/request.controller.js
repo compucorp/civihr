@@ -693,7 +693,8 @@ define([
           id: entitlementItem.type_id,
           title: absenceType.title + ' ( ' + entitlementItem.remainder.current + ' ) ',
           remainder: entitlementItem.remainder.current,
-          allow_overuse: absenceType.allow_overuse
+          allow_overuse: absenceType.allow_overuse,
+          calculation_unit_name: absenceType.calculation_unit_name
         };
       });
     }
@@ -879,6 +880,7 @@ define([
      */
     function _loadAbsenceTypes () {
       return AbsenceType.all(getAbsenceTypeParams())
+        .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
           absenceTypesAndIds = {
             types: absenceTypes,
