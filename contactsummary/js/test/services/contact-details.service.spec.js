@@ -6,41 +6,40 @@ define([
   'common/angularMocks',
   'mocks/constants.mock',
   'mocks/services.mock',
-  'contact-summary/app',
-  'contact-summary/services/contactDetails'
+  'contact-summary/modules/contact-summary.module'
 ], function (angular, moment) {
   'use strict';
 
-  describe('ContactDetailsService', function () {
-    var ApiServiceMock, ContactDetailsService, ModelServiceMock, rootScope;
+  describe('contactDetailsService', function () {
+    var apiServiceMock, contactDetailsService, modelServiceMock, rootScope;
     var settingsMock = {};
 
     beforeEach(module('contactsummary', 'contactsummary.mocks',
       'contact-summary.templates'));
 
     beforeEach(module(function ($provide) {
-      $provide.factory('ApiService', function () {
-        return ApiServiceMock;
+      $provide.factory('apiService', function () {
+        return apiServiceMock;
       });
 
-      $provide.factory('ModelService', function () {
-        return ModelServiceMock;
+      $provide.factory('modelService', function () {
+        return modelServiceMock;
       });
 
       $provide.constant('settings', settingsMock);
     }));
 
     beforeEach(inject(function ($injector) {
-      ApiServiceMock = $injector.get('ApiServiceMock');
-      ModelServiceMock = $injector.get('ModelServiceMock');
+      apiServiceMock = $injector.get('apiServiceMock');
+      modelServiceMock = $injector.get('modelServiceMock');
       rootScope = $injector.get('$rootScope');
 
       // We're extending because a reference to the original object was passed above, during bootstrap phase.
       angular.extend(settingsMock, $injector.get('settingsMock'));
     }));
 
-    beforeEach(inject(function (_ContactDetailsService_) {
-      ContactDetailsService = _ContactDetailsService_;
+    beforeEach(inject(function (_contactDetailsService_) {
+      contactDetailsService = _contactDetailsService_;
     }));
 
     describe('get', function () {
@@ -51,16 +50,16 @@ define([
       var expectedContactId = 123;
 
       beforeEach(function () {
-        ApiServiceMock.respondGet('Contact', expectedResponse);
+        apiServiceMock.respondGet('Contact', expectedResponse);
         settingsMock.contactId = expectedContactId;
 
-        ContactDetailsService.get().then(function (response) {
+        contactDetailsService.get().then(function (response) {
           details = response;
         });
 
         rootScope.$digest();
 
-        ApiServiceMock.flush();
+        apiServiceMock.flush();
       });
 
       it('should return contact details', function () {

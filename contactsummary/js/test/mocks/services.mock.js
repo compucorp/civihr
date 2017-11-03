@@ -14,7 +14,8 @@ define([
    * @returns {Object}
    * @constructor
    */
-  function BaseServiceMock ($q) {
+  baseServiceMock.$inject = ['$q'];
+  function baseServiceMock ($q) {
     var get = jasmine.createSpy('get').and.callFake(function () {
       var deferred = $q.defer();
 
@@ -56,7 +57,9 @@ define([
     return factory;
   }
 
-  function ItemServiceMock (Base) {
+  itemServiceMock.__name = 'itemService';
+  itemServiceMock.$inject = ['baseServiceMock'];
+  function itemServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.data = {};
@@ -72,7 +75,9 @@ define([
     return factory;
   }
 
-  function ModelServiceMock (Base) {
+  modelServiceMock.__name = 'modelService';
+  modelServiceMock.$inject = ['baseServiceMock'];
+  function modelServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.data = {};
@@ -95,7 +100,9 @@ define([
     return factory;
   }
 
-  function ApiServiceMock (Base, $q) {
+  apiServiceMock.__name = 'apiService';
+  apiServiceMock.$inject = ['baseServiceMock', '$q'];
+  function apiServiceMock (Base, $q) {
     var factory = Base.createInstance();
 
     var post = jasmine.createSpy('post').and.callFake(function () {
@@ -141,7 +148,9 @@ define([
     return factory;
   }
 
-  function ContactDetailsServiceMock (Base) {
+  contactDetailsServiceMock.__name = 'contactDetailsService';
+  contactDetailsServiceMock.$inject = ['baseServiceMock'];
+  function contactDetailsServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.response = {};
@@ -154,7 +163,9 @@ define([
     return factory;
   }
 
-  function KeyDetailsServiceMock (Base) {
+  keyDetailsServiceMock.__name = 'keyDetailsService';
+  keyDetailsServiceMock.$inject = ['baseServiceMock'];
+  function keyDetailsServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.response = {};
@@ -162,7 +173,9 @@ define([
     return factory;
   }
 
-  function KeyDatesServiceMock (Base) {
+  keyDatesServiceMock.__name = 'keyDatesService';
+  keyDatesServiceMock.$inject = ['baseServiceMock'];
+  function keyDatesServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.response = {};
@@ -170,7 +183,9 @@ define([
     return factory;
   }
 
-  function ContractServiceMock (Base) {
+  contractServiceMock.__name = 'contractService';
+  contractServiceMock.$inject = ['baseServiceMock'];
+  function contractServiceMock (Base) {
     var factory = Base.createInstance();
 
     factory.response = {};
@@ -192,13 +207,13 @@ define([
   }
 
   mocks
-    .factory('BaseServiceMock', ['$q', BaseServiceMock])
-    .factory('ItemServiceMock', ['BaseServiceMock', ItemServiceMock])
-    .factory('ModelServiceMock', ['ItemServiceMock', 'BaseServiceMock', ModelServiceMock])
-    .factory('ApiServiceMock', ['BaseServiceMock', '$q', ApiServiceMock])
-    .factory('ContactDetailsServiceMock', ['BaseServiceMock', ContactDetailsServiceMock])
-    .factory('KeyDetailsServiceMock', ['BaseServiceMock', 'settingsMock', KeyDetailsServiceMock])
-    .factory('KeyDatesServiceMock', ['BaseServiceMock', KeyDatesServiceMock])
-    .factory('ContractServiceMock', ['BaseServiceMock', ContractServiceMock])
-    .factory('PubSubMock', [PubSubMock]);
+    .factory('baseServiceMock', baseServiceMock)
+    .factory('itemServiceMock', itemServiceMock)
+    .factory('modelServiceMock', modelServiceMock)
+    .factory('apiServiceMock', apiServiceMock)
+    .factory('contactDetailsServiceMock', contactDetailsServiceMock)
+    .factory('keyDetailsServiceMock', 'settingsMock', keyDetailsServiceMock)
+    .factory('keyDatesServiceMock', keyDatesServiceMock)
+    .factory('contractServiceMock', contractServiceMock)
+    .factory('PubSubMock', PubSubMock);
 });

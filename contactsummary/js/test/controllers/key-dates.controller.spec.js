@@ -4,14 +4,13 @@ define([
   'common/angularMocks',
   'mocks/constants.mock',
   'mocks/services.mock',
-  'contact-summary/app',
-  'contact-summary/controllers/keyDates'
+  'contact-summary/modules/contact-summary.module'
 ], function () {
   'use strict';
 
-  describe('KeyDatesCtrl', function () {
+  describe('KeyDatesController', function () {
     var ctrlConstructor,
-      PubSubMock, ContractServiceMock, controllerObj;
+      PubSubMock, contractServiceMock, controllerObj;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks'));
 
@@ -20,24 +19,24 @@ define([
         return PubSubMock;
       });
 
-      $provide.factory('ContractService', function () {
-        return ContractServiceMock;
+      $provide.factory('contractService', function () {
+        return contractServiceMock;
       });
     }));
 
     beforeEach(inject(function ($injector, _$controller_) {
       PubSubMock = $injector.get('PubSubMock');
-      ContractServiceMock = $injector.get('ContractServiceMock');
+      contractServiceMock = $injector.get('contractServiceMock');
       ctrlConstructor = _$controller_;
     }));
 
     describe('constructor', function () {
       it('Should subscribe for contract changes', function () {
-        spyOn(ContractServiceMock, 'get').and.callThrough();
-        controllerObj = ctrlConstructor('KeyDatesCtrl');
+        spyOn(contractServiceMock, 'get').and.callThrough();
+        controllerObj = ctrlConstructor('KeyDatesController');
         expect(PubSubMock.subscribe).toHaveBeenCalledWith('contract-refresh', jasmine.any(Function));
         expect(controllerObj.dates).toEqual([]);
-        expect(ContractServiceMock.get).toHaveBeenCalled();
+        expect(contractServiceMock.get).toHaveBeenCalled();
       });
     });
   });

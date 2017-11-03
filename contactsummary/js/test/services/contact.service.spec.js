@@ -3,41 +3,40 @@
 define([
   'common/angularMocks',
   'mocks/services.mock',
-  'contact-summary/app',
-  'contact-summary/services/contact'
+  'contact-summary/services/contact.service'
 ], function () {
   'use strict';
 
-  describe('ContactService', function () {
-    var ContactDetailsServiceMock, ContactService, ContractServiceMock,
-      ModelServiceMock, rootScope;
+  describe('contactService', function () {
+    var contactDetailsServiceMock, contactService, contractServiceMock,
+      modelServiceMock, rootScope;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks',
       'contact-summary.templates'));
 
     beforeEach(module(function ($provide) {
-      $provide.factory('ModelService', function () {
-        return ModelServiceMock;
+      $provide.factory('modelService', function () {
+        return modelServiceMock;
       });
 
-      $provide.factory('ContactDetailsService', function () {
-        return ContactDetailsServiceMock;
+      $provide.factory('contactDetailsService', function () {
+        return contactDetailsServiceMock;
       });
 
-      $provide.factory('ContractService', function () {
-        return ContractServiceMock;
+      $provide.factory('contractService', function () {
+        return contractServiceMock;
       });
     }));
 
     beforeEach(inject(function ($injector) {
-      ModelServiceMock = $injector.get('ModelServiceMock');
-      ContactDetailsServiceMock = $injector.get('ContactDetailsServiceMock');
-      ContractServiceMock = $injector.get('ContractServiceMock');
+      modelServiceMock = $injector.get('modelServiceMock');
+      contactDetailsServiceMock = $injector.get('contactDetailsServiceMock');
+      contractServiceMock = $injector.get('contractServiceMock');
       rootScope = $injector.get('$rootScope');
     }));
 
-    beforeEach(inject(function (_ContactService_) {
-      ContactService = _ContactService_;
+    beforeEach(inject(function (_contactService_) {
+      contactService = _contactService_;
     }));
 
     describe('get', function () {
@@ -45,9 +44,9 @@ define([
       var expectedDetails = {id: 123, dateOfBirth: '1970/01/01', age: 45};
 
       beforeEach(function () {
-        ContactDetailsServiceMock.respond('get', expectedDetails);
+        contactDetailsServiceMock.respond('get', expectedDetails);
 
-        ContactService.get().then(function (response) {
+        contactService.get().then(function (response) {
           contact = response;
         });
 

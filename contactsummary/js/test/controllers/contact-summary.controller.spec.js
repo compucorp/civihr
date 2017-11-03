@@ -4,12 +4,11 @@ define([
   'common/angularMocks',
   'mocks/constants.mock',
   'mocks/services.mock',
-  'contact-summary/app',
-  'contact-summary/controllers/contactSummary'
+  'contact-summary/modules/contact-summary.module'
 ], function () {
   'use strict';
 
-  xdescribe('ContactSummaryCtrl', function () {
+  xdescribe('ContactSummaryController', function () {
     var settingsMock;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks'));
