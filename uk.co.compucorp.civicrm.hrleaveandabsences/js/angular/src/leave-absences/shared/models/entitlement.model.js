@@ -5,13 +5,15 @@ define([
   'leave-absences/shared/modules/models',
   'common/models/model',
   'leave-absences/shared/apis/entitlement.api',
+  'leave-absences/shared/apis/entitlement-log.api',
   'leave-absences/shared/instances/entitlement.instance'
 ], function (_, models) {
   'use strict';
 
   models.factory('Entitlement', [
     '$log', 'Model', 'EntitlementAPI', 'EntitlementInstance',
-    function ($log, Model, entitlementAPI, instance) {
+    'EntitlementLogAPI',
+    function ($log, Model, entitlementAPI, instance, entitlementLogAPI) {
       $log.debug('Entitlement');
 
       return Model.extend({
@@ -69,6 +71,33 @@ define([
                 return instance.init(entitlement, true);
               });
             });
+        },
+
+        /**
+         * Returns all Leave Entitlement Log entries. Can filter by contact and
+         * period id.
+         *
+         * @param {Object} param - list of filters to pass to the api call.
+         * @return {Promise} - resolves to a list of entitlement log entries.
+         */
+        logs: function (params) {
+          params = _.clone(params);
+
+          if (params.contact_id) {
+            params['entitlement_id.contact_id'] = params.contact_id;
+            delete params.contact_id;
+          }
+
+          if (params.period_id) {
+            params['entitlement_id.period_id'] = params.period_id;
+            delete params.period_id;
+          }
+
+          params.return = params.return || [];
+          params.return.push('entitlement_id', 'entitlement_id.type_id',
+            'editor_id', 'entitlement_amount', 'comment', 'created_date');
+
+          return entitlementLogAPI.all(params);
         }
       });
     }
