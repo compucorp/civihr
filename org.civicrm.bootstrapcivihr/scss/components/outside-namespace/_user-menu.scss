@@ -1,3 +1,5 @@
+$chr-user-menu-dropdown-item-gap: 0 30px 0 20px;
+
 .chr_user-menu {
   color: $chr-user-menu-color;
   cursor: default;
@@ -15,6 +17,7 @@
 }
 
 .chr_user-menu__data {
+
   > .chr_profile-card {
     margin: -2px 8px 0 8px; // To improve, the vertical margin is just to vertically align the card
     vertical-align: top;
@@ -45,7 +48,7 @@
 
     > a,
     > span {
-      padding: 0 30px 0 20px;
+      padding: $chr-user-menu-dropdown-item-gap;
     }
   }
 
@@ -73,6 +76,6 @@
     content: '';
     display: block;
     height: 0;
-    margin: 0 30px 0 20px;
+    margin: $chr-user-menu-dropdown-item-gap;
   }
 }
