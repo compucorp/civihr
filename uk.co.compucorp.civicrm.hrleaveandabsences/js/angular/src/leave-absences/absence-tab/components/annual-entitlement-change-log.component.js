@@ -8,8 +8,8 @@ define([
 ], function (_, moment, components) {
   components.component('annualEntitlementChangeLog', {
     bindings: {
-      periodId: '<',
       contactId: '<',
+      periodId: '<',
       dismissModal: '&'
     },
     templateUrl: ['settings', function (settings) {
@@ -37,11 +37,25 @@ define([
       .then(loadCalculationUnits)
       .then(loadAbsenceTypes)
       .then(loadChangeLog)
+      .then(appendCurrentEntitlementsToChangeLog)
       .then(createChangeLogRows)
       .finally(function () {
         vm.loading.component = false;
       });
     })();
+
+    /**
+     * Appends the current entitlements for the user and period into the change
+     * log's list. This is done because the logs don't return the current
+     * entitlement values, just the previous ones.
+     *
+     * @return {Promise}
+     */
+    function appendCurrentEntitlementsToChangeLog () {
+      return getCurrentEntitlementsLog().then(function (currentEntitlements) {
+        entitlementsChangeLog = entitlementsChangeLog.concat(currentEntitlements);
+      });
+    }
 
     /**
      * Creates the structure used to display entitlement logs by grouping
@@ -54,6 +68,32 @@ define([
         .sort(function (previousRow, currentRow) {
           return currentRow.date.diff(previousRow.date);
         });
+    }
+
+    /**
+     * Returns the current entitlements for the contact and period and maps
+     * them into entitlement logs format.
+     *
+     * @return {Promise}
+     */
+    function getCurrentEntitlementsLog () {
+      return Entitlement.all({
+        contact_id: vm.contactId,
+        period_id: vm.periodId
+      }, false)
+      .then(function (currentEntitlements) {
+        return currentEntitlements.map(function (entitlement) {
+          return {
+            'comment': entitlement.comment,
+            'contact_id': entitlement.contact_id,
+            'created_date': entitlement.created_date,
+            'editor_id': entitlement.editor_id,
+            'entitlement_amount': entitlement.value,
+            'entitlement_id': entitlement.id,
+            'entitlement_id.type_id': entitlement.type_id
+          };
+        });
+      });
     }
 
     /**

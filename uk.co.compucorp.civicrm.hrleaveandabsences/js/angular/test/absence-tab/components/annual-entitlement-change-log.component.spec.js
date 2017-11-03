@@ -5,12 +5,13 @@ define([
   'common/moment',
   'mocks/apis/absence-period-api-mock',
   'mocks/apis/absence-type-api-mock',
+  'mocks/apis/entitlement-api-mock',
   'mocks/apis/entitlement-log-api-mock',
   'mocks/apis/option-group-api-mock',
   'leave-absences/absence-tab/components/annual-entitlement-change-log.component'
 ], function (_, moment) {
-  describe('Annual entitlement change log', function () {
-    var $provide, $rootScope, AbsencePeriod, AbsenceType, ctrl, Entitlement;
+  fdescribe('Annual entitlement change log', function () {
+    var $provide, $q, $rootScope, AbsencePeriod, AbsenceType, ctrl, Entitlement;
     var contactId = 204;
     var periodId = 304;
 
@@ -20,15 +21,17 @@ define([
     }));
 
     beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock,
-    EntitlementLogAPIMock, OptionGroupAPIMock) {
+    EntitlementAPIMock, EntitlementLogAPIMock, OptionGroupAPIMock) {
       $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
       $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
+      $provide.value('EntitlementAPI', EntitlementAPIMock);
       $provide.value('EntitlementLogAPI', EntitlementLogAPIMock);
       $provide.value('api.optionGroup', OptionGroupAPIMock);
     }));
 
-    beforeEach(inject(function ($componentController, _$rootScope_,
+    beforeEach(inject(function ($componentController, _$q_, _$rootScope_,
     _AbsencePeriod_, _AbsenceType_, _Entitlement_) {
+      $q = _$q_;
       $rootScope = _$rootScope_;
       AbsencePeriod = _AbsencePeriod_;
       AbsenceType = _AbsenceType_;
@@ -110,18 +113,59 @@ define([
       });
 
       describe('entitlement log rows', function () {
-        var entitlementLogRows;
+        var allEntitlements, entitlementLogRows,
+          expectedEntitlementLogRowsStructure;
 
         beforeEach(function () {
-          Entitlement.logs().then(function (entitlementLogs) {
-            entitlementLogRows = _.chain(entitlementLogs)
+          var filters = { contact_id: contactId, period_id: periodId };
+
+          $q.all([
+            Entitlement.all(filters),
+            Entitlement.logs(filters)
+          ])
+          .then(function (entitlementsAndLogs) {
+            allEntitlements = entitlementsAndLogs[0];
+            entitlementLogRows = _.chain(entitlementsAndLogs).flatten()
               .groupBy('created_date').toArray().value();
+          })
+          .then(function () {
+            var indexedEntitlements = _.indexBy(allEntitlements, 'type_id');
+
+            var entitlements = ctrl.absenceTypes.map(function (absenceType) {
+              var hasEntitlementForAbsenceType = indexedEntitlements[absenceType.id];
+
+              /**
+               * Skip if there are no entitlements related to the absence type
+               * for this row.
+               */
+              if (!hasEntitlementForAbsenceType) {
+                return jasmine.anything();
+              }
+
+              return jasmine.objectContaining({
+                'calculation_unit': jasmine.anything(),
+                'created_date': jasmine.anything(),
+                'editor_id': jasmine.anything(),
+                'entitlement_amount': jasmine.anything(),
+                'entitlement_id': jasmine.anything(),
+                'entitlement_id.type_id': jasmine.anything()
+              });
+            });
+
+            expectedEntitlementLogRowsStructure = _.map(entitlementLogRows,
+              function () {
+                return {
+                  date: jasmine.anything(),
+                  entitlements: entitlements
+                };
+              });
           });
+
           $rootScope.$digest();
         });
 
-        it('stores one row for each group entitlement logs grouped by their creation date', function () {
-          expect(ctrl.changeLogRows.length).toEqual(entitlementLogRows.length);
+        it('stores one row for each entitlement logs and current entitlements grouped by their creation date', function () {
+          expect(ctrl.changeLogRows).toEqual(expectedEntitlementLogRowsStructure);
         });
 
         describe('each row', function () {
