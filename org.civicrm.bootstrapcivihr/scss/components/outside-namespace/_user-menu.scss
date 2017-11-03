@@ -15,18 +15,13 @@
 }
 
 .chr_user-menu__data {
-  > .chr_user-menu__name {
-    float: left;
-  }
-
   > .chr_profile-card {
     margin: -2px 8px 0 8px; // To improve, the vertical margin is just to vertically align the card
     vertical-align: top;
   }
 
   @media(max-width: $chr-user-menu-minify-breakpoint) {
-    > .chr_user-menu__arrow,
-    > .chr_user-menu__name {
+    > .chr_user-menu__arrow {
       display: none;
     }
   }
@@ -44,12 +39,19 @@
     margin: 0;
   }
 
+  li {
+    line-height: 50px;
+    white-space: nowrap;
+
+    > a,
+    > span {
+      padding: 0 30px 0 20px;
+    }
+  }
+
   a {
     color: $chr-user-menu-dropdown-link-color;
     display: block;
-    line-height: 50px;
-    padding: 0 30px 0 20px;
-    white-space: nowrap;
 
     &:hover {
       background: $chr-user-menu-dropdown-link-bg-hover;
@@ -60,5 +62,17 @@
     > i {
       margin-right: 10px;
     }
+  }
+}
+
+.chr_user-menu__dropdown__username {
+  color: $chr-user-menu-dropdown-username-color;
+
+  &:after {
+    border-top: 1px solid $gray-darker;
+    content: '';
+    display: block;
+    height: 0;
+    margin: 0 30px 0 20px;
   }
 }

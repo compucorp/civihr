@@ -1,6 +1,5 @@
 <div class="chr_user-menu">
   <div class="chr_user-menu__data">
-    <span class="chr_user-menu__name">{$username}</span>
     <div class="chr_profile-card">
       <div class="chr_profile-card__picture chr_profile-card__picture--small">
         <img src="{$image}" alt="{$username|escape}">
@@ -10,6 +9,9 @@
   </div>
   <nav class="chr_user-menu__dropdown">
     <ul>
+      <li class="chr_user-menu__dropdown__username">
+        <span>signed in as <strong>{$username}</strong></span>
+      </li>
       <li>
         <a href="{$editLink}">
           <i class="fa fa-edit"></i>{ts}Edit Account{/ts}
