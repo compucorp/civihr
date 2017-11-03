@@ -19,35 +19,19 @@
       <thead>
         <tr>
           <td>Date Changed</td>
-          <td>Sick</td>
-          <td>Vacation</td>
-          <td>Maternity</td>
-          <td>Paternity</td>
-          <td>TOIL</td>
-          <td>Other</td>
-          <td>Comment</td>
+          <td ng-repeat="period in changeLog.absenceTypes">
+            {{period.title}}
+          </td>
+          <td>Comments</td>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>31/1/2015</td>
-          <td>0</td>
-          <td>32</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>5</td>
-          <td>Added 4 days ago</td>
-        </tr>
-        <tr>
-          <td>0</td>
-          <td>32</td>
-          <td>0</td>
-          <td>0</td>
-          <td>0</td>
-          <td>5</td>
-          <td>31/1/2015</td>
-          <td>Added 4 days ago</td>
+        <tr ng-repeat="change in changeLog.changeLogRows">
+          <td>{{change.date.format('DD/MM/YYYY')}}</td>
+          <td ng-repeat="entitlement in change.entitlements">
+            {{entitlement.entitlement_amount | timeUnitApplier:entitlement.calculation_unit}}
+          </td>
+          <td></td>
         </tr>
       </tbody>
     </table>

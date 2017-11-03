@@ -81,7 +81,7 @@ define([
          * @return {Promise} - resolves to a list of entitlement log entries.
          */
         logs: function (params) {
-          params = _.clone(params);
+          params = _.clone(params || {});
 
           if (params.contact_id) {
             params['entitlement_id.contact_id'] = params.contact_id;
