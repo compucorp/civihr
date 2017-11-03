@@ -4266,4 +4266,88 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($fromDate->format('Y-m-d') ." 00:00:00", $leaveRequest->from_date);
     $this->assertEquals($toDate->format('Y-m-d') ." 23:59:00", $leaveRequest->to_date);
   }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, leave_date
+   */
+  public function testGetWorkDayForDateShouldNotAllowNullParams() {
+    civicrm_api3('LeaveRequest', 'getWorkDayForDate', []);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id
+   */
+  public function testGetWorkDayForDateShouldThrowAnExceptionWhenContactIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'getWorkDayForDate', ['leave_date' => '2016-01-01']);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_date
+   */
+  public function testGetWorkDayForDateShouldThrowAnExceptionWhenLeaveDateIsMissing() {
+    civicrm_api3('LeaveRequest', 'getWorkDayForDate', ['contact_id' => 1]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage leave_date is not a valid date: 2016-99-02
+   */
+  public function testGetWorkDayForDateShouldThrowAnExceptionWhenLeaveDateIsInvalid() {
+    civicrm_api3('LeaveRequest', 'getWorkDayForDate', ['contact_id' => 1, 'leave_date' => '2016-99-02']);
+  }
+
+  public function testGetWorkDayForDateReturnsCorrectResults() {
+    $periodStartDate = new DateTime('2017-01-01');
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [ 'period_start_date' => $periodStartDate->format('Y-m-d') ]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+    $workWeeks = WorkPatternFabricator::getWeekFor40HourWorkWeek();
+    $workDay = $workWeeks['days'][0];
+
+    $expectedResult = [
+      'time_from' => CRM_Utils_Array::value('time_from', $workDay, '') ,
+      'time_to' => CRM_Utils_Array::value('time_to', $workDay, ''),
+      'number_of_hours' =>  !empty($workDay['number_of_hours']) ? $workDay['number_of_hours'] : ''
+
+    ];
+
+    //2017-01-02 is a monday and a working day
+    $result = civicrm_api3('LeaveRequest', 'getWorkDayForDate', [
+      'contact_id' => $contract['contact_id'],
+      'leave_date' => '2017-01-02']
+    );
+    $this->assertEquals($expectedResult, $result['values']);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Contact has no Work Day for this date
+   */
+  public function testGetContactWorkDayForDateThrowsAnExceptionWhenThereIsNoWorkDay() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+    ]);
+
+    $contactID = 1;
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    civicrm_api3('LeaveRequest', 'getWorkDayForDate', [
+      'contact_id' => $contactID,
+      'leave_date' => '2017-01-02']
+    );
+  }
 }
+
