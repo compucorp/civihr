@@ -62,7 +62,8 @@ define([
      * changes using their creation date and sorting them in a descending order.
      */
     function createChangeLogRows () {
-      var groupedEntitlements = _.groupBy(entitlementsChangeLog, 'created_date');
+      var groupedEntitlements = _.groupBy(entitlementsChangeLog,
+        groupByCreationDateRoundedSeconds);
 
       vm.changeLogRows = _.map(groupedEntitlements, getChangeLogRow)
         .sort(function (previousRow, currentRow) {
@@ -121,6 +122,27 @@ define([
         date: moment(createdDate),
         entitlements: sortedEntitlements
       };
+    }
+
+    /**
+     * Helper function that groups entitlements by their creation date. The
+     * creation date is rounded to the nearest 15 second interval (0, 15, 30,
+     * 45, and 0 + 1 minute) in order to group entitlements that were created
+     * at the same time, but have a difference of a few seconds between them.
+     *
+     * @param {Object} entitlement - the entitlement change log to grab the
+     * creation date from.
+     * @return {String} - ISO date string of the rounded creation date.
+     */
+    function groupByCreationDateRoundedSeconds (entitlement) {
+      var date = moment(entitlement.created_date);
+      var secondIntervals = 15;
+      var roundedSeconds = Math.round(date.seconds() / secondIntervals) *
+        secondIntervals;
+
+      date.seconds(roundedSeconds);
+
+      return date.toISOString();
     }
 
     /**

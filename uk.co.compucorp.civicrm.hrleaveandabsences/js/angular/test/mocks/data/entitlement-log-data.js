@@ -12,7 +12,7 @@ define(function () {
         'entitlement_id.type_id': '1',
         'editor_id': '207',
         'entitlement_amount': '33.00',
-        'created_date': '2017-11-02 14:36:38'
+        'created_date': '2017-11-02 14:36:31'
       },
       {
         'id': '2',
@@ -20,7 +20,7 @@ define(function () {
         'entitlement_id.type_id': '2',
         'editor_id': '207',
         'entitlement_amount': '0.00',
-        'created_date': '2017-11-02 14:36:38'
+        'created_date': '2017-11-02 14:36:32'
       },
       {
         'id': '3',
@@ -28,7 +28,7 @@ define(function () {
         'entitlement_id.type_id': '3',
         'editor_id': '207',
         'entitlement_amount': '5.00',
-        'created_date': '2017-11-02 14:36:38'
+        'created_date': '2017-11-02 14:36:33'
       },
       {
         'id': '4',
@@ -36,7 +36,7 @@ define(function () {
         'entitlement_id.type_id': '4',
         'editor_id': '207',
         'entitlement_amount': '0.00',
-        'created_date': '2017-11-02 14:36:38'
+        'created_date': '2017-11-02 14:36:34'
       },
       {
         'id': '5',
@@ -44,7 +44,7 @@ define(function () {
         'entitlement_id.type_id': '5',
         'editor_id': '207',
         'entitlement_amount': '0.00',
-        'created_date': '2017-11-02 14:36:38'
+        'created_date': '2017-11-02 14:36:35'
       },
       {
         'id': '6',
@@ -81,7 +81,7 @@ define(function () {
         'created_date': '2017-11-02 14:57:27'
       },
       {
-        'id': '10',
+        'id': '1-',
         'entitlement_id': '5',
         'entitlement_id.type_id': '5',
         'editor_id': '207',
@@ -123,7 +123,7 @@ define(function () {
         'created_date': '2017-11-02 15:25:49'
       },
       {
-        'id': '15',
+        'id': '14',
         'entitlement_id': '5',
         'entitlement_id.type_id': '5',
         'editor_id': '207',
