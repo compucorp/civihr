@@ -40,6 +40,7 @@ define([
       .then(appendCurrentEntitlementsToChangeLog)
       .then(createChangeLogRows)
       .then(removeRepeatedComments)
+      .then(highlightEntitlementWithComments)
       .finally(function () {
         vm.loading.component = false;
       });
@@ -70,6 +71,27 @@ define([
         .sort(function (previousRow, currentRow) {
           return currentRow.date.diff(previousRow.date);
         });
+    }
+
+    /**
+     * Selects the entitlement rows to be highlighlighted based on the one
+     * that has comments.
+     */
+    function highlightEntitlementWithComments () {
+      for (var i = vm.changeLogRows.length - 1; i >= 0; i--) {
+        var changeLogRow = vm.changeLogRows[i];
+        var entitlementComments = _.pluck(changeLogRow.entitlements, 'comment');
+        var validEntitlementComments = _.compact(entitlementComments).length;
+
+        if (validEntitlementComments === 1) {
+          var commentIndex = _.findIndex(entitlementComments, 'length');
+
+          changeLogRow.highlightedEntitlement = changeLogRow
+            .entitlements[commentIndex];
+        } else if (validEntitlementComments > 1) {
+          splitEntitlementCommentsIntoMultipleRows(i);
+        }
+      }
     }
 
     /**
@@ -245,6 +267,53 @@ define([
         currentLogRowPointer--;
         nextLogRowPointer--;
       }
+    }
+
+    /**
+     * When a row has multiple entitlements with comments this function can be
+     * used to create a new row for each of the comments. The new rows created
+     * will display the change between comments and highlight the comment's
+     * entitlement.
+     *
+     * @param {Number} rowIndex - The row index with multiple entitlement
+     * comments that will be split into different rows.
+     */
+    function splitEntitlementCommentsIntoMultipleRows (rowIndex) {
+      var changeLogRow = vm.changeLogRows[rowIndex];
+      var nextRow = vm.changeLogRows[rowIndex + 1];
+
+      if (!nextRow) {
+        nextRow = {
+          date: changeLogRow.date.clone(),
+          entitlements: changeLogRow.entitlements.map(function () {
+            return {};
+          })
+        };
+      }
+
+      changeLogRow.entitlements.forEach(function (entitlement, i) {
+        var entitlements, newRowWithSingleComment;
+
+        if (!entitlement.comment) {
+          return;
+        }
+
+        entitlements = nextRow.entitlements.slice(0, i)
+          .concat(entitlement)
+          .concat(changeLogRow.entitlements.slice(i + 1));
+        newRowWithSingleComment = {
+          date: changeLogRow.date.clone(),
+          entitlements: _.cloneDeep(entitlements)
+        };
+        newRowWithSingleComment.highlightedEntitlement = newRowWithSingleComment
+          .entitlements[i];
+        // Inserts the new row at rowIndex:
+        vm.changeLogRows.splice(rowIndex, 0, newRowWithSingleComment);
+        rowIndex++;
+      });
+
+      // Removes the unsplitted row:
+      vm.changeLogRows.splice(rowIndex, 1);
     }
   }
 });

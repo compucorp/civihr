@@ -28,12 +28,12 @@
       <tbody>
         <tr ng-repeat="change in changeLog.changeLogRows">
           <td>{{change.date.format('DD/MM/YYYY')}}</td>
-          <td ng-repeat="entitlement in change.entitlements" ng-class="{'bg-info': entitlement === change.highlightedEntitlement}">
+          <td ng-repeat="entitlement in change.entitlements track by $index" ng-class="{'bg-info': entitlement === change.highlightedEntitlement}">
             {{entitlement.entitlement_amount | timeUnitApplier:entitlement.calculation_unit}}
           </td>
           <td>
             <span ng-if="change.highlightedEntitlement">
-              {{change.highlightedEntitlement.comments}}
+              {{change.highlightedEntitlement.comment}}
             </span>
           </td>
         </tr>

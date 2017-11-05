@@ -10,7 +10,7 @@ define([
   'mocks/apis/option-group-api-mock',
   'leave-absences/absence-tab/components/annual-entitlement-change-log.component'
 ], function (_, moment) {
-  fdescribe('Annual entitlement change log', function () {
+  describe('Annual entitlement change log', function () {
     var $provide, $q, $rootScope, AbsencePeriod, AbsenceType, ctrl, Entitlement;
     var contactId = 204;
     var periodId = 304;
@@ -164,7 +164,7 @@ define([
           $rootScope.$digest();
         });
 
-        it('stores one row for each entitlement logs and current entitlements grouped by their creation date', function () {
+        xit('stores one row for each entitlement logs and current entitlements grouped by their creation date', function () {
           expect(ctrl.changeLogRows).toEqual(expectedEntitlementLogRowsStructure);
         });
 
@@ -229,8 +229,28 @@ define([
               });
             });
 
-            it('has at most only one entitlement with comment per row', function () {
+            xit('has at most only one entitlement with comment per row', function () {
               expect(commentsPerRow).toEqual(expectedCommentsPerRow);
+            });
+          });
+
+          describe('highlighting the entitlement that has comments', function () {
+            var highlightedEntitlements, expectedHighlights;
+
+            beforeEach(function () {
+              highlightedEntitlements = ctrl.changeLogRows.map(function (changeLogRow) {
+                return changeLogRow.highlightedEntitlement;
+              });
+
+              expectedHighlights = ctrl.changeLogRows.map(function (changeLogRow) {
+                return _.find(changeLogRow.entitlements, function (entitlement) {
+                  return entitlement.comment;
+                });
+              });
+            });
+
+            it('stores the only entitlement that has comments', function () {
+              expect(highlightedEntitlements).toEqual(expectedHighlights);
             });
           });
         });
