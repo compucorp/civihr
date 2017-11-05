@@ -39,6 +39,7 @@ define([
       .then(loadChangeLog)
       .then(appendCurrentEntitlementsToChangeLog)
       .then(createChangeLogRows)
+      .then(removeRepeatedComments)
       .finally(function () {
         vm.loading.component = false;
       });
@@ -211,6 +212,39 @@ define([
       .then(function (changeLog) {
         entitlementsChangeLog = changeLog;
       });
+    }
+
+    /**
+     * Removes comments that remain the same from one row to the other.
+     * This reduces duplication of rows when displaying one row per comment.
+     */
+    function removeRepeatedComments () {
+      var currentLogRowPointer, nextLogRowPointer;
+      var logHasOneOrCeroRows = vm.changeLogRows.length <= 1;
+
+      // There is no chance of repetition when there are one or cero rows
+      if (logHasOneOrCeroRows) {
+        return;
+      }
+
+      currentLogRowPointer = vm.changeLogRows.length - 2;
+      nextLogRowPointer = vm.changeLogRows.length - 1;
+
+      while (currentLogRowPointer >= 0) {
+        var currentLogRow = vm.changeLogRows[currentLogRowPointer];
+        var nextLogRow = vm.changeLogRows[nextLogRowPointer];
+
+        currentLogRow.entitlements.forEach(function (currentLogRowEntitlement, i) {
+          var nextLogRowEntitlement = nextLogRow.entitlements[i];
+
+          if (currentLogRowEntitlement.comment === nextLogRowEntitlement.comment) {
+            delete currentLogRowEntitlement.comment;
+          }
+        });
+
+        currentLogRowPointer--;
+        nextLogRowPointer--;
+      }
     }
   }
 });

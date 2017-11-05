@@ -10,7 +10,7 @@ define([
   'mocks/apis/option-group-api-mock',
   'leave-absences/absence-tab/components/annual-entitlement-change-log.component'
 ], function (_, moment) {
-  describe('Annual entitlement change log', function () {
+  fdescribe('Annual entitlement change log', function () {
     var $provide, $q, $rootScope, AbsencePeriod, AbsenceType, ctrl, Entitlement;
     var contactId = 204;
     var periodId = 304;
@@ -154,10 +154,10 @@ define([
 
             expectedEntitlementLogRowsStructure = _.map(entitlementLogRows,
               function () {
-                return {
+                return jasmine.objectContaining({
                   date: jasmine.anything(),
                   entitlements: entitlements
-                };
+                });
               });
           });
 
@@ -204,6 +204,33 @@ define([
 
             it('stores the calculation unit name for the entitlement', function () {
               expect(entitlementCalculationUnits).toEqual(absenceTypeCalculationUnits);
+            });
+          });
+        });
+
+        describe('comment column', function () {
+          describe('when multiple comments exists per row', function () {
+            var commentsPerRow, expectedCommentsPerRow;
+
+            beforeEach(function () {
+              commentsPerRow = ctrl.changeLogRows.map(function (changeLogRow) {
+                return changeLogRow.entitlements
+                  .reduce(function (count, entitlement) {
+                    return entitlement.comment ? ++count : count;
+                  }, 0);
+              });
+
+              expectedCommentsPerRow = ctrl.changeLogRows.map(function (changeLogRow) {
+                return {
+                  asymmetricMatch: function (value) {
+                    return value === 1 || value === 0;
+                  }
+                };
+              });
+            });
+
+            it('has at most only one entitlement with comment per row', function () {
+              expect(commentsPerRow).toEqual(expectedCommentsPerRow);
             });
           });
         });
