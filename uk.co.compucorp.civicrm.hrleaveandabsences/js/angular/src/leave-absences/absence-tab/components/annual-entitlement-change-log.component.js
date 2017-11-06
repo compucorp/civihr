@@ -16,13 +16,13 @@ define([
       return settings.pathTpl + 'components/annual-entitlement-change-log.html';
     }],
     controllerAs: 'changeLog',
-    controller: AnualEntitlementChangeLog
+    controller: AnnualEntitlementChangeLog
   });
 
-  AnualEntitlementChangeLog.$inject = ['AbsencePeriod', 'AbsenceType',
+  AnnualEntitlementChangeLog.$inject = ['AbsencePeriod', 'AbsenceType',
     'Entitlement', 'OptionGroup', 'shared-settings'];
 
-  function AnualEntitlementChangeLog (AbsencePeriod, AbsenceType, Entitlement,
+  function AnnualEntitlementChangeLog (AbsencePeriod, AbsenceType, Entitlement,
   OptionGroup, sharedSettings) {
     var entitlementsChangeLog = [];
     var vm = this;

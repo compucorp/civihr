@@ -101,7 +101,7 @@
       }
 
       /**
-       * Opens the Anual entitlement change log modal for the current
+       * Opens the Annual entitlement change log modal for the current
        * contact and the given period.
        */
       function openAnnualEntitlementChangeLog (periodId) {
