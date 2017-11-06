@@ -4320,7 +4320,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'time_from' => CRM_Utils_Array::value('time_from', $workDay, '') ,
       'time_to' => CRM_Utils_Array::value('time_to', $workDay, ''),
       'number_of_hours' =>  !empty($workDay['number_of_hours']) ? $workDay['number_of_hours'] : ''
-
     ];
 
     //2017-01-02 is a monday and a working day

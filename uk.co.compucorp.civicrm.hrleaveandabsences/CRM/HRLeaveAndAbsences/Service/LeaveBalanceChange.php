@@ -122,6 +122,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange {
       $leaveRequest,
       $date,
       $dateDeductionFactory,
-      $contactWorkPatternService);
+      $contactWorkPatternService
+    );
   }
 }
