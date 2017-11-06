@@ -114,35 +114,12 @@ define([
       });
 
       describe('entitlement log rows', function () {
-        var allEntitlements, entitlementLogRows,
-          expectedEntitlementLogRowsStructure;
+        var expectedEntitlementLogRowsStructure;
 
         beforeEach(function () {
-          var filters = { contact_id: contactId, period_id: periodId };
-
-          $q.all([
-            Entitlement.all(filters),
-            Entitlement.logs(filters)
-          ])
-          .then(function (entitlementsAndLogs) {
-            allEntitlements = entitlementsAndLogs[0];
-            entitlementLogRows = _.chain(entitlementsAndLogs).flatten()
-              .groupBy(groupByCreationDateRoundedSeconds).toArray().value();
-          })
-          .then(function () {
-            var indexedEntitlements = _.indexBy(allEntitlements, 'type_id');
-
-            var entitlements = ctrl.absenceTypes.map(function (absenceType) {
-              var hasEntitlementForAbsenceType = !!indexedEntitlements[absenceType.id];
-
-              /**
-               * Skip if there are no entitlements related to the absence type
-               * for this row.
-               */
-              if (!hasEntitlementForAbsenceType) {
-                return jasmine.anything();
-              }
-
+          expectedEntitlementLogRowsStructure = jasmine.objectContaining({
+            date: jasmine.anything(),
+            entitlements: ctrl.absenceTypes.map(function () {
               return jasmine.objectContaining({
                 'calculation_unit': jasmine.anything(),
                 'created_date': jasmine.anything(),
@@ -151,22 +128,12 @@ define([
                 'entitlement_id': jasmine.anything(),
                 'entitlement_id.type_id': jasmine.anything()
               });
-            });
-
-            expectedEntitlementLogRowsStructure = _.map(entitlementLogRows,
-              function () {
-                return jasmine.objectContaining({
-                  date: jasmine.anything(),
-                  entitlements: entitlements
-                });
-              });
+            })
           });
-
-          $rootScope.$digest();
         });
 
-        xit('stores one row for each entitlement logs and current entitlements grouped by their creation date', function () {
-          expect(ctrl.changeLogRows).toEqual(expectedEntitlementLogRowsStructure);
+        it('stores entitlement rows containing the change date and entitlements list', function () {
+          expect(ctrl.changeLogRows[0]).toEqual(expectedEntitlementLogRowsStructure);
         });
 
         describe('each row', function () {
