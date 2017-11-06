@@ -3,15 +3,17 @@
 define([
   'common/lodash',
   'common/moment',
+  'mocks/data/entitlement-log-data',
   'mocks/apis/absence-period-api-mock',
   'mocks/apis/absence-type-api-mock',
   'mocks/apis/entitlement-api-mock',
   'mocks/apis/entitlement-log-api-mock',
   'mocks/apis/option-group-api-mock',
   'leave-absences/absence-tab/components/annual-entitlement-change-log.component'
-], function (_, moment) {
+], function (_, moment, entitlementLogData) {
   describe('Annual entitlement change log', function () {
-    var $provide, $q, $rootScope, AbsencePeriod, AbsenceType, ctrl, Entitlement;
+    var $componentController, $provide, $q, $rootScope, AbsencePeriod,
+      AbsenceType, ctrl, Entitlement;
     var contactId = 204;
     var periodId = 304;
 
@@ -29,8 +31,9 @@ define([
       $provide.value('api.optionGroup', OptionGroupAPIMock);
     }));
 
-    beforeEach(inject(function ($componentController, _$q_, _$rootScope_,
+    beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
     _AbsencePeriod_, _AbsenceType_, _Entitlement_) {
+      $componentController = _$componentController_;
       $q = _$q_;
       $rootScope = _$rootScope_;
       AbsencePeriod = _AbsencePeriod_;
@@ -38,12 +41,10 @@ define([
       Entitlement = _Entitlement_;
 
       spyOn(AbsencePeriod, 'all').and.callThrough();
+      spyOn(Entitlement, 'all').and.callThrough();
       spyOn(Entitlement, 'logs').and.callThrough();
 
-      ctrl = $componentController('annualEntitlementChangeLog', null, {
-        contactId: contactId,
-        periodId: periodId
-      });
+      compileComponent();
     }));
 
     describe('on init', function () {
@@ -209,31 +210,6 @@ define([
         });
 
         describe('comment column', function () {
-          describe('when multiple comments exists per row', function () {
-            var commentsPerRow, expectedCommentsPerRow;
-
-            beforeEach(function () {
-              commentsPerRow = ctrl.changeLogRows.map(function (changeLogRow) {
-                return changeLogRow.entitlements
-                  .reduce(function (count, entitlement) {
-                    return entitlement.comment ? ++count : count;
-                  }, 0);
-              });
-
-              expectedCommentsPerRow = ctrl.changeLogRows.map(function (changeLogRow) {
-                return {
-                  asymmetricMatch: function (value) {
-                    return value === 1 || value === 0;
-                  }
-                };
-              });
-            });
-
-            xit('has at most only one entitlement with comment per row', function () {
-              expect(commentsPerRow).toEqual(expectedCommentsPerRow);
-            });
-          });
-
           describe('highlighting the entitlement that has comments', function () {
             var highlightedEntitlements, expectedHighlights;
 
@@ -249,8 +225,34 @@ define([
               });
             });
 
-            it('stores the only entitlement that has comments', function () {
+            it('highlights the entitlement that has comments', function () {
               expect(highlightedEntitlements).toEqual(expectedHighlights);
+            });
+          });
+
+          describe('not highlighting entitlements when there are no comments', function () {
+            var highlightedEntitlements;
+
+            beforeEach(function () {
+              var changeLog = entitlementLogData.all().values.map(function (change) {
+                return _.defaults({
+                  comment: ''
+                }, change);
+              });
+
+              Entitlement.logs.and.returnValue($q.resolve(changeLog));
+              Entitlement.all.and.returnValue($q.resolve([]));
+
+              compileComponent();
+              $rootScope.$digest();
+
+              highlightedEntitlements = _.compact(ctrl.changeLogRows.map(function (changeLogRow) {
+                return changeLogRow.highlightedEntitlement;
+              }));
+            });
+
+            it('doesn\'t highlight any row\'s entitlements', function () {
+              expect(highlightedEntitlements.length).toBe(0);
             });
           });
         });
@@ -274,6 +276,17 @@ define([
         });
       });
     });
+
+    /**
+     * Compiles the component and stores the reference for the controller for
+     * testing purposes.
+     */
+    function compileComponent () {
+      ctrl = $componentController('annualEntitlementChangeLog', null, {
+        contactId: contactId,
+        periodId: periodId
+      });
+    }
 
     /**
      * Helper function that groups entitlements by their creation date. The
