@@ -1,1 +1,1 @@
-({    baseUrl : 'src',    out: 'dist/contact-summary.min.js',    name: 'contact-summary',    skipModuleInsertion: true,    paths: {        'common': 'empty:'    }})
+/* eslint-disable */({  baseUrl : 'src',  out: 'dist/contact-summary.min.js',  name: 'contact-summary',  skipModuleInsertion: true,  paths: {    'common': 'empty:'  }})
