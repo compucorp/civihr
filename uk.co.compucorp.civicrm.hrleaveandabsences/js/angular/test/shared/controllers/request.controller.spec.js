@@ -140,6 +140,10 @@
               expect(controller.absenceTypes.length).toBeGreaterThan(0);
             });
 
+            it('loads calculation units into absence types', function () {
+              expect(controller.absenceTypes[0].calculation_unit_name).toEqual(jasmine.any(String));
+            });
+
             it('has first absence type selected', function () {
               expect(controller.request.type_id).toEqual(controller.absenceTypes[0].id);
             });

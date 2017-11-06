@@ -6,9 +6,9 @@ define([
 ], function (_, controllers) {
   controllers.controller('ToilRequestCtrl', ToilRequestCtrl);
 
-  ToilRequestCtrl.$inject = ['$log', '$q', 'api.optionGroup', 'AbsenceType', 'parentCtrl'];
+  ToilRequestCtrl.$inject = ['$log', '$q', '$rootScope', 'api.optionGroup', 'AbsenceType', 'parentCtrl'];
 
-  function ToilRequestCtrl ($log, $q, OptionGroup, AbsenceType, parentCtrl) {
+  function ToilRequestCtrl ($log, $q, $rootScope, OptionGroup, AbsenceType, parentCtrl) {
     $log.debug('ToilRequestCtrl');
 
     var vm = parentCtrl;
@@ -25,6 +25,10 @@ define([
     vm.updateAbsencePeriodDatesTypes = updateAbsencePeriodDatesTypes;
     vm.updateExpiryDate = updateExpiryDate;
 
+    (function init () {
+      initAccrueValueWatcher();
+    })();
+
     /**
      * Calculate change in balance, it updates balance variables.
      * It overrides the parent's implementation
@@ -32,6 +36,8 @@ define([
      * @return {Promise} empty promise if all required params are not set otherwise promise from server
      */
     function calculateBalanceChange () {
+      vm.uiOptions.showBalance = false;
+
       if (vm.request.toil_to_accrue) {
         vm.loading.showBalanceChange = true;
         vm._setDateAndTypes();
@@ -49,18 +55,14 @@ define([
      * @return {Promise}
      */
     function calculateToilExpiryDate () {
-      /**
-       * blocks the expiry date from updating if this is an existing request
-       * and user is not a manager or admin.
-       */
+      // blocks the expiry date from updating if this is an existing request
+      // and user is not a manager or admin
       if (!vm.canManage && vm.request.id) {
         return $q.resolve(vm.request.toil_expiry_date);
       }
 
-      /**
-       * skips calculation of expiration date if request never expires
-       * according to admin setting.
-       */
+      // skips calculation of expiration date if request never expires
+      // according to admin setting
       if (!vm.requestCanExpire) {
         vm.request.toil_expiry_date = false;
         return $q.resolve(false);
@@ -192,6 +194,17 @@ define([
       if (vm.canManage) {
         vm.uiOptions.expiryDate = vm._convertDateFormatFromServer(vm.request.toil_expiry_date);
       }
+    }
+
+    /**
+     * Initialises watcher for accrue value
+     */
+    function initAccrueValueWatcher () {
+      if (vm.isMode('view')) { return; }
+
+      $rootScope.$watch(
+        function () { return vm.request.toil_to_accrue; },
+        function () { calculateBalanceChange(); });
     }
 
     /**

@@ -5,6 +5,8 @@ define([
   'common/angularBootstrap',
   'common/text-angular',
   'common/directives/loading',
+  'common/directives/time-amount-picker.directive',
+  'common/directives/timepicker-select.directive',
   'common/filters/time-unit-applier.filter',
   'common/modules/dialog',
   'common/services/angular-date/date-format',
