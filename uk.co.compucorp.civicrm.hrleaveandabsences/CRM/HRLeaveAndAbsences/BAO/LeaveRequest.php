@@ -13,6 +13,7 @@ use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException as InvalidLeav
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 use CRM_HRLeaveAndAbsences_Factory_LeaveDateAmountDeduction as LeaveDateAmountDeductionFactory;
+use CRM_HRLeaveAndAbsences_Service_ContactWorkPattern as ContactWorkPatternService;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
 
@@ -971,6 +972,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $isCalculationUnitInHours = AbsenceType::isCalculationUnitInHours($leaveRequest->type_id);
     $dateDeductionService = LeaveDateAmountDeductionFactory::createForAbsenceType($leaveRequest->type_id);
+    $contactWorkPatternService = new ContactWorkPatternService();
 
     foreach ($datePeriod as $date) {
       if($excludeStartAndEndDates) {
@@ -988,7 +990,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       if(!$publicHolidayLeaveRequestExists){
         $type = ContactWorkPattern::getWorkDayType($contactId, $date);
         $dayType = self::getLeaveRequestDayTypeFromWorkDayType($type);
-        $amount = LeaveBalanceChange::calculateAmountForDate($leaveRequest, $date, $dateDeductionService);
+        $amount = LeaveBalanceChange::calculateAmountForDate(
+          $leaveRequest,
+          $date,
+          $dateDeductionService,
+          $contactWorkPatternService
+        );
 
         if(!$isCalculationUnitInHours) {
           if($amount == -0.5) {

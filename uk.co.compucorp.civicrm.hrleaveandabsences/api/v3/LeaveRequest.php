@@ -798,3 +798,67 @@ function _civicrm_api3_leave_request_set_time_for_leave_dates(&$params) {
   $params['from_date'] = $fromDate->format('YmdHis');
   $params['to_date'] = $toDate->format('YmdHis');
 }
+
+/**
+ * LeaveRequest.getWorkDayForDate API spec
+ *
+ * @param array $spec
+ */
+function _civicrm_api3_leave_request_getworkdayfordate_spec(&$spec) {
+  $spec['contact_id'] = [
+    'name' => 'contact_id',
+    'title' => 'Contact ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1,
+    'FKClassName'  => 'CRM_Contact_DAO_Contact',
+    'FKApiName'    => 'Contact',
+  ];
+
+  $spec['leave_date'] = [
+    'name' => 'leave_date',
+    'title' => 'Leave Date',
+    'description' => 'The leave date to get the Work Day for',
+    'type' => CRM_Utils_Type::T_DATE,
+    'api.required' => 1
+  ];
+}
+
+/**
+ * LeaveRequest.getWorkDayForDate API
+ *
+ * Returns the work day information for a
+ * contact for the given leave date using
+ * the contactWorkPatternService.
+ *
+ * @param array $params
+ *
+ * @return array
+ *
+ * @throws CiviCRM_API3_Exception
+ */
+function civicrm_api3_leave_request_getworkdayfordate($params) {
+  $contactWorkPatternService = new CRM_HRLeaveAndAbsences_Service_ContactWorkPattern();
+  $workDay = $contactWorkPatternService->getContactWorkDayForDate($params['contact_id'], new DateTime($params['leave_date']));
+
+  if(is_null($workDay)) {
+    throw new InvalidArgumentException(
+      'Contact has no Work Day for this date'
+    );
+  }
+
+  _civicrm_api3_leave_request_filter_workday_fields($workDay);
+
+  return civicrm_api3_create_success($workDay);
+}
+
+/**
+ * Helper method to filter the returned results from
+ * contactWorkPatternService.getContactWorkDayForDate function.
+ * Ensures only relevant fields are returned.
+ *
+ * @param array $workDay
+ */
+function _civicrm_api3_leave_request_filter_workday_fields(&$workDay) {
+  $fields = array_flip(['time_from', 'time_to', 'number_of_hours']);
+  $workDay = array_intersect_key($workDay, $fields);
+}

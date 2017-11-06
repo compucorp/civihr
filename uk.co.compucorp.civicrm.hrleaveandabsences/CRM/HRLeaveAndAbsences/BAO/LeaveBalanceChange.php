@@ -516,18 +516,21 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    *  The LeaveRequest which the $date belongs to
    * @param \DateTime $date
    * @param CRM_HRLeaveAndAbsences_Service_LeaveDateAmountDeduction $dateDeduction
+   * @param CRM_HRLeaveAndAbsences_Service_ContactWorkPattern $contactWorkPatternService
    *
    * @return float
    */
-  public static function calculateAmountForDate(LeaveRequest $leaveRequest, DateTime $date, LeaveDateAmountDeduction $dateDeduction) {
-    $workPattern = ContactWorkPattern::getWorkPattern($leaveRequest->contact_id, $date);
-    $startDate = ContactWorkPattern::getStartDate($leaveRequest->contact_id, $date);
+  public static function calculateAmountForDate(
+    LeaveRequest $leaveRequest,
+    DateTime $date,
+    LeaveDateAmountDeduction $dateDeduction,
+    $contactWorkPatternService
+  ) {
+    $workDay = $contactWorkPatternService->getContactWorkDayForDate($leaveRequest->contact_id, $date);
 
-    if(!$workPattern || !$startDate) {
+    if(is_null($workDay)) {
       return 0.0;
     }
-
-    $workDay = $workPattern->getWorkDayForDate($date, $startDate);
 
     return $dateDeduction->calculate($date, $workDay, $leaveRequest) * -1;
   }
