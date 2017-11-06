@@ -98,18 +98,33 @@ define([
         });
       });
 
-      describe('when "time-amount-picker-value" attribute is passed', function () {
+      describe('when "time-amount-picker-max-amount" is 0', function () {
         beforeEach(function () {
           buildDirective([
-            { key: 'time-amount-picker-value', value: '6.5', bind: '=' }
+            { key: 'time-amount-picker-max-amount', value: '0', bind: '>' }
           ]);
         });
 
-        it('sets selected hours', function () {
+        it('builds correct amount of options', function () {
+          expect(vm.hoursOptions).toEqual([0]);
+          expect(vm.minutesOptions).toEqual([0]);
+        });
+      });
+
+      describe('when "time-amount-picker-value" attribute is passed', function () {
+        var valueObject = { value: '6.5' };
+
+        beforeEach(function () {
+          buildDirective([
+            { key: 'time-amount-picker-value', value: valueObject.value, bind: '=' }
+          ]);
+        });
+
+        it('sets hours', function () {
           expect(vm.selectedHours).toBe('6');
         });
 
-        it('sets selected minutes', function () {
+        it('sets minutes', function () {
           expect(vm.selectedMinutes).toBe('30');
         });
 
@@ -124,6 +139,18 @@ define([
           it('sets the result value back', function () {
             expect($scope.$$childTail.value).toBe(8.75);
           });
+        });
+      });
+
+      describe('when "time-amount-picker-disabled" attribute is passed', function () {
+        beforeEach(function () {
+          buildDirective([
+            { key: 'time-amount-picker-disabled', value: 'true', bind: '<' }
+          ]);
+        });
+
+        it('sets the "disabled" property', function () {
+          expect(vm.disabled).toBe('true');
         });
       });
     });

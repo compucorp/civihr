@@ -12,7 +12,8 @@ define([
         minAmount: '<timeAmountPickerMinAmount',
         maxAmount: '<timeAmountPickerMaxAmount',
         interval: '<timeAmountPickerInterval',
-        value: '=timeAmountPickerValue'
+        value: '=timeAmountPickerValue',
+        disabled: '<timeAmountPickerDisabled'
       },
       restrict: 'E',
       controllerAs: 'picker',
@@ -36,7 +37,7 @@ define([
     vm.calculateSelectedValue = calculateSelectedValue;
 
     (function init () {
-      parseInitialValue();
+      parseCurrentValue();
       watchTimeAmountPickerOptions();
     })();
 
@@ -70,7 +71,7 @@ define([
       while (minute < 60) {
         isLessThanLowerBound = +vm.selectedHours === Math.floor(minAmount) && minute < minAmount % 1 * 60;
         isMoreThanUpperBound = +vm.selectedHours === Math.floor(maxAmount) && minute > maxAmount % 1 * 60;
-        skip = vm.selectedHours !== '' && (isLessThanLowerBound || isMoreThanUpperBound);
+        skip = isLessThanLowerBound || isMoreThanUpperBound;
 
         (!skip) && vm.minutesOptions.push(minute);
 
@@ -85,8 +86,8 @@ define([
      */
     function buildOptions () {
       interval = +$scope.interval || 1;
-      minAmount = +$scope.minAmount || 0;
-      maxAmount = +$scope.maxAmount || 24;
+      minAmount = !isNaN(+$scope.minAmount) ? +$scope.minAmount : 0;
+      maxAmount = !isNaN(+$scope.maxAmount) ? +$scope.maxAmount : 24;
 
       buildHoursOptions();
       buildMinutesOptions();
@@ -96,17 +97,21 @@ define([
      * Calculates the output number in hours (float) and sets to the scope
      */
     function calculateSelectedValue () {
-      if (vm.selectedHours === '' || vm.selectedMinutes === '') {
-        return null;
+      if (vm.selectedHours !== '' && vm.selectedMinutes !== '') {
+        $scope.value = +vm.selectedHours + vm.selectedMinutes / 60;
       }
-
-      $scope.value = +vm.selectedHours + vm.selectedMinutes / 60;
     }
 
     /**
      * Starts watching inbound attributes for changes
      */
     function watchTimeAmountPickerOptions () {
+      $scope.$watch('disabled', function (disabled) {
+        vm.disabled = disabled;
+      });
+      $scope.$watch('value', function () {
+        parseCurrentValue();
+      });
       $scope.$watchGroup(['minAmount', 'maxAmount', 'interval'], function () {
         buildOptions();
       });
@@ -115,7 +120,7 @@ define([
     /**
      * Parses initially passed variable
      */
-    function parseInitialValue () {
+    function parseCurrentValue () {
       if ($scope.value !== undefined) {
         vm.selectedHours = '' + Math.floor($scope.value);
         vm.selectedMinutes = '' + Math.floor($scope.value % 1 * 60);

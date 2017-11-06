@@ -1,10 +1,12 @@
 <div class="time-amount-picker">
   <select class="no-select2" ng-model="picker.selectedHours"
+    ng-disabled="picker.disabled"
     ng-change="picker.buildMinutesOptions(); picker.calculateSelectedValue();">
     <option value="{{ hour }}" ng-repeat="hour in picker.hoursOptions">{{ hour }}</option>
   <select>
   h
   <select class="no-select2" ng-model="picker.selectedMinutes"
+    ng-disabled="picker.disabled"
     ng-change="picker.calculateSelectedValue();">
     <option value="{{ minute }}" ng-repeat="minute in picker.minutesOptions">{{ minute }}</option>
   <select>
