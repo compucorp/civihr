@@ -5,7 +5,6 @@ define([
   'leave-absences/shared/modules/models-instances',
   'common/models/option-group',
   'common/models/instances/instance'
-
 ], function (_, instances) {
   'use strict';
 
@@ -127,13 +126,18 @@ define([
         /**
          * Gets the current balance change according to a current work pattern
          *
+         * @param  {String} calculationUnit (days|hours)
          * @return {Promise} resolves to an object containing
          *   a balance change amount and a detailed breakdown
          */
-        calculateBalanceChange: function () {
-          return LeaveRequestAPI.calculateBalanceChange(
-            _.pick(this, ['contact_id', 'from_date',
-              'from_date_type', 'to_date', 'to_date_type']));
+        calculateBalanceChange: function (calculationUnit) {
+          var params = ['contact_id', 'from_date', 'to_date', 'type_id', 'from_date_type', 'to_date_type'];
+
+          if (calculationUnit === 'hours') {
+            _.pull(params, 'from_date_type', 'to_date_type');
+          }
+
+          return LeaveRequestAPI.calculateBalanceChange(_.pick(this, params));
         },
 
         /**
@@ -258,6 +262,19 @@ define([
                   };
                 })
               };
+            });
+        },
+
+        /**
+         * Gets info about work day for the date specified
+         *   for the contact the leave request belongs to
+         *
+         * @param {String} date in the "YYYY-MM-DD" format
+         */
+        getWorkDayForDate: function (date) {
+          return LeaveRequestAPI.getWorkDayForDate(date, this.contact_id)
+            .then(function (response) {
+              return response.values;
             });
         },
 

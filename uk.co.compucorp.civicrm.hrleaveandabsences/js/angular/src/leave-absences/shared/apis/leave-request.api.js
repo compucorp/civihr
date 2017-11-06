@@ -87,18 +87,16 @@ define([
          */
         calculateBalanceChange: function (params) {
           $log.debug('LeaveRequestAPI.calculateBalanceChange', params);
-          var deferred = $q.defer();
 
-          if (params && (!params.contact_id || !params.from_date || !params.from_date_type)) {
-            deferred.reject('contact_id, from_date and from_date_type in params are mandatory');
-          }
+          return this.sendPOST('LeaveRequest', 'calculatebalancechange', params)
+            .then(function (data) {
+              // The breakdown property in the API response has been changed
+              // from an array collection to an indexed collection (object),
+              // so a transformation is needed to support the current code
+              data.values.breakdown = _.values(data.values.breakdown);
 
-          this.sendPOST('LeaveRequest', 'calculatebalancechange', params)
-          .then(function (data) {
-            deferred.resolve(data.values);
-          });
-
-          return deferred.promise;
+              return data.values;
+            });
         },
 
         /**
@@ -114,6 +112,20 @@ define([
         },
 
         /**
+         * Get the "from" and "to" times and number of hours
+         *   for a given date according to the current work pattern
+         *
+         * @param  {String} leaveDate in the "YYYY-MM-DD" format
+         * @param  {String|Number} contactId
+         * @return {Promise} resolved with the response
+         *   as per LeaveRequest.getWorkDayForDate API
+         */
+        getWorkDayForDate: function (date, contactId) {
+          return this.sendGET('LeaveRequest', 'getWorkDayForDate',
+            { leave_date: date, contact_id: contactId.toString() }, false);
+        },
+
+        /**
          * Create a new leave request with given params.
          *
          * @param {Object} params matched the API end point params with
@@ -126,22 +138,11 @@ define([
          */
         create: function (params) {
           $log.debug('LeaveRequestAPI.create', params);
-          var deferred = $q.defer();
 
-          if (params) {
-            if (params.to_date && !params.to_date_type) {
-              deferred.reject('to_date_type is mandatory');
-            } else if (!params.contact_id || !params.from_date || !params.from_date_type || !params.status_id) {
-              deferred.reject('contact_id, from_date, status_id and from_date_type params are mandatory');
-            }
-          }
-
-          this.sendPOST('LeaveRequest', 'create', params)
-          .then(function (data) {
-            deferred.resolve(data.values[0]);
-          });
-
-          return deferred.promise;
+          return this.sendPOST('LeaveRequest', 'create', params)
+            .then(function (data) {
+              return data.values[0];
+            });
         },
 
         /**

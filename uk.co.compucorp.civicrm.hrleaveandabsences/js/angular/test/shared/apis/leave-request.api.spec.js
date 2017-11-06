@@ -16,6 +16,7 @@ define([
   describe('LeaveRequestAPI', function () {
     var LeaveRequestAPI, $httpBackend, $rootScope, $q, promise;
     var balanceChangeBreakdownMock = mockData.balanceChangeBreakdown();
+    var workDayForDateMock = mockData.workDayForDate();
 
     beforeEach(module('leave-absences.apis', 'leave-absences.settings'));
     beforeEach(inject(['$httpBackend', '$q', '$rootScope', 'LeaveRequestAPI',
@@ -209,6 +210,35 @@ define([
         it('returns the api data as is', function () {
           promise.then(function (result) {
             expect(result).toEqual(balanceChangeBreakdownMock);
+          });
+        });
+      });
+    });
+
+    describe('getWorkDayForDate()', function () {
+      describe('basic tests', function () {
+        var leaveDate = '2017-05-11';
+        var contactId = '1';
+
+        beforeEach(function () {
+          spyOn(LeaveRequestAPI, 'sendGET').and.callThrough();
+
+          promise = LeaveRequestAPI.getWorkDayForDate(leaveDate, contactId);
+        });
+
+        afterEach(function () {
+          $httpBackend.flush();
+        });
+
+        it('calls the LeaveRequest.getWorkDayForDate endpoint', function () {
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith(
+            'LeaveRequest', 'getWorkDayForDate',
+            { leave_date: leaveDate, contact_id: contactId }, false);
+        });
+
+        it('returns the api data as is', function () {
+          promise.then(function (result) {
+            expect(result).toEqual(workDayForDateMock);
           });
         });
       });
@@ -614,6 +644,10 @@ define([
       // Intercept backend calls for LeaveRequest.getBreakdown
       $httpBackend.whenGET(/action=getBreakdown&entity=LeaveRequest/)
         .respond(balanceChangeBreakdownMock);
+
+      // Intercept backend calls for LeaveRequest.getBreakdown
+      $httpBackend.whenGET(/action=getWorkDayForDate&entity=LeaveRequest/)
+        .respond(workDayForDateMock);
 
       // Intercept backend calls for LeaveRequest.create in POST
       $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)
