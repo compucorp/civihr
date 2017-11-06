@@ -103,13 +103,13 @@ define([
      * is used to display the current balance for approved and open requestes.
      */
     function mapAbsenceTypesWithTheirEntitlements () {
-      vm.absenceTypeEntitlements = entitlements.map(function (entitlement) {
-        var absenceType = _.find(vm.absenceTypes, function (type) {
-          return +type.id === +entitlement.type_id;
+      vm.absenceTypeEntitlements = vm.absenceTypes.map(function (absenceType) {
+        var entitlement = _.find(entitlements, function (entitlement) {
+          return +absenceType.id === +entitlement.type_id;
         });
 
         return _.assign({
-          balance: entitlement.remainder.future
+          balance: entitlement && entitlement.remainder.future
         }, absenceType);
       });
     }

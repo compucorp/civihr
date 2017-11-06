@@ -246,7 +246,7 @@ define([
         });
 
         it('loads all absence types', function () {
-          expect(AbsenceType.all).toHaveBeenCalled();
+          expect(AbsenceType.all).toHaveBeenCalledWith({ is_active: true });
         });
 
         describe('after loading all absence types', function () {
