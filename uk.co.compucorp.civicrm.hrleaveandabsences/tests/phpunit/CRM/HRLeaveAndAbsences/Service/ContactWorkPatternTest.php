@@ -21,7 +21,7 @@ class CRM_HRLeaveAndAbsences_Service_ContactWorkPatternTest extends BaseHeadless
     CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
     $tableName = WorkPattern::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
-    $this->contactWorkPatternService = new contactWorkPatternService();
+    $this->contactWorkPatternService = new ContactWorkPatternService();
   }
 
   public function tearDown() {
@@ -62,11 +62,11 @@ class CRM_HRLeaveAndAbsences_Service_ContactWorkPatternTest extends BaseHeadless
   }
 
   public function testGetContactWorkDayForDateReturnsCorrectlyForAContactWithWorkPatternHavingOneWeek() {
-    $periodStartDate = new DateTime('2017-01-01');
+    $periodStartDate = new DateTime('2016-07-01');
 
     AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
-      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+      'start_date' => CRM_Utils_Date::processDate('2016-07-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
     ]);
 
     $contract = HRJobContractFabricator::fabricate(
@@ -84,27 +84,27 @@ class CRM_HRLeaveAndAbsences_Service_ContactWorkPatternTest extends BaseHeadless
 
     $workWeeks = WorkPatternFabricator::getWeekFor40HourWorkWeek();
 
-    //2017-01-02 is a monday and a working day
-    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-01-02'));
+    //2016-07-04 is a monday and a working day
+    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2016-07-04'));
     $expectedWorkDay =  $this->getExpectedWorkDayArray($workWeeks['days'][0]);
     $this->assertEquals($expectedWorkDay, $workDay);
 
-    //2017-01-06 is a friday and a working day
-    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-01-06'));
+    //2016-07-08 is a friday and a working day
+    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2016-07-08'));
     $expectedWorkDay =  $this->getExpectedWorkDayArray($workWeeks['days'][4]);
     $this->assertEquals($expectedWorkDay, $workDay);
 
-    //2017-01-07 is a saturday and a weekend
-    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-01-07'));
+    //2016-07-09 is a saturday and a weekend
+    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2016-07-09'));
     $expectedWorkDay =  $this->getExpectedWorkDayArray($workWeeks['days'][5]);
     $this->assertEquals($expectedWorkDay, $workDay);
   }
 
   public function testGetContactWorkDayForDateReturnsCorrectlyForAContactWithWorkPatternHavingMoreThanOneWeek() {
-    $periodStartDate = new DateTime('2017-01-02');
+    $periodStartDate = new DateTime('2017-07-31');
 
     AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('2017-01-02'),
+      'start_date' => CRM_Utils_Date::processDate('2017-07-31'),
       'end_date' => CRM_Utils_Date::processDate('2017-12-31')
     ]);
 
@@ -123,23 +123,23 @@ class CRM_HRLeaveAndAbsences_Service_ContactWorkPatternTest extends BaseHeadless
 
     $workWeeks = WorkPatternFabricator::getWeekForTwoWeeksAnd31AndHalfHours();
 
-    //2017-01-06 is a friday on first week and a working day
-    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-01-06'));
+    //2017-08-04 is a friday on first week and a working day
+    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-08-04'));
     $expectedWorkDay =  $this->getExpectedWorkDayArray($workWeeks[0]['days'][4]);
     $this->assertEquals($expectedWorkDay, $workDay);
 
-    //2017-01-08 is a sunday on first week and non-working day
-    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-01-08'));
+    //2017-08-06 is a sunday on first week and non-working day
+    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-08-06'));
     $expectedWorkDay =  $this->getExpectedWorkDayArray($workWeeks[0]['days'][6]);
     $this->assertEquals($expectedWorkDay, $workDay);
 
-    //2017-01-09 is a monday on second week and not a working day
-    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-01-09'));
+    //2017-08-07 is a monday on second week and not a working day
+    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-08-07'));
     $expectedWorkDay =  $this->getExpectedWorkDayArray($workWeeks[1]['days'][0]);
     $this->assertEquals($expectedWorkDay, $workDay);
 
-    //2017-01-10 is a tuesday on second week and a working day
-    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-01-10'));
+    //2017-08-08 is a tuesday on second week and a working day
+    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-08-08'));
     $expectedWorkDay =  $this->getExpectedWorkDayArray($workWeeks[1]['days'][1]);
     $this->assertEquals($expectedWorkDay, $workDay);
   }
@@ -159,12 +159,6 @@ class CRM_HRLeaveAndAbsences_Service_ContactWorkPatternTest extends BaseHeadless
 
     $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-01-02'));
     $this->assertNull($workDay);
-
-    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-01-06'));
-    $this->assertNull($workDay);
-
-    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contract['contact_id'], new DateTime('2017-01-07'));
-    $this->assertNull($workDay);
   }
 
   public function testGetContactWorkDayForDateReturnsNullWhenContactHasNoContractAndThereIsDefaultWorkPattern() {
@@ -177,12 +171,6 @@ class CRM_HRLeaveAndAbsences_Service_ContactWorkPatternTest extends BaseHeadless
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
 
     $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contactID, new DateTime('2017-01-02'));
-    $this->assertNull($workDay);
-
-    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contactID, new DateTime('2017-01-06'));
-    $this->assertNull($workDay);
-
-    $workDay = $this->contactWorkPatternService->getContactWorkDayForDate($contactID, new DateTime('2017-01-07'));
     $this->assertNull($workDay);
   }
 
