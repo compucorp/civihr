@@ -1,28 +1,25 @@
-<div class="anual-entitlement-change-log-component panel panel-default">
+<div class="annual-entitlement-change-log-component panel panel-default">
   <div class="panel-heading">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"
     ng-click="changeLog.dismissModal()">
       <span aria-hidden="true">&times;</span>
     </button>
-
     <h3 class="panel-title">Anual entitlement change log</h3>
-
     <p>
       Period {{changeLog.absencePeriod.title}} -
       from {{changeLog.absencePeriod.start_date | date:'MMM dd, yyyy'}}
       to {{changeLog.absencePeriod.end_date | date:'MMM dd, yyyy'}}
     </p>
   </div>
-
   <div class="panel-body table-responsive">
     <table class="table">
       <thead>
         <tr>
-          <td>Date Changed</td>
-          <td ng-repeat="period in changeLog.absenceTypes">
+          <td class="annual-entitlement-change-log-component__date-changed">Date Changed</td>
+          <td class="annual-entitlement-change-log-component__entitlements" ng-repeat="period in changeLog.absenceTypes">
             {{period.title}}
           </td>
-          <td>Comments</td>
+          <td class="annual-entitlement-change-log-component__comments">Comments</td>
         </tr>
       </thead>
       <tbody>
