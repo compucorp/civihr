@@ -242,7 +242,6 @@ define([
 
               Entitlement.logs.and.returnValue($q.resolve(changeLog));
               Entitlement.all.and.returnValue($q.resolve([]));
-
               compileComponent();
               $rootScope.$digest();
 
@@ -253,6 +252,54 @@ define([
 
             it('doesn\'t highlight any row\'s entitlements', function () {
               expect(highlightedEntitlements.length).toBe(0);
+            });
+          });
+
+          describe('when a single entitlement change row has multiple comments', function () {
+            beforeEach(function () {
+              var entitlementLogs, entitlementLogsSamples;
+              var today = moment().startOf('day');
+
+              entitlementLogsSamples = entitlementLogData.all().values.slice(0, 3);
+              entitlementLogs = entitlementLogsSamples.map(function (change, index) {
+                return _.defaults({
+                  comment: 'Sample Comment',
+                  created_date: today.toISOString(),
+                  entitlement_amount: 10
+                }, change);
+              }).concat(entitlementLogsSamples.map(function (change, index) {
+                return _.defaults({
+                  comment: '',
+                  created_date: today.clone().subtract(1, 'days').toISOString(),
+                  entitlement_amount: 5
+                }, change);
+              })).concat(entitlementLogsSamples.map(function (change, index) {
+                return _.defaults({
+                  comment: index === 0 ? 'Sample Comment' : '',
+                  created_date: today.clone().subtract(2, 'days').toISOString(),
+                  entitlement_amount: 5
+                }, change);
+              }));
+
+              Entitlement.logs.and.returnValue($q.resolve(entitlementLogs));
+              Entitlement.all.and.returnValue($q.resolve([]));
+              compileComponent();
+              $rootScope.$digest();
+            });
+
+            it('splits comments in the same row into multiple rows', function () {
+              expect(ctrl.changeLogRows.length).toBe(5);
+              expect(ctrl.changeLogRows[0].highlightedEntitlement).toBeDefined();
+              expect(ctrl.changeLogRows[1].highlightedEntitlement).toBeDefined();
+              expect(ctrl.changeLogRows[2].highlightedEntitlement).toBeDefined();
+            });
+
+            it('doesn\'t highlight entitlements from a row with no comments', function () {
+              expect(ctrl.changeLogRows[3].highlightedEntitlement).not.toBeDefined();
+            });
+
+            it('highlights the only entitlement comment in a row', function () {
+              expect(ctrl.changeLogRows[4].highlightedEntitlement).toBeDefined();
             });
           });
         });
