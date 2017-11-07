@@ -60,6 +60,7 @@ define([
         spyOn(LeaveRequestAPI, 'getAttachments').and.callThrough();
         spyOn(LeaveRequestAPI, 'deleteAttachment').and.callThrough();
         spyOn(LeaveRequestAPI, 'getBalanceChangeBreakdown').and.callThrough();
+        spyOn(LeaveRequestAPI, 'getWorkDayForDate').and.callThrough();
         spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
       }
     ]));
@@ -375,6 +376,33 @@ define([
             date: jasmine.any(String),
             amount: jasmine.any(Number)
           }])
+        }));
+      });
+    });
+
+    describe('getWorkDayForDate()', function () {
+      var leaveRequest, instance, promiseResult;
+      var date = '2027-05-11';
+
+      beforeEach(function () {
+        leaveRequest = helper.createRandomLeaveRequest();
+        instance = LeaveRequestInstance.init(leaveRequest);
+
+        instance.getWorkDayForDate(date).then(function (_promiseResult_) {
+          promiseResult = _promiseResult_;
+        });
+        $rootScope.$digest();
+      });
+
+      it('calls getWorkDayForDate endpoint with Instance ID as a parameter', function () {
+        expect(LeaveRequestAPI.getWorkDayForDate).toHaveBeenCalledWith(date, instance.contact_id);
+      });
+
+      it('returns data with the same structure as LeaveRequestAPI.getWorkDayForDate() endpoint', function () {
+        expect(promiseResult).toEqual(jasmine.objectContaining({
+          time_from: jasmine.any(String),
+          time_to: jasmine.any(String),
+          number_of_hours: jasmine.any(String)
         }));
       });
     });

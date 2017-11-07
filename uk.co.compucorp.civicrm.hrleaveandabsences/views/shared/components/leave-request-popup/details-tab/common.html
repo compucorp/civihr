@@ -1,17 +1,18 @@
-<div class="row">
+<div class="row"
+  ng-init="__isNotEditable = !detailsTab.isRole('admin') && (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')));">
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
       <label class="col-sm-4 control-label">No. of Days</label>
       <div class="col-sm-8">
         <div class="btn-group btn-group-justified">
           <label
-            ng-disabled="!detailsTab.isRole('admin') && (detailsTab.isMode('view') || (!detailsTab.isMode('create') && detailsTab.isRole('manager') && !detailsTab.isLeaveType('sickness')))"
+            ng-disabled="__isNotEditable"
             class="btn active"
             ng-model="detailsTab.uiOptions.multipleDays"
             uib-btn-radio="true"
             ng-change="detailsTab.changeInNoOfDays()">Multiple Days</label>
           <label
-            ng-disabled="!detailsTab.isRole('admin') && (detailsTab.isMode('view') || (!detailsTab.isMode('create') && detailsTab.isRole('manager') && !detailsTab.isLeaveType('sickness')))"
+            ng-disabled="__isNotEditable"
             class="btn"
             ng-model="detailsTab.uiOptions.multipleDays"
             uib-btn-radio="false"
@@ -24,7 +25,9 @@
 <div class="row">
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
-      <label class="col-sm-4 control-label required-mark">From Date</label>
+      <label class="col-sm-4 control-label required-mark">
+        From Date{{ detailsTab.selectedAbsenceType.calculation_unit_name === 'hours' && !detailsTab.isLeaveType('toil') ? '/Time' : ''}}
+      </label>
       <div class="col-xs-6 col-sm-4 chr_leave-request-date-picker-container">
         <div class="input-group">
           <input
@@ -36,74 +39,135 @@
             ng-model="detailsTab.uiOptions.fromDate"
             is-open="detailsTab.uiOptions.date.from.show"
             ng-readonly="true"
-            ng-disabled="!detailsTab.isRole('admin') && (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
+            ng-disabled="__isNotEditable"
             ng-change="detailsTab.updateAbsencePeriodDatesTypes(detailsTab.uiOptions.fromDate, 'from')"/>
         </div>
       </div>
       <div class="col-xs-6 col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
         <crm-loading
           show="!detailsTab.loading.fromDayTypes"
-          class="chr_leave-request-modal__small_spinner">
+          class="chr_leave-request-modal__small_spinner"
+          ng-if="detailsTab.selectedAbsenceType.calculation_unit_name == 'days'">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
               name="fromDayTypeSelect"
-              ng-disabled="!detailsTab.isRole('admin') &&
-                (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
+              ng-disabled="__isNotEditable"
               ng-options="dayType.value as dayType.label for dayType in detailsTab.requestFromDayTypes"
               ng-model="detailsTab.request.from_date_type"
-              ng-change="detailsTab.calculateBalanceChange()">
-              <option ng-disabled="!detailsTab.isRole('admin') &&
-                (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
-                value="">Select</option>
-              dayType{{dayType}}
-            </select>
-            <span class="crm_custom-select__arrow"></span>
-          </div>
-        </crm-loading>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-<div class="row" ng-hide="!detailsTab.uiOptions.multipleDays">
-  <div class="col-xs-12 form-horizontal">
-    <div class="form-group">
-      <label class="col-sm-4 control-label required-mark">To Date</label>
-      <div class="col-xs-6 col-sm-4 chr_leave-request-date-picker-container">
-        <div class="input-group">
-          <input
-            type="text"
-            class="form-control"
-            uib-datepicker-popup
-            datepicker-options="detailsTab.uiOptions.date.to.options"
-            show-button-bar="false"
-            ng-model="detailsTab.uiOptions.toDate"
-            is-open="detailsTab.uiOptions.date.to.show"
-            ng-readonly="true"
-            ng-disabled="!detailsTab.isRole('admin') &&
-              (detailsTab.isMode('view') || !detailsTab.request.from_date || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
-            ng-change="detailsTab.updateAbsencePeriodDatesTypes(detailsTab.uiOptions.toDate, 'to')"/>
-        </div>
-      </div>
-      <div class="col-xs-6 col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
-        <crm-loading
-          show="!detailsTab.loading.toDayTypes"
-          class="chr_leave-request-modal__small_spinner">
-          <div class="crm_custom-select crm_custom-select--full">
-            <select
-              class="no-select2"
-              name="toDayTypeSelect"
-              ng-disabled="!detailsTab.isRole('admin') &&
-                (detailsTab.isMode('view') || !detailsTab.request.from_date || (detailsTab.isRole('manager') && !detailsTab.isMode('create') && !detailsTab.isLeaveType('sickness')))"
-              ng-options="dayType.value as dayType.label for dayType in detailsTab.requestToDayTypes"
-              ng-model="detailsTab.request.to_date_type"
               ng-change="detailsTab.calculateBalanceChange()">
               <option value="">Select</option>
             </select>
             <span class="crm_custom-select__arrow"></span>
           </div>
         </crm-loading>
+        <div
+          class="crm_custom-select crm_custom-select--full"
+          ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours'">
+          <select
+            class="no-select2"
+            ng-model="detailsTab.uiOptions.times.from.time"
+            ng-disabled="detailsTab.uiOptions.times.from.disabled"
+            timepicker-select
+            timepicker-select-time-from="detailsTab.uiOptions.times.from.min"
+            timepicker-select-time-to="detailsTab.uiOptions.times.from.max"
+            timepicker-select-interval="15"
+            timepicker-select-placeholder="Select time"
+          ></select>
+          <span class="crm_custom-select__arrow"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours' && !detailsTab.isLeaveType('toil')">
+  <div class="col-xs-12 form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-4 control-label required-mark">Deduction</label>
+      <div class="col-xs-6 col-sm-4">
+        <time-amount-picker
+          time-amount-picker-disabled="!detailsTab.uiOptions.times.from.maxAmount || __isNotEditable"
+          time-amount-picker-value="detailsTab.uiOptions.times.from.amount"
+          time-amount-picker-min-amount="0"
+          time-amount-picker-max-amount="detailsTab.uiOptions.times.from.maxAmount"
+          time-amount-picker-interval="15"
+        ></time-amount-picker>
+      </div>
+    </div>
+  </div>
+</div>
+<div ng-hide="!detailsTab.uiOptions.multipleDays">
+  <div class="row">
+    <div class="col-xs-12 form-horizontal">
+      <div class="form-group">
+        <label class="col-sm-4 control-label required-mark">
+          To Date{{ detailsTab.selectedAbsenceType.calculation_unit_name === 'hours' && !detailsTab.isLeaveType('toil') ? '/Time' : ''}}
+        </label>
+        <div class="col-xs-6 col-sm-4 chr_leave-request-date-picker-container">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              uib-datepicker-popup
+              datepicker-options="detailsTab.uiOptions.date.to.options"
+              show-button-bar="false"
+              ng-model="detailsTab.uiOptions.toDate"
+              is-open="detailsTab.uiOptions.date.to.show"
+              ng-readonly="true"
+              ng-disabled="__isNotEditable"
+              ng-change="detailsTab.updateAbsencePeriodDatesTypes(detailsTab.uiOptions.toDate, 'to')"/>
+          </div>
+        </div>
+        <div class="col-xs-6 col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
+          <crm-loading
+            ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'days'"
+            show="!detailsTab.loading.toDayTypes"
+            class="chr_leave-request-modal__small_spinner">
+            <div class="crm_custom-select crm_custom-select--full">
+              <select
+                class="no-select2"
+                name="toDayTypeSelect"
+                ng-disabled="__isNotEditable"
+                ng-options="dayType.value as dayType.label for dayType in detailsTab.requestToDayTypes"
+                ng-model="detailsTab.request.to_date_type"
+                ng-change="detailsTab.calculateBalanceChange()">
+                <option value="">Select</option>
+              </select>
+              <span class="crm_custom-select__arrow"></span>
+            </div>
+          </crm-loading>
+          <div
+            class="crm_custom-select crm_custom-select--full"
+            ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours'">
+            <select
+              class="no-select2"
+              ng-model="detailsTab.uiOptions.times.to.time"
+              ng-disabled="detailsTab.uiOptions.times.to.disabled"
+              timepicker-select
+              timepicker-select-time-from="detailsTab.uiOptions.times.to.min"
+              timepicker-select-time-to="detailsTab.uiOptions.times.to.max"
+              timepicker-select-interval="15"
+              timepicker-select-placeholder="Select time"
+            ></select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours' && !detailsTab.isLeaveType('toil')">
+    <div class="col-xs-12 form-horizontal">
+      <div class="form-group">
+        <label class="col-sm-4 control-label required-mark">Deduction</label>
+        <div class="col-xs-6 col-sm-4">
+          <time-amount-picker
+            time-amount-picker-disabled="!detailsTab.uiOptions.times.to.maxAmount || __isNotEditable"
+            time-amount-picker-value="detailsTab.uiOptions.times.to.amount"
+            time-amount-picker-min-amount="0"
+            time-amount-picker-max-amount="detailsTab.uiOptions.times.to.maxAmount"
+            time-amount-picker-interval="15"
+          ></time-amount-picker>
+        </div>
       </div>
     </div>
   </div>

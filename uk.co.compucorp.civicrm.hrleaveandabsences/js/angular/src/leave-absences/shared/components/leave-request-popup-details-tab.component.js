@@ -29,9 +29,13 @@ define([
     controller: DetailsTabController
   });
 
-  DetailsTabController.$inject = ['$controller', '$log', '$rootScope', '$q', 'HR_settings', 'shared-settings', 'Calendar', 'OptionGroup', 'PublicHoliday', 'LeaveRequest'];
+  DetailsTabController.$inject = ['$controller', '$log', '$rootScope', '$scope',
+    '$q', 'HR_settings', 'shared-settings', 'Calendar', 'OptionGroup',
+    'PublicHoliday', 'LeaveRequest', '$timeout'];
 
-  function DetailsTabController ($controller, $log, $rootScope, $q, HRSettings, sharedSettings, Calendar, OptionGroup, PublicHoliday, LeaveRequest) {
+  function DetailsTabController ($controller, $log, $rootScope, $scope,
+    $q, HRSettings, sharedSettings, Calendar, OptionGroup,
+    PublicHoliday, LeaveRequest, $timeout) {
     $log.debug('Component: leave-request-popup-details-tab');
     var originalOpeningBalance = null;
     var listeners = [];
@@ -86,6 +90,20 @@ define([
             showWeeks: false
           }
         }
+      },
+      times: {
+        from: {
+          time: '',
+          amount: 0,
+          maxAmount: 0,
+          disabled: true
+        },
+        to: {
+          time: '',
+          amount: 0,
+          maxAmount: 0,
+          disabled: true
+        }
       }
     };
 
@@ -105,6 +123,7 @@ define([
     vm._setDates = _setDates;
     vm._setDateAndTypes = _setDateAndTypes;
     vm._setMinMaxDate = _setMinMaxDate;
+    vm._toggleBalance = _toggleBalance;
     vm.$onDestroy = unsubscribeFromEvents;
 
     (function init () {
@@ -122,6 +141,7 @@ define([
         ]);
       })
       .then(initDates)
+      .then(initTimes)
       .then(initOriginalOpeningBalance)
       .then(function () {
         return $q.all([
@@ -129,11 +149,69 @@ define([
           initBalanceChange()
         ]);
       })
+      .then(initTimeAndDateInputsWatchers)
       .catch(handleError)
       .finally(function () {
         vm.loading.tab = false;
       });
     }());
+
+    /**
+     * Amends balance change breakdown if calculation unit absence type is "hours".
+     * It changes the balance first and last days (only first day in case of single day request)
+     *   by setting the selected deductions.
+     * @NOTE this function mutates the "balanceChange" object
+     *
+     * @param  {Object} balanceChange
+     * @return {Object} amended balance change in case of "hours" absence type
+     */
+    function amendHourlyBalanceChangeBreakdown (balanceChange) {
+      var breakdown = balanceChange.breakdown;
+
+      if (!isCalculationUnit('hours')) {
+        return balanceChange;
+      }
+
+      if (balanceChange) {
+        amendHourlyBalanceChangeForDay(_.first(_.values(breakdown)), 'from');
+
+        if (breakdown.length > 1) {
+          amendHourlyBalanceChangeForDay(_.last(_.values(breakdown)), 'to');
+        }
+
+        amendHourlyBalanceChangeAmount(balanceChange);
+      }
+
+      return balanceChange;
+    }
+
+    /**
+     * Amends balance change amount if calculation unit absence type is "hours".
+     * @NOTE this function mutates the "balanceChange" object
+     *
+     * @param {Object} balanceChange
+     */
+    function amendHourlyBalanceChangeAmount (balanceChange) {
+      balanceChange.amount = _.reduce(balanceChange.breakdown, function (updatedChange, day) {
+        return updatedChange - day.amount;
+      }, 0);
+    }
+
+    /**
+     * Amends a particular day balance change if calculation unit absence type is "hours".
+     * The amending is skipped for non-working days, holidays or weekends.
+     * @NOTE this function mutates the "day" object
+     *
+     * @param {Object} day taken from a balance change breakdown
+     * @param {Object} type (from|to)
+     */
+    function amendHourlyBalanceChangeForDay (day, type) {
+      var dayType = _.find(vm.requestDayTypes, { value: '' + day.type.value }).name;
+
+      if (!_.includes(['weekend', 'non_working_day', 'public_holiday'], dayType)) {
+        day.amount = vm.uiOptions.times[type].amount;
+      }
+    }
 
     /**
      * Calculate change in balance, it updates local balance variables.
@@ -143,12 +221,14 @@ define([
      */
     function calculateBalanceChange () {
       vm._setDateAndTypes();
+      vm._toggleBalance();
 
       if (!vm._canCalculateChange()) { return $q.resolve(); }
 
       vm.loading.showBalanceChange = true;
 
-      return vm.request.calculateBalanceChange()
+      return vm.request.calculateBalanceChange(vm.selectedAbsenceType.calculation_unit_name)
+        .then(amendHourlyBalanceChangeBreakdown)
         .then(setBalanceChange)
         .catch(handleError);
     }
@@ -160,6 +240,16 @@ define([
     function changeInNoOfDays () {
       vm._reset();
       vm._calculateOpeningAndClosingBalance();
+    }
+
+    /**
+     * Extracts time from server formatted date
+     *
+     * @param  {String} date in "YYYY-MM-DD hh:mm:ss" format
+     * @return {String} time in hh:mm format
+     */
+    function extractTimeFromServerDate (date) {
+      return moment(date).format('HH:mm');
     }
 
     /**
@@ -260,6 +350,7 @@ define([
      */
     function getOriginalBalanceChange () {
       vm._setDateAndTypes();
+      vm._toggleBalance();
 
       vm.loading.showBalanceChange = true;
 
@@ -291,6 +382,16 @@ define([
     }
 
     /**
+     * Checks for the calculation unit for the selected absence type
+     *
+     * @param  {String} unit (days|hours)
+     * @return {Boolean}
+     */
+    function isCalculationUnit (unit) {
+      return vm.selectedAbsenceType.calculation_unit_name === unit;
+    }
+
+    /**
      * Checks if popup is opened in given leave type like `leave` or `sickness` or 'toil'
      *
      * @param {String} leaveTypeParam to check the leave type of current request
@@ -301,15 +402,15 @@ define([
     }
 
     /**
-     * Initialize from and to dates and day types.
-     * It will also set the day types.
+     * Initialises and sets the "from" and "to" dates and day types
      *
      * @return {Promise}
      */
     function initDates () {
-      if (!vm.isMode('create')) {
-        var attributes = vm.request.attributes();
+      var attributes;
 
+      if (!vm.isMode('create')) {
+        attributes = vm.request.attributes();
         vm.uiOptions.fromDate = vm._convertDateFormatFromServer(vm.request.from_date);
 
         return vm.loadAbsencePeriodDatesTypes(vm.uiOptions.fromDate, 'from')
@@ -318,6 +419,7 @@ define([
             vm.request.to_date = attributes.to_date;
             vm.request.to_date_type = attributes.to_date_type;
             vm.uiOptions.toDate = vm._convertDateFormatFromServer(vm.request.to_date);
+
             return vm.loadAbsencePeriodDatesTypes(vm.uiOptions.toDate, 'to');
           });
       } else {
@@ -332,6 +434,41 @@ define([
       listeners.push(
         $rootScope.$on('LeaveRequestPopup::updateBalance', vm.updateBalance)
       );
+    }
+
+    /**
+     * Initialises and sets the "from" and "to" times
+     */
+    function initTimes () {
+      var times = vm.uiOptions.times;
+      var request = vm.request;
+
+      if (!vm.isMode('create') && isCalculationUnit('hours')) {
+        _.each(['from', 'to'], function (type) {
+          times[type].time = extractTimeFromServerDate(request[type + '_date']);
+          times[type].amount = request[type + '_date_amount'];
+          times[type].maxAmount = times[type].amount;
+        });
+      }
+    }
+
+    /**
+     * Initialises watchers for time and date inputs
+     */
+    function initTimeAndDateInputsWatchers () {
+      if (vm.isMode('view') || isLeaveType('toil')) { return; }
+
+      _.each(['from', 'to'], function (type) {
+        $scope.$watch('detailsTab.uiOptions.times.' + type + '.time', function (time) {
+          return calculateBalanceChange();
+        });
+        $scope.$watch('detailsTab.uiOptions.times.' + type + '.amount', function (time) {
+          return calculateBalanceChange();
+        });
+        $scope.$watch('detailsTab.uiOptions.' + type + 'Date', function (date) {
+          return loadAndSetTimeRangesFromWorkPattern(date, type);
+        });
+      });
     }
 
     /**
@@ -411,6 +548,31 @@ define([
         .then(function (dayTypes) {
           vm.requestDayTypes = dayTypes;
         });
+    }
+
+    /**
+     * Loads and sets time ranges from work pattern for "from" or "to" timepickers
+     *
+     * @param  {Date} date in standard JavaScript format
+     * @param  {String} type (days|hours)
+     * @return {Promise}
+     */
+    function loadAndSetTimeRangesFromWorkPattern (date, type) {
+      var timeObject = vm.uiOptions.times[type];
+
+      if (!date) { return $q.resolve(); }
+
+      timeObject.disabled = true;
+      timeObject.time = '';
+
+      return vm.request.getWorkDayForDate(date).then(function (response) {
+        timeObject.min = response.time_from;
+        timeObject.max = response.time_to;
+        timeObject.maxAmount = response.number_of_hours.toString() || '0';
+        timeObject.amount = timeObject.maxAmount || '0';
+        timeObject.disabled = false;
+        timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
+      });
     }
 
     /**
@@ -502,6 +664,7 @@ define([
         .catch(function (errors) {
           handleError(errors);
           vm._setDateAndTypes();
+          vm._toggleBalance();
         });
     }
 
@@ -522,8 +685,14 @@ define([
      * If change can be calculated
      */
     function _canCalculateChange () {
-      return !!vm.request.from_date && !!vm.request.to_date &&
-        !!vm.request.from_date_type && !!vm.request.to_date_type;
+      var canCalculate = !!vm.request.from_date && !!vm.request.to_date;
+
+      if (isCalculationUnit('days')) {
+        canCalculate = canCalculate &&
+          !!vm.request.from_date_type && !!vm.request.to_date_type;
+      }
+
+      return canCalculate;
     }
 
     /**
@@ -603,15 +772,27 @@ define([
     }
 
     /**
-     * Sets dates and types for vm.request from UI
+     * Sets dates (and times in case of "hours" absence type) for vm.request from UI
      */
     function _setDates () {
-      vm.request.from_date = vm.uiOptions.fromDate ? vm._convertDateToServerFormat(vm.uiOptions.fromDate) : null;
-      vm.request.to_date = vm.uiOptions.toDate ? vm._convertDateToServerFormat(vm.uiOptions.toDate) : null;
+      var options = vm.uiOptions;
+      var request = vm.request;
+      var times;
 
-      if (!vm.uiOptions.multipleDays && vm.uiOptions.fromDate) {
-        vm.uiOptions.toDate = vm.uiOptions.fromDate;
-        vm.request.to_date = vm.request.from_date;
+      request.from_date = options.fromDate ? vm._convertDateToServerFormat(options.fromDate) : null;
+      request.to_date = options.toDate ? vm._convertDateToServerFormat(options.toDate) : null;
+
+      if (isCalculationUnit('hours') && !isLeaveType('toil')) {
+        times = options.times;
+        request.from_date = request.from_date && times.from.time ? request.from_date + ' ' + times.from.time : null;
+        request.to_date = request.to_date && times.to.time ? request.to_date + ' ' + times.to.time : null;
+        request.from_date_amount = !isNaN(+times.from.amount) ? times.from.amount : null;
+        request.to_date_amount = !isNaN(+times.to.amount) ? times.to.amount : null;
+      }
+
+      if (!options.multipleDays && options.fromDate) {
+        options.toDate = options.fromDate;
+        request.to_date = request.from_date;
       }
     }
 
@@ -621,14 +802,8 @@ define([
     function _setDateAndTypes () {
       vm._setDates();
 
-      if (vm.uiOptions.multipleDays) {
-        vm.uiOptions.showBalance = !!vm.request.from_date && !!vm.request.from_date_type && !!vm.request.to_date && !!vm.request.to_date_type && !!vm.period.id;
-      } else {
-        if (vm.uiOptions.fromDate) {
-          vm.request.to_date_type = vm.request.from_date_type;
-        }
-
-        vm.uiOptions.showBalance = !!vm.request.from_date && !!vm.request.from_date_type && !!vm.period.id;
+      if (!vm.uiOptions.multipleDays && vm.uiOptions.fromDate) {
+        vm.request.to_date_type = vm.request.from_date_type;
       }
     }
 
@@ -665,6 +840,28 @@ define([
       vm.request.to_date = vm.request.from_date;
 
       vm.calculateBalanceChange();
+    }
+
+    /**
+     * Shows or hides the balance breakdown depending on various conditions
+     */
+    function _toggleBalance () {
+      var options = vm.uiOptions;
+      var request = vm.request;
+
+      if (options.multipleDays) {
+        options.showBalance = !!request.from_date && !!request.to_date && !!vm.period.id;
+
+        if (isCalculationUnit('days')) {
+          options.showBalance = options.showBalance && !!request.from_date_type && !!request.to_date_type;
+        }
+      } else {
+        options.showBalance = !!request.from_date && !!vm.period.id;
+
+        if (isCalculationUnit('days')) {
+          options.showBalance = options.showBalance && !!request.from_date_type;
+        }
+      }
     }
   }
 });

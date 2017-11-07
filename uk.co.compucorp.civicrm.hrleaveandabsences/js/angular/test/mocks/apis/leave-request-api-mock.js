@@ -65,6 +65,9 @@ define([
         getBalanceChangeBreakdown: function (id) {
           return $q.resolve(mockData.balanceChangeBreakdown());
         },
+        getWorkDayForDate: function () {
+          return $q.resolve(mockData.workDayForDate());
+        },
         update: function (params) {
           return $q(function (resolve, reject) {
             var newAttributes;

@@ -479,12 +479,45 @@ define([
       'version': 3,
       'count': 1,
       'values': true
-    }
+    },
+    /**
+     * Generates random work day for date
+     *
+     * @return {Object} mocking a response from LeaveRequest.getWorkDayForDate API
+     */
+    workDayForDate: (function () {
+      var timeFrom = moment({
+        hours: Math.ceil(Math.random() * 14),
+        minutes: Math.ceil(Math.random() * 20)
+      });
+
+      return {
+        is_error: 0,
+        version: 3,
+        count: 3,
+        values: {
+          time_from: timeFrom.format('hh:mm'),
+          time_to: timeFrom
+            .add(Math.ceil(Math.random() * 9), 'hours')
+            .add(Math.ceil(Math.random() * 39), 'minutes')
+            .format('hh:mm'),
+          number_of_hours: '' + (Math.ceil(Math.random() * 24 / 0.25) * 0.25)
+        }
+      };
+    })()
   };
 
   return {
     all: function () {
       return mockData.allData;
+    },
+    hoursTypeLeaveRequests: function () {
+      return _.map(mockData.allData, function (request) {
+        return _.assign(request, {
+          from_date: request.from_date + ' 12:45:00',
+          to_date: request.to_date + ' 16:15:00'
+        });
+      });
     },
     singleDataSuccess: function () {
       return mockData.singleDataSuccess;
@@ -517,6 +550,9 @@ define([
     },
     balanceChangeBreakdown: function () {
       return mockData.balanceChangeBreakdown;
+    },
+    workDayForDate: function () {
+      return mockData.workDayForDate;
     },
     getComments: function () {
       return mockData.getComments;
