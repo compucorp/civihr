@@ -9,8 +9,7 @@ define([
   'use strict';
 
   describe('KeyDatesController', function () {
-    var ctrlConstructor,
-      PubSubMock, contractServiceMock, controllerObj;
+    var ctrlConstructor, PubSubMock, contractServiceMock, controller;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks'));
 
@@ -31,13 +30,30 @@ define([
     }));
 
     describe('constructor', function () {
-      it('Should subscribe for contract changes', function () {
+      beforeEach(function () {
         spyOn(contractServiceMock, 'get').and.callThrough();
-        controllerObj = ctrlConstructor('KeyDatesController');
-        expect(PubSubMock.subscribe).toHaveBeenCalledWith('contract-refresh', jasmine.any(Function));
-        expect(controllerObj.dates).toEqual([]);
+        controller = ctrlConstructor('KeyDatesController');
+      });
+
+      it('Should subscribe for contract changes', function () {
+        expect(controller.dates).toEqual([]);
         expect(contractServiceMock.get).toHaveBeenCalled();
       });
+
+      it('initialiaze contracts and job roles count and key dates', function () {
+        expect(controller.activeContracts).toBe(0);
+        expect(controller.activeRoles).toBe(0);
+        expect(controller.dates.length).toBe(0);
+      });
+
+      it('initialiaze pubsub subscriptions', function () {
+        expect(PubSubMock.subscribe).toHaveBeenCalledWith('Contract::created', jasmine.any(Function));
+        expect(PubSubMock.subscribe).toHaveBeenCalledWith('Contract::updated', jasmine.any(Function));
+        expect(PubSubMock.subscribe).toHaveBeenCalledWith('Contract::deleted', jasmine.any(Function));
+        expect(PubSubMock.subscribe).toHaveBeenCalledWith('JobRole::created', jasmine.any(Function));
+        expect(PubSubMock.subscribe).toHaveBeenCalledWith('JobRole::updated', jasmine.any(Function));
+        expect(PubSubMock.subscribe).toHaveBeenCalledWith('JobRole::deleted', jasmine.any(Function));
+      })
     });
   });
 });

@@ -14,14 +14,14 @@ define([
 
     var vm = this;
 
-    vm.ready = false;
     vm.dates = [];
     vm.activeContracts = 0;
     vm.activeRoles = 0;
+    vm.ready = false;
 
     (function init () {
       getContacts();
-      pubSub.subscribe('contract-refresh', resetKeyDates);
+      initSubscribers();
     }());
 
     /**
@@ -46,9 +46,10 @@ define([
     }
 
     /**
-     * Fetch Contacts from Server
+     * Fetch Contacts and Job Roles from Server
      */
     function getContacts () {
+      resetKeyDates();
       Contract.get()
         .then(function (response) {
           angular.forEach(response, function (contract) {
@@ -86,11 +87,31 @@ define([
     }
 
     /**
-     * Resets the dates and gets the contacts again
+     * Resets activeRoles and activeContracts counter and
+     * resets the list of key dates to empty
      */
     function resetKeyDates () {
+      vm.activeContracts = 0;
+      vm.activeRoles = 0;
       vm.dates = [];
-      getContacts();
+    }
+
+    // Init subscribers
+    function initSubscribers () {
+      $log.debug('Subcsribers initialiazed!');
+
+      var events = [
+        'Contract::created',
+        'Contract::updated',
+        'Contract::deleted',
+        'JobRole::created',
+        'JobRole::updated',
+        'JobRole::deleted'
+      ];
+
+      events.forEach(function (event) {
+        pubSub.subscribe(event, getContacts);
+      });
     }
   }
 
