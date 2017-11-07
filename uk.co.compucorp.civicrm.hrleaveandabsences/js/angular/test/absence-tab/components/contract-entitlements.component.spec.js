@@ -115,7 +115,7 @@ define([
     function getAbsenceTypeMocks () {
       return absenceTypeMocked.all().values.map(function (absenceType) {
         return _.extend({
-          'calculation_unit.name': 'days'
+          'calculation_unit_name': 'days'
         }, absenceType);
       });
     }

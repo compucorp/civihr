@@ -76,7 +76,7 @@ define([
 
           return {
             amount: leave ? leave.leave_amount : '',
-            calculation_unit: absenceType['calculation_unit.name']
+            calculation_unit: absenceType['calculation_unit_name']
           };
         });
 

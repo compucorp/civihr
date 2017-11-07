@@ -18,7 +18,7 @@ define([
 
   describe('absenceTabEntitlements', function () {
     var $componentController, $log, $provide, $rootScope, AbsenceType,
-      controller, OptionGroup;
+      controller;
 
     beforeEach(module('leave-absences.templates', 'absence-tab', 'common.mocks', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -39,12 +39,11 @@ define([
       }]));
 
     beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_,
-    _AbsenceType_, _OptionGroup_) {
+    _AbsenceType_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
       AbsenceType = _AbsenceType_;
-      OptionGroup = _OptionGroup_;
 
       spyOn($log, 'debug');
 
@@ -67,11 +66,12 @@ define([
       var expectedAbsenceTypes;
 
       beforeEach(function () {
-        getIndexedCalculationUnits()
-        .then(getExpectedAbsenceTypes)
-        .then(function (absenceTypes) {
-          expectedAbsenceTypes = absenceTypes;
-        });
+        AbsenceType.all()
+          .then(AbsenceType.loadCalculationUnits)
+          .then(function (absenceTypes) {
+            expectedAbsenceTypes = absenceTypes;
+          });
+
         $rootScope.$digest();
       });
 
@@ -89,38 +89,6 @@ define([
      */
     function compileComponent () {
       controller = $componentController('absenceTabEntitlements', null, { contactId: '202' });
-    }
-
-    /**
-     * Returns a calculation units map indexed by value.
-     *
-     * @return {Promise} - resolves to the calculation units map.
-     */
-    function getIndexedCalculationUnits () {
-      return OptionGroup
-      .valuesOf('hrleaveandabsences_absence_type_calculation_unit')
-      .then(function (calculationUnits) {
-        return _.indexBy(calculationUnits, 'value');
-      });
-    }
-
-    /**
-     * Returns a list of absence types with their calculation units names and
-     * labels.
-     *
-     * @return {Promise} - resolves to a list of absence types.
-     */
-    function getExpectedAbsenceTypes (calculationUnits) {
-      return AbsenceType.all().then(function (absenceTypes) {
-        return absenceTypes.map(function (absenceType) {
-          var unit = calculationUnits[absenceType.calculation_unit];
-
-          return _.extend({
-            'calculation_unit.name': unit.name,
-            'calculation_unit.label': unit.label
-          }, absenceType);
-        });
-      });
     }
   });
 });

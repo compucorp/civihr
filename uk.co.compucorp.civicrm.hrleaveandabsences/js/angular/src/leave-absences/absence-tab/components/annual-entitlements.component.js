@@ -149,7 +149,7 @@
 
             return leave ? {
               amount: leave.value,
-              calculation_unit: absenceType['calculation_unit.name'],
+              calculation_unit: absenceType['calculation_unit_name'],
               comment: leave.comment ? {
                 message: leave.comment,
                 author_name: contacts[leave.editor_id].display_name,
