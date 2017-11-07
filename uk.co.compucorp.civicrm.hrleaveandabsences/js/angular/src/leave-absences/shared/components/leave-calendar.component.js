@@ -18,13 +18,13 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$controller', '$q', '$log', '$rootScope', '$timeout',
-      'shared-settings', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest',
-      'PublicHoliday', 'OptionGroup', 'Calendar', 'checkPermissions',
+    controller: ['$controller', '$q', '$log', '$rootScope',
+      'shared-settings', 'AbsencePeriod', 'AbsenceType',
+      'PublicHoliday', 'OptionGroup', 'checkPermissions',
       controller]
   });
 
-  function controller ($controller, $q, $log, $rootScope, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup, Calendar, checkPermissions) {
+  function controller ($controller, $q, $log, $rootScope, sharedSettings, AbsencePeriod, AbsenceType, PublicHoliday, OptionGroup, checkPermissions) {
     $log.debug('Component: leave-calendar');
 
     var subController, userRole;
