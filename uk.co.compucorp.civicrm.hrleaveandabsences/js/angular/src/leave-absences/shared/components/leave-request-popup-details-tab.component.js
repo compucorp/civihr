@@ -123,6 +123,7 @@ define([
     vm._setDates = _setDates;
     vm._setDateAndTypes = _setDateAndTypes;
     vm._setMinMaxDate = _setMinMaxDate;
+    vm._toggleBalance = _toggleBalance;
     vm.$onDestroy = unsubscribeFromEvents;
 
     (function init () {
@@ -172,7 +173,7 @@ define([
       }
 
       if (balanceChange) {
-        amendHourlyBalanceChangeForDay(_.values(breakdown)[0], 'from');
+        amendHourlyBalanceChangeForDay(_.first(_.values(breakdown)), 'from');
 
         if (breakdown.length > 1) {
           amendHourlyBalanceChangeForDay(_.last(_.values(breakdown)), 'to');
@@ -220,6 +221,7 @@ define([
      */
     function calculateBalanceChange () {
       vm._setDateAndTypes();
+      vm._toggleBalance();
 
       if (!vm._canCalculateChange()) { return $q.resolve(); }
 
@@ -247,7 +249,7 @@ define([
      * @return {String} time in hh:mm format
      */
     function extractTimeFromServerDate (date) {
-      return date.substr(11, 5);
+      return moment(date).format('HH:mm');
     }
 
     /**
@@ -348,6 +350,7 @@ define([
      */
     function getOriginalBalanceChange () {
       vm._setDateAndTypes();
+      vm._toggleBalance();
 
       vm.loading.showBalanceChange = true;
 
@@ -563,8 +566,8 @@ define([
       timeObject.time = '';
 
       return vm.request.getWorkDayForDate(date).then(function (response) {
-        timeObject.min = response.time_from || '00:00';
-        timeObject.max = response.time_to || '23:45';
+        timeObject.min = response.time_from;
+        timeObject.max = response.time_to;
         timeObject.maxAmount = response.number_of_hours.toString() || '0';
         timeObject.amount = timeObject.maxAmount || '0';
         timeObject.disabled = false;
@@ -661,6 +664,7 @@ define([
         .catch(function (errors) {
           handleError(errors);
           vm._setDateAndTypes();
+          vm._toggleBalance();
         });
     }
 
@@ -796,27 +800,10 @@ define([
      * Sets dates and types for vm.request from UI
      */
     function _setDateAndTypes () {
-      var options = vm.uiOptions;
-      var request = vm.request;
-
       vm._setDates();
 
-      if (options.multipleDays) {
-        options.showBalance = !!request.from_date && !!request.to_date && !!vm.period.id;
-
-        if (isCalculationUnit('days')) {
-          options.showBalance = options.showBalance && !!request.from_date_type && !!request.to_date_type;
-        }
-      } else {
-        if (options.fromDate) {
-          request.to_date_type = request.from_date_type;
-        }
-
-        options.showBalance = !!request.from_date && !!vm.period.id;
-
-        if (isCalculationUnit('days')) {
-          options.showBalance = options.showBalance && !!request.from_date_type;
-        }
+      if (!vm.uiOptions.multipleDays && vm.uiOptions.fromDate) {
+        vm.request.to_date_type = vm.request.from_date_type;
       }
     }
 
@@ -853,6 +840,28 @@ define([
       vm.request.to_date = vm.request.from_date;
 
       vm.calculateBalanceChange();
+    }
+
+    /**
+     * Shows or hides the balance breakdown depending on various conditions
+     */
+    function _toggleBalance () {
+      var options = vm.uiOptions;
+      var request = vm.request;
+
+      if (options.multipleDays) {
+        options.showBalance = !!request.from_date && !!request.to_date && !!vm.period.id;
+
+        if (isCalculationUnit('days')) {
+          options.showBalance = options.showBalance && !!request.from_date_type && !!request.to_date_type;
+        }
+      } else {
+        options.showBalance = !!request.from_date && !!vm.period.id;
+
+        if (isCalculationUnit('days')) {
+          options.showBalance = options.showBalance && !!request.from_date_type;
+        }
+      }
     }
   }
 });

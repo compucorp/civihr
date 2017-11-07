@@ -41,6 +41,7 @@ define([
       if (vm.request.toil_to_accrue) {
         vm.loading.showBalanceChange = true;
         vm._setDateAndTypes();
+        vm._toggleBalance();
         vm.balance.change.amount = +vm.request.toil_to_accrue;
         vm._calculateOpeningAndClosingBalance();
         vm.uiOptions.showBalance = true;
