@@ -105,15 +105,9 @@
        * contact and the given period.
        */
       function openAnnualEntitlementChangeLog (periodId) {
-        var template = '<annual-entitlement-change-log' +
-          ' contact-id="modal.contactId"' +
-          ' dismiss-modal="modal.dismiss()"' +
-          ' period-id="modal.periodId"' +
-          '></annual-entitlement-change-log>';
-
         $uibModal.open({
           appendTo: $rootElement.children().eq(0),
-          template: template,
+          templateUrl: 'annual-entitlement-change-log-modal',
           controller: ['$uibModalInstance', function ($modalInstance) {
             this.contactId = vm.contactId;
             this.dismiss = $modalInstance.dismiss;
