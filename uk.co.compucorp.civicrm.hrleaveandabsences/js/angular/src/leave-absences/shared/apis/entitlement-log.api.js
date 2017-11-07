@@ -13,9 +13,9 @@ define([
 
       /**
        * This method returns all the entitlements log.
-       * This request is not cached.
+       * @NOTE This request is not cached.
        *
-       * @param  {Object} params  matches the api endpoint parameters.
+       * @param  {Object} params - matches the api endpoint parameters.
        * @return {Promise}
        */
       all: function (params) {

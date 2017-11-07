@@ -81,7 +81,7 @@ define([
          * @return {Promise} - resolves to a list of entitlement log entries.
          */
         logs: function (params) {
-          params = _.clone(params || {});
+          params = _.cloneDeep(params || {});
 
           if (params.contact_id) {
             params['entitlement_id.contact_id'] = params.contact_id;
@@ -94,6 +94,7 @@ define([
           }
 
           params.return = params.return || [];
+
           params.return.push('entitlement_id', 'entitlement_id.type_id',
             'editor_id', 'entitlement_amount', 'comment', 'created_date');
 
