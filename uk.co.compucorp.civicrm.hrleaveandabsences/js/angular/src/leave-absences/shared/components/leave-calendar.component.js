@@ -60,6 +60,7 @@ define([
       setUserRole()
       .then(initWatchers)
       .then(injectSubController)
+      .then(makeSureMonthsAreNotInjected)
       .then(loadAbsencePeriods)
       .then(function () {
         return $q.all([
@@ -114,15 +115,13 @@ define([
      * @param {Boolean} forceDataReload whether the months need to force data reload
      */
     function injectAndShowMonths (forceDataReload) {
+      vm.injectMonths = true;
+
       waitUntilMonthsAre('injected').then(function () {
         sendShowMonthsSignal(forceDataReload);
       })
       .then(function () {
         vm.loading.calendar = false;
-      });
-
-      makeSureMonthsAreNotInjected().then(function () {
-        vm.injectMonths = true;
       });
     }
 
@@ -289,6 +288,7 @@ define([
         .then(function () {
           vm.loading.calendar = true;
         })
+        .then(makeSureMonthsAreNotInjected)
         .then(source === 'period' ? buildPeriodMonthsList : _.noop)
         .then(source === 'contacts' ? loadContacts : _.noop)
         .then(function () {
