@@ -85,8 +85,8 @@ define([
         AbsenceType.all().then(function (absenceTypes) {
           expectedAbsenceTypes = absenceTypes.map(function (absenceType) {
             return _.extend({
-              'calculation_unit.name': jasmine.any(String),
-              'calculation_unit.label': jasmine.any(String)
+              'calculation_unit_name': jasmine.any(String),
+              'calculation_unit_label': jasmine.any(String)
             }, absenceType);
           });
         });
@@ -165,7 +165,7 @@ define([
 
             beforeEach(function () {
               absenceTypeCalculationUnits = _.pluck(ctrl.absenceTypes,
-                'calculation_unit.name');
+                'calculation_unit_name');
               entitlementCalculationUnits = _.pluck(ctrl.changeLogRows[0]
                 .entitlements, 'calculation_unit');
             });

@@ -34,7 +34,6 @@ define([
 
     (function init () {
       loadAbsencePeriod()
-      .then(loadCalculationUnits)
       .then(loadAbsenceTypes)
       .then(loadChangeLog)
       .then(appendCurrentEntitlementsToChangeLog)
@@ -77,10 +76,12 @@ define([
      * that has comments.
      */
     function highlightEntitlementWithComments () {
+      var changeLogRow, entitlementComments, validEntitlementComments;
+
       for (var i = vm.changeLogRows.length - 1; i >= 0; i--) {
-        var changeLogRow = vm.changeLogRows[i];
-        var entitlementComments = _.pluck(changeLogRow.entitlements, 'comment');
-        var validEntitlementComments = _.compact(entitlementComments).length;
+        changeLogRow = vm.changeLogRows[i];
+        entitlementComments = _.pluck(changeLogRow.entitlements, 'comment');
+        validEntitlementComments = _.compact(entitlementComments).length;
 
         if (validEntitlementComments === 1) {
           var commentIndex = _.findIndex(entitlementComments, 'length');
@@ -131,12 +132,14 @@ define([
      * @return {Object}
      */
     function getChangeLogRow (entitlements, createdDate) {
-      var indexedEntitlements = _.indexBy(entitlements, 'entitlement_id.type_id');
-      var sortedEntitlements = vm.absenceTypes.map(function (absenceType) {
-        var entitlement = indexedEntitlements[absenceType.id];
+      var entitlement, indexedEntitlements, sortedEntitlements;
+
+      indexedEntitlements = _.indexBy(entitlements, 'entitlement_id.type_id');
+      sortedEntitlements = vm.absenceTypes.map(function (absenceType) {
+        entitlement = indexedEntitlements[absenceType.id];
 
         return _.extend({
-          calculation_unit: absenceType['calculation_unit.name']
+          calculation_unit: absenceType['calculation_unit_name']
         }, entitlement);
       });
 
@@ -170,32 +173,11 @@ define([
      * @return {Promise}
      */
     function loadAbsenceTypes (calculationUnits) {
-      return AbsenceType.all().then(function (absenceTypes) {
-        return absenceTypes.map(function (absenceType) {
-          var unit = calculationUnits[absenceType.calculation_unit];
-
-          return _.extend({
-            'calculation_unit.name': unit.name,
-            'calculation_unit.label': unit.label
-          }, absenceType);
+      return AbsenceType.all()
+        .then(AbsenceType.loadCalculationUnits)
+        .then(function (absenceTypes) {
+          vm.absenceTypes = absenceTypes;
         });
-      })
-      .then(function (absenceTypes) {
-        vm.absenceTypes = absenceTypes;
-      });
-    }
-
-    /**
-     * Returns a map of absence type calculation units indexed by their
-     * values.
-     *
-     * @return {Promise}
-     */
-    function loadCalculationUnits () {
-      return OptionGroup.valuesOf('hrleaveandabsences_absence_type_calculation_unit')
-      .then(function (calculationUnits) {
-        return _.indexBy(calculationUnits, 'value');
-      });
     }
 
     /**
@@ -220,10 +202,10 @@ define([
      */
     function removeRepeatedComments () {
       var currentLogRowPointer, nextLogRowPointer;
-      var logHasOneOrCeroRows = vm.changeLogRows.length <= 1;
+      var logHasOneOrZeroRows = vm.changeLogRows.length <= 1;
 
-      // There is no chance of repetition when there are one or cero rows
-      if (logHasOneOrCeroRows) {
+      // There is no chance of repetition when there are one or zero rows
+      if (logHasOneOrZeroRows) {
         return;
       }
 
