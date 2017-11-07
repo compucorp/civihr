@@ -1,6 +1,9 @@
+/* eslint-env amd */
+
 define([
-  'common/moment',
   'common/angular',
+  'common/lodash',
+  'common/moment',
   'job-contract/controllers/controllers',
   'job-contract/services/contract',
   'job-contract/services/contract-details',
@@ -11,15 +14,15 @@ define([
   'job-contract/services/contract-pension',
   'job-contract/services/contract-files',
   'job-contract/services/utils',
-  'common/services/pub-sub',
-], function(moment, angular, controllers) {
+  'common/services/pub-sub'
+], function (angular, _, moment, controllers) {
   'use strict';
 
   controllers.controller('ModalContractNewCtrl', ['$rootScope', '$scope', '$uibModalInstance', '$q', '$uibModal', '$rootElement', '$sce',
     'Contract', 'ContractService', 'ContractDetailsService', 'ContractHourService', 'ContractPayService', 'ContractLeaveService',
     'ContractHealthService', 'ContractPensionService', 'ContractFilesService', 'model', 'UtilsService', 'utils',
     'settings', '$log', 'pubSub',
-    function($rootScope, $scope, $modalInstance, $q, $modal, $rootElement, $sce, Contract, ContractService, ContractDetailsService,
+    function ($rootScope, $scope, $modalInstance, $q, $modal, $rootElement, $sce, Contract, ContractService, ContractDetailsService,
       ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
       ContractFilesService, model, UtilsService, utils, settings, $log, pubSub) {
       $log.debug('Controller: ModalContractNewCtrl');
@@ -87,12 +90,12 @@ define([
       };
 
       // Init
-      (function init() {
-        angular.forEach($scope.uploader, function(entity){
-          angular.forEach(entity, function(field){
-            field.onAfterAddingAll = function(){
+      (function init () {
+        angular.forEach($scope.uploader, function (entity) {
+          angular.forEach(entity, function (field) {
+            field.onAfterAddingAll = function () {
               $scope.filesValidate();
-            }
+            };
           });
         });
 
@@ -102,24 +105,20 @@ define([
         });
       }());
 
-      $scope.filesValidate = function() {
-        var entityName,
-          fieldName,
-          fileMaxSize = $scope.fileMaxSize,
-          uploader = $scope.uploader,
-          uploaderEntity,
-          uploaderEntityField,
-          uploaderEntityFieldQueue,
-          isValid = true,
-          i, len;
+      $scope.filesValidate = function () {
+        var entityName, fieldName, i, len, uploaderEntity, uploaderEntityField, uploaderEntityFieldQueue;
+        var fileMaxSize = $scope.fileMaxSize;
+        var isValid = true;
+        var uploader = $scope.uploader;
 
         for (entityName in uploader) {
           uploaderEntity = uploader[entityName];
 
           for (fieldName in uploaderEntity) {
-            uploaderEntityField = uploaderEntity[fieldName],
-              uploaderEntityFieldQueue = uploaderEntityField.queue,
-              i = 0, len = uploaderEntityFieldQueue.length;
+            i = 0;
+            len = uploaderEntityFieldQueue.length;
+            uploaderEntityField = uploaderEntity[fieldName];
+            uploaderEntityFieldQueue = uploaderEntityField.queue;
 
             for (; i < len && isValid; i++) {
               isValid = uploaderEntityFieldQueue[i].file.size < fileMaxSize;
@@ -128,36 +127,33 @@ define([
         }
 
         $scope.contractForm.$setValidity('maxFileSize', isValid);
-
       };
 
-      $scope.cancel = function() {
+      $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
       };
 
-      $scope.save = function() {
+      $scope.save = function () {
         $scope.$broadcast('hrjc-loader-show');
 
         ContractDetailsService.validateDates({
           contact_id: settings.contactId,
           period_start_date: $scope.entity.details.period_start_date,
           period_end_date: $scope.entity.details.period_end_date
-        }).then(function(result) {
+        }).then(function (result) {
           if (result.success) {
-
             confirmUpdateEntitlements()
               .then(function () {
-                  saveContract();
-                },
+                saveContract();
+              },
                 function () {
                   $scope.$broadcast('hrjc-loader-hide');
                 });
-
           } else {
             CRM.alert(result.message, 'Error', 'error');
             $scope.$broadcast('hrjc-loader-hide');
           }
-        }, function(reason) {});
+        }, function (reason) {});
       };
 
       /**
@@ -166,11 +162,11 @@ define([
        *
        * @returns {*}
        */
-      function confirmUpdateEntitlements() {
+      function confirmUpdateEntitlements () {
         var modalUpdateEntitlements = $modal.open({
           appendTo: $rootElement.find('div').eq(0),
           size: 'sm',
-          templateUrl: settings.pathApp+'views/modalDialog.html?v='+(new Date()).getTime(),
+          templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
           controller: 'ModalDialogCtrl',
           resolve: {
             content: {
@@ -187,7 +183,7 @@ define([
       /**
        * Saves a new contract
        */
-      function saveContract() {
+      function saveContract () {
         var contract = new Contract();
 
         contract.$save({
@@ -197,35 +193,32 @@ define([
             contact_id: settings.contactId,
             is_primary: utils.contractListLen ? $scope.entity.contract.is_primary : 1
           }
-        }, function(data) {
-          var contract = data.values[0],
-            contractId = contract.id,
-            entityDetails = angular.copy($scope.entity.details),
-            entityHour = $scope.entity.hour,
-            entityPay = $scope.entity.pay,
-            entityLeave = $scope.entity.leave,
-            entityHealth = $scope.entity.health,
-            entityPension = $scope.entity.pension,
-            modalInstance,
-            promiseContractNew,
-            promiseUpload = [],
-            uploader = $scope.uploader,
-            revisionId;
+        }, function (data) {
+          var modalInstance, promiseContractNew, revisionId;
+          var contract = data.values[0];
+          var contractId = contract.id;
+          var entityDetails = angular.copy($scope.entity.details);
+          var entityHour = $scope.entity.hour;
+          var entityPay = $scope.entity.pay;
+          var entityLeave = $scope.entity.leave;
+          var entityHealth = $scope.entity.health;
+          var entityPension = $scope.entity.pension;
+          var promiseUpload = [];
+          var uploader = $scope.uploader;
 
-          contract.is_current = !entityDetails.period_end_date || moment().diff(entityDetails.period_end_date, "day") <= 0;
+          contract.is_current = !entityDetails.period_end_date || moment().diff(entityDetails.period_end_date, 'day') <= 0;
 
           UtilsService.prepareEntityIds(entityDetails, contractId);
 
-          ContractDetailsService.save(entityDetails).then(function(results) {
+          ContractDetailsService.save(entityDetails).then(function (results) {
             revisionId = results.jobcontract_revision_id;
-          }, function(reason) {
+          }, function (reason) {
             CRM.alert(reason, 'Error', 'error');
             ContractService.delete(contractId);
             $modalInstance.dismiss();
             return $q.reject();
-          }).then(function() {
-
-            angular.forEach($scope.entity, function(entity) {
+          }).then(function () {
+            angular.forEach($scope.entity, function (entity) {
               UtilsService.prepareEntityIds(entity, contractId, revisionId);
             });
 
@@ -252,10 +245,10 @@ define([
                 size: 'sm',
                 controller: 'ModalProgressCtrl',
                 resolve: {
-                  uploader: function() {
+                  uploader: function () {
                     return uploader;
                   },
-                  promiseFilesUpload: function() {
+                  promiseFilesUpload: function () {
                     return promiseUpload;
                   }
                 }
@@ -265,45 +258,44 @@ define([
             }
 
             return $q.all(promiseContractNew);
-          }).then(function() {
-              $scope.$broadcast('hrjc-loader-hide');
-              $modalInstance.close(contract);
+          }).then(function () {
+            $scope.$broadcast('hrjc-loader-hide');
+            $modalInstance.close(contract);
 
-              pubSub.publish('contract:created', settings.contactId);
-              pubSub.publish('contract-refresh');
-            },
+            pubSub.publish('contract:created', settings.contactId);
+            pubSub.publish('contract-refresh');
+          },
             function (reason) {
               CRM.alert(reason, 'Error', 'error');
-              ContractService.delete(contractId).then(function(result){
+              ContractService.delete(contractId).then(function (result) {
                 $scope.$broadcast('hrjc-loader-hide');
                 if (result.is_error) {
                   CRM.alert((result.error_message || 'Unknown error'), 'Error', 'error');
                 }
-              }, function(error){
+              }, function (error) {
                 $scope.$broadcast('hrjc-loader-hide');
                 CRM.alert((error || 'Unknown error'), 'Error', 'error');
               });
             });
-        }, function(reason) {
+        }, function (reason) {
           $scope.$broadcast('hrjc-loader-hide');
           $modalInstance.dismiss();
           CRM.alert((reason.statusText || 'Unknown error'), 'Error', 'error');
           return $q.reject();
         });
-
       }
 
       /*
        * Fetch updated Health and Life Insurance Plan Types
        */
-      function fetchInsurancePlanTypes() {
+      function fetchInsurancePlanTypes () {
         return $q.all([
-          { name: "hrjobcontract_health_health_plan_type", key: 'plan_type' },
-          { name: "hrjobcontract_health_life_insurance_plan_type", key: 'plan_type_life_insurance' }
+          { name: 'hrjobcontract_health_health_plan_type', key: 'plan_type' },
+          { name: 'hrjobcontract_health_life_insurance_plan_type', key: 'plan_type_life_insurance' }
         ].map(function (planTypeData) {
           ContractHealthService.getOptions(planTypeData.name, true)
           .then(function (planTypes) {
-            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function(acc, type) {
+            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
               acc[type.key] = type.value;
             }, {});
           });
@@ -315,8 +307,8 @@ define([
        *
        * It will set both the leave amount and if public holidays should be added to it.
        */
-      function setDefaultLeaveValuesFromAbsenceType() {
-        if(!$scope.entity.leave) {
+      function setDefaultLeaveValuesFromAbsenceType () {
+        if (!$scope.entity.leave) {
           return;
         }
 
