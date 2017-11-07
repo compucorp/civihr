@@ -72,26 +72,32 @@ define([
     }
 
     /**
-     * Selects the entitlement rows to be highlighlighted based on the one
-     * that has comments.
+     * Iterates over each one of the log row's entitlements providing
+     * the previous entitlement values from the previous row and the updated
+     * ones from the current row. This function can be used to display
+     * the change between one row and the one below.
+     *
+     * @param {Object} changeLogRow - a row inside the changeLogRows array.
+     * @param {Function} iterationFunction - the function that will be used
+     * to iterate over each one of the entitlements. The signatura for this
+     * function is:
+     * - {EntitlementInstance} entitlement - the current entitlement being iterated.
+     * - {Array} previousEntitlementValues - An array with the previous row's
+     * entitlements before the current entitlement.
+     * - {Array} updatedEntitlementValues - An array with the current row's
+     * entitlements after the current entitlement.
      */
-    function highlightEntitlementWithComments () {
-      var changeLogRow, entitlementComments, validEntitlementComments;
+    function forEachEntitlementOfRow (changeLogRow, iterationFunction) {
+      var previousEntitlementValues, updatedEntitlementValues;
+      var nextRow = getNextLogRowOf(changeLogRow);
 
-      for (var i = vm.changeLogRows.length - 1; i >= 0; i--) {
-        changeLogRow = vm.changeLogRows[i];
-        entitlementComments = _.pluck(changeLogRow.entitlements, 'comment');
-        validEntitlementComments = _.compact(entitlementComments).length;
+      changeLogRow.entitlements.forEach(function (entitlement, i) {
+        previousEntitlementValues = nextRow.entitlements.slice(0, i);
+        updatedEntitlementValues = changeLogRow.entitlements.slice(i + 1);
 
-        if (validEntitlementComments === 1) {
-          var commentIndex = _.findIndex(entitlementComments, 'length');
-
-          changeLogRow.highlightedEntitlement = changeLogRow
-            .entitlements[commentIndex];
-        } else if (validEntitlementComments > 1) {
-          splitEntitlementCommentsIntoMultipleRows(i);
-        }
-      }
+        iterationFunction(entitlement, previousEntitlementValues,
+          updatedEntitlementValues);
+      });
     }
 
     /**
@@ -147,6 +153,62 @@ define([
         date: moment(createdDate),
         entitlements: sortedEntitlements
       };
+    }
+
+    /**
+     * Returns the row below the one provided. This can be used to access the
+     * previous entitlement values. In case this is the last row, a row with
+     * empty values is returned so it can be used for reference.
+     *
+     * @param {Object} changeLogRow - The change log row to use as reference
+     * for finding the row below.
+     * @return {Object}
+     */
+    function getNextLogRowOf (changeLogRow) {
+      var nextRow, rowIndex;
+
+      rowIndex = vm.changeLogRows.indexOf(changeLogRow);
+      nextRow = vm.changeLogRows[rowIndex + 1];
+
+      return nextRow || {
+        date: changeLogRow.date.clone(),
+        entitlements: changeLogRow.entitlements.map(function () {
+          return {};
+        })
+      };
+    }
+
+    /**
+     * Selects the entitlement rows to be highlighlighted based on the one
+     * that has comments.
+     */
+    function highlightEntitlementWithComments () {
+      var changeLogRow, entitlementComments, validEntitlementComments;
+
+      for (var i = vm.changeLogRows.length - 1; i >= 0; i--) {
+        changeLogRow = vm.changeLogRows[i];
+        entitlementComments = _.pluck(changeLogRow.entitlements, 'comment');
+        validEntitlementComments = _.compact(entitlementComments).length;
+
+        if (validEntitlementComments === 1) {
+          var commentIndex = _.findIndex(entitlementComments, 'length');
+
+          changeLogRow.highlightedEntitlement = changeLogRow
+            .entitlements[commentIndex];
+        } else if (validEntitlementComments > 1) {
+          splitEntitlementCommentsIntoMultipleRows(i);
+        }
+      }
+    }
+
+    /**
+     * Inserts a new log row at the provided index.
+     *
+     * @param {Object} logRow - the log row to insert.
+     * @param {Number} rowIndex - the index where the new row should be inserted.
+     */
+    function insertLogRowAtIndex (logRow, rowIndex) {
+      vm.changeLogRows.splice(rowIndex, 0, logRow);
     }
 
     /**
@@ -239,40 +301,34 @@ define([
      * comments that will be split into different rows.
      */
     function splitEntitlementCommentsIntoMultipleRows (rowIndex) {
+      var entitlements, newRowWithSingleComment;
       var changeLogRow = vm.changeLogRows[rowIndex];
-      var nextRow = vm.changeLogRows[rowIndex + 1];
 
-      if (!nextRow) {
-        nextRow = {
-          date: changeLogRow.date.clone(),
-          entitlements: changeLogRow.entitlements.map(function () {
-            return {};
-          })
-        };
-      }
+      forEachEntitlementOfRow(changeLogRow, function (entitlement,
+      previousEntitlementValues, updatedEntitlementValues) {
+        // Doesn't create a new row if the entitlement has no comments:
+        if (!entitlement.comment) { return; }
 
-      changeLogRow.entitlements.forEach(function (entitlement, i) {
-        var entitlements, newRowWithSingleComment;
-
-        if (!entitlement.comment) {
-          return;
-        }
-
-        entitlements = nextRow.entitlements.slice(0, i)
-          .concat(entitlement)
-          .concat(changeLogRow.entitlements.slice(i + 1));
+        entitlements = previousEntitlementValues.concat(entitlement)
+          .concat(updatedEntitlementValues);
         newRowWithSingleComment = {
           date: changeLogRow.date.clone(),
-          entitlements: _.cloneDeep(entitlements)
+          entitlements: entitlements
         };
-        newRowWithSingleComment.highlightedEntitlement = newRowWithSingleComment
-          .entitlements[i];
-        // Inserts the new row at rowIndex:
-        vm.changeLogRows.splice(rowIndex, 0, newRowWithSingleComment);
-        rowIndex++;
+        newRowWithSingleComment.highlightedEntitlement = entitlement;
+
+        insertLogRowAtIndex(newRowWithSingleComment, rowIndex++);
       });
 
-      // Removes the unsplitted row:
+      // Removes the original row to avoid repetition of information:
+      removeLogRow(rowIndex);
+    }
+
+    /**
+     * Removes the log row at the provided index.
+     * @param {Number} rowIndex - the index of the row to be removed from the log.
+     */
+    function removeLogRow (rowIndex) {
       vm.changeLogRows.splice(rowIndex, 1);
     }
   }

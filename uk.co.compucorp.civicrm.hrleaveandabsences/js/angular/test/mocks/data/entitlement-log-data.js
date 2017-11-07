@@ -12,7 +12,7 @@ define(function () {
         'entitlement_id.type_id': '1',
         'editor_id': '207',
         'entitlement_amount': '33.00',
-        'created_date': '2017-11-02 14:36:31'
+        'created_date': '2017-11-02 14:36:32'
       },
       {
         'id': '2',
@@ -28,7 +28,7 @@ define(function () {
         'entitlement_id.type_id': '3',
         'editor_id': '207',
         'entitlement_amount': '5.00',
-        'created_date': '2017-11-02 14:36:33'
+        'created_date': '2017-11-02 14:36:32'
       },
       {
         'id': '4',
@@ -36,7 +36,7 @@ define(function () {
         'entitlement_id.type_id': '4',
         'editor_id': '207',
         'entitlement_amount': '0.00',
-        'created_date': '2017-11-02 14:36:34'
+        'created_date': '2017-11-02 14:36:32'
       },
       {
         'id': '5',
@@ -44,7 +44,7 @@ define(function () {
         'entitlement_id.type_id': '5',
         'editor_id': '207',
         'entitlement_amount': '0.00',
-        'created_date': '2017-11-02 14:36:35'
+        'created_date': '2017-11-02 14:36:32'
       },
       {
         'id': '6',
