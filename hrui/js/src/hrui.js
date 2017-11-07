@@ -21,10 +21,16 @@
    * Adds the user menu by fetching it from the hrcore extension
    */
   function addUserMenuToMainMenu () {
-    $.ajax('/civicrm/hrcore/usermenu?snippet=4', {
-      dataType: 'html',
-      success: injectUserMenuInAMainMenuWrapper
-    });
+    var wrapperId = 'civihr-menu';
+
+    if (!$('#' + wrapperId).length) {
+      $.ajax('/civicrm/hrcore/usermenu?snippet=4', {
+        dataType: 'html',
+        success: function (menuMarkup) {
+          injectUserMenuInAMainMenuWrapper(menuMarkup, wrapperId);
+        }
+      });
+    }
   }
 
   /**
@@ -141,16 +147,17 @@
   }
 
   /**
-   * Injects the given markup in a menu wrapper
+   * Injects the given markup in a menu wrapper with the given id
    * created to contain both the original menu and the user one
    *
    * @param {string} menuMarkup
+   * @param {string} wrapperId
    */
-  function injectUserMenuInAMainMenuWrapper (menuMarkup) {
+  function injectUserMenuInAMainMenuWrapper (menuMarkup, wrapperId) {
     var $menuMarkup = $(menuMarkup);
     var $menuWrapper = $('<div>');
 
-    $menuWrapper.attr('id', 'civihr-menu');
+    $menuWrapper.attr('id', wrapperId);
     $menuWrapper.append($('#civicrm-menu'));
     $menuWrapper.append($menuMarkup);
     $menuWrapper.insertAfter('#page');
