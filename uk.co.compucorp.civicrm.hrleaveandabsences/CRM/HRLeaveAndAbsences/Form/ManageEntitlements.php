@@ -98,12 +98,14 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    */
   public function postProcess() {
     $values = $this->exportValues();
+    $createdDate = new DateTime();
     foreach($this->calculations as $calculation) {
       $absenceTypeID = $calculation->getAbsenceType()->id;
       $contactID = $calculation->getContact()['id'];
 
       LeavePeriodEntitlement::saveFromCalculation(
         $calculation,
+        $createdDate,
         $values['overridden_entitlement'][$contactID][$absenceTypeID],
         $values['comment'][$contactID][$absenceTypeID]
       );
