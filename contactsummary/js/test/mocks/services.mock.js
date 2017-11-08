@@ -191,6 +191,7 @@ define([
     factory.response = {};
     factory.resetContracts = jasmine.createSpy('');
     factory.getOptions = jasmine.createSpy('');
+    factory.removeContract = jasmine.createSpy('');
 
     return factory;
   }
