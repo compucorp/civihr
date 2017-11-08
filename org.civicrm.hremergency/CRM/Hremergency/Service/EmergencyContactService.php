@@ -17,9 +17,8 @@ class CRM_Hremergency_Service_EmergencyContactService {
     $params = [1 => [$id, 'Integer']];
     $emergencyContacts = CRM_Core_DAO::executeQuery($selectQuery, $params);
     $emergencyContacts = $emergencyContacts->fetchAll();
-    $count = count($emergencyContacts);
 
-    if (1 !== $count) {
+    if (1 !== count($emergencyContacts)) {
       return NULL;
     }
 
