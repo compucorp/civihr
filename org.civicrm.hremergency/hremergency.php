@@ -2,6 +2,10 @@
 
 require_once 'hremergency.civix.php';
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\Config\FileLocator;
+
 /**
  * Implementation of hook_civicrm_config
  *
@@ -105,4 +109,14 @@ function hremergency_civicrm_caseTypes(&$caseTypes) {
  */
 function hremergency_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _hremergency_civix_civicrm_alterSettingsFolders($metaDataFolders);
+}
+
+/**
+ * Implements hook_civicrm_container().
+ *
+ * @param ContainerBuilder $container
+ */
+function hremergency_civicrm_container($container) {
+  $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/xml'));
+  $loader->load('services.xml');
 }
