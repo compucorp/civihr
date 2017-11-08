@@ -9,7 +9,7 @@ define([
   'common/services/pub-sub'
 ], function (_) {
   describe('LeaveWidget', function () {
-    var $componentController, $provide, $rootScope, $scope, AbsencePeriod,
+    var $componentController, $provide, $q, $rootScope, $scope, AbsencePeriod,
       AbsenceType, Contract, ctrl, OptionGroup, pubSub;
     var contactId = 208;
 
@@ -27,9 +27,10 @@ define([
         $provide.value('OptionGroup', OptionGroupAPIMock);
       }]));
 
-    beforeEach(inject(function (_$componentController_, $q, _$rootScope_,
+    beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
     _AbsencePeriod_, _AbsenceType_, _Contract_, _OptionGroup_, _pubSub_) {
       $componentController = _$componentController_;
+      $q = _$q_;
       $rootScope = _$rootScope_;
       $scope = $rootScope.$new();
       AbsencePeriod = _AbsencePeriod_;
@@ -69,8 +70,8 @@ define([
         expect(ctrl.absenceTypes).toEqual([]);
       });
 
-      it('sets current absence period to null', function () {
-        expect(ctrl.currentAbsencePeriod).toBe(null);
+      it('sets absence period to null', function () {
+        expect(ctrl.absencePeriod).toBe(null);
       });
 
       it('sets job contract to null', function () {
@@ -246,7 +247,7 @@ define([
         });
 
         it('loads all absence types', function () {
-          expect(AbsenceType.all).toHaveBeenCalled();
+          expect(AbsenceType.all).toHaveBeenCalledWith({ is_active: true });
         });
 
         describe('after loading all absence types', function () {
@@ -273,30 +274,61 @@ define([
         });
       });
 
-      describe('current absence period', function () {
+      describe('loading the absence period', function () {
+        var absencePeriods;
+
         beforeEach(function () {
-          $rootScope.$digest();
+          absencePeriods = [
+            {
+              'id': '1',
+              'title': '2016',
+              'start_date': '2016-01-01',
+              'end_date': '2016-12-31',
+              'weight': '1'
+            },
+            {
+              'id': '2',
+              'title': '2017',
+              'start_date': '2017-01-01',
+              'end_date': '2017-12-31',
+              'weight': '2',
+              'current': true
+            }
+          ];
+
+          AbsencePeriod.all.and.returnValue($q.resolve(absencePeriods));
         });
 
-        it('loads the absence periods', function () {
-          expect(AbsencePeriod.all).toHaveBeenCalled();
-        });
-
-        describe('after loading all the absence periods', function () {
-          var expectedPeriod;
-
+        describe('when the component initializes', function () {
           beforeEach(function () {
-            AbsencePeriod.all().then(function (periods) {
-              expectedPeriod = _.find(periods, function (period) {
-                return period.current;
-              });
-            });
+            $rootScope.$digest();
+          });
 
+          it('loads the absence periods', function () {
+            expect(AbsencePeriod.all).toHaveBeenCalled();
+          });
+        });
+
+        describe('when there is a current absence period', function () {
+          beforeEach(function () {
             $rootScope.$digest();
           });
 
           it('stores the current one', function () {
-            expect(ctrl.currentAbsencePeriod).toEqual(expectedPeriod);
+            expect(ctrl.absencePeriod.title).toEqual('2017');
+          });
+        });
+
+        describe('when there are no current absence periods', function () {
+          beforeEach(function () {
+            absencePeriods.forEach(function (period) {
+              period.current = false;
+            });
+            $rootScope.$digest();
+          });
+
+          it('stores the last one', function () {
+            expect(ctrl.absencePeriod.title).toEqual('2017');
           });
         });
       });

@@ -29,10 +29,17 @@
           {{absenceType.balance | timeUnitApplier:'days'}}
         </td>
       </tr>
+      <tr ng-if="absenceTypesTaken.absenceTypes.length === 0">
+        <td colspan="2">
+          <p class="text-muted">No {{absenceTypesTaken.title | lowercase}} information available</p>
+        </td>
+      </tr>
     </tbody>
   </table>
-  <h4>{{absenceTypesTaken.title}} heatmap</h4>
-  <leave-requests-heatmap
-    leave-requests="absenceTypesTaken.leaveRequests"
-  ></leave-requests-heatmap>
+  <div ng-if="absenceTypesTaken.absenceTypes.length">
+    <h4>{{absenceTypesTaken.title}} heatmap</h4>
+    <leave-requests-heatmap
+      leave-requests="absenceTypesTaken.leaveRequests"
+    ></leave-requests-heatmap>
+  </div>
 </div>

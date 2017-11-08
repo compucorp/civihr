@@ -93,21 +93,17 @@ define([
               type_id: { IN: getJobContractAbsenceEntitlements() }
             }, true)
             .then(function (entitlements) {
-              expectedEntitlements = entitlements
-                .filter(function (entitlement) {
-                  return entitlement.value > 0;
-                })
-                .map(function (entitlement) {
-                  var absenceType = _.find(absenceTypes, function (type) {
-                    return +entitlement.type_id === +type.id;
-                  }) || {};
-
-                  absenceType = _.assign({
-                    balance: jasmine.any(Number)
-                  }, absenceType);
-
-                  return absenceType;
-                });
+              expectedEntitlements = absenceTypes.map(function (absenceType) {
+                return _.assign({
+                  balance: {
+                    // Checks if the balance is a number or if it's not defined
+                    asymmetricMatch: function (value) {
+                      return typeof value === 'number' ||
+                        typeof value === 'undefined';
+                    }
+                  }
+                }, absenceType);
+              });
             });
 
             $rootScope.$digest();
