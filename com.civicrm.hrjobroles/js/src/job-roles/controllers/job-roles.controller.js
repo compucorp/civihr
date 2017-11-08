@@ -935,6 +935,7 @@ define([
         if (confirm) {
           deleteJobRole(jobRole.id).then(function () {
             updateHeaderInfo(jobRole);
+            pubSub.publish('JobRole::deleted');
 
             return getJobRolesList(vm.contactId);
           });
@@ -982,6 +983,7 @@ define([
 
         createJobRole(newRole).then(function () {
           updateHeaderInfo(newRole);
+          pubSub.publish('JobRole::created');
 
           // Hide the add new form
           vm.add_new = false;
@@ -1163,6 +1165,7 @@ define([
 
       updateJobRole(roleId, updatedRole).then(function () {
         updateHeaderInfo(updatedRole);
+        pubSub.publish('JobRole::updated');
 
         return getJobRolesList(vm.contactId);
       });
