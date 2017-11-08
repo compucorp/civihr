@@ -6,7 +6,7 @@
     <crm-loading show="!leaveWidget.loading.component && !leaveWidget.loading.childComponents">
       <div ng-if="leaveWidget.jobContract">
         <leave-widget-absence-types-available-balance
-          absence-period="leaveWidget.currentAbsencePeriod"
+          absence-period="leaveWidget.absencePeriod"
           absence-types="leaveWidget.absenceTypes"
           contact-id="leaveWidget.contactId"
           job-contract="leaveWidget.jobContract"
@@ -15,7 +15,7 @@
         <leave-widget-absence-types-amount-taken
           title="Sickness"
           leave-name="sick leaves"
-          absence-period="leaveWidget.currentAbsencePeriod"
+          absence-period="leaveWidget.absencePeriod"
           absence-types="leaveWidget.sicknessAbsenceTypes"
           contact-id="leaveWidget.contactId"
           leave-request-statuses="leaveWidget.leaveRequestStatuses"

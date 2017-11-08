@@ -3,6 +3,7 @@
 define([
   'common/angular',
   'common/lodash',
+  'common/moment',
   'common/directives/loading',
   'common/directives/help-text.directive',
   'common/filters/time-unit-applier.filter',
@@ -15,7 +16,7 @@ define([
   'leave-absences/shared/components/leave-widget/leave-widget-absence-types-amount-taken.component',
   'leave-absences/shared/components/leave-widget/leave-widget-absence-types-available-balance.component',
   'leave-absences/shared/components/leave-widget/leave-widget-next-leave.component'
-], function (angular, _) {
+], function (angular, _, moment) {
   angular.module('leave-absences.components.leave-widget', [
     'common.components',
     'common.directives',
@@ -48,7 +49,7 @@ define([
     var vm = this;
 
     vm.absenceTypes = [];
-    vm.currentAbsencePeriod = null;
+    vm.absencePeriod = null;
     vm.jobContract = null;
     vm.loading = { childComponents: false, component: true };
     vm.leaveRequestStatuses = [];
@@ -87,6 +88,32 @@ define([
     }
 
     /**
+     * Finds the current absence period
+     *
+     * @param {Array} periods - An array of periods to filter for the current
+     * absence period.
+     * @return {AbsencePeriodInstance}
+     */
+    function findCurrentAbsencePeriod (periods) {
+      return _.find(periods, function (period) {
+        return period.current;
+      });
+    }
+
+    /**
+     * Finds the last absence period
+     *
+     * @param {Array} periods - An array of periods to filter for the last
+     * absence period.
+     * @return {AbsencePeriodInstance}
+     */
+    function findLastAbsencePeriod (periods) {
+      return _.chain(periods).sort(function (previous, current) {
+        return moment(previous.end_date).diff(current);
+      }).last().value();
+    }
+
+    /**
      * Initializes watchers for child components and events that make the leave
      * widget refresh.
      */
@@ -122,7 +149,7 @@ define([
       loadCurrentJobContract().then(function () {
         return $q.all([
           loadAbsenceTypes(),
-          loadCurrentAbsencePeriod(),
+          loadAbsencePeriod(),
           loadLeaveRequestTypes()
         ]);
       })
@@ -183,15 +210,15 @@ define([
     }
 
     /**
-     * Loads all absence periods and stores the current one.
+     * Loads all absence periods and stores the current one or the last absence
+     * period.
      *
      * @return {Promise}
      */
-    function loadCurrentAbsencePeriod () {
+    function loadAbsencePeriod () {
       return AbsencePeriod.all().then(function (periods) {
-        vm.currentAbsencePeriod = _.find(periods, function (period) {
-          return period.current;
-        });
+        vm.absencePeriod = findCurrentAbsencePeriod(periods) ||
+          findLastAbsencePeriod(periods);
       });
     }
   }
