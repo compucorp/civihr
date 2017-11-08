@@ -88,27 +88,39 @@ define([
     }
 
     /**
-     * Finds the current absence period
+     * Returns the current absence period
      *
-     * @param {Array} periods - An array of periods to filter for the current
+     * @param {Array} absencePeriods - An array of periods to filter for the last
      * absence period.
      * @return {AbsencePeriodInstance}
      */
-    function findCurrentAbsencePeriod (periods) {
-      return _.find(periods, function (period) {
+    function currentAbsencePeriod (absencePeriods) {
+      return _.find(absencePeriods, function (period) {
         return period.current;
       });
     }
 
     /**
-     * Finds the last absence period
+     * Returns the current absence period. If there is no current absence period
+     * it returns the last one.
      *
-     * @param {Array} periods - An array of periods to filter for the last
+     * @param {Array} absencePeriods - An array of periods to filter for the last
      * absence period.
      * @return {AbsencePeriodInstance}
      */
-    function findLastAbsencePeriod (periods) {
-      return _.chain(periods).sort(function (previous, current) {
+    function findAbsencePeriodToDisplay (absencePeriods) {
+      return currentAbsencePeriod(absencePeriods) || lastAbsencePeriod(absencePeriods);
+    }
+
+    /**
+     * Returns the last absence period
+     *
+     * @param {Array} absencePeriods - An array of periods to filter for the last
+     * absence period.
+     * @return {AbsencePeriodInstance}
+     */
+    function lastAbsencePeriod (absencePeriods) {
+      return _.chain(absencePeriods).sort(function (previous, current) {
         return moment(previous.end_date).diff(current);
       }).last().value();
     }
@@ -216,9 +228,10 @@ define([
      * @return {Promise}
      */
     function loadAbsencePeriod () {
-      return AbsencePeriod.all().then(function (periods) {
-        vm.absencePeriod = findCurrentAbsencePeriod(periods) ||
-          findLastAbsencePeriod(periods);
+      return AbsencePeriod.all()
+      .then(findAbsencePeriodToDisplay)
+      .then(function (currentOrLastPeriod) {
+        vm.absencePeriod = currentOrLastPeriod;
       });
     }
   }
