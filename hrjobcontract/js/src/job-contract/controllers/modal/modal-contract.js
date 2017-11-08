@@ -387,7 +387,7 @@ define([
         }).then(function (results) {
           $scope.$broadcast('hrjc-loader-hide');
           $modalInstance.close(results);
-          pubSub.publish('contract-refresh');
+          pubSub.publish('Contract::updated');
         }, function (reason) {
           $scope.$broadcast('hrjc-loader-hide');
           CRM.alert(reason, 'Error', 'error');
@@ -574,7 +574,7 @@ define([
           }).then(function (results) {
             $scope.$broadcast('hrjc-loader-hide');
             $modalInstance.close(results);
-            pubSub.publish('contract-refresh');
+            pubSub.publish('Contract::updated');
           });
         } else {
           $scope.$broadcast('hrjc-loader-hide');

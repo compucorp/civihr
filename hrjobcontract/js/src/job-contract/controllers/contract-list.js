@@ -204,11 +204,10 @@ define([
               if (!result.is_error) {
                 ContractService.updateHeaderInfo();
                 removeContractById($scope.contractCurrent, contractId) || removeContractById($scope.contractPast, contractId);
-                pubSub.publish('contract:deleted', {
+                pubSub.publish('Contract::deleted', {
                   contactId: settings.contactId,
                   contractId: contractId
                 });
-                pubSub.publish('contract-refresh');
               }
             });
           }

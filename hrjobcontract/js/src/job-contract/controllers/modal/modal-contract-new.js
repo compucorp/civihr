@@ -262,8 +262,7 @@ define([
             $scope.$broadcast('hrjc-loader-hide');
             $modalInstance.close(contract);
 
-            pubSub.publish('contract:created', settings.contactId);
-            pubSub.publish('contract-refresh');
+            pubSub.publish('Contract::created', settings.contactId);
           },
             function (reason) {
               CRM.alert(reason, 'Error', 'error');
