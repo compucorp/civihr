@@ -8,16 +8,19 @@
  * @return array API result descriptor
  */
 function civicrm_api3_emergency_contact_delete($params) {
-  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
-}
+  civicrm_api3_verify_mandatory($params, NULL, ['id']);
+  $id = $params['id'];
 
-/**
- * EmergencyContact.get API
- *
- * @param array $params
- *
- * @return array API result descriptor
- */
-function civicrm_api3_emergency_contact_get($params) {
-  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $contactID = CRM_Core_Session::getLoggedInContactID();
+  // todo permissions
+
+  $query = 'DELETE FROM civicrm_value_emergency_contacts_21 WHERE id = %1';
+  $result = CRM_Core_DAO::executeQuery($query, [1 => [$id, 'Integer']]);
+
+  if (1 !== $result->affectedRows()) {
+    $error = sprintf('Emergency contact with ID \'%d\' not found', $id);
+    return civicrm_api3_create_error($error);
+  }
+
+  return civicrm_api3_create_success();
 }

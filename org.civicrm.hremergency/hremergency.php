@@ -106,16 +106,3 @@ function hremergency_civicrm_caseTypes(&$caseTypes) {
 function hremergency_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _hremergency_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
-
-/**
- * Implements hook_civicrm_entityTypes().
- *
- * @param array $entityTypes
- */
-function hremergency_civicrm_entityTypes(&$entityTypes) {
-  $entityTypes[] = [
-    'name'  => 'EmergencyContact',
-    'class' => 'CRM_Hremergency_DAO_EmergencyContact',
-    'table' => 'civicrm_value_emergency_contacts_21',
-  ];
-}
