@@ -93,42 +93,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals($loggedInUserID, $leavePeriodEntitlement->editor_id);
   }
 
-  public function testLeavePeriodEntitlementCreatedDateIsTheCurrentDateWhenCreatingEntitlement() {
-    $leavePeriodEntitlement = LeavePeriodEntitlement::create([
-      'period_id' => 1,
-      'type_id' => 1,
-      'contact_id' => 1,
-      'created_date' => CRM_Utils_Date::processDate('2016-01-01')
-    ]);
-
-    $leavePeriodEntitlement = LeavePeriodEntitlement::findById($leavePeriodEntitlement->id);
-    $now = new DateTime('now');
-    $entitlementCreatedDate = new DateTime($leavePeriodEntitlement->created_date);
-
-    $this->assertEquals($now, $entitlementCreatedDate, '', 5);
-  }
-
-  public function testLeavePeriodEntitlementCreatedDateIsTheCurrentDateWhenUpdatingEntitlement() {
-    $params = [
-      'period_id' => 1,
-      'type_id' => 1,
-      'contact_id' => 1,
-    ];
-
-    $leavePeriodEntitlement = LeavePeriodEntitlement::create($params);
-    $params['id'] = $leavePeriodEntitlement->id;
-    $params['created_date'] = CRM_Utils_Date::processDate('2016-01-01');
-
-    //update the entitlement
-    $leavePeriodEntitlement =  LeavePeriodEntitlement::create($params);
-
-    $leavePeriodEntitlement = LeavePeriodEntitlement::findById($leavePeriodEntitlement->id);
-    $now = new DateTime('now');
-    $entitlementCreatedDate = new DateTime($leavePeriodEntitlement->created_date);
-
-    $this->assertEquals($now, $entitlementCreatedDate, '', 5);
-  }
-
   public function testBalanceShouldNotIncludeOpenLeaveRequests() {
     $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
 
@@ -412,8 +376,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       $proRata,
       $publicHolidays
     );
+    $createdDate = new DateTime();
 
-    LeavePeriodEntitlement::saveFromCalculation($calculation);
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate);
 
     $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
       $this->contract['contact_id'],
@@ -482,8 +447,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       $broughtForward,
       $proRata
     );
+    $createdDate = new DateTime();
 
-    LeavePeriodEntitlement::saveFromCalculation($calculation);
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate);
 
     $periodEntitlement2 = LeavePeriodEntitlement::getPeriodEntitlementForContact(
       $this->contract['contact_id'],
@@ -515,7 +481,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     );
 
     $overriddenEntitlement = 50;
-    LeavePeriodEntitlement::saveFromCalculation($calculation, $overriddenEntitlement);
+    $createdDate = new DateTime();
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate, $overriddenEntitlement);
 
     $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
       $contact['id'],
@@ -552,7 +519,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     );
 
     $overriddenEntitlement = 5;
-    LeavePeriodEntitlement::saveFromCalculation($calculation, $overriddenEntitlement);
+    $createdDate = new DateTime();
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate, $overriddenEntitlement);
 
     $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
       $contact['id'],
@@ -592,9 +560,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     );
 
     $comment = 'Lorem ipsum dolor sit amet...';
-    LeavePeriodEntitlement::saveFromCalculation($calculation, null, $comment);
+    $createdDate = new DateTime();
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate, null, $comment);
 
-    $dateTimeNow = new DateTime('now');
     $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
       $contact['id'],
       $period->id,
@@ -603,7 +571,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
     $this->assertNotNull($periodEntitlement);
     $this->assertEquals($comment, $periodEntitlement->comment);
-    $this->assertEquals($dateTimeNow, new DateTime($periodEntitlement->created_date), '', 10);
+    $this->assertEquals($createdDate, new DateTime($periodEntitlement->created_date));
     $this->assertEquals($userId, $periodEntitlement->editor_id);
 
     $this->unregisterCurrentLoggedInContactFromSession();
@@ -622,7 +590,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       'contact_id' => $contact['id'],
       'period_id' => $period->id,
       'type_id' => $type->id,
-      'comment' => 'This is a sample comment'
+      'comment' => 'This is a sample comment',
+      'created_date' => CRM_Utils_Date::processDate('2016-05-08 11:50')
     ]);
 
     $entitlementBalance = 3;
@@ -639,8 +608,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     );
 
     $comment = 'Lorem ipsum dolor sit amet...';
+    $createdDate = new DateTime();
     //This should create a record in the entitlement log table
-    LeavePeriodEntitlement::saveFromCalculation($calculation, null, $comment);
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate, null, $comment);
 
     $leavePeriodEntitlementLog = new LeavePeriodEntitlementLog();
     $leavePeriodEntitlementLog->entitlement_id = $periodEntitlement1->id;
@@ -689,7 +659,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     );
 
     $comment = 'Lorem ipsum dolor sit amet...';
-    LeavePeriodEntitlement::saveFromCalculation($calculation, null, $comment);
+    $createdDate = new DateTime('2017-06-05 13:00:43');
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate, null, $comment);
     $leavePeriodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
       $contact['id'],
       $period->id,
@@ -697,6 +668,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     );
 
     $this->assertNotNull($leavePeriodEntitlement->id);
+    $this->assertEquals($createdDate, new DateTime($leavePeriodEntitlement->created_date));
 
     $leavePeriodEntitlementLog = new LeavePeriodEntitlementLog();
     $leavePeriodEntitlementLog->entitlement_id = $leavePeriodEntitlement->id;
