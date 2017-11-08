@@ -112,7 +112,7 @@ define([
         });
 
         it('has the calculation unit name', function () {
-          expect(entitlement.calculation_unit).toBe('days');
+          expect(entitlement.calculation_unit).toMatch(/days|hours/);
         });
 
         it('has comment', function () {
@@ -151,26 +151,13 @@ define([
      * Compiles the controller
      */
     function compileComponent () {
-      absenceTypes = getAbsenceTypeMocks();
-
+      absenceTypes = absenceTypeMocked.getAllAndTheirCalculationUnits();
       controller = $componentController('annualEntitlements', null, {
         contactId: contactId,
         absenceTypes: absenceTypes
       });
-      $rootScope.$digest();
-    }
 
-    /**
-     * Returns a list of absence types mocks that have a calculation unit name.
-     *
-     * @return {Array}
-     */
-    function getAbsenceTypeMocks () {
-      return absenceTypeMocked.all().values.map(function (absenceType) {
-        return _.extend({
-          'calculation_unit_name': 'days'
-        }, absenceType);
-      });
+      $rootScope.$digest();
     }
 
     /**

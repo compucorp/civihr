@@ -164,10 +164,8 @@ define([
             var absenceTypeCalculationUnits, entitlementCalculationUnits;
 
             beforeEach(function () {
-              absenceTypeCalculationUnits = _.pluck(ctrl.absenceTypes,
-                'calculation_unit_name');
-              entitlementCalculationUnits = _.pluck(ctrl.changeLogRows[0]
-                .entitlements, 'calculation_unit');
+              absenceTypeCalculationUnits = _.pluck(ctrl.absenceTypes, 'calculation_unit_name');
+              entitlementCalculationUnits = _.pluck(ctrl.changeLogRows[0].entitlements, 'calculation_unit');
             });
 
             it('stores the calculation unit name for the entitlement', function () {

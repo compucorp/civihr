@@ -79,7 +79,7 @@ define([
      *
      * @param {Object} changeLogRow - a row inside the changeLogRows array.
      * @param {Function} iterationFunction - the function that will be used
-     * to iterate over each one of the entitlements. The signatura for this
+     * to iterate over each one of the entitlements. The signature for this
      * function is:
      * - {EntitlementInstance} entitlement - the current entitlement being iterated.
      * - {Array} previousEntitlementValues - An array with the previous row's
@@ -179,7 +179,7 @@ define([
     }
 
     /**
-     * Selects the entitlement rows to be highlighlighted based on the one
+     * Selects the entitlement rows to be highlighted based on the one
      * that has comments.
      */
     function highlightEntitlementWithComments () {
@@ -188,14 +188,14 @@ define([
       for (var i = vm.changeLogRows.length - 1; i >= 0; i--) {
         changeLogRow = vm.changeLogRows[i];
         entitlementComments = _.pluck(changeLogRow.entitlements, 'comment');
-        validEntitlementComments = _.compact(entitlementComments).length;
+        validEntitlementComments = _.compact(entitlementComments);
 
-        if (validEntitlementComments === 1) {
+        if (validEntitlementComments.length === 1) {
           var commentIndex = _.findIndex(entitlementComments, 'length');
 
           changeLogRow.highlightedEntitlement = changeLogRow
             .entitlements[commentIndex];
-        } else if (validEntitlementComments > 1) {
+        } else if (validEntitlementComments.length > 1) {
           splitEntitlementCommentsIntoMultipleRows(i);
         }
       }

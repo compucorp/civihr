@@ -1,8 +1,9 @@
 /* eslint-env amd */
 
 define([
-  'common/lodash'
-], function (_) {
+  'common/lodash',
+  'mocks/data/option-group-mock-data'
+], function (_, OptionGroupData) {
   var allData = {
     'is_error': 0,
     'version': 3,
@@ -135,6 +136,27 @@ define([
     findByKeyValue: function (key, value) {
       return _.find(allData.values, function (absenceType) {
         return absenceType[key] === value;
+      });
+    },
+    /**
+     * Returns a list of absence types mocks and their calculation unit names
+     * and labels.
+     *
+     * @return {Array}
+     */
+    getAllAndTheirCalculationUnits: function () {
+      var calculationUnits, unit;
+
+      calculationUnits = OptionGroupData.getCollection('hrleaveandabsences_absence_type_calculation_unit');
+      calculationUnits = _.indexBy(calculationUnits, 'value');
+
+      return this.all().values.map(function (absenceType) {
+        unit = calculationUnits[absenceType.calculation_unit];
+
+        return _.extend({
+          calculation_unit_name: unit.name,
+          calculation_unit_label: unit.label
+        }, absenceType);
       });
     }
   };
