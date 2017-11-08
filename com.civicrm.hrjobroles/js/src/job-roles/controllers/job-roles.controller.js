@@ -74,6 +74,7 @@ define([
     vm.select = select;
     vm.showRowType = showRowType;
     vm.showSave = showSave;
+    vm.status = '';
     vm.today = today;
     vm.updateAdditionalRowType = updateAdditionalRowType;
     vm.updateRole = updateRole;
@@ -230,7 +231,7 @@ define([
             title: data.values[i]['title'],
             start_date: data.values[i]['period_start_date'],
             end_date: data.values[i]['period_end_date'],
-            status: status,
+            status: vm.status,
             is_current: data.values[i]['is_current'],
             revisions: data.values[i]['revisions']
           };
@@ -634,7 +635,9 @@ define([
     function initData (roleId, formId, data) {
       // Check if we have the array already
       if (typeof vm.editData[roleId] === 'undefined') {
-        vm.editData[roleId] = {};
+        vm.editData[roleId] = {
+          'role_id': roleId
+        };
       }
 
       if (formId === 'funders') {
@@ -709,9 +712,9 @@ define([
         var presentJobContract = !(typeof jobRole.job_contract_id === 'undefined');
 
         if (invalidDate && presentJobContract && bothJustSet) {
-          vm.onContractEdited(null, role_id).then(function () {
+          vm.onContractEdited(null, jobRole.job_contract_id).then(function () {
             $scope.$apply();
-            return vm.updateRole(role_id);
+            return vm.updateRole(jobRole.role_id);
           });
         } else {
           formatRoleDates(jobRole, {
