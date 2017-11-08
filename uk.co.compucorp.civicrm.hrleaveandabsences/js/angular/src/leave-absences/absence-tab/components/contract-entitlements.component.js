@@ -8,6 +8,7 @@ define([
 ], function (_, moment, components) {
   components.component('contractEntitlements', {
     bindings: {
+      absenceTypes: '<',
       contactId: '<'
     },
     templateUrl: ['settings', function (settings) {
@@ -22,18 +23,12 @@ define([
 
     var vm = this;
 
-    vm.absenceTypes = [];
     vm.contracts = [];
     vm.loading = { contracts: true };
 
     (function init () {
-      return $q.all([
-        loadAbsenceTypes(),
-        DateFormat.getDateFormat()
-      ])
-      .then(function () {
-        return loadContracts();
-      })
+      DateFormat.getDateFormat()
+      .then(loadContracts)
       .finally(function () {
         vm.loading.contracts = false;
       });
@@ -49,18 +44,6 @@ define([
       var dateFormat = HRSettings.DATE_FORMAT.toUpperCase();
 
       return date ? moment(date).format(dateFormat) : '';
-    }
-
-    /**
-     * Loads absence types
-     *
-     * @return {Promise}
-     */
-    function loadAbsenceTypes () {
-      return AbsenceType.all()
-        .then(function (data) {
-          vm.absenceTypes = data;
-        });
     }
 
     /**
@@ -92,7 +75,8 @@ define([
           })[0];
 
           return {
-            amount: leave ? leave.leave_amount : ''
+            amount: leave ? leave.leave_amount : '',
+            calculation_unit: absenceType['calculation_unit_name']
           };
         });
 

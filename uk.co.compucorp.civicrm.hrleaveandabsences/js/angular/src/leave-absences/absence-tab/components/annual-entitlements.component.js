@@ -9,16 +9,20 @@
   ], function (_, moment, components) {
     components.component('annualEntitlements', {
       bindings: {
+        absenceTypes: '<',
         contactId: '<'
       },
       templateUrl: ['settings', function (settings) {
         return settings.pathTpl + 'components/annual-entitlements.html';
       }],
       controllerAs: 'entitlements',
-      controller: ['$log', '$q', 'AbsenceType', 'AbsencePeriod', 'Entitlement', 'Contact', 'notificationService', controller]
+      controller: ['$log', '$q', '$rootElement', '$uibModal', 'AbsenceType',
+        'AbsencePeriod', 'Entitlement', 'Contact', 'notificationService',
+        controller]
     });
 
-    function controller ($log, $q, AbsenceType, AbsencePeriod, Entitlement, Contact, notification) {
+    function controller ($log, $q, $rootElement, $uibModal, AbsenceType, AbsencePeriod,
+      Entitlement, Contact, notification) {
       $log.debug('Component: annual-entitlements');
 
       var vm = this;
@@ -26,21 +30,14 @@
       var allEntitlements = [];
 
       vm.absencePeriods = [];
-      vm.absenceTypes = [];
       vm.loading = { absencePeriods: true };
       vm.editEntitlementsPageUrl = getEditEntitlementsPageURL(vm.contactId);
 
+      vm.openAnnualEntitlementChangeLog = openAnnualEntitlementChangeLog;
+
       (function init () {
-        return $q.all([
-          loadAbsenceTypes(),
-          loadEntitlements()
-        ])
-        .then(function () {
-          return loadCommentsAuthors();
-        })
-        .then(function () {
-          return loadAbsencePeriods();
-        })
+        loadEntitlements().then(loadCommentsAuthors)
+        .then(loadAbsencePeriods)
         .finally(function () {
           vm.loading.absencePeriods = false;
         });
@@ -76,18 +73,6 @@
       }
 
       /**
-       * Loads absence types
-       *
-       * @return {Promise}
-       */
-      function loadAbsenceTypes () {
-        return AbsenceType.all()
-          .then(function (data) {
-            vm.absenceTypes = data;
-          });
-      }
-
-      /**
        * Loads entitlements comments authors
        *
        * @return {Promise}
@@ -116,6 +101,23 @@
       }
 
       /**
+       * Opens the Annual entitlement change log modal for the current
+       * contact and the given period.
+       */
+      function openAnnualEntitlementChangeLog (periodId) {
+        $uibModal.open({
+          appendTo: $rootElement.children().eq(0),
+          templateUrl: 'annual-entitlement-change-log-modal',
+          controller: ['$uibModalInstance', function ($modalInstance) {
+            this.contactId = vm.contactId;
+            this.dismiss = $modalInstance.dismiss;
+            this.periodId = periodId;
+          }],
+          controllerAs: 'modal'
+        });
+      }
+
+      /**
        * Processes entitlements from data and sets them to the controller
        *
        * @param {Object} absencePeriods
@@ -141,6 +143,7 @@
 
             return leave ? {
               amount: leave.value,
+              calculation_unit: absenceType['calculation_unit_name'],
               comment: leave.comment ? {
                 message: leave.comment,
                 author_name: contacts[leave.editor_id].display_name,
@@ -150,7 +153,8 @@
           });
 
           return {
-            period: absencePeriod.title,
+            id: absencePeriod.id,
+            title: absencePeriod.title,
             entitlements: entitlements
           };
         });

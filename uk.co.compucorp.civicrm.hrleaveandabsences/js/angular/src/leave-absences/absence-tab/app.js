@@ -43,6 +43,7 @@ define([
   'leave-absences/absence-tab/components/absence-tab-report.component',
   'leave-absences/absence-tab/components/absence-tab-entitlements.component',
   'leave-absences/absence-tab/components/absence-tab-work-patterns.component',
+  'leave-absences/absence-tab/components/annual-entitlement-change-log.component',
   'leave-absences/absence-tab/components/annual-entitlements.component',
   'leave-absences/absence-tab/components/contract-entitlements.component',
   'leave-absences/absence-tab/modules/config'
