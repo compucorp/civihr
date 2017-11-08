@@ -2,8 +2,9 @@
 
 define([
   'common/angular',
+  'common/lodash',
   'common/moment'
-], function (angular, moment) {
+], function (angular, _, moment) {
   'use strict';
 
   KeyDatesController.__name = 'KeyDatesController';
@@ -50,25 +51,27 @@ define([
      */
     function getContacts () {
       resetKeyDates();
+
       Contract.get()
         .then(function (response) {
-          angular.forEach(response, function (contract) {
-            addContractDates(contract);
+          if (!_.isEmpty(response)) {
+            angular.forEach(response, function (contract) {
+              addContractDates(contract);
 
-            if (contract.is_current === '1') {
-              vm.activeContracts++;
-            }
-          });
+              if (contract.is_current === '1') {
+                vm.activeContracts++;
+              }
+            });
+          }
 
           return JobRole.get();
         })
         .then(function (response) {
           angular.forEach(response, function (role) {
             var endDate = moment(role.end_date);
+            var isInFuture = (!endDate.isValid()) ? isDateInFuture(endDate) : true;
 
-            if (!endDate.isValid() || isDateInFuture(endDate)) {
-              vm.activeRoles++;
-            }
+            isInFuture && vm.activeRoles++;
           });
         })
         .finally(function () {
@@ -103,7 +106,6 @@ define([
       var events = [
         'Contract::created',
         'Contract::updated',
-        'Contract::deleted',
         'JobRole::created',
         'JobRole::updated',
         'JobRole::deleted'
@@ -111,6 +113,11 @@ define([
 
       events.forEach(function (event) {
         pubSub.subscribe(event, getContacts);
+      });
+
+      pubSub.subscribe('Contract::deleted', function (contract) {
+        Contract.removeContract(contract);
+        getContacts();
       });
     }
   }

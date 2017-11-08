@@ -20,6 +20,7 @@ define([
     factory.get = get;
     factory.getCollection = getCollection;
     factory.getContracts = getContracts;
+    factory.removeContract = removeContract;
     factory.getContractDetails = getContractDetails;
     factory.getLengthOfService = getLengthOfService;
     factory.getOptions = getOptions;
@@ -74,13 +75,18 @@ define([
     }
 
     /**
+     * Returns collection of contracts
      * @returns {*}
      */
     function get () {
-      /** @type {(contractService|ModelService)} */
-      return init().then(function () {
-        return factory.getCollection();
-      });
+      return init()
+        .then(function () {
+          return factory.getCollection();
+        })
+        .catch(function (response) {
+          // return empty contracts if non are available
+          return [];
+        });
     }
 
     function getCollection () {
@@ -174,7 +180,7 @@ define([
       }
 
       return promiseCache[cacheKey];
-    };
+    }
 
     /**
      * Get an object containing 'days', 'months' and 'years' keys with
@@ -247,15 +253,14 @@ define([
 
     function init () {
       var deferred = $q.defer();
-      if (_.isEmpty(factory.collection.get())) {
-        factory.getContracts()
-          .then(assembleContracts)
-          .finally(function () {
-            deferred.resolve();
-          });
-      } else {
-        deferred.resolve();
-      }
+      factory.getContracts()
+        .then(assembleContracts)
+        .catch(function (response) {
+          deferred.reject(response);
+        })
+        .finally(function () {
+          deferred.resolve();
+        });
 
       return deferred.promise;
     }
@@ -274,6 +279,9 @@ define([
         },
         get: function () {
           return this.items;
+        },
+        remove: function (id) {
+          delete (this.items[id]);
         }
       };
     }
@@ -285,6 +293,15 @@ define([
       contracts = [];
       promiseCache = {};
       initializeCollection();
+    }
+
+    /**
+     * Remove a contrats from a collection of contracts
+     * @param  {Object} contract
+     */
+    function removeContract (contract) {
+      _.remove(contracts, { id: contract.contractId });
+      factory.collection.remove(contract.contractId);
     }
   }
 
