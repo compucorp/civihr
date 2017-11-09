@@ -18,7 +18,11 @@ class EmergencyContactFabricator {
     $allEmergencyContactData = self::getEmergencyContactData($contactID);
     $returnID = self::getMaxEmergencyContactID($allEmergencyContactData);
 
-    $return = ['id' => $returnID];
+    $return = [
+      'id' => $returnID,
+      'entityID' => $contactID
+    ];
+
     foreach ($allEmergencyContactData as $fieldID => $fieldValues) {
       $fieldName = self::getEmergencyContactFieldName($fieldID);
       $return[$fieldName] = $fieldValues[$returnID];
