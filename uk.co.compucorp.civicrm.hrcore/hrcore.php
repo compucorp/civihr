@@ -14,6 +14,7 @@ use CRM_HRCore_Listener_Page_CaseDashboard as CaseDashboardPageListener;
 use CRM_HRCore_Listener_Page_Dashlet_CaseDashboard as CaseDashboardPageDashletListener;
 use CRM_HRCore_Listener_Form_Contact as ContactFormListener;
 use CRM_HRCore_Listener_Form_ContactImportMapField as ContactImportMapFieldFormListener;
+use CRM_HRCore_Listener_Form_ProfileEdit as ProfileEditFormListener;
 use CRM_HRCore_Listener_Form_Admin_Extensions as ExtensionsFormAdminListener;
 use CRM_HRCore_Listener_Form_Admin_Options as OptionsFormAdminListener;
 use CRM_HRCore_Listener_Form_Admin_Localization as LocalizationFormAdminListener;
@@ -586,26 +587,17 @@ function _hrcore_hrui_civicrm_navigationMenu(&$params) {
 }
 
 function _hrcore_hrui_civicrm_alterContent(&$content, $context, $tplName, &$object) {
-  $smarty = CRM_Core_Smarty::singleton();
-
   $listeners = [
     new ContactSummaryPageListener($object),
     new CaseDashboardPageListener($object),
     new CaseDashboardPageDashletListener($object),
     new ContactImportMapFieldFormListener($object),
     new ContactFormListener($object),
+    new ProfileEditFormListener($object),
   ];
 
   foreach ($listeners as $listener) {
     $listener->onAlterContent($content);
-  }
-
- if ($tplName == 'CRM/Profile/Form/Edit.tpl' && $smarty->_tpl_vars['context'] == 'dialog' && $smarty->_tpl_vars['ufGroupName'] == 'new_individual') {
-   $content .="<script type=\"text/javascript\">
-     CRM.$(function($) {
-       $('.ui-dialog').css({'top':'10%'});
-     });
-   </script>";
   }
 
   if ($tplName === 'CRM/Admin/Form/Setting/Localization.tpl') {
