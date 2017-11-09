@@ -4,6 +4,7 @@ use Tests\CiviHR\HREmergency\Fabricator\EmergencyContactFabricator;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
+use CRM_Hremergency_Service_EmergencyContactService as EmergencyContactService;
 
 /**
  * @group headless
@@ -22,7 +23,7 @@ class EmergencyContactServiceTest extends \PHPUnit_Framework_TestCase
     $name = 'Kevin Bacon';
     $created = EmergencyContactFabricator::fabricate($contact['id'], $name);
 
-    $service = Civi::container()->get('emergency_contact.service');
+    $service = new EmergencyContactService();
     $found = $service->find($created['id']);
 
     $this->assertEquals($name, $found['Name']);
@@ -33,7 +34,7 @@ class EmergencyContactServiceTest extends \PHPUnit_Framework_TestCase
     $name = 'Kevin Bacon';
     $created = EmergencyContactFabricator::fabricate($contact['id'], $name);
 
-    $service = Civi::container()->get('emergency_contact.service');
+    $service = new EmergencyContactService();
     $service->delete($created['id']);
 
     $this->assertNull($service->find($created['id']));
