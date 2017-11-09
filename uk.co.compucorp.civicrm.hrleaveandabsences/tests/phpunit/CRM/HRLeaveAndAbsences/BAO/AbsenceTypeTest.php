@@ -852,7 +852,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     ]);
 
 
-    $this->assertTrue(AbsenceType::isCalculationUnitInHours($absenceType->id));
+    $this->assertTrue($absenceType->isCalculationUnitInHours());
   }
 
   public function testIsCalculationUnitInHoursReturnsFalseWhenCalculationUnitIsNotInHours() {
@@ -861,6 +861,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     ]);
 
 
-    $this->assertFalse(AbsenceType::isCalculationUnitInHours($absenceType->id));
+    $this->assertFalse($absenceType->isCalculationUnitInHours());
   }
 }

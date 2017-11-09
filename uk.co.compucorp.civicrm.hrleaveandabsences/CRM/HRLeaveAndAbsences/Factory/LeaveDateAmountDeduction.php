@@ -15,7 +15,8 @@ class CRM_HRLeaveAndAbsences_Factory_LeaveDateAmountDeduction {
    * @return CRM_HRLeaveAndAbsences_Service_LeaveDateAmountDeduction
    */
   public static function createForAbsenceType($absenceTypeID) {
-    $isCalculationUnitInHours = AbsenceType::isCalculationUnitInHours($absenceTypeID);
+    $absenceType = AbsenceType::findById($absenceTypeID);
+    $isCalculationUnitInHours = $absenceType->isCalculationUnitInHours();
 
     if($isCalculationUnitInHours) {
       return new LeaveDateHoursAmountDeduction();

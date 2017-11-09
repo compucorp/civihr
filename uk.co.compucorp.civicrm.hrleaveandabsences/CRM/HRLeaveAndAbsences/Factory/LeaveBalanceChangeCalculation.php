@@ -17,7 +17,8 @@ class CRM_HRLeaveAndAbsences_Factory_LeaveBalanceChangeCalculation {
    * @return CRM_HRLeaveAndAbsences_Service_LeaveBalanceChangeCalculation
    */
   public static function create(LeaveRequest $leaveRequest) {
-    $isCalculationUnitInHours = AbsenceType::isCalculationUnitInHours($leaveRequest->type_id);
+    $absenceType = AbsenceType::findById($leaveRequest->type_id);
+    $isCalculationUnitInHours = $absenceType->isCalculationUnitInHours();
 
     if($isCalculationUnitInHours) {
       return new LeaveHoursBalanceChangeCalculation();

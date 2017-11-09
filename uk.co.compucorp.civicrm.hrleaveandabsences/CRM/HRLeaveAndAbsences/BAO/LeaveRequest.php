@@ -87,12 +87,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateRequestType($params);
     self::validateTOILFieldsBasedOnRequestType($params);
     self::validateSicknessFieldsBasedOnRequestType($params);
-    self::validateLeaveRequestFieldsBasedOnAbsenceTypeCalculationUnit($params);
+    list($absenceType, $absencePeriod) = self::loadCommonObjects($params);
+
+    self::validateLeaveRequestFieldsBasedOnAbsenceTypeCalculationUnit($params, $absenceType);
     self::validateStartDateNotGreaterThanEndDate($params);
     self::validateNoOverlappingLeaveRequests($params);
     self::validateLeaveDatesDoesNotOverlapContractsWithLapses($params);
-
-    list($absenceType, $absencePeriod) = self::loadCommonObjects($params);
     self::validateAbsenceTypeIsActiveAndValid($params, $absenceType);
     self::validateTOILRequest($params, $absenceType, $absencePeriod);
     self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params, $absenceType);
@@ -219,11 +219,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * Absence Type calculation unit.
    *
    * @param array $params
+   * @param AbsenceType $absenceType
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateLeaveRequestFieldsBasedOnAbsenceTypeCalculationUnit($params) {
-    $isCalculationUnitInHours = AbsenceType::isCalculationUnitInHours($params['type_id']);
+  private static function validateLeaveRequestFieldsBasedOnAbsenceTypeCalculationUnit($params, $absenceType) {
+    $isCalculationUnitInHours = $absenceType->isCalculationUnitInHours();
     $hoursUnitRequiredFields = ['from_date_amount', 'to_date_amount'];
     $daysUnitRequiredFields = ['from_date_type', 'to_date_type'];
 
@@ -287,7 +288,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
 
-    self::validateTOILToAccrueIsAValidOptionValue($params);
+    self::validateTOILToAccrueIsAValidOptionValue($params, $absenceType);
     self::validateTOILPastDays($params, $absenceType);
     self::validateTOILToAccruedAmountIsValid($params, $absenceType, $absencePeriod);
   }
@@ -296,12 +297,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * Validates if the value passed to the TOIL To Accrue field is one of the
    * options available on the hrleaveandabsences_toil_amounts option group and
    * is also a numeric value.
+   * If TOIL is requested in hours, this validation is not applicable since a
+   * user can request TOIL in hours based on a user imputed value.
    *
    * @param array $params
+   * @param AbsenceType $absenceType
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateTOILToAccrueIsAValidOptionValue($params) {
+  private static function validateTOILToAccrueIsAValidOptionValue($params, $absenceType) {
+    if($absenceType->isCalculationUnitInHours()) {
+      return;
+    }
+
     $toilAmountOptions = array_flip(self::buildOptions('toil_to_accrue', 'validate'));
     if(!in_array($params['toil_to_accrue'], $toilAmountOptions) || !is_numeric($params['toil_to_accrue'])) {
       throw new InvalidLeaveRequestException(
@@ -373,10 +381,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       }
     }
 
+    $unit = $absenceType->isCalculationUnitInHours() ? 'hours' : 'days';
     $maxLeaveAccrual = $absenceType->max_leave_accrual;
     if ($totalProjectedToilForPeriod > $maxLeaveAccrual && !$unlimitedAccrual) {
       throw new InvalidLeaveRequestException(
-        'The maximum amount of leave that you can accrue is '. round($maxLeaveAccrual, 1) .' days. Please modify the dates of this request',
+        'The maximum amount of leave that you can accrue is '. round($maxLeaveAccrual, 1) .' '. $unit . '. Please modify the dates of this request',
         'leave_request_toil_amount_more_than_maximum_for_absence_type',
         'toil_to_accrue'
       );
@@ -547,7 +556,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $currentBalance = $leavePeriodEntitlement->getBalance($requestsToExcludeFromBalance);
 
-    $unit = AbsenceType::isCalculationUnitInHours($absenceType->id) ? 'hours' : 'days';
+    $unit = $absenceType->isCalculationUnitInHours() ? 'hours' : 'days';
     if(!$absenceType->allow_overuse && ($currentBalance + $leaveRequestBalance) < 0) {
       throw new InvalidLeaveRequestException(
         'There are only '. $currentBalance .' '. $unit . ' leave available. This request cannot be made or approved',
@@ -970,7 +979,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $leaveRequestDayTypeOptionsGroup = self::getLeaveRequestDayTypeOptionsGroup();
 
-    $isCalculationUnitInHours = AbsenceType::isCalculationUnitInHours($leaveRequest->type_id);
+    $absenceType = AbsenceType::findById($leaveRequest->type_id);
+    $isCalculationUnitInHours = $absenceType->isCalculationUnitInHours();
     $dateDeductionService = LeaveDateAmountDeductionFactory::createForAbsenceType($leaveRequest->type_id);
     $contactWorkPatternService = new ContactWorkPatternService();
 
