@@ -117,7 +117,8 @@
           expect(OptionGroup.valuesOf).toHaveBeenCalledWith([
             'hrleaveandabsences_absence_type_calculation_unit',
             'hrleaveandabsences_leave_request_day_type',
-            'hrleaveandabsences_leave_request_status'
+            'hrleaveandabsences_leave_request_status',
+            'hrleaveandabsences_toil_amounts'
           ]);
         });
 
@@ -140,6 +141,10 @@
 
           it('stores leave request statuses', function () {
             expect(controller.supportData.leaveRequestStatuses.length).not.toBe(0);
+          });
+
+          it('stores toil amounts', function () {
+            expect(controller.supportData.toilAmounts).toBeDefined();
           });
         });
 
