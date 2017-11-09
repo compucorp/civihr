@@ -13,7 +13,9 @@ use CRM_HRCore_Listener_Page_ContactSummary as ContactSummaryPageListener;
 use CRM_HRCore_Listener_Page_CaseDashboard as CaseDashboardPageListener;
 use CRM_HRCore_Listener_Page_Dashlet_CaseDashboard as CaseDashboardPageDashletListener;
 use CRM_HRCore_Listener_Form_Contact as ContactFormListener;
-use CRM_HRCore_Listener_Form_Admin_Extensions as ExtensionsFormListener;
+use CRM_HRCore_Listener_Form_Admin_Extensions as ExtensionsFormAdminListener;
+use CRM_HRCore_Listener_Form_Admin_Options as OptionsFormAdminListener;
+use CRM_HRCore_Listener_Form_Admin_Localization as LocalizationFormAdminListener;
 
 /**
  * Implements hook_civicrm_config().
@@ -379,19 +381,13 @@ function _hrcore_hrui_civicrm_buildForm($formName, &$form) {
 
   $listeners = [
     new ContactFormListener($form),
-    new ExtensionsFormListener($form),
+    new ExtensionsFormAdminListener($form),
+    new OptionsFormAdminListener($form),
+    new LocalizationFormAdminListener($form),
   ];
 
   foreach ($listeners as $listener) {
     $listener->onBuildForm();
-  }
-
-  if ($formName === 'CRM_Admin_Form_Options' && $form->elementExists('value')) {
-    $form->removeElement('value');
-  }
-
-  if ($form instanceof CRM_Admin_Form_Setting_Localization) {
-    $form->removeElement('makeMultilingual');
   }
 }
 
