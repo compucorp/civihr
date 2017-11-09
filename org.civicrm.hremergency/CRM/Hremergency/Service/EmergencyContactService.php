@@ -29,14 +29,9 @@ class CRM_Hremergency_Service_EmergencyContactService {
    * @param int $id
    */
   public function delete($id) {
-    $params = [1 => [$id, 'Integer']];
-    $query = "DELETE FROM $this->tableName WHERE id = %1";
-    $result = CRM_Core_DAO::executeQuery($query, $params);
-
-    if (1 !== $result->affectedRows()) {
-      $error = sprintf("Could not delete emergency contact with ID '%d'", $id);
-      throw new API_Exception($error);
-    }
+    $dao = CRM_Core_BAO_CustomGroup::class;
+    $groupID = CRM_Core_DAO::getFieldValue($dao, 'Emergency_Contacts', 'id', 'name');
+    CRM_Core_BAO_CustomValue::deleteCustomValue($id, $groupID);
   }
 
 }
