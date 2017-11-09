@@ -280,7 +280,8 @@ function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
  * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_leave_request_calculateBalanceChange($params) {
-  $calculationUnitInHours = CRM_HRLeaveAndAbsences_BAO_AbsenceType::isCalculationUnitInHours($params['type_id']);
+  $absenceType = CRM_HRLeaveAndAbsences_BAO_AbsenceType::findById($params['type_id']);
+  $calculationUnitInHours = $absenceType->isCalculationUnitInHours();
 
   if(!$calculationUnitInHours) {
     if(empty($params['from_date_type']) || empty($params['to_date_type'])) {
@@ -794,7 +795,9 @@ function _civicrm_api3_leave_request_set_time_for_leave_dates(&$params) {
     return;
   }
 
-  if(CRM_HRLeaveAndAbsences_BAO_AbsenceType::isCalculationUnitInHours($params['type_id'])) {
+  $absenceType = CRM_HRLeaveAndAbsences_BAO_AbsenceType::findById($params['type_id']);
+
+  if($absenceType->isCalculationUnitInHours()) {
     return;
   }
 
