@@ -22,8 +22,6 @@ function _civicrm_api3_contact_deleteemergencycontact_spec(&$spec) {
  * @return array API result descriptor
  */
 function civicrm_api3_contact_deleteemergencycontact($params) {
-  civicrm_api3_verify_mandatory($params, NULL, ['id']);
-
   $service = Civi::container()->get('emergency_contact.service');
   $contactID = CRM_Core_Session::getLoggedInContactID();
   $id = $params['id'];
