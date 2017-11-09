@@ -1,14 +1,8 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_Hremergency_Service_EmergencyContactService as EmergencyContactService;
 
-/**
- * @group headless
- */
-class api_v3_Contact_DeleteEmergencyContactTest extends \PHPUnit_Framework_TestCase
-  implements HeadlessInterface, TransactionalInterface {
+class api_v3_Contact_DeleteEmergencyContactTest extends \PHPUnit_Framework_TestCase {
 
   public function setUpHeadless() {
     return \Civi\Test::headless()
