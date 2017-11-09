@@ -2880,6 +2880,48 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertNotNull($toilRequest->id);
   }
 
+  public function testToilCanBeAccruedWhenTheToilRequestIsInHoursAndToilToAccrueValueIsNotAValidToilAmountOptionValue() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'calculation_unit' => 2,
+      'allow_accruals_request' => true,
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $periodStartDate = date('2016-01-01');
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $toilRequest = LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $periodEntitlement->contact_id,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('today'),
+      'from_date_amount' => 0,
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date_amount' => 0,
+      'toil_to_accrue' => 100,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $this->assertNotNull($toilRequest->id);
+  }
+
   public function testToilToAccrueAmountIsSavedCorrectlyWhenAmountToAccrueIsAFloatingNumber() {
     $toilToAccrueAmounts = [1.5, 1.8, 2.5];
     foreach ($toilToAccrueAmounts as $toilToAccrueAmount) {

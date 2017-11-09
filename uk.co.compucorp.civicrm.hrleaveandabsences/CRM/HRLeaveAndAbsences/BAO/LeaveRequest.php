@@ -286,8 +286,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     if($params['request_type'] !== self::REQUEST_TYPE_TOIL) {
       return;
     }
-
-    self::validateTOILToAccrueIsAValidOptionValue($params);
+    $isCalculationUnitInHours = AbsenceType::isCalculationUnitInHours($params['type_id']);
+    self::validateTOILToAccrueIsAValidOptionValue($params, $isCalculationUnitInHours);
     self::validateTOILPastDays($params, $absenceType);
     self::validateTOILToAccruedAmountIsValid($params, $absenceType, $absencePeriod);
   }
@@ -296,12 +296,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * Validates if the value passed to the TOIL To Accrue field is one of the
    * options available on the hrleaveandabsences_toil_amounts option group and
    * is also a numeric value.
+   * If TOIL is requested in hours, this validation is not applicable since a
+   * user can request TOIL in hours based on a user imputed value.
    *
    * @param array $params
+   * @param bool $isCalculationUnitInHours
+   *   Whether the Absence type calculation unit is in hours or not.
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateTOILToAccrueIsAValidOptionValue($params) {
+  private static function validateTOILToAccrueIsAValidOptionValue($params, $isCalculationUnitInHours) {
+    if($isCalculationUnitInHours) {
+      return;
+    }
+
     $toilAmountOptions = array_flip(self::buildOptions('toil_to_accrue', 'validate'));
     if(!in_array($params['toil_to_accrue'], $toilAmountOptions) || !is_numeric($params['toil_to_accrue'])) {
       throw new InvalidLeaveRequestException(
