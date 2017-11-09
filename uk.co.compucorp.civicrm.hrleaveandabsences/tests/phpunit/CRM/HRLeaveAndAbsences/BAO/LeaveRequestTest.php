@@ -2477,7 +2477,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $this->setExpectedException(
-      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException::class,
       'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual . ' hours. Please modify the dates of this request'
     );
     LeaveRequest::create([

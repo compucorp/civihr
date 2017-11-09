@@ -14,13 +14,10 @@ function _civicrm_api3_leave_request_create_spec(&$spec) {
     'api.required' => 0,
   ];
 
-  $spec['toil_to_accrue'] = [
-    'name' => 'toil_to_accrue',
-    'title' => 'TOIL to accrue amount',
-    'description' => 'Amount of TOIL to accrue for the request',
-    'type' => CRM_Utils_Type::T_FLOAT,
-    'api.required' => 0,
-  ];
+  //We need to unset this because we need to bypass civi validating
+  //this field against the toil amounts option group especially for
+  //TOIL in hours which can have values not part of the option group.
+  unset($spec['toil_to_accrue']['pseudoconstant']);
 }
 
 /**
