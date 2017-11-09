@@ -27,10 +27,10 @@ class api_v3_Contact_DeleteEmergencyContactTest extends \PHPUnit_Framework_TestC
     $contactIDs = array_column($contacts['values'], 'id');
     $sampleID = current($contactIDs);
 
-    $id = EmergencyContactFabricator::fabricate($sampleID, 'Kevin Foot');
+    $contact = EmergencyContactFabricator::fabricate($sampleID, 'Kevin Foot');
     $message = "Only an emergency contacts' relation can delete them";
     $this->setExpectedException(CiviCRM_API3_Exception::class, $message);
-    civicrm_api3('Contact', 'deleteemergencycontact', ['id' => $id]);
+    civicrm_api3('Contact', 'deleteemergencycontact', ['id' => $contact['id']]);
   }
 
   public function testDeletionOfOwnContact() {
@@ -39,9 +39,10 @@ class api_v3_Contact_DeleteEmergencyContactTest extends \PHPUnit_Framework_TestC
     $sampleID = current($contactIDs);
 
     $this->registerCurrentLoggedInContactInSession($sampleID);
-    $id = EmergencyContactFabricator::fabricate($sampleID, 'Kevin Foot');
+    $contact = EmergencyContactFabricator::fabricate($sampleID, 'Kevin Foot');
 
-    $result = civicrm_api3('Contact', 'deleteemergencycontact', ['id' => $id]);
+    $params = ['id' => $contact['id']];
+    $result = civicrm_api3('Contact', 'deleteemergencycontact', $params);
 
     $this->assertEquals(0, $result['is_error']);
   }
