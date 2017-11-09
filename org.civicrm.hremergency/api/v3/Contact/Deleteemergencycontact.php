@@ -7,7 +7,12 @@
  * @return void
  */
 function _civicrm_api3_contact_deleteemergencycontact_spec(&$spec) {
-  $spec['id']['api.required'] = 1;
+  $spec['id'] = [
+    'api.required' => 1,
+    'title' => 'Emergency Contact ID',
+    'description' => 'The ID of the emergency contact',
+    'type'  => CRM_Utils_Type::T_INT,
+  ];
 }
 
 /**
