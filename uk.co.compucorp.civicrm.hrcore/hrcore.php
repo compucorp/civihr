@@ -593,23 +593,11 @@ function _hrcore_hrui_civicrm_alterContent(&$content, $context, $tplName, &$obje
     new CaseDashboardPageListener($object),
     new CaseDashboardPageDashletListener($object),
     new ContactImportMapFieldFormListener($object),
+    new ContactFormListener($object),
   ];
 
   foreach ($listeners as $listener) {
     $listener->onAlterContent($content);
-  }
-
-  if ($context == "form" && $tplName == "CRM/Contact/Form/Contact.tpl" ) {
-    $content .="<script type=\"text/javascript\">
-      CRM.$(function($) {
-        if(!$('#internal_identifier_display').val()){
-          $('#first_name').keyup(function() {
-            var value = $( this ).val();
-            $('#nick_name').val(value);
-            });
-        }
-      });
-    </script>";
   }
 
  if ($tplName == 'CRM/Profile/Form/Edit.tpl' && $smarty->_tpl_vars['context'] == 'dialog' && $smarty->_tpl_vars['ufGroupName'] == 'new_individual') {

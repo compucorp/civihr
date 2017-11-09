@@ -4,6 +4,23 @@ class CRM_HRCore_Listener_Form_Contact extends CRM_HRCore_Listener_AbstractListe
 
   protected $objectClass = 'CRM_Contact_Form_Contact';
 
+  public function onAlterContent(&$content) {
+    if (!$this->canHandle()) {
+      return;
+    }
+
+    $content .="<script type=\"text/javascript\">
+      CRM.$(function($) {
+        if(!$('#internal_identifier_display').val()){
+          $('#first_name').keyup(function() {
+            var value = $( this ).val();
+            $('#nick_name').val(value);
+            });
+        }
+      });
+    </script>";
+  }
+
   public function onBuildForm() {
     if (!$this->canHandle()) {
       return;
