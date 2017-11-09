@@ -191,6 +191,18 @@ define([
         contactData.leaveRequest = leaveRequest;
       });
 
+      describe('when the request is for Accrued TOIL', function () {
+        beforeEach(function () {
+          controller.contactData.isAccruedTOIL = true;
+
+          $rootScope.$digest();
+        });
+
+        it('selects the tooltip template for accrued toil', function () {
+          expect(controller.tooltipTemplate).toBe('accrued-toil-tooltip');
+        });
+      });
+
       describe('when the request is for a single day and the calculation unit is in hours', function () {
         beforeEach(function () {
           absenceType.calculation_unit = calculationUnitInHours;

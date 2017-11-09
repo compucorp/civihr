@@ -62,6 +62,24 @@ define([
     }
 
     /**
+     * Returns the template name for Leave Requests tooltips.
+     *
+     * The pattern is `type-[days|hours]-on-[single-date|multiple-dates]-tooltip`
+     *
+     * @return {String}
+     */
+    function getTooltipTemplateForLeaveRequests () {
+      var dateRangeType, isSameDay;
+
+      isSameDay = moment(vm.contactData.leaveRequest.from_date)
+        .isSame(vm.contactData.leaveRequest.to_date, 'day');
+      dateRangeType = isSameDay ? 'single-date' : 'multiple-dates';
+
+      return 'type-' + calculationUnit.name + '-on-' +
+        dateRangeType + '-tooltip';
+    }
+
+    /**
      * Maps the absence type title to the leave request.
      */
     function mapLeaveRequestAbsenceType () {
@@ -161,20 +179,12 @@ define([
     }
 
     /**
-     * Selects the tooltip template to use to display the leave
-     * request information.
-     *
-     * The pattern is `type-[days|hours]-on-[single-date|multiple-dates]-tooltip`
+     * Selects the tooltip template to use to display the leave request information.
      */
     function selectTooltipTemplate () {
-      var dateRangeType, isSameDay;
-
-      isSameDay = moment(vm.contactData.leaveRequest.from_date)
-        .isSame(vm.contactData.leaveRequest.to_date, 'day');
-      dateRangeType = isSameDay ? 'single-date' : 'multiple-dates';
-
-      vm.tooltipTemplate = 'type-' + calculationUnit.name + '-on-' +
-        dateRangeType + '-tooltip';
+      vm.tooltipTemplate = vm.contactData.isAccruedTOIL
+        ? 'accrued-toil-tooltip'
+        : getTooltipTemplateForLeaveRequests();
     }
 
     /**

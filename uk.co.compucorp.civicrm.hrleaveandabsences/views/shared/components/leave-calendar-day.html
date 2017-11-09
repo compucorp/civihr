@@ -61,3 +61,9 @@
     </p>
   </div>
 </script>
+<script type="text/ng-template" id="accrued-toil-tooltip">
+  <div>
+    <strong>{{day.contactData.leaveRequest['type_id.title']}}</strong>
+    <p>{{day.supportData.toilAmounts[day.contactData.leaveRequest.toil_to_accrue].label}}</p>
+  </div>
+</script>
