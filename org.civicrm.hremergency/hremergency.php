@@ -134,7 +134,10 @@ function hremergency_civicrm_container($container) {
  *   The associative permissions array (probably to be altered by this hook)
  */
 function hremergency_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-  if ($entity === 'Contact' && $action === 'deleteemergencycontact') {
-    $permissions[] = 'access AJAX API';
+  $entity = strtolower($entity);
+  $action = strtolower($action);
+
+  if ($entity === 'contact' && $action === 'deleteemergencycontact') {
+    $permissions[$entity][$action] = 'access AJAX API';
   }
 }
