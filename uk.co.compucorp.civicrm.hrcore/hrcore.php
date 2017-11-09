@@ -594,19 +594,11 @@ function _hrcore_hrui_civicrm_alterContent(&$content, $context, $tplName, &$obje
     new ContactImportMapFieldFormListener($object),
     new ContactFormListener($object),
     new ProfileEditFormListener($object),
+    new LocalizationFormAdminListener($object)
   ];
 
   foreach ($listeners as $listener) {
     $listener->onAlterContent($content);
-  }
-
-  if ($tplName === 'CRM/Admin/Form/Setting/Localization.tpl') {
-    // hide multiple language description
-    $content = str_replace('<h3>Multiple Languages Support</h3>', '', $content);
-    $content .= sprintf(
-      '<script>%s</script>',
-      'CRM.$(".crm-localization-form-block-description").hide();'
-    );
   }
 }
 
