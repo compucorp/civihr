@@ -4,11 +4,7 @@ use CRM_Hremergency_Service_EmergencyContactService as EmergencyContactService;
 
 class api_v3_Contact_DeleteEmergencyContactTest extends \PHPUnit_Framework_TestCase {
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->installMe(__DIR__)
-      ->apply();
-  }
+  use CRM_HRCore_Test_Helpers_SessionHelpersTrait;
 
   public function testDeletingNonExistentContact() {
     $id = 1;
@@ -61,16 +57,6 @@ class api_v3_Contact_DeleteEmergencyContactTest extends \PHPUnit_Framework_TestC
     // check permissions defaults to false in tests
     $params = ['id' => 1, 'check_permissions' => TRUE];
     civicrm_api3('Contact', 'deleteemergencycontact', $params);
-  }
-
-  /**
-   * Sets the current logged in contact ID
-   *
-   * @param $contactID
-   */
-  protected function registerCurrentLoggedInContactInSession($contactID) {
-    $session = CRM_Core_Session::singleton();
-    $session->set('userID', $contactID);
   }
 
   /**

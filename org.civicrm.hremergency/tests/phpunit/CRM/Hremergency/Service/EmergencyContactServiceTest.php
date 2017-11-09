@@ -5,12 +5,14 @@ use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
 
+/**
+ * @group headless
+ */
 class EmergencyContactServiceTest extends \PHPUnit_Framework_TestCase
   implements HeadlessInterface, TransactionalInterface {
 
   public function setUpHeadless() {
     return \Civi\Test::headless()
-      ->install('uk.co.compucorp.civicrm.hrcore')
       ->installMe(__DIR__)
       ->apply();
   }
