@@ -13,6 +13,14 @@ function _civicrm_api3_leave_request_create_spec(&$spec) {
     'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0,
   ];
+
+  $spec['toil_to_accrue'] = [
+    'name' => 'toil_to_accrue',
+    'title' => 'TOIL to accrue amount',
+    'description' => 'Amount of TOIL to accrue for the request',
+    'type' => CRM_Utils_Type::T_FLOAT,
+    'api.required' => 0,
+  ];
 }
 
 /**

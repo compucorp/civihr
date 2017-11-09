@@ -2894,6 +2894,50 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result);
   }
 
+  public function testToilCanBeAccruedWhenToilIsInHoursAndToilToAccrueValueIsNotAValidToilAmountOptionValue() {
+    $contactID = 1;
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+
+    $this->registerCurrentLoggedInContactInSession($contactID);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'calculation_unit' => 2,
+      'allow_accruals_request' => true,
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $period->id
+    ]);
+
+    $periodStartDate = '2016-01-01';
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $result = civicrm_api3('LeaveRequest', 'create', [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('today'),
+      'from_date_amount' => 0,
+      'to_date' => CRM_Utils_Date::processDate('today'),
+      'to_date_amount' => 0,
+      'toil_duration' => 1,
+      'toil_to_accrue' => 100,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $this->assertNotNull($result['id']);
+  }
+
   public function testLeaveRequestIsValidShouldReturnAnErrorWhenTheToilDatesAreInThePastAndTheAbsenceTypeDoesNotAllowIt() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
