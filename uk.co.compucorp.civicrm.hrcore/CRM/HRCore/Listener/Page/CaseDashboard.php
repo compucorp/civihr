@@ -1,8 +1,8 @@
 <?php
 
-class CRM_HRCore_Listener_Page_CaseDashboard extends CRM_HRCore_Listener_Page_AbstractPage {
+class CRM_HRCore_Listener_Page_CaseDashboard extends CRM_HRCore_Listener_AbstractListener {
 
-  protected $pageClass = 'CRM_Case_Page_DashBoard';
+  protected $objectClass = 'CRM_Case_Page_DashBoard';
   protected $pageCSSIdentifier = '.page-civicrm-case';
 
   public function onAlterContent(&$content) {

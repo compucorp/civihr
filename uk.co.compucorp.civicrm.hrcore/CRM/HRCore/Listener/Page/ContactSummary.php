@@ -1,8 +1,8 @@
 <?php
 
-class CRM_HRCore_Listener_Page_ContactSummary extends CRM_HRCore_Listener_Page_AbstractPage {
+class CRM_HRCore_Listener_Page_ContactSummary extends CRM_HRCore_Listener_AbstractListener {
 
-  protected $pageClass = 'CRM_Contact_Page_View_Summary';
+  protected $objectClass = 'CRM_Contact_Page_View_Summary';
 
   public function onAlterContent(&$content) {
     if (!$this->canHandle()) {

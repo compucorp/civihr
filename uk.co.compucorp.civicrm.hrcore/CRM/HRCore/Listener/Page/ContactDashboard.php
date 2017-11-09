@@ -1,8 +1,8 @@
 <?php
 
-class CRM_HRCore_Listener_Page_ContactDashboard extends CRM_HRCore_Listener_Page_AbstractPage {
+class CRM_HRCore_Listener_Page_ContactDashboard extends CRM_HRCore_Listener_AbstractListener {
 
-  protected $pageClass = 'CRM_Contact_Page_DashBoard';
+  protected $objectClass = 'CRM_Contact_Page_DashBoard';
 
   public function onPageRun() {
     if (!$this->canHandle()) {
