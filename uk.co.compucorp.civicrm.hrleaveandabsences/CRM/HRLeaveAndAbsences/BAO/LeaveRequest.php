@@ -289,7 +289,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $isCalculationUnitInHours = AbsenceType::isCalculationUnitInHours($params['type_id']);
     self::validateTOILToAccrueIsAValidOptionValue($params, $isCalculationUnitInHours);
     self::validateTOILPastDays($params, $absenceType);
-    self::validateTOILToAccruedAmountIsValid($params, $absenceType, $absencePeriod);
+    self::validateTOILToAccruedAmountIsValid($params, $absenceType, $absencePeriod, $isCalculationUnitInHours);
   }
 
   /**
@@ -353,10 +353,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *   The params array received by the create method
    * @param AbsenceType $absenceType
    * @param AbsencePeriod $absencePeriod
+   * @param bool $isCalculationUnitInHours
+   *   Whether the Absence type calculation unit is in hours or not.
    *
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
-  private static function validateTOILToAccruedAmountIsValid($params, $absenceType, $absencePeriod) {
+  private static function validateTOILToAccruedAmountIsValid($params, $absenceType, $absencePeriod, $isCalculationUnitInHours) {
     $unlimitedAccrual = empty($absenceType->max_leave_accrual) && $absenceType->max_leave_accrual !== 0;
     $oldToilRequest = '';
 
@@ -381,10 +383,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       }
     }
 
+    $unit = $isCalculationUnitInHours ? 'hours' : 'days';
     $maxLeaveAccrual = $absenceType->max_leave_accrual;
     if ($totalProjectedToilForPeriod > $maxLeaveAccrual && !$unlimitedAccrual) {
       throw new InvalidLeaveRequestException(
-        'The maximum amount of leave that you can accrue is '. round($maxLeaveAccrual, 1) .' days. Please modify the dates of this request',
+        'The maximum amount of leave that you can accrue is '. round($maxLeaveAccrual, 1) .' '. $unit . '. Please modify the dates of this request',
         'leave_request_toil_amount_more_than_maximum_for_absence_type',
         'toil_to_accrue'
       );

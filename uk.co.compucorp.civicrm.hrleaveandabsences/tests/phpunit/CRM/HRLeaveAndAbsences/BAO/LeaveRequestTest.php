@@ -2462,6 +2462,38 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
   }
 
+  public function testLeaveRequestCanNotBeCreatedForToilInHoursWhenToilToAccrueIsGreaterThanTheMaximumAllowed() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('today'),
+      'end_date'   => CRM_Utils_Date::processDate('+100 days'),
+    ]);
+
+    //Max accrual of 10 hours
+    $maxLeaveAccrual = 10;
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'calculation_unit' => 2,
+      'max_leave_accrual' => $maxLeaveAccrual,
+    ]);
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'The maximum amount of leave that you can accrue is '. $maxLeaveAccrual . ' hours. Please modify the dates of this request'
+    );
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'from_date_amount' => 0,
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date_amount' => 0,
+      'toil_to_accrue' => 11,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+  }
+
   public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilAmountPlusApprovedToilForPeriodIsGreaterThanMaximumAllowed() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-10 days'),
