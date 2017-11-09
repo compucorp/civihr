@@ -392,27 +392,12 @@ function _hrcore_hrui_civicrm_buildForm($formName, &$form) {
 }
 
 function _hrcore_hrui_civicrm_postProcess($formName, &$form) {
-  $isEnabled = __hrui_is_extension_enabled('org.civicrm.hrident');
+  $listeners = [
+    new ContactFormListener($form),
+  ];
 
-  if ($formName == 'CRM_Contact_Form_Contact'
-    && $isEnabled
-    && !empty($form->_submitValues['GovernmentId'])
-    && $form->_contactType == 'Individual'
-  ) {
-    $govFieldId = CRM_HRIdent_Page_HRIdent::retreiveContactFieldId('Identify');
-    $govFieldIds = CRM_HRIdent_Page_HRIdent::retreiveContactFieldValue($form->_contactId);
-    if (!empty($govFieldId)) {
-      if (empty($govFieldIds)) {
-        $govFieldIds['id'] = NULL;
-      }
-      $customParams = array(
-        "custom_{$govFieldId['Type']}{$govFieldIds['id']}" => $form->_submitValues['govTypeOptions'],
-        "custom_{$govFieldId['Number']}{$govFieldIds['id']}" => $form->_submitValues['GovernmentId'],
-        "custom_{$govFieldId['is_government']}{$govFieldIds['id']}" => 1,
-        "entity_id" => $form->_contactId,
-      );
-      civicrm_api3('CustomValue', 'create', $customParams);
-    }
+  foreach ($listeners as $listener) {
+    $listener->onPostProcess();
   }
 }
 

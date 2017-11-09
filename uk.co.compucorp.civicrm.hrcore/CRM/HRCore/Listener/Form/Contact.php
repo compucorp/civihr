@@ -19,6 +19,32 @@ class CRM_HRCore_Listener_Form_Contact extends CRM_HRCore_Listener_AbstractListe
     }
   }
 
+  public function onPostProcess() {
+    if (!$this->canHandle()) {
+      return;
+    }
+
+    $isEnabled = $this->isExtensionEnabled('org.civicrm.hrident');
+
+    if ($isEnabled && !empty($this->object->_submitValues['GovernmentId']) && $this->object->_contactType == 'Individual') {
+      $govFieldId = CRM_HRIdent_Page_HRIdent::retreiveContactFieldId('Identify');
+      $govFieldIds = CRM_HRIdent_Page_HRIdent::retreiveContactFieldValue($this->object->_contactId);
+
+      if (!empty($govFieldId)) {
+        if (empty($govFieldIds)) {
+          $govFieldIds['id'] = NULL;
+        }
+
+        civicrm_api3('CustomValue', 'create', [
+          "custom_{$govFieldId['Type']}{$govFieldIds['id']}" => $this->object->_submitValues['govTypeOptions'],
+          "custom_{$govFieldId['Number']}{$govFieldIds['id']}" => $this->object->_submitValues['GovernmentId'],
+          "custom_{$govFieldId['is_government']}{$govFieldIds['id']}" => 1,
+          "entity_id" => $this->object->_contactId,
+        ]);
+      }
+    }
+  }
+
   /**
    * Returns if the contact form has a phone with the given index and it's empty
    *
