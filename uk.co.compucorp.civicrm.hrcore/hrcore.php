@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\Reference as Reference;
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_SearchTask_ContactFormSearchTaskAdder as ContactFormSearchTaskAdder;
+use CRM_HRCore_Listener_Page_ContactDashboard as ContactDashboardPageListener;
 use CRM_HRCore_Listener_Page_ContactSummary as ContactSummaryPageListener;
 
 /**
@@ -342,12 +343,14 @@ function _hrcore_hrui_civicrm_pageRun($page) {
     return;
   }
 
-  if ($page instanceof CRM_Contact_Page_DashBoard) {
-    CRM_Utils_System::setTitle(ts('CiviHR Home'));
-  }
+  $listeners = [
+    new ContactDashboardPageListener($page),
+    new ContactSummaryPageListener($page)
+  ];
 
-  $listener = new ContactSummaryPageListener($page);
-  $listener->onPageRun();
+  foreach ($listeners as $listener) {
+    $listener->onPageRun();
+  }
 
   if (CRM_Core_Config::singleton()->debug) {
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/src/civihr-popup/attrchange.js');
