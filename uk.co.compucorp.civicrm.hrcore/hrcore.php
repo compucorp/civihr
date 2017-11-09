@@ -13,6 +13,7 @@ use CRM_HRCore_Listener_Page_ContactSummary as ContactSummaryPageListener;
 use CRM_HRCore_Listener_Page_CaseDashboard as CaseDashboardPageListener;
 use CRM_HRCore_Listener_Page_Dashlet_CaseDashboard as CaseDashboardPageDashletListener;
 use CRM_HRCore_Listener_Form_Contact as ContactFormListener;
+use CRM_HRCore_Listener_Form_Admin_Extensions as ExtensionsFormListener;
 
 /**
  * Implements hook_civicrm_config().
@@ -378,20 +379,11 @@ function _hrcore_hrui_civicrm_buildForm($formName, &$form) {
 
   $listeners = [
     new ContactFormListener($form),
+    new ExtensionsFormListener($form),
   ];
 
   foreach ($listeners as $listener) {
     $listener->onBuildForm();
-  }
-
-  if ($formName == 'CRM_Admin_Form_Extensions') {
-    $extensionKey= CRM_Utils_Request::retrieve('key', 'String', $this);
-    if ($extensionKey == 'uk.co.compucorp.civicrm.hrsampledata') {
-      $title = ts("Be Careful");
-      $message = ts("Installing/Uninstalling this extension will remove all existing data, so make sure to create a backup first !");
-
-      CRM_Core_Session::setStatus($message, $title, 'no-popup crm-error', ['expires' => 0]);
-    }
   }
 
   if ($formName === 'CRM_Admin_Form_Options' && $form->elementExists('value')) {
