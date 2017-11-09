@@ -1,8 +1,6 @@
 <?php
 
-namespace Tests\CiviHR\HREmergency\Fabricator;
-
-class EmergencyContactFabricator {
+class CRM_Hremergency_Test_Fabricator_EmergencyContactFabricator {
 
   /**
    * @param int $contactID

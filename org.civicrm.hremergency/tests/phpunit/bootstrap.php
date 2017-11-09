@@ -4,11 +4,6 @@ ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
 eval(cv('php:boot --level=full', 'phpcode'));
 
-// Allow autoloading of PHPUnit helper classes in this extension.
-$loader = new \Composer\Autoload\ClassLoader();
-$loader->addPsr4('Tests\CiviHR\HREmergency\\', realpath(__DIR__ . '/..'));
-$loader->register();
-
 $hrCoreDir = __DIR__ . '/../../../uk.co.compucorp.civicrm.hrcore';
 require_once $hrCoreDir . '/CRM/HRCore/Test/Helpers/SessionHelpersTrait.php';
 require_once $hrCoreDir . '/CRM/HRCore/Test/Fabricator/Contact.php';

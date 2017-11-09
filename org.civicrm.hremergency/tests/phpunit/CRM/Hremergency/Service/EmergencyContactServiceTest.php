@@ -1,6 +1,6 @@
 <?php
 
-use Tests\CiviHR\HREmergency\Fabricator\EmergencyContactFabricator;
+use CRM_Hremergency_Test_Fabricator_EmergencyContactFabricator as EmergencyContactFabricator;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use Civi\Test\HeadlessInterface;
 use Civi\Test\TransactionalInterface;
