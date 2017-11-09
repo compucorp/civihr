@@ -10,6 +10,8 @@ use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_SearchTask_ContactFormSearchTaskAdder as ContactFormSearchTaskAdder;
 use CRM_HRCore_Listener_Page_ContactDashboard as ContactDashboardPageListener;
 use CRM_HRCore_Listener_Page_ContactSummary as ContactSummaryPageListener;
+use CRM_HRCore_Listener_Page_CaseDashboard as CaseDashboardPageListener;
+use CRM_HRCore_Listener_Page_Dashlet_CaseDashboard as CaseDashboardPageDashletListener;
 
 /**
  * Implements hook_civicrm_config().
@@ -614,8 +616,15 @@ function _hrcore_hrui_civicrm_navigationMenu(&$params) {
 function _hrcore_hrui_civicrm_alterContent(&$content, $context, $tplName, &$object) {
   $smarty = CRM_Core_Smarty::singleton();
 
-  $listener = new CRM_HRCore_Listener_Page_ContactSummary($object);
-  $listener->onAlterContent($content);
+  $listeners = [
+    new CRM_HRCore_Listener_Page_ContactSummary($object),
+    new CRM_HRCore_Listener_Page_CaseDashboard($object),
+    new CRM_HRCore_Listener_Page_Dashlet_CaseDashboard($object),
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->onAlterContent($content);
+  }
 
   if ($context == "form" && $tplName == "CRM/Contact/Import/Form/MapField.tpl" ) {
     $columnToHide = array(
@@ -674,25 +683,6 @@ function _hrcore_hrui_civicrm_alterContent(&$content, $context, $tplName, &$obje
             $('#nick_name').val(value);
             });
         }
-      });
-    </script>";
-  }
-
-  if($context == 'page' && ($tplName == "CRM/Case/Page/DashBoard.tpl" || $tplName == "CRM/Dashlet/Page/CaseDashboard.tpl")) {
-    if($tplName == "CRM/Case/Page/DashBoard.tpl") {
-       $id = '.page-civicrm-case';
-    }
-    else {
-      $id = '#case_dashboard_dashlet';
-    }
-    $content .="<script type=\"text/javascript\">
-      CRM.$(function($) {
-        $('{$id} table.report tr th strong').each(function () {
-          var app = $(this).text();
-          if (app == 'Application') {
-            $(this).parent('th').parent('tr').remove();
-          }
-        });
       });
     </script>";
   }
