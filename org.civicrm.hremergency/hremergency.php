@@ -120,3 +120,21 @@ function hremergency_civicrm_container($container) {
   $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/xml'));
   $loader->load('services.xml');
 }
+
+/**
+ * Implements hook_civicrm_alterAPIPermissions().
+ *
+ * @param string $entity
+ *   The API entity (like contact)
+ * @param string $action
+ *   The API action (like get)
+ * @param array $params
+ *   The API parameters
+ * @param array $permissions
+ *   The associative permissions array (probably to be altered by this hook)
+ */
+function hremergency_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  if ($entity === 'Contact' && $action === 'deleteemergencycontact') {
+    $permissions[] = 'access AJAX API';
+  }
+}
