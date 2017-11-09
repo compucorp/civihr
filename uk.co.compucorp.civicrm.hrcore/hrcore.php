@@ -12,6 +12,7 @@ use CRM_HRCore_Listener_Page_ContactDashboard as ContactDashboardPageListener;
 use CRM_HRCore_Listener_Page_ContactSummary as ContactSummaryPageListener;
 use CRM_HRCore_Listener_Page_CaseDashboard as CaseDashboardPageListener;
 use CRM_HRCore_Listener_Page_Dashlet_CaseDashboard as CaseDashboardPageDashletListener;
+use CRM_HRCore_Listener_Form_Contact as ContactFormListener;
 
 /**
  * Implements hook_civicrm_config().
@@ -375,15 +376,12 @@ function _hrcore_hrui_civicrm_buildForm($formName, &$form) {
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/dist/hrcore.min.js');
   }
 
-  if ($form instanceof CRM_Contact_Form_Contact) {
-    CRM_Core_Resources::singleton()
-      ->addSetting(array('formName' => 'contactForm'));
+  $listeners = [
+    new ContactFormListener($form),
+  ];
 
-    $phoneIndex = 2;
-    if (__hrui_phone_is_empty($phoneIndex, $form)) {
-      __hrui_set_phone_type_as_mobile($phoneIndex, $form);
-      __hrui_set_phone_location_to_the_default_location($phoneIndex, $form);
-    }
+  foreach ($listeners as $listener) {
+    $listener->onBuildForm();
   }
 
   if ($formName == 'CRM_Admin_Form_Extensions') {
@@ -714,80 +712,6 @@ function _hrcore_hrui_civicrm_summary($contactId, &$content, &$contentPlacement)
   $content['userid'] = $uf['uf_id'];
   $content['username'] = !empty($user->name) ? $user->name : '';
   $contentPlacement = NULL;
-}
-
-
-
-/**
- * Sets the location type of the phone with the given index to the default
- * location type.
- *
- * @param int $phoneIndex
- *  The index of phone in the contact form
- * @param CRM_Core_Form $form
- *  The Contact Form instance
- */
-function __hrui_set_phone_location_to_the_default_location($phoneIndex, $form) {
-  $locationId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_LocationType', 1, 'id', 'is_default');
-
-  if($locationId) {
-    $form->setDefaults([
-      "phone[{$phoneIndex}][location_type_id]" => $locationId
-    ]);
-  }
-}
-
-/**
- * Sets the phone type of the phone with the given index as 'Mobile'.
- *
- * @param $phoneIndex
- *  The index of phone in the contact form
- * @param CRM_Core_Form $form
- *  The Contact Form instance
- */
-function __hrui_set_phone_type_as_mobile($phoneIndex, $form) {
-  __hrui_set_phone_type($phoneIndex, $form, 'Mobile');
-}
-
-/**
- * Sets the phone type of the phone with the given index to the type given by
- * $type.
- *
- * @param int $phoneIndex
- *   The index of phone in the contact form
- * @param CRM_Core_Form $form
- *   The Contact Form instance
- * @param string $type
- *   The new phone type. Valid values are those from the phone_type option list
- */
-function __hrui_set_phone_type($phoneIndex, $form, $type) {
-  $elementName = "phone[{$phoneIndex}][phone_type_id]";
-
-  if(!$form->elementExists($elementName)) {
-    return;
-  }
-
-  $phoneType  = $form->getElement($elementName);
-  $phoneValue = CRM_Core_OptionGroup::values('phone_type');
-  $phoneKey   = CRM_Utils_Array::key($type, $phoneValue);
-  if($phoneKey) {
-    $phoneType->setSelected($phoneKey);
-  }
-}
-
-/**
- * Returns if the contact form has a phone with the given index and it's empty
- *
- * @param int $phoneIndex
- *  The index of phone in the contact form
- * @param CRM_Core_Form $form
- *  The Contact Form instance
- *
- * @return bool
- */
-function __hrui_phone_is_empty($phoneIndex, $form) {
-  return $form->elementExists("phone[{$phoneIndex}][phone]") &&
-         empty($form->getElementValue("phone[{$phoneIndex}][phone]"));
 }
 
 /**
