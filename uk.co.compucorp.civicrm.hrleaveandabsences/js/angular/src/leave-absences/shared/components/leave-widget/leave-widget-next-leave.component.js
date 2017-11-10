@@ -79,14 +79,22 @@ define([
     }
 
     /**
+     * Returns a list of of absence type ids that can be used to filter leave
+     * requests by absence type.
+     *
+     * @return {Array}
+     */
+    function getAbsenceTypeIds () {
+      return _.pluck(vm.absenceTypes, 'id');
+    }
+
+    /**
      * Returns a list of status ids.
      *
      * @return {Array}
      */
     function getStatusIds () {
-      return vm.leaveRequestStatuses.map(function (status) {
-        return status.value;
-      });
+      return _.pluck(vm.leaveRequestStatuses, 'value');
     }
 
     /**
@@ -116,6 +124,7 @@ define([
         from_date: { '>=': today },
         request_type: 'leave',
         status_id: { IN: getStatusIds() },
+        type_id: { IN: getAbsenceTypeIds() },
         options: { limit: 1, sort: 'from_date DESC' }
       }, null, null, null, false) // No cache
       .then(function (response) {
