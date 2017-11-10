@@ -421,17 +421,23 @@
         });
 
         describe('absence types', function () {
-          var AbsenceType;
+          var AbsenceType, absenceTypeRecord;
 
           beforeEach(inject(function (_AbsenceType_) {
             AbsenceType = _AbsenceType_;
-            spyOn(AbsenceType, 'all').and.callThrough();
+            absenceTypeRecord = controller.supportData.absenceTypes[0];
 
+            spyOn(AbsenceType, 'all').and.callThrough();
             compileComponent();
           }));
 
           it('loads the absence types', function () {
             expect(controller.supportData.absenceTypes.length).not.toBe(0);
+          });
+
+          it('loads the absence types calculation units', function () {
+            expect(absenceTypeRecord.calculation_unit_name).toEqual(jasmine.any(String));
+            expect(absenceTypeRecord.calculation_unit_label).toEqual(jasmine.any(String));
           });
 
           it('excludes the inactive absence types', function () {
