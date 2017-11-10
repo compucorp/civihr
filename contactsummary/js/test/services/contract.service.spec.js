@@ -10,9 +10,8 @@ define([
   'use strict';
 
   describe('contractService', function () {
-    var contractService,
-      apiServiceMock, contactDetailsServiceMock, modelServiceMock,
-      $rootScope;
+    var apiServiceMock, contactDetailsServiceMock, contractService,
+       modelServiceMock, $rootScope;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks',
       'contact-summary.templates'));
@@ -123,6 +122,16 @@ define([
           it('returns the list of contract options for given field name only', function () {
             expect(options).toEqual({ details: 'fieldValues' });
           });
+        });
+      });
+
+      describe('removeContract()', function () {
+        beforeEach(function () {
+          contractService.removeContract('1');
+        });
+
+        it('removes the contract form the list', function () {
+          expect(_.isEmpty(contractService.collection.get())).toBe(true);
         });
       });
     });
