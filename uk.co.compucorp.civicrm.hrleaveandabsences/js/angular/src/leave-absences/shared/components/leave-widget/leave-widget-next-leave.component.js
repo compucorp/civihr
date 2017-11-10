@@ -57,6 +57,7 @@ define([
       ])
       .then(function () {
         if (vm.nextLeaveRequest) {
+          convertStringsToMomentDates();
           mapAbsenceTypeToNextLeaveRequest();
           makeBalanceChangeAbsolute();
           storeStatusForNextRequest();
@@ -79,14 +80,33 @@ define([
     }
 
     /**
+     * Converts the from and to date of the next leave request from strings
+     * into Moment dates. This helps display the dates in the view.
+     */
+    function convertStringsToMomentDates () {
+      vm.nextLeaveRequest.from_date = vm.nextLeaveRequest.from_date &&
+        moment(vm.nextLeaveRequest.from_date);
+      vm.nextLeaveRequest.to_date = vm.nextLeaveRequest.to_date &&
+        moment(vm.nextLeaveRequest.to_date);
+    }
+
+    /**
+     * Returns a list of of absence type ids that can be used to filter leave
+     * requests by absence type.
+     *
+     * @return {Array}
+     */
+    function getAbsenceTypeIds () {
+      return _.pluck(vm.absenceTypes, 'id');
+    }
+
+    /**
      * Returns a list of status ids.
      *
      * @return {Array}
      */
     function getStatusIds () {
-      return vm.leaveRequestStatuses.map(function (status) {
-        return status.value;
-      });
+      return _.pluck(vm.leaveRequestStatuses, 'value');
     }
 
     /**
@@ -116,6 +136,7 @@ define([
         from_date: { '>=': today },
         request_type: 'leave',
         status_id: { IN: getStatusIds() },
+        type_id: { IN: getAbsenceTypeIds() },
         options: { limit: 1, sort: 'from_date DESC' }
       }, null, null, null, false) // No cache
       .then(function (response) {

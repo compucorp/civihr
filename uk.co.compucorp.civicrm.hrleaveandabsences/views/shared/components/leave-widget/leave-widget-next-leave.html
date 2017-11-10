@@ -12,17 +12,17 @@
           <h3>{{nextLeave.nextLeaveRequest['type_id.title']}}</h3>
           <div class="date-range-calendar">
             <div class="date-range-calendar__from" ng-if="nextLeave.nextLeaveRequest.from_date">
-              <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.from_date | date:'d'}}</span>
-              <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.from_date | date:'MMM'}}</span>
-              <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.from_date | date:'yyyy'}}</span>
+              <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.from_date.format('D')}}</span>
+              <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.from_date.format('MMM')}}</span>
+              <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.from_date.format('YYYY')}}</span>
               <span class="date-range-calendar__time text-muted">
                 ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.from_date_type].label}})
               </span>
             </div>
-            <div class="date-range-calendar__to" ng-if="nextLeave.nextLeaveRequest.to_date && nextLeave.nextLeaveRequest.to_date != nextLeave.nextLeaveRequest.from_date">
-              <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.to_date | date:'d'}}</span>
-              <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.to_date | date:'MMM'}}</span>
-              <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.to_date | date:'yyyy'}}</span>
+            <div class="date-range-calendar__to" ng-if="nextLeave.nextLeaveRequest.to_date && !nextLeave.nextLeaveRequest.to_date.isSame(nextLeave.nextLeaveRequest.from_date, 'day')">
+              <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.to_date.format('D')}}</span>
+              <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.to_date.format('MMM')}}</span>
+              <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.to_date.format('YYYY')}}</span>
               <span class="date-range-calendar__time text-muted">
                 ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.to_date_type].label}})
               </span>

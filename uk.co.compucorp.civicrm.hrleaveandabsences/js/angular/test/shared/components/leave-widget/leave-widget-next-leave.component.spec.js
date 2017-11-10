@@ -75,12 +75,11 @@ define([
     });
 
     describe('when bindings are ready', function () {
-      var leaveRequestStatusIds;
+      var leaveRequestAbsenceTypeIds, leaveRequestStatusIds;
 
       beforeEach(function () {
-        leaveRequestStatusIds = leaveRequestStatuses.map(function (status) {
-          return status.value;
-        });
+        leaveRequestAbsenceTypeIds = _.pluck(absenceTypes, 'id');
+        leaveRequestStatusIds = _.pluck(leaveRequestStatuses, 'value');
         controllerOnChanges.mockChange('absenceTypes', absenceTypes);
         controllerOnChanges.mockChange('contactId', contactId);
         controllerOnChanges.mockChange('leaveRequestStatuses',
@@ -94,6 +93,7 @@ define([
           from_date: { '>=': moment().format(sharedSettings.serverDateFormat) },
           request_type: 'leave',
           status_id: { IN: leaveRequestStatusIds },
+          type_id: { IN: leaveRequestAbsenceTypeIds },
           options: { limit: 1, sort: 'from_date DESC' }
         }, null, null, null, false);
       });
@@ -131,6 +131,11 @@ define([
 
         it('stores the next leave request', function () {
           expect(ctrl.nextLeaveRequest).toEqual(expectedNextLeave);
+        });
+
+        it('converts the request dates from strings to Date objects', function () {
+          expect(moment.isMoment(ctrl.nextLeaveRequest.from_date)).toBe(true);
+          expect(moment.isMoment(ctrl.nextLeaveRequest.to_date)).toBe(true);
         });
 
         it('stores the status for the request', function () {
