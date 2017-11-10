@@ -84,7 +84,7 @@ define([
         });
 
         describe('after getting all the entitlements', function () {
-          var expectedEntitlements;
+          var expectedEntitlements, entitlement;
 
           beforeEach(function () {
             Entitlement.all({
@@ -94,15 +94,18 @@ define([
             }, true)
             .then(function (entitlements) {
               expectedEntitlements = absenceTypes.map(function (absenceType) {
-                return _.assign({
-                  balance: {
-                    // Checks if the balance is a number or if it's not defined
-                    asymmetricMatch: function (value) {
-                      return typeof value === 'number' ||
-                        typeof value === 'undefined';
-                    }
-                  }
-                }, absenceType);
+                entitlement = entitlements.find(function (entitlement) {
+                  return +absenceType.id === +entitlement.type_id;
+                });
+
+                return {
+                  absenceType: absenceType,
+                  entitlement: entitlement
+                };
+              })
+              .filter(function (absenceTypeEntitlement) {
+                return absenceTypeEntitlement.absenceType &&
+                  absenceTypeEntitlement.entitlement;
               });
             });
 
