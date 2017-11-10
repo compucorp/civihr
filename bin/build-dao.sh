@@ -8,34 +8,27 @@
 # entities (Civi's and your extension), and finally it copies your extension's
 # DAOs to your extension CRM/NAMESPACE/DAO directory.
 
-CIVIROOT="$1"
-EXTROOT="$2"
-NAMESPACE="$3"
-EXTSRCDIR="$EXTROOT/CRM/$NAMESPACE"
-EXTDAODIR="$EXTSRCDIR/DAO"
-XMLBUILD="$EXTROOT/build/xml/schema"
-
-function validateOptions() {
-  if [ -z "$CIVIROOT" -o ! -d "$CIVIROOT" ]; then
-    echo "ERROR: invalid civicrm-dir: [$CIVIROOT]"
-    printUsage
+function validatePaths() {
+  if [ -z "$CIVIROOT" ]; then
+    echo "ERROR: civicrm-dir couldn't be found"
+    exit
   fi
 
-  if [ -z "$EXTROOT" -o ! -d "$EXTROOT" ]; then
-    echo "ERROR: invalid extension-dir: [$EXTROOT]"
-    printUsage
+  if [ -z "$EXTROOT" ]; then
+    echo "ERROR: it was not possible to find a path to $1"
+    exit
   fi
 
-  if [ -z "$NAMESPACE" -o ! -d "$EXTSRCDIR" ]; then
-    echo "ERROR: invalid namespace: [$NAMESPACE]"
-    printUsage
+  if [ -z "$NAMESPACE" ]; then
+    echo "ERROR: it was not possible for find the namespace of $1"
+    exit
   fi
 }
 
 function printUsage() {
   echo ""
-  echo "usage: $0 <civicrm-dir> <extension-dir> <namespace>"
-  echo "example: $0 /var/www/drupal/sites/all/modules/civicrm /var/www/drupal/sites/all/modules/civicrm/tools/extensions/civihr/your-extension YourNamespace"
+  echo "usage: $0 <extension>"
+  echo "example: $0 key.of.your.extension"
   exit
 }
 
@@ -62,11 +55,11 @@ function buildDAO() {
   popd > /dev/null
 
   [ ! -d "$EXTDAODIR" ] && mkdir -p "$EXTDAODIR"
-  cp -f "$CIVIROOT/CRM/$NAMESPACE/DAO"/* "$EXTDAODIR/"
+  cp -f "$CIVIROOT/$NAMESPACE/DAO"/* "$EXTDAODIR/"
 }
 
 function cleanup() {
-  for DIR in "$EXTROOT/build" "$CIVIROOT/CRM/$NAMESPACE" ; do
+  for DIR in "$EXTROOT/build" "$CIVIROOT/$NAMESPACE" ; do
     if [ -e "$DIR" ]; then
       echo "Cleanup: removing $DIR"
       rm -rf "$DIR"
@@ -78,7 +71,18 @@ function cleanup() {
 ##############################
 ## Main
 set -e
-validateOptions
+
+if [ -z $1 ]; then
+  printUsage
+fi
+
+CIVIROOT=`cv path -d '[civicrm.root]'`
+EXTROOT=`cv path -x $1`
+NAMESPACE=`cd $EXTROOT && civix info:get -x civix/namespace`
+EXTDAODIR="$EXTROOT/$NAMESPACE/DAO"
+XMLBUILD="$EXTROOT/build/xml/schema"
+
+validatePaths
 cleanup
 buildXmlSchema
 buildDAO
