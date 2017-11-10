@@ -18,6 +18,7 @@ pipeline {
     WEBURL = "http://jenkins.compucorp.co.uk:8900"
     ADMIN_PASS = credentials('CVHR_ADMIN_PASS')
     KARMA_TESTS_REPORT_FOLDER = "reports/js-karma"
+    PHPUNIT_TESTS_REPORT_FOLDER = "reports/phpunit"
   }
 
   stages {
@@ -31,6 +32,12 @@ pipeline {
 
         // Test build tools
         sh 'amp test'
+
+        // Cleanup old Karma test reports
+        sh "rm -f $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/* || true"
+
+        // Cleanup old PHPUnit test reports
+        sh "rm -f $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/* || true"
       }
     }
 
@@ -44,10 +51,10 @@ pipeline {
           def buildBranch = params.CIVIHR_BRANCH != '' ? params.CIVIHR_BRANCH : env.CHANGE_TARGET != null ? env.CHANGE_TARGET : env.BRANCH_NAME != null ? env.BRANCH_NAME : 'staging'
 
           // Build site with CV Buildkit
-          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.22 --hr-ver ${buildBranch} --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.27 --hr-ver ${buildBranch} --url $WEBURL --admin-pass $ADMIN_PASS"
           sh """
             cd $DRUPAL_MODULES_ROOT/civicrm
-            wget https://gist.githubusercontent.com/davialexandre/deafc6d4929fbf58b97105e54bfb300f/raw/2ec70492a8d5ce419337cc58097c1dfd3e2d4df6/attachments.patch
+            wget -O attachments.patch https://gist.githubusercontent.com/davialexandre/199b3ebb2c69f43c07dde0f51fb02c8b/raw/0f11edad8049c6edddd7f865c801ecba5fa4c052/attachments-4.7.27.patch
             patch -p1 -i attachments.patch
             rm attachments.patch
           """
@@ -114,7 +121,7 @@ pipeline {
             tools: [
               [
                 $class: 'JUnitType',
-                pattern: 'reports/phpunit/*.xml'
+                pattern: env.PHPUNIT_TESTS_REPORT_FOLDER + '/*.xml'
               ]
             ]
           ])
@@ -238,7 +245,8 @@ def testPHPUnit(java.util.LinkedHashMap extension) {
 
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    phpunit4 --log-junit $WORKSPACE/reports/phpunit/result-phpunit_${extension.shortName}.xml || true
+    phpunit4 --testsuite="Unit Tests" --log-junit $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/result-phpunit_${extension
+    .shortName}.xml
   """
 }
 
@@ -331,14 +339,14 @@ def listCivihrExtensions() {
       shortName: 'hrreport',
       folder: 'hrreport',
       hasJSTests: false,
-      hasPHPTests: true
+      hasPHPTests: false
     ],
     [
       name: 'HR UI',
       shortName: 'hrui',
       folder: 'hrui',
       hasJSTests: false,
-      hasPHPTests: true
+      hasPHPTests: false
     ],
     [
       name: 'HR Visa',

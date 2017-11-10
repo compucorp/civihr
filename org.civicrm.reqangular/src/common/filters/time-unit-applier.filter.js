@@ -32,7 +32,7 @@ define(['common/modules/filters'], function (module) {
         number = Math.abs(number);
         hours = (number >= 1 - roundMinutes ?
           Math.floor(Math.ceil(number / roundMinutes) * roundMinutes) + 'h' : '');
-        minutes = (number % 1 && number % 1 < 1 - roundMinutes && number % 1 >= 0
+        minutes = (number % 1 && number % 1 <= 1 - roundMinutes && number % 1 >= 0
           ? Math.ceil(number % 1 / roundMinutes) * roundMinutes * 60 + 'm' : '');
 
         return sign + hours + (hours && minutes ? ' ' : '') + minutes;
