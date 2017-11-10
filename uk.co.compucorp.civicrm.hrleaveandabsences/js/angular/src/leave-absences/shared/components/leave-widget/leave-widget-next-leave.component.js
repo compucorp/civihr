@@ -57,6 +57,7 @@ define([
       ])
       .then(function () {
         if (vm.nextLeaveRequest) {
+          convertStringsToMomentDates();
           mapAbsenceTypeToNextLeaveRequest();
           makeBalanceChangeAbsolute();
           storeStatusForNextRequest();
@@ -76,6 +77,20 @@ define([
     function bindingsAreReady () {
       return vm.absenceTypes && vm.absenceTypes.length && vm.contactId &&
         vm.leaveRequestStatuses && vm.leaveRequestStatuses.length;
+    }
+
+    /**
+     * Converts the from and to date of the next leave request from strings
+     * into Moment dates. This helps display the dates in the view.
+     */
+    function convertStringsToMomentDates () {
+      if (vm.nextLeaveRequest.from_date) {
+        vm.nextLeaveRequest.from_date = moment(vm.nextLeaveRequest.from_date);
+      }
+
+      if (vm.nextLeaveRequest.to_date) {
+        vm.nextLeaveRequest.to_date = moment(vm.nextLeaveRequest.to_date);
+      }
     }
 
     /**

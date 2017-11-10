@@ -133,6 +133,11 @@ define([
           expect(ctrl.nextLeaveRequest).toEqual(expectedNextLeave);
         });
 
+        it('converts the request dates from strings to Date objects', function () {
+          expect(moment.isMoment(ctrl.nextLeaveRequest.from_date)).toBe(true);
+          expect(moment.isMoment(ctrl.nextLeaveRequest.to_date)).toBe(true);
+        });
+
         it('stores the status for the request', function () {
           expect(ctrl.requestStatus).toEqual(expectedRequestStatus);
         });
