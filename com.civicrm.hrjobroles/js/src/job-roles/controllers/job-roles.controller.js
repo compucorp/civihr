@@ -1040,12 +1040,12 @@ define([
      */
     function subcribeToEvents () {
       // Triggers when a new contract is created for a contact.
-      pubSub.subscribe('contract:created', function (contactId) {
+      pubSub.subscribe('Contract::created', function (contactId) {
         contractIdsFromContact(contactId);
       });
 
       // Triggers when a contract is deleted for a contact.
-      pubSub.subscribe('contract:deleted', function (data) {
+      pubSub.subscribe('Contract::deleted', function (data) {
         contractIdsFromContact(data.contactId).then(function (contractIds) {
           if (!contractIds.length) {
             vm.presentJobRoles = [];
