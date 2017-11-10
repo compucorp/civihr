@@ -108,6 +108,8 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Pay Scale ID') ,
           'required' => true,
+          'entity' => 'PayScale',
+          'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
         ) ,
         'pay_scale' => array(
           'name' => 'pay_scale',
@@ -118,6 +120,8 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           'where' => 'civicrm_hrpay_scale.pay_scale',
           'headerPattern' => '',
           'dataPattern' => '',
+          'entity' => 'PayScale',
+          'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
         ) ,
         'currency' => array(
           'name' => 'currency',
@@ -130,7 +134,9 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           'dataPattern' => '',
           'pseudoconstant' => array(
             'optionGroupName' => 'currencies_enabled',
-          )
+          ),
+          'entity' => 'PayScale',
+          'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
         ) ,
         'amount' => array(
           'name' => 'amount',
@@ -140,6 +146,8 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           'where' => 'civicrm_hrpay_scale.amount',
           'headerPattern' => '',
           'dataPattern' => '',
+          'entity' => 'PayScale',
+          'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
         ) ,
         'pay_frequency' => array(
           'name' => 'pay_frequency',
@@ -152,13 +160,17 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           'dataPattern' => '',
           'pseudoconstant' => array(
             'callback' => 'CRM_Hrjobcontract_SelectValues::commonUnit',
-          )
+          ),
+          'entity' => 'PayScale',
+          'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
         ) ,
         'is_active' => array(
           'name' => 'is_active',
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Pay Scale Is Active') ,
           'default' => '1',
+          'entity' => 'PayScale',
+          'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
         ) ,
       );
     }

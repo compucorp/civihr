@@ -109,6 +109,8 @@ class CRM_Hrjobcontract_DAO_HoursLocation extends CRM_Core_DAO
           'type' => CRM_Utils_Type::T_INT,
           'title' => ts('Hours Location ID') ,
           'required' => true,
+          'entity' => 'HoursLocation',
+          'bao' => 'CRM_Hrjobcontract_DAO_HoursLocation',
         ) ,
         'location' => array(
           'name' => 'location',
@@ -119,6 +121,8 @@ class CRM_Hrjobcontract_DAO_HoursLocation extends CRM_Core_DAO
           'where' => 'civicrm_hrhours_location.location',
           'headerPattern' => '',
           'dataPattern' => '',
+          'entity' => 'HoursLocation',
+          'bao' => 'CRM_Hrjobcontract_DAO_HoursLocation',
         ) ,
         'standard_hours' => array(
           'name' => 'standard_hours',
@@ -128,6 +132,8 @@ class CRM_Hrjobcontract_DAO_HoursLocation extends CRM_Core_DAO
           'where' => 'civicrm_hrhours_location.standard_hours',
           'headerPattern' => '',
           'dataPattern' => '',
+          'entity' => 'HoursLocation',
+          'bao' => 'CRM_Hrjobcontract_DAO_HoursLocation',
         ) ,
         'periodicity' => array(
           'name' => 'periodicity',
@@ -137,13 +143,17 @@ class CRM_Hrjobcontract_DAO_HoursLocation extends CRM_Core_DAO
           'export' => true,
           'where' => 'civicrm_hrhours_location.periodicity',
           'headerPattern' => '',
-          'dataPattern' => ''
+          'dataPattern' => '',
+          'entity' => 'HoursLocation',
+          'bao' => 'CRM_Hrjobcontract_DAO_HoursLocation',
         ) ,
         'is_active' => array(
           'name' => 'is_active',
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('Hours Location Is Active') ,
           'default' => '1',
+          'entity' => 'HoursLocation',
+          'bao' => 'CRM_Hrjobcontract_DAO_HoursLocation',
         ) ,
       );
     }
