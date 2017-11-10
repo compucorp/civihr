@@ -316,32 +316,38 @@
             <div class="form-group">
               <label for="{{prefix}}pay-scale-grade" class="col-sm-4 control-label">Pay Scale / Grade</label>
               <div class="col-sm-5">
-                <select id="{{prefix}}pay-scale-grade" class="form-control no-select2"
-                  ng-change="applyPayScaleGradeData()"
-                  ng-options="payScaleGrade.id as (payScaleGrade.pay_scale + (payScaleGrade.currency || payScaleGrade.amount ? ' - ' : '') + payScaleGrade.currency + ' ' + payScaleGrade.amount + (payScaleGrade.pay_frequency ? ' per ' + payScaleGrade.pay_frequency : '')) for payScaleGrade in utils.payScaleGrade"
-                  ng-model="entity.pay.pay_scale"
-                  ng-disabled="isDisabled">
-                  <option value="">- select -</option>
-                </select>
+                <div class="chr_custom-select chr_custom-select--full">
+                  <select id="{{prefix}}pay-scale-grade" class="form-control no-select2"
+                    ng-change="applyPayScaleGradeData()"
+                    ng-options="payScaleGrade.id as (payScaleGrade.pay_scale + (payScaleGrade.currency || payScaleGrade.amount ? ' - ' : '') + payScaleGrade.currency + ' ' + payScaleGrade.amount + (payScaleGrade.pay_frequency ? ' per ' + payScaleGrade.pay_frequency : '')) for payScaleGrade in utils.payScaleGrade"
+                    ng-model="entity.pay.pay_scale"
+                    ng-disabled="isDisabled">
+                    <option value="">- select -</option>
+                  </select>
+                </div>
               </div>
             </div>
             <div class="form-group">
               <label for="{{prefix}}pay-amount" class="col-sm-4 control-label">Pay</label>
               <div class="col-sm-8">
                 <div class="form-inline">
-                  <select class="form-control no-select2"
-                    ng-model="entity.pay.pay_currency"
-                    ng-options="key as value for (key, value) in options.pay.pay_currency"
-                    ng-disabled="isDisabled">
-                  </select>
+                  <div class="chr_custom-select">
+                    <select class="form-control no-select2"
+                      ng-model="entity.pay.pay_currency"
+                      ng-options="key as value for (key, value) in options.pay.pay_currency"
+                      ng-disabled="isDisabled">
+                    </select>
+                  </div>
                   <input id="{{prefix}}pay-amount" type="text" class="form-control input-inline-sm" hrjc-number ng-model="entity.pay.pay_amount" ng-disabled="isDisabled">
                   per
-                  <select class="form-control no-select2"
-                    ng-model="entity.pay.pay_unit"
-                    ng-options="key as value for (key, value) in options.pay.pay_unit"
-                    ng-disabled="isDisabled">
-                    <option value="">- select -</option>
-                  </select>
+                  <div class="chr_custom-select">
+                    <select class="form-control no-select2"
+                      ng-model="entity.pay.pay_unit"
+                      ng-options="key as value for (key, value) in options.pay.pay_unit"
+                      ng-disabled="isDisabled">
+                      <option value="">- select -</option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
@@ -355,12 +361,14 @@
             <div class="form-group">
               <label for="{{prefix}}pay-cycle" class="col-sm-4 control-label">Pay cycle</label>
               <div class="col-sm-3">
-                <select id="{{prefix}}pay-cycle" class="form-control no-select2"
-                  ng-change="calcPayPerCycleGross(); calcBenefitsPerCycle(); calcDeductionsPerCycle();"
-                  ng-options="key as value for (key, value) in options.pay.pay_cycle"
-                  ng-model="entity.pay.pay_cycle"
-                  ng-disabled="isDisabled">
-                </select>
+                <div class="chr_custom-select chr_custom-select--full">
+                  <select id="{{prefix}}pay-cycle" class="form-control no-select2"
+                    ng-change="calcPayPerCycleGross(); calcBenefitsPerCycle(); calcDeductionsPerCycle();"
+                    ng-options="key as value for (key, value) in options.pay.pay_cycle"
+                    ng-model="entity.pay.pay_cycle"
+                    ng-disabled="isDisabled">
+                  </select>
+                </div>
               </div>
             </div>
             <div class="well">
@@ -408,20 +416,24 @@
                         <tr ng-repeat="benefit in entity.pay.annual_benefits">
                           <td class="index">{{$index+1}}</td>
                           <td>
-                            <select class="form-control no-select2"
-                              ng-options="key as value for (key, value) in options.pay.benefit_name"
-                              ng-model="benefit.name"
-                              ng-disabled="isDisabled">
-                              <option value="">- select -</option>
-                            </select>
+                            <div class="chr_custom-select chr_custom-select--full">
+                              <select class="form-control no-select2"
+                                ng-options="key as value for (key, value) in options.pay.benefit_name"
+                                ng-model="benefit.name"
+                                ng-disabled="isDisabled">
+                                <option value="">- select -</option>
+                              </select>
+                            </div>
                           </td>
                           <td>
-                            <select class="form-control no-select2"
-                              ng-options="key as value for (key, value) in options.pay.benefit_type"
-                              ng-model="benefit.type"
-                              ng-disabled="isDisabled">
-                              <option value="">- select -</option>
-                            </select>
+                            <div class="chr_custom-select chr_custom-select--full">
+                              <select class="form-control no-select2"
+                                ng-options="key as value for (key, value) in options.pay.benefit_type"
+                                ng-model="benefit.type"
+                                ng-disabled="isDisabled">
+                                <option value="">- select -</option>
+                              </select>
+                            </div>
                           </td>
                           <td><input type="text" class="form-control"
                             hrjc-number
@@ -430,14 +442,14 @@
                             ng-model="benefit.amount_pct"
                             ng-disabled="isDisabled"></td>
                           <td><input type="text" class="form-control" hrjc-number ng-model="benefit.amount_abs" ng-disabled="isDisabled || benefit.type == '2'"></td>
-                          <td class="action"><a class="btn btn-default btn-sm btn-danger" ng-click="remove(entity.pay.annual_benefits, $index)" ng-disabled="isDisabled">
+                          <td class="action"><a class="btn btn-sm btn-danger" ng-click="remove(entity.pay.annual_benefits, $index)" ng-disabled="isDisabled">
                             <span class="fa fa-remove" aria-hidden="true"></span>
                             </a>
                           </td>
                         </tr>
                         <tr ng-if="!isDisabled">
                           <td colspan="6" class="text-right">
-                            <a class="btn btn-default btn-sm btn-primary" ng-click="add(entity.pay.annual_benefits)">
+                            <a class="btn btn-sm btn-primary" ng-click="add(entity.pay.annual_benefits)">
                             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add
                             </a>
                           </td>
@@ -474,20 +486,24 @@
                         <tr ng-repeat="deduction in entity.pay.annual_deductions">
                           <td class="index">{{$index+1}}</td>
                           <td>
-                            <select class="form-control no-select2"
-                              ng-options="key as value for (key, value) in options.pay.deduction_name"
-                              ng-model="deduction.name"
-                              ng-disabled="isDisabled">
-                              <option value="">- select -</option>
-                            </select>
+                            <div class="chr_custom-select chr_custom-select--full">
+                              <select class="form-control no-select2"
+                                ng-options="key as value for (key, value) in options.pay.deduction_name"
+                                ng-model="deduction.name"
+                                ng-disabled="isDisabled">
+                                <option value="">- select -</option>
+                              </select>
+                            </div>
                           </td>
                           <td>
-                            <select class="form-control no-select2"
-                              ng-options="key as value for (key, value) in options.pay.deduction_type"
-                              ng-model="deduction.type"
-                              ng-disabled="isDisabled">
-                              <option value="">- select -</option>
-                            </select>
+                            <div class="chr_custom-select chr_custom-select--full">
+                              <select class="form-control no-select2"
+                                ng-options="key as value for (key, value) in options.pay.deduction_type"
+                                ng-model="deduction.type"
+                                ng-disabled="isDisabled">
+                                <option value="">- select -</option>
+                              </select>
+                            </div>
                           </td>
                           <td><input type="text" class="form-control"
                             hrjc-number
@@ -496,14 +512,14 @@
                             ng-model="deduction.amount_pct"
                             ng-disabled="isDisabled"></td>
                           <td><input type="text" class="form-control" hrjc-number ng-model="deduction.amount_abs" ng-disabled="isDisabled || deduction.type == '2'"></td>
-                          <td class="action"><a class="btn btn-default btn-sm btn-danger" ng-click="remove(entity.pay.annual_deductions, $index)" ng-disabled="isDisabled">
+                          <td class="action"><a class="btn btn-sm btn-danger" ng-click="remove(entity.pay.annual_deductions, $index)" ng-disabled="isDisabled">
                             <span class="fa fa-remove" aria-hidden="true"></span>
                             </a>
                           </td>
                         </tr>
                         <tr ng-if="!isDisabled">
                           <td colspan="6" class="text-right">
-                            <a class="btn btn-default btn-sm btn-primary" ng-click="add(entity.pay.annual_deductions)">
+                            <a class="btn btn-sm btn-primary" ng-click="add(entity.pay.annual_deductions)">
                             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add
                             </a>
                           </td>

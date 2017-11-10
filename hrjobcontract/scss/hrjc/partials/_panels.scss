@@ -10,12 +10,22 @@
   }
 
   .btn {
-    background-color: $panel-default-heading-bg;
+
     margin-left: 7px;
     padding: {
       bottom: 8px;
       top: 8px;
     };
+
+    &.btn-default {
+      background-color: $panel-default-heading-bg;
+
+        &:hover,
+        &:focus,
+        &:active {
+          background-color: $btn-default-border-hover;
+        }
+    }
 
     .glyphicon {
       margin-right: 3px;
@@ -29,11 +39,6 @@
 
     &:first-child {
       margin-left: 0;
-    }
-
-    &:hover,
-    &:focus {
-      background-color: lighten($panel-default-heading-bg, 2%);
     }
   }
 

@@ -24,6 +24,10 @@
         line-height: 1;
         width: auto !important;
 
+        &:hover,
+        &:active {
+          color: $btn-default-color;
+        }
         &:active {
           @include box-shadow(none);
         }

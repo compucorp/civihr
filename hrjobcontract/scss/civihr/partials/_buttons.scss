@@ -1,6 +1,7 @@
 .btn {
-  text-transform: uppercase;
   @include border-radius($border-radius-alt);
+  font-weight: normal;
+  text-transform: uppercase;
 }
 
 .btn-link {
@@ -8,25 +9,25 @@
 }
 
 .btn-gray {
-  color: #767e8f;
+  color: $gray-dark;
   background-color: #fff;
-  border-color: #767e8f;
+  border-color: $gray-dark;
 
   &:hover,
   &:focus,
   &.btn-focus {
-    color: darken(#767e8f, 15%);
-    border-color: darken(#767e8f, 15%);
+    background-color: $brand-secondary-dark;
+    color: #fff;
   }
 
   &.active {
-    background-color: #767e8f;
+    background-color: $brand-secondary-dark;
     color: #fff;
 
     &:hover,
     &:focus,
     &.btn-focus {
-      background-color: darken(#767e8f, 10%);
+      background-color: $brand-secondary-dark;
       color: #fff;
     }
   }

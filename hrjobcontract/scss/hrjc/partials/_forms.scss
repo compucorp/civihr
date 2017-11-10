@@ -7,6 +7,7 @@ $customselect-padding-right: $customselect-caret-width + 12;
 
 .chr_custom-select {
   background: #ffffff;
+  border-radius: $input-border-radius;
   color: #767B8E;
   display: inline-block;
   overflow: hidden;
@@ -15,7 +16,6 @@ $customselect-padding-right: $customselect-caret-width + 12;
 
   > select {
     background: transparent;
-    border: 1px solid $gray;
     padding: 6px #{$customselect-padding-right}px 6px 12px;
     position: relative;
     width: 100%;
@@ -32,7 +32,7 @@ $customselect-padding-right: $customselect-caret-width + 12;
 
   &:after {
     content: '\f0d7';
-    border-left: 1px solid $gray;
+    border-left: 1px solid $input-border;
     bottom: 0;
     font-family: "FontAwesome";
     display: inline-block;
@@ -86,9 +86,7 @@ $customselect-padding-right: $customselect-caret-width + 12;
 }
 
 .input-group-addon {
-  border: solid 1px $gray-dark !important;
   border-left: 0 !important;
-  color: $brand-primary;
   cursor: pointer;
   width: 0;
 
@@ -123,4 +121,38 @@ $customselect-padding-right: $customselect-caret-width + 12;
     .form-control {
         vertical-align: top;
     }
+}
+
+.form-control {
+  @include box-shadow($crm-form-control-shadow);
+
+  &:focus {
+    @include box-shadow($crm-form-control-shadow);
+    border-color: $brand-primary;
+  }
+
+  .input-group-addon,
+  .input-group-btn,
+  .input-group .form-control {
+    display: table-cell;
+    border-radius: $input-border;
+  }
+}
+
+.ui-select-match,
+.ui-select-container + .input-group-btn {
+  .btn-default {
+    border-color: $input-border;
+    border-radius: $input-border 0 0 $input-border;
+
+    &:hover,
+    &:focus {
+      background-color: $panel-bg;
+
+      i,
+      .fa {
+        color: $btn-default-color;
+      }
+    }
+  }
 }

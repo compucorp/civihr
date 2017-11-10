@@ -19,24 +19,37 @@
 
 // Inspired by upcoming Bootstrap 4 (http://v4-alpha.getbootstrap.com/components/buttons/#outline-buttons)
 $buttons-w-colors: (
-  danger: $brand-danger,
-  primary: $brand-primary,
-  success: $brand-success,
-  warning: $brand-warning
+  danger: ($brand-danger,$brand-danger-dark),
+  primary: ($brand-primary,$brand-primary-dark),
+  success: ($brand-success,$brand-success-dark),
+  warning: ($brand-warning,$brand-warning-dark)
 );
 
 @each $button-type, $button-color in $buttons-w-colors {
 
   .btn-#{$button-type}-outline {
     background-color: transparent;
-    border-color: $button-color;
-    color: $button-color;
+    border-color: nth($button-color,1);
+    color: $btn-default-color;
 
     &:hover,
     &:focus {
-      background-color: transparent;
-      border-color: darken($button-color, 10%);
-      color: darken($button-color, 10%);
+      background-color: nth($button-color,2);
+      border-color: nth($button-color,2);
+      color: $panel-bg;
     }
+  }
+}
+
+.btn-default {
+  &:hover,
+  &:focus,
+  &:active,
+  &.active
+  &.focus,
+  &:active:focus {
+    background-color: $btn-default-border-hover;
+    border-color: $btn-default-border-hover;
+    color: $table-bg;
   }
 }

@@ -16,16 +16,16 @@ $bootstrap-sass-asset-helper: false
 
 // $gray-base:              #000
 $gray-darker:           #525966
-$gray-dark:             #535a67
+$gray-dark:             #4D4D69
 $gray:                  #586277
-$gray-light:            #727e8a
+$gray-light:            #4D4D69
 $gray-lighter:          #e8eef0
 
-$brand-primary:         #41afcb
+$brand-primary:         #0071BD
 $brand-success:         #7dc4a7
 // $brand-info:            #5bc0de
 $brand-warning:         #f7b284
-$brand-danger:          #f08290
+$brand-danger:          #CF3458
 
 
 //== Scaffolding
@@ -40,7 +40,7 @@ $text-color:            $gray-light
 //** Global textual link color.
 // $link-color:            $brand-primary
 //** Link hover color set via `darken()` function.
-// $link-hover-color:      darken($link-color, 15%)
+$link-hover-color:      $brand-primary
 //** Link hover decoration.
 $link-hover-decoration: none
 
@@ -112,7 +112,7 @@ $padding-xs-horizontal:     8px
 // $line-height-large:         1.33
 // $line-height-small:         1.5
 
-$border-radius-base:        0
+$border-radius-base:        2px
 $border-radius-large:       0
 $border-radius-small:       0
 
@@ -154,13 +154,14 @@ $table-border-color:            #e8eef0
 
 $btn-font-weight:                600
 
-$btn-default-color:              #535a67
+$btn-default-color:              #363342
 // $btn-default-bg:                 #fff
-$btn-default-border:             $gray-light
+$btn-default-border:             #4D4D69
+$btn-default-border-hover:       #3D3D54
 
 // $btn-primary-color:              #fff
 // $btn-primary-bg:                 $brand-primary
-// $btn-primary-border:             darken($btn-primary-bg, 5%)
+$btn-primary-border:             $brand-primary
 
 // $btn-success-color:              #fff
 // $btn-success-bg:                 $brand-success
@@ -175,11 +176,17 @@ $btn-default-border:             $gray-light
 // $btn-warning-border:             darken($btn-warning-bg, 5%)
 
 // $btn-danger-color:               #fff
-$btn-danger-bg:                  #e6807f
+$btn-danger-bg:                  #CF3458
 $btn-danger-border:              $btn-danger-bg
 
 // $btn-link-disabled-color:        $gray-light
 
+$brand-primary-dark:             #005A97
+$brand-secondary-dark:           #3D3D54
+$brand-success-dark:             #2C8452
+$brand-info-dark:                #005A97
+$brand-warning-dark:             #9F6A26
+$brand-danger-dark:              #A52946
 
 //== Forms
 //
@@ -193,18 +200,18 @@ $input-bg-disabled:              #f4f7f8
 //** Text color for `<input>`s
 // $input-color:                    $gray
 //** `<input>` border color
-$input-border:                   $gray-light
+$input-border:                   #C2CFD8
 
 // TODO: Rename `$input-border-radius` to `$input-border-radius-base` in v4
 //** Default `.form-control` border radius
-// $input-border-radius:            $border-radius-base
+$input-border-radius:            $border-radius-base
 //** Large `.form-control` border radius
 // $input-border-radius-large:      $border-radius-large
 //** Small `.form-control` border radius
 // $input-border-radius-small:      $border-radius-small
 
 //** Border color for inputs on focus
-// $input-border-focus:             #66afe9
+$input-border-focus:             $brand-primary
 
 //** Placeholder text color
 // $input-color-placeholder:        #999
@@ -495,7 +502,7 @@ $nav-tabs-active-link-hover-border-color:   $nav-tabs-border-color
 //
 //## Define colors for form feedback states and, by default, alerts.
 
-// $state-success-text:             #3c763d
+$state-success-text:             #4D994D
 // $state-success-bg:               #dff0d8
 // $state-success-border:           darken(adjust-hue($state-success-bg, -10), 5%)
 
@@ -507,7 +514,7 @@ $nav-tabs-active-link-hover-border-color:   $nav-tabs-border-color
 // $state-warning-bg:               #fcf8e3
 // $state-warning-border:           darken(adjust-hue($state-warning-bg, -10), 5%)
 
-// $state-danger-text:              #a94442
+$state-danger-text:              #CF3458
 // $state-danger-bg:                #f2dede
 // $state-danger-border:            darken(adjust-hue($state-danger-bg, -10), 5%)
 
@@ -864,3 +871,4 @@ $text-muted:                  $gray
 // $dl-horizontal-offset:        $component-offset-horizontal
 //** Horizontal line color.
 // $hr-border:                   $gray-lighter
+$crm-form-control-shadow:     inset 0 0 3px 0 rgba(0,0,0,0.2)
