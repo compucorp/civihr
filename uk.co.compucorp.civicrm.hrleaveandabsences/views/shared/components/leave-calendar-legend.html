@@ -10,7 +10,7 @@
   <div class="panel-collapse" uib-collapse="legend.legendCollapsed">
     <div class="panel-body chr_leave-calendar__legend" ng-show="!legend.legendCollapsed">
       <div class="row" ng-repeat-start="absenceType in legend.absenceTypes">
-        <div class="col-xs-6 col-md-3">
+        <div class="col-xs-6 col-md-3" ng-if="absenceType.calculation_unit_name === 'days'">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item"
                ng-style="legend.getAbsenceTypeStyle(absenceType)"></div>
@@ -34,12 +34,13 @@
         <div class="col-xs-6 col-md-3" ng-if="absenceType.calculation_unit_name === 'hours'">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item"
-                 ng-style="legend.getAbsenceTypeStyle(absenceType)"><span>10:00</span>
+                 ng-style="legend.getAbsenceTypeStyle(absenceType)">
+              <span class="chr_leave-calendar__time-unit">10:00</span>
             </div>
             <span class="chr_leave-calendar__legend__label">{{absenceType.title}} specific time</span>
           </div>
         </div>
-        <div class="col-xs-6 col-md-3">
+        <div class="col-xs-6 col-md-3" ng-if="absenceType.calculation_unit_name === 'days'">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
                ng-style="legend.getAbsenceTypeStyle(absenceType)"></div>
@@ -63,7 +64,8 @@
         <div class="col-xs-6 col-md-3" ng-if="absenceType.calculation_unit_name === 'hours'">
           <div class="chr_leave-calendar__legend__entry">
             <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
-               ng-style="legend.getAbsenceTypeStyle(absenceType)"><span>10:00</span>
+               ng-style="legend.getAbsenceTypeStyle(absenceType)">
+              <span class="chr_leave-calendar__time-unit">10:00</span>
             </div>
             <span class="chr_leave-calendar__legend__label">Requested {{absenceType.title}} specific time</span>
           </div>
