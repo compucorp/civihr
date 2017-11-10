@@ -117,9 +117,11 @@ define([
             options: { limit: 1, sort: 'from_date DESC' }
           }, null, null, null, false)
           .then(function (response) {
-            expectedNextLeave = response.list[0];
+            expectedNextLeave = _.clone(response.list[0]);
             expectedNextLeave['type_id.title'] = getAbsenceTypeTitleFor(expectedNextLeave);
             expectedNextLeave.balance_change = Math.abs(expectedNextLeave.balance_change);
+            expectedNextLeave.from_date = moment(expectedNextLeave.from_date);
+            expectedNextLeave.to_date = moment(expectedNextLeave.to_date);
             expectedRequestStatus = getExpectedRequestStatus(expectedNextLeave);
           });
           $rootScope.$digest();
