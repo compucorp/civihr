@@ -84,13 +84,10 @@ define([
      * into Moment dates. This helps display the dates in the view.
      */
     function convertStringsToMomentDates () {
-      if (vm.nextLeaveRequest.from_date) {
-        vm.nextLeaveRequest.from_date = moment(vm.nextLeaveRequest.from_date);
-      }
-
-      if (vm.nextLeaveRequest.to_date) {
-        vm.nextLeaveRequest.to_date = moment(vm.nextLeaveRequest.to_date);
-      }
+      vm.nextLeaveRequest.from_date = vm.nextLeaveRequest.from_date &&
+        moment(vm.nextLeaveRequest.from_date);
+      vm.nextLeaveRequest.to_date = vm.nextLeaveRequest.to_date &&
+        moment(vm.nextLeaveRequest.to_date);
     }
 
     /**
