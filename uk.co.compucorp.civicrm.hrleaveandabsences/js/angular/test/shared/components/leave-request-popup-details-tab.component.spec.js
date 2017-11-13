@@ -532,6 +532,38 @@ define([
                 it('shows the balance', function () {
                   expect(controller.uiOptions.showBalance).toBeTruthy();
                 });
+
+                describe('if work day info cannot be retrieved', function () {
+                  beforeEach(function () {
+                    spyOn($rootScope, '$broadcast');
+                    spyOn(request, 'getWorkDayForDate').and.returnValue($q.reject());
+                    setTestDates(date2016, date2017);
+                    $rootScope.$digest();
+                  });
+
+                  it('flushes and disables time and deduction fields', function () {
+                    expect(timeToObject.disabled).toBeTruthy();
+                    expect(timeToObject.time).toBe('');
+                    expect(timeToObject.min).toBe('0');
+                    expect(timeToObject.max).toBe('0');
+                    expect(timeToObject.maxAmount).toBe('0');
+                    expect(timeToObject.amount).toBe('0');
+                  });
+
+                  it('flushes and disables time and deduction fields', function () {
+                    expect(timeToObject.disabled).toBeTruthy();
+                    expect(timeToObject.time).toBe('');
+                    expect(timeToObject.min).toBe('0');
+                    expect(timeToObject.max).toBe('0');
+                    expect(timeToObject.maxAmount).toBe('0');
+                    expect(timeToObject.amount).toBe('0');
+                  });
+
+                  it('shows the error', function () {
+                    expect($rootScope.$broadcast).toHaveBeenCalledWith(
+                      'LeaveRequestPopup::handleError', jasmine.any(Array));
+                  });
+                });
               });
             });
           });

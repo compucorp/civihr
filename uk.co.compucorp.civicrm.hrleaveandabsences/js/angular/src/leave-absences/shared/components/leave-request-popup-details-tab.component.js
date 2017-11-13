@@ -564,6 +564,10 @@ define([
 
       timeObject.disabled = true;
       timeObject.time = '';
+      timeObject.min = '0';
+      timeObject.max = '0';
+      timeObject.maxAmount = '0';
+      timeObject.amount = '0';
 
       return vm.request.getWorkDayForDate(date).then(function (response) {
         timeObject.min = response.time_from;
@@ -572,7 +576,7 @@ define([
         timeObject.amount = timeObject.maxAmount || '0';
         timeObject.disabled = false;
         timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
-      });
+      }).catch(handleError);
     }
 
     /**

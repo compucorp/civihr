@@ -275,6 +275,9 @@ define([
           return LeaveRequestAPI.getWorkDayForDate(date, this.contact_id)
             .then(function (response) {
               return response.values;
+            })
+            .catch(function (errors) {
+              return $q.reject(errors);
             });
         },
 

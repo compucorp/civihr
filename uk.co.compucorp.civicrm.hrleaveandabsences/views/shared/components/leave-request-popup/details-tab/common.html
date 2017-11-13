@@ -67,7 +67,7 @@
           <select
             class="no-select2"
             ng-model="detailsTab.uiOptions.times.from.time"
-            ng-disabled="detailsTab.uiOptions.times.from.disabled"
+            ng-disabled="detailsTab.uiOptions.times.from.disabled || __isNotEditable"
             timepicker-select
             timepicker-select-time-from="detailsTab.uiOptions.times.from.min"
             timepicker-select-time-to="detailsTab.uiOptions.times.from.max"
@@ -86,7 +86,7 @@
       <label class="col-sm-4 control-label required-mark">Deduction</label>
       <div class="col-sm-4">
         <time-amount-picker
-          time-amount-picker-disabled="!detailsTab.uiOptions.times.from.maxAmount || __isNotEditable"
+          time-amount-picker-disabled="!detailsTab.uiOptions.times.from.maxAmount || detailsTab.uiOptions.times.from.disabled || __isNotEditable"
           time-amount-picker-value="detailsTab.uiOptions.times.from.amount"
           time-amount-picker-min-amount="0"
           time-amount-picker-max-amount="detailsTab.uiOptions.times.from.maxAmount"
@@ -142,7 +142,7 @@
             <select
               class="no-select2"
               ng-model="detailsTab.uiOptions.times.to.time"
-              ng-disabled="detailsTab.uiOptions.times.to.disabled"
+              ng-disabled="detailsTab.uiOptions.times.to.disabled || __isNotEditable"
               timepicker-select
               timepicker-select-time-from="detailsTab.uiOptions.times.to.min"
               timepicker-select-time-to="detailsTab.uiOptions.times.to.max"
@@ -161,7 +161,7 @@
         <label class="col-sm-4 control-label required-mark">Deduction</label>
         <div class="col-sm-4">
           <time-amount-picker
-            time-amount-picker-disabled="!detailsTab.uiOptions.times.to.maxAmount || __isNotEditable"
+            time-amount-picker-disabled="!detailsTab.uiOptions.times.to.maxAmount || detailsTab.uiOptions.times.from.disabled || __isNotEditable"
             time-amount-picker-value="detailsTab.uiOptions.times.to.amount"
             time-amount-picker-min-amount="0"
             time-amount-picker-max-amount="detailsTab.uiOptions.times.to.maxAmount"
