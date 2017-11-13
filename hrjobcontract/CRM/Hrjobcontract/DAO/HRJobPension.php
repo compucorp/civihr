@@ -177,6 +177,7 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
                   'import' => false,
                   'entity' => 'HRJobPension',
                   'bao' => 'CRM_Hrjobcontract_DAO_HRJobPension',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_pension_is_enrolled' => array(
                   'name' => 'is_enrolled',
@@ -189,6 +190,7 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
                   'dataPattern' => '',
                   'entity' => 'HRJobPension',
                   'bao' => 'CRM_Hrjobcontract_DAO_HRJobPension',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_pension_ee_contrib_pct' => array(
                   'name' => 'ee_contrib_pct',
@@ -201,6 +203,7 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
                   'dataPattern' => '',
                   'entity' => 'HRJobPension',
                   'bao' => 'CRM_Hrjobcontract_DAO_HRJobPension',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_pension_er_contrib_pct' => array(
                   'name' => 'er_contrib_pct',
@@ -213,6 +216,7 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
                   'dataPattern' => '',
                   'entity' => 'HRJobPension',
                   'bao' => 'CRM_Hrjobcontract_DAO_HRJobPension',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_pension_pension_type' => array(
                   'name' => 'pension_type',
@@ -231,6 +235,7 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
                   ),
                   'entity' => 'HRJobPension',
                   'bao' => 'CRM_Hrjobcontract_DAO_HRJobPension',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_pension_ee_contrib_abs' => array(
                   'name' => 'ee_contrib_abs',
@@ -243,6 +248,7 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
                   'dataPattern' => '',
                   'entity' => 'HRJobPension',
                   'bao' => 'CRM_Hrjobcontract_DAO_HRJobPension',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_pension_ee_evidence_note' => array(
                   'name' => 'ee_evidence_note',
@@ -256,6 +262,7 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
                   'headerPattern' => '/^pension\s?evidence\s?note/i',
                   'entity' => 'HRJobPension',
                   'bao' => 'CRM_Hrjobcontract_DAO_HRJobPension',
+                  'localizable' => 0,
                 ) ,
             )
         );

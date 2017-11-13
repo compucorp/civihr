@@ -110,6 +110,7 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           'required' => true,
           'entity' => 'PayScale',
           'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
+          'localizable' => 0,
         ) ,
         'pay_scale' => array(
           'name' => 'pay_scale',
@@ -122,6 +123,7 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           'dataPattern' => '',
           'entity' => 'PayScale',
           'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
+          'localizable' => 0,
         ) ,
         'currency' => array(
           'name' => 'currency',
@@ -137,6 +139,7 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           ),
           'entity' => 'PayScale',
           'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
+          'localizable' => 0,
         ) ,
         'amount' => array(
           'name' => 'amount',
@@ -148,6 +151,7 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           'dataPattern' => '',
           'entity' => 'PayScale',
           'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
+          'localizable' => 0,
         ) ,
         'pay_frequency' => array(
           'name' => 'pay_frequency',
@@ -163,6 +167,7 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           ),
           'entity' => 'PayScale',
           'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
+          'localizable' => 0,
         ) ,
         'is_active' => array(
           'name' => 'is_active',
@@ -171,6 +176,7 @@ class CRM_Hrjobcontract_DAO_PayScale extends CRM_Core_DAO
           'default' => '1',
           'entity' => 'PayScale',
           'bao' => 'CRM_Hrjobcontract_DAO_PayScale',
+          'localizable' => 0,
         ) ,
       );
     }

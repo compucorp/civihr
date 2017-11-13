@@ -111,6 +111,7 @@ class CRM_Hrjobcontract_DAO_HoursLocation extends CRM_Core_DAO
           'required' => true,
           'entity' => 'HoursLocation',
           'bao' => 'CRM_Hrjobcontract_DAO_HoursLocation',
+          'localizable' => 0,
         ) ,
         'location' => array(
           'name' => 'location',
@@ -123,6 +124,7 @@ class CRM_Hrjobcontract_DAO_HoursLocation extends CRM_Core_DAO
           'dataPattern' => '',
           'entity' => 'HoursLocation',
           'bao' => 'CRM_Hrjobcontract_DAO_HoursLocation',
+          'localizable' => 0,
         ) ,
         'standard_hours' => array(
           'name' => 'standard_hours',
@@ -134,6 +136,7 @@ class CRM_Hrjobcontract_DAO_HoursLocation extends CRM_Core_DAO
           'dataPattern' => '',
           'entity' => 'HoursLocation',
           'bao' => 'CRM_Hrjobcontract_DAO_HoursLocation',
+          'localizable' => 0,
         ) ,
         'periodicity' => array(
           'name' => 'periodicity',
@@ -146,6 +149,7 @@ class CRM_Hrjobcontract_DAO_HoursLocation extends CRM_Core_DAO
           'dataPattern' => '',
           'entity' => 'HoursLocation',
           'bao' => 'CRM_Hrjobcontract_DAO_HoursLocation',
+          'localizable' => 0,
         ) ,
         'is_active' => array(
           'name' => 'is_active',
@@ -154,6 +158,7 @@ class CRM_Hrjobcontract_DAO_HoursLocation extends CRM_Core_DAO
           'default' => '1',
           'entity' => 'HoursLocation',
           'bao' => 'CRM_Hrjobcontract_DAO_HoursLocation',
+          'localizable' => 0,
         ) ,
       );
     }

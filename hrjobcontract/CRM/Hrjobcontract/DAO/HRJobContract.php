@@ -153,6 +153,7 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
           'where' => 'civicrm_hrjobcontract.id',
           'entity' => 'HRJobContract',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContract',
+          'localizable' => 0,
         ) ,
         'contact_id' => array(
           'name' => 'contact_id',
@@ -165,6 +166,7 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
           'FKClassName' => 'CRM_Contact_DAO_Contact',
           'entity' => 'HRJobContract',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContract',
+          'localizable' => 0,
         ) ,
         'is_primary' => array(
           'name' => 'is_primary',
@@ -177,6 +179,7 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
           'dataPattern' => '',
           'entity' => 'HRJobContract',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContract',
+          'localizable' => 0,
         ) ,
         'deleted' => array(
           'name' => 'deleted',
@@ -187,6 +190,7 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
           'where' => 'civicrm_hrjobcontract.deleted',
           'entity' => 'HRJobContract',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContract',
+          'localizable' => 0,
         ) ,
       );
     }

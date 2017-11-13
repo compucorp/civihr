@@ -149,6 +149,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^revision\s?id/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'jobcontract_id' => array(
           'name' => 'jobcontract_id',
@@ -160,6 +161,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/(job\s?)?contract\s?id/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'editor_uid' => array(
           'name' => 'editor_uid',
@@ -170,6 +172,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'import' => false,
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'created_date' => array(
           'name' => 'created_date',
@@ -181,6 +184,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^created\s?date/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'effective_date' => array(
           'name' => 'effective_date',
@@ -192,6 +196,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^effective\s?date/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'effective_end_date' => array(
           'name' => 'effective_end_date',
@@ -203,6 +208,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^effective\s?end\s?date/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'change_reason' => array(
           'name' => 'change_reason',
@@ -217,6 +223,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^change\s?reason/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'modified_date' => array(
           'name' => 'modified_date',
@@ -228,6 +235,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^modified\s?date/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'status' => array(
           'name' => 'status',
@@ -239,6 +247,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^revision\s?status/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'details_revision_id' => array(
           'name' => 'details_revision_id',
@@ -252,6 +261,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^details\s?revision\s?id/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'health_revision_id' => array(
           'name' => 'health_revision_id',
@@ -265,6 +275,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^health\s?revision\s?id/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'hour_revision_id' => array(
           'name' => 'hour_revision_id',
@@ -278,6 +289,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^hour\s?revision\s?id/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'leave_revision_id' => array(
           'name' => 'leave_revision_id',
@@ -291,6 +303,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^leave\s?revision\s?id/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'pay_revision_id' => array(
           'name' => 'pay_revision_id',
@@ -304,6 +317,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^pay\s?revision\s?id/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'pension_revision_id' => array(
           'name' => 'pension_revision_id',
@@ -317,6 +331,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^pension\s?revision\s?id/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'role_revision_id' => array(
           'name' => 'role_revision_id',
@@ -330,6 +345,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'headerPattern' => '/^role\s?revision\s?id/i',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
         'deleted' => array(
           'name' => 'deleted',
@@ -340,6 +356,7 @@ class CRM_Hrjobcontract_DAO_HRJobContractRevision extends CRM_Core_DAO
           'where' => 'civicrm_hrjobcontract_revision.deleted',
           'entity' => 'HRJobContractRevision',
           'bao' => 'CRM_Hrjobcontract_DAO_HRJobContractRevision',
+          'localizable' => 0,
         ) ,
       );
     }

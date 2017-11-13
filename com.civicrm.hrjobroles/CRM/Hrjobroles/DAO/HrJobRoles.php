@@ -275,6 +275,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'where' => 'civicrm_hrjobroles.id',
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'job_contract_id' => array(
           'name' => 'job_contract_id',
@@ -284,6 +285,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'required' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'title' => array(
           'name' => 'title',
@@ -297,6 +299,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'where' => 'civicrm_hrjobroles.title',
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'description' => array(
           'name' => 'description',
@@ -307,6 +310,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'where' => 'civicrm_hrjobroles.description',
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'status' => array(
           'name' => 'status',
@@ -319,6 +323,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'where' => 'civicrm_hrjobroles.status',
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'hrjc_role_hours' => array(
           'name' => 'hours',
@@ -328,6 +333,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'where' => 'civicrm_hrjobroles.hours',
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'hrjc_role_unit' => array(
           'name' => 'role_hours_unit',
@@ -341,6 +347,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'hrjc_region' => array(
           'name' => 'region',
@@ -358,6 +365,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjc_region',
           ),
+          'localizable' => 0,
         ) ,
         'hrjc_role_department' => array(
           'name' => 'department',
@@ -375,6 +383,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjc_department',
           ),
+          'localizable' => 0,
         ) ,
         'hrjc_level_type' => array(
           'name' => 'level_type',
@@ -392,6 +401,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjc_level_type',
           ),
+          'localizable' => 0,
         ) ,
         'manager_contact_id' => array(
           'name' => 'manager_contact_id',
@@ -400,6 +410,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'FKClassName' => 'CRM_Contact_DAO_Contact',
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'functional_area' => array(
           'name' => 'functional_area',
@@ -411,6 +422,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'organization' => array(
           'name' => 'organization',
@@ -422,6 +434,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'hrjc_cost_center' => array(
           'name' => 'cost_center',
@@ -436,6 +449,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'hrjc_cost_center_val_type' => array(
           'name' => 'cost_center_val_type',
@@ -450,6 +464,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'hrjc_role_percent_pay_cost_center' => array(
           'name' => 'percent_pay_cost_center',
@@ -464,6 +479,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'hrjc_role_amount_pay_cost_center' => array(
           'name' => 'amount_pay_cost_center',
@@ -478,6 +494,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'funder' => array(
           'name' => 'funder',
@@ -490,6 +507,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'where' => 'civicrm_hrjobroles.funder',
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'hrjc_funder_val_type' => array(
           'name' => 'funder_val_type',
@@ -504,6 +522,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'hrjc_role_percent_pay_funder' => array(
           'name' => 'percent_pay_funder',
@@ -518,6 +537,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'hrjc_role_amount_pay_funder' => array(
           'name' => 'amount_pay_funder',
@@ -532,6 +552,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'location' => array(
           'name' => 'location',
@@ -549,6 +570,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'pseudoconstant' => array(
             'optionGroupName' => 'hrjc_location',
           ),
+          'localizable' => 0,
         ) ,
         'hrjc_role_start_date' => array(
           'name' => 'start_date',
@@ -563,6 +585,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
         'hrjc_role_end_date' => array(
           'name' => 'end_date',
@@ -577,6 +600,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
           'export' => true,
           'entity' => 'HrJobRoles',
           'bao' => 'CRM_Hrjobroles_DAO_HrJobRoles',
+          'localizable' => 0,
         ) ,
       );
     }
