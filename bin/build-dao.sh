@@ -27,7 +27,7 @@ function validatePaths() {
 
 function printUsage() {
   echo ""
-  echo "usage: $0 <extension>"
+  echo "usage: $0 <extension-key>"
   echo "example: $0 key.of.your.extension"
   exit
 }
