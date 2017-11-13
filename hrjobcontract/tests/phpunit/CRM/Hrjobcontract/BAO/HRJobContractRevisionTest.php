@@ -1,7 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContractRevision as HRJobContractRevisionFabricator;
@@ -16,24 +14,15 @@ use CRM_Hrjobcontract_Test_Fabricator_HRJobPension as HRJobPensionFabricator;
  *
  * @group headless
  */
-class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface,
-  TransactionalInterface {
+class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends CRM_Hrjobcontract_Test_BaseHeadlessTest {
 
   use HRJobContractTestTrait;
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('uk.co.compucorp.civicrm.hrcore')
-      ->installMe(__DIR__)
-      ->apply();
-  }
 
   /**
    * Tests that structure of response for CRM_Hrjobcontract_BAO_HRJobContractRevision::fullDetails()
    * has all required sets of values.
    */
-  function testFullDetailsResponse() {
+  public function testFullDetailsResponse() {
     $contact = ContactFabricator::fabricate();
     $contract = HRJobContractFabricator::fabricate(
       ['contact_id' => $contact['id']],
@@ -65,10 +54,10 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends PHPUnit_Framework_
 
   /**
    * Obtains current revision for given contract.
-   * 
+   *
    * @param int $jobContractID
    *   ID of job contract
-   * 
+   *
    * @return array
    *   Details for current revision of job contract
    */
@@ -87,7 +76,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevisionTest extends PHPUnit_Framework_
    * start dates and Revision's effective dates and test its valididy
    * after each change basing on current time.
    */
-  function testHRJobContractRevisionFlow() {
+  public function testHRJobContractRevisionFlow() {
     // Create test data.
     $time = time();
     $testContactId = $this->createTestContactAndGetItsID();

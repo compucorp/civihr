@@ -72,7 +72,7 @@ function hrvisa_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrvisa_civicrm_install() {
-  if (!CRM_Core_OptionGroup::getValue('activity_type', 'Visa Expiration', 'name')) {
+  if (!CRM_HRVisa_Activity::getActivityTypeID('Visa Expiration')) {
     // create activity_type 'Visa Expiration'
     $params = array(
       'weight' => 1,
@@ -89,7 +89,7 @@ function hrvisa_civicrm_install() {
     $activityTypeId =  $result['values'][$result['id']]['value'];
   }
   else {
-    $activityTypeId = CRM_Core_OptionGroup::getValue('activity_type', 'Visa Expiration', 'name');
+    $activityTypeId = CRM_HRVisa_Activity::getActivityTypeID('Visa Expiration');
   }
 
   // set weekly reminder for Visa Expiration activities (not active)
@@ -107,7 +107,7 @@ function hrvisa_civicrm_install() {
         'recipient' => $targetID,
         'limit_to' => 1,
         'entity_value' => $activityTypeId,
-        'entity_status' => CRM_Core_OptionGroup::getValue('activity_status', 'Scheduled', 'name'),
+        'entity_status' => CRM_HRVisa_Activity::getActivityStatusID('Scheduled'),
         'start_action_offset' => 1,
         'start_action_unit' => 'week',
         'start_action_condition' => 'before',

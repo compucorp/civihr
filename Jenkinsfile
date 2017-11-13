@@ -17,6 +17,8 @@ pipeline {
     CIVICRM_EXT_ROOT = "$DRUPAL_MODULES_ROOT/civicrm/tools/extensions"
     WEBURL = "http://jenkins.compucorp.co.uk:8900"
     ADMIN_PASS = credentials('CVHR_ADMIN_PASS')
+    KARMA_TESTS_REPORT_FOLDER = "reports/js-karma"
+    PHPUNIT_TESTS_REPORT_FOLDER = "reports/phpunit"
   }
 
   stages {
@@ -30,6 +32,12 @@ pipeline {
 
         // Test build tools
         sh 'amp test'
+
+        // Cleanup old Karma test reports
+        sh "rm -f $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/* || true"
+
+        // Cleanup old PHPUnit test reports
+        sh "rm -f $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/* || true"
       }
     }
 
@@ -43,7 +51,13 @@ pipeline {
           def buildBranch = params.CIVIHR_BRANCH != '' ? params.CIVIHR_BRANCH : env.CHANGE_TARGET != null ? env.CHANGE_TARGET : env.BRANCH_NAME != null ? env.BRANCH_NAME : 'staging'
 
           // Build site with CV Buildkit
-          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr16 --civi-ver 4.7.22 --hr-ver ${buildBranch} --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.27 --hr-ver ${buildBranch} --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh """
+            cd $DRUPAL_MODULES_ROOT/civicrm
+            wget -O attachments.patch https://gist.githubusercontent.com/davialexandre/199b3ebb2c69f43c07dde0f51fb02c8b/raw/0f11edad8049c6edddd7f865c801ecba5fa4c052/attachments-4.7.27.patch
+            patch -p1 -i attachments.patch
+            rm attachments.patch
+          """
 
           // Change git remote of civihr ext to support dev version of Jenkins pipeline
           changeCivihrGitRemote()
@@ -107,7 +121,7 @@ pipeline {
             tools: [
               [
                 $class: 'JUnitType',
-                pattern: 'reports/phpunit/*.xml'
+                pattern: env.PHPUNIT_TESTS_REPORT_FOLDER + '/*.xml'
               ]
             ]
           ])
@@ -115,35 +129,29 @@ pipeline {
       }
     }
 
-  /* Testing JS */
-  // TODO: Execute test and Generate report without stop on fail
-    stage('Testing JS: Install NPM in parallel') {
+    /* Testing JS */
+    stage('Testing JS: Install JS packages') {
       steps {
         script {
-          def extensionTestings = [:]
-
-          // Install NPM jobs
           for (extension in listCivihrExtensions()) {
-            if(!extension.hasJSTests) {
-              continue;
-            }
-
-            extensionTestings[extension.shortName] = {
-              installNPM(extension)
+            if(extension.hasJSTests) {
+              installJSPackages(extension);
             }
           }
-          // Running install NPM jobs in parallel
-          parallel extensionTestings
         }
       }
     }
 
-    stage('Testing JS: Test JS in sequent') {
+    stage('Testing JS: Test JS') {
       steps {
         script {
-          // Testing JS in sequent
-          for (extension in listCivihrExtensions) {
-            if(extension.hasJSTests) {
+          // This is necessary to avoid an additional loop
+          // in each extension folder to read the XML.
+          // After each test we move the reports to this folder
+          sh "mkdir -p $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER"
+
+          for (extension in listCivihrExtensions()) {
+            if (extension.hasJSTests) {
               testJS(extension)
             }
           }
@@ -160,19 +168,12 @@ pipeline {
                 failureThreshold: '1',
                 unstableNewThreshold: '1',
                 unstableThreshold: '1'
-              ],
-              [
-                $class: 'SkippedThreshold',
-                failureNewThreshold: '0',
-                failureThreshold: '0',
-                unstableNewThreshold: '0',
-                unstableThreshold: '0'
               ]
             ],
             tools: [
               [
                 $class: 'JUnitType',
-                pattern: 'reports/js-karma/*.xml'
+                pattern: env.KARMA_TESTS_REPORT_FOLDER + '/*.xml'
               ]
             ]
           ])
@@ -244,18 +245,19 @@ def testPHPUnit(java.util.LinkedHashMap extension) {
 
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    phpunit4 --log-junit $WORKSPACE/reports/phpunit/result-phpunit_${extension.shortName}.xml || true
+    phpunit4 --testsuite="Unit Tests" --log-junit $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/result-phpunit_${extension
+    .shortName}.xml
   """
 }
 
 /*
- * Installk JS Testing
+ * Install JS Testing
  * params: extension
  */
-def installNPM(java.util.LinkedHashMap extension) {
+def installJSPackages(java.util.LinkedHashMap extension) {
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    npm install || true
+    yarn || true
   """
 }
 
@@ -266,9 +268,14 @@ def installNPM(java.util.LinkedHashMap extension) {
 def testJS(java.util.LinkedHashMap extension) {
   echo "JS Testing ${extension.name}"
 
+  // We cannot change, using CLI arguments, the place where
+  // karma stores the junit XML report, so the last command
+  // here copies the XML from the extension folder to the
+  // workspace, where Jenkins will read it
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    gulp test || true
+    gulp test --reporters junit,progress || true
+    mv test-reports/*.xml $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/ || true
   """
 }
 
@@ -296,21 +303,28 @@ def listCivihrExtensions() {
       name: 'Job Roles',
       shortName: 'hrjobroles',
       folder: 'com.civicrm.hrjobroles',
-      hasJSTests: false,
+      hasJSTests: true,
       hasPHPTests: true
     ],
     [
       name: 'Contacts Access Rights',
       shortName: 'contactaccessrights',
       folder: 'contactaccessrights',
-      hasJSTests: false,
+      hasJSTests: true,
       hasPHPTests: true
+    ],
+    [
+      name: 'Contacts Summary',
+      shortName: 'contactsummary',
+      folder: 'contactsummary',
+      hasJSTests: true,
+      hasPHPTests: false
     ],
     [
       name: 'Job Contracts',
       shortName: 'hrjobcontract',
       folder: 'hrjobcontract',
-      hasJSTests: false,
+      hasJSTests: true,
       hasPHPTests: true
     ],
     [
@@ -325,14 +339,14 @@ def listCivihrExtensions() {
       shortName: 'hrreport',
       folder: 'hrreport',
       hasJSTests: false,
-      hasPHPTests: true
+      hasPHPTests: false
     ],
     [
       name: 'HR UI',
       shortName: 'hrui',
       folder: 'hrui',
       hasJSTests: false,
-      hasPHPTests: true
+      hasPHPTests: false
     ],
     [
       name: 'HR Visa',
@@ -340,6 +354,13 @@ def listCivihrExtensions() {
       folder: 'hrvisa',
       hasJSTests: false,
       hasPHPTests: true
+    ],
+    [
+      name: 'Reqangular',
+      shortName: 'reqangular',
+      folder: 'org.civicrm.reqangular',
+      hasJSTests: true,
+      hasPHPTests: false
     ],
     [
       name: 'HRCore',
@@ -352,7 +373,7 @@ def listCivihrExtensions() {
       name: 'Leave and Absences',
       shortName: 'hrleaveandabsences',
       folder: 'uk.co.compucorp.civicrm.hrleaveandabsences',
-      hasJSTests: false,
+      hasJSTests: true,
       hasPHPTests: true
     ],
     [
