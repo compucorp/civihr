@@ -72,7 +72,13 @@ define([
      * loaded.
      */
     function loadDependencies () {
-      return loadEntitlements().then(function () {
+      return loadEntitlements()
+      .then(mapAbsenceTypesWithTheirEntitlements)
+      .then(filterOutUnentitledAbsenceTypes)
+      .then(function (absenceTypeEntitlements) {
+        vm.absenceTypeEntitlements = absenceTypeEntitlements;
+      })
+      .finally(function () {
         $scope.$emit('LeaveWidget::childIsReady', childComponentName);
       });
     }
@@ -89,28 +95,40 @@ define([
         contact_id: vm.contactId,
         period_id: vm.absencePeriod.id,
         type_id: { IN: getContractEntitlementsIds() }
-      }, true)
-      .then(function (_entitlements_) {
-        entitlements = _entitlements_;
-
-        mapAbsenceTypesWithTheirEntitlements();
-      });
+      }, true);
     }
 
     /**
-     * Maps absence types with their entitlements. Only absence types the user
-     * is entitled to are mapped (entitlement.value > 0). The .remainder.future
-     * is used to display the current balance for approved and open requestes.
+     * Maps absence types with their entitlements.
+     *
+     * @param {Array} entitlements - a list of entitlements for the user.
+     * @return {Array} - a list of entitlements and their corresponding absence
+     * type.
      */
-    function mapAbsenceTypesWithTheirEntitlements () {
-      vm.absenceTypeEntitlements = vm.absenceTypes.map(function (absenceType) {
+    function mapAbsenceTypesWithTheirEntitlements (entitlements) {
+      return vm.absenceTypes.map(function (absenceType) {
         var entitlement = _.find(entitlements, function (entitlement) {
           return +absenceType.id === +entitlement.type_id;
         });
 
-        return _.assign({
-          balance: entitlement && entitlement.remainder.future
-        }, absenceType);
+        return {
+          absenceType: absenceType,
+          entitlement: entitlement
+        };
+      });
+    }
+
+    /**
+     * Returns only entitlements that have a corresponding absence type. This
+     * helps filter out entitlements for disabled absence types.
+     *
+     * @param {Array} absenceTypeEntitlements - a list of absence type and
+     * entitlement pairs.
+     * @return {Array}
+     */
+    function filterOutUnentitledAbsenceTypes (absenceTypeEntitlements) {
+      return absenceTypeEntitlements.filter(function (absenceTypeEntitlement) {
+        return absenceTypeEntitlement.absenceType && absenceTypeEntitlement.entitlement;
       });
     }
   }
