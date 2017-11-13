@@ -9,7 +9,7 @@ use CRM_Hremergency_Service_EmergencyContactService as EmergencyContactService;
 /**
  * @group headless
  */
-class EmergencyContactServiceTest extends \PHPUnit_Framework_TestCase
+class CRM_Hremergency_Service_EmergencyContactServiceTest extends \PHPUnit_Framework_TestCase
   implements HeadlessInterface, TransactionalInterface {
 
   public function setUpHeadless() {
