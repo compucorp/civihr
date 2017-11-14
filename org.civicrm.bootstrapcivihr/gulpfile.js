@@ -22,8 +22,8 @@ gulp.task('sass', ['sass:sync'], function () {
       prefix: bootstrapNamespace + ' ',
       exclude: [
         /^html/, /^body/, /page-civi/,
-        '.crm-container .blockUI.blockOverlay',
-        '.crm-container .dataTables_processing'
+        '.crm-container .blockUI.blockOverlay', // class to display spinner on overlay
+        '.crm-container .dataTables_processing' // class to display spinner datatable load
       ]
     })]))
     .pipe(transformSelectors(namespaceRootElements, { splitOnCommas: true }))
