@@ -15,10 +15,14 @@ define([
       return settings.pathTpl + 'components/contract-entitlements.html';
     }],
     controllerAs: 'entitlements',
-    controller: ['$log', '$q', 'HR_settings', 'AbsenceType', 'Contract', 'DateFormat', controller]
+    controller: contractEntitlementsController
   });
 
-  function controller ($log, $q, HRSettings, AbsenceType, Contract, DateFormat) {
+  contractEntitlementsController.$inject = ['$log', '$q', 'HR_settings',
+    'AbsenceType', 'Contract', 'DateFormat'];
+
+  function contractEntitlementsController ($log, $q, HRSettings,
+    AbsenceType, Contract, DateFormat) {
     $log.debug('Component: contract-entitlements');
 
     var vm = this;
@@ -88,7 +92,5 @@ define([
         };
       });
     }
-
-    return vm;
   }
 });
