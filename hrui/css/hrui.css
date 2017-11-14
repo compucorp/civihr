@@ -41,11 +41,3 @@ body {
 #crm-main-content-wrapper #contactDetails #govID span {
   margin-right: 1%;
 }
-
-#civicrm-menu .crm-logo-sm {
-  background: url('../../assets/civihr.png') !important;
-  background-size: 20px 20px !important;
-  height: 20px !important;
-  width: 20px !important;
-}
-
