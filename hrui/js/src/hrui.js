@@ -11,11 +11,11 @@
       changeContactSourceFieldHelpText();
     })
     .ready(function () {
-      toggleActiveClassOnHoverOnAnyMainMenuItem();
       addUserMenuToMainMenu();
+      amendAppLogoMenuItem();
       amendApplicationForm();
       useFontAwesomeArrowsInSubMenuItems();
-      amendAppLogoMenuItem();
+      toggleActiveClassOnHoverOnAnyMainMenuItem();
     });
 
   /**
