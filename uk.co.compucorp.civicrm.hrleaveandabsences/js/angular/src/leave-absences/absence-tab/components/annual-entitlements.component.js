@@ -16,13 +16,16 @@
         return settings.pathTpl + 'components/annual-entitlements.html';
       }],
       controllerAs: 'entitlements',
-      controller: ['$log', '$q', '$rootElement', '$uibModal', 'AbsenceType',
-        'AbsencePeriod', 'Entitlement', 'Contact', 'notificationService',
-        controller]
+      controller: AnnualEntitlementsController
     });
 
-    function controller ($log, $q, $rootElement, $uibModal, AbsenceType, AbsencePeriod,
-      Entitlement, Contact, notification) {
+    AnnualEntitlementsController.$inject = ['$log', '$q', '$rootElement',
+      '$uibModal', 'AbsenceType', 'AbsencePeriod', 'Entitlement', 'Contact',
+      'notificationService'];
+
+    function AnnualEntitlementsController ($log, $q, $rootElement,
+      $uibModal, AbsenceType, AbsencePeriod, Entitlement, Contact,
+      notification) {
       $log.debug('Component: annual-entitlements');
 
       var vm = this;
@@ -34,6 +37,7 @@
       vm.editEntitlementsPageUrl = getEditEntitlementsPageURL(vm.contactId);
 
       vm.openAnnualEntitlementChangeLog = openAnnualEntitlementChangeLog;
+      vm.showComment = showComment;
 
       (function init () {
         loadEntitlements()
@@ -46,26 +50,6 @@
           vm.loading.absencePeriods = false;
         });
       })();
-
-      /**
-       * Shows a comment to the entitlement
-       *
-       * @param {Object} comment
-       */
-      vm.showComment = function (comment) {
-        /*
-         * @TODO There is no support for footer in notificationService at the moment.
-         * This code should be refactored as soon as notificationService supports footer.
-         * At the moment the footer is constructed via rich HTML directly via body text
-         */
-        var text = comment.message +
-          '<br/><br/><strong>Last updated:' +
-          '<br/>By: ' + comment.author_name +
-          '<br/>Date: ' + moment.utc(comment.date).local().format('DD/M/YYYY HH:mm') +
-          '</strong>';
-
-        notification.info('Calculation comment:', text);
-      };
 
       /**
        * Filters absence periods basing on loaded entitlements
@@ -90,6 +74,21 @@
             return entitlement.type_id === absenceType.id;
           });
         });
+      }
+
+      /**
+        * Returns the URL to the Manage Entitlement page.
+        *
+        * The given contact ID is added to the URL, as the cid parameter.
+        *
+        * @param  {Number} contactId
+        * @return {String}
+        */
+      function getEditEntitlementsPageURL (contactId) {
+        var path = 'civicrm/admin/leaveandabsences/periods/manage_entitlements';
+        var returnPath = 'civicrm/contact/view';
+        var returnUrl = CRM.url(returnPath, { cid: contactId, selectedChild: 'absence' });
+        return CRM.url(path, { cid: contactId, returnUrl: returnUrl });
       }
 
       /**
@@ -180,21 +179,24 @@
       }
 
       /**
-        * Returns the URL to the Manage Entitlement page.
-        *
-        * The given contact ID is added to the URL, as the cid parameter.
-        *
-        * @param {number} contactId
-        * @return {string}
-        */
-      function getEditEntitlementsPageURL (contactId) {
-        var path = 'civicrm/admin/leaveandabsences/periods/manage_entitlements';
-        var returnPath = 'civicrm/contact/view';
-        var returnUrl = CRM.url(returnPath, { cid: contactId, selectedChild: 'absence' });
-        return CRM.url(path, { cid: contactId, returnUrl: returnUrl });
-      }
+       * Shows a comment to the entitlement
+       *
+       * @param {Object} comment
+       */
+      function showComment (comment) {
+        /*
+         * @NOTE There is no support for footer in notificationService at the moment.
+         * This code should be refactored as soon as notificationService supports footer.
+         * At the moment the footer is constructed via rich HTML directly via body text
+         */
+        var text = comment.message +
+          '<br/><br/><strong>Last updated:' +
+          '<br/>By: ' + comment.author_name +
+          '<br/>Date: ' + moment.utc(comment.date).local().format('DD/M/YYYY HH:mm') +
+          '</strong>';
 
-      return vm;
+        notification.info('Calculation comment:', text);
+      }
     }
   });
 })(CRM);
