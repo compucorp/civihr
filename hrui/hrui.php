@@ -32,15 +32,7 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrui.civix.php';
  */
 function hrui_civicrm_coreResourceList(&$items, $region) {
   if ($region == 'html-header') {
-    if (CRM_Core_Config::singleton()->debug) {
-      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/civihr-popup/attrchange.js');
-      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/civihr-popup/civihr-popup.js');
-      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/hrui.js');
-      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/contact.js');
-    } else {
-      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
-    }
-
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
     CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
   }
 }
