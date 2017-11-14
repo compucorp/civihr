@@ -176,6 +176,9 @@ class CRM_Hrjobcontract_DAO_HRJobHour extends CRM_Hrjobcontract_DAO_Base
                   'required' => true,
                   'export' => false,
                   'import' => false,
+                  'entity' => 'HRJobHour',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobHour',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_hour_location_standard_hours' => array(
                   'name' => 'location_standard_hours',
@@ -187,6 +190,9 @@ class CRM_Hrjobcontract_DAO_HRJobHour extends CRM_Hrjobcontract_DAO_Base
                   'headerPattern' => '',
                   'dataPattern' => '',
                   'headerPattern' => '/^location\/standard\s?hours/i',
+                  'entity' => 'HRJobHour',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobHour',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_hour_hours_type' => array(
                   'name' => 'hours_type',
@@ -203,6 +209,9 @@ class CRM_Hrjobcontract_DAO_HRJobHour extends CRM_Hrjobcontract_DAO_Base
                     'optionGroupName' => 'hrjc_hours_type',
                   ),
                   'headerPattern' => '/^hours\s?type/i',
+                  'entity' => 'HRJobHour',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobHour',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_hour_hours_amount' => array(
                   'name' => 'hours_amount',
@@ -214,6 +223,9 @@ class CRM_Hrjobcontract_DAO_HRJobHour extends CRM_Hrjobcontract_DAO_Base
                   'headerPattern' => '',
                   'dataPattern' => '',
                   'headerPattern' => '/^actual\s?hours\s?\(amount\)/i',
+                  'entity' => 'HRJobHour',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobHour',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_hour_hours_unit' => array(
                   'name' => 'hours_unit',
@@ -230,6 +242,9 @@ class CRM_Hrjobcontract_DAO_HRJobHour extends CRM_Hrjobcontract_DAO_Base
                     'callback' => 'CRM_Hrjobcontract_SelectValues::commonUnit',
                   ),
                   'headerPattern' => '/^actual\s?hours\s?\(unit\)/i',
+                  'entity' => 'HRJobHour',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobHour',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_hour_hours_fte' => array(
                   'name' => 'hours_fte',
@@ -241,6 +256,9 @@ class CRM_Hrjobcontract_DAO_HRJobHour extends CRM_Hrjobcontract_DAO_Base
                   'headerPattern' => '',
                   'dataPattern' => '',
                   'headerPattern' => '/^full\-time\s?equivalence/i',
+                  'entity' => 'HRJobHour',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobHour',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_hour_hours_fte_num' => array(
                   'name' => 'fte_num',
@@ -253,6 +271,9 @@ class CRM_Hrjobcontract_DAO_HRJobHour extends CRM_Hrjobcontract_DAO_Base
                   'dataPattern' => '',
                   'default' => '0',
                   'headerPattern' => '/^full\-time\s?numerator\s?equivalence/i',
+                  'entity' => 'HRJobHour',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobHour',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_hour_fte_denom' => array(
                   'name' => 'fte_denom',
@@ -265,6 +286,9 @@ class CRM_Hrjobcontract_DAO_HRJobHour extends CRM_Hrjobcontract_DAO_Base
                   'dataPattern' => '',
                   'default' => '0',
                   'headerPattern' => '/^full\-time\s?denominator\s?equivalence/i',
+                  'entity' => 'HRJobHour',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobHour',
+                  'localizable' => 0,
                 ) ,
             )
         );

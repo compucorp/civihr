@@ -158,6 +158,9 @@ class CRM_Hrjobcontract_DAO_HRJobLeave extends CRM_Hrjobcontract_DAO_Base
                 'required' => true,
                 'export' => false,
                 'import' => false,
+                'entity' => 'HRJobLeave',
+                'bao' => 'CRM_Hrjobcontract_DAO_HRJobLeave',
+                'localizable' => 0,
               ) ,
               'hrjobcontract_leave_leave_type' => array(
                 'name' => 'leave_type',
@@ -171,6 +174,9 @@ class CRM_Hrjobcontract_DAO_HRJobLeave extends CRM_Hrjobcontract_DAO_Base
                   'labelColumn' => 'name',
                 ),
                 'headerPattern' => '/^leave\s?type/i',
+                'entity' => 'HRJobLeave',
+                'bao' => 'CRM_Hrjobcontract_DAO_HRJobLeave',
+                'localizable' => 0,
               ) ,
               'hrjobcontract_leave_leave_amount' => array(
                 'name' => 'leave_amount',
@@ -182,6 +188,9 @@ class CRM_Hrjobcontract_DAO_HRJobLeave extends CRM_Hrjobcontract_DAO_Base
                 'dataPattern' => '',
                 'export' => true,
                 'headerPattern' => '/^contract\s?leave\s?amount/i',
+                'entity' => 'HRJobLeave',
+                'bao' => 'CRM_Hrjobcontract_DAO_HRJobLeave',
+                'localizable' => 0,
               ) ,
               'hrjobcontract_leave_add_public_holidays' => array(
                 'name' => 'add_public_holidays',
@@ -190,6 +199,9 @@ class CRM_Hrjobcontract_DAO_HRJobLeave extends CRM_Hrjobcontract_DAO_Base
                 'export' => false,
                 'import' => false,
                 'headerPattern' => '/^add\s?public\s?holidays/i',
+                'entity' => 'HRJobLeave',
+                'bao' => 'CRM_Hrjobcontract_DAO_HRJobLeave',
+                'localizable' => 0,
               ) ,
             )
         );

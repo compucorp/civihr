@@ -86,14 +86,14 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
    * @static
    */
   static $_log = true;
-  
+
   /**
    * Unique HRJob ID
    *
    * @var int unsigned
    */
   public $id;
-  
+
   /**
    * FK to Contact
    *
@@ -107,7 +107,7 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
    * @var boolean
    */
   public $is_primary;
-  
+
   /**
    * class constructor
    *
@@ -130,7 +130,7 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
   {
     self::$_links = static ::createReferenceColumns(__CLASS__);
     self::$_links[] = new CRM_Core_Reference_Basic(self::getTableName() , 'contact_id', 'civicrm_contact', 'id');
-    
+
     return self::$_links;
   }
   /**
@@ -151,6 +151,9 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
           'export' => false,
           'import' => false,
           'where' => 'civicrm_hrjobcontract.id',
+          'entity' => 'HRJobContract',
+          'bao' => 'CRM_Hrjobcontract_DAO_HRJobContract',
+          'localizable' => 0,
         ) ,
         'contact_id' => array(
           'name' => 'contact_id',
@@ -161,6 +164,9 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
           'import' => true,
           'headerPattern' => '/contact(.?id)?/i',
           'FKClassName' => 'CRM_Contact_DAO_Contact',
+          'entity' => 'HRJobContract',
+          'bao' => 'CRM_Hrjobcontract_DAO_HRJobContract',
+          'localizable' => 0,
         ) ,
         'is_primary' => array(
           'name' => 'is_primary',
@@ -171,6 +177,9 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
           'where' => 'civicrm_hrjobcontract.is_primary',
           'headerPattern' => '',
           'dataPattern' => '',
+          'entity' => 'HRJobContract',
+          'bao' => 'CRM_Hrjobcontract_DAO_HRJobContract',
+          'localizable' => 0,
         ) ,
         'deleted' => array(
           'name' => 'deleted',
@@ -179,6 +188,9 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
           'export' => false,
           'import' => false,
           'where' => 'civicrm_hrjobcontract.deleted',
+          'entity' => 'HRJobContract',
+          'bao' => 'CRM_Hrjobcontract_DAO_HRJobContract',
+          'localizable' => 0,
         ) ,
       );
     }
@@ -272,12 +284,12 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
     }
     return self::$_export;
   }
-  
+
   static function handlePrimary($instance, array $params)
   {
         $instance->find(TRUE);
         $isPrimary = (int)CRM_Utils_Array::value('is_primary', $params);
-        
+
         if ($isPrimary)
         {
             $otherContracts = civicrm_api3('HRJobContract', 'get', array(
@@ -299,20 +311,20 @@ class CRM_Hrjobcontract_DAO_HRJobContract extends CRM_Core_DAO
                 }
             }
         }
-        
+
         $primaryContracts = civicrm_api3('HRJobContract', 'get', array(
             'sequential' => 1,
             'contact_id' => $instance->contact_id,
             'is_primary' => 1,
             'deleted' => 0,
         ));
-        
+
         if (empty($primaryContracts['values']))
         {
             $instance->is_primary = 1;
             $instance->save();
         }
-        
+
         return (bool)$isPrimary;
   }
 }
