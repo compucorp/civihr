@@ -40,6 +40,7 @@ define([
     var originalOpeningBalance = null;
     var listeners = [];
     var vm = this;
+    var skipTimeValuesUpdate;
 
     vm.canManage = false;
     vm.calendar = {};
@@ -411,6 +412,7 @@ define([
 
       if (!vm.isMode('create')) {
         attributes = vm.request.attributes();
+        skipTimeValuesUpdate = true;
         vm.uiOptions.fromDate = vm._convertDateFormatFromServer(vm.request.from_date);
 
         return vm.loadAbsencePeriodDatesTypes(vm.uiOptions.fromDate, 'from')
@@ -563,16 +565,31 @@ define([
       if (!date) { return $q.resolve(); }
 
       timeObject.disabled = true;
-      timeObject.time = '';
+      timeObject.min = '0';
+      timeObject.max = '0';
+      timeObject.maxAmount = '0';
 
-      return vm.request.getWorkDayForDate(date).then(function (response) {
-        timeObject.min = response.time_from;
-        timeObject.max = response.time_to;
-        timeObject.maxAmount = response.number_of_hours.toString() || '0';
-        timeObject.amount = timeObject.maxAmount || '0';
-        timeObject.disabled = false;
-        timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
-      });
+      if (!skipTimeValuesUpdate) {
+        timeObject.time = '';
+        timeObject.amount = '0';
+      }
+
+      return vm.request.getWorkDayForDate(date)
+        .then(function (response) {
+          timeObject.min = response.time_from;
+          timeObject.max = response.time_to;
+          timeObject.maxAmount = response.number_of_hours.toString() || '0';
+          timeObject.disabled = false;
+
+          if (!skipTimeValuesUpdate) {
+            timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
+            timeObject.amount = timeObject.maxAmount;
+          }
+        })
+        .catch(handleError)
+        .finally(function () {
+          skipTimeValuesUpdate = false;
+        });
     }
 
     /**
@@ -595,6 +612,17 @@ define([
     }
 
     /**
+     * Checks if the given request has same "from" and "to" dates
+     *
+     * @param  {RequestInstance} request
+     * @return {Boolean}
+     */
+    function requestHasSameDates (request) {
+      return _convertDateToServerFormat(request.from_date) ===
+        _convertDateToServerFormat(request.to_date);
+    }
+
+    /**
      * Sets balance change breakdown after it was retrieved or calculated
      *
      * @param {Object} balanceChange
@@ -614,7 +642,7 @@ define([
      * Sets day selection mode: multiple days or a single day
      */
     function setDaySelectionMode () {
-      if ((vm.isMode('edit') && vm.request.from_date === vm.request.to_date) ||
+      if ((!vm.isMode('create') && requestHasSameDates(vm.request)) ||
         (vm.isMode('create') && vm.isLeaveType('sickness'))) {
         vm.uiOptions.multipleDays = false;
       }
