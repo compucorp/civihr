@@ -9,9 +9,9 @@ trait CRM_HRUI_Upgrader_Steps_4706 {
    */
   public function upgrade_4706() {
     $menuToIcons = [
-      'Search...' => 'fa fa-search',
-      'Contacts'=> 'fa fa-users',
-      'Administer' => 'fa fa-cog',
+      'Search...' => 'crm-i fa-search',
+      'Contacts'=> 'crm-i fa-users',
+      'Administer' => 'crm-i fa-cog',
     ];
 
     foreach ($menuToIcons as $menuName => $menuIcon) {

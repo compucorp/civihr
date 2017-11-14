@@ -1058,8 +1058,8 @@ function _hrui_createDeveloperMenu(&$menu) {
  */
 function _hui_setDynamicMenuIcons(&$menu) {
   $menuToIcons = [
-    'Help' => 'fa fa-question-circle',
-    'Developer'=> 'fa fa-code',
+    'Help' => 'crm-i fa-question-circle',
+    'Developer'=> 'crm-i fa-code',
   ];
 
   foreach ($menu as $key => $item) {
