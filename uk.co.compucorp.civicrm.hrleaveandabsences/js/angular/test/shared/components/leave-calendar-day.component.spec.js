@@ -29,7 +29,7 @@ define([
       dayTypes = optionGroupData.getCollection(
         'hrleaveandabsences_leave_request_day_type');
       LeavePopup = _LeavePopup_;
-      leaveRequest = leaveRequestData.all().values[0];
+      leaveRequest = _.cloneDeep(leaveRequestData.all().values[0]);
       absenceType = _.find(absenceTypes, function (type) {
         return +type.id === +leaveRequest.type_id;
       });
@@ -49,33 +49,63 @@ define([
     });
 
     describe('mapping leave request fields', function () {
-      var absenceType, fromDateType, toDateType;
+      var absenceType;
 
       beforeEach(function () {
+        compileComponent();
+
+        leaveRequest = _.cloneDeep(leaveRequestData.all().values[0]);
         contactData.leaveRequest = leaveRequest;
         absenceType = _.find(absenceTypes, function (type) {
           return +type.id === +leaveRequest.type_id;
         });
-        fromDateType = optionGroupData.specificObject(
-          'hrleaveandabsences_leave_request_day_type', 'value',
-          leaveRequest.from_date_type);
-        toDateType = optionGroupData.specificObject(
-          'hrleaveandabsences_leave_request_day_type', 'value',
-          leaveRequest.from_date_type);
-
-        $rootScope.$digest();
       });
 
-      it('maps the absence type title', function () {
-        expect(leaveRequest['type_id.title']).toEqual(absenceType.title);
+      describe('for any calculation unit', function () {
+        beforeEach(function () {
+          $rootScope.$digest();
+        });
+
+        it('maps the absence type title', function () {
+          expect(leaveRequest['type_id.title']).toEqual(absenceType.title);
+        });
       });
 
-      it('maps the from date type label', function () {
-        expect(leaveRequest['from_date_type.label']).toEqual(fromDateType.label);
+      describe('when calculation unit is "days"', function () {
+        var fromDateType, toDateType;
+
+        beforeEach(function () {
+          absenceType.calculation_unit = calculationUnitInDays;
+          fromDateType = optionGroupData.specificObject(
+            'hrleaveandabsences_leave_request_day_type', 'value',
+            leaveRequest.from_date_type);
+          toDateType = optionGroupData.specificObject(
+            'hrleaveandabsences_leave_request_day_type', 'value',
+            leaveRequest.from_date_type);
+
+          $rootScope.$digest();
+        });
+
+        it('maps the from date type label', function () {
+          expect(leaveRequest['from_date_type.label']).toEqual(fromDateType.label);
+        });
+
+        it('maps the to date type label', function () {
+          expect(leaveRequest['from_date_type.label']).toEqual(toDateType.label);
+        });
       });
 
-      it('maps the to date type label', function () {
-        expect(leaveRequest['from_date_type.label']).toEqual(toDateType.label);
+      describe('when calculation unit is "hours"', function () {
+        beforeEach(function () {
+          absenceType.calculation_unit = calculationUnitInHours;
+
+          $rootScope.$digest();
+        });
+
+        it('does not map neither "from" nor "to" date type label', function () {
+          expect(leaveRequest['from_date_type.label']).not.toBeDefined();
+          expect(leaveRequest['to_date_type.label']).not.toBeDefined();
+        });
       });
     });
 
@@ -167,7 +197,7 @@ define([
 
       describe('between dates of hours request', function () {
         beforeEach(function () {
-          var dateFormat = 'YYYY-MM-DD HH:mm:ss';
+          var dateFormat = 'YYYY-MM-DD HH:mm';
           var startDate = moment(leaveRequest.from_date).startOf('day');
 
           absenceType.calculation_unit = calculationUnitInHours;
@@ -187,7 +217,7 @@ define([
 
       beforeEach(function () {
         nextWeek = moment(leaveRequest.from_date).add(7, 'days')
-          .format('YYYY-MM-DD HH:ii:ss');
+          .format('YYYY-MM-DD HH:ii');
         contactData.leaveRequest = leaveRequest;
       });
 

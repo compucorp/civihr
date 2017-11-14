@@ -93,22 +93,15 @@ define([
      * Maps the from and to date type labels to the leave request.
      */
     function mapLeaveRequestDateTypes () {
-      fromDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
-        'value', vm.contactData.leaveRequest.from_date_type);
-      toDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
-        'value', vm.contactData.leaveRequest.to_date_type);
+      if (calculationUnit.name === 'days') {
+        fromDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
+          'value', vm.contactData.leaveRequest.from_date_type);
+        toDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
+          'value', vm.contactData.leaveRequest.to_date_type);
 
-      vm.contactData.leaveRequest['from_date_type.label'] = fromDateType.label;
-      vm.contactData.leaveRequest['to_date_type.label'] = toDateType.label;
-    }
-
-    /**
-     * Maps missing fields from the leave request to use them in the tooltip's
-     * template.
-     */
-    function mapLeaveRequestFields () {
-      mapLeaveRequestAbsenceType();
-      mapLeaveRequestDateTypes();
+        vm.contactData.leaveRequest['from_date_type.label'] = fromDateType.label;
+        vm.contactData.leaveRequest['to_date_type.label'] = toDateType.label;
+      }
     }
 
     /**
@@ -194,8 +187,9 @@ define([
     function watchForLeaveRequestReady () {
       $scope.$watch('day.contactData.leaveRequest', function () {
         if (vm.contactData && vm.contactData.leaveRequest) {
-          mapLeaveRequestFields();
+          mapLeaveRequestAbsenceType();
           findAbsenceTypeCalculationUnit();
+          mapLeaveRequestDateTypes();
           resolveDayLabel();
           selectTooltipTemplate();
         }
