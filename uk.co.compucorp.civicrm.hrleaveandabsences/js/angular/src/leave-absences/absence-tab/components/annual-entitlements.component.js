@@ -36,8 +36,12 @@
       vm.openAnnualEntitlementChangeLog = openAnnualEntitlementChangeLog;
 
       (function init () {
-        loadEntitlements().then(loadCommentsAuthors)
+        loadEntitlements()
+        .then(loadCommentsAuthors)
         .then(loadAbsencePeriods)
+        .then(filterAbsencePeriods)
+        .then(filterAbsenceTypes)
+        .then(setAbsencePeriodsProps)
         .finally(function () {
           vm.loading.absencePeriods = false;
         });
@@ -64,12 +68,40 @@
       };
 
       /**
+       * Filters absence periods basing on loaded entitlements
+       */
+      function filterAbsencePeriods () {
+        vm.absencePeriods = _.filter(vm.absencePeriods, function (absencePeriod) {
+          return _.find(allEntitlements, function (entitlement) {
+            return entitlement.period_id === absencePeriod.id;
+          });
+        });
+        vm.absencePeriods = _.sortBy(vm.absencePeriods, function (absencePeriod) {
+          return -moment(absencePeriod.start_date).valueOf();
+        });
+      }
+
+      /**
+       * Filters absence types basing on loaded entitlements
+       */
+      function filterAbsenceTypes () {
+        vm.absenceTypes = _.filter(vm.absenceTypes, function (absenceType) {
+          return _.find(allEntitlements, function (entitlement) {
+            return entitlement.type_id === absenceType.id;
+          });
+        });
+      }
+
+      /**
        * Loads absence periods
        *
        * @return {Promise}
        */
       function loadAbsencePeriods () {
-        return AbsencePeriod.all().then(setAbsencePeriodsProps);
+        return AbsencePeriod.all()
+          .then(function (absencePeriods) {
+            vm.absencePeriods = absencePeriods;
+          });
       }
 
       /**
@@ -95,8 +127,8 @@
        */
       function loadEntitlements () {
         return Entitlement.all({ contact_id: vm.contactId })
-          .then(function (data) {
-            allEntitlements = data;
+          .then(function (entitlements) {
+            allEntitlements = entitlements;
           });
       }
 
@@ -119,27 +151,14 @@
 
       /**
        * Processes entitlements from data and sets them to the controller
-       *
-       * @param {Object} absencePeriods
        */
-      function setAbsencePeriodsProps (absencePeriods) {
-        // Get all periods as per entitlements
-        var periods = _.uniq(_.map(allEntitlements, function (entitlement) {
-          return entitlement.period_id;
-        }));
-
-        // Filter periods needed for loaded entitlements only
-        absencePeriods = _.filter(absencePeriods, function (absencePeriod) {
-          return periods.indexOf(absencePeriod.id) !== -1;
-        });
-        absencePeriods = _.sortBy(absencePeriods, function (absencePeriod) {
-          return -moment(absencePeriod.start_date).valueOf();
-        });
-        vm.absencePeriods = _.map(absencePeriods, function (absencePeriod) {
+      function setAbsencePeriodsProps () {
+        vm.absencePeriods = _.map(vm.absencePeriods, function (absencePeriod) {
           var entitlements = _.map(vm.absenceTypes, function (absenceType) {
-            var leave = _.filter(allEntitlements, function (entitlement) {
-              return entitlement.type_id === absenceType.id && entitlement.period_id === absencePeriod.id;
-            })[0];
+            var leave = _.find(allEntitlements, function (entitlement) {
+              return entitlement.type_id === absenceType.id &&
+                entitlement.period_id === absencePeriod.id;
+            });
 
             return leave ? {
               amount: leave.value,

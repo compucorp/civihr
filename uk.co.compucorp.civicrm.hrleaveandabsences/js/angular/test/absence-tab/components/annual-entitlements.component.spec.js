@@ -152,6 +152,17 @@ define([
       });
     });
 
+    describe('when there are no entitlements for the loaded absence types', function () {
+      beforeEach(function () {
+        // giving a fake ID ensures such an entitlement doesn't exist
+        compileComponent([{ id: 'just-created-absence-type-' + Math.random() }]);
+      });
+
+      it('filters the absence type with non-existing entitlements', function () {
+        expect(controller.absenceTypes.length).toBe(0);
+      });
+    });
+
     /**
      * Compiles the controller
      *
