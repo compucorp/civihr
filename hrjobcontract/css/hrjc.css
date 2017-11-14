@@ -6009,32 +6009,32 @@ fieldset[disabled]
 /* line 75, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_buttons.scss */
 #hrjob-contract .btn-success {
   color: #fff;
-  background-color: #7dc4a7;
-  border-color: #6bbc9b;
+  background-color: #44CB7E;
+  border-color: #44CB7E;
 }
 /* line 11, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjob-contract .btn-success:focus, #hrjob-contract .btn-success.focus {
   color: #fff;
-  background-color: #5ab48f;
-  border-color: #34745a;
+  background-color: #30ac65;
+  border-color: #1f7042;
 }
 /* line 17, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjob-contract .btn-success:hover {
   color: #fff;
-  background-color: #5ab48f;
-  border-color: #49a17d;
+  background-color: #30ac65;
+  border-color: #2ea461;
 }
 /* line 22, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjob-contract .btn-success:active, #hrjob-contract .btn-success.active, .open > #hrjob-contract .btn-success.dropdown-toggle {
   color: #fff;
-  background-color: #5ab48f;
-  border-color: #49a17d;
+  background-color: #30ac65;
+  border-color: #2ea461;
 }
 /* line 29, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjob-contract .btn-success:active:hover, #hrjob-contract .btn-success:active:focus, #hrjob-contract .btn-success:active.focus, #hrjob-contract .btn-success.active:hover, #hrjob-contract .btn-success.active:focus, #hrjob-contract .btn-success.active.focus, .open > #hrjob-contract .btn-success.dropdown-toggle:hover, .open > #hrjob-contract .btn-success.dropdown-toggle:focus, .open > #hrjob-contract .btn-success.dropdown-toggle.focus {
   color: #fff;
-  background-color: #49a17d;
-  border-color: #34745a;
+  background-color: #289055;
+  border-color: #1f7042;
 }
 /* line 37, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjob-contract .btn-success:active, #hrjob-contract .btn-success.active, .open > #hrjob-contract .btn-success.dropdown-toggle {
@@ -6042,12 +6042,12 @@ fieldset[disabled]
 }
 /* line 45, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjob-contract .btn-success.disabled:hover, #hrjob-contract .btn-success.disabled:focus, #hrjob-contract .btn-success.disabled.focus, #hrjob-contract .btn-success[disabled]:hover, #hrjob-contract .btn-success[disabled]:focus, #hrjob-contract .btn-success[disabled].focus, fieldset[disabled] #hrjob-contract .btn-success:hover, fieldset[disabled] #hrjob-contract .btn-success:focus, fieldset[disabled] #hrjob-contract .btn-success.focus {
-  background-color: #7dc4a7;
-  border-color: #6bbc9b;
+  background-color: #44CB7E;
+  border-color: #44CB7E;
 }
 /* line 53, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_buttons.scss */
 #hrjob-contract .btn-success .badge {
-  color: #7dc4a7;
+  color: #44CB7E;
   background-color: #fff;
 }
 /* line 79, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_buttons.scss */
@@ -10717,17 +10717,17 @@ fieldset[disabled]
 }
 /* line 16, ../scss/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-gray:hover, #hrjob-contract .btn-gray:focus, #hrjob-contract .btn-gray.btn-focus {
-  background-color: #3D3D54;
+  background-color: #3e3e54;
   color: #fff;
 }
 /* line 23, ../scss/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-gray.active {
-  background-color: #3D3D54;
+  background-color: #3e3e54;
   color: #fff;
 }
 /* line 27, ../scss/civihr/partials/_buttons.scss */
 #hrjob-contract .btn-gray.active:hover, #hrjob-contract .btn-gray.active:focus, #hrjob-contract .btn-gray.active.btn-focus {
-  background-color: #3D3D54;
+  background-color: #3e3e54;
   color: #fff;
 }
 /* line 36, ../scss/civihr/partials/_buttons.scss */
@@ -11412,8 +11412,8 @@ fieldset[disabled]
 }
 /* line 35, ../scss/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-danger-outline:hover, #hrjob-contract .btn-danger-outline:focus {
-  background-color: #A52946;
-  border-color: #A52946;
+  background-color: #b52b4b;
+  border-color: #b52b4b;
   color: #fff;
 }
 /* line 30, ../scss/hrjc/partials/_buttons.scss */
@@ -11424,21 +11424,21 @@ fieldset[disabled]
 }
 /* line 35, ../scss/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-primary-outline:hover, #hrjob-contract .btn-primary-outline:focus {
-  background-color: #005A97;
-  border-color: #005A97;
+  background-color: #005c99;
+  border-color: #005c99;
   color: #fff;
 }
 /* line 30, ../scss/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-success-outline {
   background-color: transparent;
-  border-color: #7dc4a7;
+  border-color: #44CB7E;
   color: #363342;
 }
 /* line 35, ../scss/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-success-outline:hover, #hrjob-contract .btn-success-outline:focus {
-  background-color: #2C8452;
-  border-color: #2C8452;
-  color: #fff;
+  background-color: #33b86c;
+  border-color: #33b86c;
+  color: #000000;
 }
 /* line 30, ../scss/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-warning-outline {
@@ -11448,9 +11448,9 @@ fieldset[disabled]
 }
 /* line 35, ../scss/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-warning-outline:hover, #hrjob-contract .btn-warning-outline:focus {
-  background-color: #9F6A26;
-  border-color: #9F6A26;
-  color: #fff;
+  background-color: #f59d62;
+  border-color: #f59d62;
+  color: #000000;
 }
 /* line 45, ../scss/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-default:hover, #hrjob-contract .btn-default:focus, #hrjob-contract .btn-default:active, #hrjob-contract .btn-default.active

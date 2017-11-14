@@ -1,110 +1,109 @@
 <h3 class="header-bar header-bar-primary" ng-show="contractCurrent.length">Current Contracts:</h3>
 <ul class="{{prefix}}list-contract">
-    <li class="{{prefix}}list-contract-item" hrjc-loader hrjc-loader-show="true" ng-class="{'ng-active': contractLoaded}" ng-repeat="contract in contractCurrent track by contract.id" ng-controller="ContractCtrl" ng-include src="'contract.html'"></li>
+  <li class="{{prefix}}list-contract-item" hrjc-loader hrjc-loader-show="true" ng-class="{'ng-active': contractLoaded}" ng-repeat="contract in contractCurrent track by contract.id" ng-controller="ContractCtrl" ng-include src="'contract.html'"></li>
 </ul>
 
 <h3 class="header-bar header-bar-danger" ng-show="contractPast.length">Past Contracts:</h3>
 <ul class="{{prefix}}list-contract">
-    <li class="{{prefix}}list-contract-item" hrjc-loader hrjc-loader-show="true" ng-class="{'ng-active': contractLoaded}" ng-repeat="contract in contractPast track by contract.id" ng-controller="ContractCtrl" ng-include src="'contract.html'"></li>
+  <li class="{{prefix}}list-contract-item" hrjc-loader hrjc-loader-show="true" ng-class="{'ng-active': contractLoaded}" ng-repeat="contract in contractPast track by contract.id" ng-controller="ContractCtrl" ng-include src="'contract.html'"></li>
 </ul>
 <p class="{{prefix}}btn-add-contract"  ng-class="{'ng-active': contractListLoaded}">
-    <button class="btn btn-primary" ng-click="modalContract('new')">
-        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Job Contract
-    </button>
+  <button class="btn btn-primary" ng-click="modalContract('new')">
+    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add New Job Contract
+  </button>
 </p>
 
 <script type="text/ng-template" id="contract.html">
-    <div class="panel panel-default" ng-cloak>
-        <div class="panel-heading {{prefix}}panel-action">
-            <div class="row  {{prefix}}row-action form-horizontal">
-                <div class="col-xs-3">
-                    <div class="form-group">
-                        <label class="col-sm-5 control-label">Position:</label>
-                        <div class="col-sm-7">
-                            <p class="form-control-static" ng-bind="details.position"></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-3">
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Dates:</label>
-                        <div class="col-sm-9">
-                            <p class="form-control-static" ng-bind="(details.period_start_date | formatDate) + ' - ' + (details.period_end_date | formatDate)" ng-show="details.period_start_date"></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 text-right">
-                    <button class="btn btn-default" ng-click="modalContract()">
-                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> View current revision
-                    </button>
-                    <button class="btn btn-default"  ng-click="modalContract('edit')">
-                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Correct error
-                    </button>
-                    <button class="btn btn-default" ng-click="modalContract('change')">
-                        <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> Change terms
-                    </button>
-                    <a class="btn btn-sm"
-                       tooltip-placement="left"
-                       uib-tooltip-html="tooltips.changeContractTerms">
-                        <i class="fa fa-question-circle fa-lg"></i>
-                    </a>
-                </div>
+  <div class="panel panel-default" ng-cloak>
+    <div class="panel-heading {{prefix}}panel-action">
+      <div class="row  {{prefix}}row-action form-horizontal">
+        <div class="col-xs-3">
+          <div class="form-group">
+            <label class="col-sm-5 control-label">Position:</label>
+            <div class="col-sm-7">
+              <p class="form-control-static" ng-bind="details.position"></p>
             </div>
-            <div class="row">
-                <div class="col-xs-12"><hr></div>
-            </div>
-            <div class="row  {{prefix}}row-info form-horizontal">
-                <div class="col-xs-3">
-                    <div class="form-group">
-                        <label class="col-sm-5 control-label">Contract type:</label>
-                        <div class="col-sm-7">
-                            <p class="form-control-static" ng-bind="options.details.contract_type[details.contract_type]"></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-3">
-                    <div class="form-group">
-                        <div class="col-sm-3"></div>
-                        <div class="col-sm-9">
-                            <span ng-if="contract.is_primary == 1 && utils.contractListLen > 1"><span class="badge badge-primary">Primary</span>&nbsp;</span><span class="badge" ng-class="{'badge-primary':pay.is_paid!=0}">{{options.pay.is_paid[pay.is_paid]}}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-6 text-right">
-                </div>
-            </div>
+          </div>
         </div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-xs-12">
-                    <a class="btn btn-collapse" ng-click="isCollapsed = !isCollapsed">
-                        <i ng-class="{fa: true, 'fa-chevron-down': !isCollapsed, 'fa-chevron-right': isCollapsed }"></i> Details
-                    </a>
-                </div>
+        <div class="col-xs-3">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Dates:</label>
+            <div class="col-sm-9">
+              <p class="form-control-static" ng-bind="(details.period_start_date | formatDate) + ' - ' + (details.period_end_date | formatDate)" ng-show="details.period_start_date"></p>
             </div>
-            <div uib-collapse="isCollapsed">
-                <div class="{{prefix}}contract-details">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <uib-tabset>
-                                <uib-tab heading="Summary">
-                                    <div ng-include src="pathTpl + 'contractSummary.html?v=446466'"></div>
-                                </uib-tab>
-                                <uib-tab select="showRevisions()" heading="Full History" disabled="!revisionDataList.length">
-                                    <div ng-if="revisionsShown" ng-include src="pathTpl + 'contractRevisionList.html?v=87654354'"></div>
-                                </uib-tab>
-                            </uib-tabset>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <button class="btn btn-danger" ng-click="delete(contract.id)">
-                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete this job contract
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          </div>
         </div>
+        <div class="col-xs-6 text-right">
+          <button class="btn btn-default" ng-click="modalContract()">
+            <span class="glyphicon glyphicon-search" aria-hidden="true"></span> View current revision
+          </button>
+          <button class="btn btn-default"  ng-click="modalContract('edit')">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Correct error
+          </button>
+          <button class="btn btn-default" ng-click="modalContract('change')">
+            <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span> Change terms
+          </button>
+          <a class="btn btn-sm"
+             tooltip-placement="left"
+             uib-tooltip-html="tooltips.changeContractTerms">
+              <i class="fa fa-question-circle fa-lg"></i>
+          </a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12"><hr></div>
+      </div>
+      <div class="row  {{prefix}}row-info form-horizontal">
+        <div class="col-xs-3">
+          <div class="form-group">
+            <label class="col-sm-5 control-label">Contract type:</label>
+            <div class="col-sm-7">
+              <p class="form-control-static" ng-bind="options.details.contract_type[details.contract_type]"></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-3">
+          <div class="form-group">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-9">
+              <span ng-if="contract.is_primary == 1 && utils.contractListLen > 1"><span class="badge badge-primary">Primary</span>&nbsp;</span><span class="badge" ng-class="{'badge-primary':pay.is_paid!=0}">{{options.pay.is_paid[pay.is_paid]}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-6 text-right"></div>
+      </div>
     </div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-12">
+          <a class="btn btn-collapse" ng-click="isCollapsed = !isCollapsed">
+            <i ng-class="{fa: true, 'fa-chevron-down': !isCollapsed, 'fa-chevron-right': isCollapsed }"></i> Details
+          </a>
+        </div>
+      </div>
+      <div uib-collapse="isCollapsed">
+        <div class="{{prefix}}contract-details">
+          <div class="row">
+            <div class="col-xs-12">
+              <uib-tabset>
+                <uib-tab heading="Summary">
+                  <div ng-include src="pathTpl + 'contractSummary.html?v=446466'"></div>
+                </uib-tab>
+                <uib-tab select="showRevisions()" heading="Full History" disabled="!revisionDataList.length">
+                  <div ng-if="revisionsShown" ng-include src="pathTpl + 'contractRevisionList.html?v=87654354'"></div>
+                </uib-tab>
+              </uib-tabset>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-12">
+              <button class="btn btn-danger" ng-click="delete(contract.id)">
+                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete this job contract
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </script>

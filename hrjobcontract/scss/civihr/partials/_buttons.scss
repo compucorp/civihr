@@ -16,18 +16,18 @@
   &:hover,
   &:focus,
   &.btn-focus {
-    background-color: $brand-secondary-dark;
+    background-color: darken($gray-dark, 7%);
     color: #fff;
   }
 
   &.active {
-    background-color: $brand-secondary-dark;
+    background-color: darken($gray-dark, 7%);
     color: #fff;
 
     &:hover,
     &:focus,
     &.btn-focus {
-      background-color: $brand-secondary-dark;
+      background-color: darken($gray-dark, 7%);
       color: #fff;
     }
   }
