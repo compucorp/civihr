@@ -27,6 +27,24 @@
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrui.civix.php';
 
+/**
+ * Implements hook_civicrm_coreResourceList().
+ */
+function hrui_civicrm_coreResourceList(&$items, $region) {
+  if ($region == 'html-header') {
+    if (CRM_Core_Config::singleton()->debug) {
+      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/civihr-popup/attrchange.js');
+      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/civihr-popup/civihr-popup.js');
+      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/hrui.js');
+      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/contact.js');
+    } else {
+      CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
+    }
+
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
+  }
+}
+
 function hrui_civicrm_pageRun($page) {
   if (isset($_GET['snippet']) && $_GET['snippet'] == 'json') {
     return;
@@ -53,17 +71,6 @@ function hrui_civicrm_pageRun($page) {
         );
     }
   }
-
-  if (CRM_Core_Config::singleton()->debug) {
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/civihr-popup/attrchange.js');
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/civihr-popup/civihr-popup.js');
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/hrui.js');
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/contact.js');
-  } else {
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
-  }
-
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
 }
 
 /**
@@ -73,14 +80,6 @@ function hrui_civicrm_pageRun($page) {
  * @param CRM_Core_Form $form
  */
 function hrui_civicrm_buildForm($formName, &$form) {
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
-
-  if (CRM_Core_Config::singleton()->debug) {
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/src/hrui.js');
-  } else {
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
-  }
-
   if ($form instanceof CRM_Contact_Form_Contact) {
     CRM_Core_Resources::singleton()
       ->addSetting(array('formName' => 'contactForm'));

@@ -35,16 +35,12 @@
    * Adds the user menu by fetching it from the hrcore extension
    */
   function addUserMenuToMainMenu () {
-    var wrapperId = 'civihr-menu';
-
-    if (!$('#' + wrapperId).length) {
-      $.ajax('/civicrm/hrcore/usermenu?snippet=4', {
-        dataType: 'html',
-        success: function (menuMarkup) {
-          injectUserMenuInAMainMenuWrapper(menuMarkup, wrapperId);
-        }
-      });
-    }
+    $.ajax('/civicrm/hrcore/usermenu?snippet=4', {
+      dataType: 'html',
+      success: function (menuMarkup) {
+        injectUserMenuInAMainMenuWrapper(menuMarkup, 'civihr-menu');
+      }
+    });
   }
 
   /**
