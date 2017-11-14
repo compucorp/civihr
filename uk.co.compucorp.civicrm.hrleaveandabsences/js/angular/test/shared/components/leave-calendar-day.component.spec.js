@@ -74,6 +74,10 @@ define([
           expect(controller.dates.from).toEqual(new Date(leaveRequest.from_date));
           expect(controller.dates.to).toEqual(new Date(leaveRequest.to_date));
         });
+
+        it('sets the calculation unit', function () {
+          expect(controller.calculationUnit).toEqual(jasmine.any(Object));
+        });
       });
 
       describe('when calculation unit is "days"', function () {
@@ -91,6 +95,10 @@ define([
           $rootScope.$digest();
         });
 
+        it('sets the "days" calculation unit', function () {
+          expect(controller.calculationUnit.name).toEqual('days');
+        });
+
         it('maps the from date type label', function () {
           expect(leaveRequest['from_date_type.label']).toEqual(fromDateType.label);
         });
@@ -105,6 +113,10 @@ define([
           absenceType.calculation_unit = calculationUnitInHours;
 
           $rootScope.$digest();
+        });
+
+        it('sets the "hours" calculation unit', function () {
+          expect(controller.calculationUnit.name).toEqual('hours');
         });
 
         it('does not map neither "from" nor "to" date type label', function () {

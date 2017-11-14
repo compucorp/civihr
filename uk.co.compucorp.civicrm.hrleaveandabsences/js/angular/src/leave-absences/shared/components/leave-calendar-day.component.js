@@ -24,9 +24,10 @@ define([
     'use strict';
     $log.debug('Component: leave-calendar-day');
 
-    var absenceType, calculationUnit, fromDateType, toDateType;
+    var absenceType, fromDateType, toDateType;
     var vm = this;
 
+    vm.calculationUnit = '';
     vm.dates = { from: null, to: null };
     vm.label = '';
     vm.tooltipTemplate = null;
@@ -42,7 +43,7 @@ define([
      * absence type
      */
     function findAbsenceTypeCalculationUnit () {
-      calculationUnit = findRecordByIdFieldValue(
+      vm.calculationUnit = findRecordByIdFieldValue(
         vm.supportData.calculationUnits, 'value', absenceType.calculation_unit);
     }
 
@@ -76,7 +77,7 @@ define([
         .isSame(vm.contactData.leaveRequest.to_date, 'day');
       dateRangeType = isSameDay ? 'single-date' : 'multiple-dates';
 
-      return 'type-' + calculationUnit.name + '-on-' +
+      return 'type-' + vm.calculationUnit.name + '-on-' +
         dateRangeType + '-tooltip';
     }
 
@@ -94,7 +95,7 @@ define([
      * Maps the from and to date type labels to the leave request.
      */
     function mapLeaveRequestDateTypes () {
-      if (calculationUnit.name === 'days') {
+      if (vm.calculationUnit.name === 'days') {
         fromDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
           'value', vm.contactData.leaveRequest.from_date_type);
         toDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
@@ -139,7 +140,7 @@ define([
     function resolveDayLabel () {
       if (vm.contactData.isAccruedTOIL) {
         vm.label = 'AT';
-      } else if (calculationUnit.name === 'days') {
+      } else if (vm.calculationUnit.name === 'days') {
         resolveDayLabelForDaysCalculationUnit();
       } else {
         resolveDayLabelForHoursCalculationUnit();

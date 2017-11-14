@@ -47,7 +47,8 @@
   <div>
     <strong>{{day.contactData.leaveRequest['type_id.title']}}</strong>
     <p>
-      From: {{day.dates.from | date:'HH:mm'}}
+      From: {{day.dates.from | date:'HH:mm'}}<br/>
+      For: {{ day.contactData.leaveRequest.from_date_amount | timeUnitApplier : day.calculationUnit.name }}
     </p>
   </div>
 </script>
