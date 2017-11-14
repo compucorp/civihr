@@ -42,7 +42,7 @@ class CRM_HRRecruitment_Upgrader extends CRM_HRRecruitment_Upgrader_Base {
   public function upgrade_1402() {
     $params = [
       'name' => 'Vacancies',
-      'api.Navigation.create' => ['id' => '$value.id', 'icon' => 'fa fa-user-plus'],
+      'api.Navigation.create' => ['id' => '$value.id', 'icon' => 'crm-i fa-user-plus'],
       'parent_id' => ['IS NULL' => true],
     ];
     civicrm_api3('Navigation', 'get', $params);
