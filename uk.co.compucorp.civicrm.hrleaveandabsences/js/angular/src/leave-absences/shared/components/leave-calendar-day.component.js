@@ -27,6 +27,7 @@ define([
     var absenceType, calculationUnit, fromDateType, toDateType;
     var vm = this;
 
+    vm.dates = { from: null, to: null };
     vm.label = '';
     vm.tooltipTemplate = null;
 
@@ -123,6 +124,15 @@ define([
     }
 
     /**
+     * Copies dates from Leave Request, converts them from String
+     * to Date type and sets to the component.
+     */
+    function resolveDayDates () {
+      vm.dates.from = new Date(vm.contactData.leaveRequest.from_date);
+      vm.dates.to = new Date(vm.contactData.leaveRequest.to_date);
+    }
+
+    /**
      * Determines the label for the day depending on the calculation unit or if
      * it's an accrued TOIL request.
      */
@@ -191,6 +201,7 @@ define([
           findAbsenceTypeCalculationUnit();
           mapLeaveRequestDateTypes();
           resolveDayLabel();
+          resolveDayDates();
           selectTooltipTemplate();
         }
       });

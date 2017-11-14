@@ -69,6 +69,11 @@ define([
         it('maps the absence type title', function () {
           expect(leaveRequest['type_id.title']).toEqual(absenceType.title);
         });
+
+        it('sets dates ready for formatting', function () {
+          expect(controller.dates.from).toEqual(new Date(leaveRequest.from_date));
+          expect(controller.dates.to).toEqual(new Date(leaveRequest.to_date));
+        });
       });
 
       describe('when calculation unit is "days"', function () {
