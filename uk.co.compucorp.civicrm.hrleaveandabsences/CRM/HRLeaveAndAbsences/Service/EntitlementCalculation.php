@@ -10,7 +10,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
  * This class encapsulates all of the entitlement calculation logic.
  *
  * Based on a set of Absence Period, Contact and Absence Type, it can
- * calculate the Pro Rata, Number of days brought forward, Contractual
+ * calculate the Pro Rata, Brought forward, Contractual
  * Entitlement and a Proposed Entitlement.
  */
 class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
@@ -91,25 +91,24 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
   }
 
   /**
-   * Calculates the number of days Brought Forward from the previous Absence
-   * Period.
+   * Calculates the amount Brought Forward from the previous Absence Period.
    *
-   * This number of days is given by the proposed entitlement of the previous
-   * period - the number of leaves taken on the previous period. It may be
-   * limited by the max number of days allowed to be carried forward for this
+   * The amount is given by the proposed entitlement of the previous
+   * period - the amount taken as leave during the previous period. It may be
+   * limited by the max amount allowed to be carried forward for this
    * calculation's absence type.
    *
-   * @return int
+   * @return float
    */
   public function getBroughtForward() {
     if(!$this->shouldCalculateBroughtForward()) {
       return 0;
     }
 
-    $broughtForward = $this->getNumberOfDaysRemainingInThePreviousPeriod();
-    $maxDaysToCarryForward = $this->absenceType->max_number_of_days_to_carry_forward;
-    if($maxDaysToCarryForward && ($broughtForward > $maxDaysToCarryForward)) {
-      return $maxDaysToCarryForward;
+    $broughtForward = $this->getPreviousPeriodBalance();
+    $maxToCarryForward = $this->absenceType->max_number_of_days_to_carry_forward;
+    if($maxToCarryForward && ($broughtForward > $maxToCarryForward)) {
+      return $maxToCarryForward;
     }
 
     return $broughtForward;
@@ -147,7 +146,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
    * + public holidays.
    *
    * Finally, we sum the Pro Rata for each of the contracts and then round the
-   * value up the nearest half day. Example (single contract):
+   * value up the nearest half. Example (single contract):
    *
    * Number of working days to work: 212
    * Number of working days: 253
@@ -170,7 +169,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
   /**
    * Returns the calculated proposed entitlement.
    *
-   * This is basically the Pro Rata + the number of days brought forward
+   * This is basically the Pro Rata + Brought forward
    *
    * @return float
    */
@@ -253,7 +252,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
   }
 
   /**
-   * Return the number of days taken as leave during the Previous Period.
+   * Return the amount used as leave during the Previous Period.
    *
    * This is, basically, the LeaveRequest balance from the previous period, but
    * returned as a positive number
@@ -262,7 +261,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
    *
    * @return float
    */
-  public function getNumberOfDaysTakenOnThePreviousPeriod() {
+  public function getAmountUsedInPreviousPeriod() {
     $entitlement = $this->getPreviousPeriodEntitlement();
 
     if(!$entitlement) {
@@ -273,13 +272,12 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
   }
 
   /**
-   * Return the number of days remaining on the previous period. That is, the
-   * balance of that period, which is given by the sum of all days added to the
-   * entitlement plus the days deducted
+   * Return the balance for the previous period. That is, the period's entitlement
+   * plus any deductions
    *
    * @return float
    */
-  public function getNumberOfDaysRemainingInThePreviousPeriod() {
+  public function getPreviousPeriodBalance() {
     $entitlement = $this->getPreviousPeriodEntitlement();
 
     if(!$entitlement) {
@@ -376,7 +374,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
   }
 
   /**
-   * We only calculate the amount of days brought forward if the AbsenceType
+   * We only calculate the amount brought forward if the AbsenceType
    * allows carry forward and it has not expired
    *
    * @return bool
