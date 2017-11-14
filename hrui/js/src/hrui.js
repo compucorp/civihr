@@ -19,9 +19,9 @@
     });
 
   /**
-   * Customizes the app logo menu item, swithing from the CiviCRM logo
+   * Customizes the app logo menu item, switching from the CiviCRM logo
    * to the CiviHR logo, and making the item a direct link instead of a
-   * toggle for a sub menu
+   * toggle for a sub menu dropdown
    */
   function amendAppLogoMenuItem () {
     var $menuItem = $('.crm-link-home');
