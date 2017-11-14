@@ -567,33 +567,31 @@ FROM civicrm_navigation WHERE domain_id = $domainID {$whereClause} ORDER BY pare
       // get home menu from db
       $homeParams = array('name' => 'Home');
       $homeNav = array();
-      $homeIcon = '<span class="chr_logo chr_logo--default-color"></span>';
+      $homeIcon = '<span class="crm-logo-sm" ></span>';
       self::retrieve($homeParams, $homeNav);
       if ($homeNav) {
-        if (array_key_exists('query', parse_url($homeNav['url']))) {
-          list($path, $q) = explode('?', $homeNav['url']);
-        } else {
-          $q = NULL;
-          $path = $homeNav['url'];
-        }
-
+        list($path, $q) = explode('?', $homeNav['url']);
         $homeURL = CRM_Utils_System::url($path, $q);
         $homeLabel = $homeNav['label'];
         // CRM-6804 (we need to special-case this as we don’t ts()-tag variables)
         if ($homeLabel == 'Home') {
-          $homeLabel = ts('Home');
+          $homeLabel = ts('CiviCRM Home');
         }
       }
       else {
         $homeURL = CRM_Utils_System::url('civicrm/dashboard', 'reset=1');
-        $homeLabel = ts('Home');
+        $homeLabel = ts('CiviCRM Home');
       }
-
+      // Link to hide the menubar
       $hideLabel = ts('Hide Menu');
+
       $prepandString = "
-        <li class='menumain crm-link-home'><a href='$homeURL'>
-          <span class=\"menumain-icon\">$homeIcon</span>
-          <span class=\"menumain-label\">$homeLabel</span></a>";
+        <li class='menumain crm-link-home'>$homeIcon
+          <ul id='civicrm-home'>
+            <li><a href='$homeURL'>$homeLabel</a></li>
+            <li><a href='#' class='crm-hidemenu'>$hideLabel</a></li>
+            <li><a href='$logoutURL' class='crm-logout-link'>" . ts('Log out') . "</a></li>
+          </ul>";
       // <li> tag doesn't need to be closed
     }
     return $prepandString . $navigation;
