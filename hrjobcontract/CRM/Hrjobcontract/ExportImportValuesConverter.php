@@ -103,11 +103,14 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         }
 
         // leave types options:
+        $calculationUnitOptions = AbsenceType::buildOptions('calculation_unit');
         $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
         foreach($absenceTypes as $absenceType) {
             $absenceTypeArray = (array)$absenceType;
             $this->_leaveTypes[$absenceType->id] = $absenceTypeArray;
-            $this->_leaveTypesFlipped[$absenceTypeArray['title']] = $absenceType->id;
+            $typeCalculationUnit = $absenceTypeArray['calculation_unit'];
+            $this->_leaveTypes[$absenceType->id]['label'] = $absenceTypeArray['title'] . '(' .$calculationUnitOptions[$typeCalculationUnit] . ')';
+            $this->_leaveTypesFlipped[$this->_leaveTypes[$absenceType->id]['label']] = $absenceType->id;
         }
 
         // location options:
@@ -259,7 +262,7 @@ class CRM_Hrjobcontract_ExportImportValuesConverter
         foreach ($leaves as $leave)
         {
             list($typeId, $leaveAmount) = explode(':', $leave);
-            $output[] = $this->_leaveTypes[$typeId]['title'] . ': ' . $leaveAmount;
+            $output[] = $this->_leaveTypes[$typeId]['label'] . ': ' . $leaveAmount;
         }
         return implode(', ', $output);
     }
