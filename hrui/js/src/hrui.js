@@ -11,26 +11,36 @@
       changeContactSourceFieldHelpText();
     })
     .ready(function () {
-      toggleActiveClassOnHoverOnAnyMainMenuItem();
       addUserMenuToMainMenu();
+      amendAppLogoMenuItem();
       amendApplicationForm();
       useFontAwesomeArrowsInSubMenuItems();
+      toggleActiveClassOnHoverOnAnyMainMenuItem();
     });
+
+  /**
+   * Customizes the app logo menu item, switching from the CiviCRM logo
+   * to the CiviHR logo, and making the item a direct link instead of a
+   * toggle for a sub menu dropdown
+   */
+  function amendAppLogoMenuItem () {
+    var $menuItem = $('.crm-link-home');
+    var $wrappedLogo = swapAndWrapAppLogo($menuItem);
+    var $customHomeLink = customizeHomeLinkInLogoMenuItem($menuItem, $wrappedLogo);
+
+    removeLogoSubMenuAndKeepOnlyHomeLink($menuItem, $customHomeLink);
+  }
 
   /**
    * Adds the user menu by fetching it from the hrcore extension
    */
   function addUserMenuToMainMenu () {
-    var wrapperId = 'civihr-menu';
-
-    if (!$('#' + wrapperId).length) {
-      $.ajax('/civicrm/hrcore/usermenu?snippet=4', {
-        dataType: 'html',
-        success: function (menuMarkup) {
-          injectUserMenuInAMainMenuWrapper(menuMarkup, wrapperId);
-        }
-      });
-    }
+    $.ajax('/civicrm/hrcore/usermenu?snippet=4', {
+      dataType: 'html',
+      success: function (menuMarkup) {
+        injectUserMenuInAMainMenuWrapper(menuMarkup, 'civihr-menu');
+      }
+    });
   }
 
   /**
@@ -147,6 +157,23 @@
   }
 
   /**
+   * Finds the original link to the homepage, changes the text, wraps it in a
+   * `menumain-label` element and prepends internally the given app logo
+   *
+   * @param {object} $menuItem The context where to find the link
+   * @param {object} $appLogo
+   * @return the customized home link
+   */
+  function customizeHomeLinkInLogoMenuItem ($menuItem, $appLogo) {
+    var $homeLink = $('li > a', $menuItem).first();
+
+    return $homeLink
+      .text('Home')
+      .wrapInner('<span class="menumain-label">')
+      .prepend($appLogo);
+  }
+
+  /**
    * Injects the given markup in a menu wrapper with the given id
    * created to contain both the original menu and the user one
    *
@@ -224,6 +251,38 @@
 
     $('#js-uploaded-file').remove();
     $input.val('');
+  }
+
+  /**
+   * Moves the given home link right under the menu item and gets rid
+   * of the original sub menu
+   *
+   * @param {object} $menuItem The context where to find the link
+   * @param {object} $homeLink
+   */
+  function removeLogoSubMenuAndKeepOnlyHomeLink ($menuItem, $homeLink) {
+    $menuItem
+      .off() // removes any handler that the original item had
+      .find('#civicrm-home')
+      .before($homeLink)
+      .remove();
+  }
+
+  /**
+   * Swaps the CiviCRM logo with the CiviHR logo
+   * and wraps it in a `menumain-icon` element
+   *
+   * @param {object} $menuItem The context where to find the logo
+   * @return the wrapper of the logo
+   */
+  function swapAndWrapAppLogo ($menuItem) {
+    var $appLogo = $('.crm-logo-sm', $menuItem);
+
+    return $appLogo
+      .addClass('chr_logo chr_logo--default-color')
+      .removeClass('crm-logo-sm')
+      .wrap('<span class="menumain-icon">')
+      .parent();
   }
 
   /**
