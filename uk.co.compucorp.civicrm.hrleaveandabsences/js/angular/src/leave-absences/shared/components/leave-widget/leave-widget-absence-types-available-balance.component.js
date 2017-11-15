@@ -104,6 +104,7 @@ define([
      */
     function mapAbsenceTypesWithTheirEntitlements () {
       vm.absenceTypeEntitlements = [];
+
       _.each(vm.absenceTypes, function (absenceType) {
         var entitlement = _.find(entitlements, function (entitlement) {
           return +absenceType.id === +entitlement.type_id;
