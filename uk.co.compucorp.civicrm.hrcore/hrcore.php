@@ -28,7 +28,7 @@ use CRM_HRCore_HookListener_Form_Admin_Localization as LocalizationFormAdminHook
 function hrcore_civicrm_config(&$config) {
   _hrcore_civix_civicrm_config($config);
 
-  BaseHookListener::onConfig($config);
+  (new BaseHookListener())->onConfig($config);
 }
 
 /**
@@ -97,7 +97,7 @@ function hrcore_civicrm_xmlMenu(&$files) {
 function hrcore_civicrm_install() {
   require_once 'CRM/HRCore/HookListener/BaseListener.php';
 
-  BaseHookListener::onInstall();
+  (new BaseHookListener())->onInstall();
   _hrcore_civix_civicrm_install();
 }
 
@@ -109,7 +109,7 @@ function hrcore_civicrm_install() {
 function hrcore_civicrm_uninstall() {
   require_once 'CRM/HRCore/HookListener/BaseListener.php';
 
-  BaseHookListener::onUninstall();
+  (new BaseHookListener())->onUninstall();
   _hrcore_civix_civicrm_uninstall();
 }
 
@@ -121,7 +121,7 @@ function hrcore_civicrm_uninstall() {
 function hrcore_civicrm_enable() {
   require_once 'CRM/HRCore/HookListener/BaseListener.php';
 
-  BaseHookListener::onEnable();
+  (new BaseHookListener())->onEnable();
   _hrcore_civix_civicrm_enable();
 }
 
@@ -131,7 +131,7 @@ function hrcore_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function hrcore_civicrm_disable() {
-  BaseHookListener::onDisable();
+  (new BaseHookListener())->onDisable();
   _hrcore_civix_civicrm_disable();
 }
 
