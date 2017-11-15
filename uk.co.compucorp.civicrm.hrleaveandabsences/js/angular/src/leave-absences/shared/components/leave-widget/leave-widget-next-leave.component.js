@@ -137,8 +137,8 @@ define([
         request_type: 'leave',
         status_id: { IN: getStatusIds() },
         type_id: { IN: getAbsenceTypeIds() },
-        options: { limit: 1, sort: 'from_date DESC' }
-      }, null, null, null, false) // No cache
+        options: { limit: 1 }
+      }, null, 'from_date ASC', null, false) // No cache
       .then(function (response) {
         vm.nextLeaveRequest = response.list[0] || null;
       });

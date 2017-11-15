@@ -94,8 +94,8 @@ define([
           request_type: 'leave',
           status_id: { IN: leaveRequestStatusIds },
           type_id: { IN: leaveRequestAbsenceTypeIds },
-          options: { limit: 1, sort: 'from_date DESC' }
-        }, null, null, null, false);
+          options: { limit: 1 }
+        }, null, 'from_date ASC', null, false);
       });
 
       it('loads the leave request day types', function () {
@@ -120,6 +120,8 @@ define([
             expectedNextLeave = response.list[0];
             expectedNextLeave['type_id.title'] = getAbsenceTypeTitleFor(expectedNextLeave);
             expectedNextLeave.balance_change = Math.abs(expectedNextLeave.balance_change);
+            expectedNextLeave.from_date = moment(expectedNextLeave.from_date);
+            expectedNextLeave.to_date = moment(expectedNextLeave.to_date);
             expectedRequestStatus = getExpectedRequestStatus(expectedNextLeave);
           });
           $rootScope.$digest();
@@ -131,11 +133,6 @@ define([
 
         it('stores the next leave request', function () {
           expect(ctrl.nextLeaveRequest).toEqual(expectedNextLeave);
-        });
-
-        it('converts the request dates from strings to Date objects', function () {
-          expect(moment.isMoment(ctrl.nextLeaveRequest.from_date)).toBe(true);
-          expect(moment.isMoment(ctrl.nextLeaveRequest.to_date)).toBe(true);
         });
 
         it('stores the status for the request', function () {
