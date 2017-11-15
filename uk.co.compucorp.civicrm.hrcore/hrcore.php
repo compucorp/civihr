@@ -131,7 +131,7 @@ function hrcore_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function hrcore_civicrm_disable() {
-  _hrcore_hrui_civicrm_disable();
+  BaseHookListener::onDisable();
   _hrcore_civix_civicrm_disable();
 }
 
@@ -401,12 +401,6 @@ function hrcore_civicrm_coreResourceList(&$items, $region) {
 //                  //
 //////////////////////
 
-function _hrcore_hrui_civicrm_disable() {
-  __hrui_setActiveFields(TRUE);
-  __hrui_wordReplacement(TRUE);
-  __hrui_menuSetActive(0);
-}
-
 function _hrcore_hrui_civicrm_tabset($tabsetName, &$tabs, $contactID) {
   $tabsToRemove = array();
 
@@ -439,31 +433,6 @@ function _hrcore_hrui_civicrm_summary($contactId, &$content, &$contentPlacement)
   $content['userid'] = $uf['uf_id'];
   $content['username'] = !empty($user->name) ? $user->name : '';
   $contentPlacement = NULL;
-}
-
-function __hrui_wordReplacement($isActive) {
-  if( $isActive) {
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'CiviCRM News' WHERE name = 'blog' ");
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'Case Dashboard Dashlet' WHERE name = 'casedashboard' ");
-  }
-  else {
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'CiviHR News' WHERE name = 'blog' ");
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'Assignments Dashlet' WHERE name = 'casedashboard' ");
-  }
-}
-
-function __hrui_setActiveFields($setActive) {
-  $setActive = $setActive ? 1 : 0;
-  //disable/enable optionGroup and optionValue
-  $query = "UPDATE civicrm_option_value JOIN civicrm_option_group ON civicrm_option_group.id = civicrm_option_value.option_group_id SET civicrm_option_value.is_active = {$setActive} WHERE civicrm_option_group.name IN ('custom_most_important_issue', 'custom_marital_status')";
-  CRM_Core_DAO::executeQuery($query);
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_option_group SET is_active = {$setActive} WHERE name IN ('custom_most_important_issue', 'custom_marital_status')");
-
-  //disable/enable customgroup and customvalue
-  $sql = "UPDATE civicrm_custom_field JOIN civicrm_custom_group ON civicrm_custom_group.id = civicrm_custom_field.custom_group_id SET civicrm_custom_field.is_active = {$setActive} WHERE civicrm_custom_group.name = 'constituent_information'";
-  CRM_Core_DAO::executeQuery($sql);
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_active = {$setActive} WHERE name = 'constituent_information'");
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_relationship_type SET is_active = {$setActive} WHERE name_a_b IN ( 'Employee of', 'Head of Household for', 'Household Member of' )");
 }
 
 /**
@@ -638,15 +607,6 @@ function __hrui_coreMenuChanges(&$params) {
   unset($params[$supportNavId]);
   unset($params[$adminNavId]['child'][$civiReportNavId]);
   unset($params[$adminNavId]['child'][$civiCaseNavId]['child'][$redactionRulesNavId]);
-}
-
-/**
- * Enable/Disable Menu items created by hrui extension
- *
- */
-function __hrui_menuSetActive($isActive) {
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active = {$isActive} WHERE name = 'import_custom_fields'");
-  CRM_Core_BAO_Navigation::resetNavigation();
 }
 
 /**

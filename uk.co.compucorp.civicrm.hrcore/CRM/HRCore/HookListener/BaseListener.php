@@ -7,6 +7,12 @@ class CRM_HRCore_HookListener_BaseListener {
     self::addSmartyPluginDir();
   }
 
+  public static function onDisable() {
+    self::setActiveFields(TRUE);
+    self::wordReplacement(TRUE);
+    self::menuSetActive(0);
+  }
+
   public static function onEnable() {
     self::setActiveFields(FALSE);
     self::wordReplacement(FALSE);
@@ -216,7 +222,6 @@ class CRM_HRCore_HookListener_BaseListener {
 
     return TRUE;
   }
-
 
   private static function setActiveFields($setActive) {
     $setActive = $setActive ? 1 : 0;
