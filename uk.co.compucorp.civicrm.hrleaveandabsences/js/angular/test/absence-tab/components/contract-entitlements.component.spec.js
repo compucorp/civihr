@@ -38,7 +38,7 @@ define([
       spyOn($log, 'debug');
     }));
 
-    describe('common tests', function () {
+    describe('basic tests', function () {
       beforeEach(function () {
         compileComponent();
       });

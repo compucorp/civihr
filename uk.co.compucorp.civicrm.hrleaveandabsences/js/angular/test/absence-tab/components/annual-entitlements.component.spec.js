@@ -50,7 +50,10 @@ define([
       spyOn($log, 'debug');
     }));
 
-    describe('common tests', function () {
+    describe('basic tests', function () {
+      var expectedEntitlementURL = '/index.php?q=civicrm/admin/leaveandabsences/periods/manage_entitlements&cid=' +
+        contactId + '&returnUrl=%2Findex.php%3Fq%3Dcivicrm%2Fcontact%2Fview%26cid%3D202%26selectedChild%3Dabsence';
+
       beforeEach(function () {
         compileComponent();
       });
@@ -72,7 +75,7 @@ define([
       });
 
       it('navigates to a correct edit entitlements page', function () {
-        expect(controller.editEntitlementsPageUrl).toEqual('/index.php?q=civicrm/admin/leaveandabsences/periods/manage_entitlements&cid=' + contactId + '&returnUrl=%2Findex.php%3Fq%3Dcivicrm%2Fcontact%2Fview%26cid%3D202%26selectedChild%3Dabsence');
+        expect(controller.editEntitlementsPageUrl).toEqual(expectedEntitlementURL);
       });
 
       describe('absence period', function () {
@@ -103,12 +106,12 @@ define([
 
           beforeEach(function () {
             entitlement = absencePeriod.entitlements[0];
-            mockedEntitlement = _.filter(mockedEntitlements, function (mockedEntitlement) {
+            mockedEntitlement = _.find(mockedEntitlements, function (mockedEntitlement) {
               return mockedEntitlement.period_id === mockedAbsencePeriod.id;
-            })[0];
-            mockedContact = _.filter(ContactAPIMock.mockedContacts().list, function (mockedContact) {
+            });
+            mockedContact = _.find(ContactAPIMock.mockedContacts().list, function (mockedContact) {
               return mockedContact.id === contactId.toString();
-            })[0];
+            });
           });
 
           it('has amount', function () {

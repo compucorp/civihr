@@ -55,14 +55,16 @@
        * Filters absence periods basing on loaded entitlements
        */
       function filterAbsencePeriods () {
-        vm.absencePeriods = _.filter(vm.absencePeriods, function (absencePeriod) {
-          return _.find(allEntitlements, function (entitlement) {
-            return entitlement.period_id === absencePeriod.id;
-          });
-        });
-        vm.absencePeriods = _.sortBy(vm.absencePeriods, function (absencePeriod) {
-          return -moment(absencePeriod.start_date).valueOf();
-        });
+        vm.absencePeriods = _.chain(vm.absencePeriods)
+          .filter(function (absencePeriod) {
+            return _.find(allEntitlements, function (entitlement) {
+              return entitlement.period_id === absencePeriod.id;
+            });
+          })
+          .sortBy(function (absencePeriod) {
+            return -moment(absencePeriod.start_date).valueOf();
+          })
+          .value();
       }
 
       /**
