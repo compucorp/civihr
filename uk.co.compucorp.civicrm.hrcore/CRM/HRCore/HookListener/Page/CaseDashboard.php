@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRCore_Listener_Page_CaseDashboard extends CRM_HRCore_Listener_AbstractListener {
+class CRM_HRCore_HookListener_Page_CaseDashboard extends CRM_HRCore_HookListener_AbstractListener {
 
   protected $objectClass = 'CRM_Case_Page_DashBoard';
   protected $pageCSSIdentifier = '.page-civicrm-case';

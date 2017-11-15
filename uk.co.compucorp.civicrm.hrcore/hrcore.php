@@ -8,16 +8,16 @@ use Symfony\Component\DependencyInjection\Reference as Reference;
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_SearchTask_ContactFormSearchTaskAdder as ContactFormSearchTaskAdder;
-use CRM_HRCore_Listener_Page_ContactDashboard as ContactDashboardPageListener;
-use CRM_HRCore_Listener_Page_ContactSummary as ContactSummaryPageListener;
-use CRM_HRCore_Listener_Page_CaseDashboard as CaseDashboardPageListener;
-use CRM_HRCore_Listener_Page_Dashlet_CaseDashboard as CaseDashboardPageDashletListener;
-use CRM_HRCore_Listener_Form_Contact as ContactFormListener;
-use CRM_HRCore_Listener_Form_ContactImportMapField as ContactImportMapFieldFormListener;
-use CRM_HRCore_Listener_Form_ProfileEdit as ProfileEditFormListener;
-use CRM_HRCore_Listener_Form_Admin_Extensions as ExtensionsFormAdminListener;
-use CRM_HRCore_Listener_Form_Admin_Options as OptionsFormAdminListener;
-use CRM_HRCore_Listener_Form_Admin_Localization as LocalizationFormAdminListener;
+use CRM_HRCore_HookListener_Page_ContactDashboard as ContactDashboardPageHookListener;
+use CRM_HRCore_HookListener_Page_ContactSummary as ContactSummaryPageHookListener;
+use CRM_HRCore_HookListener_Page_CaseDashboard as CaseDashboardPageHookListener;
+use CRM_HRCore_HookListener_Page_Dashlet_CaseDashboard as CaseDashboardPageDashletHookListener;
+use CRM_HRCore_HookListener_Form_Contact as ContactFormHookListener;
+use CRM_HRCore_HookListener_Form_ContactImportMapField as ContactImportMapFieldFormHookListener;
+use CRM_HRCore_HookListener_Form_ProfileEdit as ProfileEditFormHookListener;
+use CRM_HRCore_HookListener_Form_Admin_Extensions as ExtensionsFormAdminHookListener;
+use CRM_HRCore_HookListener_Form_Admin_Options as OptionsFormAdminHookListener;
+use CRM_HRCore_HookListener_Form_Admin_Localization as LocalizationFormAdminHookListener;
 
 /**
  * Implements hook_civicrm_config().
@@ -239,8 +239,8 @@ function hrcore_civicrm_pageRun($page) {
   }
 
   $listeners = [
-    new ContactDashboardPageListener($page),
-    new ContactSummaryPageListener($page)
+    new ContactDashboardPageHookListener($page),
+    new ContactSummaryPageHookListener($page)
   ];
 
   foreach ($listeners as $listener) {
@@ -296,8 +296,6 @@ function _hrcore_add_js_session_vars() {
   ]);
 }
 
-
-
 /**
  * Implements hrcore_civicrm_buildForm.
  *
@@ -305,10 +303,10 @@ function _hrcore_add_js_session_vars() {
  */
 function hrcore_civicrm_buildForm($formName, &$form) {
   $listeners = [
-    new ContactFormListener($form),
-    new ExtensionsFormAdminListener($form),
-    new OptionsFormAdminListener($form),
-    new LocalizationFormAdminListener($form),
+    new ContactFormHookListener($form),
+    new ExtensionsFormAdminHookListener($form),
+    new OptionsFormAdminHookListener($form),
+    new LocalizationFormAdminHookListener($form),
   ];
 
   foreach ($listeners as $listener) {
@@ -323,7 +321,7 @@ function hrcore_civicrm_buildForm($formName, &$form) {
  */
 function hrcore_civicrm_postProcess($formName, &$form) {
   $listeners = [
-    new ContactFormListener($form),
+    new ContactFormHookListener($form),
   ];
 
   foreach ($listeners as $listener) {
@@ -356,13 +354,13 @@ function hrcore_civicrm_alterMenu(&$items) {
  */
 function hrcore_civicrm_alterContent(&$content, $context, $tplName, &$object) {
   $listeners = [
-    new ContactSummaryPageListener($object),
-    new CaseDashboardPageListener($object),
-    new CaseDashboardPageDashletListener($object),
-    new ContactImportMapFieldFormListener($object),
-    new ContactFormListener($object),
-    new ProfileEditFormListener($object),
-    new LocalizationFormAdminListener($object)
+    new ContactSummaryPageHookListener($object),
+    new CaseDashboardPageHookListener($object),
+    new CaseDashboardPageDashletHookListener($object),
+    new ContactImportMapFieldFormHookListener($object),
+    new ContactFormHookListener($object),
+    new ProfileEditFormHookListener($object),
+    new LocalizationFormAdminHookListener($object)
   ];
 
   foreach ($listeners as $listener) {

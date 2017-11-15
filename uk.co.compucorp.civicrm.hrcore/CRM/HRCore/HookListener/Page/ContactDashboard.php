@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRCore_Listener_Page_ContactDashboard extends CRM_HRCore_Listener_AbstractListener {
+class CRM_HRCore_HookListener_Page_ContactDashboard extends CRM_HRCore_HookListener_AbstractListener {
 
   protected $objectClass = 'CRM_Contact_Page_DashBoard';
 

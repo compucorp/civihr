@@ -1,5 +1,5 @@
 <?php
-  abstract class CRM_HRCore_Listener_AbstractListener {
+  abstract class CRM_HRCore_HookListener_AbstractListener {
 
     protected $objectClass;
     protected $object;

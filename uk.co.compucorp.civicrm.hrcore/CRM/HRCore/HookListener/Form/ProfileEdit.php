@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRCore_Listener_Form_ProfileEdit extends CRM_HRCore_Listener_AbstractListener {
+class CRM_HRCore_HookListener_Form_ProfileEdit extends CRM_HRCore_HookListener_AbstractListener {
 
   protected $objectClass = 'CRM_Profile_Form_Edit';
 
