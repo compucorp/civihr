@@ -340,6 +340,18 @@ function hrcore_civicrm_summary($contactId, &$content, &$contentPlacement) {
   _hrcore_hrui_civicrm_summary($contactId, $content, $contentPlacement);
 }
 
+/**
+ * Implements hook_civicrm_coreResourceList.
+ *
+ * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_coreResourceList/
+ */
+function hrcore_civicrm_coreResourceList(&$items, $region) {
+  if ($region == 'html-header') {
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/dist/hrcore.min.js');
+    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrcore', 'css/hrcore.css');
+  }
+}
+
 //////////////////////
 //                  //
 //       HRUI       //
@@ -359,28 +371,9 @@ function _hrcore_hrui_civicrm_pageRun($page) {
   foreach ($listeners as $listener) {
     $listener->onPageRun();
   }
-
-  if (CRM_Core_Config::singleton()->debug) {
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/src/civihr-popup/attrchange.js');
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/src/civihr-popup/civihr-popup.js');
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/src/hrcore.js');
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/src/contact.js');
-  } else {
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/dist/hrcore.min.js');
-  }
-
-  CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrcore', 'css/hrcore.css');
 }
 
 function _hrcore_hrui_civicrm_buildForm($formName, &$form) {
-  CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrcore', 'css/hrcore.css');
-
-  if (CRM_Core_Config::singleton()->debug) {
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/src/hrcore.js');
-  } else {
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/dist/hrcore.min.js');
-  }
-
   $listeners = [
     new ContactFormListener($form),
     new ExtensionsFormAdminListener($form),
