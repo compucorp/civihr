@@ -7,6 +7,12 @@ class CRM_HRCore_HookListener_BaseListener {
     self::addSmartyPluginDir();
   }
 
+  public static function onEnable() {
+    self::setActiveFields(FALSE);
+    self::wordReplacement(FALSE);
+    self::menuSetActive(1);
+  }
+
   public static function onInstall() {
     //delete default tag of civicrm
     CRM_Core_DAO::executeQuery("DELETE FROM civicrm_tag WHERE name IN ('Non-profit', 'Company', 'Government Entity', 'Major Donor', 'Volunteer')");
@@ -235,5 +241,14 @@ class CRM_HRCore_HookListener_BaseListener {
       CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'CiviHR News' WHERE name = 'blog' ");
       CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET label = 'Assignments Dashlet' WHERE name = 'casedashboard' ");
     }
+  }
+
+  /**
+   * Enable/Disable Menu items created by hrui extension
+   *
+   */
+  private static function menuSetActive($isActive) {
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active = {$isActive} WHERE name = 'import_custom_fields'");
+    CRM_Core_BAO_Navigation::resetNavigation();
   }
 }

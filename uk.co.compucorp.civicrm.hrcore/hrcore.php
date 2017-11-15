@@ -119,7 +119,9 @@ function hrcore_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function hrcore_civicrm_enable() {
-  _hrcore_hrui_civicrm_enable();
+  require_once 'CRM/HRCore/HookListener/BaseListener.php';
+
+  BaseHookListener::onEnable();
   _hrcore_civix_civicrm_enable();
 }
 
@@ -398,12 +400,6 @@ function hrcore_civicrm_coreResourceList(&$items, $region) {
 //       HRUI       //
 //                  //
 //////////////////////
-
-function _hrcore_hrui_civicrm_enable() {
-  __hrui_setActiveFields(FALSE);
-  __hrui_wordReplacement(FALSE);
-  __hrui_menuSetActive(1);
-}
 
 function _hrcore_hrui_civicrm_disable() {
   __hrui_setActiveFields(TRUE);
