@@ -2,6 +2,11 @@
 
 class CRM_HRCore_HookListener_BaseListener {
 
+  public function onAlterMenu(&$items) {
+    $items['civicrm/api']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
+    $items['civicrm/styleguide']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
+  }
+
   public function onConfig(&$config) {
     $this->updateCiviSettings();
     $this->addSmartyPluginDir();

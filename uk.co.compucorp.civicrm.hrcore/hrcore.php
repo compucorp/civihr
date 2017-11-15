@@ -350,7 +350,7 @@ function hrcore_civicrm_tabset($tabsetName, &$tabs, $contactID) {
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_alterMenu/
  */
 function hrcore_civicrm_alterMenu(&$items) {
-  _hrcore_hrui_civicrm_alterMenu($items);
+  (new BaseHookListener())->onAlterMenu($items);
 }
 
 /**
@@ -400,11 +400,6 @@ function hrcore_civicrm_coreResourceList(&$items, $region) {
 //       HRUI       //
 //                  //
 //////////////////////
-
-function _hrcore_hrui_civicrm_alterMenu(&$items) {
-  $items['civicrm/api']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
-  $items['civicrm/styleguide']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
-}
 
 function _hrcore_hrui_civicrm_navigationMenu(&$params) {
   __hrui_customImportMenuItems($params);
