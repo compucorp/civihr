@@ -16,10 +16,8 @@
           <tr ng-repeat="absencePeriod in entitlements.absencePeriods">
             <td>
               {{absencePeriod.title}}
-              <button class="btn btn-default"
-                ng-click="entitlements.openAnnualEntitlementChangeLog(absencePeriod.id)">
-                <i class="fa fa-clock-o"></i>
-              </button>
+              <i ng-click="entitlements.openAnnualEntitlementChangeLog(absencePeriod.id)"
+                 class="fa fa-clock-o pointer"></i>
             </td>
             <td ng-repeat="entitlement in absencePeriod.entitlements">
               <span ng-if="entitlement">
