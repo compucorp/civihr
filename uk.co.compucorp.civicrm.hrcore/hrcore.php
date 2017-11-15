@@ -107,7 +107,9 @@ function hrcore_civicrm_install() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function hrcore_civicrm_uninstall() {
-  _hrcore_hrui_civicrm_uninstall();
+  require_once 'CRM/HRCore/HookListener/BaseListener.php';
+
+  BaseHookListener::onUninstall();
   _hrcore_civix_civicrm_uninstall();
 }
 
@@ -397,46 +399,6 @@ function hrcore_civicrm_coreResourceList(&$items, $region) {
 //                  //
 //////////////////////
 
-function _hrcore_hrui_civicrm_uninstall() {
-  // get a list of all tab options
-  $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
-  $tabsToSet = array($options['Activities'], $options['Tags']);
-
-  // get tab options from DB
-  $options = __hrui_getViewOptionsSetting();
-
-  // set activity & tag tab options
-  foreach ($tabsToSet as $key) {
-    $options[$key] = 1;
-  }
-  $options = array_keys($options);
-
-  // set modified options in the DB
-  __hrui_setViewOptionsSetting($options);
-  __hrui_setActiveFields(TRUE);
-  // show communication preferences block
-  $groupID = CRM_Core_DAO::getFieldValue(
-    'CRM_Core_DAO_OptionGroup',
-    'contact_edit_options',
-    'id',
-    'name'
-  );
-
-  $params = array(
-    'option_group_id' => $groupID,
-    'name' => 'CommunicationPreferences',
-  );
-
-  CRM_Core_BAO_OptionValue::retrieve($params, $defaults);
-  $defaults['is_active'] = 1;
-  CRM_Core_BAO_OptionValue::create($defaults);
-  __hrui_wordReplacement(TRUE);
-
-  // Remove 'Import Custom Fields' Navigation item and reset the menu
-  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name = 'import_custom_fields'");
-  CRM_Core_BAO_Navigation::resetNavigation();
-}
-
 function _hrcore_hrui_civicrm_enable() {
   __hrui_setActiveFields(FALSE);
   __hrui_wordReplacement(FALSE);
@@ -482,41 +444,6 @@ function _hrcore_hrui_civicrm_summary($contactId, &$content, &$contentPlacement)
   $content['username'] = !empty($user->name) ? $user->name : '';
   $contentPlacement = NULL;
 }
-
-/**
- * get tab options from DB using setting-get api
- */
-function __hrui_getViewOptionsSetting() {
-  $domainID = CRM_Core_Config::domainID();
-  $params = array(
-    'domain_id' => $domainID,
-    'return' => 'contact_view_options',
-  );
-  $result = civicrm_api3('setting', 'get', $params);
-  if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
-    CRM_Core_Error::debug_var('setting-get result for contact_view_options', $result);
-    throw new CRM_Core_Exception('Failed to retrieve settings for contact_view_options');
-  }
-  return array_flip($result['values'][$domainID]['contact_view_options']);
-}
-
-/**
- * set modified options in the DB using setting-create api
- */
-function __hrui_setViewOptionsSetting($options = array()) {
-  $domainID = CRM_Core_Config::domainID();
-  $params = array(
-    'domain_id' => $domainID,
-    'contact_view_options' => $options,
-  );
-  $result = civicrm_api3('setting', 'create', $params);
-  if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
-    CRM_Core_Error::debug_var('setting-create result for contact_view_options', $result);
-    throw new CRM_Core_Exception('Failed to create settings for contact_view_options');
-  }
-  return TRUE;
-}
-
 
 function __hrui_wordReplacement($isActive) {
   if( $isActive) {
