@@ -1,11 +1,3 @@
-/**
- * Ensures that there is the same top padding regardless whether
- * the user can see the admin toolbar or not
- */
-body {
-  padding-top: 60px !important;
-}
-
 #civicrm-footer {
   height: 250px;
   background-color: #e8eef0 !important;
