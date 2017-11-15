@@ -232,8 +232,20 @@ function hrcore_civicrm_pre($op, $objectName, $objectId, &$params) {
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_pageRun/
  */
 function hrcore_civicrm_pageRun($page) {
-  _hrcore_hrui_civicrm_pageRun($page);
   _hrcore_add_js_session_vars();
+
+  if (isset($_GET['snippet']) && $_GET['snippet'] == 'json') {
+    return;
+  }
+
+  $listeners = [
+    new ContactDashboardPageListener($page),
+    new ContactSummaryPageListener($page)
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->onPageRun();
+  }
 }
 
 /**
@@ -292,7 +304,16 @@ function _hrcore_add_js_session_vars() {
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_buildForm/
  */
 function hrcore_civicrm_buildForm($formName, &$form) {
-  _hrcore_hrui_civicrm_buildForm($formName, $form);
+  $listeners = [
+    new ContactFormListener($form),
+    new ExtensionsFormAdminListener($form),
+    new OptionsFormAdminListener($form),
+    new LocalizationFormAdminListener($form),
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->onBuildForm();
+  }
 }
 
 /**
@@ -301,7 +322,13 @@ function hrcore_civicrm_buildForm($formName, &$form) {
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_postProcess/
  */
 function hrcore_civicrm_postProcess($formName, &$form) {
-  _hrcore_hrui_civicrm_postProcess($formName, $form);
+  $listeners = [
+    new ContactFormListener($form),
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->onPostProcess();
+  }
 }
 
 /**
@@ -328,7 +355,19 @@ function hrcore_civicrm_alterMenu(&$items) {
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_alterContent/
  */
 function hrcore_civicrm_alterContent(&$content, $context, $tplName, &$object) {
-  _hrcore_hrui_civicrm_alterContent($content, $context, $tplName, $object);
+  $listeners = [
+    new ContactSummaryPageListener($object),
+    new CaseDashboardPageListener($object),
+    new CaseDashboardPageDashletListener($object),
+    new ContactImportMapFieldFormListener($object),
+    new ContactFormListener($object),
+    new ProfileEditFormListener($object),
+    new LocalizationFormAdminListener($object)
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->onAlterContent($content);
+  }
 }
 
 /**
@@ -357,44 +396,6 @@ function hrcore_civicrm_coreResourceList(&$items, $region) {
 //       HRUI       //
 //                  //
 //////////////////////
-
-function _hrcore_hrui_civicrm_pageRun($page) {
-  if (isset($_GET['snippet']) && $_GET['snippet'] == 'json') {
-    return;
-  }
-
-  $listeners = [
-    new ContactDashboardPageListener($page),
-    new ContactSummaryPageListener($page)
-  ];
-
-  foreach ($listeners as $listener) {
-    $listener->onPageRun();
-  }
-}
-
-function _hrcore_hrui_civicrm_buildForm($formName, &$form) {
-  $listeners = [
-    new ContactFormListener($form),
-    new ExtensionsFormAdminListener($form),
-    new OptionsFormAdminListener($form),
-    new LocalizationFormAdminListener($form),
-  ];
-
-  foreach ($listeners as $listener) {
-    $listener->onBuildForm();
-  }
-}
-
-function _hrcore_hrui_civicrm_postProcess($formName, &$form) {
-  $listeners = [
-    new ContactFormListener($form),
-  ];
-
-  foreach ($listeners as $listener) {
-    $listener->onPostProcess();
-  }
-}
 
 function _hrcore_hrui_civicrm_config(&$config) {
   global $civicrm_setting;
@@ -577,22 +578,6 @@ function _hrcore_hrui_civicrm_navigationMenu(&$params) {
   __hrui_createHelpMenu($params);
   __hrui_createDeveloperMenu($params);
   __hrui_setDynamicMenuIcons($params);
-}
-
-function _hrcore_hrui_civicrm_alterContent(&$content, $context, $tplName, &$object) {
-  $listeners = [
-    new ContactSummaryPageListener($object),
-    new CaseDashboardPageListener($object),
-    new CaseDashboardPageDashletListener($object),
-    new ContactImportMapFieldFormListener($object),
-    new ContactFormListener($object),
-    new ProfileEditFormListener($object),
-    new LocalizationFormAdminListener($object)
-  ];
-
-  foreach ($listeners as $listener) {
-    $listener->onAlterContent($content);
-  }
 }
 
 function _hrcore_hrui_civicrm_summary($contactId, &$content, &$contentPlacement) {
