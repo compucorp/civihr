@@ -64,9 +64,13 @@
 <script type="text/ng-template" id="accrued-toil-tooltip">
   <div>
     <strong>{{day.contactData.leaveRequest['type_id.title']}}</strong>
-    <p ng-if="day.calculationUnit.name === 'days'">
-      {{day.supportData.toilAmounts[day.contactData.leaveRequest.toil_to_accrue].label}}</p>
-    <p ng-if="day.calculationUnit.name === 'hours'">
-      {{day.contactData.leaveRequest.toil_to_accrue | timeUnitApplier : 'hours' }}</p>
+    <p ng-switch="day.calculationUnit.name">
+      <span ng-switch-when="days">
+        {{day.supportData.toilAmounts[day.contactData.leaveRequest.toil_to_accrue].label}}
+      </span>
+      <span ng-switch-when="hours">
+        {{day.contactData.leaveRequest.toil_to_accrue | timeUnitApplier : 'hours' }}
+      </span>
+    </p>
   </div>
 </script>
