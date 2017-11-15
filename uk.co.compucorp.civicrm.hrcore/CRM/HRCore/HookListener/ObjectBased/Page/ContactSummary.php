@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRCore_HookListener_Page_ContactSummary extends CRM_HRCore_HookListener_ObjectBasedListener {
+class CRM_HRCore_HookListener_ObjectBased_Page_ContactSummary extends CRM_HRCore_HookListener_ObjectBased_ObjectBasedListener {
 
   protected $objectClass = 'CRM_Contact_Page_View_Summary';
 

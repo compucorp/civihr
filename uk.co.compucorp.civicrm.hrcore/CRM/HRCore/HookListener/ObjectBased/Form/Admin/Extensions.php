@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRCore_HookListener_Form_Admin_Extensions extends CRM_HRCore_HookListener_ObjectBasedListener {
+class CRM_HRCore_HookListener_ObjectBased_Form_Admin_Extensions extends CRM_HRCore_HookListener_ObjectBased_ObjectBasedListener {
 
   protected $objectClass = 'CRM_Admin_Form_Extensions';
 

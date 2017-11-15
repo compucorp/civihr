@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRCore_HookListener_ObjectBasedListener extends CRM_HRCore_HookListener_BaseListener {
+class CRM_HRCore_HookListener_ObjectBased_ObjectBasedListener extends CRM_HRCore_HookListener_BaseListener {
 
   protected $objectClass;
   protected $object;
