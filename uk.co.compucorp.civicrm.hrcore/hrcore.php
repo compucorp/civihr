@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\Reference as Reference;
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_SearchTask_ContactFormSearchTaskAdder as ContactFormSearchTaskAdder;
+use CRM_HRCore_HookListener_BaseListener as BaseHookListener;
 use CRM_HRCore_HookListener_Page_ContactDashboard as ContactDashboardPageHookListener;
 use CRM_HRCore_HookListener_Page_ContactSummary as ContactSummaryPageHookListener;
 use CRM_HRCore_HookListener_Page_CaseDashboard as CaseDashboardPageHookListener;
@@ -25,10 +26,9 @@ use CRM_HRCore_HookListener_Form_Admin_Localization as LocalizationFormAdminHook
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
  */
 function hrcore_civicrm_config(&$config) {
-  _hrcore_hrui_civicrm_config($config);
   _hrcore_civix_civicrm_config($config);
-  $smarty = CRM_Core_Smarty::singleton();
-  array_push($smarty->plugins_dir, __DIR__ . '/CRM/Smarty/plugins');
+
+  BaseHookListener::onConfig($config);
 }
 
 /**
@@ -394,11 +394,6 @@ function hrcore_civicrm_coreResourceList(&$items, $region) {
 //       HRUI       //
 //                  //
 //////////////////////
-
-function _hrcore_hrui_civicrm_config(&$config) {
-  global $civicrm_setting;
-  $civicrm_setting['CiviCRM Preferences']['communityMessagesUrl'] = FALSE;
-}
 
 function _hrcore_hrui_civicrm_install() {
   //delete default tag of civicrm
