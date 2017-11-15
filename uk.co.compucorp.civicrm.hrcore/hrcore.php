@@ -341,7 +341,7 @@ function hrcore_civicrm_postProcess($formName, &$form) {
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_tabset/
  */
 function hrcore_civicrm_tabset($tabsetName, &$tabs, $contactID) {
-  _hrcore_hrui_civicrm_tabset($tabsetName, $tabs, $contactID);
+  (new BaseHookListener())->onTabset($tabsetName, $tabs, $contactID);
 }
 
 /**
@@ -401,16 +401,6 @@ function hrcore_civicrm_coreResourceList(&$items, $region) {
 //                  //
 //////////////////////
 
-function _hrcore_hrui_civicrm_tabset($tabsetName, &$tabs, $contactID) {
-  $tabsToRemove = array();
-
-  if (__hrui_check_extension('uk.co.compucorp.civicrm.tasksassignments')) {
-    $tabsToRemove[] = 'case';
-  }
-
-  __hrui_alter_tabs($tabs, $tabsToRemove);
-}
-
 function _hrcore_hrui_civicrm_alterMenu(&$items) {
   $items['civicrm/api']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
   $items['civicrm/styleguide']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
@@ -448,64 +438,6 @@ function __hrui_check_extension($extensionKey)  {
     'is_active',
     'full_name'
   );
-}
-
-/**
- * 1) we alter the weights for these tabs here
- * since these tabs are not created by hook_civicrm_tab
- * and the only way to alter their weights is here
- * by taking advantage of &$tabs variable.
- * 2) we set assignments tab to 30 since it should appear
- * after appraisals tab directly which have the weight of 20.
- * 3) the weight increased by 10 between every tab
- * to give a large space for other tabs to be inserted
- * between any two without altering other tabs weights.
- * 4) we remove a tab if present in the $tabsToRemove list
- *
- * @param array $tabs
- * @param array $tabsToRemove
- */
-function __hrui_alter_tabs(&$tabs, $tabsToRemove) {
-  foreach ($tabs as $i => $tab) {
-    if (in_array($tab['id'], $tabsToRemove)) {
-      unset($tabs[$i]);
-      continue;
-    }
-
-    switch($tab['title'])  {
-      case 'Assignments':
-        $tabs[$i]['weight'] = 30;
-        break;
-      case 'Emergency Contacts':
-        $tabs[$i]['weight'] = 80;
-        break;
-      case 'Relationships':
-        $tabs[$i]['weight'] = 90;
-        $tabs[$i]['title'] = 'Managers';
-        break;
-      case 'Bank Details':
-        $tabs[$i]['weight'] = 100;
-        break;
-      case 'Career History':
-        $tabs[$i]['weight'] = 110;
-        break;
-      case 'Medical & Disability':
-        $tabs[$i]['weight'] = 120;
-        break;
-      case 'Qualifications':
-        $tabs[$i]['weight'] = 130;
-        break;
-      case 'Notes':
-        $tabs[$i]['weight'] = 140;
-        break;
-      case 'Groups':
-        $tabs[$i]['weight'] = 150;
-        break;
-      case 'Change Log':
-        $tabs[$i]['weight'] = 160;
-        break;
-    }
-  }
 }
 
 /**
