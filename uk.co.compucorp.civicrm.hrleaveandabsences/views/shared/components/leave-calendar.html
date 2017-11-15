@@ -7,7 +7,7 @@
             <ui-select-match placeholder="Staff Member" allow-clear>
               <span ng-bind="$select.selected.display_name"></span>
             </ui-select-match>
-            <ui-select-choices repeat="user in (calendar.lookupContacts | filter: $select.search) track by user.id">
+            <ui-select-choices repeat="user in (calendar.lookupContacts | orderBy: 'sort_name' | filter: $select.search) track by user.id">
               <span ng-bind="user.display_name"></span>
             </ui-select-choices>
           </ui-select>

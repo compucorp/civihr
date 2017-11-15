@@ -1,24 +1,15 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
-
 /**
  * Class CRM_Hrjobcontract_BAO_HRJobDetailsTest
  *
  * @group headless
  */
-class CRM_Hrjobcontract_BAO_HRJobDetailsTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface,
-  TransactionalInterface {
+class CRM_Hrjobcontract_BAO_HRJobDetailsTest extends CRM_Hrjobcontract_Test_BaseHeadlessTest {
 
   use HRJobContractTestTrait;
 
   private $contactID;
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()->installMe(__DIR__)->apply();
-  }
 
   public function setUp()  {
     // Create test Contact.

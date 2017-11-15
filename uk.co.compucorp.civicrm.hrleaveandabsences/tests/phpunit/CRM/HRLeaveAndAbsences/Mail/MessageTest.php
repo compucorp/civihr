@@ -14,7 +14,6 @@ use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotific
  */
 class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
 
-  use CRM_HRLeaveAndAbsences_LeaveRequestHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
   use CRM_HRLeaveAndAbsences_MailHelpersTrait;
 
@@ -29,9 +28,6 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $this->leaveContact = ContactFabricator::fabricateWithEmail([
       'first_name' => 'Staff1', 'last_name' => 'Staff1'], 'staffmember@dummysite.com'
     );
-
-    $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
-    $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
   public function testGetRecipientEmailsReturnsCorrectlyWhenLeaveContactHasLeaveApprover() {

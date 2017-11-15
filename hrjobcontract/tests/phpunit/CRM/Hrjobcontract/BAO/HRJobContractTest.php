@@ -1,8 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
-
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 
@@ -11,18 +8,9 @@ use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
  *
  * @group headless
  */
-class CRM_Hrjobcontract_BAO_HRJobContractTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface,
-  TransactionalInterface {
+class CRM_Hrjobcontract_BAO_HRJobContractTest extends CRM_Hrjobcontract_Test_BaseHeadlessTest {
 
   use HRJobContractTestTrait;
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('uk.co.compucorp.civicrm.hrcore')
-      ->installMe(__DIR__)
-      ->apply();
-  }
 
   public function testGetContractsWithDetailsInPeriodDoesntIncludeContractsWithoutDetails() {
     $this->createContacts(1);

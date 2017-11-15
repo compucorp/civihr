@@ -822,7 +822,8 @@ function _hrui_updateContactSummaryUI() {
 
   // $managersList contain current line managers list separated by comma
   if ($currentContractDetails)  {
-    $managersArray = CRM_HRUI_Helper::getLineManagersList($contact_id);
+    $managersService = new CRM_HRCore_Service_Manager();
+    $managersArray = $managersService->getLineManagersFor($contact_id);
     $managersList = implode(', ', $managersArray);
   }
 

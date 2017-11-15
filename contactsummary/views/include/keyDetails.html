@@ -1,30 +1,30 @@
 <section class="panel panel-default panel-default-plain panel--key-details"
-         ng-controller="KeyDetailsCtrl as KeyDetails">
-    <header class="panel-heading">
-        <h2 class="panel-title">Key Details</h2>
-        <hr>
-    </header>
-    <div class="panel-body">
-        <dl class="dl-horizontal">
-            <dt>Age</dt>
-            <dd>{{ KeyDetails.contactDetails.age }}</dd>
-            <dt>Date of Birth</dt>
-            <dd>{{ KeyDetails.contactDetails.dateOfBirth }}</dd>
-            <dt>Length of Service</dt>
-            <dd>
-                <span ng-if="KeyDetails.lengthOfService.years > 0">{{KeyDetails.lengthOfService.years}} years</span>
-                <span ng-if="KeyDetails.lengthOfService.months > 0">{{KeyDetails.lengthOfService.months}} months</span>
-                <span ng-if="KeyDetails.lengthOfService.days > 0">{{KeyDetails.lengthOfService.days}} days</span>
-            </dd>
-            <dt>Contract Type</dt>
-            <dd>{{ KeyDetails.primaryContract.type }}</dd>
-            <dt>Gross Annual Pay</dt>
-            <dd>{{ KeyDetails.primaryContract.pay.currency }} {{ KeyDetails.primaryContract.pay.amount }}</dd>
-            <dt>Hours</dt>
-            <dd>
-                {{ KeyDetails.primaryContract.hours.amount }}
-                {{ KeyDetails.primaryContract.hours.unit ? 'per ' + KeyDetails.primaryContract.hours.unit : ''}}
-            </dd>
-        </dl>
-    </div>
+  ng-controller="KeyDetailsController as KeyDetails">
+  <header class="panel-heading">
+    <h2 class="panel-title">Key Details</h2>
+    <hr>
+  </header>
+  <div class="panel-body">
+    <dl class="dl-horizontal">
+      <dt>Age</dt>
+      <dd>{{ KeyDetails.contactDetails.age }}</dd>
+      <dt>Date of Birth</dt>
+      <dd>{{ KeyDetails.contactDetails.dateOfBirth }}</dd>
+      <dt>Length of Service</dt>
+      <dd>
+        <span ng-if="KeyDetails.lengthOfService.years > 0">{{KeyDetails.lengthOfService.years}} years</span>
+        <span ng-if="KeyDetails.lengthOfService.months > 0">{{KeyDetails.lengthOfService.months}} months</span>
+        <span ng-if="KeyDetails.lengthOfService.days > 0">{{KeyDetails.lengthOfService.days}} days</span>
+      </dd>
+      <dt>Contract Type</dt>
+      <dd>{{ KeyDetails.primaryContract.type }}</dd>
+      <dt>Gross Annual Pay</dt>
+      <dd>{{ KeyDetails.primaryContract.pay.currency }} {{ KeyDetails.primaryContract.pay.amount }}</dd>
+      <dt>Hours</dt>
+      <dd>
+        {{ KeyDetails.primaryContract.hours.amount }}
+        {{ KeyDetails.primaryContract.hours.unit ? 'per ' + KeyDetails.primaryContract.hours.unit : ''}}
+      </dd>
+    </dl>
+  </div>
 </section>

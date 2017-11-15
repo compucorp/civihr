@@ -80,6 +80,9 @@ define([
         expect(timeUnitApplier(1.126, 'hours')).toBe('1h 15m');
         expect(timeUnitApplier(5, 'hours')).toBe('5h');
         expect(timeUnitApplier(7.78, 'hours')).toBe('8h');
+        expect(timeUnitApplier(20.74, 'hours')).toBe('20h 45m');
+        expect(timeUnitApplier(20.75, 'hours')).toBe('20h 45m');
+        expect(timeUnitApplier(20.76, 'hours')).toBe('21h');
       });
     });
   });

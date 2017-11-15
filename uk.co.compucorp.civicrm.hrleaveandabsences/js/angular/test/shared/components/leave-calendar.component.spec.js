@@ -443,7 +443,7 @@
 
           describe('when it has not yet received the "month injected" event from all the months', function () {
             beforeEach(function () {
-              simulateMonthsInjected(2);
+              simulateMonthsWithSignal('injected', 2);
             });
 
             it('does not send the event', function () {
@@ -453,7 +453,7 @@
 
           describe('when it has received the "month injected" event from all the months', function () {
             beforeEach(function () {
-              simulateMonthsInjected(controller.months.length);
+              simulateMonthsWithSignal('injected', controller.months.length);
             });
 
             it('sends the event', function () {
@@ -480,6 +480,8 @@
 
           controller.refresh('contacts');
           $rootScope.$digest();
+
+          simulateMonthsWithSignal('destroyed', controller.months.length);
         }
       });
 
@@ -579,7 +581,8 @@
               controller.refresh('period');
               $rootScope.$digest();
 
-              simulateMonthsInjected(controller.months.length);
+              simulateMonthsWithSignal('destroyed', controller.months.length);
+              simulateMonthsWithSignal('injected', controller.months.length);
             });
 
             it('rebuilds the months structure', function () {
@@ -604,7 +607,8 @@
               controller.refresh('contacts');
               $rootScope.$digest();
 
-              simulateMonthsInjected(controller.months.length);
+              simulateMonthsWithSignal('destroyed', controller.months.length);
+              simulateMonthsWithSignal('injected', controller.months.length);
             });
 
             it('does not rebuild the months structure', function () {
@@ -670,14 +674,15 @@
       }
 
       /**
-       * Simulates that the given number of months sends the "injected"
+       * Simulates that the given number of months sends the given
        * signal to the component
        *
+       * @param {string} signal
        * @param {int} numberOfMonths
        */
-      function simulateMonthsInjected (numberOfMonths) {
+      function simulateMonthsWithSignal (signal, numberOfMonths) {
         _.times(numberOfMonths, function () {
-          $rootScope.$emit('LeaveCalendar::monthInjected');
+          $rootScope.$emit('LeaveCalendar::month' + _.capitalize(signal));
         });
 
         $rootScope.$emit.calls.reset();
