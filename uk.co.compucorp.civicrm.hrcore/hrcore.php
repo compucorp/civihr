@@ -8,15 +8,6 @@ use Symfony\Component\DependencyInjection\Reference as Reference;
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
 use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_SearchTask_ContactFormSearchTaskAdder as ContactFormSearchTaskAdder;
-use CRM_HRCore_HookListener_EventBased_OnConfig as OnConfigListener;
-use CRM_HRCore_HookListener_EventBased_OnInstall as OnInstallListener;
-use CRM_HRCore_HookListener_EventBased_OnUninstall as OnUninstallListener;
-use CRM_HRCore_HookListener_EventBased_OnEnable as OnEnableListener;
-use CRM_HRCore_HookListener_EventBased_OnDisable as OnDisableListener;
-use CRM_HRCore_HookListener_EventBased_OnAlterMenu as OnAlterMenuListener;
-use CRM_HRCore_HookListener_EventBased_OnTabset as OnTabsetListener;
-use CRM_HRCore_HookListener_EventBased_OnNavigationMenu as OnNavigationMenuListener;
-use CRM_HRCore_HookListener_EventBased_OnSummary as OnSummaryListener;
 use CRM_HRCore_HookListener_ObjectBased_Page_ContactDashboard as ContactDashboardPageHookListener;
 use CRM_HRCore_HookListener_ObjectBased_Page_ContactSummary as ContactSummaryPageHookListener;
 use CRM_HRCore_HookListener_ObjectBased_Page_CaseDashboard as CaseDashboardPageHookListener;
@@ -35,8 +26,7 @@ use CRM_HRCore_HookListener_ObjectBased_Form_Admin_Localization as LocalizationF
  */
 function hrcore_civicrm_config(&$config) {
   _hrcore_civix_civicrm_config($config);
-
-  (new OnConfigListener())->handle($config);
+  _hrcore_call_hook_listener();
 }
 
 /**
@@ -103,10 +93,7 @@ function hrcore_civicrm_xmlMenu(&$files) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
  */
 function hrcore_civicrm_install() {
-  require_once 'CRM/HRCore/HookListener/BaseListener.php';
-  require_once 'CRM/HRCore/HookListener/EventBased/OnInstall.php';
-
-  (new OnInstallListener())->handle();
+  _hrcore_call_hook_listener();
   _hrcore_civix_civicrm_install();
 }
 
@@ -116,10 +103,7 @@ function hrcore_civicrm_install() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function hrcore_civicrm_uninstall() {
-  require_once 'CRM/HRCore/HookListener/BaseListener.php';
-  require_once 'CRM/HRCore/HookListener/EventBased/OnUninstall.php';
-
-  (new OnUninstallListener())->handle();
+  _hrcore_call_hook_listener();
   _hrcore_civix_civicrm_uninstall();
 }
 
@@ -129,10 +113,7 @@ function hrcore_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function hrcore_civicrm_enable() {
-  require_once 'CRM/HRCore/HookListener/BaseListener.php';
-  require_once 'CRM/HRCore/HookListener/EventBased/OnEnable.php';
-
-  (new OnEnableListener())->handle();
+  _hrcore_call_hook_listener();
   _hrcore_civix_civicrm_enable();
 }
 
@@ -142,7 +123,7 @@ function hrcore_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function hrcore_civicrm_disable() {
-  (new OnDisableListener())->handle();
+  _hrcore_call_hook_listener();
   _hrcore_civix_civicrm_disable();
 }
 
@@ -271,7 +252,7 @@ function hrcore_civicrm_pageRun($page) {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu/
  */
 function hrcore_civicrm_navigationMenu(&$params) {
-  (new OnNavigationMenuListener())->handle($params);
+  _hrcore_call_hook_listener();
 }
 
 /**
@@ -333,7 +314,7 @@ function hrcore_civicrm_postProcess($formName, &$form) {
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_tabset/
  */
 function hrcore_civicrm_tabset($tabsetName, &$tabs, $contactID) {
-  (new OnTabsetListener())->handle($tabsetName, $tabs, $contactID);
+  _hrcore_call_hook_listener();
 }
 
 /**
@@ -342,7 +323,7 @@ function hrcore_civicrm_tabset($tabsetName, &$tabs, $contactID) {
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_alterMenu/
  */
 function hrcore_civicrm_alterMenu(&$items) {
-  (new OnAlterMenuListener())->handle($items);
+  _hrcore_call_hook_listener();
 }
 
 /**
@@ -372,7 +353,7 @@ function hrcore_civicrm_alterContent(&$content, $context, $tplName, &$object) {
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_summary/
  */
 function hrcore_civicrm_summary($contactId, &$content, &$contentPlacement) {
-  (new OnSummaryListener())->handle($contactId, $content, $contentPlacement);
+  _hrcore_call_hook_listener();
 }
 
 /**
@@ -385,4 +366,21 @@ function hrcore_civicrm_coreResourceList(&$items, $region) {
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/dist/hrcore.min.js');
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrcore', 'css/hrcore.css');
   }
+}
+
+/**
+ * Calls the listener related to whatever hook called the function,
+ * passing along any param that was given to the hook
+ *
+ */
+function _hrcore_call_hook_listener() {
+  $caller = debug_backtrace(FALSE, 2)[1];
+  $hookName = substr($caller['function'], strrpos($caller['function'], '_') + 1);
+  $listenerClass = 'CRM_HRCore_HookListener_EventBased_On' . ucfirst($hookName);
+
+  // necessary for install, uninstall, enable, and disable hooks
+  require_once 'CRM/HRCore/HookListener/BaseListener.php';
+  require_once str_replace('_', '/', $listenerClass . '.php');
+
+  call_user_func_array([new $listenerClass(), 'handle'], $caller['args']);
 }
