@@ -17,7 +17,7 @@
         <span ng-if="KeyDetails.lengthOfService.days > 0">{{KeyDetails.lengthOfService.days}} days</span>
       </dd>
       <dt>Contract Type</dt>
-      <dd>{{ KeyDetails.primaryContract.type }}</dd>
+      <dd>{{ KeyDetails.options.details.contract_type[KeyDetails.primaryContract.type] }}</dd>
       <dt>Gross Annual Pay</dt>
       <dd>{{ KeyDetails.primaryContract.pay.currency }} {{ KeyDetails.primaryContract.pay.amount }}</dd>
       <dt>Hours</dt>
