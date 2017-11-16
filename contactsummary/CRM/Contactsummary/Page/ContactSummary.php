@@ -17,10 +17,8 @@ class CRM_Contactsummary_Page_ContactSummary extends CRM_Core_Page {
         'baseURL' => CRM_Extension_System::singleton()->getMapper()->keyToUrl('org.civicrm.contactsummary')))
       ->addScriptFile('org.civicrm.contactsummary', CRM_Core_Config::singleton()->debug ? 'js/src/contact-summary.js' : 'js/dist/contact-summary.min.js', 1005)
       ->addStyleFile('org.civicrm.contactsummary', 'css/contactsummary.css')
-      ->addSettingsFactory(function () {
-        return [
-          'FieldOptions' => CRM_Hrjobcontract_Page_JobContractTab::getFieldOptions()
-        ];
-      });
+      ->addSetting([
+        'FieldOptions' => CRM_Hrjobcontract_Page_JobContractTab::getFieldOptions()
+      ]);
   }
 }
