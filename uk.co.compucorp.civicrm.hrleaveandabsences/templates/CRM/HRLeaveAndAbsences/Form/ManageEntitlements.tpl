@@ -96,8 +96,8 @@
               </td>
               <td>{$calculation->getPreviousPeriodProposedEntitlement()}</td>
               <td>{$calculation->getAccruedTOILForPreviousPeriod()}</td>
-              <td>{$calculation->getNumberOfDaysTakenOnThePreviousPeriod()}</td>
-              <td>{$calculation->getNumberOfDaysRemainingInThePreviousPeriod()}</td>
+              <td>{$calculation->getAmountUsedInPreviousPeriod()}</td>
+              <td>{$calculation->getPreviousPeriodBalance()}</td>
               <td>{$calculation->getBroughtForward()}</td>
               <td>{$calculation->getProRata()}</td>
               <td class="proposed-entitlement">

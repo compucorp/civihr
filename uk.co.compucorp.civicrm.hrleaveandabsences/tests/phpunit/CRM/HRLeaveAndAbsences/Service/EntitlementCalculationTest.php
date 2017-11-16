@@ -121,7 +121,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $this->assertEquals(0, $calculation->getBroughtForward());
   }
 
-  public function testBroughtForwardShouldNotBeMoreThanTheMaxNumberOfDaysAllowedToBeCarriedForward() {
+  public function testBroughtForwardShouldNotBeMoreThanTheMaxAmountAllowedToBeCarriedForward() {
     $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
 
     $type = AbsenceTypeFabricator::fabricate([
@@ -150,7 +150,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $this->assertEquals(5.5, $calculation->getBroughtForward());
   }
 
-  public function testBroughtForwardShouldBeTheNumberOfDaysRemainingInPreviousPeriodIfTheAbsenceTypeAllowsUnlimitedDaysToBeBroughtForward() {
+  public function testBroughtForwardShouldBeThePreviousPeriodBalanceIfTheAbsenceTypeAllowsAnUnlimitedAmountToBeBroughtForward() {
     $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
 
     $type = AbsenceTypeFabricator::fabricate([
@@ -171,12 +171,12 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
-    // Since the absence type allows unlimited brought forward, the whole entitlement
-    // remaining in previous period is brought forward.
+    // Since the absence type allows unlimited brought forward, the whole previous
+    // period balance is brought forward
     $this->assertEquals(10, $calculation->getBroughtForward());
   }
 
-  public function testBroughtForwardShouldNotBeMoreThanTheNumberOfRemainingDaysInPreviousEntitlement() {
+  public function testBroughtForwardShouldNotBeMoreThanThePreviousPeriodBalance() {
     $this->setContractDates(date('YmdHis', strtotime('-2 days')), null);
 
     $type = AbsenceTypeFabricator::fabricate([
@@ -198,9 +198,8 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
 
     // The maximum allowed to be carried forward by the absence type is 5,
-    // But the number of days remaining (it's balance) in the previous the period
-    // is only 3 (the original entitlement without any leave taken), so that's
-    // what will brought forward
+    // But the previous period balance 3 (the original entitlement without any
+    // leave taken), so that's what will brought forward
     $this->assertEquals(3, $calculation->getBroughtForward());
   }
 
@@ -231,7 +230,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $this->assertEquals(0, $calculation->getProRata());
   }
 
-  public function testProRataShouldBeRoundedToTheNearestHalfDay() {
+  public function testProRataShouldBeRoundedToTheNearestHalf() {
     $type = AbsenceTypeFabricator::fabricate();
 
     // 261 working days
@@ -403,8 +402,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $this->assertEquals(10, $calculation->getProposedEntitlement());
   }
 
-  public function testTheProposedEntitlementShouldBeProRataPlusNumberOfDaysBroughtForward()
-  {
+  public function testTheProposedEntitlementShouldBeProRataPlusBroughtForward() {
     // To simplify the code, we use an Absence where the carried
     // forward never expires
     $type = AbsenceTypeFabricator::fabricate([
@@ -444,13 +442,13 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $this->assertEquals(10, $calculation->getBroughtForward());
 
     // Proposed Entitlement in previous period: 20
-    // Number of days brought from previous period: 10 (The whole entitlement from the previous period)
+    // Brought from previous period: 10 (The whole entitlement from the previous period)
     // Number of Working days: 261
     // Number of Days to work: 66
     // Contractual Entitlement: 10
     // Pro Rata: (Number of days to work / Number working days) * Contractual Entitlement
     // Pro Rata: (66/261) * 10 = 2.52 = 3 rounded
-    // Proposed entitlement: Pro Rata + Number of days brought from previous period
+    // Proposed entitlement: Pro Rata + brought from previous period
     // Proposed entitlement: 3 + 10
     $this->assertEquals(13, $calculation->getProposedEntitlement());
   }
@@ -501,13 +499,13 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     // entitlement will be carried to the current period
     $this->assertEquals(10, $calculation->getBroughtForward());
 
-    // Number of days brought from previous period: 10 (The whole entitlement from the previous period)
+    // Brought from previous period: 10 (The whole entitlement from the previous period)
     // Number of Working days: 258
     // Number of Days to work: 64
     // Contractual Entitlement: 10
     // Pro Rata: ((Number of days to work / Number working days) * Contractual Entitlement) + Number of public holidays
     // Pro Rata: (64/258) * 10 = 2.48 ~ 2.5 (to nearest half day) + 2 Public Holidays =  4.5.
-    // Proposed entitlement: Pro Rata(includes number of public holidays) + Number of days brought from previous period
+    // Proposed entitlement: Pro Rata(includes number of public holidays) + Brought from previous period
     // Proposed entitlement: 4.5 + 10
     $this->assertEquals(14.5, $calculation->getProposedEntitlement());
   }
@@ -591,15 +589,15 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $this->assertEquals(10, $calculation->getPreviousPeriodProposedEntitlement());
   }
 
-  public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeZeroIfThereIsNoPreviousPeriod() {
+  public function testAmountUsedInPreviousPeriodShouldBeZeroIfThereIsNoPreviousPeriod() {
     $type = new AbsenceType();
     $period = new AbsencePeriod();
 
     $calculation = new EntitlementCalculation($period, $this->contact, $type);
-    $this->assertEquals(0, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
+    $this->assertEquals(0, $calculation->getAmountUsedInPreviousPeriod());
   }
 
-  public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeZeroIfThereIsNoPeriodEntitlementForThePreviousPeriod() {
+  public function testAmountUsedInPreviousPeriodShouldBeZeroIfThereIsNoPeriodEntitlementForThePreviousPeriod() {
     $type = AbsenceTypeFabricator::fabricate();
 
     AbsencePeriodFabricator::fabricate([
@@ -613,10 +611,10 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     ], true);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
-    $this->assertEquals(0, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
+    $this->assertEquals(0, $calculation->getAmountUsedInPreviousPeriod());
   }
 
-  public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeZeroIfThereAreNoLeaveRequestsOnThePeriod() {
+  public function testAmountUsedInPreviousPeriodShouldBeZeroIfThereAreNoLeaveRequestsOnThePeriod() {
     $type = AbsenceTypeFabricator::fabricate();
 
     $previousPeriod = AbsencePeriodFabricator::fabricate([
@@ -632,10 +630,10 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $this->createEntitlement($previousPeriod, $type, 10);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
-    $this->assertEquals(0, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
+    $this->assertEquals(0, $calculation->getAmountUsedInPreviousPeriod());
   }
 
-  public function testNumberOfDaysTakenOnThePreviousPeriodShouldBeTheTotalAmountOfDaysFromAllApprovedLeaveRequestsOnThePeriod() {
+  public function testAmountUsedInPreviousPeriodShouldBeTheTotalAmountFromAllApprovedLeaveRequestsOnThePeriod() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
     $this->setContractDates(date('YmdHis', strtotime('2015-01-01')), null);
@@ -672,11 +670,10 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     ], true);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
-    $this->assertEquals(12, $calculation->getNumberOfDaysTakenOnThePreviousPeriod());
+    $this->assertEquals(12, $calculation->getAmountUsedInPreviousPeriod());
   }
 
-  public function testNumberOfDaysRemainingInThePreviousPeriodShouldBeZeroIfThereIsNoPreviousPeriod()
-  {
+  public function testPreviousPeriodBalanceShouldBeZeroIfThereIsNoPreviousPeriod() {
     $type = AbsenceTypeFabricator::fabricate();
     $currentPeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => date('YmdHis', strtotime('2016-01-01')),
@@ -684,10 +681,10 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     ], true);
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
-    $this->assertEquals(0, $calculation->getNumberOfDaysRemainingInThePreviousPeriod());
+    $this->assertEquals(0, $calculation->getPreviousPeriodBalance());
   }
 
-  public function testNumberOfDaysRemainingInThePreviousPeriodShouldBeEqualsToProposedEntitlementMinusNumberOfDaysTaken() {
+  public function testPreviousPeriodBalanceShouldBeEqualsToProposedEntitlementMinusNumberOfDaysTaken() {
     $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
 
     $this->setContractDates(date('YmdHis', strtotime('2015-01-01')), null);
@@ -717,7 +714,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     // 10 days from the entitlement - 5 days taken as leave
-    $this->assertEquals(5, $calculation->getNumberOfDaysRemainingInThePreviousPeriod());
+    $this->assertEquals(5, $calculation->getPreviousPeriodBalance());
   }
 
   public function testGetAbsencePeriodShouldReturnTheAbsencePeriodUsedToCreateTheCalculation() {
