@@ -132,6 +132,15 @@
       {literal}
           <script type="text/javascript">
               CRM.$(function($) {
+                $(document).ready(function() {
+                  initToilControls();
+                  initCarryForwardControls();
+                  initColorPicker();
+                  initDeleteButton();
+                  initCalculationUnitControls();
+                  supportValueSubmissionOfAllSelectorsIfDisabled();
+                });
+
                 function initToilControls() {
                   var allow_accruals_request = $('#allow_accruals_request');
                   var accrual_never_expire = $('#accrual_never_expire');
@@ -349,15 +358,6 @@
                     $inputHidden.val($select.val());
                   });
                 }
-
-                $(document).ready(function() {
-                  initToilControls();
-                  initCarryForwardControls();
-                  initColorPicker();
-                  initDeleteButton();
-                  initCalculationUnitControls();
-                  supportValueSubmissionOfAllSelectorsIfDisabled();
-                });
               });
           </script>
         {/literal}
