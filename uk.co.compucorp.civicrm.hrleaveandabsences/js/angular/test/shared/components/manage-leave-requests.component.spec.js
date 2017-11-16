@@ -72,6 +72,7 @@ define([
       spyOn($log, 'debug');
       spyOn(AbsencePeriod, 'all').and.callThrough();
       spyOn(AbsenceType, 'all').and.callThrough();
+      spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
       spyOn(Contact, 'leaveManagees').and.callFake(function () {
         return ContactAPIMock.leaveManagees();
       });
@@ -177,6 +178,7 @@ define([
 
         it('loaded absence types', function () {
           expect(controller.absenceTypes.length).not.toBe(0);
+          expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
         });
 
         it('filtered list of contacts have loaded', function () {
@@ -253,24 +255,33 @@ define([
       });
     });
 
-    describe('getAbsenceTypesByID', function () {
-      var absence,
-        returnValue;
+    describe('getAbsenceTypeByID', function () {
+      var absence, returnValue;
 
       describe('when id is passed', function () {
         beforeEach(function () {
           absence = absenceTypeData.all().values[0];
-          returnValue = controller.getAbsenceTypesByID(absence.id);
+          returnValue = controller.getAbsenceTypeByID(absence.id);
         });
 
         it('returns title of the absence', function () {
-          expect(returnValue).toBe(absence.title);
+          expect(returnValue).toEqual(jasmine.objectContaining(absence));
         });
       });
 
       describe('when id is not passed', function () {
         beforeEach(function () {
-          returnValue = controller.getAbsenceTypesByID();
+          returnValue = controller.getAbsenceTypeByID();
+        });
+
+        it('returns undefined value', function () {
+          expect(returnValue).toBeUndefined();
+        });
+      });
+
+      describe('when wrong or non-existing id is passed', function () {
+        beforeEach(function () {
+          returnValue = controller.getAbsenceTypeByID('does-not-exist');
         });
 
         it('returns undefined value', function () {
@@ -631,7 +642,8 @@ define([
             });
 
             it('not filtered by type id', function () {
-              expectLeaveRequestsFilteredBy({ type_id: null });
+              expectLeaveRequestsFilteredBy(
+                { type_id: { IN: _.pluck(controller.absenceTypes, 'id') } });
             });
           });
         });
