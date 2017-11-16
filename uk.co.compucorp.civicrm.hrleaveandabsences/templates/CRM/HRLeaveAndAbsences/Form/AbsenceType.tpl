@@ -132,6 +132,15 @@
       {literal}
           <script type="text/javascript">
               CRM.$(function($) {
+                $(document).ready(function() {
+                  initToilControls();
+                  initCarryForwardControls();
+                  initColorPicker();
+                  initDeleteButton();
+                  initCalculationUnitControls();
+                  supportValueSubmissionOfAllSelectorsIfDisabled();
+                });
+
                 function initToilControls() {
                   var allow_accruals_request = $('#allow_accruals_request');
                   var accrual_never_expire = $('#accrual_never_expire');
@@ -320,14 +329,35 @@
                   return hours_unit_value;
                 }
 
-                $(document).ready(function() {
-                  initToilControls();
-                  initCarryForwardControls();
-                  initColorPicker();
-                  initDeleteButton();
-                  initCalculationUnitControls()
-                });
+                /**
+                 * Supports value submission of all CRM selectors
+                 * when such selectors are disabled
+                 */
+                function supportValueSubmissionOfAllSelectorsIfDisabled () {
+                  var $selectors = $('select.crm-select2');
 
+                  $.each($selectors, function (index, select) {
+                    supportValueSubmissionOfSelectorIfDisabled($(select));
+                  });
+                }
+
+                /**
+                 * Adds <input type="hidden"> before disabled <select>
+                 * with the same, watches <select> value and sets to the <input>
+                 *
+                 * @param {jQueryElement} $select - the selector to be amended
+                 */
+                function supportValueSubmissionOfSelectorIfDisabled ($select) {
+                  var $inputHidden = $('<input type="hidden" name="' +
+                    $select.attr('name') + '" value="' +
+                    $select.val() + '" />');
+
+                  $select.before($inputHidden);
+                  $select.removeAttr('name');
+                  $select.on('change', function () {
+                    $inputHidden.val($select.val());
+                  });
+                }
               });
           </script>
         {/literal}

@@ -149,11 +149,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
     }
     $this->addSelect(
       'calculation_unit',
-      [
-        'options' => $this->getCalculationUnitOptions(),
-        'option_url' => NULL,
-        'label' => ts('Calculate Leave in')
-      ],
+      $this->getCalculationUnitSelectorParams(),
       TRUE
     );
     $this->addYesNo(
@@ -272,6 +268,24 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
   private function getDAOFieldAttributes($field) {
     $dao = 'CRM_HRLeaveAndAbsences_DAO_AbsenceType';
     return CRM_Core_DAO::getAttribute($dao, $field);
+  }
+
+  /**
+   * Returns parameters needed for the calculation unit selector
+   *
+   * @return array
+   */
+  private function getCalculationUnitSelectorParams () {
+    $calculationUnitSelectorParams = [
+      'option_url' => NULL,
+      'label' => ts('Calculate Leave in')
+    ];
+
+    if ($this->absenceTypeHasEverBeenUsed()) {
+      $calculationUnitSelectorParams['disabled'] = 'disabled';
+    }
+
+    return $calculationUnitSelectorParams;
   }
 
   /**
@@ -418,35 +432,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
   private function canDelete() {
     $absenceTypeService = new AbsenceTypeService();
     return !$absenceTypeService->absenceTypeHasEverBeenUsed($this->_id);
-  }
-
-  /**
-   * Get the option values for the calculation_unit
-   * select field.
-   * When the Absence Type has been used, the only option
-   * returned is the current value of the calculation unit for the
-   * absence type.
-   *
-   * @return array
-   */
-  private function getCalculationUnitOptions() {
-    $options = AbsenceType::buildOptions('calculation_unit');
-    $selectOptions = [];
-    $absenceTypeHasBeenUsed = $this->absenceTypeHasEverBeenUsed();
-    $calculationUnitValue = false;
-
-    if($absenceTypeHasBeenUsed) {
-      $calculationUnitValue = AbsenceType::getFieldValue(AbsenceType::class, $this->_id, 'calculation_unit');
-    }
-
-    foreach($options as $value => $label) {
-      if($calculationUnitValue && $value != $calculationUnitValue) {
-        continue;
-      }
-      $selectOptions[$value] = ts($label);
-    }
-
-    return $selectOptions;
   }
 
   /**
