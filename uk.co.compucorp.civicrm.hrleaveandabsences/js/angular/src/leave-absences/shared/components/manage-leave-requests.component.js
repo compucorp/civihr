@@ -361,7 +361,8 @@ define([
         contact_id: prepareContactID(),
         managed_by: (vm.isAdmin && filters.assignedTo.type !== 'me' ? undefined : vm.contactId),
         status_id: prepareStatusFilter(filterByStatus),
-        type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
+        type_id: filters.selectedAbsenceTypes
+          ? filters.selectedAbsenceTypes.id : { IN: _.pluck(vm.absenceTypes, 'id') },
         from_date: { from: filters.selectedPeriod.start_date },
         to_date: { to: filters.selectedPeriod.end_date },
         unassigned: (filters.assignedTo.type === 'unassigned' ? true : undefined)
