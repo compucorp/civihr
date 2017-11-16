@@ -85,8 +85,8 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseTest extends BaseHeadlessTest {
     $this->assertEquals(CRM_Import_Parser::VALID, $response2);
 
     $leaveRequest = new LeaveRequest();
-    $leaveRequest->from_date = CRM_Utils_Date::processDate('2016-01-01');
-    $leaveRequest->to_date = CRM_Utils_Date::processDate('2016-01-02');
+    $leaveRequest->from_date = CRM_Utils_Date::processDate('2016-01-01 00:00');
+    $leaveRequest->to_date = CRM_Utils_Date::processDate('2016-01-02 23:59');
     $leaveRequest->contact_id = $contactId;
     $leaveRequest->find(true);
 
