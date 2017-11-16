@@ -16,6 +16,7 @@ use CRM_HRCore_HookListener_EventBased_OnDisable as OnDisableListener;
 use CRM_HRCore_HookListener_EventBased_OnAlterMenu as OnAlterMenuListener;
 use CRM_HRCore_HookListener_EventBased_OnTabset as OnTabsetListener;
 use CRM_HRCore_HookListener_EventBased_OnNavigationMenu as OnNavigationMenuListener;
+use CRM_HRCore_HookListener_EventBased_OnSummary as OnSummaryListener;
 use CRM_HRCore_HookListener_ObjectBased_Page_ContactDashboard as ContactDashboardPageHookListener;
 use CRM_HRCore_HookListener_ObjectBased_Page_ContactSummary as ContactSummaryPageHookListener;
 use CRM_HRCore_HookListener_ObjectBased_Page_CaseDashboard as CaseDashboardPageHookListener;
@@ -371,7 +372,7 @@ function hrcore_civicrm_alterContent(&$content, $context, $tplName, &$object) {
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_summary/
  */
 function hrcore_civicrm_summary($contactId, &$content, &$contentPlacement) {
-  _hrcore_hrui_civicrm_summary($contactId, $content, $contentPlacement);
+  (new OnSummaryListener())->handle($contactId, $content, $contentPlacement);
 }
 
 /**
@@ -384,21 +385,4 @@ function hrcore_civicrm_coreResourceList(&$items, $region) {
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/dist/hrcore.min.js');
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrcore', 'css/hrcore.css');
   }
-}
-
-//////////////////////
-//                  //
-//       HRUI       //
-//                  //
-//////////////////////
-
-function _hrcore_hrui_civicrm_summary($contactId, &$content, &$contentPlacement) {
-  $uf = _get_uf_match_contact($contactId);
-  if (empty($uf) || empty($uf['uf_id'])) {
-    return NULL;
-  }
-  $user = user_load($uf['uf_id']);
-  $content['userid'] = $uf['uf_id'];
-  $content['username'] = !empty($user->name) ? $user->name : '';
-  $contentPlacement = NULL;
 }
