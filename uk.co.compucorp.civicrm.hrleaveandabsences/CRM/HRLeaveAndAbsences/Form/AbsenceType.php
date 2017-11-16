@@ -149,11 +149,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
     }
     $this->addSelect(
       'calculation_unit',
-      [
-        'options' => $this->getCalculationUnitOptions(),
-        'option_url' => NULL,
-        'label' => ts('Calculate Leave in')
-      ],
+      $this->getCalculationUnitSelectorParams(),
       TRUE
     );
     $this->addYesNo(
@@ -272,6 +268,25 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
   private function getDAOFieldAttributes($field) {
     $dao = 'CRM_HRLeaveAndAbsences_DAO_AbsenceType';
     return CRM_Core_DAO::getAttribute($dao, $field);
+  }
+
+  /**
+   * Returns parameters needed for the calculation unit selector
+   *
+   * @return array
+   */
+  private function getCalculationUnitSelectorParams () {
+    $calculationUnitSelectorParams = [
+      'options' => $this->getCalculationUnitOptions(),
+      'option_url' => NULL,
+      'label' => ts('Calculate Leave in')
+    ];
+
+    if ($this->absenceTypeHasEverBeenUsed()) {
+      $calculationUnitSelectorParams['disabled'] = 'disabled';
+    }
+
+    return $calculationUnitSelectorParams;
   }
 
   /**
