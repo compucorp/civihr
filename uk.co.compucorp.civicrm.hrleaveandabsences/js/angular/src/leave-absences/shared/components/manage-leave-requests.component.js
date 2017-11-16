@@ -55,7 +55,7 @@ define([
 
     vm.clearStaffSelection = clearStaffSelection;
     vm.countLeaveRequestByStatus = countLeaveRequestByStatus;
-    vm.getAbsenceTypesByID = getAbsenceTypesByID;
+    vm.getAbsenceTypeByID = getAbsenceTypeByID;
     vm.getArrayOfSize = getArrayOfSize;
     vm.getLeaveStatusByValue = getLeaveStatusByValue;
     vm.getNavBadge = getNavBadge;
@@ -131,19 +131,13 @@ define([
     }
 
     /**
-     * Returns the title of a Absence type when id is given
+     * Returns the Absence type by ID
      *
-     * @param {string} id - id of the Absence type
-     * @return {string}
+     * @param {String} id of the Absence type
+     * @return {AbsenceTypeInstance}
      */
-    function getAbsenceTypesByID (id) {
-      if (vm.absenceTypes && id) {
-        var type = _.find(vm.absenceTypes, function (absenceType) {
-          return absenceType.id === id;
-        });
-
-        return type ? type.title : null;
-      }
+    function getAbsenceTypeByID (id) {
+      return _.find(vm.absenceTypes, { id: id });
     }
 
     /**
@@ -248,6 +242,7 @@ define([
      */
     function loadAbsenceTypes () {
       return AbsenceType.all()
+        .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
           vm.absenceTypes = absenceTypes;
         });
