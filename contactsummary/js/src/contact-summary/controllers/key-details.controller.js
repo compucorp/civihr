@@ -18,12 +18,9 @@ define([
     vm.options = {};
 
     (function init () {
-      initContractOptions()
-        .then(function () {
-          getContacts();
-        });
-
-      initSubscribers();
+      initContractOptions();
+      getContacts();
+      initListeners();
     }());
 
     /**
@@ -55,13 +52,16 @@ define([
 
     /**
      * Initialiazes the contract options
-     * @return {Promise}
      */
     function initContractOptions () {
-      return Contract.getOptions()
-        .then(function (results) {
-          vm.options = results;
-        });
+      vm.options = Contract.getOptions();
+    }
+
+    /**
+     * Initialize Listeners
+     */
+    function initListeners () {
+      pubSub.subscribe('contract-refresh', resetKeyDetails);
     }
 
     /**
@@ -71,11 +71,6 @@ define([
       Contract.resetContracts();
       ContactDetails.data.item = {};
       getContacts();
-    }
-
-    // Initialiaze sucscribers
-    function initSubscribers () {
-      pubSub.subscribe('contract-refresh', resetKeyDetails);
     }
   }
 

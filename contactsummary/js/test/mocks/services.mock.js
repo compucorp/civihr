@@ -190,9 +190,7 @@ define([
 
     factory.response = {};
     factory.resetContracts = jasmine.createSpy('');
-    factory.getOptions = function () {
-      return $q.resolve({});
-    };
+    factory.getOptions = jasmine.createSpy('');
 
     return factory;
   }

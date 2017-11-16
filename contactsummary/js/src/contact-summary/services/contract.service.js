@@ -175,22 +175,6 @@ define([
     }
 
     /**
-     * Returns the contract field options
-     *
-     * @param  {string} fieldName
-     * @return {Promise}
-     */
-    function getOptions (fieldName) {
-      var options = settings.CRM.options.HRJobDetails || {};
-
-      if (fieldName && typeof fieldName === 'string') {
-        options = options[fieldName];
-      }
-
-      return $q.resolve({ 'details': options });
-    }
-
-    /**
      * Get an object containing 'days', 'months' and 'years' keys with
      * integer values of total Length of Service value, for example:
      * {
@@ -224,6 +208,22 @@ define([
         });
 
       return deferred.promise;
+    }
+
+    /**
+     * Returns the contract field options
+     *
+     * @param  {string} fieldName
+     * @return {Object}
+     */
+    function getOptions (fieldName) {
+      var options = settings.CRM.options.HRJobDetails || {};
+
+      if (typeof fieldName === 'string') {
+        options = options[fieldName];
+      }
+
+      return { 'details': options };
     }
 
     /**

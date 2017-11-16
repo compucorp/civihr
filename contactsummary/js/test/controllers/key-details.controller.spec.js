@@ -38,7 +38,6 @@ define([
     describe('init()', function () {
       beforeEach(function () {
         spyOn(contactDetailsServiceMock, 'get').and.callThrough();
-        spyOn(contractServiceMock, 'getOptions').and.callThrough();
         ctrlConstructor('KeyDetailsController');
       });
 
