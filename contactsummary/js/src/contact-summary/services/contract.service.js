@@ -9,9 +9,9 @@ define([
   var promiseCache = {};
 
   contractService.__name = 'contractService';
-  contractService.$inject = ['$q', '$log', 'apiService', 'modelService', 'contactDetailsService'];
+  contractService.$inject = ['$q', '$log', 'settings', 'apiService', 'modelService', 'contactDetailsService'];
 
-  function contractService ($q, $log, Api, Model, ContactDetails) {
+  function contractService ($q, $log, settings, Api, Model, ContactDetails) {
     $log.debug('Service: Contract Service');
 
     var contracts = [];
@@ -22,6 +22,7 @@ define([
     factory.getContracts = getContracts;
     factory.getContractDetails = getContractDetails;
     factory.getLengthOfService = getLengthOfService;
+    factory.getOptions = getOptions;
     factory.getPrimary = getPrimary;
     factory.resetContracts = resetContracts;
 
@@ -171,6 +172,22 @@ define([
       }
 
       return promiseCache.getContractDetails;
+    }
+
+    /**
+     * Returns the contract field options
+     *
+     * @param  {string} fieldName
+     * @return {Promise}
+     */
+    function getOptions (fieldName) {
+      var options = settings.CRM.options.HRJobDetails || {};
+
+      if (fieldName && typeof fieldName === 'string') {
+        options = options[fieldName];
+      }
+
+      return $q.resolve({ 'details': options });
     }
 
     /**
