@@ -17,10 +17,56 @@
     }
 }
 
+.btn {
+
+  &.btn-success {
+    color: $gray-darker;
+
+    &:hover {
+      color: $crm-black;
+    }
+  }
+
+  &.btn-warning {
+    color: $gray-darker;
+
+    &:hover {
+      color: $crm-black;
+    }
+  }
+
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    cursor: $cursor-disabled;
+    @include opacity(1);
+
+    &.btn-primary {
+      background-color: $crm-primary-light;
+      border-color: $crm-primary-light;
+    }
+    &.btn-success {
+      background-color: $crm-success-light;
+      border-color: $crm-success-light;
+      color: lighten($gray-darker, 30%);
+    }
+    &.btn-warning {
+      background-color: $crm-warning-light;
+      border-color: $crm-warning-light;
+      color: lighten($gray-darker, 30%);
+    }
+    &.btn-danger {
+      background-color: $crm-danger-light;
+      border-color: $crm-danger-light;
+    }
+  }
+}
+
 // Inspired by upcoming Bootstrap 4 (http://v4-alpha.getbootstrap.com/components/buttons/#outline-buttons)
 $buttons-w-colors: (
   danger: ($brand-danger,$panel-bg),
   primary: ($brand-primary,$panel-bg),
+  secondary: ($gray-darker,$panel-bg),
   success: ($btn-success-bg,$crm-black),
   warning: ($btn-warning-bg,$crm-black)
 );
@@ -30,26 +76,22 @@ $buttons-w-colors: (
   .btn-#{$button-type}-outline {
     background-color: transparent;
     border-color: nth($button-color,1);
-    color: $btn-default-color;
+    color: $gray-darker;
 
-    &:hover,
-    &:focus {
+    &:hover:not(.disabled):not([disabled]),
+    &:focus:not(.disabled):not([disabled]) {
       background-color: darken(nth($button-color,1), 7%);
       border-color: darken(nth($button-color,1), 7%);
       color: nth($button-color,2);
     }
-  }
-}
 
-.btn-default {
-  &:hover,
-  &:focus,
-  &:active,
-  &.active
-  &.focus,
-  &:active:focus {
-    background-color: $btn-default-border-hover;
-    border-color: $btn-default-border-hover;
-    color: $table-bg;
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+      border-color: lighten(nth($button-color,1), 30%);
+      color: lighten($gray-darker, 30%);
+      cursor: $cursor-disabled;
+      @include opacity(1);
+    }
   }
 }

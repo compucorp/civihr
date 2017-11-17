@@ -1,8 +1,14 @@
 .modal-header {
-  border-bottom: 0 none;
+  background-color: $gray-lighter;
 
   .close {
-    margin-top: 0px;
+    opacity: 1;
+    margin-top: 3px;
+    color: $gray-darker;
+
+    &:hover {
+      color: $crm-black;
+    }
   }
 }
 

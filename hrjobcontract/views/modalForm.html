@@ -939,7 +939,7 @@
     </uib-tabset>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" ng-click="cancel()">{{copy.close}}</button>
+    <button type="button" class="btn btn-secondary-outline" ng-click="cancel()">{{copy.close}}</button>
     <button type="submit" class="btn btn-save" ng-class="{ 'btn-danger-outline': action !== 'new', 'btn-primary': action === 'new' }" ng-show="allowSave" ng-disabled="!contractForm.$valid">{{copy.save}}</button>
   </div>
 </form>

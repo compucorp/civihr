@@ -1,68 +1,73 @@
 <div hrjc-loader>
-    <div class="modal-header">
-        <button type="button" class="close" ng-click="cancel()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <div class="btn-group btn-group-sm btn-group-action">
-            <a ng-href="{{urlCSV}}" class="btn btn-default btn-sm">
-                <span class="fa fa-download" aria-hidden="true"></span> Export to CSV
-            </a>
-            <div class="btn-group btn-group-sm" uib-dropdown>
-                <button type="button" class="btn btn-default btn-sm dropdown-toggle" uib-dropdown-toggle
-                        ng-disabled="disabled">
-                    Fields <span class="caret"></span>
-                </button>
-                <ul uib-dropdown-menu class="dropdown-menu dropdown-menu-right" ng-click="$event.stopPropagation()" role="menu">
-                    <li ng-repeat="field in fields" ng-if="field.display"><div class="checkbox"><label><input type="checkbox"
-                                                                                        ng-checked="!!field.selected"
-                                                                                        ng-click="toggleFieldsSelected(field)"> {{field.title}}</label></div></li>
-                </ul>
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <div class="btn-group btn-group-sm btn-group-action">
+      <a ng-href="{{urlCSV}}" class="btn btn-secondary-outline btn-sm">
+        <span class="fa fa-download" aria-hidden="true"></span> Export to CSV
+      </a>
+      <div class="btn-group btn-group-sm" uib-dropdown>
+        <button type="button" class="btn btn-secondary-outline btn-sm dropdown-toggle" uib-dropdown-toggle
+            ng-disabled="disabled">
+          Fields <span class="caret"></span>
+        </button>
+        <ul uib-dropdown-menu class="dropdown-menu dropdown-menu-right" ng-click="$event.stopPropagation()" role="menu">
+          <li ng-repeat="field in fields" ng-if="field.display">
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" ng-checked="!!field.selected" ng-click="toggleFieldsSelected(field)"> {{field.title}}
+              </label>
             </div>
-        </div>
-        <h4 class="modal-title">Contract - {{entity | capitalize}}</h4>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="table-responsive">
-        <table class="table table-striped {{prefix}}table-sort">
-            <thead>
-            <tr>
-                <th ng-repeat="field in fields" ng-if="field.selected && field.display">
-                    <a href="" ng-click="sortBy(field.name);createPage();">{{field.title}} <i class="fa"
-                                                                                    ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
-                                                                                    ng-show="sortCol == field.name"></i></a></th>
-                <th>&nbsp;</th>
-            </tr>
-            </thead>
-            <tbody ng-if="!isMultiDim">
-                <tr ng-repeat="revisionData in revisionDataListPage">
-                    <td ng-repeat="field in fields" ng-if="field.selected && field.display">
-                        {{!field.isArray ? (!subFields[field.name] ? ((!field.pseudoconstant ? revisionData[field.name] : options[entity][field.name][revisionData[field.name]]) || '-') : (revisionData[field.name].length ? '' : '-')) : ''}}
-                        <table ng-if="!!subFields[field.name] && revisionData[field.name].length" class="table table-condensed">
-                            <thead>
-                                <tr>
-                                    <th ng-repeat="subField in subFields[field.name]">{{subField.title}}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="revisionDataEntry in revisionData[field.name]">
-                                    <td ng-repeat="subField in subFields[field.name]">{{!subField.pseudoconstant ? revisionDataEntry[subField.name] : options[entity][subField.pseudoconstant][revisionDataEntry[subField.name]] }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table ng-if="field.isArray && revisionData.data">
-                            <tr ng-repeat="revisionDataEntry in revisionData.data">
-                                <td>{{(!field.pseudoconstant ? revisionDataEntry[field.name] : options[entity][field.name][revisionDataEntry[field.name]]) || '-'}}</td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td><a class="cursor-pointer" ng-click="modalContract('view',revisionData)">view this contract revision</a></td>
+    <h4 class="modal-title">Contract - {{entity | capitalize}}</h4>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-striped {{prefix}}table-sort">
+      <thead>
+      <tr>
+        <th ng-repeat="field in fields" ng-if="field.selected && field.display">
+          <a href="" ng-click="sortBy(field.name);createPage();">{{field.title}} <i class="fa"
+            ng-class="{'fa-sort-asc': !sortReverse, 'fa-sort-desc': sortReverse}"
+            ng-show="sortCol == field.name"></i></a>
+        </th>
+        <th>&nbsp;</th>
+      </tr>
+      </thead>
+      <tbody ng-if="!isMultiDim">
+        <tr ng-repeat="revisionData in revisionDataListPage">
+          <td ng-repeat="field in fields" ng-if="field.selected && field.display">
+            {{!field.isArray ? (!subFields[field.name] ? ((!field.pseudoconstant ? revisionData[field.name] : options[entity][field.name][revisionData[field.name]]) || '-') : (revisionData[field.name].length ? '' : '-')) : ''}}
+            <table ng-if="!!subFields[field.name] && revisionData[field.name].length" class="table table-condensed">
+              <thead>
+                <tr>
+                  <th ng-repeat="subField in subFields[field.name]">{{subField.title}}</th>
                 </tr>
-            </tbody>
-        </table>
+              </thead>
+              <tbody>
+                <tr ng-repeat="revisionDataEntry in revisionData[field.name]">
+                  <td ng-repeat="subField in subFields[field.name]">{{!subField.pseudoconstant ? revisionDataEntry[subField.name] : options[entity][subField.pseudoconstant][revisionDataEntry[subField.name]] }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <table ng-if="field.isArray && revisionData.data">
+              <tr ng-repeat="revisionDataEntry in revisionData.data">
+                <td>{{(!field.pseudoconstant ? revisionDataEntry[field.name] : options[entity][field.name][revisionDataEntry[field.name]]) || '-'}}</td>
+              </tr>
+            </table>
+          </td>
+          <td><a class="cursor-pointer" ng-click="modalContract('view',revisionData)">view this contract revision</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="row" ng-show="(revisionDataList.length > itemsPerPage)">
+    <div class="col-xs-12 text-center">
+      <uib-pagination boundary-links="true" total-items="revisionDataList.length" rotate="false" items-per-page="itemsPerPage" max-size="maxSize" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
     </div>
-    <div class="row" ng-show="(revisionDataList.length > itemsPerPage)">
-        <div class="col-xs-12 text-center">
-            <uib-pagination boundary-links="true" total-items="revisionDataList.length" rotate="false" items-per-page="itemsPerPage" max-size="maxSize" ng-model="currentPage" class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"></uib-pagination>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
-    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary-outline" ng-click="cancel()">Close</button>
+  </div>
 </div>

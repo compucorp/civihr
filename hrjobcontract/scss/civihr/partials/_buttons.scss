@@ -2,6 +2,57 @@
   @include border-radius($border-radius-alt);
   font-weight: normal;
   text-transform: uppercase;
+
+  &.btn-primary {
+
+    &:hover {
+      background-color: darken($btn-primary-bg, $crm-darken-percentage);
+      border-color:  darken($btn-primary-bg, $crm-darken-percentage);
+    }
+  }
+
+  &.btn-success {
+    color: $gray-darker;
+
+    &:hover {
+      background-color: darken($btn-success-bg, $crm-darken-percentage);
+      border-color: darken($btn-success-bg, $crm-darken-percentage);
+      color: $crm-black;
+    }
+  }
+
+  &.btn-info {
+
+    &:hover {
+      background-color: darken($btn-info-bg, $crm-darken-percentage);
+      border-color: darken($btn-info-bg, $crm-darken-percentage);
+    }
+  }
+
+  &.btn-warning {
+    color: $gray-darker;
+
+    &:hover {
+      background-color: darken($btn-warning-bg, $crm-darken-percentage);
+      border-color: darken($btn-warning-bg, $crm-darken-percentage);
+      color: $crm-black;
+    }
+  }
+
+  &.btn-danger {
+
+    &:hover {
+      background-color: darken($btn-danger-bg, $crm-darken-percentage);
+      border-color: darken($btn-danger-bg, $crm-darken-percentage);
+    }
+  }
+
+  &.disabled,
+  &[disabled],
+  fieldset[disabled] & {
+    cursor: $cursor-disabled;
+    @include opacity(1);
+  }
 }
 
 .btn-link {
