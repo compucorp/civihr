@@ -26,11 +26,6 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
   /**
    * @var array
    */
-  private $calculationUnitOptions;
-
-  /**
-   * @var array
-   */
   private $absenceStatuses;
 
   /**
@@ -107,7 +102,6 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
 
     $this->setActiveFields($this->_mapperKeys);
     $this->absenceTypes = $this->getAbsenceTypes();
-    $this->calculationUnitOptions = $this->getCalculationUnitOptions();
     $this->absenceStatuses = $this->getAbsenceStatuses();
     $session = CRM_Core_Session::singleton();
     $this->dateFormatType = $session->get('dateTypes');
@@ -366,9 +360,9 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
     $absenceTypesList = [];
 
     foreach($absenceTypes as $absenceType) {
-      $absenceTypesList[$absenceType->title] = (array) $absenceType;
+      $absenceTypesList[$absenceType->title] = $absenceType;
       if ($absenceType->allow_accruals_request) {
-        $absenceTypesList[$absenceType->title. ' (Credit)'] = (array) $absenceType;
+        $absenceTypesList[$absenceType->title. ' (Credit)'] = $absenceType;
       }
     }
 
@@ -482,7 +476,7 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
 
     $payload = [
       'contact_id' => $params['contact_id'],
-      'type_id' => $this->absenceTypes[$params['absence_type']]['id'],
+      'type_id' => $this->absenceTypes[$params['absence_type']]->id,
       'status_id' => $this->absenceStatuses[$params['status']],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
       'from_date' => $startDate,
@@ -540,9 +534,7 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
    * @return bool
    */
   private function isCalculationUnitInDays($absenceType) {
-    $calculationUnit = $this->absenceTypes[$absenceType]['calculation_unit'];
-
-    return $this->calculationUnitOptions['days'] == $calculationUnit;
+    return !$this->absenceTypes[$absenceType]->isCalculationUnitInHours();
   }
 
   /**
@@ -559,7 +551,7 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
     if($this->isCalculationUnitInDays($absenceType)) {
       return ['from_date_type' => $dateTypes['all_day'], 'to_date_type' => $dateTypes['all_day']];
     }
-    else{
+    else {
       return ['from_date_amount' => 0, 'to_date_amount' => 0];
     }
   }
@@ -698,7 +690,7 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
 
     $leaveRequestBalance = $params['total_qty'];
     $currentBalance = $leavePeriodEntitlement->getBalance();
-    $allowOveruse = $this->absenceTypes[$params['absence_type']]['allow_overuse'];
+    $allowOveruse = $this->absenceTypes[$params['absence_type']]->allow_overuse;
     $unit = $this->getAbsenceTypeCalculationUnitLabel($params['absence_type']);
 
     if(!$allowOveruse && $leaveRequestBalance > $currentBalance) {
@@ -720,14 +712,5 @@ class CRM_HRLeaveAndAbsences_Import_Parser_Base extends CRM_HRLeaveAndAbsences_I
    */
   public function validateLeaveParams($params) {
     $this->validateEntitlementAndBalanceChange($params);
-  }
-
-  /**
-   * Returns the Absence type calculation unit options
-   *
-   * @return array
-   */
-  private function getCalculationUnitOptions() {
-    return array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
   }
 }
