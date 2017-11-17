@@ -53,9 +53,9 @@
             <th>{ts}Employee ID{/ts}</th>
             <th>{ts}Employee name{/ts}</th>
             <th>{ts}Leave type{/ts}</th>
-            <th>{ts}Prev. yr entitlement{/ts}</th>
-            <th>{ts}Prev. yr Accrued TOIL{/ts}</th>
-            <th>{ts}Days taken{/ts}</th>
+            <th>{ts}Previous period entitlement{/ts}</th>
+            <th>{ts}Previous period Accrued TOIL{/ts}</th>
+            <th>{ts}Used in previous period{/ts}</th>
             <th>{ts}Remaining{/ts}</th>
             <th>{ts}Brought Forward from previous period{/ts}</th>
             <th>{ts}New Period Pro rata{/ts}</th>
@@ -86,6 +86,12 @@
             {assign var=absencePeriod value=$calculation->getAbsencePeriod()}
             {assign var=absencePeriodID value=$absencePeriod->id}
             {assign var=contact value=$calculation->getContact()}
+            {assign var=calculationUnit value='days'}
+            {assign var=calculationUnitSuffix value='d'}
+            {if $calculation->isCalculationUnitInHours()}
+              {assign var=calculationUnit value='hours'}
+              {assign var=calculationUnitSuffix value='h'}
+            {/if}
             <tr data-contact="{$contact.id}" data-absence-type="{$absenceTypeID}" data-absence-period="{$absencePeriodID}">
               <td>{$contact.id}</td>
               <td>{$contact.display_name}</td>
@@ -94,15 +100,19 @@
                   {$absenceType->title}
                 </span>
               </td>
-              <td>{$calculation->getPreviousPeriodProposedEntitlement()}</td>
-              <td>{$calculation->getAccruedTOILForPreviousPeriod()}</td>
-              <td>{$calculation->getAmountUsedInPreviousPeriod()}</td>
-              <td>{$calculation->getPreviousPeriodBalance()}</td>
-              <td>{$calculation->getBroughtForward()}</td>
-              <td>{$calculation->getProRata()}</td>
+              <td>{$calculation->getPreviousPeriodProposedEntitlement()|timeUnitApplier:$calculationUnit}</td>
+              <td>{$calculation->getAccruedTOILForPreviousPeriod()|timeUnitApplier:$calculationUnit}</td>
+              <td>{$calculation->getAmountUsedInPreviousPeriod()|timeUnitApplier:$calculationUnit}</td>
+              <td>{$calculation->getPreviousPeriodBalance()|timeUnitApplier:$calculationUnit}</td>
+              <td>{$calculation->getBroughtForward()|timeUnitApplier:$calculationUnit}</td>
+              <td>{$calculation->getProRata()|timeUnitApplier:$calculationUnit}</td>
               <td class="proposed-entitlement">
-                  <span class="proposed-value">{$calculation->getProposedEntitlement()}</span>
+                  {assign var=proposedEntitlement value=$calculation->getProposedEntitlement()}
+                  <span class="proposed-value" data-raw-value="{$proposedEntitlement}">
+                    {$proposedEntitlement|timeUnitApplier:$calculationUnit}
+                  </span>
                   {$form.overridden_entitlement[$contact.id][$absenceTypeID].html}
+                  <span class="calculation-unit"> {$calculationUnitSuffix} </span>
                   <button type="button" class="borderless-button"><i class="fa fa-pencil"></i></button>
                   <label for="override_checkbox_{$contact.id}_{$absenceTypeID}">
                     <input id="override_checkbox_{$contact.id}_{$absenceTypeID}"
