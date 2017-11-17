@@ -135,12 +135,13 @@
               expect(LeaveRequest.all).toHaveBeenCalled();
             });
 
-            it('loads only the approved, admin approved, or awaiting approval leave requests', function () {
+            it('loads only the approved, admin approved, awaiting approval or more information required leave requests', function () {
               expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
                 status_id: {'IN': [
                   OptionGroupData.specificObject('hrleaveandabsences_leave_request_status', 'name', 'approved').value,
                   OptionGroupData.specificObject('hrleaveandabsences_leave_request_status', 'name', 'admin_approved').value,
-                  OptionGroupData.specificObject('hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval').value
+                  OptionGroupData.specificObject('hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval').value,
+                  OptionGroupData.specificObject('hrleaveandabsences_leave_request_status', 'name', 'more_information_required').value
                 ]}
               }));
             });

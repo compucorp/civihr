@@ -244,18 +244,6 @@ define([
     }
 
     /**
-     * Returns whether a leaveRequest is pending approval
-     *
-     * @param  {object} leaveRequest
-     * @return {boolean}
-     */
-    function isPendingApproval (leaveRequest) {
-      var status = vm.supportData.leaveRequestStatuses[leaveRequest.status_id];
-
-      return status.name === sharedSettings.statusNames.awaitingApproval;
-    }
-
-    /**
      * Decides whether sent date is a public holiday
      *
      * @param  {string} date
@@ -263,6 +251,19 @@ define([
      */
     function isPublicHoliday (date) {
       return !!vm.supportData.publicHolidays[dateObjectWithFormat(date).valueOf()];
+    }
+
+    /**
+     * Returns whether a leaveRequest is pending approval or more information requested
+     *
+     * @param  {object} leaveRequest
+     * @return {boolean}
+     */
+    function isRequested (leaveRequest) {
+      var status = vm.supportData.leaveRequestStatuses[leaveRequest.status_id];
+
+      return status.name === sharedSettings.statusNames.awaitingApproval ||
+        status.name === sharedSettings.statusNames.moreInformationRequired;
     }
 
     /**
@@ -353,7 +354,8 @@ define([
         status_id: {'IN': [
           leaveRequestStatusValueFromName(sharedSettings.statusNames.approved),
           leaveRequestStatusValueFromName(sharedSettings.statusNames.adminApproved),
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.awaitingApproval)
+          leaveRequestStatusValueFromName(sharedSettings.statusNames.awaitingApproval),
+          leaveRequestStatusValueFromName(sharedSettings.statusNames.moreInformationRequired)
         ]},
         contact_id: { 'IN': vm.contacts.map(function (contact) {
           return contact.id;
@@ -443,7 +445,7 @@ define([
           leaveRequest: leaveRequest || null,
           styles: leaveRequest ? styles(leaveRequest) : null,
           isAccruedTOIL: leaveRequest ? isLeaveType(leaveRequest, 'toil') : null,
-          isRequested: leaveRequest ? isPendingApproval(leaveRequest) : null,
+          isRequested: leaveRequest ? isRequested(leaveRequest) : null,
           isAM: leaveRequest ? isDayType('half_day_am', leaveRequest, day.date) : null,
           isPM: leaveRequest ? isDayType('half_day_pm', leaveRequest, day.date) : null
         });
