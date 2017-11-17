@@ -165,9 +165,7 @@ define([
 
   jobRoleServiceMock.__name = 'jobRoleService';
   function jobRoleServiceMock () {
-    var factory = {
-      get: jasmine.any(Function)
-    };
+    var factory = { get: jasmine.any(Function) };
 
     factory.jobRoles = [
       {
