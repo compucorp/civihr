@@ -55,7 +55,7 @@
             <th>{ts}Leave type{/ts}</th>
             <th>{ts}Prev. yr entitlement{/ts}</th>
             <th>{ts}Prev. yr Accrued TOIL{/ts}</th>
-            <th>{ts}Days taken{/ts}</th>
+            <th>{ts}Used in previous period{/ts}</th>
             <th>{ts}Remaining{/ts}</th>
             <th>{ts}Brought Forward from previous period{/ts}</th>
             <th>{ts}New Period Pro rata{/ts}</th>
