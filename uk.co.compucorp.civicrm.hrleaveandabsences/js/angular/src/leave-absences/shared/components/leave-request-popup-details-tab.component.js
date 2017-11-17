@@ -97,13 +97,15 @@ define([
           time: '',
           amount: 0,
           maxAmount: 0,
-          disabled: true
+          disabled: true,
+          loading: false
         },
         to: {
           time: '',
           amount: 0,
           maxAmount: 0,
-          disabled: true
+          disabled: true,
+          loading: false
         }
       }
     };
@@ -564,6 +566,7 @@ define([
 
       if (!date) { return $q.resolve(); }
 
+      timeObject.loading = true;
       timeObject.disabled = true;
       timeObject.min = '0';
       timeObject.max = '0';
@@ -576,8 +579,8 @@ define([
 
       return vm.request.getWorkDayForDate(date)
         .then(function (response) {
-          timeObject.min = response.time_from;
-          timeObject.max = response.time_to;
+          timeObject.min = response.time_from || '00:00';
+          timeObject.max = response.time_to || '00:00';
           timeObject.maxAmount = response.number_of_hours.toString() || '0';
           timeObject.disabled = false;
 
@@ -588,6 +591,7 @@ define([
         })
         .catch(handleError)
         .finally(function () {
+          timeObject.loading = false;
           skipTimeValuesUpdate = false;
         });
     }

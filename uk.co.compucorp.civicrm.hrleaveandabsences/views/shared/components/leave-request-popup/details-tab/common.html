@@ -61,21 +61,29 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </crm-loading>
-        <div
-          class="crm_custom-select crm_custom-select--full"
-          ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours'">
-          <select
-            class="no-select2"
-            ng-model="detailsTab.uiOptions.times.from.time"
-            ng-disabled="detailsTab.uiOptions.times.from.disabled || __isNotEditable"
-            timepicker-select
-            timepicker-select-time-from="detailsTab.uiOptions.times.from.min"
-            timepicker-select-time-to="detailsTab.uiOptions.times.from.max"
-            timepicker-select-interval="15"
-            timepicker-select-placeholder="Select time"
-          ></select>
-          <span class="crm_custom-select__arrow"></span>
-        </div>
+        <crm-loading show="!detailsTab.uiOptions.times.from.loading"
+          class="chr_leave-request-modal__small_spinner"
+          ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours'"
+          ng-switch="['weekend', 'non_working_day', 'public_holiday'].indexOf(detailsTab.requestFromDayTypes[0].name) === -1">
+          <div
+            class="crm_custom-select crm_custom-select--full"
+            ng-switch-when="true">
+            <select
+              class="no-select2"
+              ng-model="detailsTab.uiOptions.times.from.time"
+              ng-disabled="detailsTab.uiOptions.times.from.disabled || __isNotEditable"
+              timepicker-select
+              timepicker-select-time-from="detailsTab.uiOptions.times.from.min"
+              timepicker-select-time-to="detailsTab.uiOptions.times.from.max"
+              timepicker-select-interval="15"
+              timepicker-select-placeholder="Select time"
+            ></select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+          <div ng-switch-when="false" class="control-label">
+            {{ detailsTab.requestFromDayTypes[0].label }}
+          </div>
+        </crm-loading>
       </div>
     </div>
   </div>
@@ -85,13 +93,16 @@
     <div class="form-group">
       <label class="col-sm-4 control-label required-mark">Deduction</label>
       <div class="col-sm-4">
-        <time-amount-picker
-          time-amount-picker-disabled="!detailsTab.uiOptions.times.from.maxAmount || detailsTab.uiOptions.times.from.disabled || __isNotEditable"
-          time-amount-picker-value="detailsTab.uiOptions.times.from.amount"
-          time-amount-picker-min-amount="0"
-          time-amount-picker-max-amount="detailsTab.uiOptions.times.from.maxAmount"
-          time-amount-picker-interval="15"
-        ></time-amount-picker>
+        <crm-loading show="!detailsTab.uiOptions.times.from.loading"
+          class="chr_leave-request-modal__small_spinner">
+          <time-amount-picker
+            time-amount-picker-disabled="!detailsTab.uiOptions.times.from.maxAmount || detailsTab.uiOptions.times.from.disabled || __isNotEditable"
+            time-amount-picker-value="detailsTab.uiOptions.times.from.amount"
+            time-amount-picker-min-amount="0"
+            time-amount-picker-max-amount="detailsTab.uiOptions.times.from.maxAmount"
+            time-amount-picker-interval="15"
+          ></time-amount-picker>
+        </crm-loading>
       </div>
     </div>
   </div>
@@ -136,21 +147,29 @@
               <span class="crm_custom-select__arrow"></span>
             </div>
           </crm-loading>
-          <div
-            class="crm_custom-select crm_custom-select--full"
-            ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours'">
-            <select
-              class="no-select2"
-              ng-model="detailsTab.uiOptions.times.to.time"
-              ng-disabled="detailsTab.uiOptions.times.to.disabled || __isNotEditable"
-              timepicker-select
-              timepicker-select-time-from="detailsTab.uiOptions.times.to.min"
-              timepicker-select-time-to="detailsTab.uiOptions.times.to.max"
-              timepicker-select-interval="15"
-              timepicker-select-placeholder="Select time"
-            ></select>
-            <span class="crm_custom-select__arrow"></span>
-          </div>
+          <crm-loading show="!detailsTab.uiOptions.times.to.loading"
+            class="chr_leave-request-modal__small_spinner"
+            ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours'"
+            ng-switch="['weekend', 'non_working_day', 'public_holiday'].indexOf(detailsTab.requestToDayTypes[0].name) === -1">
+            <div
+              class="crm_custom-select crm_custom-select--full"
+              ng-switch-when="true">
+              <select
+                class="no-select2"
+                ng-model="detailsTab.uiOptions.times.to.time"
+                ng-disabled="detailsTab.uiOptions.times.to.disabled || __isNotEditable"
+                timepicker-select
+                timepicker-select-time-from="detailsTab.uiOptions.times.to.min"
+                timepicker-select-time-to="detailsTab.uiOptions.times.to.max"
+                timepicker-select-interval="15"
+                timepicker-select-placeholder="Select time"
+              ></select>
+              <span class="crm_custom-select__arrow"></span>
+            </div>
+            <div ng-switch-when="false" class="control-label">
+              {{ detailsTab.requestToDayTypes[0].label }}
+            </div>
+          </crm-loading>
         </div>
       </div>
     </div>
@@ -160,13 +179,16 @@
       <div class="form-group">
         <label class="col-sm-4 control-label required-mark">Deduction</label>
         <div class="col-sm-4">
-          <time-amount-picker
-            time-amount-picker-disabled="!detailsTab.uiOptions.times.to.maxAmount || detailsTab.uiOptions.times.from.disabled || __isNotEditable"
-            time-amount-picker-value="detailsTab.uiOptions.times.to.amount"
-            time-amount-picker-min-amount="0"
-            time-amount-picker-max-amount="detailsTab.uiOptions.times.to.maxAmount"
-            time-amount-picker-interval="15"
-          ></time-amount-picker>
+          <crm-loading show="!detailsTab.uiOptions.times.to.loading"
+            class="chr_leave-request-modal__small_spinner">
+            <time-amount-picker
+              time-amount-picker-disabled="!detailsTab.uiOptions.times.to.maxAmount || detailsTab.uiOptions.times.to.disabled || __isNotEditable"
+              time-amount-picker-value="detailsTab.uiOptions.times.to.amount"
+              time-amount-picker-min-amount="0"
+              time-amount-picker-max-amount="detailsTab.uiOptions.times.to.maxAmount"
+              time-amount-picker-interval="15"
+            ></time-amount-picker>
+          </crm-loading>
         </div>
       </div>
     </div>

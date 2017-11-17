@@ -459,6 +459,10 @@ define([
                 $rootScope.$digest();
               });
 
+              it('turns loading indicator off', function () {
+                expect(timeFromObject.loading).toBeFalsy();
+              });
+
               it('sets minimum timepicker option', function () {
                 expect(timeFromObject.min).toBe(workDayMock.time_from);
               });
@@ -499,6 +503,10 @@ define([
 
                   setTestDates(date2016, date2017);
                   $rootScope.$digest();
+                });
+
+                it('turns loading indicator off', function () {
+                  expect(timeToObject.loading).toBeFalsy();
                 });
 
                 it('sets minimum timepicker option', function () {
