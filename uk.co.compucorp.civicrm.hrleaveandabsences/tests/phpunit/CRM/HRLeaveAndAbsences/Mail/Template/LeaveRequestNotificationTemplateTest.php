@@ -95,4 +95,19 @@ class CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplateTest 
 
     $this->assertEquals($leaveCommentText, ['Random Commenter', 'Sample text']);
   }
+
+  public function testFromDateTypeAndToDateTypeTemplateParametersAreNotPresentWhenAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' =>2,
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+    ], false);
+
+    $tplParams = $this->leaveRequestNotificationTemplate->getTemplateParameters($leaveRequest);
+
+    $this->assertArrayNotHasKey('fromDateType', $tplParams);
+    $this->assertArrayNotHasKey('toDateType', $tplParams);
+  }
 }

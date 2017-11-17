@@ -103,4 +103,22 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
     $this->assertEquals($tplParams['sicknessRequiredDocuments'], $this->getSicknessRequiredDocuments());
     $this->assertEquals($tplParams['leaveRequiredDocuments'], explode(',', $leaveRequest->sickness_required_documents));
   }
+
+  public function testFromDateTypeAndToDateTypeTemplateParametersAreNotPresentWhenAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' =>2,
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'sickness_reason' => 1,
+      'sickness_required_documents' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ], false);
+
+    $tplParams = $this->sicknessRequestNotificationTemplate->getTemplateParameters($leaveRequest);
+
+    $this->assertArrayNotHasKey('fromDateType', $tplParams);
+    $this->assertArrayNotHasKey('toDateType', $tplParams);
+  }
 }
