@@ -214,9 +214,9 @@ define([
      * Returns whether a date is of a specific type
      * half_day_am or half_day_pm
      *
-     * @param  {string} typeName
+     * @param  {String} typeName
      * @param  {object} leaveRequest
-     * @param  {string} date
+     * @param  {String} date
      *
      * @return {boolean}
      */
@@ -244,9 +244,9 @@ define([
     }
 
     /**
-     * Decides whether sent date is a public holiday
+     * Checks whether sent date is a public holiday
      *
-     * @param  {string} date
+     * @param  {String} date
      * @return {boolean}
      */
     function isPublicHoliday (date) {
@@ -254,16 +254,18 @@ define([
     }
 
     /**
-     * Returns whether a leaveRequest is pending approval or more information requested
+     * Checks whether a leaveRequest is pending approval or more information requested
      *
      * @param  {object} leaveRequest
      * @return {boolean}
      */
     function isRequested (leaveRequest) {
-      var status = vm.supportData.leaveRequestStatuses[leaveRequest.status_id];
+      var statusName = vm.supportData.leaveRequestStatuses[leaveRequest.status_id].name;
 
-      return status.name === sharedSettings.statusNames.awaitingApproval ||
-        status.name === sharedSettings.statusNames.moreInformationRequired;
+      return _.contains([
+        sharedSettings.statusNames.awaitingApproval,
+        sharedSettings.statusNames.moreInformationRequired
+      ], statusName);
     }
 
     /**
