@@ -107,9 +107,12 @@
               <td>{$calculation->getBroughtForward()|timeUnitApplier:$calculationUnit}</td>
               <td>{$calculation->getProRata()|timeUnitApplier:$calculationUnit}</td>
               <td class="proposed-entitlement">
-                  <span class="proposed-value">{$calculation->getProposedEntitlement()|timeUnitApplier:$calculationUnit}</span>
+                  {assign var=proposedEntitlement value=$calculation->getProposedEntitlement()}
+                  <span class="proposed-value" data-raw-value="{$proposedEntitlement}">
+                    {$proposedEntitlement|timeUnitApplier:$calculationUnit}
+                  </span>
                   {$form.overridden_entitlement[$contact.id][$absenceTypeID].html}
-                  <span class="calculation-unit"> {$calculationUnitSuffix}</span>
+                  <span class="calculation-unit"> {$calculationUnitSuffix} </span>
                   <button type="button" class="borderless-button"><i class="fa fa-pencil"></i></button>
                   <label for="override_checkbox_{$contact.id}_{$absenceTypeID}">
                     <input id="override_checkbox_{$contact.id}_{$absenceTypeID}"

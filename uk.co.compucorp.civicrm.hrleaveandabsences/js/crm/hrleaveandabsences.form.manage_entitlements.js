@@ -291,7 +291,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
    */
   function ProposedEntitlement(element) {
     this._overrideButton = element.find('button');
-    this._overrideCheckbox = element.find('input[type="checkbox"]');
+    this._overrideCheckbox = element.find('.override-checkbox');
     this._overrideField = element.find('input[type="text"]');
     this._proposedValue = element.find('.proposed-value');
     this._calculationUnit = element.find('.calculation-unit');
@@ -427,14 +427,16 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
     this._proposedValue.hide();
 
     if(!this._overrideField.val()) {
-      this._overrideField.val(this._proposedValue.text())
+      this._overrideField.val(this._proposedValue.data('raw-value'))
     }
     this._calculationUnit.show();
     this._overrideField
       .show()
       .focus();
 
-    this._overrideCheckbox.prop('checked', true);
+    this._overrideCheckbox
+      .show()
+      .prop('checked', true);
     this._isOverridden = true;
   };
 
@@ -451,7 +453,9 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
     this._overrideField
       .val('')
       .hide();
-    this._overrideCheckbox.prop('checked', false);
+    this._overrideCheckbox
+      .prop('checked', false)
+      .hide();
     this._isOverridden = false;
   };
 
