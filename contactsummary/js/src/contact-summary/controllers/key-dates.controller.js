@@ -69,9 +69,11 @@ define([
         .then(function (response) {
           angular.forEach(response, function (role) {
             var endDate = moment(role.end_date);
-            var isInFuture = (!endDate.isValid()) ? isDateInFuture(endDate) : true;
+            var isInFuture = endDate.isValid() ? isDateInFuture(endDate) : false;
 
-            isInFuture && vm.activeRoles++;
+            if (isInFuture || role.end_date === undefined) {
+              vm.activeRoles++;
+            }
           });
         })
         .finally(function () {
