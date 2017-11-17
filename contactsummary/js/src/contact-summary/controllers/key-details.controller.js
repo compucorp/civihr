@@ -15,10 +15,12 @@ define([
     var vm = this;
 
     vm.ready = false;
+    vm.options = {};
 
     (function init () {
+      initContractOptions();
       getContacts();
-      pubSub.subscribe('contract-refresh', resetKeyDetails);
+      initListeners();
     }());
 
     /**
@@ -46,6 +48,20 @@ define([
         .finally(function () {
           vm.ready = true;
         });
+    }
+
+    /**
+     * Initialiazes the contract options
+     */
+    function initContractOptions () {
+      vm.options = Contract.getOptions();
+    }
+
+    /**
+     * Initialize Listeners
+     */
+    function initListeners () {
+      pubSub.subscribe('contract-refresh', resetKeyDetails);
     }
 
     /**
