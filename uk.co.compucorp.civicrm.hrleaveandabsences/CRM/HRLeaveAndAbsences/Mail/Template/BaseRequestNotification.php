@@ -61,12 +61,8 @@ abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification {
     ];
 
     if($calculationUnitName == 'days') {
-      $dateTypeLabels = [
-        'fromDateType' => $this->getLeaveRequestDayTypeLabel($leaveRequest->from_date_type),
-        'toDateType' => $this->getLeaveRequestDayTypeLabel($leaveRequest->to_date_type),
-      ];
-
-      $templateParameters = array_merge($templateParameters, $dateTypeLabels);
+      $templateParameters['fromDateType'] = $this->getLeaveRequestDayTypeLabel($leaveRequest->from_date_type);
+      $templateParameters['toDateType'] = $this->getLeaveRequestDayTypeLabel($leaveRequest->to_date_type);
     }
 
 
