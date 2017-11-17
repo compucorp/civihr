@@ -34,11 +34,15 @@ class CRM_HRCore_String_TimeUnitApplier {
    * Note that, for hours, some rounding will be also applied, and the value
    * will be rounded up to the nearest quarter of an hour: 1.35 will become 1h 30m
    *
-   * @param number $value
+   * @param int|float $value
    * @param string $unit
    *
    * @return string
-   *  The value with the time unit applied to it
+   *   The value with the time unit applied to it
+   *
+   * @throws \InvalidArgumentException
+   *   If either the given $value is not a numerical value or $unit is not a
+   *   valid unit
    */
   public static function apply($value, $unit) {
     if(!is_numeric($value)) {
@@ -60,7 +64,7 @@ class CRM_HRCore_String_TimeUnitApplier {
   /**
    * Apply the days unit by adding the d suffix to the given value
    *
-   * @param number $value
+   * @param int|float $value
    *
    * @return string
    */
@@ -72,7 +76,7 @@ class CRM_HRCore_String_TimeUnitApplier {
    * Applies the hours unit by adding the h and m suffixes to the given value
    * and rounding it up to the nearest quarter of an hour.
    *
-   * @param number $value
+   * @param int|float $value
    *
    * @return string
    */
@@ -94,7 +98,7 @@ class CRM_HRCore_String_TimeUnitApplier {
    * Builds the hours part of the time unit. For real numbers, it will consider
    * only the integer part of it (i.e. for 1.3 it will return 1h)
    *
-   * @param number $value
+   * @param int|float $value
    *
    * @return string
    */
@@ -111,7 +115,7 @@ class CRM_HRCore_String_TimeUnitApplier {
    * be the whole value we wan't to apply the unit to, but only the decimal part,
    * that represents the minutes.
    *
-   * @param number $value
+   * @param int|float $value
    *
    * @return string
    */
