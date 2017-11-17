@@ -525,6 +525,24 @@
               });
             });
           });
+
+          describe('in case leave request is TOIL', function () {
+            beforeEach(function () {
+              controller.request.request_type = 'toil';
+              controller.balance.change.amount--;
+
+              spyOn(dialog, 'open');
+              $rootScope.$apply();
+            });
+
+            it('ignores balance changes and does not open confirmation dialog', function () {
+              expect(dialog.open).not.toHaveBeenCalled();
+            });
+
+            it('updates the request straight away', function () {
+              expect(controller.request.update).toHaveBeenCalled();
+            });
+          });
         });
 
         describe('when the popup is closed', function () {

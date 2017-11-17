@@ -3,6 +3,7 @@
 define([
   'common/angularMocks',
   'mocks/services.mock',
+  'contact-summary/modules/contact-summary.module',
   'contact-summary/services/contact.service'
 ], function () {
   'use strict';
@@ -39,9 +40,9 @@ define([
       contactService = _contactService_;
     }));
 
-    describe('get', function () {
+    describe('get()', function () {
       var contact;
-      var expectedDetails = {id: 123, dateOfBirth: '1970/01/01', age: 45};
+      var expectedDetails = { id: 123, dateOfBirth: '1970/01/01', age: 45 };
 
       beforeEach(function () {
         contactDetailsServiceMock.respond('get', expectedDetails);
@@ -53,15 +54,11 @@ define([
         rootScope.$digest();
       });
 
-      it('should return contact details', function () {
+      it('returns contact details', function () {
         expect(contact.id).toEqual(expectedDetails.id);
         expect(contact.dateOfBirth).toEqual(expectedDetails.dateOfBirth);
         expect(contact.age).toEqual(expectedDetails.age);
       });
-
-      it('should return contracts');
-
-      it('should return leaves');
     });
   });
 });
