@@ -46,6 +46,9 @@ class CRM_HRCore_String_TimeUnitApplierTest extends CRM_HRCore_Test_BaseHeadless
     $this->assertEquals('30m', TimeUnitApplier::apply(0.3, 'hours'));
     $this->assertEquals('30m', TimeUnitApplier::apply('0.3', 'hours'));
     $this->assertEquals('30m', TimeUnitApplier::apply('.3', 'hours'));
+    $this->assertEquals('45m', TimeUnitApplier::apply('.75', 'hours'));
+    $this->assertEquals('45m', TimeUnitApplier::apply(0.75, 'hours'));
+    $this->assertEquals('45m', TimeUnitApplier::apply('0.75', 'hours'));
     $this->assertEquals('1h', TimeUnitApplier::apply(0.874, 'hours'));
     $this->assertEquals('1h', TimeUnitApplier::apply(0.875, 'hours'));
     $this->assertEquals('1h', TimeUnitApplier::apply(0.876, 'hours'));

@@ -103,7 +103,7 @@ class CRM_HRCore_String_TimeUnitApplier {
    * @return string
    */
   private static function getHoursPart($value) {
-    if ($value >= 1 - self::$roundMinutes) {
+    if ($value > 1 - self::$roundMinutes) {
       return floor(ceil($value / self::$roundMinutes) * self::$roundMinutes) . 'h';
     }
 
@@ -120,7 +120,7 @@ class CRM_HRCore_String_TimeUnitApplier {
    * @return string
    */
   private static function getMinutesPart($value) {
-    if($value && $value <= 1 - self::$roundMinutes && $value >= 0) {
+    if($value && $value <= 1 - self::$roundMinutes) {
       return ceil($value / self::$roundMinutes) * self::$roundMinutes * 60 . 'm';
     }
 
