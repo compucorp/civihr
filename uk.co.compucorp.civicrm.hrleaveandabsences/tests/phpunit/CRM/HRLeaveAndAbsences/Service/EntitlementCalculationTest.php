@@ -1068,4 +1068,24 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $this->assertEquals(2, $calculation->getAccruedTOILForPreviousPeriod());
   }
 
+  public function testIsCalculationUnitInHoursShouldReturnTrueIfAbsenceTypeCalculationUnitIsInHours() {
+    $absenceType = $this->prophesize(AbsenceType::class);
+    $absenceType->isCalculationUnitInHours()
+                ->shouldBeCalled()
+                ->willReturn(true);
+
+    $calculation = new EntitlementCalculation(new AbsencePeriod(), $this->contract, $absenceType->reveal());
+    $this->assertTrue($calculation->isCalculationUnitInHours());
+  }
+
+  public function testIsCalculationUnitInHoursShouldReturnFalseIfAbsenceTypeCalculationUnitIsNotInHours() {
+    $absenceType = $this->prophesize(AbsenceType::class);
+    $absenceType->isCalculationUnitInHours()
+                ->shouldBeCalled()
+                ->willReturn(false);
+
+    $calculation = new EntitlementCalculation(new AbsencePeriod(), $this->contract, $absenceType->reveal());
+    $this->assertFalse($calculation->isCalculationUnitInHours());
+  }
+
 }

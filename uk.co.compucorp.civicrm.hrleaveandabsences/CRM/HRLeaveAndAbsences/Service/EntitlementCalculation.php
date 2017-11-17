@@ -515,4 +515,14 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculation {
 
     return 0;
   }
+
+  /**
+   * Returns true if this calculation is in hours, according to the calculation's
+   * Absence Type
+   *
+   * @return bool
+   */
+  public function isCalculationUnitInHours() {
+    return $this->absenceType->isCalculationUnitInHours();
+  }
 }
