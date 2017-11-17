@@ -444,6 +444,7 @@ define([
                 expect(controller.uiOptions.times[type].amount).toBeDefined();
                 expect(controller.uiOptions.times[type].maxAmount).toBeDefined();
                 expect(controller.uiOptions.times[type].disabled).toBeDefined();
+                expect(controller.uiOptions.times[type].skip_value_setting).toBeDefined();
               });
             });
 
@@ -564,6 +565,39 @@ define([
                   });
                 });
               });
+            });
+          });
+
+          describe('when user edits the request', function () {
+            beforeEach(function () {
+              var status = optionGroupMock.specificValue(
+                'hrleaveandabsences_leave_request_status', 'value', '3');
+              var leaveRequest = LeaveRequestInstance.init(
+                leaveRequestData.findBy('status_id', status));
+
+              selectedAbsenceType.calculation_unit_name = 'hours';
+              leaveRequest.contact_id = '' + CRM.vars.leaveAndAbsences.contactId;
+              leaveRequest.type_id = selectedAbsenceType.id;
+              leaveRequest.from_date_amount = '1.5';
+              leaveRequest.to_date_amount = '4.75';
+
+              compileComponent({
+                mode: 'edit',
+                request: leaveRequest
+              });
+              $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+              $rootScope.$digest();
+            });
+
+            afterEach(function () {
+              selectedAbsenceType.calculation_unit_name = 'days';
+            });
+
+            it('leaves time and deduction as is', function () {
+              expect(controller.uiOptions.times.from.time).toBe(moment(controller.request.from_date).format('HH:mm'));
+              expect(controller.uiOptions.times.to.time).toBe(moment(controller.request.to_date).format('HH:mm'));
+              expect(controller.uiOptions.times.from.amount).toBe(controller.request.from_date_amount);
+              expect(controller.uiOptions.times.to.amount).toBe(controller.request.to_date_amount);
             });
           });
         });

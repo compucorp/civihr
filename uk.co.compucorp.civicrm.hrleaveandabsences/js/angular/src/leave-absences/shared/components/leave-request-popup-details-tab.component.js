@@ -40,7 +40,6 @@ define([
     var originalOpeningBalance = null;
     var listeners = [];
     var vm = this;
-    var skipTimeValuesUpdate;
 
     vm.canManage = false;
     vm.calendar = {};
@@ -98,14 +97,16 @@ define([
           amount: 0,
           maxAmount: 0,
           disabled: true,
-          loading: false
+          loading: false,
+          skip_value_setting: false
         },
         to: {
           time: '',
           amount: 0,
           maxAmount: 0,
           disabled: true,
-          loading: false
+          loading: false,
+          skip_value_setting: false
         }
       }
     };
@@ -414,7 +415,6 @@ define([
 
       if (!vm.isMode('create')) {
         attributes = vm.request.attributes();
-        skipTimeValuesUpdate = true;
         vm.uiOptions.fromDate = vm._convertDateFormatFromServer(vm.request.from_date);
 
         return vm.loadAbsencePeriodDatesTypes(vm.uiOptions.fromDate, 'from')
@@ -449,6 +449,7 @@ define([
 
       if (!vm.isMode('create') && isCalculationUnit('hours')) {
         _.each(['from', 'to'], function (type) {
+          times[type].skip_value_setting = true;
           times[type].time = extractTimeFromServerDate(request[type + '_date']);
           times[type].amount = request[type + '_date_amount'];
           times[type].maxAmount = times[type].amount;
@@ -572,7 +573,7 @@ define([
       timeObject.max = '0';
       timeObject.maxAmount = '0';
 
-      if (!skipTimeValuesUpdate) {
+      if (!timeObject.skip_value_setting) {
         timeObject.time = '';
         timeObject.amount = '0';
       }
@@ -584,7 +585,7 @@ define([
           timeObject.maxAmount = response.number_of_hours.toString() || '0';
           timeObject.disabled = false;
 
-          if (!skipTimeValuesUpdate) {
+          if (!timeObject.skip_value_setting) {
             timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
             timeObject.amount = timeObject.maxAmount;
           }
@@ -592,7 +593,7 @@ define([
         .catch(handleError)
         .finally(function () {
           timeObject.loading = false;
-          skipTimeValuesUpdate = false;
+          timeObject.skip_value_setting = false;
         });
     }
 
