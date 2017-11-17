@@ -86,6 +86,10 @@
             {assign var=absencePeriod value=$calculation->getAbsencePeriod()}
             {assign var=absencePeriodID value=$absencePeriod->id}
             {assign var=contact value=$calculation->getContact()}
+            {assign var=calculationUnit value='days'}
+            {if $calculation->isCalculationUnitInHours()}
+              {assign var=calculationUnit value='hours'}
+            {/if}
             <tr data-contact="{$contact.id}" data-absence-type="{$absenceTypeID}" data-absence-period="{$absencePeriodID}">
               <td>{$contact.id}</td>
               <td>{$contact.display_name}</td>
@@ -94,14 +98,14 @@
                   {$absenceType->title}
                 </span>
               </td>
-              <td>{$calculation->getPreviousPeriodProposedEntitlement()}</td>
-              <td>{$calculation->getAccruedTOILForPreviousPeriod()}</td>
-              <td>{$calculation->getAmountUsedInPreviousPeriod()}</td>
-              <td>{$calculation->getPreviousPeriodBalance()}</td>
-              <td>{$calculation->getBroughtForward()}</td>
-              <td>{$calculation->getProRata()}</td>
+              <td>{$calculation->getPreviousPeriodProposedEntitlement()|timeUnitApplier:$calculationUnit}</td>
+              <td>{$calculation->getAccruedTOILForPreviousPeriod()|timeUnitApplier:$calculationUnit}</td>
+              <td>{$calculation->getAmountUsedInPreviousPeriod()|timeUnitApplier:$calculationUnit}</td>
+              <td>{$calculation->getPreviousPeriodBalance()|timeUnitApplier:$calculationUnit}</td>
+              <td>{$calculation->getBroughtForward()|timeUnitApplier:$calculationUnit}</td>
+              <td>{$calculation->getProRata()|timeUnitApplier:$calculationUnit}</td>
               <td class="proposed-entitlement">
-                  <span class="proposed-value">{$calculation->getProposedEntitlement()}</span>
+                  <span class="proposed-value">{$calculation->getProposedEntitlement()|timeUnitApplier:$calculationUnit}</span>
                   {$form.overridden_entitlement[$contact.id][$absenceTypeID].html}
                   <button type="button" class="borderless-button"><i class="fa fa-pencil"></i></button>
                   <label for="override_checkbox_{$contact.id}_{$absenceTypeID}">
