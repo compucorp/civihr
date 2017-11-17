@@ -87,8 +87,10 @@
             {assign var=absencePeriodID value=$absencePeriod->id}
             {assign var=contact value=$calculation->getContact()}
             {assign var=calculationUnit value='days'}
+            {assign var=calculationUnitSuffix value='d'}
             {if $calculation->isCalculationUnitInHours()}
               {assign var=calculationUnit value='hours'}
+              {assign var=calculationUnitSuffix value='h'}
             {/if}
             <tr data-contact="{$contact.id}" data-absence-type="{$absenceTypeID}" data-absence-period="{$absencePeriodID}">
               <td>{$contact.id}</td>
@@ -107,6 +109,7 @@
               <td class="proposed-entitlement">
                   <span class="proposed-value">{$calculation->getProposedEntitlement()|timeUnitApplier:$calculationUnit}</span>
                   {$form.overridden_entitlement[$contact.id][$absenceTypeID].html}
+                  <span class="calculation-unit"> {$calculationUnitSuffix}</span>
                   <button type="button" class="borderless-button"><i class="fa fa-pencil"></i></button>
                   <label for="override_checkbox_{$contact.id}_{$absenceTypeID}">
                     <input id="override_checkbox_{$contact.id}_{$absenceTypeID}"
