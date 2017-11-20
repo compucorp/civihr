@@ -743,7 +743,7 @@ define([
     function _calculateOpeningAndClosingBalance () {
       if (originalOpeningBalance &&
       originalOpeningBalance.absenceTypeId === vm.selectedAbsenceType.id) {
-        vm.balance.opening = originalOpeningBalance.value;
+        vm.balance.opening = originalOpeningBalance.value || 0;
       } else {
         vm.balance.opening = vm.selectedAbsenceType.remainder;
       }
