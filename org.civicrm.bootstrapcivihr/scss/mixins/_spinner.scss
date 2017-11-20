@@ -1,0 +1,39 @@
+// Spinner related variables
+$default-height: 32px;
+$default-width: 32px;
+$speed: 1s;
+
+/**
+ * Spinner mixin
+ * $speed Speed to rorate the spinner in seconds
+ * $height Hight of the spinner
+ * $height Width of the spinner
+ */
+@mixin spinner($speed: $speed, $height: $default-height, $width: $default-width) {
+  animation: spin $speed linear infinite;
+  background: url(../img/spinner.svg) no-repeat center center !important;
+  display: block;
+  margin: auto;
+
+  @if $height {
+    height: $height !important;
+  } @else {
+    height: $default !important;
+  }
+
+  @if $width {
+    width: $width !important;
+  } @else {
+    width: $default !important;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
