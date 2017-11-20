@@ -8,13 +8,17 @@
     'chr_leave-calendar__item--alt': day.contactData.isAccruedTOIL,
     'chr_leave-calendar__item--toil-requested': day.contactData.isRequested && day.contactData.isAccruedTOIL
   }">
-  <span ng-if="day.contactData.isAccruedTOIL">AT</span>
-  <span ng-if="day.calculationUnit.name === 'days'">
-    <span ng-if="day.contactData.isAM">AM</span>
-    <span ng-if="day.contactData.isPM">PM</span>
-  </span>
-  <span class="chr_leave-calendar__item__label">
-    {{day.label}}
+  <span ng-if="day.contactData.leaveRequest">
+    <span ng-if="day.calculationUnit.name === 'hours'">
+      <span ng-if="day.contactData.isAccruedTOIL">AT</span>
+    </span>
+    <span ng-if="day.calculationUnit.name === 'days'">
+      <span ng-if="day.contactData.isAM">AM</span>
+      <span ng-if="day.contactData.isPM">PM</span>
+      <span class="chr_leave-calendar__item__label">
+        {{day.label}}
+      </span>
+    </span>
   </span>
   <a ng-if="day.contactData.leaveRequest"
     uib-tooltip-template="day.tooltipTemplate"
@@ -24,7 +28,8 @@
     ng-click="day.openLeavePopup($event, day.contactData.leaveRequest, null, null, $root.section === 'my-leave')">
   </a>
 </div>
-<script type="text/ng-template" id="type-days-on-single-date-tooltip">
+<script type="text/ng-template" id="type-days-on-single-date-tooltip"
+  ng-if="day.contactData.leaveRequest">
   <div>
     <strong>{{day.contactData.leaveRequest['type_id.title']}}</strong>
     <p>
@@ -32,7 +37,8 @@
     </p>
   </div>
 </script>
-<script type="text/ng-template" id="type-days-on-multiple-dates-tooltip">
+<script type="text/ng-template" id="type-days-on-multiple-dates-tooltip"
+  ng-if="day.contactData.leaveRequest">
   <div>
     <strong>{{day.contactData.leaveRequest['type_id.title']}}</strong>
     <p>
@@ -43,7 +49,8 @@
     </p>
   </div>
 </script>
-<script type="text/ng-template" id="type-hours-on-single-date-tooltip">
+<script type="text/ng-template" id="type-hours-on-single-date-tooltip"
+  ng-if="day.contactData.leaveRequest">
   <div>
     <strong>{{day.contactData.leaveRequest['type_id.title']}}</strong>
     <p>
@@ -52,7 +59,8 @@
     </p>
   </div>
 </script>
-<script type="text/ng-template" id="type-hours-on-multiple-dates-tooltip">
+<script type="text/ng-template" id="type-hours-on-multiple-dates-tooltip"
+  ng-if="day.contactData.leaveRequest">
   <div>
     <strong>{{day.contactData.leaveRequest['type_id.title']}}</strong>
     <p>
@@ -61,7 +69,8 @@
     </p>
   </div>
 </script>
-<script type="text/ng-template" id="accrued-toil-tooltip">
+<script type="text/ng-template" id="accrued-toil-tooltip"
+  ng-if="day.contactData.leaveRequest">
   <div>
     <strong>{{day.contactData.leaveRequest['type_id.title']}}</strong>
     <p ng-switch="day.calculationUnit.name">
