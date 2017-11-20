@@ -21,7 +21,12 @@ gulp.task('sass', ['sass:sync'], function () {
     .pipe(stripCssComments({ preserve: false }))
     .pipe(postcss([postcssPrefix({
       prefix: bootstrapNamespace + ' ',
-      exclude: [/^html/, /^body/, /page-civi/, outsideNamespaceRegExp]
+      exclude: [
+        /^html/, /^body/, /page-civi/,
+        '.crm-container .blockUI.blockOverlay', // class to display spinner on overlay
+        '.crm-container .dataTables_processing', // class to display spinner datatable load
+        outsideNamespaceRegExp
+      ]
     })]))
     .pipe(transformSelectors(namespaceRootElements, { splitOnCommas: true }))
     .pipe(transformSelectors(removeOutsideNamespaceMarker, { splitOnCommas: true }))
