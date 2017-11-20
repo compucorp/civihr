@@ -5,7 +5,7 @@
 .crm-container {
   .dataTables_processing,
   .blockUI.blockOverlay {
-    @include spinner(1s);
+    @include spinner('true'); // true for forcing to use the spinner size
     margin: 11% 50% !important;
   }
 }
