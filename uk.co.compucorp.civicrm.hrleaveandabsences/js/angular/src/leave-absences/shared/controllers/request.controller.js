@@ -183,7 +183,7 @@ define([
      * @return {Promise}
      */
     function checkIfBalanceChangeHasChanged () {
-      if (!vm.isMode('edit') || vm.isRole('staff')) { return; }
+      if (!vm.isMode('edit') || vm.isRole('staff') || getLeaveType() === 'toil') { return; }
 
       return vm.request.calculateBalanceChange()
         .then(function (balanceChange) {
