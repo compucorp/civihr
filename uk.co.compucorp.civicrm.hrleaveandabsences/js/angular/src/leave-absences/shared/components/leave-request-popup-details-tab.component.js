@@ -658,6 +658,8 @@ define([
 
           if (isInCurrentPeriod) {
             return vm.updateBalance();
+          } else {
+            $rootScope.$broadcast('LeaveRequestPopup::loadAbsenceTypes');
           }
         })
         .catch(function (errors) {
