@@ -599,6 +599,10 @@ define([
               expect(controller.uiOptions.times.from.amount).toBe(controller.request.from_date_amount);
               expect(controller.uiOptions.times.to.amount).toBe(controller.request.to_date_amount);
             });
+
+            it('does not recalculate the balance', function () {
+              expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
+            });
           });
         });
       });

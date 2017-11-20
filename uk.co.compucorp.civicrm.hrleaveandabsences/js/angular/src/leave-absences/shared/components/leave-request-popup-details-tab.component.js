@@ -464,11 +464,11 @@ define([
       if (vm.isMode('view') || isLeaveType('toil')) { return; }
 
       _.each(['from', 'to'], function (type) {
-        $scope.$watch('detailsTab.uiOptions.times.' + type + '.time', function (time) {
-          return calculateBalanceChange();
+        $scope.$watch('detailsTab.uiOptions.times.' + type + '.time', function (time, oldTime) {
+          return (time !== oldTime) && calculateBalanceChange();
         });
-        $scope.$watch('detailsTab.uiOptions.times.' + type + '.amount', function (time) {
-          return calculateBalanceChange();
+        $scope.$watch('detailsTab.uiOptions.times.' + type + '.amount', function (time, oldTime) {
+          return (time !== oldTime) && calculateBalanceChange();
         });
         $scope.$watch('detailsTab.uiOptions.' + type + 'Date', function (date) {
           return loadAndSetTimeRangesFromWorkPattern(date, type);
