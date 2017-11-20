@@ -183,14 +183,54 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $this->assertEquals($expectedTemplateID, $message->getTemplateID());
   }
 
-  public function testGetFromEmail() {
+  public function testGetFromEmailReturnsTheFirstOptionFromTheFromEmailAddressOptionGroupWhenThereIsNoDefaultAddress() {
+    $fromEmailAddress = [
+      "From Email 1 <from_email1@testdomain.com>",
+      "From Email 2 <from_email2@testdomain.com>",
+      "From Email 3 <from_email3@testdomain.com>",
+    ];
+
+    $value = 1;
+    foreach ($fromEmailAddress as $fromAddress) {;
+      $this->createFromEmail($fromAddress, $value);
+      $value++;
+    }
     $leaveRequest = new LeaveRequest();
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
-    $recipientEmails = $message->getFromEmail();
+    $fromEmail = $message->getFromEmail();
 
-    //this simple assertion should probably do for now since the method logic will be changed
-    //to fetch from L&A general settings
-    $this->assertNotNull($recipientEmails);
+    $this->assertEquals($fromEmailAddress[0], $fromEmail);
+  }
+
+  public function testGetFromEmailReturnsTheDefaultEmailAddressFromTheFromEmailAddressOption() {
+    $fromEmailAddress = [
+      "From Email 1 <from_email1@testdomain.com>",
+      "From Email 2 <from_email2@testdomain.com>",
+      "From Email 3 <from_email3@testdomain.com>",
+    ];
+
+    $value = 1;
+    foreach ($fromEmailAddress as $fromAddress) {;
+      $this->createFromEmail($fromAddress, $value);
+      $value++;
+    }
+
+    $defaultEmailAddress = "Default Email <default_email@testdomain.com>";
+    $this->createDefaultFromEmail($defaultEmailAddress, $value + 1);
+
+    $leaveRequest = new LeaveRequest();
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $fromEmail = $message->getFromEmail();
+
+    $this->assertEquals($defaultEmailAddress, $fromEmail);
+  }
+
+  public function testGetFromEmailReturnsNullWhenThereIsNoOptionForTheFromEmailAddressOption() {
+    $leaveRequest = new LeaveRequest();
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $fromEmail = $message->getFromEmail();
+
+    $this->assertNull($fromEmail);
   }
 
   public function testGetTemplateParametersReturnsNullWhenThereIsNoTemplateForARequestType() {
@@ -217,5 +257,22 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
     $this->assertNull($message->getTemplateID());
+  }
+
+  private function createFromEmail($label, $value, $isDefault = false) {
+    $params = [
+      'option_group_id' => 'from_email_address',
+      'label' => $label,
+      'value' => $value,
+    ];
+
+    if($isDefault) {
+      $params['is_default'] = 1;
+    }
+    civicrm_api3('OptionValue', 'create', $params);
+  }
+
+  private function createDefaultFromEmail($label, $value) {
+    $this->createFromEmail($label, $value, true);
   }
 }
