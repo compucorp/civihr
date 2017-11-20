@@ -650,9 +650,15 @@ define([
      * @return {Promise}
      */
     function updateAbsencePeriodDatesTypes (date, dayType) {
+      var oldPeriodId = vm.period.id;
+
       return vm.loadAbsencePeriodDatesTypes(date, dayType)
         .then(function () {
-          return vm.updateBalance();
+          var isInCurrentPeriod = oldPeriodId === vm.period.id;
+
+          if (isInCurrentPeriod) {
+            return vm.updateBalance();
+          }
         })
         .catch(function (errors) {
           handleError(errors);
@@ -668,10 +674,16 @@ define([
      */
     function updateBalance () {
       vm.selectedAbsenceType = getSelectedAbsenceType();
-      // get the `balance` of the newly selected absence type
-      vm.balance.opening = vm.selectedAbsenceType.remainder;
+      // calculate balance only if current absence type exists
+      if (vm.selectedAbsenceType) {
+        // get the `balance` of the newly selected absence type
+        vm.balance.opening = vm.selectedAbsenceType.remainder;
 
-      vm.calculateBalanceChange();
+        vm.calculateBalanceChange();
+      } else {
+        // hide the show balance block
+        vm.uiOptions.showBalance = false;
+      }
     }
 
     /**
