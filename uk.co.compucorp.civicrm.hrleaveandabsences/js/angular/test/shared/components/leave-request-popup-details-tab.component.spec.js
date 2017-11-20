@@ -448,6 +448,10 @@ define([
               });
             });
 
+            it('defaults data selection to a single day', function () {
+              expect(controller.uiOptions.multipleDays).toBeFalsy();
+            });
+
             describe('after from date is selected', function () {
               var timeFromObject, request, workDayMock;
 
@@ -490,10 +494,6 @@ define([
 
               it('sets the "from" date to request in a date+time format', function () {
                 expect(request.from_date.length).toBe('YYYY-MM-DD hh:mm'.length);
-              });
-
-              it('does not yet show balance', function () {
-                expect(controller.uiOptions.showBalance).toBeFalsy();
               });
 
               describe('after to date is selected', function () {
@@ -564,6 +564,17 @@ define([
                       'LeaveRequestPopup::handleError', jasmine.any(Array));
                   });
                 });
+              });
+            });
+
+            describe('when absence period is changed', function () {
+              beforeEach(function () {
+                $rootScope.$broadcast('LeaveRequestPopup::updateBalance');
+                $rootScope.$digest();
+              });
+
+              it('sets data selection to a single day', function () {
+                expect(controller.uiOptions.multipleDays).toBeFalsy();
               });
             });
           });

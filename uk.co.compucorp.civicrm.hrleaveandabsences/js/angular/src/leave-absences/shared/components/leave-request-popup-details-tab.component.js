@@ -436,7 +436,10 @@ define([
      */
     function initListeners () {
       listeners.push(
-        $rootScope.$on('LeaveRequestPopup::updateBalance', vm.updateBalance)
+        $rootScope.$on('LeaveRequestPopup::updateBalance', function () {
+          vm.updateBalance();
+          setDaySelectionMode();
+        })
       );
     }
 
@@ -648,8 +651,10 @@ define([
      */
     function setDaySelectionMode () {
       if ((!vm.isMode('create') && requestHasSameDates(vm.request)) ||
-        (vm.isMode('create') && vm.isLeaveType('sickness'))) {
+        (vm.isMode('create') && (vm.isLeaveType('sickness') || isCalculationUnit('hours')))) {
         vm.uiOptions.multipleDays = false;
+      } else {
+        vm.uiOptions.multipleDays = true;
       }
     }
 
