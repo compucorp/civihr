@@ -467,9 +467,6 @@ define([
       if (vm.isMode('view') || isLeaveType('toil')) { return; }
 
       _.each(['from', 'to'], function (type) {
-        $scope.$watch('detailsTab.uiOptions.times.' + type + '.time', function (time, oldTime) {
-          return (time !== oldTime) && calculateBalanceChange();
-        });
         $scope.$watch('detailsTab.uiOptions.times.' + type + '.amount', function (time, oldTime) {
           return (time !== oldTime) && calculateBalanceChange();
         });
