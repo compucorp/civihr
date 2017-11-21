@@ -800,6 +800,10 @@ define([
               expect(controller.loading.showBalanceChange).toBe(false);
             });
 
+            it('does not recalculate the balance', function () {
+              expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
+            });
+
             it('shows balance', function () {
               expect(controller.uiOptions.showBalance).toBeTruthy();
             });
