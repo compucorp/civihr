@@ -12,7 +12,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="document.activity_date_time"]');
+        casper.click(this.modalRoot + ' [ng-model="documentModal.document.activity_date_time"]');
         casper.waitUntilVisible('.uib-datepicker-popup');
       }.bind(this));
 
@@ -29,7 +29,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click(this.modalRoot + ' a[ng-click*="show' + fieldName + 'Field"]');
+        casper.click(this.modalRoot + ' a[ng-click*="documentModal.show' + fieldName + 'Field"]');
       }.bind(this));
 
       return this;
@@ -44,7 +44,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="document.assignee_contact"] .ui-select-match');
+        casper.click(this.modalRoot + ' [ng-model="documentModal.document.assignee_contact"] .ui-select-match');
         casper.waitUntilVisible('.select2-with-searchbox');
       }.bind(this));
 
@@ -60,7 +60,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="document.activity_type_id"] .ui-select-match');
+        casper.click(this.modalRoot + ' [ng-model="documentModal.document.activity_type_id"] .ui-select-match');
         casper.waitUntilVisible('.select2-with-searchbox');
       }.bind(this));
 
@@ -76,7 +76,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click(this.modalRoot + ' [heading="' + tabName + '"] a');
+        casper.click(this.modalRoot + ' a[data-target="#' + tabName + 'Tab"]');
         casper.wait(200);
       }.bind(this));
 
