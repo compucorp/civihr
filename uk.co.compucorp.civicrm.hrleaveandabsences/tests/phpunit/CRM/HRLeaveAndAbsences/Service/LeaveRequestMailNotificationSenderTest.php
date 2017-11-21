@@ -34,7 +34,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
     );
 
     $defaultEmailAddress = "Default Email <default_email@testdomain.com>";
-    $this->createDefaultFromEmail($defaultEmailAddress, 1);
+    $this->createDefaultFromEmail($defaultEmailAddress);
 
     // Set manager1 to be leave aprovers for the leave contact
     $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact);

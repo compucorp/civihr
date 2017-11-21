@@ -3997,7 +3997,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $startDate = new DateTime();
     $endDate = new DateTime('+5 days');
 
-    $defaultEmailAddress = "Default Email <default_email@testdomain.com>";
+    $defaultEmailAddress = 'Default Email <default_email@testdomain.com>';
     $this->createDefaultFromEmail($defaultEmailAddress);
 
     $period = AbsencePeriodFabricator::fabricate([

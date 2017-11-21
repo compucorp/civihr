@@ -185,9 +185,9 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
 
   public function testGetFromEmailReturnsTheFirstOptionFromTheFromEmailAddressOptionGroupWhenThereIsNoDefaultAddress() {
     $fromEmailAddress = [
-      "From Email 1 <from_email1@testdomain.com>",
-      "From Email 2 <from_email2@testdomain.com>",
-      "From Email 3 <from_email3@testdomain.com>",
+      'From Email 1 <from_email1@testdomain.com>',
+      'From Email 2 <from_email2@testdomain.com>',
+      'From Email 3 <from_email3@testdomain.com>',
     ];
 
     $value = 1;
@@ -204,9 +204,9 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
 
   public function testGetFromEmailReturnsTheDefaultEmailAddressFromTheFromEmailAddressOption() {
     $fromEmailAddress = [
-      "From Email 1 <from_email1@testdomain.com>",
-      "From Email 2 <from_email2@testdomain.com>",
-      "From Email 3 <from_email3@testdomain.com>",
+      'From Email 1 <from_email1@testdomain.com>',
+      'From Email 2 <from_email2@testdomain.com>',
+      'From Email 3 <from_email3@testdomain.com>',
     ];
 
     $value = 1;
@@ -215,7 +215,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       $value++;
     }
 
-    $defaultEmailAddress = "Default Email <default_email@testdomain.com>";
+    $defaultEmailAddress = 'Default Email <default_email@testdomain.com>';
     $this->createDefaultFromEmail($defaultEmailAddress, $value + 1);
 
     $leaveRequest = new LeaveRequest();
@@ -225,7 +225,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $this->assertEquals($defaultEmailAddress, $fromEmail);
   }
 
-  public function testGetFromEmailReturnsNullWhenThereIsNoOptionForTheFromEmailAddressOption() {
+  public function testGetFromEmailReturnsNullWhenThereIsNoOptionForTheFromEmailAddressOptionGroup() {
     $leaveRequest = new LeaveRequest();
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
     $fromEmail = $message->getFromEmail();
