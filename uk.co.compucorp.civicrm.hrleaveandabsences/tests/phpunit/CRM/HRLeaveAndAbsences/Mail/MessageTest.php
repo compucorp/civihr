@@ -258,21 +258,4 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
     $this->assertNull($message->getTemplateID());
   }
-
-  private function createFromEmail($label, $value, $isDefault = false) {
-    $params = [
-      'option_group_id' => 'from_email_address',
-      'label' => $label,
-      'value' => $value,
-    ];
-
-    if($isDefault) {
-      $params['is_default'] = 1;
-    }
-    civicrm_api3('OptionValue', 'create', $params);
-  }
-
-  private function createDefaultFromEmail($label, $value) {
-    $this->createFromEmail($label, $value, true);
-  }
 }

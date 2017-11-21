@@ -53,4 +53,21 @@ trait CRM_HRLeaveAndAbsences_MailHelpersTrait {
 
     return isset($result['values'][0]) ? $result['values'][0] : '';
   }
+
+  private function createFromEmail($label, $value, $isDefault = false) {
+    $params = [
+      'option_group_id' => 'from_email_address',
+      'label' => $label,
+      'value' => $value,
+    ];
+
+    if($isDefault) {
+      $params['is_default'] = 1;
+    }
+    civicrm_api3('OptionValue', 'create', $params);
+  }
+
+  private function createDefaultFromEmail($label, $value) {
+    $this->createFromEmail($label, $value, true);
+  }
 }
