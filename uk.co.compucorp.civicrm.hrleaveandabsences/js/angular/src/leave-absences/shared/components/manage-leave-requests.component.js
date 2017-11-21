@@ -3,7 +3,8 @@
 define([
   'common/lodash',
   'leave-absences/shared/modules/components',
-  'common/models/contact'
+  'common/models/contact',
+  'common/services/pub-sub'
 ], function (_, components) {
   components.component('manageLeaveRequests', {
     bindings: { contactId: '<' },
@@ -16,10 +17,13 @@ define([
 
   ManageLeaveRequestsController.$inject = [
     '$log', '$q', '$rootScope', 'Contact', 'checkPermissions', 'OptionGroup',
-    'shared-settings', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest', 'LeavePopup'
+    'shared-settings', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest',
+    'LeavePopup', 'pubSub'
   ];
 
-  function ManageLeaveRequestsController ($log, $q, $rootScope, Contact, checkPermissions, OptionGroup, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, LeavePopup) {
+  function ManageLeaveRequestsController ($log, $q, $rootScope, Contact,
+  checkPermissions, OptionGroup, sharedSettings, AbsencePeriod, AbsenceType,
+  LeaveRequest, LeavePopup, pubSub) {
     'use strict';
     $log.debug('Component: manage-leave-requests');
 
@@ -525,10 +529,10 @@ define([
      * Register events which will be called by other modules
      */
     function registerEvents () {
-      $rootScope.$on('LeaveRequest::updatedByManager', function () { vm.refresh(); });
-      $rootScope.$on('LeaveRequest::new', function () { vm.refresh(); });
-      $rootScope.$on('LeaveRequest::edit', function () { vm.refresh(); });
-      $rootScope.$on('LeaveRequest::deleted', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::updatedByManager', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::new', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::edit', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::deleted', function () { vm.refresh(); });
     }
 
     /**

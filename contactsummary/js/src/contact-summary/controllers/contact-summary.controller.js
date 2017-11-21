@@ -12,6 +12,7 @@ define(function () {
     var templateDir = settings.pathBaseUrl + settings.pathTpl;
     var vm = this;
 
+    vm.contactId = settings.contactId;
     vm.ready = false;
     vm.partials = {
       keyDetails: templateDir + '/include/keyDetails.html',
