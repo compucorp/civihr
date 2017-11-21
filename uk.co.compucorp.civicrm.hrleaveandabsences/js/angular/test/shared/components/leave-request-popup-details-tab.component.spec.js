@@ -444,7 +444,12 @@ define([
                 expect(controller.uiOptions.times[type].amount).toBeDefined();
                 expect(controller.uiOptions.times[type].maxAmount).toBeDefined();
                 expect(controller.uiOptions.times[type].disabled).toBeDefined();
+                expect(controller.uiOptions.times[type].skipValueSetting).toBeDefined();
               });
+            });
+
+            it('defaults data selection to a single day', function () {
+              expect(controller.uiOptions.multipleDays).toBeFalsy();
             });
 
             describe('after from date is selected', function () {
@@ -457,6 +462,10 @@ define([
 
                 setTestDates(date2016);
                 $rootScope.$digest();
+              });
+
+              it('turns loading indicator off', function () {
+                expect(timeFromObject.loading).toBeFalsy();
               });
 
               it('sets minimum timepicker option', function () {
@@ -487,10 +496,6 @@ define([
                 expect(request.from_date.length).toBe('YYYY-MM-DD hh:mm'.length);
               });
 
-              it('does not yet show balance', function () {
-                expect(controller.uiOptions.showBalance).toBeFalsy();
-              });
-
               describe('after to date is selected', function () {
                 var timeToObject;
 
@@ -499,6 +504,10 @@ define([
 
                   setTestDates(date2016, date2017);
                   $rootScope.$digest();
+                });
+
+                it('turns loading indicator off', function () {
+                  expect(timeToObject.loading).toBeFalsy();
                 });
 
                 it('sets minimum timepicker option', function () {
@@ -556,6 +565,54 @@ define([
                   });
                 });
               });
+            });
+
+            describe('when absence period is changed', function () {
+              beforeEach(function () {
+                $rootScope.$broadcast('LeaveRequestPopup::updateBalance');
+                $rootScope.$digest();
+              });
+
+              it('sets data selection to a single day', function () {
+                expect(controller.uiOptions.multipleDays).toBeFalsy();
+              });
+            });
+          });
+
+          describe('when user edits the request', function () {
+            beforeEach(function () {
+              var status = optionGroupMock.specificValue(
+                'hrleaveandabsences_leave_request_status', 'value', '3');
+              var leaveRequest = LeaveRequestInstance.init(
+                leaveRequestData.findBy('status_id', status));
+
+              selectedAbsenceType.calculation_unit_name = 'hours';
+              leaveRequest.contact_id = '' + CRM.vars.leaveAndAbsences.contactId;
+              leaveRequest.type_id = selectedAbsenceType.id;
+              leaveRequest.from_date_amount = '1.5';
+              leaveRequest.to_date_amount = '4.75';
+
+              compileComponent({
+                mode: 'edit',
+                request: leaveRequest
+              });
+              $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+              $rootScope.$digest();
+            });
+
+            afterEach(function () {
+              selectedAbsenceType.calculation_unit_name = 'days';
+            });
+
+            it('leaves time and deduction as is', function () {
+              expect(controller.uiOptions.times.from.time).toBe(moment(controller.request.from_date).format('HH:mm'));
+              expect(controller.uiOptions.times.to.time).toBe(moment(controller.request.to_date).format('HH:mm'));
+              expect(controller.uiOptions.times.from.amount).toBe(controller.request.from_date_amount);
+              expect(controller.uiOptions.times.to.amount).toBe(controller.request.to_date_amount);
+            });
+
+            it('does not recalculate the balance', function () {
+              expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
             });
           });
         });
