@@ -33,6 +33,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
       'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
     );
 
+    $defaultEmailAddress = "Default Email <default_email@testdomain.com>";
+    $this->createDefaultFromEmail($defaultEmailAddress);
+
     // Set manager1 to be leave aprovers for the leave contact
     $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact);
 
@@ -76,5 +79,26 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
       $this->assertNotEmpty($email['body']);
       $this->assertNotEmpty($email['headers']);
     }
+  }
+
+  public function testSendThrowsExceptionWhenFromEmailIsNotConfigured() {
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $this->leaveContact['id'],
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+    ], false);
+
+    $leaveRequestTemplateFactory = new RequestNotificationTemplateFactory();
+    $message = new Message($leaveRequest, $leaveRequestTemplateFactory);
+
+    $leaveMailSenderService = new LeaveRequestMailNotificationSenderService();
+
+    $this->setExpectedException(
+      CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestMailNotificationSenderException::class,
+      'From Email Address need to be configured in order to allow Email notifications'
+    );
+
+    $leaveMailSenderService->send($message);
   }
 }
