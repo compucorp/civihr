@@ -27,6 +27,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
   use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
+  use CRM_HRLeaveAndAbsences_MailHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -3947,5 +3948,90 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     return array_merge($sicknessParams, $params);
+  }
+
+  public function testCreateReturnsFalseForFromEmailParameterWhenFromEmailIsNotConfigured() {
+    $contactID = 1;
+    $this->registerCurrentLoggedInContactInSession($contactID);
+    $startDate = new DateTime();
+    $endDate = new DateTime('+5 days');
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $startDate->format('YmdHis'),
+      'end_date' => $endDate->format('YmdHis'),
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $startDate->format('Y-m-d')]
+    );
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contract['contact_id'],
+      'period_id' => $period->id,
+      'type_id' => $this->absenceType->id,
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 20);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $result = civicrm_api3('LeaveRequest', 'create', [
+      'contact_id' => $periodEntitlement->contact_id,
+      'type_id' => $periodEntitlement->type_id,
+      'from_date' => $startDate->format('Y-m-d'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => $endDate->format('Y-m-d'),
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'status_id' => 3,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'sequential' => 1,
+    ]);
+
+    $this->assertFalse($result['from_email_configured']);
+  }
+
+  public function testCreateReturnsTrueForFromEmailParameterWhenFromEmailIsConfigured() {
+    $contactID = 1;
+    $this->registerCurrentLoggedInContactInSession($contactID);
+    $startDate = new DateTime();
+    $endDate = new DateTime('+5 days');
+
+    $defaultEmailAddress = "Default Email <default_email@testdomain.com>";
+    $this->createDefaultFromEmail($defaultEmailAddress);
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $startDate->format('YmdHis'),
+      'end_date' => $endDate->format('YmdHis'),
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $startDate->format('Y-m-d')]
+    );
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $contract['contact_id'],
+      'period_id' => $period->id,
+      'type_id' => $this->absenceType->id,
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 20);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $result = civicrm_api3('LeaveRequest', 'create', [
+      'contact_id' => $periodEntitlement->contact_id,
+      'type_id' => $periodEntitlement->type_id,
+      'from_date' => $startDate->format('Y-m-d'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => $endDate->format('Y-m-d'),
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'status_id' => 3,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'sequential' => 1,
+    ]);
+
+    $this->assertTrue($result['from_email_configured']);
   }
 }
