@@ -98,7 +98,7 @@ define([
           maxAmount: 0,
           disabled: true,
           loading: false,
-          skip_value_setting: false
+          skipValueSetting: false
         },
         to: {
           time: '',
@@ -106,7 +106,7 @@ define([
           maxAmount: 0,
           disabled: true,
           loading: false,
-          skip_value_setting: false
+          skipValueSetting: false
         }
       }
     };
@@ -114,6 +114,7 @@ define([
     vm.calculateBalanceChange = calculateBalanceChange;
     vm.changeInNoOfDays = changeInNoOfDays;
     vm.isLeaveType = isLeaveType;
+    vm.isNotWorkingDay = isNotWorkingDay;
     vm.loadAbsencePeriodDatesTypes = loadAbsencePeriodDatesTypes;
     vm.updateAbsencePeriodDatesTypes = updateAbsencePeriodDatesTypes;
     vm.updateBalance = updateBalance;
@@ -452,7 +453,7 @@ define([
 
       if (!vm.isMode('create') && isCalculationUnit('hours')) {
         _.each(['from', 'to'], function (type) {
-          times[type].skip_value_setting = true;
+          times[type].skipValueSetting = true;
           times[type].time = extractTimeFromServerDate(request[type + '_date']);
           times[type].amount = request[type + '_date_amount'];
           times[type].maxAmount = times[type].amount;
@@ -494,6 +495,17 @@ define([
           value: vm.selectedAbsenceType.remainder - vm.request.balance_change
         };
       }
+    }
+
+    /**
+     * Checks if the given day type is not a working day.
+     * Do not confuse with "non working day".
+     *
+     * @param  {String} dayType
+     * @return {Boolean} true if is not a working day
+     */
+    function isNotWorkingDay (dayType) {
+      return _.includes(['weekend', 'non_working_day', 'public_holiday'], dayType);
     }
 
     /**
@@ -573,7 +585,7 @@ define([
       timeObject.max = '0';
       timeObject.maxAmount = '0';
 
-      if (!timeObject.skip_value_setting) {
+      if (!timeObject.skipValueSetting) {
         timeObject.time = '';
         timeObject.amount = '0';
       }
@@ -585,7 +597,7 @@ define([
           timeObject.maxAmount = response.number_of_hours.toString() || '0';
           timeObject.disabled = false;
 
-          if (!timeObject.skip_value_setting) {
+          if (!timeObject.skipValueSetting) {
             timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
             timeObject.amount = timeObject.maxAmount;
           }
@@ -593,7 +605,7 @@ define([
         .catch(handleError)
         .finally(function () {
           timeObject.loading = false;
-          timeObject.skip_value_setting = false;
+          timeObject.skipValueSetting = false;
         });
     }
 

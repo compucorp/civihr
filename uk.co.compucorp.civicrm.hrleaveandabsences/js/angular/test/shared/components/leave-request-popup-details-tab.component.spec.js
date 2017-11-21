@@ -444,7 +444,7 @@ define([
                 expect(controller.uiOptions.times[type].amount).toBeDefined();
                 expect(controller.uiOptions.times[type].maxAmount).toBeDefined();
                 expect(controller.uiOptions.times[type].disabled).toBeDefined();
-                expect(controller.uiOptions.times[type].skip_value_setting).toBeDefined();
+                expect(controller.uiOptions.times[type].skipValueSetting).toBeDefined();
               });
             });
 

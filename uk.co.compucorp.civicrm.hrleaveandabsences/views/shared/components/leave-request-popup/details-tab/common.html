@@ -64,7 +64,7 @@
         <crm-loading show="!detailsTab.uiOptions.times.from.loading"
           class="chr_leave-request-modal__small_spinner"
           ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours'"
-          ng-switch="['weekend', 'non_working_day', 'public_holiday'].indexOf(detailsTab.requestFromDayTypes[0].name) === -1">
+          ng-switch="!detailsTab.isNotWorkingDay(detailsTab.requestFromDayTypes[0].name)">
           <div
             class="crm_custom-select crm_custom-select--full"
             ng-switch-when="true">
@@ -150,7 +150,7 @@
           <crm-loading show="!detailsTab.uiOptions.times.to.loading"
             class="chr_leave-request-modal__small_spinner"
             ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours'"
-            ng-switch="['weekend', 'non_working_day', 'public_holiday'].indexOf(detailsTab.requestToDayTypes[0].name) === -1">
+            ng-switch="!detailsTab.isNotWorkingDay(detailsTab.requestToDayTypes[0].name)">
             <div
               class="crm_custom-select crm_custom-select--full"
               ng-switch-when="true">

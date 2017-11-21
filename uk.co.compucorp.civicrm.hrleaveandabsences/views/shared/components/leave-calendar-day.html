@@ -8,11 +8,12 @@
     'chr_leave-calendar__item--alt': day.contactData.isAccruedTOIL,
     'chr_leave-calendar__item--toil-requested': day.contactData.isRequested && day.contactData.isAccruedTOIL
   }">
-  <span ng-if="day.contactData.leaveRequest">
-    <span ng-if="day.calculationUnit.name === 'hours'">
+  <span ng-if="day.contactData.leaveRequest"
+    ng-switch="day.calculationUnit.name">
+    <span ng-switch-when="hours">
       <span ng-if="day.contactData.isAccruedTOIL">AT</span>
     </span>
-    <span ng-if="day.calculationUnit.name === 'days'">
+    <span ng-switch-when="days">
       <span ng-if="day.contactData.isAM">AM</span>
       <span ng-if="day.contactData.isPM">PM</span>
       <span class="chr_leave-calendar__item__label">
