@@ -232,7 +232,12 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
    * @return string|null
    */
   private function getFirstFromEmailAddress($params = []) {
-    $params = array_merge(['option_group_id' => 'from_email_address'], $params);
+    $params = array_merge([
+      'option_group_id' => 'from_email_address',
+      'options' => ['limit' => 1, 'sort' => 'weight ASC'],
+      'return' => ['label']
+    ], $params);
+
     $result = civicrm_api3('OptionValue', 'get', $params);
 
     $result = array_shift($result['values']);
