@@ -192,7 +192,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
 
     $value = 1;
     foreach ($fromEmailAddress as $fromAddress) {;
-      $this->createFromEmail($fromAddress, $value);
+      $this->createFromEmail($fromAddress);
       $value++;
     }
     $leaveRequest = new LeaveRequest();
@@ -210,13 +210,13 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     ];
 
     $value = 1;
-    foreach ($fromEmailAddress as $fromAddress) {;
-      $this->createFromEmail($fromAddress, $value);
+    foreach ($fromEmailAddress as $fromAddress) {
+      $this->createFromEmail($fromAddress);
       $value++;
     }
 
     $defaultEmailAddress = 'Default Email <default_email@testdomain.com>';
-    $this->createDefaultFromEmail($defaultEmailAddress, $value + 1);
+    $this->createDefaultFromEmail($defaultEmailAddress);
 
     $leaveRequest = new LeaveRequest();
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);

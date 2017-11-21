@@ -84,7 +84,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
   public function testSendThrowsExceptionWhenFromEmailIsNotConfigured() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
-      'contact_id' =>$this->leaveContact['id'],
+      'contact_id' => $this->leaveContact['id'],
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
     ], false);
