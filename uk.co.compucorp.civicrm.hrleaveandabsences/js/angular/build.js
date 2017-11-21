@@ -10,6 +10,8 @@
     {name: 'my-leave'}
   ],
   mainConfigFile: 'src/leave-absences/shared/config.js',
+  generateSourceMaps: true,
+  useSourceUrl: true,
   paths: {
     'common': 'empty:'
   },

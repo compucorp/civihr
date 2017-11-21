@@ -9,32 +9,35 @@ var exec = require('child_process').exec;
 var path = require('path');
 var fs = require('fs');
 var civicrmScssRoot = require('civicrm-scssroot')();
+var cv = require('civicrm-cv')({ mode: 'sync' });
 var argv = require('yargs').argv;
 
 gulp.task('sass', ['sass-sync'], function () {
   gulp.src('scss/*.scss')
-  .pipe(bulk())
-  .pipe(sass({
-    outputStyle: 'compressed',
-    includePaths: civicrmScssRoot.getPath()
-  }).on('error', sass.logError))
-  .pipe(gulp.dest('css/'));
+    .pipe(bulk())
+    .pipe(sass({
+      outputStyle: 'compressed',
+      includePaths: civicrmScssRoot.getPath()
+    }).on('error', sass.logError))
+    .pipe(gulp.dest('css/'));
 });
 
 gulp.task('sass-sync', function () {
   civicrmScssRoot.updateSync();
 });
 
-gulp.task('requirejs-bundle', function (done) {
-  exec('r.js -o js/build.js', function (err, stdout, stderr) {
-    err && err.code && console.log(stdout);
-    done();
-  });
+gulp.task('requirejs', function (done) {
+  buildFileManager.init().createTempFile()
+  .then(runRequireJSOptimizer)
+  .then(done);
 });
 
 gulp.task('watch', function () {
+  var watchPaths = ['js/src/**/*.js'].concat(buildFileManager
+    .init().getExtensionWatchPaths());
+
   gulp.watch('scss/**/*.scss', ['sass']);
-  gulp.watch('js/src/**/*.js', ['requirejs-bundle']).on('change', function (file) {
+  gulp.watch(watchPaths, ['requirejs']).on('change', function (file) {
     try { test.for(file.path); } catch (ex) { test.all(); }
   });
   gulp.watch(['js/test/**/*.js', '!js/test/mocks/**/*.js', '!js/test/test-main.js']).on('change', function (file) {
@@ -46,7 +49,7 @@ gulp.task('test', function (done) {
   test.all();
 });
 
-gulp.task('default', ['requirejs-bundle', 'sass', 'test', 'watch']);
+gulp.task('default', ['requirejs', 'sass', 'test', 'watch']);
 
 var test = (function () {
   /**
@@ -117,3 +120,139 @@ var test = (function () {
     }
   };
 })();
+
+/**
+ * The build file manager can create the temporary build file that has the
+ * extensions full path and also return a list of extension paths that can
+ * be watched for changes.
+ *
+ * @return {Object}
+ */
+var buildFileManager = (function () {
+  var buildFileContent, requiredExtensions;
+  var extensionPathRegExp = /((%{([\w._-]+)})([^'"]*))/g;
+
+  return {
+    init: init,
+    createTempFile: createTempFile,
+    getExtensionWatchPaths: getExtensionWatchPaths
+  };
+
+  /**
+   * Creates the temporary build file and replaces the extension names with
+   * their full path.
+   *
+   * @return {Promise} - resolves to the temporary build file.
+   */
+  function createTempFile () {
+    var outFilePath = './js/build.tmp.js';
+
+    requiredExtensions.forEach(function (extension) {
+      buildFileContent = buildFileContent.replace(
+        new RegExp(extension.placeholder, 'g'),
+        extension.path
+      );
+    });
+
+    return new Promise(function (resolve, reject) {
+      fs.writeFile(outFilePath, buildFileContent, 'utf8', function (error) {
+        if (error) {
+          return reject(error);
+        }
+
+        resolve(outFilePath);
+      });
+    });
+  }
+
+  /**
+   * Returns the extension path.
+   *
+   * @param {String} extensionName - the name of the extension.
+   * @return {String}
+   */
+  function getExtensionPathByName (extensionName) {
+    var cvResult = cv('path -x ' + extensionName);
+
+    return cvResult[0].value;
+  }
+
+  /**
+   * Returns watch paths for JS files that are part of the extensions specified
+   * in the build file.
+   *
+   * @return {Array}
+   */
+  function getExtensionWatchPaths () {
+    return requiredExtensions.map(function (extension) {
+      return path.join(extension.fullPath, '/**/*.js');
+    });
+  }
+
+  /**
+   *
+   */
+  function init () {
+    initBuildFileContent();
+    initRequiredExtensions();
+
+    return this;
+  }
+
+  /**
+   * Stores the contents of the requirejs' build file.
+   *
+   * @return {String}
+   */
+  function initBuildFileContent () {
+    buildFileContent = fs.readFileSync('./js/build.js', 'utf8');
+  }
+
+  /**
+   * Initializes the list of extensions required by the build file.
+   * The extensions are populated from the placeholders (${extension-name})
+   * inside of the build ile content.
+   *
+   * @param {String} buildFileContent - A string with the contents of the build file.
+   * @return {Object[]} - An array of objects, each with the following fields:
+   * - placeholder: The extension placeholder. Ex: %{uk.co.compucorp.extension-name}
+   * - path: The path to the extension. Ex: /root/path/to/ext/
+   * - fullPath: The path + the sub path specified in the build file. Ex:
+   *   /root/path/to/ext/js/angular/src/shared'
+   */
+  function initRequiredExtensions () {
+    var name, matches, placeholder, pathToFiles, pathToExt;
+    requiredExtensions = [];
+
+    while ((matches = extensionPathRegExp.exec(buildFileContent))) {
+      name = matches[3];
+      placeholder = matches[2];
+      pathToFiles = matches[4];
+      pathToExt = getExtensionPathByName(name);
+
+      requiredExtensions.push({
+        placeholder: placeholder,
+        path: pathToExt,
+        fullPath: path.join(pathToExt, pathToFiles)
+      });
+    }
+  }
+})();
+
+/**
+ * Runs the requireJS optimizer given a build file path.
+ *
+ * @param {String} buildFilePath - The path to the build file to use.
+ */
+function runRequireJSOptimizer (buildFilePath) {
+  return new Promise(function (resolve, reject) {
+    exec('r.js -o ' + buildFilePath, function (err, stdout, stderr) {
+      if (err && err.code) {
+        console.log(stdout);
+        return reject(err);
+      }
+
+      resolve();
+    });
+  });
+}

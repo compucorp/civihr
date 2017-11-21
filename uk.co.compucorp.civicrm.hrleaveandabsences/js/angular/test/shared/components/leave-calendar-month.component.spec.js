@@ -15,6 +15,7 @@
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
     'mocks/apis/work-pattern-api-mock',
+    'common/services/pub-sub',
     'leave-absences/my-leave/app'
   ], function (_, moment, helper, ContactData, AbsencePeriodData, AbsenceTypeData, LeaveRequestData, OptionGroupData, PublicHolidayData, WorkPatternData) {
     'use strict';
@@ -22,13 +23,14 @@
     describe('leaveCalendarMonth', function () {
       var $componentController, $log, $provide, $q, $rootScope, Calendar,
         LeaveRequest, OptionGroup, controller, daysInFebruary, february, leaveRequestInFebruary,
-        period2016, publicHolidays;
+        period2016, publicHolidays, pubSub;
       var currentContactId = CRM.vars.leaveAndAbsences.contactId;
       var contactIdsToReduceTo = null;
 
-      beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
-        $provide = _$provide_;
-      }));
+      beforeEach(module('common.services', 'leave-absences.templates',
+        'leave-absences.mocks', 'my-leave', function (_$provide_) {
+          $provide = _$provide_;
+        }));
 
       beforeEach(inject(function (LeaveRequestAPIMock, WorkPatternAPIMock) {
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
@@ -36,7 +38,7 @@
       }));
 
       beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-        _Calendar_, _LeaveRequest_, _OptionGroup_, OptionGroupAPIMock) {
+        _Calendar_, _LeaveRequest_, _OptionGroup_, OptionGroupAPIMock, _pubSub_) {
         $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
@@ -50,6 +52,7 @@
         period2016 = _.clone(AbsencePeriodData.all().values[0]);
         publicHolidays = PublicHolidayData.all().values;
         leaveRequestInFebruary = LeaveRequestData.all().values[0];
+        pubSub = _pubSub_;
 
         spyOn($log, 'debug');
         spyOn(Calendar, 'get').and.callThrough();
@@ -566,7 +569,7 @@
             leaveRequestToDelete = leaveRequestInFebruary;
 
             LeaveRequest.all.calls.reset();
-            $rootScope.$emit('LeaveRequest::deleted', leaveRequestToDelete);
+            pubSub.publish('LeaveRequest::deleted', leaveRequestToDelete);
             $rootScope.$digest();
           });
 
@@ -587,7 +590,7 @@
             leaveRequestToAdd = modifyLeaveRequestData(leaveRequestToAdd, true);
 
             LeaveRequest.all.calls.reset();
-            $rootScope.$emit('LeaveRequest::new', leaveRequestToAdd);
+            pubSub.publish('LeaveRequest::new', leaveRequestToAdd);
             $rootScope.$digest();
           });
 
@@ -610,7 +613,7 @@
 
             LeaveRequest.all.calls.reset();
 
-            $rootScope.$emit('LeaveRequest::edit', leaveRequestToUpdate);
+            pubSub.publish('LeaveRequest::edit', leaveRequestToUpdate);
             $rootScope.$digest();
 
             newDays = getLeaveRequestDays(leaveRequestToUpdate);

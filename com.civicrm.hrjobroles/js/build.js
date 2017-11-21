@@ -5,6 +5,8 @@
   out: 'dist/job-roles.min.js',
   name: 'job-roles',
   skipModuleInsertion: true,
+  generateSourceMaps: true,
+  useSourceUrl: true,
   paths: {
     'common': 'empty:',
     'job-roles/vendor/angular-editable': 'job-roles/vendor/angular/xeditable.min',

@@ -17,7 +17,7 @@ define([
       return {
         all: function (filters, pagination, sort, params, cache) {
           return $q(function (resolve, reject) {
-            var list = mockData.all().values;
+            var list = _.cloneDeep(mockData.all().values);
 
             resolve({
               list: list,

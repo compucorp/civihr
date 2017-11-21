@@ -3,7 +3,8 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/shared/modules/components'
+  'leave-absences/shared/modules/components',
+  'common/services/pub-sub'
 ], function (_, moment, components) {
   components.component('leaveCalendarMonth', {
     bindings: {
@@ -19,10 +20,12 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-calendar-month.html';
     }],
     controllerAs: 'month',
-    controller: ['$log', '$q', '$rootScope', 'Calendar', 'LeaveRequest', 'shared-settings', controller]
+    controller: ['$log', '$q', '$rootScope', 'Calendar', 'LeaveRequest',
+      'pubSub', 'shared-settings', controller]
   });
 
-  function controller ($log, $q, $rootScope, Calendar, LeaveRequest, sharedSettings) {
+  function controller ($log, $q, $rootScope, Calendar, LeaveRequest, pubSub,
+    sharedSettings) {
     $log.debug('Component: leave-calendar-month');
 
     var dataLoaded = false;
@@ -56,7 +59,7 @@ define([
      *
      * @param {LeaveRequestInstance} leaveRequest
      */
-    function addLeaveRequest (__, leaveRequest) {
+    function addLeaveRequest (leaveRequest) {
       indexLeaveRequests([leaveRequest]);
       updateLeaveRequestDaysContactData(leaveRequest);
     }
@@ -140,7 +143,7 @@ define([
      *
      * @param  {LeaveRequestInstance} leaveRequest
      */
-    function deleteLeaveRequest (__, leaveRequest) {
+    function deleteLeaveRequest (leaveRequest) {
       removeLeaveRequestFromIndexedList(leaveRequest);
       updateLeaveRequestDaysContactData(leaveRequest);
     }
@@ -201,10 +204,10 @@ define([
      */
     function initListeners () {
       eventListeners.push($rootScope.$on('LeaveCalendar::showMonths', showMonthIfInList));
-      eventListeners.push($rootScope.$on('LeaveRequest::new', addLeaveRequest));
-      eventListeners.push($rootScope.$on('LeaveRequest::edit', updateLeaveRequest));
-      eventListeners.push($rootScope.$on('LeaveRequest::updatedByManager', updateLeaveRequest));
-      eventListeners.push($rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest));
+      eventListeners.push(pubSub.subscribe('LeaveRequest::new', addLeaveRequest));
+      eventListeners.push(pubSub.subscribe('LeaveRequest::edit', updateLeaveRequest));
+      eventListeners.push(pubSub.subscribe('LeaveRequest::updatedByManager', updateLeaveRequest));
+      eventListeners.push(pubSub.subscribe('LeaveRequest::deleted', deleteLeaveRequest));
     }
 
     /**
@@ -399,7 +402,9 @@ define([
       $rootScope.$emit('LeaveCalendar::monthDestroyed');
 
       eventListeners.map(function (destroyListener) {
-        destroyListener();
+        destroyListener.remove
+          ? destroyListener.remove() // Destroy pubSub subscription
+          : destroyListener(); // Destroy $scope.$on subscription
       });
     }
 
@@ -502,11 +507,11 @@ define([
      *
      * @param  {LeaveRequestInstance} leaveRequest
      */
-    function updateLeaveRequest (__, leaveRequest) {
+    function updateLeaveRequest (leaveRequest) {
       var oldLeaveRequest = leaveRequestFromIndexedList(leaveRequest);
 
-      deleteLeaveRequest(null, oldLeaveRequest);
-      addLeaveRequest(null, leaveRequest);
+      deleteLeaveRequest(oldLeaveRequest);
+      addLeaveRequest(leaveRequest);
     }
 
     /**

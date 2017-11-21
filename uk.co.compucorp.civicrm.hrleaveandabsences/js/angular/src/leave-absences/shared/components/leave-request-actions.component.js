@@ -233,7 +233,7 @@ define([
         pubSub.publish('ManagerBadge:: Update Count');
       }
 
-      $rootScope.$emit('LeaveRequest::' + (action === 'delete' ? 'deleted' : 'edit'),
+      pubSub.publish('LeaveRequest::' + (action === 'delete' ? 'deleted' : 'edit'),
         vm.leaveRequest);
     }
 
