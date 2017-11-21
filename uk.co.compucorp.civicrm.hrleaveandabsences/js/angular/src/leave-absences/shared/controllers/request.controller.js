@@ -256,7 +256,7 @@ define([
           return vm.request.delete()
             .then(function () {
               vm.dismissModal();
-              $rootScope.$emit('LeaveRequest::deleted', vm.request);
+              pubSub.publish('LeaveRequest::deleted', vm.request);
             });
         }
       });
@@ -723,7 +723,7 @@ define([
      */
     function postSubmit (eventName) {
       broadcastRequestUpdatedEvent();
-      $rootScope.$emit(eventName, vm.request);
+      pubSub.publish(eventName, vm.request);
 
       vm.errors = [];
 

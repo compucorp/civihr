@@ -1,0 +1,45 @@
+<div class="leave-widget__sickness">
+  <table class="table-responsive">
+    <thead>
+      <tr>
+        <th>{{absenceTypesTaken.title}}</th>
+        <th>
+          Amount taken
+          <help-text title="Amount taken">
+            <p>This table displays the amount of {{absenceTypesTaken.leaveName || 'leaves'}} taken in the current period.
+            The total amount is in days/hours by default. Admin users can change the display options if needed.
+            The {{absenceTypesTaken.title}} Heatmap shows the most common days of the week for recorded {{absenceTypesTaken.title | lowercase}}.
+            The Heatmap uses three colours:</p>
+
+            <ul>
+              <li><strong>Green:</strong> indicates days with the lowest incidence of reported {{absenceTypesTaken.title | lowercase}}</li>
+              <li><strong>Yellow:</strong> indicates days with medium rates of reported {{absenceTypesTaken.title | lowercase}}</li>
+              <li><strong>Red:</strong> indicates days with highest rates of reported {{absenceTypesTaken.title | lowercase}}</li>
+            </ul>
+          </help-text>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="absenceType in absenceTypesTaken.absenceTypes">
+        <td class="leave-widget__sickness-type">
+          {{absenceType.title}}
+        </td>
+        <td class="leave-widget__sickness-balance">
+          {{absenceType.balance | timeUnitApplier:'days'}}
+        </td>
+      </tr>
+      <tr ng-if="absenceTypesTaken.absenceTypes.length === 0">
+        <td colspan="2">
+          <p class="text-muted">No {{absenceTypesTaken.title | lowercase}} information available</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div ng-if="absenceTypesTaken.absenceTypes.length">
+    <h4>{{absenceTypesTaken.title}} heatmap</h4>
+    <leave-requests-heatmap
+      leave-requests="absenceTypesTaken.leaveRequests"
+    ></leave-requests-heatmap>
+  </div>
+</div>
