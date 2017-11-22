@@ -184,12 +184,13 @@ define([
   }
 
   contractServiceMock.__name = 'contractService';
-  contractServiceMock.$inject = ['baseServiceMock'];
-  function contractServiceMock (Base) {
+  contractServiceMock.$inject = ['baseServiceMock', '$q'];
+  function contractServiceMock (Base, $q) {
     var factory = Base.createInstance();
 
     factory.response = {};
     factory.resetContracts = jasmine.createSpy('');
+    factory.getOptions = jasmine.createSpy('');
 
     return factory;
   }

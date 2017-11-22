@@ -41,7 +41,19 @@ function civicrm_api3_leave_request_create($params) {
   $values = [];
   _civicrm_api3_object_to_array($leaveRequest, $values[$leaveRequest->id]);
 
-  return civicrm_api3_create_success($values, $params, null, 'create', $leaveRequest);
+  $extraParams = ['from_email_configured' => true];
+  if(!civicrm_api3_leave_request_get_from_email_for_notifications($leaveRequest)) {
+    $extraParams['from_email_configured'] = false;
+  }
+
+  return civicrm_api3_create_success($values, $params, null, 'create', $leaveRequest, $extraParams);
+}
+
+function civicrm_api3_leave_request_get_from_email_for_notifications($leaveRequest) {
+  $leaveRequestTemplateFactory = new CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate();
+  $message = new CRM_HRLeaveAndAbsences_Mail_Message($leaveRequest, $leaveRequestTemplateFactory);
+
+  return $message->getFromEmail();
 }
 
 /**
