@@ -81,7 +81,7 @@ trait CRM_HRCore_Upgrader_Steps_1005 {
       'run_frequency' => 'Daily',
       'is_active' => TRUE
     ],
-    'Documents Notification' => [
+    'Tasks and Assignments Documents Notification' => [
       'run_frequency' => 'Daily',
       'is_active' => TRUE
     ],
