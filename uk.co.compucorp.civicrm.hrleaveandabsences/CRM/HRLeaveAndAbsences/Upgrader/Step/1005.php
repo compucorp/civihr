@@ -1,12 +1,9 @@
 <?php
 
-use CRM_Core_BAO_SchemaHandler as SchemaHandler;
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
-
 trait CRM_HRLeaveAndAbsences_Upgrader_Step_1005 {
 
   /**
-   * Renames the two "Leave and Absences" menu items to just "Absences"
+   * Renames the two "Leave and Absences" menu items to just "Leave"
    *
    * @return bool
    */
@@ -19,7 +16,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1005 {
       'dashboard' => CRM_Core_BAO_Navigation::retrieve($paramsDashboard, $default),
       'admin' => CRM_Core_BAO_Navigation::retrieve($paramsAdmin, $default)
     ];
-    
+
     foreach ($menuItems as $menuItem) {
       $menuItem->label = 'Leave';
       $menuItem->save();
