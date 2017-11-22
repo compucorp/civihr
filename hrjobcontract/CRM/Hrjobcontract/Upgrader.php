@@ -512,6 +512,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1030();
     $this->upgrade_1032();
     $this->upgrade_1033();
+    $this->upgrade_1034();
   }
 
   function upgrade_1001() {
@@ -1160,6 +1161,43 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'url' => ['LIKE' => 'civicrm/admin/options?gid%'],
       'api.Navigation.delete' => ['id' => '$value.id'],
     ]);
+    CRM_Core_BAO_Navigation::resetNavigation();
+
+    return TRUE;
+  }
+
+  /**
+   * Update the URLs of all menu items pointing to Job Contracts options under
+   * the "Administer -> Customize Data and Screens -> Dropdowns" menu to have
+   * the option group name instead of its ID
+   *
+   * @return bool
+   */
+  public function upgrade_1034() {
+    $dropdownMenuItems = [
+      'hrjc_contract_type',
+      'hrjc_location',
+      'hrjc_pay_cycle',
+      'hrjc_benefit_name',
+      'hrjc_benefit_type',
+      'hrjc_deduction_name',
+      'hrjc_deduction_type',
+      'hrjc_revision_change_reason',
+      'hrjc_contract_end_reason',
+    ];
+
+    foreach($dropdownMenuItems as $menuItem) {
+      civicrm_api3('Navigation', 'get', [
+        'sequential' => 1,
+        'name' => $menuItem,
+        'url' => ['LIKE' => 'civicrm/admin/options?gid%'],
+        'api.Navigation.create' => [
+          'id' => '$value.id',
+          'url' => "civicrm/admin/options/{$menuItem}?reset=1"
+        ],
+      ]);
+    }
+
     CRM_Core_BAO_Navigation::resetNavigation();
 
     return TRUE;
