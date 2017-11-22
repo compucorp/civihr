@@ -800,6 +800,10 @@ define([
               expect(controller.loading.showBalanceChange).toBe(false);
             });
 
+            it('does not recalculate the balance', function () {
+              expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
+            });
+
             it('shows balance', function () {
               expect(controller.uiOptions.showBalance).toBeTruthy();
             });
@@ -1280,6 +1284,84 @@ define([
 
         it('has absence type remainder as opening balance', function () {
           expect(controller.balance.opening).toBe(expectedOpeningBalance);
+        });
+      });
+    });
+
+    describe('time and date inputs watchers', function () {
+      beforeEach(function () {
+        var absenceTypes = absenceTypeData.all().values;
+
+        compileComponent({
+          mode: 'create',
+          role: 'admin',
+          selectedAbsenceType: absenceTypes[0]
+        });
+        spyOn(controller, 'calculateBalanceChange').and.callThrough();
+      });
+
+      describe('when the calculation unit is "hours"', function () {
+        beforeEach(function () {
+          selectedAbsenceType.calculation_unit_name = 'hours';
+        });
+
+        describe('when from/to deductions values are set but not changed', function () {
+          beforeEach(function () {
+            // the amounts are 0, setting them to 0 again still fires the watcher
+            controller.uiOptions.times.from.amount = 0;
+            controller.uiOptions.times.to.amount = 0;
+
+            $rootScope.$digest();
+          });
+
+          it('does not call the balance change calculation function', function () {
+            expect(controller.calculateBalanceChange).not.toHaveBeenCalled();
+          });
+
+          describe('when from/to deductions values are changed', function () {
+            beforeEach(function () {
+              controller.uiOptions.times.from.amount = 80;
+              controller.uiOptions.times.to.amount = 100;
+
+              $rootScope.$digest();
+            });
+
+            it('calls the balance change calculation function', function () {
+              expect(controller.calculateBalanceChange).toHaveBeenCalled();
+            });
+          });
+        });
+      });
+
+      describe('when the calculation unit is "days"', function () {
+        beforeEach(function () {
+          selectedAbsenceType.calculation_unit_name = 'days';
+        });
+
+        describe('when from/to deductions are set', function () {
+          beforeEach(function () {
+            controller.uiOptions.times.from.amount = 50;
+            controller.uiOptions.times.to.amount = 100;
+
+            $rootScope.$digest();
+          });
+
+          it('does not call the balance change calculation function', function () {
+            expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe('when from/to dates are changed', function () {
+        beforeEach(function () {
+          controller.uiOptions.fromDate = '1989-04-14';
+
+          spyOn(controller.request, 'getWorkDayForDate').and.returnValue($q.reject());
+          $rootScope.$digest();
+        });
+
+        it('loads the time and deduction ranges', function () {
+          expect(controller.request.getWorkDayForDate).toHaveBeenCalled();
         });
       });
     });
