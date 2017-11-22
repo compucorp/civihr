@@ -3541,7 +3541,7 @@
 }
 /* line 86, ../scss/civihr/bootstrap/_scaffolding-custom.scss */
 #hrjob-contract .img-rounded {
-  border-radius: 0;
+  border-radius: 4px;
 }
 /* line 93, ../scss/civihr/bootstrap/_scaffolding-custom.scss */
 #hrjob-contract .img-thumbnail {
@@ -3779,12 +3779,12 @@
 }
 /* line 5, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_text-emphasis.scss */
 #hrjob-contract .text-danger {
-  color: #a94442;
+  color: #CF3458;
 }
 /* line 8, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_text-emphasis.scss */
 #hrjob-contract a.text-danger:hover,
 #hrjob-contract a.text-danger:focus {
-  color: #843534;
+  color: #a82846;
 }
 /* line 119, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_type.scss */
 #hrjob-contract .bg-primary {
@@ -4006,7 +4006,7 @@
   font-size: 90%;
   color: #fff;
   background-color: #333;
-  border-radius: 0;
+  border-radius: 2px;
   box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 /* line 32, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_code.scss */
@@ -5270,7 +5270,7 @@
   padding-top: 7px;
   font-size: 13px;
   line-height: 1.42857143;
-  color: #586277;
+  color: #4D4D69;
 }
 /* line 114, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_forms.scss */
 #hrjob-contract .form-control {
@@ -5280,7 +5280,7 @@
   padding: 6px 12px;
   font-size: 13px;
   line-height: 1.42857143;
-  color: #586277;
+  color: #4D4D69;
   background-color: #fff;
   background-image: none;
   border: 1px solid #C2CFD8;
@@ -5489,7 +5489,7 @@ fieldset[disabled]
   padding: 5px 10px;
   font-size: 12px;
   line-height: 1.5;
-  border-radius: 0;
+  border-radius: 2px;
 }
 /* line 79, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_forms.scss */
 #hrjob-contract select.input-sm, #hrjob-contract .input-group-sm > select.form-control,
@@ -5514,7 +5514,7 @@ fieldset[disabled]
   padding: 5px 10px;
   font-size: 12px;
   line-height: 1.5;
-  border-radius: 0;
+  border-radius: 2px;
 }
 /* line 340, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_forms.scss */
 #hrjob-contract .form-group-sm select.form-control {
@@ -5542,7 +5542,7 @@ fieldset[disabled]
   padding: 10px 16px;
   font-size: 17px;
   line-height: 1.3333333;
-  border-radius: 0;
+  border-radius: 4px;
 }
 /* line 79, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_forms.scss */
 #hrjob-contract select.input-lg, #hrjob-contract .input-group-lg > select.form-control,
@@ -5567,7 +5567,7 @@ fieldset[disabled]
   padding: 10px 16px;
   font-size: 17px;
   line-height: 1.3333333;
-  border-radius: 0;
+  border-radius: 4px;
 }
 /* line 366, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_forms.scss */
 #hrjob-contract .form-group-lg select.form-control {
@@ -5709,29 +5709,29 @@ fieldset[disabled]
 #hrjob-contract .has-error.checkbox .radio-label, #hrjob-contract .has-error.radio-inline label, #hrjob-contract .has-error.radio-inline .checkbox-label,
 #hrjob-contract .has-error.radio-inline .radio-label, #hrjob-contract .has-error.checkbox-inline label, #hrjob-contract .has-error.checkbox-inline .checkbox-label,
 #hrjob-contract .has-error.checkbox-inline .radio-label {
-  color: #a94442;
+  color: #CF3458;
 }
 /* line 21, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_forms.scss */
 #hrjob-contract .has-error .form-control {
-  border-color: #a94442;
+  border-color: #CF3458;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 /* line 24, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_forms.scss */
 #hrjob-contract .has-error .form-control:focus {
-  border-color: #843534;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+  border-color: #a82846;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #e3869c;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #e3869c;
 }
 /* line 31, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_forms.scss */
 #hrjob-contract .has-error .input-group-addon {
-  color: #a94442;
-  border-color: #a94442;
+  color: #CF3458;
+  border-color: #CF3458;
   background-color: #f2dede;
 }
 /* line 37, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_forms.scss */
 #hrjob-contract .has-error .form-control-feedback {
-  color: #a94442;
+  color: #CF3458;
 }
 /* line 439, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_forms.scss */
 #hrjob-contract .has-feedback label ~ .form-control-feedback, #hrjob-contract .has-feedback .checkbox-label ~ .form-control-feedback,
@@ -6214,21 +6214,21 @@ fieldset[disabled]
   padding: 10px 16px;
   font-size: 17px;
   line-height: 1.3333333;
-  border-radius: 0;
+  border-radius: 4px;
 }
 /* line 139, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_buttons.scss */
 #hrjob-contract .btn-sm, #hrjob-contract .btn-group-sm > .btn {
   padding: 5px 10px;
   font-size: 12px;
   line-height: 1.5;
-  border-radius: 0;
+  border-radius: 2px;
 }
 /* line 143, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_buttons.scss */
 #hrjob-contract .btn-xs, #hrjob-contract .btn-group-xs > .btn {
   padding: 3px 8px;
   font-size: 12px;
   line-height: 1.5;
-  border-radius: 0;
+  border-radius: 2px;
 }
 /* line 151, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_buttons.scss */
 #hrjob-contract .btn-block {
@@ -6714,7 +6714,7 @@ fieldset[disabled]
   font-size: 13px;
   font-weight: normal;
   line-height: 1;
-  color: #586277;
+  color: #4D4D69;
   text-align: center;
   background-color: #F3F6F7;
   border: 1px solid #C2CFD8;
@@ -6726,7 +6726,7 @@ fieldset[disabled]
 #hrjob-contract .input-group-sm > .input-group-btn > .input-group-addon.btn {
   padding: 5px 10px;
   font-size: 12px;
-  border-radius: 0;
+  border-radius: 2px;
 }
 /* line 94, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_input-groups.scss */
 #hrjob-contract .input-group-addon.input-lg,
@@ -6734,7 +6734,7 @@ fieldset[disabled]
 #hrjob-contract .input-group-lg > .input-group-btn > .input-group-addon.btn {
   padding: 10px 16px;
   font-size: 17px;
-  border-radius: 0;
+  border-radius: 4px;
 }
 /* line 101, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_input-groups.scss */
 #hrjob-contract .input-group-addon input[type="radio"],
@@ -6880,7 +6880,7 @@ fieldset[disabled]
 }
 /* line 96, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_navs.scss */
 #hrjob-contract .nav-tabs > li.active > a, #hrjob-contract .nav-tabs > li.active > a:hover, #hrjob-contract .nav-tabs > li.active > a:focus {
-  color: #586277;
+  color: #464354;
   background-color: #F3F6F7;
   border: 1px solid #D3DEE2;
   border-bottom-color: transparent;
@@ -7709,14 +7709,14 @@ fieldset[disabled]
 /* line 12, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_pagination.scss */
 #hrjob-contract .pagination-lg > li:first-child > a,
 #hrjob-contract .pagination-lg > li:first-child > span {
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
 }
 /* line 18, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_pagination.scss */
 #hrjob-contract .pagination-lg > li:last-child > a,
 #hrjob-contract .pagination-lg > li:last-child > span {
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
+  border-bottom-right-radius: 4px;
+  border-top-right-radius: 4px;
 }
 /* line 5, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_pagination.scss */
 #hrjob-contract .pagination-sm > li > a,
@@ -7728,14 +7728,14 @@ fieldset[disabled]
 /* line 12, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_pagination.scss */
 #hrjob-contract .pagination-sm > li:first-child > a,
 #hrjob-contract .pagination-sm > li:first-child > span {
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
 }
 /* line 18, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_pagination.scss */
 #hrjob-contract .pagination-sm > li:last-child > a,
 #hrjob-contract .pagination-sm > li:last-child > span {
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
+  border-bottom-right-radius: 2px;
+  border-top-right-radius: 2px;
 }
 /* line 6, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_pager.scss */
 #hrjob-contract .pager {
@@ -7944,7 +7944,7 @@ fieldset[disabled]
 }
 /* line 28, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_jumbotron.scss */
 .container #hrjob-contract .jumbotron, .container-fluid #hrjob-contract .jumbotron {
-  border-radius: 0;
+  border-radius: 4px;
   padding-left: 15px;
   padding-right: 15px;
 }
@@ -8086,7 +8086,7 @@ fieldset[disabled]
 #hrjob-contract .alert-danger {
   background-color: #f2dede;
   border-color: #ebccd1;
-  color: #a94442;
+  color: #CF3458;
 }
 /* line 8, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_alerts.scss */
 #hrjob-contract .alert-danger hr {
@@ -8094,7 +8094,7 @@ fieldset[disabled]
 }
 /* line 11, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_alerts.scss */
 #hrjob-contract .alert-danger .alert-link {
-  color: #843534;
+  color: #a82846;
 }
 @-webkit-keyframes progress-bar-stripes {
   from {
@@ -8432,13 +8432,13 @@ fieldset[disabled]
 }
 /* line 4, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_list-group.scss */
 #hrjob-contract .list-group-item-danger {
-  color: #a94442;
+  color: #CF3458;
   background-color: #f2dede;
 }
 /* line 11, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_list-group.scss */
 #hrjob-contract a.list-group-item-danger,
 #hrjob-contract button.list-group-item-danger {
-  color: #a94442;
+  color: #CF3458;
 }
 /* line 15, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_list-group.scss */
 #hrjob-contract a.list-group-item-danger .list-group-item-heading,
@@ -8449,7 +8449,7 @@ fieldset[disabled]
 #hrjob-contract a.list-group-item-danger:hover, #hrjob-contract a.list-group-item-danger:focus,
 #hrjob-contract button.list-group-item-danger:hover,
 #hrjob-contract button.list-group-item-danger:focus {
-  color: #a94442;
+  color: #CF3458;
   background-color: #ebcccc;
 }
 /* line 24, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_list-group.scss */
@@ -8458,8 +8458,8 @@ fieldset[disabled]
 #hrjob-contract button.list-group-item-danger.active:hover,
 #hrjob-contract button.list-group-item-danger.active:focus {
   color: #fff;
-  background-color: #a94442;
-  border-color: #a94442;
+  background-color: #CF3458;
+  border-color: #CF3458;
 }
 /* line 123, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_list-group.scss */
 #hrjob-contract .list-group-item-heading {
@@ -8875,7 +8875,7 @@ fieldset[disabled]
 }
 /* line 6, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_panels.scss */
 #hrjob-contract .panel-danger > .panel-heading {
-  color: #a94442;
+  color: #CF3458;
   background-color: #f2dede;
   border-color: #ebccd1;
 }
@@ -8886,7 +8886,7 @@ fieldset[disabled]
 /* line 14, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_panels.scss */
 #hrjob-contract .panel-danger > .panel-heading .badge {
   color: #f2dede;
-  background-color: #a94442;
+  background-color: #CF3458;
 }
 /* line 20, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/mixins/_panels.scss */
 #hrjob-contract .panel-danger > .panel-footer + .panel-collapse > .panel-body {
@@ -8941,12 +8941,12 @@ fieldset[disabled]
 /* line 22, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_wells.scss */
 #hrjob-contract .well-lg {
   padding: 24px;
-  border-radius: 0;
+  border-radius: 4px;
 }
 /* line 26, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_wells.scss */
 #hrjob-contract .well-sm {
   padding: 9px;
-  border-radius: 0;
+  border-radius: 2px;
 }
 /* line 6, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_close.scss */
 #hrjob-contract .close {
@@ -9027,7 +9027,7 @@ fieldset[disabled]
   background-color: #fff;
   border: 1px solid #999;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 0;
+  border-radius: 4px;
   -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
   box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
   background-clip: padding-box;
@@ -9070,6 +9070,7 @@ fieldset[disabled]
 }
 /* line 103, ../scss/civihr/bootstrap/_modals-custom.scss */
 #hrjob-contract .modal-footer {
+  background: #F3F6F7;
   padding: 15px;
   text-align: right;
   border-top: 1px solid #e5e5e5;
@@ -9083,20 +9084,20 @@ fieldset[disabled]
 #hrjob-contract .modal-footer:after {
   clear: both;
 }
-/* line 110, ../scss/civihr/bootstrap/_modals-custom.scss */
+/* line 111, ../scss/civihr/bootstrap/_modals-custom.scss */
 #hrjob-contract .modal-footer .btn + .btn {
   margin-left: 5px;
   margin-bottom: 0;
 }
-/* line 115, ../scss/civihr/bootstrap/_modals-custom.scss */
+/* line 116, ../scss/civihr/bootstrap/_modals-custom.scss */
 #hrjob-contract .modal-footer .btn-group .btn + .btn {
   margin-left: -1px;
 }
-/* line 119, ../scss/civihr/bootstrap/_modals-custom.scss */
+/* line 120, ../scss/civihr/bootstrap/_modals-custom.scss */
 #hrjob-contract .modal-footer .btn-block + .btn-block {
   margin-left: 0;
 }
-/* line 125, ../scss/civihr/bootstrap/_modals-custom.scss */
+/* line 126, ../scss/civihr/bootstrap/_modals-custom.scss */
 #hrjob-contract .modal-scrollbar-measure {
   position: absolute;
   top: -9999px;
@@ -9105,23 +9106,23 @@ fieldset[disabled]
   overflow: scroll;
 }
 @media (min-width: 768px) {
-  /* line 136, ../scss/civihr/bootstrap/_modals-custom.scss */
+  /* line 137, ../scss/civihr/bootstrap/_modals-custom.scss */
   #hrjob-contract .modal-dialog {
     width: 600px;
     margin: 30px auto;
   }
-  /* line 140, ../scss/civihr/bootstrap/_modals-custom.scss */
+  /* line 141, ../scss/civihr/bootstrap/_modals-custom.scss */
   #hrjob-contract .modal-content {
     -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   }
-  /* line 145, ../scss/civihr/bootstrap/_modals-custom.scss */
+  /* line 146, ../scss/civihr/bootstrap/_modals-custom.scss */
   #hrjob-contract .modal-sm {
     width: 300px;
   }
 }
 @media (min-width: 992px) {
-  /* line 149, ../scss/civihr/bootstrap/_modals-custom.scss */
+  /* line 150, ../scss/civihr/bootstrap/_modals-custom.scss */
   #hrjob-contract .modal-lg {
     width: 900px;
   }
@@ -9285,7 +9286,7 @@ fieldset[disabled]
   background-clip: padding-box;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 0;
+  border-radius: 4px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
@@ -9312,7 +9313,7 @@ fieldset[disabled]
   font-size: 13px;
   background-color: #f7f7f7;
   border-bottom: 1px solid #ebebeb;
-  border-radius: -1 -1 0 0;
+  border-radius: 3px 3px 0 0;
 }
 /* line 42, ../../../../../../../../../../../../.rvm/gems/ruby-2.4.1/gems/bootstrap-sass-3.3.7/assets/stylesheets/bootstrap/_popovers.scss */
 #hrjob-contract .popover-content {
@@ -10783,7 +10784,7 @@ fieldset[disabled]
 }
 /* line 113, ../scss/civihr/partials/_buttons.scss */
 #hrjob-contract .hrjc-context-menu-toggle {
-  color: #586277;
+  color: #464354;
   padding: 0px 10px;
   text-align: center;
   display: inline-block;
@@ -11008,7 +11009,7 @@ fieldset[disabled]
 }
 /* line 119, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .ui-select-match-text {
-  color: #586277;
+  color: #4D4D69;
 }
 /* line 123, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .ui-select-toggle[disabled] {
@@ -11036,53 +11037,54 @@ fieldset[disabled]
 }
 /* line 4, ../scss/civihr/partials/_modals.scss */
 #hrjob-contract .modal-header .close {
-  opacity: 1;
-  margin-top: 3px;
   color: #464354;
+  font-size: 18px;
+  margin-top: 3px;
+  opacity: 1;
 }
-/* line 9, ../scss/civihr/partials/_modals.scss */
+/* line 10, ../scss/civihr/partials/_modals.scss */
 #hrjob-contract .modal-header .close:hover {
   color: #000000;
 }
-/* line 15, ../scss/civihr/partials/_modals.scss */
+/* line 16, ../scss/civihr/partials/_modals.scss */
 #hrjob-contract .modal-body {
-  background-color: #f4f7f8;
+  background-color: #FFFFFF;
 }
-/* line 20, ../scss/civihr/partials/_modals.scss */
+/* line 21, ../scss/civihr/partials/_modals.scss */
 #hrjob-contract .modal-progress .modal-body {
   overflow: hidden;
   padding-top: 25px;
 }
-/* line 25, ../scss/civihr/partials/_modals.scss */
+/* line 26, ../scss/civihr/partials/_modals.scss */
 #hrjob-contract .modal-progress .progress {
   margin-bottom: 2px;
 }
-/* line 29, ../scss/civihr/partials/_modals.scss */
+/* line 30, ../scss/civihr/partials/_modals.scss */
 #hrjob-contract .modal-progress .progress-bar {
   min-width: 2.5em;
 }
-/* line 34, ../scss/civihr/partials/_modals.scss */
+/* line 35, ../scss/civihr/partials/_modals.scss */
 #hrjob-contract .modal-title {
   font-size: 18px;
 }
-/* line 41, ../scss/civihr/partials/_modals.scss */
+/* line 42, ../scss/civihr/partials/_modals.scss */
 #hrjob-contract .modal-content .form-horizontal .row,
 #hrjob-contract .modal-content .form-horizontal .form-group {
   margin-left: -15px;
   margin-right: -15px;
 }
-/* line 49, ../scss/civihr/partials/_modals.scss */
+/* line 50, ../scss/civihr/partials/_modals.scss */
 #hrjob-contract .modal-content .form-horizontal .modal-body {
   padding-bottom: 0;
 }
-/* line 54, ../scss/civihr/partials/_modals.scss */
+/* line 55, ../scss/civihr/partials/_modals.scss */
 #hrjob-contract .modal-content [class^="col-"],
 #hrjob-contract .modal-content [class*=" col-"] {
   padding-left: 15px;
   padding-right: 15px;
 }
 @media (min-width: 768px) {
-  /* line 64, ../scss/civihr/partials/_modals.scss */
+  /* line 65, ../scss/civihr/partials/_modals.scss */
   #hrjob-contract .modal-dialog {
     margin: 60px auto;
   }
@@ -11521,18 +11523,18 @@ fieldset[disabled]
 /* line 76, ../scss/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-secondary-outline {
   background-color: transparent;
-  border-color: #464354;
+  border-color: #4D4D69;
   color: #464354;
 }
 /* line 81, ../scss/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-secondary-outline:hover:not(.disabled):not([disabled]), #hrjob-contract .btn-secondary-outline:focus:not(.disabled):not([disabled]) {
-  background-color: #353340;
-  border-color: #353340;
+  background-color: #3e3e54;
+  border-color: #3e3e54;
   color: #FFFFFF;
 }
 /* line 88, ../scss/hrjc/partials/_buttons.scss */
 #hrjob-contract .btn-secondary-outline.disabled, #hrjob-contract .btn-secondary-outline[disabled], fieldset[disabled] #hrjob-contract .btn-secondary-outline {
-  border-color: #908ca4;
+  border-color: #9a9ab5;
   color: #908ca4;
   cursor: not-allowed;
   opacity: 1;
@@ -11663,50 +11665,54 @@ fieldset[disabled]
 #hrjob-contract .input-group-addon a {
   color: #333333;
 }
-/* line 105, ../scss/hrjc/partials/_forms.scss */
+/* line 103, ../scss/hrjc/partials/_forms.scss */
 #hrjob-contract .form-horizontal .control-label.control-label-checkbox {
   padding-top: 0;
 }
-/* line 113, ../scss/hrjc/partials/_forms.scss */
+/* line 114, ../scss/hrjc/partials/_forms.scss */
+#hrjob-contract .form-group.required.has-has-feedback .control-label, #hrjob-contract .form-group.required.has-error .control-label, #hrjob-contract .form-group.required.has-success .control-label {
+  color: #464354;
+}
+/* line 119, ../scss/hrjc/partials/_forms.scss */
 #hrjob-contract .form-group.required .control-label:after {
-  color: #e6807f;
+  color: #CF3458;
   margin-left: 5px;
 }
-/* line 121, ../scss/hrjc/partials/_forms.scss */
+/* line 126, ../scss/hrjc/partials/_forms.scss */
 #hrjob-contract .form-inline .form-control {
   vertical-align: top;
 }
-/* line 126, ../scss/hrjc/partials/_forms.scss */
+/* line 131, ../scss/hrjc/partials/_forms.scss */
 #hrjob-contract .form-control {
   -webkit-box-shadow: inset 0 0 3px 0 rgba(0, 0, 0, 0.2);
   box-shadow: inset 0 0 3px 0 rgba(0, 0, 0, 0.2);
 }
-/* line 129, ../scss/hrjc/partials/_forms.scss */
+/* line 134, ../scss/hrjc/partials/_forms.scss */
 #hrjob-contract .form-control:focus {
   -webkit-box-shadow: inset 0 0 3px 0 rgba(0, 0, 0, 0.2);
   box-shadow: inset 0 0 3px 0 rgba(0, 0, 0, 0.2);
   border-color: #0071BD;
 }
-/* line 134, ../scss/hrjc/partials/_forms.scss */
+/* line 139, ../scss/hrjc/partials/_forms.scss */
 #hrjob-contract .form-control .input-group-addon,
 #hrjob-contract .form-control .input-group-btn,
 #hrjob-contract .form-control .input-group .form-control {
   display: table-cell;
   border-radius: #C2CFD8;
 }
-/* line 144, ../scss/hrjc/partials/_forms.scss */
+/* line 149, ../scss/hrjc/partials/_forms.scss */
 #hrjob-contract .ui-select-match .btn-default,
 #hrjob-contract .ui-select-container + .input-group-btn .btn-default {
   border-color: #C2CFD8;
   border-radius: #C2CFD8 0 0 #C2CFD8;
 }
-/* line 148, ../scss/hrjc/partials/_forms.scss */
+/* line 153, ../scss/hrjc/partials/_forms.scss */
 #hrjob-contract .ui-select-match .btn-default:hover, #hrjob-contract .ui-select-match .btn-default:focus,
 #hrjob-contract .ui-select-container + .input-group-btn .btn-default:hover,
 #hrjob-contract .ui-select-container + .input-group-btn .btn-default:focus {
   background-color: #FFFFFF;
 }
-/* line 152, ../scss/hrjc/partials/_forms.scss */
+/* line 157, ../scss/hrjc/partials/_forms.scss */
 #hrjob-contract .ui-select-match .btn-default:hover i,
 #hrjob-contract .ui-select-match .btn-default:hover .fa, #hrjob-contract .ui-select-match .btn-default:focus i,
 #hrjob-contract .ui-select-match .btn-default:focus .fa,

@@ -101,6 +101,7 @@
 
 // Footer (for actions)
 .modal-footer {
+  background: $gray-lighter;
   padding: $modal-inner-padding;
   text-align: right; // right align buttons
   border-top: 1px solid $modal-footer-border-color;

@@ -79,7 +79,7 @@ $customselect-padding-right: $customselect-caret-width + 12;
       padding-right: #{$customselect-padding-right}px;
 
       + .form-control-feedback {
-          right: #{$customselect-caret-width - 5}px !important;
+        right: #{$customselect-caret-width - 5}px !important;
       }
     }
   }
@@ -99,28 +99,33 @@ $customselect-padding-right: $customselect-caret-width + 12;
  * Ad-hoc customizations
  */
 .form-horizontal {
-
-    .control-label {
-
-        &.control-label-checkbox {
-            padding-top: 0;
-        }
+  .control-label {
+    &.control-label-checkbox {
+      padding-top: 0;
     }
+  }
 }
 
 .form-group.required {
 
-    .control-label:after {
-        color: $brand-danger-light;
-        margin-left: 5px;
+  &.has-has-feedback,
+  &.has-error,
+  &.has-success {
+    .control-label {
+      color: $gray-darker;
     }
+  }
+  
+  .control-label:after {
+    color: $brand-danger;
+    margin-left: 5px;
+  }
 }
 
 .form-inline {
-
-    .form-control {
-        vertical-align: top;
-    }
+  .form-control {
+    vertical-align: top;
+  }
 }
 
 .form-control {
