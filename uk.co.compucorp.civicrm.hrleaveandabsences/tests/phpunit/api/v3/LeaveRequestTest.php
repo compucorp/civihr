@@ -4309,7 +4309,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertTrue($result['from_email_configured']);
   }
-}
 
   public function testTheTimeForFromAndToDateOfLeaveRequestIsNotModifiedWhenLeaveIsNotCalculatedInDays() {
     $fromDate = new DateTime('2016-01-08 13:00:00');
