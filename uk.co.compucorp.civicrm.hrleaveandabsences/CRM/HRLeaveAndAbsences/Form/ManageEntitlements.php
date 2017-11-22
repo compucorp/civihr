@@ -370,7 +370,10 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
       ];
 
       if(!empty($formValues['overridden_entitlement'][$contactID][$absenceTypeID])) {
-        $row['proposed_entitlement'] = $formValues['overridden_entitlement'][$contactID][$absenceTypeID];
+        $row['proposed_entitlement'] = TimeUnitApplier::apply(
+          $formValues['overridden_entitlement'][$contactID][$absenceTypeID],
+          $calculationUnit
+        );
         $row['overridden'] = 1;
       }
 
