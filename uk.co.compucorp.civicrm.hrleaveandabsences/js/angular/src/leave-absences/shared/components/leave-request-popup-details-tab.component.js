@@ -162,63 +162,6 @@ define([
     }());
 
     /**
-     * Amends balance change breakdown if calculation unit absence type is "hours".
-     * It changes the balance first and last days (only first day in case of single day request)
-     *   by setting the selected deductions.
-     * @NOTE this function mutates the "balanceChange" object
-     *
-     * @param  {Object} balanceChange
-     * @return {Object} amended balance change in case of "hours" absence type
-     */
-    function amendHourlyBalanceChangeBreakdown (balanceChange) {
-      var breakdown = balanceChange.breakdown;
-
-      if (!isCalculationUnit('hours')) {
-        return balanceChange;
-      }
-
-      if (balanceChange) {
-        amendHourlyBalanceChangeForDay(_.first(_.values(breakdown)), 'from');
-
-        if (breakdown.length > 1) {
-          amendHourlyBalanceChangeForDay(_.last(_.values(breakdown)), 'to');
-        }
-
-        amendHourlyBalanceChangeAmount(balanceChange);
-      }
-
-      return balanceChange;
-    }
-
-    /**
-     * Amends balance change amount if calculation unit absence type is "hours".
-     * @NOTE this function mutates the "balanceChange" object
-     *
-     * @param {Object} balanceChange
-     */
-    function amendHourlyBalanceChangeAmount (balanceChange) {
-      balanceChange.amount = _.reduce(balanceChange.breakdown, function (updatedChange, day) {
-        return updatedChange - day.amount;
-      }, 0);
-    }
-
-    /**
-     * Amends a particular day balance change if calculation unit absence type is "hours".
-     * The amending is skipped for non-working days, holidays or weekends.
-     * @NOTE this function mutates the "day" object
-     *
-     * @param {Object} day taken from a balance change breakdown
-     * @param {Object} type (from|to)
-     */
-    function amendHourlyBalanceChangeForDay (day, type) {
-      var dayType = _.find(vm.requestDayTypes, { value: '' + day.type.value }).name;
-
-      if (!_.includes(['weekend', 'non_working_day', 'public_holiday'], dayType)) {
-        day.amount = vm.uiOptions.times[type].amount;
-      }
-    }
-
-    /**
      * Calculate change in balance, it updates local balance variables.
      *
      * @return {Promise} empty promise if all required params are not set
@@ -233,7 +176,6 @@ define([
       vm.loading.showBalanceChange = true;
 
       return vm.request.calculateBalanceChange(vm.selectedAbsenceType.calculation_unit_name)
-        .then(amendHourlyBalanceChangeBreakdown)
         .then(setBalanceChange)
         .catch(handleError);
     }
@@ -583,9 +525,6 @@ define([
 
       timeObject.loading = true;
       timeObject.disabled = true;
-      timeObject.min = '0';
-      timeObject.max = '0';
-      timeObject.maxAmount = '0';
 
       if (!timeObject.skipValueSetting) {
         timeObject.time = '';
