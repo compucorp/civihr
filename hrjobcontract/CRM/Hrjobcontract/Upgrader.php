@@ -511,6 +511,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1029();
     $this->upgrade_1030();
     $this->upgrade_1032();
+    $this->upgrade_1033();
   }
 
   function upgrade_1001() {
@@ -1139,6 +1140,27 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   public function upgrade_1032() {
     $query = "ALTER TABLE civicrm_hrpay_scale CHANGE periodicity pay_frequency VARCHAR(63)";
     CRM_Core_DAO::executeQuery($query);
+
+    return TRUE;
+  }
+
+  /**
+   * Removes the "Pension Type" item from the
+   *  "Administer -> Customize Data and Screens -> Dropdowns" menu
+   *
+   * The option group this menu item links to has been removed by PCHR-1820,
+   * but the menu item itself wasn't, so we're deleting it now.
+   *
+   * @return bool
+   */
+  public function upgrade_1033() {
+    civicrm_api3('Navigation', 'get', [
+      'sequential' => 1,
+      'name' => 'hrjc_pension_type',
+      'url' => ['LIKE' => 'civicrm/admin/options?gid%'],
+      'api.Navigation.delete' => ['id' => '$value.id'],
+    ]);
+    CRM_Core_BAO_Navigation::resetNavigation();
 
     return TRUE;
   }
