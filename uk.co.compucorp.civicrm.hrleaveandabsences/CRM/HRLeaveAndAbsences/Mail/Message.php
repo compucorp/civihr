@@ -30,12 +30,6 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
   private $requestTemplateFactory;
 
   /**
-   * @var String
-   *   The From email configured on the site for sending out emails.
-   */
-  private $fromEmail;
-
-  /**
    * CRM_HRLeaveAndAbsences_Mail_Message constructor.
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
@@ -50,29 +44,23 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
   }
 
   /**
-   * Gets the From Email address configured on the site
-   * Currently It gets the from email address and name of the contact linked to the
-   * default domain in civicrm_domain table.
+   * Gets the default From Email address configured on the site
+   * at civicrm/admin/options/from_email_address?reset=1.
+   * from the from_email_address civi option group.
    *
-   * @TODO This logic will be changed later to fetch from L&A general settings
+   * If there is no default from email address, the first from
+   * email address is returned.
    *
-   * @return string
+   * @return string|null
    */
   public function getFromEmail() {
-    if (is_null($this->fromEmail)) {
-      $domainValues = [];
-      $domain = CRM_Core_BAO_Domain::getDomain();
-      $tokens = [
-        'domain' => ['name', 'email'],
-      ];
+    $fromEmail = $this->getDefaultFromEmailAddress();
 
-      foreach ($tokens['domain'] as $token) {
-        $domainValues[$token] = CRM_Utils_Token::getDomainTokenReplacement($token, $domain);
-      }
-
-      $this->fromEmail = $domainValues['name'] . ' <' . $domainValues['email'] . '>';
+    if($fromEmail) {
+      return $fromEmail;
     }
-    return $this->fromEmail;
+
+    return $this->getFirstFromEmailAddress();
   }
 
   /**
@@ -233,5 +221,37 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
    */
   private function isValidTemplate() {
     return $this->getTemplate() instanceof BaseRequestNotificationTemplate;
+  }
+
+  /**
+   * Returns the first email address from the
+   * from_email_address option group.
+   *
+   * @param array $params
+   *
+   * @return string|null
+   */
+  private function getFirstFromEmailAddress($params = []) {
+    $params = array_merge([
+      'option_group_id' => 'from_email_address',
+      'options' => ['limit' => 1, 'sort' => 'weight ASC'],
+      'return' => ['label']
+    ], $params);
+
+    $result = civicrm_api3('OptionValue', 'get', $params);
+
+    $result = array_shift($result['values']);
+
+    return $result ? $result['label'] : null;
+  }
+
+  /**
+   * Returns the default from email address from the
+   * from_email_address option group.
+   *
+   * @return string|null
+   */
+  private function getDefaultFromEmailAddress() {
+    return $this->getFirstFromEmailAddress(['is_default' => 1]);
   }
 }

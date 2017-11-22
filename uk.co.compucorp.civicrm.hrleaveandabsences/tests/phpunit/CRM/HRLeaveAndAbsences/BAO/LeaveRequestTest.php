@@ -2736,6 +2736,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testEmailGetsSentWhenLeaveRequestIsCreatedAndUpdated() {
+    $defaultEmailAddress = "Default Email <default_email@testdomain.com>";
+    $this->createDefaultFromEmail($defaultEmailAddress);
     $manager1 = ContactFabricator::fabricateWithEmail([
       'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
     );
