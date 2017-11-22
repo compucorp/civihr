@@ -469,8 +469,8 @@ define([
 
       _.each(['from', 'to'], function (type) {
         $scope.$watch('detailsTab.uiOptions.times.' + type + '.amount', function (amount, oldAmount) {
-          if (isCalculationUnit('hours') && +amount !== +oldAmount) {
-            return calculateBalanceChange();
+          if (!isCalculationUnit('days') && +amount !== +oldAmount) {
+            return vm.calculateBalanceChange();
           }
         });
         $scope.$watch('detailsTab.uiOptions.' + type + 'Date', function (date) {
