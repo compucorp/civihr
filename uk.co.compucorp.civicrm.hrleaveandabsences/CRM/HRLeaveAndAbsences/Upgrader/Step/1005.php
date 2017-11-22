@@ -3,7 +3,7 @@
 trait CRM_HRLeaveAndAbsences_Upgrader_Step_1005 {
 
   /**
-   * Renames the two "Leave and Absences" menu items to just "Absences"
+   * Renames the two "Leave and Absences" menu items to just "Leave"
    *
    * @return bool
    */
