@@ -512,7 +512,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1030();
     $this->upgrade_1032();
     $this->upgrade_1033();
-    $this->upgrade_1034();
   }
 
   function upgrade_1001() {
@@ -1146,6 +1145,19 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
+   * Removes menu link pointing to an nonexistent option group and update
+   * dropdown links to use option group names instead of IDs.
+   *
+   * @return bool
+   */
+  public function upgrade_1033() {
+    $this->deletePensionTypeDropdownMenu();
+    $this->updateDropdownMenuItemsLinkToUseOptionGroupName();
+
+    return TRUE;
+  }
+
+  /**
    * Removes the "Pension Type" item from the
    *  "Administer -> Customize Data and Screens -> Dropdowns" menu
    *
@@ -1154,16 +1166,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    *
    * @return bool
    */
-  public function upgrade_1033() {
+  private function deletePensionTypeDropdownMenu() {
     civicrm_api3('Navigation', 'get', [
-      'sequential' => 1,
       'name' => 'hrjc_pension_type',
       'url' => ['LIKE' => 'civicrm/admin/options?gid%'],
       'api.Navigation.delete' => ['id' => '$value.id'],
     ]);
-    CRM_Core_BAO_Navigation::resetNavigation();
 
-    return TRUE;
+    CRM_Core_BAO_Navigation::resetNavigation();
   }
 
   /**
@@ -1173,7 +1183,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    *
    * @return bool
    */
-  public function upgrade_1034() {
+  private function updateDropdownMenuItemsLinkToUseOptionGroupName() {
     $dropdownMenuItems = [
       'hrjc_contract_type',
       'hrjc_location',
@@ -1186,9 +1196,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'hrjc_contract_end_reason',
     ];
 
-    foreach($dropdownMenuItems as $menuItem) {
+    foreach ($dropdownMenuItems as $menuItem) {
       civicrm_api3('Navigation', 'get', [
-        'sequential' => 1,
         'name' => $menuItem,
         'url' => ['LIKE' => 'civicrm/admin/options?gid%'],
         'api.Navigation.create' => [
@@ -1199,8 +1208,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
 
     CRM_Core_BAO_Navigation::resetNavigation();
-
-    return TRUE;
   }
 
   /**
