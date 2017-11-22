@@ -1,10 +1,34 @@
 <?xml version="1.0"?>
-<phpunit backupGlobals="false" backupStaticAttributes="false" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false" syntaxCheck="false" bootstrap="tests/phpunit/bootstrap.php">
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         bootstrap="tests/phpunit/bootstrap.php"
+>
   <testsuites>
-    <testsuite name="HRCore Test Suite">
+    <testsuite name="Full">
       <directory>./tests/phpunit</directory>
     </testsuite>
   </testsuites>
+
+  <testsuites>
+    <testsuite name="Unit Tests">
+      <directory>./tests/phpunit/CRM</directory>
+      <directory>./tests/phpunit/api</directory>
+    </testsuite>
+  </testsuites>
+
+  <testsuites>
+    <testsuite name="Web Tests">
+      <directory>./tests/phpunit/WebTest</directory>
+    </testsuite>
+  </testsuites>
+
   <filter>
     <whitelist>
       <directory suffix=".php">./</directory>

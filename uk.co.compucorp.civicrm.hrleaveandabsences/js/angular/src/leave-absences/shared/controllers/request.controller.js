@@ -183,7 +183,7 @@ define([
      * @return {Promise}
      */
     function checkIfBalanceChangeHasChanged () {
-      if (!vm.isMode('edit') || vm.isRole('staff')) { return; }
+      if (!vm.isMode('edit') || vm.isRole('staff') || getLeaveType() === 'toil') { return; }
 
       return vm.request.calculateBalanceChange()
         .then(function (balanceChange) {
@@ -239,7 +239,7 @@ define([
           return vm.request.delete()
             .then(function () {
               vm.dismissModal();
-              $rootScope.$emit('LeaveRequest::deleted', vm.request);
+              pubSub.publish('LeaveRequest::deleted', vm.request);
             });
         }
       });
@@ -705,7 +705,7 @@ define([
      */
     function postSubmit (eventName) {
       broadcastRequestUpdatedEvent();
-      $rootScope.$emit(eventName, vm.request);
+      pubSub.publish(eventName, vm.request);
 
       vm.errors = [];
 

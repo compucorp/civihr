@@ -187,7 +187,6 @@ function contactaccessrights_civicrm_pageRun($page) {
       'baseURL' => CRM_Extension_System::singleton()->getMapper()->keyToUrl($extName)
     ));
     CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/access-rights.css');
-    CRM_Core_Resources::singleton()->addScriptFile($extName, CRM_Core_Config::singleton()->debug ?
-      'js/src/access-rights.js' : 'js/dist/access-rights.min.js', 1010);
+    CRM_Core_Resources::singleton()->addScriptFile($extName, 'js/dist/access-rights.min.js', 1010);
   }
 }

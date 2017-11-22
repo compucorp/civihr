@@ -2,7 +2,8 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/shared/modules/components'
+  'leave-absences/shared/modules/components',
+  'common/services/pub-sub'
 ], function (_, moment, components) {
   components.component('staffLeaveReport', {
     bindings: {
@@ -14,12 +15,14 @@ define([
     controllerAs: 'report',
     controller: [
       '$log', '$q', '$rootScope', 'checkPermissions', 'AbsencePeriod', 'AbsenceType',
-      'Entitlement', 'LeaveRequest', 'OptionGroup', 'HR_settings',
+      'Entitlement', 'LeaveRequest', 'OptionGroup', 'pubSub', 'HR_settings',
       'shared-settings', controller
     ]
   });
 
-  function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, OptionGroup, HRSettings, sharedSettings) {
+  function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod,
+  AbsenceType, Entitlement, LeaveRequest, OptionGroup, pubSub,
+  HRSettings, sharedSettings) {
     $log.debug('Component: staff-leave-report');
 
     var requestSort = 'from_date ASC';
@@ -434,9 +437,9 @@ define([
      * Register events which will be called by other modules
      */
     function registerEvents () {
-      $rootScope.$on('LeaveRequest::new', function () { vm.refresh(); });
-      $rootScope.$on('LeaveRequest::edit', function () { vm.refresh(); });
-      $rootScope.$on('LeaveRequest::deleted', function (event, leaveRequest) {
+      pubSub.subscribe('LeaveRequest::new', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::edit', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::deleted', function (leaveRequest) {
         removeLeaveRequestFromItsSection(leaveRequest);
       });
     }

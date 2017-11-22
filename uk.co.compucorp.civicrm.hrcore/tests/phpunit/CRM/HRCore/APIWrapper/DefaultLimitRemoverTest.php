@@ -1,8 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
-
 use CRM_HRCore_APIWrapper_DefaultLimitRemover as DefaultLimitRemover;
 
 /**
@@ -10,18 +7,12 @@ use CRM_HRCore_APIWrapper_DefaultLimitRemover as DefaultLimitRemover;
  *
  * @group headless
  */
-class CRM_HRCore_APIWrapper_DefaultLimitRemoverTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
+class CRM_HRCore_APIWrapper_DefaultLimitRemoverTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   /**
    * @var DefaultLimitRemover
    */
   private $defaultLimitRemover;
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->installMe(__DIR__)
-      ->apply();
-  }
 
   public function setUp() {
     $this->defaultLimitRemover = new DefaultLimitRemover();

@@ -1,20 +1,11 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\HookInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_HRCore_Date_BasicDatePeriod as BasicDatePeriod;
 
 /**
  * @group headless
  */
-class CRM_HRCore_Date_BasicDatePeriodTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, HookInterface, TransactionalInterface {
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->installMe(__DIR__)
-      ->apply();
-  }
+class CRM_HRCore_Date_BasicDatePeriodTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   public function testItIncludesTheEndDate() {
     $period = new BasicDatePeriod('2016-01-01', '2016-01-05');

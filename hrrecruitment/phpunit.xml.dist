@@ -10,8 +10,21 @@
          bootstrap="tests/phpunit/bootstrap.php"
 >
   <testsuites>
-    <testsuite name="Recruitment (CiviHR) Test Suite">
+    <testsuite name="Full">
       <directory>./tests/phpunit</directory>
+    </testsuite>
+  </testsuites>
+
+  <testsuites>
+    <testsuite name="Unit Tests">
+      <directory>./tests/phpunit/CRM</directory>
+      <directory>./tests/phpunit/api</directory>
+    </testsuite>
+  </testsuites>
+
+  <testsuites>
+    <testsuite name="Web Tests">
+      <directory>./tests/phpunit/WebTest</directory>
     </testsuite>
   </testsuites>
 

@@ -208,6 +208,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                   'required' => true,
                   'export' => false,
                   'import' => false,
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_position' => array(
                   'name' => 'position',
@@ -222,6 +225,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                   'headerPattern' => '',
                   'dataPattern' => '',
                   'headerPattern' => '/^position/i',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_title' => array(
                   'name' => 'title',
@@ -236,6 +242,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                   'headerPattern' => '',
                   'dataPattern' => '',
                   'headerPattern' => '/^title/i',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_funding_notes' => array(
                   'name' => 'funding_notes',
@@ -245,6 +254,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                   'import' => true,
                   'where' => 'civicrm_hrjobcontract_details.funding_notes',
                   'headerPattern' => '/^funding\s?notes/i',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_contract_type' => array(
                   'name' => 'contract_type',
@@ -261,6 +273,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                     'optionGroupName' => 'hrjc_contract_type',
                   ),
                   'headerPattern' => '/^contract\s?type/i',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_period_start_date' => array(
                   'name' => 'period_start_date',
@@ -272,6 +287,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                   'headerPattern' => '',
                   'dataPattern' => '',
                   'headerPattern' => '/^contract\s?start\s?date/i',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_period_end_date' => array(
                   'name' => 'period_end_date',
@@ -283,6 +301,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                   'headerPattern' => '',
                   'dataPattern' => '',
                   'headerPattern' => '/^contract\s?end\s?date/i',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_end_reason' => array(
                   'name' => 'end_reason',
@@ -295,7 +316,10 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                     'optionGroupName' => 'hrjc_contract_end_reason',
                   ),
                   'headerPattern' => '/^end\s?reason/i',
-                  'where' => 'civicrm_hrjobcontract_details.end_reason'
+                  'where' => 'civicrm_hrjobcontract_details.end_reason',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_notice_amount' => array(
                   'name' => 'notice_amount',
@@ -307,6 +331,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                   'headerPattern' => '',
                   'dataPattern' => '',
                   'headerPattern' => '/^notice\s?period\s?from\s?employer\s?\(amount\)/i',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_notice_unit' => array(
                   'name' => 'notice_unit',
@@ -323,6 +350,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                     'callback' => 'CRM_Hrjobcontract_SelectValues::commonUnit',
                   ),
                   'headerPattern' => '/^notice\s?period\s?from\s?employer\s?\(unit\)/i',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_notice_amount_employee' => array(
                   'name' => 'notice_amount_employee',
@@ -334,6 +364,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                   'dataPattern' => '',
                   'export' => true,
                   'headerPattern' => '/^notice\s?period\s?from\s?employee\s?\(amount\)/i',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_notice_unit_employee' => array(
                   'name' => 'notice_unit_employee',
@@ -350,6 +383,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                     'callback' => 'CRM_Hrjobcontract_SelectValues::commonUnit',
                   ),
                   'headerPattern' => '/^notice\s?period\s?from\s?employee\s?\(unit\)/i',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
                 'hrjobcontract_details_location' => array(
                   'name' => 'location',
@@ -366,6 +402,9 @@ class CRM_Hrjobcontract_DAO_HRJobDetails extends CRM_Hrjobcontract_DAO_Base
                     'optionGroupName' => 'hrjc_location',
                   ),
                   'headerPattern' => '/^normal\s?place\s?of\s?work/i',
+                  'entity' => 'HRJobDetails',
+                  'bao' => 'CRM_Hrjobcontract_DAO_HRJobDetails',
+                  'localizable' => 0,
                 ) ,
               )
         );
