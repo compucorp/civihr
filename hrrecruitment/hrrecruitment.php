@@ -101,6 +101,7 @@ function hrrecruitment_civicrm_install() {
     'domain_id' => CRM_Core_Config::domainID(),
     'label' => ts('Recruitment'),
     'name' => 'Vacancies',
+    'icon' => 'crm-i fa-user-plus',
     'url' => null,
     'operator' => null,
     'weight' => $reportWeight-1,
