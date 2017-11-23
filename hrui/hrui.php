@@ -27,6 +27,16 @@
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrui.civix.php';
 
+/**
+ * Implements hook_civicrm_coreResourceList().
+ */
+function hrui_civicrm_coreResourceList(&$items, $region) {
+  if ($region == 'html-header') {
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
+    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
+  }
+}
+
 function hrui_civicrm_pageRun($page) {
   if (isset($_GET['snippet']) && $_GET['snippet'] == 'json') {
     return;
@@ -53,9 +63,6 @@ function hrui_civicrm_pageRun($page) {
         );
     }
   }
-
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
-  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
 }
 
 /**
@@ -65,9 +72,6 @@ function hrui_civicrm_pageRun($page) {
  * @param CRM_Core_Form $form
  */
 function hrui_civicrm_buildForm($formName, &$form) {
-  CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
-  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
-
   if ($form instanceof CRM_Contact_Form_Contact) {
     CRM_Core_Resources::singleton()
       ->addSetting(array('formName' => 'contactForm'));
@@ -577,6 +581,17 @@ function hrui_civicrm_managed(&$entities) {
 }
 
 /**
+ * Implements hook_civicrm_alterMenu().
+ *
+ * @param Array $items List of http routes
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterMenu
+ */
+function hrui_civicrm_alterMenu(&$items) {
+  $items['civicrm/api']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
+  $items['civicrm/styleguide']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
+}
+
+/**
  * Implements hook_civicrm_navigationMenu().
  *
  * @param Array $params List of menu items
@@ -587,6 +602,7 @@ function hrui_civicrm_navigationMenu(&$params) {
   _hrui_coreMenuChanges($params);
   _hrui_createHelpMenu($params);
   _hrui_createDeveloperMenu($params);
+  _hui_setDynamicMenuIcons($params);
 }
 
 /**
@@ -985,28 +1001,32 @@ function _hrui_createHelpMenu(&$menu) {
 function _hrui_createDeveloperMenu(&$menu) {
   _hrui_civix_insert_navigation_menu($menu, '', [
     'name' => ts('Developer'),
-    'permission' => 'access CiviCRM'
+    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
+    'operator' => 'AND'
   ]);
 
   _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('API Explorer'),
     'url' => 'civicrm/api',
     'target' => '_blank',
-    'permission' => 'access CiviCRM'
+    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
+    'operator' => 'AND'
   ]);
 
   _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('Developer Docs'),
     'target' => '_blank',
     'url' => 'https://civihr.atlassian.net/wiki/spaces/CIV/pages',
-    'permission' => 'access CiviCRM'
+    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
+    'operator' => 'AND'
   ]);
 
   _hrui_civix_insert_navigation_menu($menu, 'Developer', [
     'name' => ts('Style Guide'),
     'target' => '_blank',
     'url' => 'https://www.civihr.org/support',
-    'permission' => 'access CiviCRM'
+    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
+    'operator' => 'AND'
   ]);
 
   // Adds sub menu under Style Guide menu
@@ -1015,8 +1035,29 @@ function _hrui_createDeveloperMenu(&$menu) {
       'label' => $styleGuide['label'],
       'name' => $styleGuide['name'],
       'url' => 'civicrm/styleguide/' . $styleGuide['name'],
-      'permission' => 'access CiviCRM',
+      'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
+      'operator' => 'AND'
     ]);
+  }
+}
+
+/**
+ * Adds icons to dynamically defined menu items
+ *
+ * @param array $menu
+ *   List of available menu items
+ */
+function _hui_setDynamicMenuIcons(&$menu) {
+  $menuToIcons = [
+    'Help' => 'crm-i fa-question-circle',
+    'Developer'=> 'crm-i fa-code',
+  ];
+
+  foreach ($menu as $key => $item) {
+    $menuName = $item['attributes']['name'];
+    if (array_key_exists($menuName, $menuToIcons)) {
+      $menu[$key]['attributes']['icon'] = $menuToIcons[$menuName];
+    }
   }
 }
 
