@@ -1,0 +1,18 @@
+#civicrm-menu {
+  li.menumain.crm-Self_Service_Portal {
+    > a {
+      border: 1px solid $gray-dark;
+      border-radius: $border-radius-base;
+      font-weight: 600;
+      height: 35px;
+      line-height: 35px;
+      padding: 0 15px;
+      margin-top: 12px;
+      text-transform: uppercase;
+
+      &:hover {
+        background: $gray-lighter;
+      }
+    }
+  }
+}
