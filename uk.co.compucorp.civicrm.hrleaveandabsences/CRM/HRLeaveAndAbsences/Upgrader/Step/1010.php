@@ -1,30 +1,43 @@
 <?php
 
 use CRM_Core_BAO_SchemaHandler as SchemaHandler;
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 trait CRM_HRLeaveAndAbsences_Upgrader_Step_1010 {
 
   /**
-   * Adds the from_date_amount and to_date_amount fields to the
-   * leave request table.
+   * Adds the calculation_unit field to the Absence Type table
+   * and also updates empty calculation_unit columns to be set to
+   * days unit.
    *
    * @return bool
    */
   public function upgrade_1010() {
-    $leaveRequestTable = LeaveRequest::getTableName();
+    $absenceTypeTable = AbsenceType::getTableName();
 
-    if(!SchemaHandler::checkIfFieldExists($leaveRequestTable, 'from_date_amount')) {
-      $queries = [
-        "ALTER TABLE {$leaveRequestTable} ADD from_date_amount decimal(20,2) COMMENT 'The balance change amount to be deducted for the leave request from date'",
-        "ALTER TABLE {$leaveRequestTable} ADD to_date_amount decimal(20,2) COMMENT 'The balance change amount to be deducted for the leave request to date'",
-      ];
+    if(!SchemaHandler::checkIfFieldExists($absenceTypeTable, 'calculation_unit')) {
+      CRM_Core_DAO::executeQuery("
+        ALTER TABLE {$absenceTypeTable} 
+        ADD calculation_unit varchar(512) NOT NULL   
+        COMMENT 'One of the values of the Absence type calculation units option group'");
 
-      foreach($queries as $query) {
-        CRM_Core_DAO::executeQuery($query);
-      }
+      $daysUnitValue = $this->getDaysUnitValue();
+      CRM_Core_DAO::executeQuery("
+        UPDATE {$absenceTypeTable}
+        SET calculation_unit = {$daysUnitValue} WHERE calculation_unit = ''");
     }
 
     return true;
+  }
+
+  /**
+   * Get the days option value of the calculation unit option group.
+   *
+   * @return mixed
+   */
+  private function getDaysUnitValue() {
+    $calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
+
+    return $calculationUnitOptions['days'];
   }
 }

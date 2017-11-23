@@ -3,7 +3,7 @@
 use CRM_Core_BAO_SchemaHandler as SchemaHandler;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 
-trait CRM_HRLeaveAndAbsences_Upgrader_Step_1008 {
+trait CRM_HRLeaveAndAbsences_Upgrader_Step_1012 {
 
   /**
    * Rename the comment_author_id and comment_date column to
@@ -11,7 +11,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1008 {
    *
    * @return bool
    */
-  public function upgrade_1008() {
+  public function upgrade_1012() {
     $periodEntitlementTable = LeavePeriodEntitlement::getTableName();
 
     if(SchemaHandler::checkIfFieldExists($periodEntitlementTable, 'comment_author_id')) {

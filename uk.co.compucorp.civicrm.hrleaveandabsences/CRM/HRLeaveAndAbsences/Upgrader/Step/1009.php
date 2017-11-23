@@ -1,25 +1,32 @@
 <?php
 
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
-
 trait CRM_HRLeaveAndAbsences_Upgrader_Step_1009 {
 
   /**
-   * Change from_date and to_date fields from date to datetime
+   * Creates the Absence Type calculation unit option group
+   * and option values.
    *
    * @return bool
    */
   public function upgrade_1009() {
-    $leaveRequestTable = LeaveRequest::getTableName();
-    $queries = [
-      "ALTER TABLE {$leaveRequestTable} MODIFY from_date datetime NOT NULL COMMENT 'The date and time the leave request starts.';",
-      "ALTER TABLE {$leaveRequestTable} MODIFY to_date datetime NOT NULL COMMENT 'The date and time the leave request ends';"
-    ];
-
-    foreach($queries as $query) {
-      CRM_Core_DAO::executeQuery($query);
-    }
+    $this->up1009_createCalculationUnitOptionGroupAndValues();
 
     return true;
+  }
+
+  /**
+   * Creates the hrleaveandabsences_absence_type_calculation_unit
+   * Option group and the Days and Hours option values by importing
+   * the option group Xml file and processing it.
+   */
+  private function up1009_createCalculationUnitOptionGroupAndValues() {
+    $result = civicrm_api3('OptionGroup', 'getcount', [
+      'name' => 'hrleaveandabsences_absence_type_calculation_unit',
+    ]);
+
+    if($result == 0) {
+      $file = $this->extensionDir . '/xml/option_groups/absence_type_calculation_unit_install.xml';
+      $this->executeCustomDataFileByAbsPath($file);
+    }
   }
 }
