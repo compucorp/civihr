@@ -415,6 +415,11 @@ define([
             return vm.calculateBalanceChange();
           }
         });
+        $scope.$watch('detailsTab.uiOptions.times.' + type + '.time', function (time, oldTime) {
+          if (!isCalculationUnit('days') && +time !== +oldTime) {
+            vm._setDateAndTypes();
+          }
+        });
         $scope.$watch('detailsTab.uiOptions.' + type + 'Date', function (date) {
           return loadAndSetTimeRangesFromWorkPattern(date, type);
         });
