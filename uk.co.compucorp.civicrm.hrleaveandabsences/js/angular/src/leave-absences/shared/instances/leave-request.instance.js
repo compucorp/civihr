@@ -12,68 +12,22 @@ define([
     'shared-settings', 'ModelInstance', 'LeaveRequestAPI',
     function ($q, checkPermissions, OptionGroup, sharedSettings, ModelInstance, LeaveRequestAPI) {
       /**
-       * Amends balance change breakdown if calculation unit absence type is "hours".
-       * It changes the balance first and last days (only first day in case of single day request)
-       *   by setting the selected deductions.
-       * @NOTE this function mutates the "balanceChange" object
+       * Amends the first and last days of the balance by setting values from the
+       * selected time deductions. It also re-calculates the total amount.
        *
        * @param  {Object} balanceChange
-       * @param  {String} calculationUnit
-       * @return {Promise} resolve with amended balance change in case of "hours" absence type
-       *   or returns unamended balance change in case of "days" absence type
        */
-      function amendHourlyBalanceChangeBreakdown (balanceChange, calculationUnit) {
-        var breakdown = balanceChange.breakdown;
-        var request = this;
+      function recalculateBalanceChange (balanceChange) {
+        _.first(_.values(balanceChange.breakdown)).amount = this['from_date_amount'];
 
-        if (calculationUnit !== 'hours') {
-          return balanceChange;
+        if (balanceChange.breakdown.length > 1) {
+          _.last(_.values(balanceChange.breakdown)).amount = this['to_date_amount'];
         }
 
-        return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
-          .then(function (dayTypes) {
-            if (balanceChange) {
-              amendHourlyBalanceChangeForDay.call(request, _.first(_.values(breakdown)), 'from', dayTypes);
-
-              if (breakdown.length > 1) {
-                amendHourlyBalanceChangeForDay.call(request, _.last(_.values(breakdown)), 'to', dayTypes);
-              }
-
-              amendHourlyBalanceChangeAmount(balanceChange);
-            }
-
-            return balanceChange;
-          });
-      }
-
-      /**
-       * Amends balance change amount if calculation unit absence type is "hours".
-       * @NOTE this function mutates the "balanceChange" object
-       *
-       * @param {Object} balanceChange
-       */
-      function amendHourlyBalanceChangeAmount (balanceChange) {
-        balanceChange.amount = _.reduce(balanceChange.breakdown, function (updatedChange, day) {
-          return updatedChange - day.amount;
-        }, 0);
-      }
-
-      /**
-       * Amends a particular day balance change if calculation unit absence type is "hours".
-       * The amending is skipped for non-working days, holidays or weekends.
-       * @NOTE this function mutates the "day" object
-       *
-       * @param {Object} day taken from a balance change breakdown
-       * @param {Object} type (from|to)
-       * @param {Object} dayTypes as per OptionGroup
-       */
-      function amendHourlyBalanceChangeForDay (day, type, dayTypes) {
-        var dayType = _.find(dayTypes, { value: '' + day.type.value }).name;
-        var request = this;
-
-        if (!_.includes(['weekend', 'non_working_day', 'public_holiday'], dayType)) {
-          day.amount = request[type + '_date_amount'];
-        }
+        balanceChange.amount = _.reduce(balanceChange.breakdown,
+          function (updatedChange, day) {
+            return updatedChange - day.amount;
+          }, 0);
       }
 
       /**
@@ -197,16 +151,19 @@ define([
          */
         calculateBalanceChange: function (calculationUnit) {
           var params = ['contact_id', 'from_date', 'to_date', 'type_id', 'from_date_type', 'to_date_type'];
-          var request = this;
 
           if (calculationUnit === 'hours') {
             _.pull(params, 'from_date_type', 'to_date_type');
           }
 
-          return LeaveRequestAPI.calculateBalanceChange(_.pick(request, params))
+          return LeaveRequestAPI.calculateBalanceChange(_.pick(this, params))
             .then(function (balanceChange) {
-              return amendHourlyBalanceChangeBreakdown.call(request, balanceChange, calculationUnit);
-            });
+              if (calculationUnit === 'hours') {
+                recalculateBalanceChange.call(this, balanceChange);
+              }
+
+              return balanceChange;
+            }.bind(this));
         },
 
         /**
