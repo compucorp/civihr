@@ -16,4 +16,37 @@ class CRM_HRRecruitment_Upgrader extends CRM_HRRecruitment_Upgrader_Base {
     return TRUE;
   }
 
+  /**
+   * Renames the main menu item "Vacancies" to "Recruitment"
+   *
+   * @return bool
+   */
+  public function upgrade_1401() {
+    $default = [];
+    $params = ['name' => 'Vacancies', 'url' => null];
+
+    $menuItem = CRM_Core_BAO_Navigation::retrieve($params, $default);
+    $menuItem->label = 'Recruitment';
+    $menuItem->save();
+
+    CRM_Core_BAO_Navigation::resetNavigation();
+
+    return TRUE;
+  }
+
+  /**
+   * Sets icon for top-level 'Recruitment' menu item
+   *
+   * @return bool
+   */
+  public function upgrade_1402() {
+    $params = [
+      'name' => 'Vacancies',
+      'api.Navigation.create' => ['id' => '$value.id', 'icon' => 'crm-i fa-user-plus'],
+      'parent_id' => ['IS NULL' => true],
+    ];
+    civicrm_api3('Navigation', 'get', $params);
+
+    return TRUE;
+  }
 }

@@ -8,6 +8,7 @@ var transformSelectors = require('gulp-transform-selectors');
 var civicrmScssRoot = require('civicrm-scssroot')();
 
 var bootstrapNamespace = '#bootstrap-theme';
+var outsideNamespaceRegExp = /^\.___outside-namespace/;
 
 gulp.task('sass', ['sass:sync'], function () {
   return gulp.src('scss/*.scss')
@@ -21,12 +22,11 @@ gulp.task('sass', ['sass:sync'], function () {
     .pipe(postcss([postcssPrefix({
       prefix: bootstrapNamespace + ' ',
       exclude: [
-        /^html/, /^body/, /page-civi/,
-        '.crm-container .blockUI.blockOverlay', // class to display spinner on overlay
-        '.crm-container .dataTables_processing' // class to display spinner datatable load
+        /^html/, /^body/, /page-civi/, /crm-container/, outsideNamespaceRegExp
       ]
     })]))
     .pipe(transformSelectors(namespaceRootElements, { splitOnCommas: true }))
+    .pipe(transformSelectors(removeOutsideNamespaceMarker, { splitOnCommas: true }))
     .pipe(gulp.dest('css/'));
 });
 
@@ -56,4 +56,8 @@ function namespaceRootElements (selector) {
   }
 
   return selector;
+}
+
+function removeOutsideNamespaceMarker (selector) {
+  return outsideNamespaceRegExp.test(selector) ? selector.replace(outsideNamespaceRegExp, '') : selector;
 }

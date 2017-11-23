@@ -589,13 +589,13 @@ FROM civicrm_navigation WHERE domain_id = $domainID {$whereClause} ORDER BY pare
         $homeLabel = ts('CiviCRM Home');
       }
       // Link to hide the menubar
-      $hideLabel = ts('Self Service Portal');
+      $hideLabel = ts('Hide Menu');
 
       $prepandString = "
         <li class='menumain crm-link-home'>$homeIcon
           <ul id='civicrm-home'>
             <li><a href='$homeURL'>$homeLabel</a></li>
-            <li><a href='/dashboard'>$hideLabel</a></li>
+            <li><a href='#' class='crm-hidemenu'>$hideLabel</a></li>
             <li><a href='$logoutURL' class='crm-logout-link'>" . ts('Log out') . "</a></li>
           </ul>";
       // <li> tag doesn't need to be closed
