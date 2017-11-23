@@ -1300,6 +1300,8 @@ define([
       describe('when the calculation unit is "hours"', function () {
         beforeEach(function () {
           selectedAbsenceType.calculation_unit_name = 'hours';
+
+          spyOn(controller, '_setDateAndTypes').and.callThrough();
         });
 
         describe('when from/to deductions values are set but not changed', function () {
@@ -1326,6 +1328,30 @@ define([
             it('calls the balance change calculation function', function () {
               expect(controller.calculateBalanceChange).toHaveBeenCalled();
             });
+          });
+        });
+
+        describe('when "from" time value is changed in UI', function () {
+          beforeEach(function () {
+            controller.uiOptions.times.from.time = '19:00';
+
+            $rootScope.$digest();
+          });
+
+          it('updates the time in the request instance', function () {
+            expect(controller._setDateAndTypes).toHaveBeenCalled();
+          });
+        });
+
+        describe('when "to" time value is changed in UI', function () {
+          beforeEach(function () {
+            controller.uiOptions.times.to.time = '12:45';
+
+            $rootScope.$digest();
+          });
+
+          it('updates the time in the request instance', function () {
+            expect(controller._setDateAndTypes).toHaveBeenCalled();
           });
         });
       });
