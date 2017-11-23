@@ -1,0 +1,50 @@
+{
+  "scenarios": [
+    {
+      "label": "Features",
+      "url": "features-in-civihr"
+    },
+    {
+      "label": "Customize Onboarding Wizard",
+      "url": "customize-onboarding-wizard"
+    },
+    {
+      "label": "Password Page",
+      "url": "user/1/edit"
+    },
+    {
+      "label": "Personal Details Page",
+      "url": "onboarding-form"
+    },
+    {
+      "label": "Address Page",
+      "url": "onboarding-form",
+      "onReadyScript": "onboarding-wizard/address"
+    },
+    {
+      "label": "Contact Page",
+      "url": "onboarding-form",
+      "onReadyScript": "onboarding-wizard/contact"
+    },
+    {
+      "label": "Payroll Page",
+      "url": "onboarding-form",
+      "onReadyScript": "onboarding-wizard/payroll"
+    },
+    {
+      "label": "Emergency Contact Page",
+      "url": "onboarding-form",
+      "onReadyScript": "onboarding-wizard/emergency_contact"
+    },
+    {
+      "label": "Dependents Page",
+      "url": "onboarding-form",
+      "onReadyScript": "onboarding-wizard/dependents"
+    },
+    {
+      "label": "Profile Picture Page",
+      "url": "onboarding-form",
+      "onReadyScript": "onboarding-wizard/profile_picture"
+    }
+  ]
+}
