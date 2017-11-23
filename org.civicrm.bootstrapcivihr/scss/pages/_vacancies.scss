@@ -165,7 +165,7 @@
         display: block;
       }
     }
-    
+
     .ui-dialog-buttonpane {
       margin: 0;
     }
@@ -203,7 +203,7 @@
           }
 
           tr td {
-            color: $crm-dark-blue;
+            color: #586277; // was $crm-dark-blue, need to be replaced with a color in the new palette
             padding: 0 15px;
           }
 
@@ -278,7 +278,7 @@
 
         tr .hr-recent-activity-block {
           font-size: $font-size-base;
-          color: $crm-dark-blue;
+          color: #586277; // was $crm-dark-blue, need to be replaced with a color in the new palette
         }
       }
     }
