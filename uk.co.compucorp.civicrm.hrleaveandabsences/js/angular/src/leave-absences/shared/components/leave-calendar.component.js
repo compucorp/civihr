@@ -165,7 +165,8 @@ define([
      * @return {Promise}
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({ is_active: true });
+      return AbsenceType.all({ is_active: true })
+        .then(AbsenceType.loadCalculationUnits);
     }
 
     /**
@@ -175,8 +176,10 @@ define([
      */
     function loadBasicOptionValues () {
       return OptionGroup.valuesOf([
+        'hrleaveandabsences_absence_type_calculation_unit',
+        'hrleaveandabsences_leave_request_day_type',
         'hrleaveandabsences_leave_request_status',
-        'hrleaveandabsences_leave_request_day_type'
+        'hrleaveandabsences_toil_amounts'
       ]);
     }
 
@@ -234,8 +237,10 @@ define([
       .then(function (results) {
         vm.supportData.absenceTypes = results[0];
         vm.supportData.publicHolidays = results[1];
-        vm.supportData.leaveRequestStatuses = results[2].hrleaveandabsences_leave_request_status;
+        vm.supportData.calculationUnits = results[2].hrleaveandabsences_absence_type_calculation_unit;
         vm.supportData.dayTypes = results[2].hrleaveandabsences_leave_request_day_type;
+        vm.supportData.leaveRequestStatuses = results[2].hrleaveandabsences_leave_request_status;
+        vm.supportData.toilAmounts = _.indexBy(results[2].hrleaveandabsences_toil_amounts, 'value');
       });
     }
 

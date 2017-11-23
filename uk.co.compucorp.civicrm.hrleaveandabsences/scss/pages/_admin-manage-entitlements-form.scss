@@ -64,7 +64,8 @@
       padding: 5px;
     }
 
-    .proposed-entitlement .overridden-proposed-entitlement {
+    .proposed-entitlement .overridden-proposed-entitlement,
+    .proposed-entitlement .calculation-unit {
       display: none;
     }
 

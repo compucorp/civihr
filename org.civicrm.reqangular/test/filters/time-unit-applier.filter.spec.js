@@ -69,6 +69,9 @@ define([
         expect(timeUnitApplier(0.3, 'hours')).toBe('30m');
         expect(timeUnitApplier('0.3', 'hours')).toBe('30m');
         expect(timeUnitApplier('.3', 'hours')).toBe('30m');
+        expect(timeUnitApplier('.75', 'hours')).toBe('45m');
+        expect(timeUnitApplier('0.75', 'hours')).toBe('45m');
+        expect(timeUnitApplier(0.75, 'hours')).toBe('45m');
         expect(timeUnitApplier(0.874, 'hours')).toBe('1h');
         expect(timeUnitApplier(0.875, 'hours')).toBe('1h');
         expect(timeUnitApplier(0.876, 'hours')).toBe('1h');

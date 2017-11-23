@@ -85,8 +85,8 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseTest extends BaseHeadlessTest {
     $this->assertEquals(CRM_Import_Parser::VALID, $response2);
 
     $leaveRequest = new LeaveRequest();
-    $leaveRequest->from_date = CRM_Utils_Date::processDate('2016-01-01');
-    $leaveRequest->to_date = CRM_Utils_Date::processDate('2016-01-02');
+    $leaveRequest->from_date = CRM_Utils_Date::processDate('2016-01-01 00:00');
+    $leaveRequest->to_date = CRM_Utils_Date::processDate('2016-01-02 23:59');
     $leaveRequest->contact_id = $contactId;
     $leaveRequest->find(true);
 
@@ -279,5 +279,209 @@ class CRM_HRLeaveAndAbsences_Import_Parser_BaseTest extends BaseHeadlessTest {
       $values = array_values($row1);
       $this->assertEquals(CRM_Import_Parser::VALID, $importObject->import(NULL, $values));
     }
+  }
+
+  public function testLeaveRequestInDaysTimeForStartAndEndDatesCanNotBeModified() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2017-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => '2017-04-01']
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $row1 = [
+      'contact_id' => $periodEntitlement->contact_id,
+      'absence_id' => 1,
+      'absence_type' => $this->absenceType->title,
+      'absence_date' => '2017-05-02',
+      'qty' => 2,
+      'start_date' => '2017-05-02 13:05',
+      'end_date' => '2017-05-03 14:45',
+      'total_qty' => 3,
+      'status' => 'Approved',
+      'comments' => 'Test Comment',
+    ];
+
+    $fields = array_keys($row1);
+    $importObject = $this->getImportObject($fields);
+
+    $row2 = $row1;
+    $row2['qty'] = 1;
+    $row2['absence_date'] = '2017-05-03';
+
+    $valuesRow1 = array_values($row1);
+    $valuesRow2 = array_values($row2);
+    $response1 = $importObject->import(NULL, $valuesRow1);
+    $response2 = $importObject->import(NULL, $valuesRow2);
+
+    $this->assertEquals(CRM_Import_Parser::VALID, $response1);
+    $this->assertEquals(CRM_Import_Parser::VALID, $response2);
+
+    $leaveRequest = new LeaveRequest();
+    //Start and end date time should be 00:00 and 23:59 respectively
+    $leaveRequest->from_date = CRM_Utils_Date::processDate('2017-05-02 00:00');
+    $leaveRequest->to_date = CRM_Utils_Date::processDate('2017-05-03 23:59');
+    $leaveRequest->contact_id = $periodEntitlement->contact_id;
+    $leaveRequest->find(true);
+
+    $this->assertNotNull($leaveRequest->id);
+  }
+
+  public function testLeaveRequestInHoursCanBeImported() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 3.5);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $row1 = [
+      'contact_id' => $periodEntitlement->contact_id,
+      'absence_id' => 1,
+      'absence_type' => $absenceType->title,
+      'absence_date' => '2016-01-01',
+      'qty' => 2.5,
+      'start_date' => '2016-01-01 15:05',
+      'end_date' => '2016-01-02 17:45',
+      'total_qty' => 3.5,
+      'status' => 'Approved',
+      'comments' => 'Test Comment For Leave in Hours',
+    ];
+
+    $fields = array_keys($row1);
+    $importObject = $this->getImportObject($fields);
+
+    $row2 = $row1;
+    $row2['qty'] = 1;
+    $row2['absence_date'] = '2016-01-02';
+
+    $valuesRow1 = array_values($row1);
+    $valuesRow2 = array_values($row2);
+    $response1 = $importObject->import(NULL, $valuesRow1);
+    $response2 = $importObject->import(NULL, $valuesRow2);
+
+    $this->assertEquals(CRM_Import_Parser::VALID, $response1);
+    $this->assertEquals(CRM_Import_Parser::VALID, $response2);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->from_date = CRM_Utils_Date::processDate('2016-01-01 15:05');
+    $leaveRequest->to_date = CRM_Utils_Date::processDate('2016-01-02 17:45');
+    $leaveRequest->contact_id = $periodEntitlement->contact_id;
+    $leaveRequest->find(true);
+
+    $this->assertNotNull($leaveRequest->id);
+    $this->assertEquals(0, $leaveRequest->from_date_amount);
+    $this->assertEquals(0, $leaveRequest->to_date_amount);
+
+    $this->assertNotNull($leaveRequest->id);
+    //a total balance change of -3.5 hours is expected, i.e 2.5 + 1
+    $balanceChange = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
+    $this->assertEquals(-3.5, $balanceChange);
+
+    //Check that comment was properly created
+    $leaveRequestCommentService = new LeaveRequestCommentService();
+    $result = $leaveRequestCommentService->get(['leave_request_id' => $leaveRequest->id, 'sequential' => 1]);
+    $this->assertEquals($result['values'][0]['text'], $row1['comments']);
+    $this->assertEquals($result['values'][0]['contact_id'], $row1['contact_id']);
+    $commentDate = new DateTime($row1['absence_date']);
+    $expectedCommentDate = new DateTime($result['values'][0]['created_at']);
+    $this->assertEquals($expectedCommentDate, $commentDate);
+  }
+
+  public function testLeaveRequestImportIgnoresTimeAndUsesOnlyTheDateWhenTimeIsSetForAbsenceDate() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 3.5);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $row1 = [
+      'contact_id' => $periodEntitlement->contact_id,
+      'absence_id' => 1,
+      'absence_type' => $absenceType->title,
+      'absence_date' => '2016-01-01 13:00',
+      'qty' => 2.5,
+      'start_date' => '2016-01-01 15:05',
+      'end_date' => '2016-01-02 17:45',
+      'total_qty' => 3,
+      'status' => 'Approved',
+      'comments' => 'Test Comment For Leave in Hours',
+    ];
+
+    $fields = array_keys($row1);
+    $importObject = $this->getImportObject($fields);
+
+    $row2 = $row1;
+    $row2['qty'] = 1;
+    $row2['absence_date'] = '2016-01-02 14:20';
+
+    $valuesRow1 = array_values($row1);
+    $valuesRow2 = array_values($row2);
+    $response1 = $importObject->import(NULL, $valuesRow1);
+    $response2 = $importObject->import(NULL, $valuesRow2);
+
+    $this->assertEquals(CRM_Import_Parser::VALID, $response1);
+    $this->assertEquals(CRM_Import_Parser::VALID, $response2);
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->from_date = CRM_Utils_Date::processDate('2016-01-01 15:05');
+    $leaveRequest->to_date = CRM_Utils_Date::processDate('2016-01-02 17:45');
+    $leaveRequest->contact_id = $periodEntitlement->contact_id;
+    $leaveRequest->find(true);
+
+    $this->assertNotNull($leaveRequest->id);
+    $absenceDate1 = new DateTime($row1['absence_date']);
+    $absenceDate1 = $absenceDate1->format('Y-m-d');
+    $absenceDate2 = new DateTime($row2['absence_date']);
+    $absenceDate2 = $absenceDate2->format('Y-m-d');
+
+    $leaveDates = $leaveRequest->getDates();
+    $this->assertCount(2, $leaveDates);
+    $this->assertEquals($absenceDate1, $leaveDates[0]->date);
+    $this->assertEquals($absenceDate2, $leaveDates[1]->date);
   }
 }

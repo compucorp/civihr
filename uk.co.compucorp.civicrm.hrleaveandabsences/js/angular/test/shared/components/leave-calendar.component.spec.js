@@ -113,11 +113,39 @@
           expect(PublicHoliday.all).toHaveBeenCalled();
         });
 
-        it('loads the OptionValues of the leave request statuses and day types', function () {
+        it('loads the OptionValues of the leave request statuses, day types, and calculation units', function () {
           expect(OptionGroup.valuesOf).toHaveBeenCalledWith([
+            'hrleaveandabsences_absence_type_calculation_unit',
+            'hrleaveandabsences_leave_request_day_type',
             'hrleaveandabsences_leave_request_status',
-            'hrleaveandabsences_leave_request_day_type'
+            'hrleaveandabsences_toil_amounts'
           ]);
+        });
+
+        describe('after loading support data', function () {
+          it('stores absence types', function () {
+            expect(controller.supportData.absenceTypes.length).not.toBe(0);
+          });
+
+          it('stores calculation units', function () {
+            expect(controller.supportData.calculationUnits.length).not.toBe(0);
+          });
+
+          it('stores day types', function () {
+            expect(controller.supportData.dayTypes.length).not.toBe(0);
+          });
+
+          it('stores public holidays', function () {
+            expect(controller.supportData.publicHolidays.length).not.toBe(0);
+          });
+
+          it('stores leave request statuses', function () {
+            expect(controller.supportData.leaveRequestStatuses.length).not.toBe(0);
+          });
+
+          it('stores toil amounts', function () {
+            expect(controller.supportData.toilAmounts).toBeDefined();
+          });
         });
 
         describe('taking leave filter', function () {
@@ -393,17 +421,23 @@
         });
 
         describe('absence types', function () {
-          var AbsenceType;
+          var AbsenceType, absenceTypeRecord;
 
           beforeEach(inject(function (_AbsenceType_) {
             AbsenceType = _AbsenceType_;
-            spyOn(AbsenceType, 'all').and.callThrough();
+            absenceTypeRecord = controller.supportData.absenceTypes[0];
 
+            spyOn(AbsenceType, 'all').and.callThrough();
             compileComponent();
           }));
 
           it('loads the absence types', function () {
             expect(controller.supportData.absenceTypes.length).not.toBe(0);
+          });
+
+          it('loads the absence types calculation units', function () {
+            expect(absenceTypeRecord.calculation_unit_name).toEqual(jasmine.any(String));
+            expect(absenceTypeRecord.calculation_unit_label).toEqual(jasmine.any(String));
           });
 
           it('excludes the inactive absence types', function () {

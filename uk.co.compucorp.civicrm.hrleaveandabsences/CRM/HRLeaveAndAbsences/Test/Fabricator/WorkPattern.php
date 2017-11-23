@@ -19,6 +19,15 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
     return WorkPattern::create($params);
   }
 
+  public static function getWeekFor40HourWorkWeek() {
+    $workWeek = self::get40HoursWeekParams();
+    return array_shift($workWeek);
+  }
+
+  public static function getWeekForTwoWeeksAnd31AndHalfHours() {
+    return self::getTwoWeeksWith31AndHalfHoursParams();
+  }
+
   public static function fabricateWithTwoWeeksAnd31AndHalfHours($params = []) {
     $params = array_merge(self::getDefaultParams(), $params);
     $params['weeks'] = self::getTwoWeeksWith31AndHalfHoursParams();
@@ -44,53 +53,60 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
       'days' => [
         [
           'type' => WorkDay::getWorkingDayTypeValue(),
-          'day_of_week' => 1,
+          'day_of_the_week' => 1,
           'time_from' => '09:00',
           'time_to' => '18:00',
           'break' => 1,
-          'leave_days' => 1
+          'leave_days' => 1,
+          'number_of_hours' => 8
         ],
         [
           'type' => WorkDay::getWorkingDayTypeValue(),
-          'day_of_week' => 2,
+          'day_of_the_week' => 2,
           'time_from' => '09:00',
           'time_to' => '18:00',
           'break' => 1,
-          'leave_days' => 1
+          'leave_days' => 1,
+          'number_of_hours' => 8
         ],
         [
           'type' => WorkDay::getWorkingDayTypeValue(),
-          'day_of_week' => 3,
+          'day_of_the_week' => 3,
           'time_from' => '09:00',
           'time_to' => '18:00',
           'break' => 1,
-          'leave_days' => 1
+          'leave_days' => 1,
+          'number_of_hours' => 8
         ],
         [
           'type' => WorkDay::getWorkingDayTypeValue(),
-          'day_of_week' => 4,
+          'day_of_the_week' => 4,
           'time_from' => '09:00',
           'time_to' => '18:00',
           'break' => 1,
-          'leave_days' => 1
+          'leave_days' => 1,
+          'number_of_hours' => 8
         ],
         [
           'type' => WorkDay::getWorkingDayTypeValue(),
-          'day_of_week' => 5,
+          'day_of_the_week' => 5,
           'time_from' => '09:00',
           'time_to' => '18:00',
           'break' => 1,
-          'leave_days' => 1
+          'leave_days' => 1,
+          'number_of_hours' => 8
         ],
         [
           'type' => WorkDay::getWeekendTypeValue(),
-          'day_of_week' => 6,
-          'leave_days' => 0
+          'day_of_the_week' => 6,
+          'leave_days' => 0,
+          'number_of_hours' => 0
         ],
         [
           'type' => WorkDay::getWeekendTypeValue(),
-          'day_of_week' => 7,
-          'leave_days' => 0
+          'day_of_the_week' => 7,
+          'leave_days' => 0,
+          'number_of_hours' => 0
         ],
       ]
     ]];
@@ -112,7 +128,8 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
             'time_from'       => '07:00',
             'time_to'         => '15:30',
             'break'           => 1,
-            'leave_days'      => 1
+            'leave_days'      => 1,
+            'number_of_hours' => 7.5
           ],
           [
             'type'            => WorkDay::getNonWorkingDayTypeValue(),
@@ -124,7 +141,8 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
             'time_from'       => '07:00',
             'time_to'         => '15:30',
             'break'           => 1,
-            'leave_days'      => 1
+            'leave_days'      => 1,
+            'number_of_hours' => 7.5
           ],
           [
             'type'            => WorkDay::getNonWorkingDayTypeValue(),
@@ -136,7 +154,8 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
             'time_from'       => '07:00',
             'time_to'         => '15:30',
             'break'           => 1,
-            'leave_days'      => 1
+            'leave_days'      => 1,
+            'number_of_hours' => 7.5
           ],
           [
             'type'            => WorkDay::getWeekendTypeValue(),
@@ -160,7 +179,8 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
             'time_from'       => '07:00',
             'time_to'         => '12:00',
             'break'           => 0.5,
-            'leave_days'      => 1
+            'leave_days'      => 1,
+            'number_of_hours' => 4.5
           ],
           [
             'type'            => WorkDay::getNonWorkingDayTypeValue(),
@@ -172,7 +192,8 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern extends SequentialTitle
             'time_from'       => '07:00',
             'time_to'         => '12:00',
             'break'           => 0.5,
-            'leave_days'      => 1
+            'leave_days'      => 1,
+            'number_of_hours' => 4.5
           ],
           [
             'type'            => WorkDay::getNonWorkingDayTypeValue(),

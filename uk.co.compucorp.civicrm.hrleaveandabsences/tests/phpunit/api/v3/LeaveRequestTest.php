@@ -596,12 +596,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     PublicHolidayLeaveRequestFabricator::fabricate(1, $publicHoliday);
 
     $result = civicrm_api3('LeaveRequest', 'get', ['public_holiday' => true, 'sequential' => 1]);
+    $fromDate = new DateTime( $result['values'][0]['from_date']);
     $this->assertCount(1, $result['values']);
     $this->assertNotEquals($leaveRequest1->contact_id, $result['values'][0]['id']);
     $this->assertNotEquals($leaveRequest2->contact_id, $result['values'][0]['id']);
     $this->assertEquals(1, $result['values'][0]['contact_id']);
     $this->assertEquals($absenceType->id, $result['values'][0]['type_id']);
-    $this->assertEquals($publicHoliday->date, $result['values'][0]['from_date']);
+    $this->assertEquals($publicHoliday->date, $fromDate->format('Y-m-d'));
   }
 
   public function testGetIncludesLeaveRequestsForAllRequestTypes() {
@@ -1937,7 +1938,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, from_date, from_date_type
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, from_date, to_date, type_id
    */
   public function testCalculateBalanceChangeShouldNotAllowNullParams() {
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', []);
@@ -1953,6 +1954,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
       'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'type_id' => 1
     ]);
   }
 
@@ -1966,19 +1968,39 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
       'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'type_id' => 1
     ]);
   }
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: from_date_type
+   * @expectedExceptionMessage The from_date_type and to_date_type is required when Absence Type calculation unit is in days
    */
-  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromType() {
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutFromDateTypeWhenAbsenceTypeUnitIsInDays() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => 1,
       'from_date' => '2016-11-05',
       'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'type_id' => $absenceType->id
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage The from_date_type and to_date_type is required when Absence Type calculation unit is in days
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutToDateTypeWhenAbsenceTypeUnitIsInDays() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => '2016-11-05',
+      'from_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'to_date' => '2016-11-10',
+      'type_id' => $absenceType->id
     ]);
   }
 
@@ -1992,19 +2014,39 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => '2016-11-05',
       'from_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'type_id' => 1
     ]);
   }
 
   /**
    * @expectedException CiviCRM_API3_Exception
-   * @expectedExceptionMessage Mandatory key(s) missing from params array: to_date_type
+   * @expectedExceptionMessage The from_date_type and to_date_type should not be used when Absence Type calculation unit is in hours
    */
-  public function testCalculateBalanceChangeShouldNotAllowParamsWithoutToDateType() {
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithToDateTypeWhenAbsenceTypeIsInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+
     civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
       'contact_id' => 1,
       'from_date' => '2016-11-05',
       'from_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
       'to_date' => '2016-11-05',
+      'type_id' => $absenceType->id
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage The from_date_type and to_date_type should not be used when Absence Type calculation unit is in hours
+   */
+  public function testCalculateBalanceChangeShouldNotAllowParamsWithFromDateTypeWhenAbsenceTypeIsInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => '2016-11-05',
+      'to_date' => '2016-11-05',
+      'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'type_id' => $absenceType->id
     ]);
   }
 
@@ -2018,12 +2060,28 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => '2016-19-05',
       'from_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
       'to_date' => '2016-11-10',
-      'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value']
+      'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
+      'type_id' => 1
+    ]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: type_id
+   */
+  public function testCalculateBalanceChangeShouldAllowParamsWithoutTypeID() {
+    civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => 1,
+      'from_date' => '2016-19-05',
+      'from_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
+      'to_date' => '2016-11-10',
+      'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
     ]);
   }
 
   public function testCalculateBalanceChangeWithAllRequiredParameters() {
     $periodStartDate = date('Y-01-01');
+    $absenceType = AbsenceTypeFabricator::fabricate();
 
     $contract = HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
@@ -2049,7 +2107,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     // Start date is a sunday, Weekend
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-13'] = [
       'date' => '2016-11-13',
       'amount' => 0,
       'type' => [
@@ -2061,7 +2119,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     // The next day is a monday, which is a working day
     $expectedResultsBreakdown['amount'] += 1;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
       'date' => '2016-11-14',
       'amount' => 1.0,
       'type' => [
@@ -2073,7 +2131,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     // last day is a tuesday, which is a working day, half day will be deducted
     $expectedResultsBreakdown['amount'] += 0.5;
-    $expectedResultsBreakdown['breakdown'][] = [
+    $expectedResultsBreakdown['breakdown']['2016-11-15'] = [
       'date' => '2016-11-15',
       'amount' => 0.5,
       'type' => [
@@ -2090,7 +2148,52 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => $fromDate,
       'from_date_type' => $fromType,
       'to_date' => $toDate,
-      'to_date_type' => $toType
+      'to_date_type' => $toType,
+      'type_id' => $absenceType->id
+    ]);
+    $this->assertEquals($expectedResultsBreakdown, $result['values']);
+  }
+
+  public function testCalculateBalanceChangeWithStartAndEndDatesExcluded() {
+    $periodStartDate = '2016-01-01';
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $fromDate = date('2016-11-13 13:00');
+    $toDate = date('2016-11-15 15:00');
+
+    $expectedResultsBreakdown = [
+      'amount' => 0,
+      'breakdown' => []
+    ];
+    //Start and End Dates (2016-11-13 and 2016-11-15) are excluded.
+
+    // The next day is a monday, which is a working day
+    $expectedResultsBreakdown['amount'] += 8;
+    $expectedResultsBreakdown['breakdown']['2016-11-14'] = [
+      'date' => '2016-11-14',
+      'amount' => 8.0,
+      'type' => [
+        'id' => $this->leaveRequestDayTypes['all_day']['id'],
+        'value' => $this->leaveRequestDayTypes['all_day']['value'],
+        'label' => $this->leaveRequestDayTypes['all_day']['label']
+      ]
+    ];
+
+    $expectedResultsBreakdown['amount'] *= -1;
+
+    $result = civicrm_api3('LeaveRequest', 'calculateBalanceChange', [
+      'contact_id' => $contract['contact_id'],
+      'from_date' => $fromDate,
+      'to_date' => $toDate,
+      'type_id' => $absenceType->id,
+      'exclude_start_end_dates' => true
     ]);
     $this->assertEquals($expectedResultsBreakdown, $result['values']);
   }
@@ -2131,12 +2234,83 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateTypeIsEmpty() {
-    $params = $this->mergeWithDefaultLeaveRequestParams(['to_date_type' => '']);
+  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateTypeIsEmptyAndAbsenceTypeIsCalculatedInDays() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $params = $this->mergeWithDefaultLeaveRequestParams(['to_date_type' => '', 'type_id' => $absenceType->id]);
     $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
 
-    $errorMessage = 'The to_date_type field should not be empty';
+    $errorMessage = 'The to_date_type can not be empty when absence type calculation unit is in days';
     $expectedResult = $this->getExpectedArrayForIsValidError('to_date_type', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenFromDateTypeIsEmptyAndAbsenceTypeIsCalculatedInDays() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $params = $this->mergeWithDefaultLeaveRequestParams(['from_date_type' => '', 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The from_date_type can not be empty when absence type calculation unit is in days';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date_type', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenFromDateAmountIsNotEmptyAndAbsenceTypeIsCalculatedInDays() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $params = $this->mergeWithDefaultLeaveRequestParams(['from_date_amount' => 2.5, 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The from_date_amount should be empty when absence type calculation unit is in days';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date_amount', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateAmountIsNotEmptyAndAbsenceTypeIsCalculatedInDays() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $params = $this->mergeWithDefaultLeaveRequestParams(['to_date_amount' => 2.5, 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The to_date_amount should be empty when absence type calculation unit is in days';
+    $expectedResult = $this->getExpectedArrayForIsValidError('to_date_amount', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenFromDateAmountIsEmptyAndAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $params = $this->mergeWithDefaultLeaveRequestInHoursParams(['from_date_amount' => '', 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The from_date_amount can not be empty when absence type calculation unit is in hours';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date_amount', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateAmountIsEmptyAndAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $params = $this->mergeWithDefaultLeaveRequestInHoursParams(['to_date_amount' => '', 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The to_date_amount can not be empty when absence type calculation unit is in hours';
+    $expectedResult = $this->getExpectedArrayForIsValidError('to_date_amount', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenToDateTypeIsNotEmptyAndAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $params = $this->mergeWithDefaultLeaveRequestInHoursParams(['to_date_type' => 1, 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The to_date_type should be empty when absence type calculation unit is in hours';
+    $expectedResult = $this->getExpectedArrayForIsValidError('to_date_type', $errorMessage);
+    $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testLeaveRequestIsValidShouldReturnErrorWhenFromDateTypeIsNotEmptyAndAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $params = $this->mergeWithDefaultLeaveRequestInHoursParams(['from_date_type' => 1, 'type_id' => $absenceType->id]);
+    $result = civicrm_api3('LeaveRequest', 'isvalid', $params);
+
+    $errorMessage = 'The from_date_type should be empty when absence type calculation unit is in hours';
+    $expectedResult = $this->getExpectedArrayForIsValidError('from_date_type', $errorMessage);
     $this->assertEquals($expectedResult, $result);
   }
 
@@ -2719,6 +2893,50 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $errorMessage = 'The TOIL to accrue amount is not valid';
     $expectedResult = $this->getExpectedArrayForIsValidError('toil_to_accrue', $errorMessage);
     $this->assertEquals($expectedResult, $result);
+  }
+
+  public function testToilCanBeAccruedWhenToilIsInHoursAndToilToAccrueValueIsNotAValidToilAmountOptionValue() {
+    $contactID = 1;
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+
+    $this->registerCurrentLoggedInContactInSession($contactID);
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'calculation_unit' => 2,
+      'allow_accruals_request' => true,
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $period->id
+    ]);
+
+    $periodStartDate = '2016-01-01';
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $periodStartDate]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $result = civicrm_api3('LeaveRequest', 'create', [
+      'type_id' => $absenceType->id,
+      'contact_id' => 1,
+      'status_id' => 3,
+      'from_date' => CRM_Utils_Date::processDate('today'),
+      'from_date_amount' => 0,
+      'to_date' => CRM_Utils_Date::processDate('today'),
+      'to_date_amount' => 0,
+      'toil_duration' => 1,
+      'toil_to_accrue' => 100,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $this->assertNotNull($result['id']);
   }
 
   public function testLeaveRequestIsValidShouldReturnAnErrorWhenTheToilDatesAreInThePastAndTheAbsenceTypeDoesNotAllowIt() {
@@ -3930,6 +4148,19 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], $params);
   }
 
+  private function mergeWithDefaultLeaveRequestInHoursParams($params) {
+    $leaveParams = $this->mergeWithDefaultLeaveRequestParams([]);
+
+    $leaveInHoursParams = [
+      'from_date_amount' => 1.5,
+      'to_date_amount' => 3,
+      'from_date_type' => null,
+      'to_date_type' => null
+    ];
+
+    return array_merge($leaveParams, $leaveInHoursParams, $params);
+  }
+
   private function mergeWithDefaultTOILRequestParams($params) {
     $toilParams = $this->mergeWithDefaultLeaveRequestParams([
       'toil_to_accrue' => 1,
@@ -3948,6 +4179,50 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     return array_merge($sicknessParams, $params);
+  }
+
+
+  public function testTheTimeForFromAndToDateOfLeaveRequestIsAddedCorrectlyWhenLeaveIsCalculatedInDays() {
+    $fromDate = new DateTime('2016-01-08');
+    $toDate = new DateTime('2016-01-10');
+    $contactID = 1;
+    $this->registerCurrentLoggedInContactInSession($contactID);
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $fromDate->format('YmdHis'),
+      'end_date' => $toDate->format('YmdHis'),
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $fromDate->format('Y-m-d')]
+    );
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $period->id
+    ]);
+
+    $entitlementBalanceChange = 3;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $result = civicrm_api3('LeaveRequest', 'create', [
+      'contact_id' => $contract['contact_id'],
+      'type_id' => $this->absenceType->id,
+      'from_date' => $fromDate->format('Y-m-d'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => $toDate->format('Y-m-d'),
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'status_id' => 3,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'sequential' => 1,
+    ]);
+
+    $leaveRequest = LeaveRequest::findById($result['id']);
+    $this->assertEquals($fromDate->format('Y-m-d') ." 00:00:00", $leaveRequest->from_date);
+    $this->assertEquals($toDate->format('Y-m-d') ." 23:59:00", $leaveRequest->to_date);
   }
 
   public function testCreateReturnsFalseForFromEmailParameterWhenFromEmailIsNotConfigured() {
@@ -4034,4 +4309,174 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertTrue($result['from_email_configured']);
   }
+
+  public function testTheTimeForFromAndToDateOfLeaveRequestIsNotModifiedWhenLeaveIsNotCalculatedInDays() {
+    $fromDate = new DateTime('2016-01-08 13:00:00');
+    $toDate = new DateTime('2016-01-10 15:45:00');
+    $contactID = 1;
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $this->registerCurrentLoggedInContactInSession($contactID);
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $fromDate->format('YmdHis'),
+      'end_date' => $toDate->format('YmdHis'),
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $fromDate->format('Y-m-d')]
+    );
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $period->id
+    ]);
+
+    $entitlementBalanceChange = 30;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $result = civicrm_api3('LeaveRequest', 'create', [
+      'contact_id' => $contract['contact_id'],
+      'type_id' => $absenceType->id,
+      'from_date' => $fromDate->format('Y-m-d H:i:s'),
+      'to_date' => $toDate->format('Y-m-d H:i:s'),
+      'status_id' => 3,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'from_date_amount' => 2,
+      'to_date_amount' => 1,
+      'sequential' => 1,
+    ]);
+
+    $leaveRequest = LeaveRequest::findById($result['id']);
+    $this->assertEquals($fromDate->format('Y-m-d H:i:s'), $leaveRequest->from_date);
+    $this->assertEquals($toDate->format('Y-m-d H:i:s'), $leaveRequest->to_date);
+  }
+
+  public function testTheTimeForFromAndToDateOfLeaveRequestIsAddedCorrectlyWhenLeaveIsCalculatedInDaysWithTimePresetForTheDates() {
+    $fromDate = new DateTime('2016-01-08 13:00:00');
+    $toDate = new DateTime('2016-01-10 15:45:00');
+    $contactID = 1;
+    $this->registerCurrentLoggedInContactInSession($contactID);
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $fromDate->format('YmdHis'),
+      'end_date' => $toDate->format('YmdHis'),
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $fromDate->format('Y-m-d')]
+    );
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $period->id
+    ]);
+
+    $entitlementBalanceChange = 30;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $result = civicrm_api3('LeaveRequest', 'create', [
+      'contact_id' => $contract['contact_id'],
+      'type_id' => $this->absenceType->id,
+      'from_date' => $fromDate->format('Y-m-d H:i:s'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => $toDate->format('Y-m-d H:i:s'),
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'status_id' => 3,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
+      'sequential' => 1,
+    ]);
+
+    $leaveRequest = LeaveRequest::findById($result['id']);
+    $this->assertEquals($fromDate->format('Y-m-d') ." 00:00:00", $leaveRequest->from_date);
+    $this->assertEquals($toDate->format('Y-m-d') ." 23:59:00", $leaveRequest->to_date);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, leave_date
+   */
+  public function testGetWorkDayForDateShouldNotAllowNullParams() {
+    civicrm_api3('LeaveRequest', 'getWorkDayForDate', []);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id
+   */
+  public function testGetWorkDayForDateShouldThrowAnExceptionWhenContactIDIsMissing() {
+    civicrm_api3('LeaveRequest', 'getWorkDayForDate', ['leave_date' => '2016-01-01']);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_date
+   */
+  public function testGetWorkDayForDateShouldThrowAnExceptionWhenLeaveDateIsMissing() {
+    civicrm_api3('LeaveRequest', 'getWorkDayForDate', ['contact_id' => 1]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage leave_date is not a valid date: 2016-99-02
+   */
+  public function testGetWorkDayForDateShouldThrowAnExceptionWhenLeaveDateIsInvalid() {
+    civicrm_api3('LeaveRequest', 'getWorkDayForDate', ['contact_id' => 1, 'leave_date' => '2016-99-02']);
+  }
+
+  public function testGetWorkDayForDateReturnsCorrectResults() {
+    $periodStartDate = new DateTime('2017-01-01');
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [ 'period_start_date' => $periodStartDate->format('Y-m-d') ]
+    );
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+    $workWeeks = WorkPatternFabricator::getWeekFor40HourWorkWeek();
+    $workDay = $workWeeks['days'][0];
+
+    $expectedResult = [
+      'time_from' => CRM_Utils_Array::value('time_from', $workDay, '') ,
+      'time_to' => CRM_Utils_Array::value('time_to', $workDay, ''),
+      'number_of_hours' =>  !empty($workDay['number_of_hours']) ? $workDay['number_of_hours'] : ''
+    ];
+
+    //2017-01-02 is a monday and a working day
+    $result = civicrm_api3('LeaveRequest', 'getWorkDayForDate', [
+      'contact_id' => $contract['contact_id'],
+      'leave_date' => '2017-01-02']
+    );
+    $this->assertEquals($expectedResult, $result['values']);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage Contact has no Work Day for this date
+   */
+  public function testGetContactWorkDayForDateThrowsAnExceptionWhenThereIsNoWorkDay() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+    ]);
+
+    $contactID = 1;
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    civicrm_api3('LeaveRequest', 'getWorkDayForDate', [
+      'contact_id' => $contactID,
+      'leave_date' => '2017-01-02']
+    );
+  }
 }
+

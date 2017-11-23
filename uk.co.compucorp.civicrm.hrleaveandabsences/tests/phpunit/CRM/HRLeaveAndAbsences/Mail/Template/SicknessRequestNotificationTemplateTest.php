@@ -4,6 +4,7 @@ use CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotification as Sickness
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 /**
@@ -71,6 +72,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
     $leaveRequestStatuses = LeaveRequest::buildOptions('status_id');
     $sicknessReasons = LeaveRequest::buildOptions('sickness_reason');
     $dateTimeNow = new DateTime('now');
+    $calculationUnitNames = AbsenceType::buildOptions('calculation_unit', 'validate');
 
     //validate template parameters
     $this->assertEquals($tplParams['toDate'], $leaveRequest->to_date);
@@ -81,6 +83,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
     $this->assertEquals($tplParams['leaveStatus'], $leaveRequestStatuses[$leaveRequest->status_id]);
     $this->assertEquals($tplParams['currentDateTime'], $dateTimeNow, '', 10);
     $this->assertEquals($tplParams['absenceTypeName'], $absenceType->title);
+    $this->assertEquals($tplParams['calculationUnitName'], $calculationUnitNames[$absenceType->calculation_unit]);
 
     //There are two attachments for the Sickness request
     $this->assertCount(2, $tplParams['leaveFiles']);
@@ -99,5 +102,23 @@ class CRM_HRLeaveAndAbsences_Mail_Template_SicknessRequestNotificationTemplateTe
     $this->assertEquals($tplParams['sicknessReason'], $sicknessReasons[$leaveRequest->sickness_reason]);
     $this->assertEquals($tplParams['sicknessRequiredDocuments'], $this->getSicknessRequiredDocuments());
     $this->assertEquals($tplParams['leaveRequiredDocuments'], explode(',', $leaveRequest->sickness_required_documents));
+  }
+
+  public function testFromDateTypeAndToDateTypeTemplateParametersAreNotPresentWhenAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' =>2,
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'sickness_reason' => 1,
+      'sickness_required_documents' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_SICKNESS
+    ], false);
+
+    $tplParams = $this->sicknessRequestNotificationTemplate->getTemplateParameters($leaveRequest);
+
+    $this->assertArrayNotHasKey('fromDateType', $tplParams);
+    $this->assertArrayNotHasKey('toDateType', $tplParams);
   }
 }

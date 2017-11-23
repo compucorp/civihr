@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification {
 
@@ -46,18 +47,24 @@ abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification {
    * @return array
    */
   public function getTemplateParameters(LeaveRequest $leaveRequest) {
+    $calculationUnitName = $this->getAbsenceTypeCalculationUnitName($leaveRequest);
     $templateParameters =  [
       'leaveComments' => $this->getLeaveComments($leaveRequest),
       'leaveFiles' => $this->getAttachments($leaveRequest),
       'fromDate' => $leaveRequest->from_date,
       'toDate' => $leaveRequest->to_date,
-      'fromDateType' => $this->getLeaveRequestDayTypeLabel($leaveRequest->from_date_type),
-      'toDateType' => $this->getLeaveRequestDayTypeLabel($leaveRequest->to_date_type),
       'leaveStatus' => $this->getLeaveRequestStatusLabel($leaveRequest->status_id),
       'leaveRequest' => $leaveRequest,
       'absenceTypeName' => $this->getAbsenceTypeName($leaveRequest),
-      'currentDateTime' => new DateTime()
+      'currentDateTime' => new DateTime(),
+      'calculationUnitName' => $calculationUnitName
     ];
+
+    if($calculationUnitName == 'days') {
+      $templateParameters['fromDateType'] = $this->getLeaveRequestDayTypeLabel($leaveRequest->from_date_type);
+      $templateParameters['toDateType'] = $this->getLeaveRequestDayTypeLabel($leaveRequest->to_date_type);
+    }
+
 
     return $templateParameters;
   }
@@ -140,5 +147,22 @@ abstract class CRM_HRLeaveAndAbsences_Mail_Template_BaseRequestNotification {
     $absenceType->find(true);
 
     return $absenceType->title;
+  }
+
+  /**
+   * Gets the Name of the Absence Type Calculation Unit for a LeaveRequest
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   *
+   * @return string
+   */
+  private function getAbsenceTypeCalculationUnitName(LeaveRequest $leaveRequest) {
+    $absenceType = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
+    $absenceType->id = $leaveRequest->type_id;
+    $absenceType->find(true);
+    $calculationUnitId = $absenceType->calculation_unit;
+    $calculationUnitOptions = AbsenceType::buildOptions('calculation_unit', 'validate');
+
+    return $calculationUnitOptions[$calculationUnitId];
   }
 }

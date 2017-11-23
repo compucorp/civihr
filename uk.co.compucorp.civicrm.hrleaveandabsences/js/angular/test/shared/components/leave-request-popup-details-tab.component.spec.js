@@ -67,6 +67,7 @@ define([
       spyOn(LeaveRequestAPI, 'getBalanceChangeBreakdown').and.callThrough();
       spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
       spyOn(AbsenceType, 'canExpire').and.callThrough();
+      spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
       spyOn(EntitlementAPI, 'all').and.callThrough();
       spyOn(WorkPatternAPI, 'getCalendar').and.callThrough();
       spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
@@ -348,7 +349,7 @@ define([
           describe('when day type changed', function () {
             describe('for single day', function () {
               beforeEach(function () {
-                // select half_day_am  to get single day mock data
+                // select half_day_am to get single day mock data
                 controller.request.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'half_day_am');
                 controller.calculateBalanceChange();
                 $rootScope.$digest();
@@ -416,6 +417,199 @@ define([
               it('changes filtered data', function () {
                 expect(controller.pagination.filteredbreakdown[0]).not.toEqual(beforeFilteredItems[0]);
               });
+            });
+          });
+        });
+
+        describe('when leave absence type has "hours" calculation unit', function () {
+          describe('on initialise', function () {
+            beforeEach(function () {
+              selectedAbsenceType.calculation_unit_name = 'hours';
+
+              compileComponent();
+
+              $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+              $rootScope.$digest();
+
+              controller.request.type_id = selectedAbsenceType.id;
+            });
+
+            afterEach(function () {
+              selectedAbsenceType.calculation_unit_name = 'days';
+            });
+
+            it('has a storage for time selectors', function () {
+              ['from', 'to'].forEach(function (type) {
+                expect(controller.uiOptions.times[type].time).toBeDefined();
+                expect(controller.uiOptions.times[type].amount).toBeDefined();
+                expect(controller.uiOptions.times[type].maxAmount).toBeDefined();
+                expect(controller.uiOptions.times[type].disabled).toBeDefined();
+                expect(controller.uiOptions.times[type].skipValueSetting).toBeDefined();
+              });
+            });
+
+            it('defaults data selection to a single day', function () {
+              expect(controller.uiOptions.multipleDays).toBeFalsy();
+            });
+
+            describe('after from date is selected', function () {
+              var timeFromObject, request, workDayMock;
+
+              beforeEach(function () {
+                timeFromObject = controller.uiOptions.times.from;
+                request = controller.request;
+                workDayMock = leaveRequestData.workDayForDate().values;
+
+                setTestDates(date2016);
+                $rootScope.$digest();
+              });
+
+              it('turns loading indicator off', function () {
+                expect(timeFromObject.loading).toBeFalsy();
+              });
+
+              it('sets minimum timepicker option', function () {
+                expect(timeFromObject.min).toBe(workDayMock.time_from);
+              });
+
+              it('sets maximum timepicker option', function () {
+                expect(timeFromObject.max).toBe(workDayMock.time_to);
+              });
+
+              it('pre-sets default timepicker option same as *minimum*', function () {
+                expect(timeFromObject.time).toBe(timeFromObject.min);
+              });
+
+              it('allows user to select "from" time', function () {
+                expect(timeFromObject.disabled).toBeFalsy();
+              });
+
+              it('sets the maximum deduction amount', function () {
+                expect(timeFromObject.maxAmount).toBe(workDayMock.number_of_hours);
+              });
+
+              it('sets the default deduction amount same as maximum', function () {
+                expect(timeFromObject.amount).toBe(timeFromObject.maxAmount);
+              });
+
+              it('sets the "from" date to request in a date+time format', function () {
+                expect(request.from_date.length).toBe('YYYY-MM-DD hh:mm'.length);
+              });
+
+              describe('after to date is selected', function () {
+                var timeToObject;
+
+                beforeEach(function () {
+                  timeToObject = controller.uiOptions.times.to;
+
+                  setTestDates(date2016, date2017);
+                  $rootScope.$digest();
+                });
+
+                it('turns loading indicator off', function () {
+                  expect(timeToObject.loading).toBeFalsy();
+                });
+
+                it('sets minimum timepicker option', function () {
+                  expect(timeToObject.min).toBe(workDayMock.time_from);
+                });
+
+                it('sets maximum timepicker option', function () {
+                  expect(timeToObject.max).toBe(workDayMock.time_to);
+                });
+
+                it('pre-sets default timepicker option same as *maximum*', function () {
+                  expect(timeToObject.time).toBe(timeToObject.max);
+                });
+
+                it('allows user to select "from" time', function () {
+                  expect(timeToObject.disabled).toBeFalsy();
+                });
+
+                it('sets the maximum deduction amount', function () {
+                  expect(timeToObject.maxAmount).toBe(workDayMock.number_of_hours);
+                });
+
+                it('sets the default deduction amount same as maximum', function () {
+                  expect(timeToObject.amount).toBe(timeToObject.maxAmount);
+                });
+
+                it('sets the "from" date to request in a date+time format', function () {
+                  expect(request.to_date.length).toBe('YYYY-MM-DD hh:mm'.length);
+                });
+
+                it('shows the balance', function () {
+                  expect(controller.uiOptions.showBalance).toBeTruthy();
+                });
+
+                describe('if work day info cannot be retrieved', function () {
+                  beforeEach(function () {
+                    spyOn($rootScope, '$broadcast');
+                    spyOn(request, 'getWorkDayForDate').and.returnValue($q.reject());
+                    setTestDates(date2016, date2017);
+                    $rootScope.$digest();
+                  });
+
+                  it('flushes and disables time and deduction fields', function () {
+                    expect(timeToObject.disabled).toBeTruthy();
+                    expect(timeToObject.time).toBe('');
+                    expect(timeToObject.amount).toBe('0');
+                  });
+
+                  it('shows the error', function () {
+                    expect($rootScope.$broadcast).toHaveBeenCalledWith(
+                      'LeaveRequestPopup::handleError', jasmine.any(Array));
+                  });
+                });
+              });
+            });
+
+            describe('when absence period is changed', function () {
+              beforeEach(function () {
+                $rootScope.$broadcast('LeaveRequestPopup::updateBalance');
+                $rootScope.$digest();
+              });
+
+              it('sets data selection to a single day', function () {
+                expect(controller.uiOptions.multipleDays).toBeFalsy();
+              });
+            });
+          });
+
+          describe('when user edits the request', function () {
+            beforeEach(function () {
+              var status = optionGroupMock.specificValue(
+                'hrleaveandabsences_leave_request_status', 'value', '3');
+              var leaveRequest = LeaveRequestInstance.init(
+                leaveRequestData.findBy('status_id', status));
+
+              selectedAbsenceType.calculation_unit_name = 'hours';
+              leaveRequest.contact_id = '' + CRM.vars.leaveAndAbsences.contactId;
+              leaveRequest.type_id = selectedAbsenceType.id;
+              leaveRequest.from_date_amount = '1.5';
+              leaveRequest.to_date_amount = '4.75';
+
+              compileComponent({
+                mode: 'edit',
+                request: leaveRequest
+              });
+              $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+              $rootScope.$digest();
+            });
+
+            afterEach(function () {
+              selectedAbsenceType.calculation_unit_name = 'days';
+            });
+
+            it('leaves time and deduction as is', function () {
+              expect(controller.uiOptions.times.from.time).toBe(moment(controller.request.from_date).format('HH:mm'));
+              expect(controller.uiOptions.times.to.time).toBe(moment(controller.request.to_date).format('HH:mm'));
+              expect(controller.uiOptions.times.from.amount).toBe(controller.request.from_date_amount);
+              expect(controller.uiOptions.times.to.amount).toBe(controller.request.to_date_amount);
+            });
+
+            it('does not recalculate the balance', function () {
+              expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
             });
           });
         });
@@ -601,6 +795,10 @@ define([
             it('retrieves original balance breakdown', function () {
               expect(LeaveRequestAPI.getBalanceChangeBreakdown).toHaveBeenCalled();
               expect(controller.loading.showBalanceChange).toBe(false);
+            });
+
+            it('does not recalculate the balance', function () {
+              expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
             });
 
             it('shows balance', function () {
@@ -1083,6 +1281,110 @@ define([
 
         it('has absence type remainder as opening balance', function () {
           expect(controller.balance.opening).toBe(expectedOpeningBalance);
+        });
+      });
+    });
+
+    describe('time and date inputs watchers', function () {
+      beforeEach(function () {
+        var absenceTypes = absenceTypeData.all().values;
+
+        compileComponent({
+          mode: 'create',
+          role: 'admin',
+          selectedAbsenceType: absenceTypes[0]
+        });
+        spyOn(controller, 'calculateBalanceChange').and.callThrough();
+      });
+
+      describe('when the calculation unit is "hours"', function () {
+        beforeEach(function () {
+          selectedAbsenceType.calculation_unit_name = 'hours';
+
+          spyOn(controller, '_setDateAndTypes').and.callThrough();
+        });
+
+        describe('when from/to deductions values are set but not changed', function () {
+          beforeEach(function () {
+            // the amounts are 0, setting them to 0 again still fires the watcher
+            controller.uiOptions.times.from.amount = 0;
+            controller.uiOptions.times.to.amount = 0;
+
+            $rootScope.$digest();
+          });
+
+          it('does not call the balance change calculation function', function () {
+            expect(controller.calculateBalanceChange).not.toHaveBeenCalled();
+          });
+
+          describe('when from/to deductions values are changed', function () {
+            beforeEach(function () {
+              controller.uiOptions.times.from.amount = 80;
+              controller.uiOptions.times.to.amount = 100;
+
+              $rootScope.$digest();
+            });
+
+            it('calls the balance change calculation function', function () {
+              expect(controller.calculateBalanceChange).toHaveBeenCalled();
+            });
+          });
+        });
+
+        describe('when "from" time value is changed in UI', function () {
+          beforeEach(function () {
+            controller.uiOptions.times.from.time = '19:00';
+
+            $rootScope.$digest();
+          });
+
+          it('updates the time in the request instance', function () {
+            expect(controller._setDateAndTypes).toHaveBeenCalled();
+          });
+        });
+
+        describe('when "to" time value is changed in UI', function () {
+          beforeEach(function () {
+            controller.uiOptions.times.to.time = '12:45';
+
+            $rootScope.$digest();
+          });
+
+          it('updates the time in the request instance', function () {
+            expect(controller._setDateAndTypes).toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe('when the calculation unit is "days"', function () {
+        beforeEach(function () {
+          selectedAbsenceType.calculation_unit_name = 'days';
+        });
+
+        describe('when from/to deductions are set', function () {
+          beforeEach(function () {
+            controller.uiOptions.times.from.amount = 50;
+            controller.uiOptions.times.to.amount = 100;
+
+            $rootScope.$digest();
+          });
+
+          it('does not call the balance change calculation function', function () {
+            expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe('when from/to dates are changed', function () {
+        beforeEach(function () {
+          controller.uiOptions.fromDate = '1989-04-14';
+
+          spyOn(controller.request, 'getWorkDayForDate').and.returnValue($q.reject());
+          $rootScope.$digest();
+        });
+
+        it('loads the time and deduction ranges', function () {
+          expect(controller.request.getWorkDayForDate).toHaveBeenCalled();
         });
       });
     });

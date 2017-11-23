@@ -147,6 +147,10 @@
               expect(controller.absenceTypes.length).toBeGreaterThan(0);
             });
 
+            it('loads calculation units into absence types', function () {
+              expect(controller.absenceTypes[0].calculation_unit_name).toEqual(jasmine.any(String));
+            });
+
             it('has first absence type selected', function () {
               expect(controller.request.type_id).toEqual(controller.absenceTypes[0].id);
             });
@@ -523,6 +527,11 @@
               it('initiates the balance change recalculation', function () {
                 expect($rootScope.$emit).toHaveBeenCalledWith(
                   'LeaveRequestPopup::updateBalance');
+              });
+
+              it('recalculates the balance', function () {
+                expect(controller.request.calculateBalanceChange).toHaveBeenCalledWith(
+                  controller.selectedAbsenceType.calculation_unit_name);
               });
             });
           });

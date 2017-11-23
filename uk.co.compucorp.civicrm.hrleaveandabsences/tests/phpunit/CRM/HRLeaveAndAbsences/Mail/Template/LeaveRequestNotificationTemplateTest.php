@@ -4,6 +4,7 @@ use CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotification as LeaveReques
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 /**
@@ -67,6 +68,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplateTest 
     $leaveRequestDayTypes = LeaveRequest::buildOptions('from_date_type');
     $leaveRequestStatuses = LeaveRequest::buildOptions('status_id');
     $dateTimeNow = new DateTime('now');
+    $calculationUnitNames = AbsenceType::buildOptions('calculation_unit', 'validate');
 
     //validate template parameters
     $this->assertEquals($tplParams['toDate'], $leaveRequest->to_date);
@@ -77,6 +79,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplateTest 
     $this->assertEquals($tplParams['leaveStatus'], $leaveRequestStatuses[$leaveRequest->status_id]);
     $this->assertEquals($tplParams['currentDateTime'], $dateTimeNow, '', 10);
     $this->assertEquals($tplParams['absenceTypeName'], $absenceType->title);
+    $this->assertEquals($tplParams['calculationUnitName'], $calculationUnitNames[$absenceType->calculation_unit]);
 
     //There are two attachments for the leave request
     $this->assertCount(2, $tplParams['leaveFiles']);
@@ -91,5 +94,20 @@ class CRM_HRLeaveAndAbsences_Mail_Template_LeaveRequestNotificationTemplateTest 
     sort($leaveCommentText);
 
     $this->assertEquals($leaveCommentText, ['Random Commenter', 'Sample text']);
+  }
+
+  public function testFromDateTypeAndToDateTypeTemplateParametersAreNotPresentWhenAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' =>2,
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+    ], false);
+
+    $tplParams = $this->leaveRequestNotificationTemplate->getTemplateParameters($leaveRequest);
+
+    $this->assertArrayNotHasKey('fromDateType', $tplParams);
+    $this->assertArrayNotHasKey('toDateType', $tplParams);
   }
 }

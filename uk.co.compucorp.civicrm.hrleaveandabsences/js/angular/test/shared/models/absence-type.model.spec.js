@@ -1,14 +1,16 @@
 /* eslint-env amd, jasmine */
 
 define([
+  'common/lodash',
   'common/moment',
+  'common/mocks/services/api/option-group-mock',
   'leave-absences/shared/models/absence-type.model',
   'mocks/apis/absence-type-api-mock'
-], function (moment) {
+], function (_, moment) {
   'use strict';
 
   describe('AbsenceType', function () {
-    var $provide, AbsenceType, AbsenceTypeAPI, $rootScope, $q;
+    var $provide, AbsenceType, AbsenceTypeAPI, OptionGroupAPI, $rootScope, $q;
 
     beforeEach(module('leave-absences.models', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -18,6 +20,12 @@ define([
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
     }));
 
+    beforeEach(inject(['api.optionGroup.mock', 'api.optionGroup.mock', function (_OptionGroupAPI_, _OptionGroupAPIMock_) {
+      OptionGroupAPI = _OptionGroupAPI_;
+
+      $provide.value('api.optionGroup', _OptionGroupAPIMock_);
+    }]));
+
     beforeEach(inject(function (_AbsenceType_, _AbsenceTypeAPI_, _$rootScope_, _$q_) {
       AbsenceType = _AbsenceType_;
       AbsenceTypeAPI = _AbsenceTypeAPI_;
@@ -26,13 +34,15 @@ define([
 
       spyOn(AbsenceTypeAPI, 'all').and.callThrough();
       spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
+      spyOn(OptionGroupAPI, 'valuesOf').and.callThrough();
     }));
 
     it('has expected interface', function () {
       expect(Object.keys(AbsenceType)).toEqual([
         'all',
         'calculateToilExpiryDate',
-        'canExpire'
+        'canExpire',
+        'loadCalculationUnits'
       ]);
     });
 
@@ -129,6 +139,33 @@ define([
             expect(expires).toBe(false);
           });
         });
+      });
+    });
+
+    describe('loadCalculationUnits()', function () {
+      var absenceTypes, result;
+      beforeEach(function () {
+        AbsenceType.all().then(function (_absenceTypes_) {
+          absenceTypes = _.cloneDeep(_absenceTypes_);
+
+          return AbsenceType.loadCalculationUnits(_absenceTypes_);
+        }).then(function (_result_) {
+          result = _.cloneDeep(_result_);
+        });
+        $rootScope.$digest();
+      });
+
+      it('retrieves calculation unit option group', function () {
+        expect(OptionGroupAPI.valuesOf).toHaveBeenCalledWith(
+          'hrleaveandabsences_absence_type_calculation_unit');
+      });
+
+      it('sets calculation unit properties', function () {
+        expect(result[0]).toEqual(
+          _.assign(absenceTypes[0], {
+            calculation_unit_name: 'days',
+            calculation_unit_label: 'Days'
+          }));
       });
     });
   });

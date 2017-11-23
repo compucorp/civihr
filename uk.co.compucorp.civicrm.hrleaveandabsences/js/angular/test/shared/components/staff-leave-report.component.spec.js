@@ -54,9 +54,11 @@
         $provide.value('checkPermissions', function () { return $q.resolve(isUserAdmin); });
       }));
 
-      beforeEach(inject(['shared-settings', 'HR_settingsMock', function (_sharedSettings_, HRSettingsMock) {
+      beforeEach(inject(['shared-settings', 'HR_settingsMock', 'api.optionGroup.mock', function (_sharedSettings_, HRSettingsMock, _OptionGroupAPIMock_) {
         sharedSettings = _sharedSettings_;
+
         $provide.value('HR_settings', HRSettingsMock);
+        $provide.value('api.optionGroup', _OptionGroupAPIMock_);
         HRSettings = HRSettingsMock;
       }]));
 
@@ -73,6 +75,7 @@
 
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
+        spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
         spyOn(Entitlement, 'all').and.callThrough();
         spyOn(Entitlement, 'breakdown').and.callThrough();
         spyOn(LeaveRequest, 'all').and.callThrough();
@@ -124,6 +127,7 @@
 
             it('has fetched the absence types', function () {
               expect(AbsenceType.all).toHaveBeenCalled();
+              expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
               expect(controller.absenceTypes.length).not.toBe(0);
             });
 
@@ -352,7 +356,8 @@
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               from_date: { from: newPeriod.start_date },
               to_date: { to: newPeriod.end_date },
-              status_id: valueOfRequestStatus('approved')
+              status_id: valueOfRequestStatus('approved'),
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
               period_id: newPeriod.id
@@ -451,7 +456,8 @@
 
           it('fetches all leave requests linked to a public holiday', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              public_holiday: true
+              public_holiday: true,
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
           });
 
@@ -467,7 +473,8 @@
 
           it('fetches all approved leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              status_id: valueOfRequestStatus('approved')
+              status_id: valueOfRequestStatus('approved'),
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
           });
 
@@ -486,7 +493,8 @@
               status_id: { in: [
                 valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
                 valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
-              ] }
+              ] },
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }));
           });
 
@@ -505,7 +513,8 @@
               status_id: { in: [
                 valueOfRequestStatus(sharedSettings.statusNames.rejected),
                 valueOfRequestStatus(sharedSettings.statusNames.cancelled)
-              ] }
+              ] },
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
           });
 
@@ -588,6 +597,7 @@
                 from_date: {from: controller.selectedPeriod.start_date},
                 to_date: {to: controller.selectedPeriod.end_date},
                 request_type: 'toil',
+                type_id: { IN: _.keys(controller.absenceTypes) },
                 expired: true
               }, null, requestSortParam, null, false);
             });

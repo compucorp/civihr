@@ -1,5 +1,18 @@
 <?php
 
+$br = "\r\n";
+$dateLabel = '{if $calculationUnitName === \'days\'}Date{/if}{if $calculationUnitName === \'hours\'}Date/Time{/if}';
+$fromDateCaption = '{if $calculationUnitName === \'days\'}{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}{/if}{if $calculationUnitName === \'hours\'}{$fromDate|truncate:16:\'\'|crmDate}{/if}';
+$toDateCaption = '{if $calculationUnitName === \'days\'}{$toDate|truncate:10:\'\'|crmDate} {$toDateType}{/if}{if $calculationUnitName === \'hours\'}{$toDate|truncate:16:\'\'|crmDate}{/if}';
+$header =
+  '{ts}Status:{/ts} {$leaveStatus}' . $br .
+  '{ts}Staff Member:{/ts} {contact.display_name}' . $br .
+  '{if $leaveRequest->from_date eq $leaveRequest->to_date}{ts}' . $dateLabel . ':{/ts} ' . $fromDateCaption . '{else}{ts}From ' . $dateLabel . ':{/ts} ' . $fromDateCaption . $br . $br . '{ts}To ' . $dateLabel . ':{/ts} ' . $toDateCaption . '{/if}';
+$footer = $br .
+  'View This Request: {$leaveRequestLink}' .
+  '{if $leaveComments}' . $br . $br . 'Request Comments{foreach from=$leaveComments item=value key=label}' . $br . $br . '{$value.commenter}:' . $br . '{$value.created_at|crmDate}' . $br . '{$value.text}{/foreach}{/if}'.
+  '{if $leaveFiles}' . $br . $br . 'Other files recorded on this request{foreach from=$leaveFiles item=value key=label}' . $br . $br . '{$value.name}: Added on {$value.upload_date|crmDate}{/foreach}{/if}';
+
 return [
   [
     'name' => 'Email Template: Leave Request',
@@ -8,7 +21,11 @@ return [
       'version' => 3,
       'msg_title' => 'CiviHR Leave Request Notification',
       'msg_subject' => 'Leave Request',
-      'msg_text' => 'CiviHR Leave RequestLeave Request Type{ts}Status:{/ts}{$leaveStatus}{ts}Staff Member:{/ts}{contact.display_name}{if $leaveRequest->from_date eq $leaveRequest->to_date}{ts}Date:{/ts}{$fromDate|truncate:10:\'\'|crmDate}{$fromDateType}{else}{ts}From Date:{/ts}{$fromDate|truncate:10:\'\'|crmDate}{$fromDateType}{ts}To Date:{/ts}{$toDate|truncate:10:\'\'|crmDate}{$toDateType}{/if}View This Request{if $leaveComments}Request Comments{foreach from=$leaveComments item=value key=label}{$value.commenter}:{$value.created_at|crmDate}{$value.text}{/foreach}{/if}{if $leaveFiles}Other files recorded on this request{foreach from=$leaveFiles item=value key=label}{$value.name}: Added on{$value.upload_date|crmDate}{/foreach}{/if}',
+      'msg_text' =>
+        'CiviHR Leave Request' . $br .
+        'Leave Request Type' . $br .
+        $header . $br . $br .
+        $footer,
       'msg_html' => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -149,15 +166,15 @@ return [
                       </tr></tbody></table>
 
 
-                      {if $leaveRequest->from_date eq $leaveRequest->to_date}
+                      {if $fromDate eq $toDate}
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}Date:{/ts}
+                              {ts}' . $dateLabel . ':{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            ' . $fromDateCaption . '
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -165,22 +182,22 @@ return [
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}From Date:{/ts}
+                              {ts}From ' . $dateLabel . ':{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            ' . $fromDateCaption . '
                           </th></tr></table></th>
                         </tr></tbody></table>
 
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 0 !important; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}To Date:{/ts}
+                              {ts}To ' . $dateLabel . ':{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 0 !important; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</span>
+                            ' . $toDateCaption . '
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -272,7 +289,12 @@ return [
       'version' => 3,
       'msg_title' => 'CiviHR TOIL Request Notification',
       'msg_subject' => 'TOIL Request',
-      'msg_text' => 'CiviHR TOIL RequestLeave Request Type{ts}Status:{/ts}{$leaveStatus}{ts}Staff Member:{/ts}{contact.display_name}{if $leaveRequest->from_date eq $leaveRequest->to_date}{ts}Date:{/ts}{$fromDate|truncate:10:\'\'|crmDate}{else}{ts}From Date:{/ts}{$fromDate|truncate:10:\'\'|crmDate}{ts}To Date:{/ts}{$toDate|truncate:10:\'\'|crmDate}{/if}{ts}No. TOIL Days Requested{/ts}{$leaveRequest->toil_to_accrue}{if $leaveRequest->toil_to_accrue > 1}days{else}day{/if}View This Request{if $leaveComments}Request Comments{foreach from=$leaveComments item=value key=label}{$value.commenter}:{$value.created_at|crmDate}{$value.text}{/foreach}{/if}{if $leaveFiles}Other files recorded on this request{foreach from=$leaveFiles item=value key=label}{$value.name}: Added on{$value.upload_date|crmDate}{/foreach}{/if}',
+      'msg_text' =>
+        'CiviHR TOIL Request' . $br .
+        'Leave Request Type' . $br .
+        $header . $br . $br .
+        '{ts}No. TOIL Days Requested{/ts} {$leaveRequest->toil_to_accrue} {if $leaveRequest->toil_to_accrue > 1}days{else}day{/if}' . $br . $br .
+        $footer,
       'msg_html' => '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -417,11 +439,11 @@ return [
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-4 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 33.33333%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}Date:{/ts}
+                              {ts}' . $dateLabel . ':{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            ' . $fromDateCaption . '
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -429,22 +451,22 @@ return [
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-4 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 33.33333%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}From Date:{/ts}
+                              {ts}From ' . $dateLabel . ':{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            ' . $fromDateCaption . '
                           </th></tr></table></th>
                         </tr></tbody></table>
 
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-4 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 33.33333%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}To Date:{/ts}
+                              {ts}To ' . $dateLabel . ':{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</span>
+                            ' . $toDateCaption . '
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -692,11 +714,11 @@ return [
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}Date:{/ts}
+                              {ts}' . $dateLabel . ':{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            ' . $fromDateCaption . '
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -704,22 +726,22 @@ return [
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}From Date:{/ts}
+                              {ts}From ' . $dateLabel . ':{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$fromDate|truncate:10:\'\'|crmDate} {$fromDateType}</span>
+                            ' . $fromDateCaption . '
                           </th></tr></table></th>
                         </tr></tbody></table>
 
                         <table class="row" style="border-collapse: collapse; border-spacing: 0; display: table; padding: 0; position: relative; text-align: left; vertical-align: top; width: 100%;"><tbody><tr style="padding: 0; text-align: left; vertical-align: top;">
                           <th class="request-data-key small-12 large-3 columns first" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 25%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
                             <span style="color: #4D5663; font-weight: 600;">
-                              {ts}To Date:{/ts}
+                              {ts}To ' . $dateLabel . ':{/ts}
                             </span>
                           </th></tr></table></th>
                           <th class="request-data-value small-12 large-6 columns last" style="Margin: 0 auto; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0 auto; padding: 0; padding-bottom: 16px; padding-left: 0 !important; padding-right: 0 !important; text-align: left; width: 50%;"><table style="border-collapse: collapse; border-spacing: 0; padding: 0; text-align: left; vertical-align: top; width: 100%;"><tr style="padding: 0; text-align: left; vertical-align: top;"><th style="Margin: 0; color: #727E8A; font-family: \'Open Sans\', \'Helvetica Neue\', Helvetica, Arial, sans-serif; font-size: 13px; font-weight: normal; line-height: 1.53846; margin: 0; padding: 0; text-align: left;">
-                            <span>{$toDate|truncate:10:\'\'|crmDate} {$toDateType}</span>
+                            ' . $toDateCaption . '
                           </th></tr></table></th>
                         </tr></tbody></table>
 
@@ -840,7 +862,13 @@ return [
    <div style="display:none; white-space:nowrap; font:15px courier; line-height:0;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </div>
   </body>
 </html>',
-      'msg_text' => 'CiviHR Sickness RecordSickness Request Type Name{ts}Status:{/ts}{$leaveStatus}{ts}Staff Member:{/ts}{contact.display_name}{if $leaveRequest->from_date eq $leaveRequest->to_date}{ts}Date:{/ts}{$fromDate|truncate:10:\'\'|crmDate}{$fromDateType}{else}{ts}From Date:{/ts}{$fromDate|truncate:10:\'\'|crmDate}{$fromDateType}{ts}To Date:{/ts}{$toDate|truncate:10:\'\'|crmDate}{$toDateType}{/if}Additional Details:The Reason{foreach from=$sicknessReasons item=value key=id}{if $id eq $leaveRequest->sickness_reason}{$value}{/if}{/foreach}{if $leaveRequiredDocuments}{foreach from=$sicknessRequiredDocuments item=value key=id}{if in_array($id, $leaveRequiredDocuments)}{$value}{/if}{/foreach}{/if}{if $leaveComments}Request Comments{foreach from=$leaveComments item=value key=label}{$value.commenter}:{$value.created_at|crmDate}{$value.text}{/foreach}{/if}{if $leaveFiles}Other files recorded on this request{foreach from=$leaveFiles item=value key=label}{$value.name}: Added on{$value.upload_date|crmDate}{/foreach}{/if}',
+      'msg_text' =>
+        'CiviHR Sickness Record' . $br .
+        'Sickness Request Type' . $br .
+        $header . $br . $br .
+        'Additional Details:' . $br .
+        'The Reason: {$sicknessReason}' . $br . $br .
+        $footer,
       'is_reserved' => 1
     ],
   ]

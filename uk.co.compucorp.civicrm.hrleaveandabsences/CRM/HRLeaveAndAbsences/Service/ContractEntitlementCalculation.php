@@ -159,6 +159,16 @@ class CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculation {
   }
 
   /**
+   * Returns true if this calculation is in hours, according to the calculation's
+   * Absence Type
+   *
+   * @return bool
+   */
+  public function isCalculationUnitInHours() {
+    return $this->absenceType->isCalculationUnitInHours();
+  }
+
+  /**
    * Returns an array with the values of the JobLeave for the given contract and
    * the calculation's  absence type.
    *

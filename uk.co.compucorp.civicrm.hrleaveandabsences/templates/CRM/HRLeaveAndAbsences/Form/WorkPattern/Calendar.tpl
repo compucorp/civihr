@@ -2,7 +2,7 @@
   <div class="number-of-weeks form-inline">
     <div class="form-group">
       <label for="number_of_weeks">{ts}No. of Weeks{/ts}: </label>
-      <select name="number_of_weeks" id="number_of_weeks">
+      <select name="number_of_weeks" id="number_of_weeks" class="crm-form-select no-select2">
         {section name=i start=1 loop="`$max_number_of_weeks+1`" step=1}
           <option value="{$smarty.section.i.index}" {if $smarty.section.i.index eq $number_of_visible_weeks}selected{/if}>{$smarty.section.i.index}</option>
         {/section}

@@ -31,8 +31,7 @@
 
   <div class="crm-footer" id="civicrm-footer">
     {* PCHR-1323 - Display CiviHR version info. *}
-    {ts}Powered by CiviHR version{/ts}
-    {civihrVersion assign=civihrversion}.
+    {ts}Powered by CiviHR version{/ts} {civihrVersion}.
 
     {if !empty($footer_status_severity)}
       <span class="status{if $footer_status_severity gt 3} crm-error{elseif $footer_status_severity gt 2} crm-warning{else} crm-ok{/if}">

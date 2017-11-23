@@ -1,4 +1,5 @@
 /* eslint-env amd */
+
 define([
   'common/lodash',
   'common/moment',
@@ -179,6 +180,7 @@ define([
      */
     function loadAbsenceTypes () {
       return AbsenceType.all()
+        .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
           vm.absenceTypes = _.indexBy(absenceTypes, 'id');
         });
@@ -194,7 +196,8 @@ define([
         contact_id: vm.contactId,
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
-        status_id: valueOfRequestStatus(sharedSettings.statusNames.approved)
+        status_id: valueOfRequestStatus(sharedSettings.statusNames.approved),
+        type_id: { IN: _.keys(vm.absenceTypes) }
       }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.approved.data = leaveRequests.list;
@@ -297,7 +300,8 @@ define([
           from_date: {from: vm.selectedPeriod.start_date},
           to_date: {to: vm.selectedPeriod.end_date},
           request_type: 'toil',
-          expired: true
+          expired: true,
+          type_id: { IN: _.keys(vm.absenceTypes) }
         }, null, requestSort, null, false)
       ])
         .then(function (results) {
@@ -340,7 +344,8 @@ define([
         status_id: { in: [
           valueOfRequestStatus(sharedSettings.statusNames.rejected),
           valueOfRequestStatus(sharedSettings.statusNames.cancelled)
-        ] }
+        ] },
+        type_id: { IN: _.keys(vm.absenceTypes) }
       }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.other.data = leaveRequests.list;
@@ -360,7 +365,8 @@ define([
         status_id: { in: [
           valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
           valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
-        ] }
+        ] },
+        type_id: { IN: _.keys(vm.absenceTypes) }
       }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.pending.data = leaveRequests.list;
@@ -377,7 +383,8 @@ define([
         contact_id: vm.contactId,
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
-        public_holiday: true
+        public_holiday: true,
+        type_id: { IN: _.keys(vm.absenceTypes) }
       }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.holidays.data = leaveRequests.list;
