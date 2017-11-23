@@ -11,7 +11,8 @@
       text-transform: uppercase;
 
       &:hover {
-        background: $gray-lighter;
+        background: darken($gray-dark, $crm-darken-percentage);
+        color: $crm-white;
       }
     }
   }
