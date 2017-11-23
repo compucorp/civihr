@@ -553,9 +553,6 @@ define([
                   it('flushes and disables time and deduction fields', function () {
                     expect(timeToObject.disabled).toBeTruthy();
                     expect(timeToObject.time).toBe('');
-                    expect(timeToObject.min).toBe('0');
-                    expect(timeToObject.max).toBe('0');
-                    expect(timeToObject.maxAmount).toBe('0');
                     expect(timeToObject.amount).toBe('0');
                   });
 

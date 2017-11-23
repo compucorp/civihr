@@ -24,16 +24,12 @@ gulp.task('requirejs', function (done) {
     .then(done);
 });
 
-gulp.task('requirejs-bundle', function (done) {
-  exec('r.js -o js/build.js', function (err, stdout, stderr) {
-    err && err.code && console.log(stdout);
-    done();
-  });
-});
-
 gulp.task('watch', function () {
+  var watchPaths = ['js/src/**/*.js'].concat(buildFileManager
+    .init().getExtensionWatchPaths());
+
   gulp.watch('scss/**/*.scss', ['sass']);
-  gulp.watch('js/src/**/*.js', ['requirejs-bundle']).on('change', function (file) {
+  gulp.watch(watchPaths, ['requirejs']).on('change', function (file) {
     try { test.for(file.path); } catch (ex) { test.all(); }
   });
   gulp.watch(['js/test/**/*.js', '!js/test/mocks/**/*.js', '!js/test/test-main.js']).on('change', function (file) {
@@ -45,7 +41,7 @@ gulp.task('test', function (done) {
   test.all();
 });
 
-gulp.task('default', ['requirejs-bundle', 'sass', 'test', 'watch']);
+gulp.task('default', ['requirejs', 'sass', 'test', 'watch']);
 
 var test = (function () {
   /**

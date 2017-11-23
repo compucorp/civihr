@@ -12,6 +12,25 @@ define([
     'shared-settings', 'ModelInstance', 'LeaveRequestAPI',
     function ($q, checkPermissions, OptionGroup, sharedSettings, ModelInstance, LeaveRequestAPI) {
       /**
+       * Amends the first and last days of the balance by setting values from the
+       * selected time deductions. It also re-calculates the total amount.
+       *
+       * @param  {Object} balanceChange
+       */
+      function recalculateBalanceChange (balanceChange) {
+        _.first(_.values(balanceChange.breakdown)).amount = this['from_date_amount'];
+
+        if (balanceChange.breakdown.length > 1) {
+          _.last(_.values(balanceChange.breakdown)).amount = this['to_date_amount'];
+        }
+
+        balanceChange.amount = _.reduce(balanceChange.breakdown,
+          function (updatedChange, day) {
+            return updatedChange - day.amount;
+          }, 0);
+      }
+
+      /**
        * Update status ID
        *
        * @param {string} status - name of the option value
@@ -137,7 +156,14 @@ define([
             _.pull(params, 'from_date_type', 'to_date_type');
           }
 
-          return LeaveRequestAPI.calculateBalanceChange(_.pick(this, params));
+          return LeaveRequestAPI.calculateBalanceChange(_.pick(this, params))
+            .then(function (balanceChange) {
+              if (calculationUnit === 'hours') {
+                recalculateBalanceChange.call(this, balanceChange);
+              }
+
+              return balanceChange;
+            }.bind(this));
         },
 
         /**
