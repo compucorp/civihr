@@ -34,14 +34,14 @@ define([
       vm.dates.push({
         title: contract.title + ' (Start)',
         date: contract.start_date,
-        future: isDateInFuture(contract.start_date)
+        future: isDateNotInPast(contract.start_date)
       });
 
       if (contract.end_date) {
         vm.dates.push({
           title: contract.title + ' (End)',
           date: contract.end_date,
-          future: isDateInFuture(contract.end_date)
+          future: isDateNotInPast(contract.end_date)
         });
       }
     }
@@ -70,7 +70,7 @@ define([
           angular.forEach(response, function (role) {
             var endDate = moment(role.end_date);
 
-            if (role.end_date === undefined || (endDate.isValid() && isDateInFuture(endDate))) {
+            if (role.end_date === undefined || (endDate.isValid() && isDateNotInPast(endDate))) {
               vm.activeRoles++;
             }
           });
@@ -86,7 +86,7 @@ define([
      * @param {string} date
      * @return {boolean}
      */
-    function isDateInFuture (date) {
+    function isDateNotInPast (date) {
       return moment().diff(date, 'days') <= 0;
     }
 

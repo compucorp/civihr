@@ -41,7 +41,7 @@ define([
         ctrlConstructor('KeyDetailsController');
       });
 
-      it('subscribes for contract refresh event', function () {
+      it('subscribes for contract deleted pubSub event', function () {
         expect(PubSubMock.subscribe).toHaveBeenCalledWith('Contract::deleted', jasmine.any(Function));
       });
 
