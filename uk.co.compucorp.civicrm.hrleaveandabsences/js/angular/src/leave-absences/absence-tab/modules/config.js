@@ -1,6 +1,6 @@
 define([
   'common/angular',
-  'leave-absences/absence-tab/modules/settings',
+  'leave-absences/absence-tab/modules/settings'
 ], function (angular) {
   return angular.module('absence-tab.config', ['absence-tab.settings'])
     .config([
@@ -9,7 +9,7 @@ define([
         $logProvider.debugEnabled(settings.debug);
 
         $resourceProvider.defaults.stripTrailingSlashes = false;
-        $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
       }
     ]);
 });
