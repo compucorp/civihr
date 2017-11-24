@@ -241,7 +241,6 @@ define([
             }
 
             return $q.all([
-              vm._loadAbsenceTypes(),
               vm._loadCalendar()
             ]);
           }
@@ -268,11 +267,20 @@ define([
      * @return {Promise}
      */
     function updateAbsencePeriodDatesTypes (date) {
+      var oldPeriodId = vm.period.id;
+
       return vm.loadAbsencePeriodDatesTypes(date)
         .then(function () {
           vm._setMinMaxDate();
           vm._setDates();
-          vm.updateBalance();
+          var isInCurrentPeriod = oldPeriodId === vm.period.id;
+
+          if (isInCurrentPeriod) {
+            vm.updateBalance();
+          } else {
+            $rootScope.$emit('LeaveRequestPopup::loadAbsenceTypes');
+          }
+
           vm.calculateToilExpiryDate();
         })
         .catch(function (error) {
