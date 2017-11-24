@@ -24,7 +24,7 @@ define([
     factory.getContractDetails = getContractDetails;
     factory.getLengthOfService = getLengthOfService;
     factory.getOptions = getOptions;
-    factory.getPrimary = getPrimary;
+    factory.getCurrent = getCurrent;
     factory.resetContracts = resetContracts;
 
     initializeCollection();
@@ -242,14 +242,14 @@ define([
     /**
      * A primary contract is:
      * 1. (If exists) a contract with is_primary=1 that is active, or
-     * 2. The most recent contract that is active
+     * 2. The most recent current contract that is active
      *
      * @return {Object}
      */
-    function getPrimary () {
+    function getCurrent () {
       return factory.get().then(function (response) {
         var sortedContracts = _.sortBy(response, function (o) {
-          return [o.end_date, +o.is_primary];
+          return [o.is_current];
         });
 
         return _.last(sortedContracts) || {};
