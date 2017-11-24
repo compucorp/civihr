@@ -42,7 +42,7 @@ define([
       });
 
       it('subscribes for contract refresh event', function () {
-        expect(PubSubMock.subscribe).toHaveBeenCalledWith('contract-refresh', jasmine.any(Function));
+        expect(PubSubMock.subscribe).toHaveBeenCalledWith('Contract::deleted', jasmine.any(Function));
       });
 
       it('calls function to get contract options', function () {
