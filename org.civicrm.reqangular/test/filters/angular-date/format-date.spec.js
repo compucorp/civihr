@@ -115,6 +115,30 @@ define([
           expect($filter('formatDate')((dateObj).valueOf(), Date)).toEqual(dateObj);
         });
       });
+
+      describe('when calculation unit is "hours"', function () {
+        var tests = [
+          { input: '1989-04-14 12:34:56', format: 'YYYY-MM-DD', expected: '1989-04-14 12:34' },
+          { input: '1989-04-14 12:34:56', format: 'DD/MM/YYYY', expected: '14/04/1989 12:34' },
+          { input: '1989-04-14 12:34:56', format: 'yyyy mm dd', expected: '1989 04 14 12:34' },
+          { input: '1989-04-14 12:34:56', format: 'YY', expected: '89 12:34' },
+          { input: '1989-04-14 12:34:56', format: undefined, expected: '1989-04-14 12:34' },
+          { input: undefined, format: 'DD/MM/YYYY', expected: 'Unspecified' },
+          { input: undefined, format: undefined, expected: 'Unspecified' }
+        ];
+
+        tests.forEach(function (test) {
+          describe('when formats "' + test.input + '" with "' + test.format + '" format', function () {
+            beforeEach(function () {
+              HRSettings.DATE_FORMAT = test.format;
+            });
+
+            it('outputs "' + test.expected + '"', function () {
+              expect($filter('formatDate')(test.input, test.format, 'hours')).toEqual(test.expected);
+            });
+          });
+        });
+      });
     });
   });
 });
