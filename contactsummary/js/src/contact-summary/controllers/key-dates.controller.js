@@ -87,7 +87,7 @@ define([
      * @return {boolean}
      */
     function isDateInFuture (date) {
-      return moment().diff(date) < 0;
+      return moment().diff(date, 'days') <= 0;
     }
 
     /**

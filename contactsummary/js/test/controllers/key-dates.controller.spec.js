@@ -77,10 +77,6 @@ define([
       });
 
       describe('when there are job contracts and job roles', function () {
-        var today = moment();
-        var tomorrow = today.add(2, 'days').format('YYYY-MM-DD');
-        var yesterday = today.subtract(3, 'days').format('YYYY-MM-DD');
-
         beforeEach(function () {
           $httpBackend.whenPOST(/civicrm/).respond({});
 
@@ -89,7 +85,7 @@ define([
 
         describe('when end date of a job roles is greater than today', function () {
           beforeEach(function () {
-            jobRoleServiceMock.jobRoles[0]['end_date'] = tomorrow;
+            jobRoleServiceMock.jobRoles[0]['end_date'] = moment().add(2, 'days').format('YYYY-MM-DD');
 
             spyOn(contractServiceMock, 'get').and.returnValue($q.resolve(jobRoleServiceMock.jobRoles));
 
@@ -105,7 +101,7 @@ define([
 
         describe('when end date of a job roles is less than today', function () {
           beforeEach(function () {
-            jobRoleServiceMock.jobRoles[0]['end_date'] = yesterday;
+            jobRoleServiceMock.jobRoles[0]['end_date'] = moment().subtract(3, 'days').format('YYYY-MM-DD');
 
             spyOn(contractServiceMock, 'get').and.returnValue($q.resolve(jobRoleServiceMock.jobRoles));
 
@@ -116,6 +112,36 @@ define([
 
           it('sets the active jobroles counter to zero (0)', function () {
             expect(controller.activeRoles).toBe(0);
+          });
+        });
+
+        describe('when end date of a job roles is today', function () {
+          beforeEach(function () {
+            jobRoleServiceMock.jobRoles[0]['end_date'] = moment().format('YYYY-MM-DD');
+
+            spyOn(contractServiceMock, 'get').and.returnValue($q.resolve(jobRoleServiceMock.jobRoles));
+
+            controller = ctrlConstructor('KeyDatesController');
+
+            $rootScope.$apply();
+          });
+
+          it('sets the active jobroles counter to one (1)', function () {
+            expect(controller.activeRoles).toBe(1);
+          });
+        });
+
+        describe('when end date of a job roles is not defined', function () {
+          beforeEach(function () {
+            spyOn(contractServiceMock, 'get').and.returnValue($q.resolve(jobRoleServiceMock.jobRoles));
+
+            controller = ctrlConstructor('KeyDatesController');
+
+            $rootScope.$apply();
+          });
+
+          it('sets the active jobroles counter to one (1)', function () {
+            expect(controller.activeRoles).toBe(1);
           });
         });
       });
