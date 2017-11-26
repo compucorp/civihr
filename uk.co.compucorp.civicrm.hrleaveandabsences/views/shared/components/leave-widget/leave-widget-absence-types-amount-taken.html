@@ -26,7 +26,7 @@
           {{absenceType.title}}
         </td>
         <td class="leave-widget__sickness-balance">
-          {{absenceType.balance | timeUnitApplier:'days'}}
+          {{absenceType.balance | timeUnitApplier:absenceType.calculation_unit_name}}
         </td>
       </tr>
       <tr ng-if="absenceTypesTaken.absenceTypes.length === 0">

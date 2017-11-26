@@ -176,7 +176,9 @@ define([
      * @return {Promise}
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({ is_active: true }).then(function (types) {
+      return AbsenceType.all({ is_active: true })
+      .then(AbsenceType.loadCalculationUnits)
+      .then(function (types) {
         vm.absenceTypes = types;
         vm.sicknessAbsenceTypes = types.filter(function (type) {
           return +type.is_sick;

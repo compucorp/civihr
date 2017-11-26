@@ -42,6 +42,7 @@ define([
       spyOn($scope, '$on').and.callThrough();
       spyOn(AbsencePeriod, 'all').and.callThrough();
       spyOn(AbsenceType, 'all').and.callThrough();
+      spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
       spyOn(Contract, 'all').and.callThrough();
       spyOn(OptionGroup, 'valuesOf').and.callThrough();
     }));
@@ -250,12 +251,18 @@ define([
           expect(AbsenceType.all).toHaveBeenCalledWith({ is_active: true });
         });
 
+        it('loads the absence type calculation units', function () {
+          expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
+        });
+
         describe('after loading all absence types', function () {
           var expectedTypes;
           var expectedSicknessTypes;
 
           beforeEach(function () {
-            AbsenceType.all().then(function (types) {
+            AbsenceType.all()
+            .then(AbsenceType.loadCalculationUnits)
+            .then(function (types) {
               expectedTypes = types;
               expectedSicknessTypes = types.filter(function (type) {
                 return +type.is_sick;
