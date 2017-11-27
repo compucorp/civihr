@@ -14,7 +14,7 @@ define([
         var loaderSet = false;
         var positionSet = false;
 
-        loader.className = 'hrjc-loader';
+        loader.className = 'hrjc-loader spinner';
 
         function isPositioned () {
           var elPosition = window.getComputedStyle(el[0]).position;
