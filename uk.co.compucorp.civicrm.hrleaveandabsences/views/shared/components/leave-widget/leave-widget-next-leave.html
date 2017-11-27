@@ -15,11 +15,13 @@
               <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.from_date.format('D')}}</span>
               <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.from_date.format('MMM')}}</span>
               <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.from_date.format('YYYY')}}</span>
-              <span class="date-range-calendar__time text-muted">
-                <span ng-if="nextLeave.nextLeaveRequest['type_id.calculation_unit_name'] === 'days'">
+              <span
+                class="date-range-calendar__time text-muted"
+                ng-switch="nextLeave.nextLeaveRequest['type_id.calculation_unit_name']">
+                <span ng-switch-when="days">
                   ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.from_date_type].label}})
                 </span>
-                <span ng-if="nextLeave.nextLeaveRequest['type_id.calculation_unit_name'] === 'hours'">
+                <span ng-switch-when="hours">
                   ({{nextLeave.nextLeaveRequest.from_date.format('HH:mm')}})
                 </span>
               </span>
@@ -28,11 +30,13 @@
               <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.to_date.format('D')}}</span>
               <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.to_date.format('MMM')}}</span>
               <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.to_date.format('YYYY')}}</span>
-              <span class="date-range-calendar__time text-muted">
-                <span ng-if="nextLeave.nextLeaveRequest['type_id.calculation_unit_name'] === 'days'">
+              <span
+                class="date-range-calendar__time text-muted"
+                ng-switch="nextLeave.nextLeaveRequest['type_id.calculation_unit_name']">
+                <span ng-switch-when="days">
                   ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.to_date_type].label}})
                 </span>
-                <span ng-if="nextLeave.nextLeaveRequest['type_id.calculation_unit_name'] === 'hours'">
+                <span ng-switch-when="hours">
                   ({{nextLeave.nextLeaveRequest.to_date.format('HH:mm')}})
                 </span>
               </span>
