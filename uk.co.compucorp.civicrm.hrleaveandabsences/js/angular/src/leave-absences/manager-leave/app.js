@@ -7,6 +7,7 @@ define([
   'common/directives/loading',
   'common/directives/time-amount-picker.directive',
   'common/directives/timepicker-select.directive',
+  'common/filters/angular-date/format-date',
   'common/filters/time-unit-applier.filter',
   'common/modules/dialog',
   'common/services/angular-date/date-format',

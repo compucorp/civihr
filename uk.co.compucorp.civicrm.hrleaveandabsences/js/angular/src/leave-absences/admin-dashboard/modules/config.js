@@ -8,6 +8,12 @@ define([
     .config([
       '$stateProvider', '$resourceProvider', '$urlRouterProvider', '$httpProvider', '$logProvider', 'settings',
       function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider, $logProvider, settings) {
+        var toResolve = {
+          format: ['DateFormat', function (DateFormat) {
+            return DateFormat.getDateFormat();
+          }]
+        };
+
         $logProvider.debugEnabled(settings.debug);
 
         $resourceProvider.defaults.stripTrailingSlashes = false;
@@ -17,15 +23,18 @@ define([
         $stateProvider
           .state('requests', {
             url: '/requests',
-            template: '<manage-leave-requests contact-id="$root.settings.contactId"></manage-leave-requests>'
+            template: '<manage-leave-requests contact-id="$root.settings.contactId"></manage-leave-requests>',
+            resolve: toResolve
           })
           .state('calendar', {
             url: '/calendar',
-            template: '<leave-calendar contact-id="$root.settings.contactId"></leave-calendar>'
+            template: '<leave-calendar contact-id="$root.settings.contactId"></leave-calendar>',
+            resolve: toResolve
           })
           .state('leave-balances', {
             url: '/leave-balances',
-            template: '<leave-balance-tab></leave-balance-tab>'
+            template: '<leave-balance-tab></leave-balance-tab>',
+            resolve: toResolve
           });
       }
     ]);

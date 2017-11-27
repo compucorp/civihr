@@ -184,12 +184,12 @@
                       {{request.balance_change > 0 ? "+" : ""}}{{request.balance_change |
                         timeUnitApplier : absenceType.calculation_unit_name}}
                     </td>
-                    <td>
-                      {{request.from_date | limitTo :
-                      (absenceType.calculation_unit_name === 'hours' ? 16 : 10)}}
-                      -
-                      {{request.to_date | limitTo :
-                      (absenceType.calculation_unit_name === 'hours' ? 16 : 10)}}
+                    <td ng-init="unit = absenceType.calculation_unit_name">
+                      {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                      <span ng-if="request.dates.length > 1">
+                        -
+                        {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                      </span>
                     </td>
                     <td>{{vm.getLeaveStatusByValue(request.status_id)}}</td>
                     <td class="text-center">

@@ -87,7 +87,7 @@
                               <td class="chr_leave-report__label">
                                 {{entry.type.label}}
                                 <span ng-if="entry.expiry_date">
-                                  (expires {{entry.expiry_date | date:report.dateFormat}})
+                                  (expires {{entry.expiry_date | date}})
                                 </span>
                               </td>
                               <td></td>
@@ -153,7 +153,7 @@
                           <tbody>
                             <tr ng-repeat="request in report.sections.holidays.data track by $index">
                               <td class="chr_leave-report__label">Public Holiday</td>
-                              <td>{{request.from_date | date:report.dateFormat}}</td>
+                              <td>{{request.from_date | formatDate}}</td>
                               <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
                               <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
                                 title="({{ absenceType.calculation_unit_label | lowercase }})">
@@ -218,11 +218,15 @@
                               <td class="chr_leave-report__label">
                                 {{report.absenceTypes[request.type_id].title}}
                                 <span ng-if="request.toil_expiry_date">
-                                    (expires {{request.toil_expiry_date | date:report.dateFormat}})
-                                  </span>
+                                  (expires {{request.toil_expiry_date | formatDate}})
+                                </span>
                               </td>
-                              <td>
-                                {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                              <td ng-init="unit = report.absenceTypes[request.type_id].calculation_unit_name">
+                                {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                                <span ng-if="request.dates.length > 1">
+                                  -
+                                  {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                                </span>
                               </td>
                               <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
                               <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
@@ -295,7 +299,7 @@
                               <td class="chr_leave-report__label">
                                 {{entry.type.label}}
                                 <span ng-if="entry.expiry_date">
-                                  (expired {{entry.expiry_date | date:report.dateFormat}})
+                                  (expired {{entry.expiry_date | formatDate}})
                                 </span>
                               </td>
                               <td></td>
@@ -384,11 +388,15 @@
                             <td class="chr_leave-report__label">
                               {{report.absenceTypes[request.type_id].title}}
                               <span ng-if="request.toil_expiry_date">
-                                (expires {{request.toil_expiry_date | date:report.dateFormat}})
+                                (expires {{request.toil_expiry_date | formatDate}})
                               </span>
                             </td>
-                            <td>
-                              {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                            <td ng-init="unit = report.absenceTypes[request.type_id].calculation_unit_name">
+                              {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                              <span ng-if="request.dates.length > 1">
+                                -
+                                {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                              </span>
                             </td>
                             <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
                             <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
@@ -478,10 +486,16 @@
                             <td class="chr_leave-report__label">
                               {{report.absenceTypes[request.type_id].title}}
                               <span ng-if="request.toil_expiry_date">
-                                (expires {{request.toil_expiry_date | date:report.dateFormat}})
+                                (expires {{request.toil_expiry_date | formatDate}})
                               </span>
                             </td>
-                            <td>{{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}</td>
+                            <td ng-init="unit = report.absenceTypes[request.type_id].calculation_unit_name">
+                              {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                              <span ng-if="request.dates.length > 1">
+                                -
+                                {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                              </span>
+                            </td>
                             <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
                             <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
                               title="({{ absenceType.calculation_unit_label | lowercase }})">
