@@ -79,7 +79,9 @@ define([
           expect(Entitlement.all).toHaveBeenCalledWith({
             contact_id: contactId,
             period_id: absencePeriod.id,
-            type_id: { IN: getJobContractAbsenceEntitlements() }
+            type_id: { IN: getJobContractAbsenceEntitlements() },
+            overridden: true,
+            options: { or: [['type_id', 'overridden']] }
           }, true);
         });
 

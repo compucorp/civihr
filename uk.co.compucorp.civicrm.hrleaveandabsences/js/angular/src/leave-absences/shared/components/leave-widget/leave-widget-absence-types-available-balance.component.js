@@ -88,7 +88,11 @@ define([
       return Entitlement.all({
         contact_id: vm.contactId,
         period_id: vm.absencePeriod.id,
-        type_id: { IN: getContractEntitlementsIds() }
+        type_id: { IN: getContractEntitlementsIds() },
+        overridden: true,
+        options: {
+          or: [['type_id', 'overridden']]
+        }
       }, true)
       .then(function (_entitlements_) {
         entitlements = _entitlements_;
