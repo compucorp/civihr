@@ -9,48 +9,71 @@ define([
     $log.debug('Directive: hrjcLoader');
 
     return {
-      link: function ($scope, el, attrs) {
+      link: function ($scope, element, attrs) {
         var loader = document.createElement('div');
-        var loaderSet = false;
-        var positionSet = false;
+        var isLoaderSet = false;
+        var isPositionSet = false;
 
         loader.className = 'hrjc-loader spinner';
 
-        function isPositioned () {
-          var elPosition = window.getComputedStyle(el[0]).position;
-          return elPosition === 'relative' || elPosition === 'absolute' || elPosition === 'fixed';
-        }
+        (function init () {
+          if (attrs.hrjcLoaderShow) {
+            appendLoader();
+          }
 
+          initLIsteners();
+        }());
+
+        /**
+        * Appends the loader in the element and
+        * updates the element's position
+        */
         function appendLoader () {
           if (!isPositioned()) {
-            el.css('position', 'relative');
-            positionSet = true;
+            element.css('position', 'relative');
+            isPositionSet = true;
           }
 
-          el.append(loader);
-          loaderSet = true;
+          element.append(loader);
+          isLoaderSet = true;
         }
 
+        /**
+         * Returns if the element has position value set
+         *
+         * @return {Boolean}
+         */
+        function isPositioned () {
+          var elementPosition = window.getComputedStyle(element[0]).position;
+
+          return elementPosition === 'relative' || elementPosition === 'absolute' || elementPosition === 'fixed';
+        }
+
+        /**
+         * Init Listeners
+         */
+        function initLIsteners () {
+          $scope.$on('hrjc-loader-show', function () {
+            appendLoader();
+          });
+
+          $scope.$on('hrjc-loader-hide', function () {
+            removeLoader();
+          });
+        }
+
+        /**
+         * Removes the loader from the element and
+         * updates the element's postion
+         */
         function removeLoader () {
-          loaderSet && loader.parentNode.removeChild(loader);
-          loaderSet = false;
+          isLoaderSet && loader.parentNode.removeChild(loader);
+          isLoaderSet = false;
 
-          if (positionSet) {
-            el.css('position', '');
+          if (isPositionSet) {
+            element.css('position', '');
           }
         }
-
-        if (attrs.hrjcLoaderShow) {
-          appendLoader();
-        }
-
-        $scope.$on('hrjc-loader-show', function () {
-          appendLoader();
-        });
-
-        $scope.$on('hrjc-loader-hide', function () {
-          removeLoader();
-        });
       }
     };
   }]);
