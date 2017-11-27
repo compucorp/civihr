@@ -1,13 +1,20 @@
 .modal-header {
-  border-bottom: 0 none;
+  background-color: $gray-lighter;
 
   .close {
-    margin-top: 0px;
+    color: $gray-darker;
+    font-size: $font-size-h2;
+    margin-top: 3px;
+    opacity: 1;
+
+    &:hover {
+      color: $crm-black;
+    }
   }
 }
 
 .modal-body {
-  background-color: $brand-secondary;
+  background-color: $crm-white;
 }
 
 .modal-progress {

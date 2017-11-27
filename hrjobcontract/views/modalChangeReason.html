@@ -1,6 +1,6 @@
 <form novalidate class="form-horizontal {{prefix}}wizard" name="contractChangeReason" role="form" ng-submit="save()">
   <div class="modal-header">
-    <button type="button" class="close" ng-click="cancel()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+    <button type="button" class="close" ng-click="cancel()"><i class="fa fa-close"></i><span class="sr-only">Close</span></button>
     <h4 class="modal-title">{{copy.title}}</h4>
   </div>
   <div class="modal-body">
@@ -9,9 +9,11 @@
         <div class="form-group required" hrjc-validate>
           <label for="{{prefix}}change-reason" class="col-sm-4 control-label">Reason for change</label>
           <div class="col-sm-6">
-            <select id="{{prefix}}change-reason" class="form-control no-select2" name="changeReason" ng-model="change_reason" ng-options="key as value for (key, value) in options.contract.change_reason" ng-disabled="isDisabled" required>
-              <option value="">- select -</option>
-            </select>
+            <div class="chr_custom-select chr_custom-select--full">
+              <select id="{{prefix}}change-reason" class="form-control no-select2" name="changeReason" ng-model="change_reason" ng-options="key as value for (key, value) in options.contract.change_reason" ng-disabled="isDisabled" required>
+                <option value="">- select -</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="form-group required" hrjc-validate hrjc-validate-warning="isPast">
@@ -35,7 +37,7 @@
     </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" ng-click="cancel()">Cancel</button>
+    <button type="button" class="btn btn-secondary-outline" ng-click="cancel()">Cancel</button>
     <button type="submit" class="btn btn-primary" ng-disabled="!contractChangeReason.$valid">Save and done</button>
   </div>
 </form>
