@@ -4,7 +4,7 @@
     <div class="form-group">
       <label class="col-sm-4 control-label">No. of Days</label>
       <div class="col-sm-8">
-        <div class="btn-group btn-group-justified">
+        <div class="btn-group btn-group-justified" ng-class="{'chr_disabled': detailsTab.absenceTypes.length === 0}">
           <label
             ng-disabled="__isNotEditable"
             class="btn active"

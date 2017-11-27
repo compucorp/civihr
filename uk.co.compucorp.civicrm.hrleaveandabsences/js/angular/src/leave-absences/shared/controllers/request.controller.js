@@ -23,11 +23,11 @@ define([
 
   controllers.controller('RequestCtrl', RequestCtrl);
 
-  RequestCtrl.$inject = ['$log', '$q', '$rootScope', '$scope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup',
+  RequestCtrl.$inject = ['$log', '$q', '$rootScope', '$scope', '$timeout', '$uibModalInstance', 'checkPermissions', 'api.optionGroup',
     'dialog', 'pubSub', 'directiveOptions', 'Contact', 'Session', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
     'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance'];
 
-  function RequestCtrl ($log, $q, $rootScope, $scope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub,
+  function RequestCtrl ($log, $q, $rootScope, $scope, $timeout, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub,
     directiveOptions, Contact, Session, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
     LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance) {
     $log.debug('RequestCtrl');
@@ -177,6 +177,9 @@ define([
 
       // check if the selected date period is in absence period
       canSubmit = canSubmit && !!vm.period.id;
+
+      // check if the absence types are present
+      canSubmit = canSubmit && !!vm.absenceTypes.length;
 
       return canSubmit && !vm.isMode('view');
     }
@@ -478,7 +481,8 @@ define([
       listeners.push(
         $rootScope.$on('LeaveRequestPopup::requestObjectUpdated', setInitialAttributes),
         $rootScope.$on('LeaveRequestPopup::handleError', function (__, errors) { handleError(errors); }),
-        $rootScope.$on('LeaveRequestPopup::childComponent::register', function () { childComponentsCount++; })
+        $rootScope.$on('LeaveRequestPopup::childComponent::register', function () { childComponentsCount++; }),
+        $rootScope.$on('LeaveRequestPopup::loadAbsenceTypes', reloadAbsenceTypes)
       );
     }
 
@@ -746,6 +750,19 @@ define([
           $rootScope.$emit('LeaveRequestPopup::updateBalance');
         }
       });
+    }
+
+    /**
+     * Reloads the absence Types and broadcasts an event to update the balance
+     *
+     * @return {Promise}
+     */
+    function reloadAbsenceTypes () {
+      return _loadAbsenceTypes()
+        .then(function () {
+          setInitialAbsenceTypes();
+          $rootScope.$emit('LeaveRequestPopup::updateBalance');
+        });
     }
 
     /**
