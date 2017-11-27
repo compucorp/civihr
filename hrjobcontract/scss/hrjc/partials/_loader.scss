@@ -1,1 +1,6 @@
-.#{$prefix}loader {   background: rgba(255, 255, 255, 0.5) url('../img/loading-overlay.gif') no-repeat center center;   @include border-radius($border-radius-base);   position: absolute;   width: 100%;   height: 100%;   top: 0;   left: 0;   z-index: 1039;   @include animation(fadein 0.3s);}.fa-spin-loading {   position: absolute;   right: 25px;   top: 10px;   &.ng-hide {      display: none!important;   }}
+.#{$prefix}loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1039;
+}
