@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+  <OptionGroups>
+    <OptionGroup>
+      <name>hrleaveandabsences_absence_type_calculation_unit</name>
+      <title>Absence Type Calculation Units</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+
+  <OptionValues>
+    <OptionValue>
+      <label>Days</label>
+      <value>1</value>
+      <name>days</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_absence_type_calculation_unit</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Hours</label>
+      <value>2</value>
+      <name>hours</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_absence_type_calculation_unit</option_group_name>
+    </OptionValue>
+  </OptionValues>
+</CustomData>

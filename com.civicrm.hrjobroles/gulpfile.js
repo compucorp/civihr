@@ -9,6 +9,7 @@ var bulk = require('gulp-sass-bulk-import');
 var sass = require('gulp-sass');
 var karma = require('karma');
 var path = require('path');
+var argv = require('yargs').argv;
 
 gulp.task('sass', ['sass:sync'], function () {
   return gulp.src('scss/*.scss')
@@ -56,8 +57,11 @@ var test = (function () {
    * @param {Function} cb - The callback to call when the server closes
    */
   function runServer (configFile, cb) {
+    var reporters = argv.reporters ? argv.reporters.split(',') : ['progress'];
+
     new karma.Server({
       configFile: path.join(__dirname, '/js/', configFile),
+      reporters: reporters,
       singleRun: true
     }, function () {
       cb && cb();

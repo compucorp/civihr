@@ -3,7 +3,7 @@
 use CRM_HRLeaveAndAbsences_Service_EntitlementCalculator as EntitlementCalculator;
 use CRM_HRLeaveAndAbsences_Service_EntitlementCalculation as EntitlementCalculation;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
-use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest
@@ -14,7 +14,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest extends BaseHeadl
 
   public function testCanReturnCalculationsForMultipleAbsenceTypes()
   {
-    $this->createBasicType();
+    AbsenceTypeFabricator::fabricate();
     $period = new AbsencePeriod();
 
     // mock the array returned by an API call
@@ -34,7 +34,7 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest extends BaseHeadl
 
   public function testCanOnlyReturnCalculationsForEnabledAbsenceTypes()
   {
-    $this->createBasicType(['is_active' => false]);
+    AbsenceTypeFabricator::fabricate(['is_active' => false]);
     $period = new AbsencePeriod();
 
     // mock the array returned by an API call
@@ -48,17 +48,5 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculatorTest extends BaseHeadl
     // new disabled AbsenceType, so we should get only 3 calculations, since
     // the new one is disabled and should not be included in the calculation
     $this->assertCount(3, $calculations);
-  }
-
-  private function createBasicType($params = array()) {
-    $basicRequiredFields = [
-      'title' => 'Type ' . microtime(),
-      'color' => '#000000',
-      'default_entitlement' => 20,
-      'allow_request_cancelation' => 1,
-    ];
-
-    $params = array_merge($basicRequiredFields, $params);
-    return AbsenceType::create($params);
   }
 }

@@ -176,13 +176,21 @@
                   <tr
                     class="pointer"
                     ng-click="vm.openLeavePopup(request)"
-                    ng-repeat="request in vm.leaveRequests.table.list track by request.id">
+                    ng-repeat="request in vm.leaveRequests.table.list track by request.id"
+                    ng-init="absenceType = vm.getAbsenceTypeByID(request.type_id)">
                     <td>{{vm.getUserNameByID(request.contact_id)}}</td>
-                    <td>{{vm.getAbsenceTypesByID(request.type_id)}}</td>
+                    <td>{{absenceType.title}}</td>
                     <td>
-                      {{request.balance_change > 0 ? "+" : ""}}{{request.balance_change}}
+                      {{request.balance_change > 0 ? "+" : ""}}{{request.balance_change |
+                        timeUnitApplier : absenceType.calculation_unit_name}}
                     </td>
-                    <td>{{request.from_date}} - {{request.to_date}}</td>
+                    <td ng-init="unit = absenceType.calculation_unit_name">
+                      {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                      <span ng-if="request.dates.length > 1">
+                        -
+                        {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                      </span>
+                    </td>
                     <td>{{vm.getLeaveStatusByValue(request.status_id)}}</td>
                     <td class="text-center">
                       <leave-request-actions

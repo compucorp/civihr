@@ -2,7 +2,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.7                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2016                                |
+ | Copyright CiviCRM LLC (c) 2004-2017                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -31,8 +31,7 @@
 
   <div class="crm-footer" id="civicrm-footer">
     {* PCHR-1323 - Display CiviHR version info. *}
-    {ts}Powered by CiviHR version{/ts}
-    {civihrVersion assign=civihrversion}.
+    {ts}Powered by CiviHR version{/ts} {civihrVersion}.
 
     {if !empty($footer_status_severity)}
       <span class="status{if $footer_status_severity gt 3} crm-error{elseif $footer_status_severity gt 2} crm-warning{else} crm-ok{/if}">
@@ -43,7 +42,7 @@
     <a target="_blank" href="https://civihr.org">Project website</a>&nbsp;.
     <div class="text-center">
       <div class="footer-logo">
-        <i class="icon-logo-full"></i>
+        <span class="chr_logo chr_logo--full chr_logo--default-size"><i></i></span>
       </div>
     </div>
   </div>

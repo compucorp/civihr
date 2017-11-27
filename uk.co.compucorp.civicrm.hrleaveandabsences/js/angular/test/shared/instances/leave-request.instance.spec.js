@@ -60,6 +60,7 @@ define([
         spyOn(LeaveRequestAPI, 'getAttachments').and.callThrough();
         spyOn(LeaveRequestAPI, 'deleteAttachment').and.callThrough();
         spyOn(LeaveRequestAPI, 'getBalanceChangeBreakdown').and.callThrough();
+        spyOn(LeaveRequestAPI, 'getWorkDayForDate').and.callThrough();
         spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
       }
     ]));
@@ -247,27 +248,73 @@ define([
     });
 
     describe('calculateBalanceChange()', function () {
-      var promise;
+      describe('when calculation unit is "days"', function () {
+        var promise;
 
-      beforeEach(function () {
-        instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
-        promise = instance.calculateBalanceChange();
+        beforeEach(function () {
+          instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+          promise = instance.calculateBalanceChange();
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
+        });
+
+        it('calls equivalent API method', function () {
+          promise.then(function () {
+            expect(LeaveRequestAPI.calculateBalanceChange)
+              .toHaveBeenCalledWith(jasmine.objectContaining({
+                contact_id: jasmine.any(String),
+                from_date: jasmine.any(String),
+                to_date: jasmine.any(String),
+                from_date_type: jasmine.any(String),
+                to_date_type: jasmine.any(String)
+              }));
+          });
+        });
       });
 
-      afterEach(function () {
-        $rootScope.$apply();
-      });
+      describe('when calculation unit is "hours"', function () {
+        var promise;
 
-      it('calls equivalent API method', function () {
-        promise.then(function () {
-          expect(LeaveRequestAPI.calculateBalanceChange)
-            .toHaveBeenCalledWith(jasmine.objectContaining({
-              contact_id: jasmine.any(String),
-              from_date: jasmine.any(String),
-              to_date: jasmine.any(String),
-              from_date_type: jasmine.any(String),
-              to_date_type: jasmine.any(String)
-            }));
+        beforeEach(function () {
+          instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+          instance.from_date_amount = 0;
+          instance.to_date_amount = 20;
+          promise = instance.calculateBalanceChange('hours');
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
+        });
+
+        it('calls equivalent API method', function () {
+          promise.then(function () {
+            expect(LeaveRequestAPI.calculateBalanceChange)
+              .toHaveBeenCalledWith(jasmine.objectContaining({
+                contact_id: jasmine.any(String),
+                from_date: jasmine.any(String),
+                to_date: jasmine.any(String)
+              }));
+          });
+        });
+
+        it('amends the breakdown "from" day amount', function () {
+          promise.then(function (balanceChange) {
+            expect(_.first(balanceChange.breakdown).amount).toBe(instance.from_date_amount);
+          });
+        });
+
+        it('amends the breakdown "to" day amount', function () {
+          promise.then(function (balanceChange) {
+            expect(_.last(balanceChange.breakdown).amount).toBe(instance.to_date_amount);
+          });
+        });
+
+        it('amends the breakdown', function () {
+          promise.then(function (balanceChange) {
+            expect(balanceChange.amount).toBe(-23);
+          });
         });
       });
     });
@@ -375,6 +422,33 @@ define([
             date: jasmine.any(String),
             amount: jasmine.any(Number)
           }])
+        }));
+      });
+    });
+
+    describe('getWorkDayForDate()', function () {
+      var leaveRequest, instance, promiseResult;
+      var date = '2027-05-11';
+
+      beforeEach(function () {
+        leaveRequest = helper.createRandomLeaveRequest();
+        instance = LeaveRequestInstance.init(leaveRequest);
+
+        instance.getWorkDayForDate(date).then(function (_promiseResult_) {
+          promiseResult = _promiseResult_;
+        });
+        $rootScope.$digest();
+      });
+
+      it('calls getWorkDayForDate endpoint with Instance ID as a parameter', function () {
+        expect(LeaveRequestAPI.getWorkDayForDate).toHaveBeenCalledWith(date, instance.contact_id);
+      });
+
+      it('returns data with the same structure as LeaveRequestAPI.getWorkDayForDate() endpoint', function () {
+        expect(promiseResult).toEqual(jasmine.objectContaining({
+          time_from: jasmine.any(String),
+          time_to: jasmine.any(String),
+          number_of_hours: jasmine.any(String)
         }));
       });
     });

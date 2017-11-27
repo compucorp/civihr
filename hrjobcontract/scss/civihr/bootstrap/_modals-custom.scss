@@ -85,10 +85,6 @@
   border-bottom: 1px solid $modal-header-border-color;
   min-height: ($modal-title-padding + $modal-title-line-height);
 }
-// Close icon
-.modal-header .close {
-  margin-top: -2px;
-}
 
 // Title text within header
 .modal-title {
@@ -105,6 +101,7 @@
 
 // Footer (for actions)
 .modal-footer {
+  background: $gray-lighter;
   padding: $modal-inner-padding;
   text-align: right; // right align buttons
   border-top: 1px solid $modal-footer-border-color;

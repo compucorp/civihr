@@ -9,15 +9,26 @@
         return settings.pathTpl + 'components/absence-tab-container.html';
       }],
       controllerAs: 'absence',
-      controller: ['$log', '$rootScope', function ($log, $rootScope) {
-        $log.debug('Component: absence-tab-container');
-
-        $rootScope.section = 'absence-tab';
-
-        var vm = this;
-
-        vm.contactId = CRM.adminId;
-      }]
+      controller: AbsenceTabContainerController
     });
+
+    AbsenceTabContainerController.$inject = ['$log', '$rootScope', 'DateFormat'];
+
+    function AbsenceTabContainerController ($log, $rootScope, DateFormat) {
+      $log.debug('Component: absence-tab-container');
+
+      $rootScope.section = 'absence-tab';
+
+      var vm = this;
+
+      vm.contactId = CRM.adminId;
+
+      (function init () {
+        // @NOTE this is a temporary solution that sets date format from CRM
+        // to HRSettings. This should have been done in the config.js file
+        // however Absence Tab has issues with routing so it isn't possible now.
+        DateFormat.getDateFormat();
+      })();
+    }
   });
 })(CRM);

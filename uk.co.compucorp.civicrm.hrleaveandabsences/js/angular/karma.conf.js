@@ -6,7 +6,7 @@ module.exports = function (config) {
   config.set({
     browserNoActivityTimeout: 100000,
     basePath: civicrmPath,
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
     frameworks: ['jasmine'],
     files: [
       // the global dependencies
@@ -59,6 +59,22 @@ module.exports = function (config) {
     ngHtml2JsPreprocessor: {
       prependPrefix: '/base/',
       moduleName: 'leave-absences.templates'
+    },
+    customLaunchers: {
+      ChromeHeadless: {
+        base: 'Chrome',
+        flags: [
+          '--headless',
+          '--disable-gpu',
+          // Without a remote debugging port, Google Chrome exits immediately.
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
+    junitReporter: {
+      outputDir: extPath + 'test-reports',
+      useBrowserName: false,
+      outputFile: 'hrleaveandabsences.xml'
     }
   });
 };

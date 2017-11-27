@@ -14,7 +14,7 @@
 
     > .panel-footer,
     > .panel-heading {
-        background: $crm-brand-primary-light;
+        background: #fafbfc; // was $crm-brand-primary-light, need to be replaced with a color in the new palette
     }
 }
 
@@ -43,7 +43,7 @@
     }
 
     > .panel-footer {
-        background: $crm-brand-primary-light;
+        background: #fafbfc; // was $crm-brand-primary-light, need to be replaced with a color in the new palette
     }
 }
 
@@ -51,6 +51,6 @@
 .panel-default-plain-inverted {
 
     > .panel-heading {
-        background: $crm-brand-primary-light;
+        background: #fafbfc; // was $crm-brand-primary-light, need to be replaced with a color in the new palette
     }
 }

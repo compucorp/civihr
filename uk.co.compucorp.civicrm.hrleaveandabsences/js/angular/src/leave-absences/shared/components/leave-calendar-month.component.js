@@ -3,7 +3,8 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/shared/modules/components'
+  'leave-absences/shared/modules/components',
+  'common/services/pub-sub'
 ], function (_, moment, components) {
   components.component('leaveCalendarMonth', {
     bindings: {
@@ -19,10 +20,12 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-calendar-month.html';
     }],
     controllerAs: 'month',
-    controller: ['$log', '$q', '$rootScope', 'Calendar', 'LeaveRequest', 'shared-settings', controller]
+    controller: ['$log', '$q', '$rootScope', 'Calendar', 'LeaveRequest',
+      'pubSub', 'shared-settings', controller]
   });
 
-  function controller ($log, $q, $rootScope, Calendar, LeaveRequest, sharedSettings) {
+  function controller ($log, $q, $rootScope, Calendar, LeaveRequest, pubSub,
+    sharedSettings) {
     $log.debug('Component: leave-calendar-month');
 
     var dataLoaded = false;
@@ -56,7 +59,7 @@ define([
      *
      * @param {LeaveRequestInstance} leaveRequest
      */
-    function addLeaveRequest (__, leaveRequest) {
+    function addLeaveRequest (leaveRequest) {
       indexLeaveRequests([leaveRequest]);
       updateLeaveRequestDaysContactData(leaveRequest);
     }
@@ -140,7 +143,7 @@ define([
      *
      * @param  {LeaveRequestInstance} leaveRequest
      */
-    function deleteLeaveRequest (__, leaveRequest) {
+    function deleteLeaveRequest (leaveRequest) {
       removeLeaveRequestFromIndexedList(leaveRequest);
       updateLeaveRequestDaysContactData(leaveRequest);
     }
@@ -201,19 +204,19 @@ define([
      */
     function initListeners () {
       eventListeners.push($rootScope.$on('LeaveCalendar::showMonths', showMonthIfInList));
-      eventListeners.push($rootScope.$on('LeaveRequest::new', addLeaveRequest));
-      eventListeners.push($rootScope.$on('LeaveRequest::edit', updateLeaveRequest));
-      eventListeners.push($rootScope.$on('LeaveRequest::updatedByManager', updateLeaveRequest));
-      eventListeners.push($rootScope.$on('LeaveRequest::deleted', deleteLeaveRequest));
+      eventListeners.push(pubSub.subscribe('LeaveRequest::new', addLeaveRequest));
+      eventListeners.push(pubSub.subscribe('LeaveRequest::edit', updateLeaveRequest));
+      eventListeners.push(pubSub.subscribe('LeaveRequest::updatedByManager', updateLeaveRequest));
+      eventListeners.push(pubSub.subscribe('LeaveRequest::deleted', deleteLeaveRequest));
     }
 
     /**
      * Returns whether a date is of a specific type
      * half_day_am or half_day_pm
      *
-     * @param  {string} typeName
+     * @param  {String} typeName
      * @param  {object} leaveRequest
-     * @param  {string} date
+     * @param  {String} date
      *
      * @return {boolean}
      */
@@ -241,25 +244,28 @@ define([
     }
 
     /**
-     * Returns whether a leaveRequest is pending approval
+     * Checks whether sent date is a public holiday
      *
-     * @param  {object} leaveRequest
-     * @return {boolean}
-     */
-    function isPendingApproval (leaveRequest) {
-      var status = vm.supportData.leaveRequestStatuses[leaveRequest.status_id];
-
-      return status.name === sharedSettings.statusNames.awaitingApproval;
-    }
-
-    /**
-     * Decides whether sent date is a public holiday
-     *
-     * @param  {string} date
+     * @param  {String} date
      * @return {boolean}
      */
     function isPublicHoliday (date) {
       return !!vm.supportData.publicHolidays[dateObjectWithFormat(date).valueOf()];
+    }
+
+    /**
+     * Checks whether a leaveRequest is pending approval or more information requested
+     *
+     * @param  {object} leaveRequest
+     * @return {boolean}
+     */
+    function isRequested (leaveRequest) {
+      var statusName = vm.supportData.leaveRequestStatuses[leaveRequest.status_id].name;
+
+      return _.contains([
+        sharedSettings.statusNames.awaitingApproval,
+        sharedSettings.statusNames.moreInformationRequired
+      ], statusName);
     }
 
     /**
@@ -350,11 +356,13 @@ define([
         status_id: {'IN': [
           leaveRequestStatusValueFromName(sharedSettings.statusNames.approved),
           leaveRequestStatusValueFromName(sharedSettings.statusNames.adminApproved),
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.awaitingApproval)
+          leaveRequestStatusValueFromName(sharedSettings.statusNames.awaitingApproval),
+          leaveRequestStatusValueFromName(sharedSettings.statusNames.moreInformationRequired)
         ]},
         contact_id: { 'IN': vm.contacts.map(function (contact) {
           return contact.id;
-        })}
+        })},
+        type_id: { IN: _.pluck(vm.supportData.absenceTypes, 'id') }
       }, null, null, null, false)
       .then(function (leaveRequestsData) {
         return indexLeaveRequests(leaveRequestsData.list);
@@ -399,7 +407,9 @@ define([
       $rootScope.$emit('LeaveCalendar::monthDestroyed');
 
       eventListeners.map(function (destroyListener) {
-        destroyListener();
+        destroyListener.remove
+          ? destroyListener.remove() // Destroy pubSub subscription
+          : destroyListener(); // Destroy $scope.$on subscription
       });
     }
 
@@ -438,7 +448,7 @@ define([
           leaveRequest: leaveRequest || null,
           styles: leaveRequest ? styles(leaveRequest) : null,
           isAccruedTOIL: leaveRequest ? isLeaveType(leaveRequest, 'toil') : null,
-          isRequested: leaveRequest ? isPendingApproval(leaveRequest) : null,
+          isRequested: leaveRequest ? isRequested(leaveRequest) : null,
           isAM: leaveRequest ? isDayType('half_day_am', leaveRequest, day.date) : null,
           isPM: leaveRequest ? isDayType('half_day_pm', leaveRequest, day.date) : null
         });
@@ -502,11 +512,11 @@ define([
      *
      * @param  {LeaveRequestInstance} leaveRequest
      */
-    function updateLeaveRequest (__, leaveRequest) {
+    function updateLeaveRequest (leaveRequest) {
       var oldLeaveRequest = leaveRequestFromIndexedList(leaveRequest);
 
-      deleteLeaveRequest(null, oldLeaveRequest);
-      addLeaveRequest(null, leaveRequest);
+      deleteLeaveRequest(oldLeaveRequest);
+      addLeaveRequest(leaveRequest);
     }
 
     /**

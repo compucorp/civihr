@@ -4,6 +4,7 @@ use CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotification as TOILRequestN
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestComment as LeaveRequestCommentService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 /**
@@ -23,9 +24,6 @@ class CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplateTest e
     CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
     $leaveRequestCommentService = new LeaveRequestCommentService();
     $this->toilRequestNotificationTemplate = new TOILRequestNotificationTemplate($leaveRequestCommentService);
-
-    $this->leaveRequestStatuses = $this->getLeaveRequestStatuses();
-    $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
   }
 
   public function testGetTemplateIDReturnsTheCorrectID() {
@@ -72,6 +70,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplateTest e
     $leaveRequestDayTypes = LeaveRequest::buildOptions('from_date_type');
     $leaveRequestStatuses = LeaveRequest::buildOptions('status_id');
     $dateTimeNow = new DateTime('now');
+    $calculationUnitNames = AbsenceType::buildOptions('calculation_unit', 'validate');
 
     //validate template parameters
     $this->assertEquals($tplParams['toDate'], $leaveRequest->to_date);
@@ -82,6 +81,7 @@ class CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplateTest e
     $this->assertEquals($tplParams['leaveStatus'], $leaveRequestStatuses[$leaveRequest->status_id]);
     $this->assertEquals($tplParams['currentDateTime'], $dateTimeNow, '', 10);
     $this->assertEquals($tplParams['absenceTypeName'], $absenceType->title);
+    $this->assertEquals($tplParams['calculationUnitName'], $calculationUnitNames[$absenceType->calculation_unit]);
 
     //There are two attachments for the TOIL request
     $this->assertCount(2, $tplParams['leaveFiles']);
@@ -96,5 +96,22 @@ class CRM_HRLeaveAndAbsences_Mail_Template_TOILRequestNotificationTemplateTest e
     sort($leaveCommentText);
 
     $this->assertEquals($leaveCommentText, ['Random Commenter', 'Sample text']);
+  }
+
+  public function testFromDateTypeAndToDateTypeTemplateParametersAreNotPresentWhenAbsenceTypeIsCalculatedInHours() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $absenceType->id,
+      'contact_id' =>2,
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'toil_to_accrue' => 2,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], false);
+
+    $tplParams = $this->toilRequestNotificationTemplate->getTemplateParameters($leaveRequest);
+
+    $this->assertArrayNotHasKey('fromDateType', $tplParams);
+    $this->assertArrayNotHasKey('toDateType', $tplParams);
   }
 }

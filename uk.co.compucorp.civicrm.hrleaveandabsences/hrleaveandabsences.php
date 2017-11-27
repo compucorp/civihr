@@ -286,6 +286,12 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern',
     'table' => 'civicrm_hrleaveandabsences_contact_work_pattern',
   ];
+
+  $entityTypes[] = [
+    'name'  => 'LeavePeriodEntitlementLog',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlementLog',
+    'table' => 'civicrm_hrleaveandabsences_leave_period_entitlement_log',
+  ];
 }
 
 /**
@@ -442,7 +448,7 @@ function _hrleaveandabsences_create_administer_menu() {
   $maxWeightOfAdminMenuItems = _hrleaveandabsences_get_max_child_weight_for_menu($administerMenuId);
 
   $params = [
-    'label'      => ts('Leave and Absences'),
+    'label'      => ts('Leave'),
     'name'       => 'leave_and_absences',
     'url'        => null,
     'operator'   => null,
@@ -531,7 +537,7 @@ function _hrleavesandabsences_create_main_menu() {
   $vacanciesWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'weight', 'name');
 
   $params = [
-    'label'      => ts('Leave and Absences'),
+    'label'      => ts('Leave'),
     'name'       => 'leave_and_absences',
     'url'        => 'civicrm/leaveandabsences/dashboard',
     'operator'   => null,

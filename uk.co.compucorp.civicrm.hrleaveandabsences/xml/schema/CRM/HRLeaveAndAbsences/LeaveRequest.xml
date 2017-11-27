@@ -63,16 +63,15 @@
 
   <field>
     <name>from_date</name>
-    <type>date</type>
+    <type>datetime</type>
     <required>true</required>
-    <comment>The date the leave request starts.</comment>
+    <comment>The date and time the leave request starts.</comment>
     <add>4.4</add>
   </field>
 
   <field>
     <name>from_date_type</name>
     <type>int unsigned</type>
-    <required>true</required>
     <comment>One of the values of the Leave Request Day Type option group</comment>
     <add>4.4</add>
     <pseudoconstant>
@@ -82,16 +81,15 @@
 
   <field>
     <name>to_date</name>
-    <type>date</type>
+    <type>datetime</type>
     <required>true</required>
-    <comment>The date the leave request ends</comment>
+    <comment>The date and time the leave request ends</comment>
     <add>4.4</add>
   </field>
 
   <field>
     <name>to_date_type</name>
     <type>int unsigned</type>
-    <required>true</required>
     <comment>One of the values of the Leave Request Day Type option group</comment>
     <add>4.4</add>
     <pseudoconstant>
@@ -157,6 +155,20 @@
     <type>boolean</type>
     <default>0</default>
     <comment>Whether this leave request has been deleted or not</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>from_date_amount</name>
+    <type>decimal</type>
+    <comment>The balance change amount to be deducted for the leave request from date</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>to_date_amount</name>
+    <type>decimal</type>
+    <comment>The balance change amount to be deducted for the leave request to date</comment>
     <add>4.4</add>
   </field>
 

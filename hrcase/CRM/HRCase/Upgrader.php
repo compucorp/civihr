@@ -31,13 +31,11 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
 
   public function uninstall() {
     self::activityTypesWordReplacement(true);
-    self::removeRelationshipTypes();
     self::removeCaseTypesWithData(array_column(DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'));
     $this->removeActivityTypesList(DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 'CiviTask');
   }
 
   public function enable() {
-    self::toggleRelationshipTypes(1);
     self::toggleCaseTypes(array_column(DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'), 1);
     self::toggleCaseTypes(DefaultCaseAndActivityTypes::getDefaultCiviCRMCaseTypes(), 0);
     self::toggleActivityTypes(DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 1);
@@ -45,7 +43,6 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   }
 
   public function disable() {
-    self::toggleRelationshipTypes(0);
     self::toggleCaseTypes(array_column(DefaultCaseAndActivityTypes::getDefaultCaseTypes(), 'name'), 0);
     self::toggleCaseTypes(DefaultCaseAndActivityTypes::getDefaultCiviCRMCaseTypes(), 1);
     self::toggleActivityTypes(DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 0);
@@ -97,7 +94,6 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    */
   public function upgrade_1400() {
     self::activityTypesWordReplacement();
-    self::createRelationshipTypes();
 
     CRM_Core_BAO_Navigation::resetNavigation();
 
@@ -192,66 +188,6 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     // replace (open case) activity type  which is a special case and should be replaced differently
     $sql = "UPDATE civicrm_option_value SET label= replace(label,'{$replaceOpenCase}', '{$replaceOpenCaseWith}') WHERE label = '{$replaceOpenCase}' and option_group_id={$optionGroupID}";
     CRM_Core_DAO::executeQuery($sql);
-  }
-  /**
-   * Creates default relationship types
-   */
-  public static function createRelationshipTypes() {
-    foreach(self::defaultRelationshipsTypes() as $relationshipType) {
-      civicrm_api3('RelationshipType', 'create', [
-        'name_a_b' => $relationshipType['name_a_b'],
-        'label_a_b' => $relationshipType['name_b_a'],
-        'name_b_a' => $relationshipType['name_b_a'],
-        'label_b_a' => $relationshipType['name_b_a'],
-        'contact_type_a' => 'Individual',
-        'contact_type_b' => 'Individual',
-        'is_reserved' => 0,
-        'is_active' => 1,
-      ]);
-    }
-  }
-  /**
-   * Removes default relationship types
-   */
-  public static function removeRelationshipTypes() {
-    foreach(self::defaultRelationshipsTypes() as $relationshipType) {
-      // chained API call to delete the relationship type
-      civicrm_api3('RelationshipType', 'get', [
-        'name_b_a' => $relationshipType['name_b_a'],
-        'api.RelationshipType.delete' => ['id' => '$value.id'],
-      ]);
-    }
-  }
-  /**
-   * (Enables/Disables) a defined list of relationship types
-   *
-   * @param int $setActive
-   *   0 : disable , 1 : enable
-   */
-  public static function toggleRelationshipTypes($setActive) {
-    foreach(self::defaultRelationshipsTypes() as $relationshipType) {
-      // chained API call to activate/disable the relationship type
-      civicrm_api3('RelationshipType', 'get', [
-        'name_b_a' => $relationshipType['name_b_a'],
-        'api.RelationshipType.create' => ['id' => '$value.id', 'name_a_b' => '$value.name_a_b', 'name_b_a' => '$value.name_b_a', 'is_active' => $setActive],
-      ]);
-    }
-  }
-  /**
-   * A list of relationship types to be managed by this extension.
-   *
-   * @return array
-   */
-  public static function defaultRelationshipsTypes() {
-    $list = [
-      ['name_a_b' => 'HR Manager is', 'name_b_a' => 'HR Manager', 'description' => 'HR Manager'],
-      ['name_a_b' => 'Line Manager is', 'name_b_a' => 'Line Manager', 'description' => 'Line Manager'],
-    ];
-    // (Recruiting Manager) should be included only if hrrecruitment extension is disabled.
-    if (!self::isExtensionEnabled('org.civicrm.hrrecruitment')) {
-      $list = array_merge($list, [ ['name_a_b' => 'Recruiting Manager is', 'name_b_a' => 'Recruiting Manager', 'description' => 'Recruiting Manager'] ]);
-    }
-    return $list;
   }
 
   /**

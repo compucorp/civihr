@@ -5,7 +5,7 @@ module.exports = function (config) {
 
   config.set({
     basePath: civicrmPath,
-    browsers: ['Chrome'],
+    browsers: ['ChromeHeadless'],
     frameworks: ['jasmine'],
     files: [
       // the global dependencies
@@ -31,6 +31,9 @@ module.exports = function (config) {
 
       // all the common/ mocked dependencies
       civihrPath + 'org.civicrm.reqangular/dist/reqangular.mocks.min.js',
+
+      // External extensions files
+      { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/angular/src/**/*.js', included: false },
 
       // the application modules
       { pattern: extPath + 'js/src/job-contract/**/*.js', included: false },
@@ -58,6 +61,22 @@ module.exports = function (config) {
     ngHtml2JsPreprocessor: {
       prependPrefix: '/base/',
       moduleName: 'job-contract.templates'
+    },
+    customLaunchers: {
+      ChromeHeadless: {
+        base: 'Chrome',
+        flags: [
+          '--headless',
+          '--disable-gpu',
+          // Without a remote debugging port, Google Chrome exits immediately.
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
+    junitReporter: {
+      outputDir: extPath + 'test-reports',
+      useBrowserName: false,
+      outputFile: 'hrjobcontract.xml'
     }
   });
 };

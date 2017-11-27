@@ -1,8 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
-
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContractRevision as HRJobContractRevisionFabricator;
@@ -17,20 +14,11 @@ use CRM_Hrjobcontract_Test_Fabricator_HRJobPension as HRJobPensionFabricator;
  *
  * @group headless
  */
-class api_v3_HRJobContractTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface,
-  TransactionalInterface {
+class api_v3_HRJobContractTest extends CRM_Hrjobcontract_Test_BaseHeadlessTest {
 
   use HRJobContractTestTrait;
 
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('uk.co.compucorp.civicrm.hrcore')
-      ->installMe(__DIR__)
-      ->apply();
-  }
-
-  function testFullDetailsResponse() {
+  public function testFullDetailsResponse() {
     $contact = ContactFabricator::fabricate(['first_name' => 'chrollo', 'last_name' => 'lucilfer']);
     $contract = HRJobContractFabricator::fabricate(['contact_id' => $contact['id']], ['period_start_date' => '2015-01-01']);
 

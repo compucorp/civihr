@@ -3,6 +3,10 @@
 define([
   'common/angular',
   'common/angularBootstrap',
+  'common/directives/time-amount-picker.directive',
+  'common/directives/timepicker-select.directive',
+  'common/filters/angular-date/format-date',
+  'common/filters/time-unit-applier.filter',
   'common/modules/dialog',
   'common/services/check-permissions',
   'common/services/angular-date/date-format',
@@ -35,6 +39,7 @@ define([
     'textAngular',
     'common.angularDate',
     'common.dialog',
+    'common.filters',
     'common.mocks',
     'leave-absences.components',
     'leave-absences.controllers',

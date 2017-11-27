@@ -161,5 +161,16 @@
     <default>0</default>
     <comment>A flag which is used to determine if this Absence Type can be used for a Sickness Request</comment>
   </field>
+  <field>
+    <name>calculation_unit</name>
+    <title>Calculation Unit</title>
+    <type>varchar</type>
+    <length>512</length>
+    <required>true</required>
+    <comment>One of the values of the Absence type calculation units option group</comment>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_absence_type_calculation_unit</optionGroupName>
+    </pseudoconstant>
+  </field>
 
 </table>

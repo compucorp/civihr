@@ -3,7 +3,8 @@
 define([
   'common/lodash',
   'leave-absences/shared/modules/components',
-  'common/models/contact'
+  'common/models/contact',
+  'common/services/pub-sub'
 ], function (_, components) {
   components.component('manageLeaveRequests', {
     bindings: { contactId: '<' },
@@ -16,10 +17,13 @@ define([
 
   ManageLeaveRequestsController.$inject = [
     '$log', '$q', '$rootScope', 'Contact', 'checkPermissions', 'OptionGroup',
-    'shared-settings', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest', 'LeavePopup'
+    'shared-settings', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest',
+    'LeavePopup', 'pubSub'
   ];
 
-  function ManageLeaveRequestsController ($log, $q, $rootScope, Contact, checkPermissions, OptionGroup, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, LeavePopup) {
+  function ManageLeaveRequestsController ($log, $q, $rootScope, Contact,
+  checkPermissions, OptionGroup, sharedSettings, AbsencePeriod, AbsenceType,
+  LeaveRequest, LeavePopup, pubSub) {
     'use strict';
     $log.debug('Component: manage-leave-requests');
 
@@ -55,7 +59,7 @@ define([
 
     vm.clearStaffSelection = clearStaffSelection;
     vm.countLeaveRequestByStatus = countLeaveRequestByStatus;
-    vm.getAbsenceTypesByID = getAbsenceTypesByID;
+    vm.getAbsenceTypeByID = getAbsenceTypeByID;
     vm.getArrayOfSize = getArrayOfSize;
     vm.getLeaveStatusByValue = getLeaveStatusByValue;
     vm.getNavBadge = getNavBadge;
@@ -131,19 +135,13 @@ define([
     }
 
     /**
-     * Returns the title of a Absence type when id is given
+     * Returns the Absence type by ID
      *
-     * @param {string} id - id of the Absence type
-     * @return {string}
+     * @param {String} id of the Absence type
+     * @return {AbsenceTypeInstance}
      */
-    function getAbsenceTypesByID (id) {
-      if (vm.absenceTypes && id) {
-        var type = _.find(vm.absenceTypes, function (absenceType) {
-          return absenceType.id === id;
-        });
-
-        return type ? type.title : null;
-      }
+    function getAbsenceTypeByID (id) {
+      return _.find(vm.absenceTypes, { id: id });
     }
 
     /**
@@ -248,6 +246,7 @@ define([
      */
     function loadAbsenceTypes () {
       return AbsenceType.all()
+        .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
           vm.absenceTypes = absenceTypes;
         });
@@ -366,7 +365,8 @@ define([
         contact_id: prepareContactID(),
         managed_by: (vm.isAdmin && filters.assignedTo.type !== 'me' ? undefined : vm.contactId),
         status_id: prepareStatusFilter(filterByStatus),
-        type_id: filters.selectedAbsenceTypes ? filters.selectedAbsenceTypes.id : null,
+        type_id: filters.selectedAbsenceTypes
+          ? filters.selectedAbsenceTypes.id : { IN: _.pluck(vm.absenceTypes, 'id') },
         from_date: { from: filters.selectedPeriod.start_date },
         to_date: { to: filters.selectedPeriod.end_date },
         unassigned: (filters.assignedTo.type === 'unassigned' ? true : undefined)
@@ -525,10 +525,10 @@ define([
      * Register events which will be called by other modules
      */
     function registerEvents () {
-      $rootScope.$on('LeaveRequest::updatedByManager', function () { vm.refresh(); });
-      $rootScope.$on('LeaveRequest::new', function () { vm.refresh(); });
-      $rootScope.$on('LeaveRequest::edit', function () { vm.refresh(); });
-      $rootScope.$on('LeaveRequest::deleted', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::updatedByManager', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::new', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::edit', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::deleted', function () { vm.refresh(); });
     }
 
     /**

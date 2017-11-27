@@ -19,14 +19,14 @@ define([
 
   describe('annualEntitlements', function () {
     var contactId = 202;
-    var $componentController, $log, $rootScope, controller, $provide, ContactAPIMock, notification;
+    var $componentController, $log, $provide, $rootScope, $uibModal,
+      controller, ContactAPIMock, notification;
 
     beforeEach(module('leave-absences.templates', 'absence-tab', 'common.mocks', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (AbsenceTypeAPIMock, AbsencePeriodAPIMock, EntitlementAPIMock) {
-      $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
+    beforeEach(inject(function (AbsencePeriodAPIMock, EntitlementAPIMock) {
       $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
       $provide.value('EntitlementAPI', EntitlementAPIMock);
     }));
@@ -38,103 +38,147 @@ define([
         ContactAPIMock = _ContactAPIMock_;
       }]));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _notificationService_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_,
+    _$uibModal_, _notificationService_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
+      $uibModal = _$uibModal_;
       notification = _notificationService_;
       window.alert = function () {}; // prevent alert from being logged in console
 
       spyOn($log, 'debug');
-      compileComponent();
     }));
 
-    it('is initialized', function () {
-      expect($log.debug).toHaveBeenCalled();
-    });
-
-    it('has a contact to load for', function () {
-      expect(controller.contactId).toEqual(contactId);
-    });
-
-    it('has absence types', function () {
-      expect(JSON.parse(angular.toJson(controller.absenceTypes))).toEqual(absenceTypeMocked.all().values);
-    });
-
-    it('has absence periods', function () {
-      expect(controller.absencePeriods).toEqual(jasmine.any(Array));
-    });
-
-    it('has loaded absence periods', function () {
-      expect(controller.loading.absencePeriods).toEqual(false);
-    });
-
-    it('navigates to a correct edit entitlements page', function () {
-      expect(controller.editEntitlementsPageUrl).toEqual('/index.php?q=civicrm/admin/leaveandabsences/periods/manage_entitlements&cid=' + contactId + '&returnUrl=%2Findex.php%3Fq%3Dcivicrm%2Fcontact%2Fview%26cid%3D202%26selectedChild%3Dabsence');
-    });
-
-    describe('absence period', function () {
-      var absencePeriod, mockedAbsencePeriod, mockedEntitlements;
+    describe('basic tests', function () {
+      var expectedEntitlementURL = '/index.php?q=civicrm/admin/leaveandabsences/periods/manage_entitlements&cid=' +
+        contactId + '&returnUrl=%2Findex.php%3Fq%3Dcivicrm%2Fcontact%2Fview%26cid%3D202%26selectedChild%3Dabsence';
 
       beforeEach(function () {
-        absencePeriod = controller.absencePeriods[0];
-        mockedAbsencePeriod = _.sortBy(absencePeriodMocked.all().values, function (absencePeriod) {
-          return -moment(absencePeriod.start_date).valueOf();
-        })[0];
-        mockedEntitlements = absenceEntitlementMocked.all().values.map(storeEntitlementValue);
+        compileComponent();
       });
 
-      it('has period', function () {
-        expect(absencePeriod.period).toEqual(moment(mockedAbsencePeriod.start_date).format('YYYY'));
+      it('is initialized', function () {
+        expect($log.debug).toHaveBeenCalled();
       });
 
-      it('has entitlements', function () {
-        expect(absencePeriod.entitlements).toEqual(jasmine.any(Array));
+      it('has a contact to load for', function () {
+        expect(controller.contactId).toEqual(contactId);
       });
 
-      describe('entitlement', function () {
-        var entitlement, mockedEntitlement, mockedContact;
+      it('has absence periods', function () {
+        expect(controller.absencePeriods).toEqual(jasmine.any(Array));
+      });
+
+      it('has loaded absence periods', function () {
+        expect(controller.loading.absencePeriods).toEqual(false);
+      });
+
+      it('navigates to a correct edit entitlements page', function () {
+        expect(controller.editEntitlementsPageUrl).toEqual(expectedEntitlementURL);
+      });
+
+      describe('absence period', function () {
+        var absencePeriod, mockedAbsencePeriod, mockedEntitlements;
 
         beforeEach(function () {
-          entitlement = absencePeriod.entitlements[0];
-          mockedEntitlement = _.filter(mockedEntitlements, function (mockedEntitlement) {
-            return mockedEntitlement.period_id === mockedAbsencePeriod.id;
+          absencePeriod = controller.absencePeriods[0];
+          mockedAbsencePeriod = _.sortBy(absencePeriodMocked.all().values, function (absencePeriod) {
+            return -moment(absencePeriod.start_date).valueOf();
           })[0];
-          mockedContact = _.filter(ContactAPIMock.mockedContacts().list, function (mockedContact) {
-            return mockedContact.id === contactId.toString();
-          })[0];
+          mockedEntitlements = absenceEntitlementMocked.all().values.map(storeEntitlementValue);
         });
 
-        it('has amount', function () {
-          expect(entitlement.amount).toEqual(mockedEntitlement.value);
+        it('has period id', function () {
+          expect(absencePeriod.id).toBe(mockedAbsencePeriod.id);
         });
 
-        it('has comment', function () {
-          expect(entitlement.comment).toEqual({
-            message: mockedEntitlement.comment,
-            author_name: mockedContact.display_name,
-            date: mockedEntitlement.comment_date
+        it('has period title', function () {
+          expect(absencePeriod.title).toEqual(moment(mockedAbsencePeriod.start_date).format('YYYY'));
+        });
+
+        it('has entitlements', function () {
+          expect(absencePeriod.entitlements).toEqual(jasmine.any(Array));
+        });
+
+        describe('entitlement', function () {
+          var entitlement, mockedEntitlement, mockedContact;
+
+          beforeEach(function () {
+            entitlement = absencePeriod.entitlements[0];
+            mockedEntitlement = _.find(mockedEntitlements, function (mockedEntitlement) {
+              return mockedEntitlement.period_id === mockedAbsencePeriod.id;
+            });
+            mockedContact = _.find(ContactAPIMock.mockedContacts().list, function (mockedContact) {
+              return mockedContact.id === contactId.toString();
+            });
+          });
+
+          it('has amount', function () {
+            expect(entitlement.amount).toEqual(mockedEntitlement.value);
+          });
+
+          it('has the calculation unit name', function () {
+            expect(entitlement.calculation_unit).toMatch(/days|hours/);
+          });
+
+          it('has comment', function () {
+            expect(entitlement.comment).toEqual({
+              message: mockedEntitlement.comment,
+              author_name: mockedContact.display_name,
+              date: mockedEntitlement.created_date
+            });
           });
         });
       });
-    });
 
-    describe('when user wants to see a comment to an entitlement', function () {
-      beforeEach(function () {
-        spyOn(notification, 'info').and.callThrough();
-        controller.showComment('Sample comment');
+      describe('when user wants to see a comment to an entitlement', function () {
+        beforeEach(function () {
+          spyOn(notification, 'info').and.callThrough();
+          controller.showComment('Sample comment');
+        });
+
+        it('shows the notification with a comment', function () {
+          expect(notification.info).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(String));
+        });
       });
 
-      it('shows the notification with a comment', function () {
-        expect(notification.info).toHaveBeenCalledWith(jasmine.any(String), jasmine.any(String));
+      describe('when opening the change log', function () {
+        beforeEach(function () {
+          spyOn($uibModal, 'open').and.callThrough();
+          controller.openAnnualEntitlementChangeLog();
+        });
+
+        it('opens a uib modal', function () {
+          expect($uibModal.open).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('when there are no entitlements for the loaded absence types', function () {
+      beforeEach(function () {
+        // giving a fake ID ensures such an entitlement doesn't exist
+        compileComponent([{ id: 'just-created-absence-type-' + Math.random() }]);
+      });
+
+      it('filters the absence type with non-existing entitlements', function () {
+        expect(controller.absenceTypes.length).toBe(0);
       });
     });
 
     /**
      * Compiles the controller
+     *
+     * @param {Array} absenceTypes
      */
-    function compileComponent () {
-      controller = $componentController('annualEntitlements', null, { contactId: contactId });
+    function compileComponent (absenceTypes) {
+      absenceTypes = absenceTypes ||
+        absenceTypeMocked.getAllAndTheirCalculationUnits();
+      controller = $componentController('annualEntitlements', null, {
+        contactId: contactId,
+        absenceTypes: absenceTypes
+      });
+
       $rootScope.$digest();
     }
 

@@ -18,13 +18,13 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$controller', '$q', '$log', '$rootScope', '$timeout',
-      'shared-settings', 'AbsencePeriod', 'AbsenceType', 'LeaveRequest',
-      'PublicHoliday', 'OptionGroup', 'Calendar', 'checkPermissions',
+    controller: ['$controller', '$q', '$log', '$rootScope',
+      'shared-settings', 'AbsencePeriod', 'AbsenceType',
+      'PublicHoliday', 'OptionGroup', 'checkPermissions',
       controller]
   });
 
-  function controller ($controller, $q, $log, $rootScope, $timeout, sharedSettings, AbsencePeriod, AbsenceType, LeaveRequest, PublicHoliday, OptionGroup, Calendar, checkPermissions) {
+  function controller ($controller, $q, $log, $rootScope, sharedSettings, AbsencePeriod, AbsenceType, PublicHoliday, OptionGroup, checkPermissions) {
     $log.debug('Component: leave-calendar');
 
     var subController, userRole;
@@ -60,6 +60,7 @@ define([
       setUserRole()
       .then(initWatchers)
       .then(injectSubController)
+      .then(makeSureMonthsAreNotInjected)
       .then(loadAbsencePeriods)
       .then(function () {
         return $q.all([
@@ -114,15 +115,13 @@ define([
      * @param {Boolean} forceDataReload whether the months need to force data reload
      */
     function injectAndShowMonths (forceDataReload) {
+      vm.injectMonths = true;
+
       waitUntilMonthsAre('injected').then(function () {
         sendShowMonthsSignal(forceDataReload);
       })
       .then(function () {
         vm.loading.calendar = false;
-      });
-
-      makeSureMonthsAreNotInjected().then(function () {
-        vm.injectMonths = true;
       });
     }
 
@@ -166,7 +165,8 @@ define([
      * @return {Promise}
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({ is_active: true });
+      return AbsenceType.all({ is_active: true })
+        .then(AbsenceType.loadCalculationUnits);
     }
 
     /**
@@ -176,8 +176,10 @@ define([
      */
     function loadBasicOptionValues () {
       return OptionGroup.valuesOf([
+        'hrleaveandabsences_absence_type_calculation_unit',
+        'hrleaveandabsences_leave_request_day_type',
         'hrleaveandabsences_leave_request_status',
-        'hrleaveandabsences_leave_request_day_type'
+        'hrleaveandabsences_toil_amounts'
       ]);
     }
 
@@ -235,8 +237,10 @@ define([
       .then(function (results) {
         vm.supportData.absenceTypes = results[0];
         vm.supportData.publicHolidays = results[1];
-        vm.supportData.leaveRequestStatuses = results[2].hrleaveandabsences_leave_request_status;
+        vm.supportData.calculationUnits = results[2].hrleaveandabsences_absence_type_calculation_unit;
         vm.supportData.dayTypes = results[2].hrleaveandabsences_leave_request_day_type;
+        vm.supportData.leaveRequestStatuses = results[2].hrleaveandabsences_leave_request_status;
+        vm.supportData.toilAmounts = _.indexBy(results[2].hrleaveandabsences_toil_amounts, 'value');
       });
     }
 
@@ -289,6 +293,7 @@ define([
         .then(function () {
           vm.loading.calendar = true;
         })
+        .then(makeSureMonthsAreNotInjected)
         .then(source === 'period' ? buildPeriodMonthsList : _.noop)
         .then(source === 'contacts' ? loadContacts : _.noop)
         .then(function () {

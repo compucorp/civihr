@@ -1,7 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_Hrjobroles_BAO_HrJobRoles as HrJobRoles;
@@ -12,18 +10,10 @@ use CRM_Hrjobroles_Test_Fabricator_HrJobRoles as HRJobRolesFabricator;
  *
  * @group headless
  */
-class api_v3_ContactHRJobRoleTest extends PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
+class api_v3_ContactHRJobRoleTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
 
   private $entity = 'ContactHrJobRoles';
   private $action = 'get';
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-                     ->install('uk.co.compucorp.civicrm.hrcore')
-                     ->install('org.civicrm.hrjobcontract')
-                     ->installMe(__DIR__)
-                     ->apply();
-  }
 
   public function testAccessAjaxPermissionIsRequiredToAccessTheGetAction() {
     $contactID = 1;

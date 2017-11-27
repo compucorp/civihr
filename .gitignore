@@ -11,3 +11,9 @@ hrabsence/build
 
 # Exclude sass cache from all extension directories
 */.sass-cache/
+
+# Exclude temporary JS build files
+**/js/build.tmp.js
+
+# Exclude all JS source map files
+*.js.map

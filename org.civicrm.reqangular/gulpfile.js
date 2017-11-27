@@ -7,6 +7,7 @@ var rename = require('gulp-rename');
 var karma = require('karma');
 var path = require('path');
 var fs = require('fs');
+var argv = require('yargs').argv;
 
 gulp.task('cache-templates', function (cb) {
   gulp.src('src/common/templates/**/*.html')
@@ -59,8 +60,11 @@ var test = (function () {
    * @param {Function} cb - The callback to call when the server closes
    */
   function runServer (configFile, cb) {
+    var reporters = argv.reporters ? argv.reporters.split(',') : ['progress'];
+
     new karma.Server({
       configFile: path.join(__dirname, configFile),
+      reporters: reporters,
       singleRun: true
     }, function () {
       cb && cb();

@@ -48,8 +48,9 @@
                   </td>
                   <td></td>
                   <td></td>
-                  <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                    {{absenceType.entitlement}}
+                  <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                    title="({{ absenceType.calculation_unit_label | lowercase }})">
+                    {{ absenceType.entitlement | timeUnitApplier : absenceType.calculation_unit_name }}
                   </td>
                   <td></td>
                 </tr>
@@ -86,13 +87,14 @@
                               <td class="chr_leave-report__label">
                                 {{entry.type.label}}
                                 <span ng-if="entry.expiry_date">
-                                  (expires {{entry.expiry_date | date:report.dateFormat}})
+                                  (expires {{entry.expiry_date | date}})
                                 </span>
                               </td>
                               <td></td>
                               <td></td>
-                              <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                                {{(entry.type_id == absenceType.id ? (entry.amount | number:0) : '')}}
+                              <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                                title="({{ absenceType.calculation_unit_label | lowercase }})">
+                                {{ +entry.type_id === +absenceType.id ? ((entry.amount | number : 0) | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
                               </td>
                               <td></td>
                             </tr>
@@ -114,8 +116,9 @@
                   </td>
                   <td></td>
                   <td></td>
-                  <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                    {{absenceType.balanceChanges.publicHolidays}}
+                  <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                    title="({{ absenceType.calculation_unit_label | lowercase }})">
+                    {{ absenceType.balanceChanges.publicHolidays | timeUnitApplier : absenceType.calculation_unit_name }}
                   </td>
                   <td></td>
                 </tr>
@@ -150,10 +153,11 @@
                           <tbody>
                             <tr ng-repeat="request in report.sections.holidays.data track by $index">
                               <td class="chr_leave-report__label">Public Holiday</td>
-                              <td>{{request.from_date | date:report.dateFormat}}</td>
+                              <td>{{request.from_date | formatDate}}</td>
                               <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
-                              <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                                {{(request.type_id == absenceType.id ? request.balance_change : '')}}
+                              <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                                title="({{ absenceType.calculation_unit_label | lowercase }})">
+                                {{ (request.type_id == absenceType.id ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '') }}
                               </td>
                               <td></td>
                             </tr>
@@ -175,16 +179,27 @@
                   </td>
                   <td></td>
                   <td></td>
-                  <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                    {{absenceType.balanceChanges.approved}}
+                  <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                    title="({{ absenceType.calculation_unit_label | lowercase }})">
+                    {{ absenceType.balanceChanges.approved | timeUnitApplier : absenceType.calculation_unit_name }}
                   </td>
                   <td></td>
                 </tr>
                 <tr>
                   <td class="table-nested-cell" colspan="{{4 + report.absenceTypesFiltered.length}}">
                     <crm-loading show="!report.sections.approved.loading">
-                      <div ng-show="report.sections.approved.open" class="table-nested">
-                        <table class="table table-condensed">
+                      <div
+                        ng-show="report.sections.approved.open"
+                        class="table-nested"
+                        ng-switch="!!report.sections.approved.data.length">
+                        <table class="table table-condensed" ng-switch-when="false">
+                          <tbody>
+                            <tr>
+                              <td align="center">There are no approved leave requests</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <table class="table table-condensed" ng-switch-when="true">
                           <thead>
                             <tr>
                               <th class="chr_leave-report__table__heading--label"></th>
@@ -203,15 +218,20 @@
                               <td class="chr_leave-report__label">
                                 {{report.absenceTypes[request.type_id].title}}
                                 <span ng-if="request.toil_expiry_date">
-                                    (expires {{request.toil_expiry_date | date:report.dateFormat}})
-                                  </span>
+                                  (expires {{request.toil_expiry_date | formatDate}})
+                                </span>
                               </td>
-                              <td>
-                                {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                              <td ng-init="unit = report.absenceTypes[request.type_id].calculation_unit_name">
+                                {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                                <span ng-if="request.dates.length > 1">
+                                  -
+                                  {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                                </span>
                               </td>
                               <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
-                              <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                                {{(request.type_id == absenceType.id ? request.balance_change : '')}}
+                              <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                                title="({{ absenceType.calculation_unit_label | lowercase }})">
+                                {{ +request.type_id === +absenceType.id ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
                               </td>
                               <td>
                                 <leave-request-actions
@@ -240,8 +260,9 @@
                   </td>
                   <td></td>
                   <td></td>
-                  <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                    {{absenceType.balanceChanges.expired}}
+                  <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                    title="({{ absenceType.calculation_unit_label | lowercase }})">
+                    {{ absenceType.balanceChanges.expired | timeUnitApplier : absenceType.calculation_unit_name }}
                   </td>
                   <td></td>
                 </tr>
@@ -278,13 +299,14 @@
                               <td class="chr_leave-report__label">
                                 {{entry.type.label}}
                                 <span ng-if="entry.expiry_date">
-                                  (expired {{entry.expiry_date | date:report.dateFormat}})
+                                  (expired {{entry.expiry_date | formatDate}})
                                 </span>
                               </td>
                               <td></td>
                               <td></td>
-                              <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                                {{(entry.type_id == absenceType.id ? (entry.amount | number:0) : '')}}
+                              <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                                title="({{ absenceType.calculation_unit_label | lowercase }})">
+                                {{ +entry.type_id === +absenceType.id ? ((entry.amount | number:0) | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
                               </td>
                               <td></td>
                             </tr>
@@ -298,8 +320,9 @@
                   <td class="chr_leave-report__label">Balance</td>
                   <td></td>
                   <td></td>
-                  <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                    {{absenceType.remainder.current}}
+                  <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                    title="({{ absenceType.calculation_unit_label | lowercase }})">
+                    {{ absenceType.remainder.current | timeUnitApplier : absenceType.calculation_unit_name }}
                   </td>
                   <td></td>
                 </tr>
@@ -326,8 +349,9 @@
                 <td class="chr_leave-report__table__heading--status"></td>
                 <td
                   class="chr_leave-report__table__heading--type"
-                  ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                  {{absenceType.balanceChanges.pending}}
+                  ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                  title="({{ absenceType.calculation_unit_label | lowercase }})">
+                  {{ absenceType.balanceChanges.pending | timeUnitApplier : absenceType.calculation_unit_name }}
                 </td>
                 <td class="chr_leave-report__table__heading--action"></td>
               </tr>
@@ -364,15 +388,20 @@
                             <td class="chr_leave-report__label">
                               {{report.absenceTypes[request.type_id].title}}
                               <span ng-if="request.toil_expiry_date">
-                                (expires {{request.toil_expiry_date | date:report.dateFormat}})
+                                (expires {{request.toil_expiry_date | formatDate}})
                               </span>
                             </td>
-                            <td>
-                              {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                            <td ng-init="unit = report.absenceTypes[request.type_id].calculation_unit_name">
+                              {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                              <span ng-if="request.dates.length > 1">
+                                -
+                                {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                              </span>
                             </td>
                             <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
-                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{(request.type_id == absenceType.id ? request.balance_change : '')}}
+                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                              title="({{ absenceType.calculation_unit_label | lowercase }})">
+                              {{ +request.type_id === +absenceType.id ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
                             </td>
                             <td>
                               <leave-request-actions
@@ -393,8 +422,9 @@
                 <td class="chr_leave-report__label">Future Balance</td>
                 <td></td>
                 <td></td>
-                <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                  {{absenceType.remainder.future}}
+                <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                  title="({{ absenceType.calculation_unit_label | lowercase }})">
+                  {{ absenceType.remainder.future | timeUnitApplier : absenceType.calculation_unit_name }}
                 </td>
                 <td></td>
               </tr>
@@ -456,15 +486,20 @@
                             <td class="chr_leave-report__label">
                               {{report.absenceTypes[request.type_id].title}}
                               <span ng-if="request.toil_expiry_date">
-                                  (expires {{request.toil_expiry_date | date:report.dateFormat}})
-                                </span>
+                                (expires {{request.toil_expiry_date | formatDate}})
+                              </span>
                             </td>
-                            <td>
-                              {{request.from_date | date:report.dateFormat}} - {{request.to_date | date:report.dateFormat}}
+                            <td ng-init="unit = report.absenceTypes[request.type_id].calculation_unit_name">
+                              {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                              <span ng-if="request.dates.length > 1">
+                                -
+                                {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
+                              </span>
                             </td>
                             <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
-                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{(request.type_id == absenceType.id ? request.balance_change : '')}}
+                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
+                              title="({{ absenceType.calculation_unit_label | lowercase }})">
+                              {{ +request.type_id === +absenceType.id ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
                             </td>
                             <td>
                               <leave-request-actions
