@@ -13,6 +13,7 @@
     'mocks/data/option-group-mock-data',
     'common/angularMocks',
     'common/mocks/services/hr-settings-mock',
+    'common/services/pub-sub',
     'mocks/apis/absence-period-api-mock',
     'mocks/apis/absence-type-api-mock',
     'mocks/apis/entitlement-api-mock',
@@ -27,11 +28,14 @@
       var requestSortParam = 'from_date ASC';
 
       var $componentController, $q, $log, $provide, $rootScope, controller;
-      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest, LeaveRequestInstance, OptionGroup, HRSettings, sharedSettings;
+      var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
+        LeaveRequestInstance, OptionGroup, pubSub, HRSettings, sharedSettings;
 
-      beforeEach(module('leave-absences.templates', 'my-leave', 'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
-        $provide = _$provide_;
-      }));
+      beforeEach(module('common.services', 'leave-absences.templates',
+        'my-leave', 'leave-absences.mocks', 'leave-absences.settings',
+        function (_$provide_) {
+          $provide = _$provide_;
+        }));
 
       beforeEach(inject(function (_$componentController_, _$q_, _$log_, _$rootScope_) {
         $componentController = _$componentController_;
@@ -50,22 +54,28 @@
         $provide.value('checkPermissions', function () { return $q.resolve(isUserAdmin); });
       }));
 
-      beforeEach(inject(['shared-settings', 'HR_settingsMock', function (_sharedSettings_, HRSettingsMock) {
+      beforeEach(inject(['shared-settings', 'HR_settingsMock', 'api.optionGroup.mock', function (_sharedSettings_, HRSettingsMock, _OptionGroupAPIMock_) {
         sharedSettings = _sharedSettings_;
+
         $provide.value('HR_settings', HRSettingsMock);
+        $provide.value('api.optionGroup', _OptionGroupAPIMock_);
         HRSettings = HRSettingsMock;
       }]));
 
-      beforeEach(inject(function ($componentController, _AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_) {
+      beforeEach(inject(function ($componentController, _AbsencePeriod_,
+      _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_,
+      _OptionGroup_, _pubSub_) {
         AbsencePeriod = _AbsencePeriod_;
         AbsenceType = _AbsenceType_;
         Entitlement = _Entitlement_;
         LeaveRequest = _LeaveRequest_;
         LeaveRequestInstance = _LeaveRequestInstance_;
         OptionGroup = _OptionGroup_;
+        pubSub = _pubSub_;
 
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
+        spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
         spyOn(Entitlement, 'all').and.callThrough();
         spyOn(Entitlement, 'breakdown').and.callThrough();
         spyOn(LeaveRequest, 'all').and.callThrough();
@@ -117,6 +127,7 @@
 
             it('has fetched the absence types', function () {
               expect(AbsenceType.all).toHaveBeenCalled();
+              expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
               expect(controller.absenceTypes.length).not.toBe(0);
             });
 
@@ -345,7 +356,8 @@
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               from_date: { from: newPeriod.start_date },
               to_date: { to: newPeriod.end_date },
-              status_id: valueOfRequestStatus('approved')
+              status_id: valueOfRequestStatus('approved'),
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
               period_id: newPeriod.id
@@ -444,7 +456,8 @@
 
           it('fetches all leave requests linked to a public holiday', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              public_holiday: true
+              public_holiday: true,
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
           });
 
@@ -460,7 +473,8 @@
 
           it('fetches all approved leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-              status_id: valueOfRequestStatus('approved')
+              status_id: valueOfRequestStatus('approved'),
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
           });
 
@@ -479,7 +493,8 @@
               status_id: { in: [
                 valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
                 valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
-              ] }
+              ] },
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }));
           });
 
@@ -498,7 +513,8 @@
               status_id: { in: [
                 valueOfRequestStatus(sharedSettings.statusNames.rejected),
                 valueOfRequestStatus(sharedSettings.statusNames.cancelled)
-              ] }
+              ] },
+              type_id: { IN: _.keys(controller.absenceTypes) }
             }), null, requestSortParam, null, false);
           });
 
@@ -581,6 +597,7 @@
                 from_date: {from: controller.selectedPeriod.start_date},
                 to_date: {to: controller.selectedPeriod.end_date},
                 request_type: 'toil',
+                type_id: { IN: _.keys(controller.absenceTypes) },
                 expired: true
               }, null, requestSortParam, null, false);
             });
@@ -630,7 +647,7 @@
       describe('when a new leave request is created', function () {
         beforeEach(function () {
           spyOn(controller, 'refresh').and.callThrough();
-          $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
+          pubSub.publish('LeaveRequest::new', jasmine.any(Object));
           openSection('pending');
         });
 
@@ -646,7 +663,7 @@
       describe('when request is edited', function () {
         beforeEach(function () {
           spyOn(controller, 'refresh').and.callThrough();
-          $rootScope.$emit('LeaveRequest::edit');
+          pubSub.publish('LeaveRequest::edit');
           $rootScope.$digest();
         });
 
@@ -674,7 +691,7 @@
             oldBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
 
             leaveRequest1.delete();
-            $rootScope.$emit('LeaveRequest::deleted', leaveRequest1);
+            pubSub.publish('LeaveRequest::deleted', leaveRequest1);
             $rootScope.$digest();
 
             newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
@@ -706,7 +723,7 @@
             oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
 
             leaveRequest1.delete();
-            $rootScope.$emit('LeaveRequest::deleted', leaveRequest1);
+            pubSub.publish('LeaveRequest::deleted', leaveRequest1);
             $rootScope.$digest();
 
             newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
@@ -726,7 +743,7 @@
             oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
 
             leaveRequest1.delete();
-            $rootScope.$emit('LeaveRequest::deleted', leaveRequest1);
+            pubSub.publish('LeaveRequest::deleted', leaveRequest1);
             $rootScope.$digest();
 
             newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;

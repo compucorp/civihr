@@ -13,6 +13,11 @@ function _civicrm_api3_leave_request_create_spec(&$spec) {
     'type' => CRM_Utils_Type::T_BOOLEAN,
     'api.required' => 0,
   ];
+
+  //We need to unset this because we need to bypass civi validating
+  //this field against the toil amounts option group especially for
+  //TOIL in hours which can have values not part of the option group.
+  unset($spec['toil_to_accrue']['pseudoconstant']);
 }
 
 /**
@@ -34,6 +39,7 @@ function civicrm_api3_leave_request_create($params) {
   $bao = _civicrm_api3_get_BAO(__FUNCTION__);
   _civicrm_api3_check_edit_permissions($bao, $params);
   _civicrm_api3_format_params_for_create($params, null);
+  _civicrm_api3_leave_request_set_time_for_leave_dates($params);
 
   $service = CRM_HRLeaveAndAbsences_Factory_LeaveRequestService::create();
 
@@ -41,7 +47,19 @@ function civicrm_api3_leave_request_create($params) {
   $values = [];
   _civicrm_api3_object_to_array($leaveRequest, $values[$leaveRequest->id]);
 
-  return civicrm_api3_create_success($values, $params, null, 'create', $leaveRequest);
+  $extraParams = ['from_email_configured' => true];
+  if(!civicrm_api3_leave_request_get_from_email_for_notifications($leaveRequest)) {
+    $extraParams['from_email_configured'] = false;
+  }
+
+  return civicrm_api3_create_success($values, $params, null, 'create', $leaveRequest, $extraParams);
+}
+
+function civicrm_api3_leave_request_get_from_email_for_notifications($leaveRequest) {
+  $leaveRequestTemplateFactory = new CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate();
+  $message = new CRM_HRLeaveAndAbsences_Mail_Message($leaveRequest, $leaveRequestTemplateFactory);
+
+  return $message->getFromEmail();
 }
 
 /**
@@ -217,7 +235,7 @@ function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
     'name' => 'from_date_type',
     'title' => 'Starting Day Type',
     'type' => CRM_Utils_Type::T_STRING,
-    'api.required' => 1,
+    'api.required' => 0,
     'pseudoconstant' => [
       'optionGroupName' => 'hrleaveandabsences_leave_request_day_type',
       'optionEditPath'  => 'civicrm/admin/options/hrleaveandabsences_leave_request_day_type',
@@ -235,11 +253,29 @@ function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
     'name' => 'to_date_type',
     'title' => 'Ending Day Type',
     'type' => CRM_Utils_Type::T_STRING,
-    'api.required' => 1,
+    'api.required' => 0,
     'pseudoconstant' => [
       'optionGroupName' => 'hrleaveandabsences_leave_request_day_type',
       'optionEditPath'  => 'civicrm/admin/options/hrleaveandabsences_leave_request_day_type',
     ]
+  ];
+
+  $spec['type_id'] = [
+    'name' => 'type_id',
+    'title' => 'Absence Type ID',
+    'description' => 'Absence Type ID for the calculation',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1,
+    'FKClassName' => 'CRM_HRLeaveAndAbsences_BAO_AbsenceType',
+    'FKApiName' => 'AbsenceType',
+  ];
+
+  $spec['exclude_start_end_dates'] = [
+    'name' => 'public_holiday',
+    'title' => 'Exclude Start and End Dates?',
+    'description' => 'Exclude the leave start and end dates from the claculation',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0,
   ];
 }
 
@@ -249,14 +285,37 @@ function _civicrm_api3_leave_request_calculateBalanceChange_spec(&$spec) {
  * @param array $params
  *
  * @return array
+ *
+ * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_leave_request_calculateBalanceChange($params) {
+  $absenceType = CRM_HRLeaveAndAbsences_BAO_AbsenceType::findById($params['type_id']);
+  $calculationUnitInHours = $absenceType->isCalculationUnitInHours();
+
+  if(!$calculationUnitInHours) {
+    if(empty($params['from_date_type']) || empty($params['to_date_type'])) {
+      throw new InvalidArgumentException(
+        'The from_date_type and to_date_type is required when Absence Type calculation unit is in days'
+      );
+    }
+  }
+
+  if($calculationUnitInHours) {
+    if(!empty($params['from_date_type']) || !empty($params['to_date_type'])) {
+      throw new InvalidArgumentException(
+        'The from_date_type and to_date_type should not be used when Absence Type calculation unit is in hours'
+      );
+    }
+  }
+
   $result = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::calculateBalanceChange(
     $params['contact_id'],
     new DateTime($params['from_date']),
-    $params['from_date_type'],
     new DateTime($params['to_date']),
-    $params['to_date_type']
+    $params['type_id'],
+    !empty($params['from_date_type']) ? $params['from_date_type'] : null,
+    !empty($params['to_date_type']) ? $params['to_date_type'] : null,
+    !empty($params['exclude_start_end_dates']) ? true : false
   );
 
   return civicrm_api3_create_success($result);
@@ -730,4 +789,96 @@ function civicrm_api3_leave_request_getbreakdown($params) {
   $breakdown = $leaveRequestService->getBreakdown($leaveRequest['id']);
 
   return civicrm_api3_create_success($breakdown);
+}
+
+/**
+ * Sets the time for the from_date and to_date of a leave
+ * request whose balance change is to be calculated in days.
+ * It sets the time of the from_date as '00:00' and the
+ * time for the to_date as '23:59'
+ *
+ * @param array $params
+ */
+function _civicrm_api3_leave_request_set_time_for_leave_dates(&$params) {
+  if(empty($params['from_date']) || empty($params['to_date']) || empty($params['type_id'])) {
+    return;
+  }
+
+  $absenceType = CRM_HRLeaveAndAbsences_BAO_AbsenceType::findById($params['type_id']);
+
+  if($absenceType->isCalculationUnitInHours()) {
+    return;
+  }
+
+  $fromDate = new DateTime($params['from_date']);
+  $fromDate->setTime(00, 00);
+  $toDate = new DateTime($params['to_date']);
+  $toDate->setTime(23, 59);
+
+  $params['from_date'] = $fromDate->format('YmdHis');
+  $params['to_date'] = $toDate->format('YmdHis');
+}
+
+/**
+ * LeaveRequest.getWorkDayForDate API spec
+ *
+ * @param array $spec
+ */
+function _civicrm_api3_leave_request_getworkdayfordate_spec(&$spec) {
+  $spec['contact_id'] = [
+    'name' => 'contact_id',
+    'title' => 'Contact ID',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1,
+    'FKClassName'  => 'CRM_Contact_DAO_Contact',
+    'FKApiName'    => 'Contact',
+  ];
+
+  $spec['leave_date'] = [
+    'name' => 'leave_date',
+    'title' => 'Leave Date',
+    'description' => 'The leave date to get the Work Day for',
+    'type' => CRM_Utils_Type::T_DATE,
+    'api.required' => 1
+  ];
+}
+
+/**
+ * LeaveRequest.getWorkDayForDate API
+ *
+ * Returns the work day information for a
+ * contact for the given leave date using
+ * the contactWorkPatternService.
+ *
+ * @param array $params
+ *
+ * @return array
+ *
+ * @throws CiviCRM_API3_Exception
+ */
+function civicrm_api3_leave_request_getworkdayfordate($params) {
+  $contactWorkPatternService = new CRM_HRLeaveAndAbsences_Service_ContactWorkPattern();
+  $workDay = $contactWorkPatternService->getContactWorkDayForDate($params['contact_id'], new DateTime($params['leave_date']));
+
+  if(is_null($workDay)) {
+    throw new InvalidArgumentException(
+      'Contact has no Work Day for this date'
+    );
+  }
+
+  _civicrm_api3_leave_request_filter_workday_fields($workDay);
+
+  return civicrm_api3_create_success($workDay);
+}
+
+/**
+ * Helper method to filter the returned results from
+ * contactWorkPatternService.getContactWorkDayForDate function.
+ * Ensures only relevant fields are returned.
+ *
+ * @param array $workDay
+ */
+function _civicrm_api3_leave_request_filter_workday_fields(&$workDay) {
+  $fields = array_flip(['time_from', 'time_to', 'number_of_hours']);
+  $workDay = array_intersect_key($workDay, $fields);
 }

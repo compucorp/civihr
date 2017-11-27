@@ -56,11 +56,8 @@
     .hours-row td {
       padding-top: 15px;
       padding-bottom: 15px;
-
-      &:not(:first-child) {
-        border-top: 1px solid rgba(0, 0, 0, .2);
-        border-bottom: 1px solid rgba(0, 0, 0, .2);
-      }
+      border-top: 1px solid rgba(0, 0, 0, .2);
+      border-bottom: 1px solid rgba(0, 0, 0, .2);
     }
   }
 }

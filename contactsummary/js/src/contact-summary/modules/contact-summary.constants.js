@@ -13,6 +13,9 @@ define([
     pathApp: '',
     pathRest: CRM.url('civicrm/ajax/rest'),
     pathBaseUrl: CRM.vars.contactsummary.baseURL + '/',
-    pathTpl: 'views/'
+    pathTpl: 'views/',
+    CRM: {
+      options: CRM.FieldOptions || {}
+    }
   });
 });

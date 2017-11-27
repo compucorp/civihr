@@ -12,6 +12,7 @@ define([
   'mocks/apis/absence-type-api-mock',
   'mocks/apis/leave-request-api-mock',
   'mocks/apis/option-group-api-mock',
+  'common/services/pub-sub',
   'leave-absences/shared/config',
   'leave-absences/manager-leave/app'
 ], function (angular, _, optionGroupMock, absencePeriodData, absenceTypeData, leaveRequestData) {
@@ -20,12 +21,14 @@ define([
   describe('manageLeaveRequests', function () {
     var $componentController, $log, $q, $provide, $rootScope, controller,
       OptionGroup, AbsenceType, AbsencePeriod, LeaveRequest,
-      Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock, LeavePopup;
+      Contact, ContactAPIMock, sharedSettings, OptionGroupAPIMock, LeavePopup,
+      pubSub;
     var contactId = '204';
     var role = 'admin'; // change this value to set other roles
 
-    beforeEach(module('leave-absences.templates', 'manager-leave',
-      'leave-absences.mocks', 'leave-absences.settings', function (_$provide_) {
+    beforeEach(module('common.services', 'leave-absences.templates',
+      'manager-leave', 'leave-absences.mocks', 'leave-absences.settings',
+      function (_$provide_) {
         $provide = _$provide_;
       }));
 
@@ -54,7 +57,8 @@ define([
 
     beforeEach(inject(function (
       _$componentController_, _$log_, _$rootScope_, _$q_, _OptionGroup_,
-      _OptionGroupAPIMock_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_, _Contact_, _LeavePopup_) {
+      _OptionGroupAPIMock_, _AbsencePeriod_, _AbsenceType_, _LeaveRequest_,
+      _Contact_, _LeavePopup_, _pubSub_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -66,12 +70,14 @@ define([
       LeaveRequest = _LeaveRequest_;
       LeavePopup = _LeavePopup_;
       Contact = _Contact_;
+      pubSub = _pubSub_;
     }));
 
     beforeEach(function () {
       spyOn($log, 'debug');
       spyOn(AbsencePeriod, 'all').and.callThrough();
       spyOn(AbsenceType, 'all').and.callThrough();
+      spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
       spyOn(Contact, 'leaveManagees').and.callFake(function () {
         return ContactAPIMock.leaveManagees();
       });
@@ -177,6 +183,7 @@ define([
 
         it('loaded absence types', function () {
           expect(controller.absenceTypes.length).not.toBe(0);
+          expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
         });
 
         it('filtered list of contacts have loaded', function () {
@@ -253,24 +260,33 @@ define([
       });
     });
 
-    describe('getAbsenceTypesByID', function () {
-      var absence,
-        returnValue;
+    describe('getAbsenceTypeByID', function () {
+      var absence, returnValue;
 
       describe('when id is passed', function () {
         beforeEach(function () {
           absence = absenceTypeData.all().values[0];
-          returnValue = controller.getAbsenceTypesByID(absence.id);
+          returnValue = controller.getAbsenceTypeByID(absence.id);
         });
 
         it('returns title of the absence', function () {
-          expect(returnValue).toBe(absence.title);
+          expect(returnValue).toEqual(jasmine.objectContaining(absence));
         });
       });
 
       describe('when id is not passed', function () {
         beforeEach(function () {
-          returnValue = controller.getAbsenceTypesByID();
+          returnValue = controller.getAbsenceTypeByID();
+        });
+
+        it('returns undefined value', function () {
+          expect(returnValue).toBeUndefined();
+        });
+      });
+
+      describe('when wrong or non-existing id is passed', function () {
+        beforeEach(function () {
+          returnValue = controller.getAbsenceTypeByID('does-not-exist');
         });
 
         it('returns undefined value', function () {
@@ -631,7 +647,8 @@ define([
             });
 
             it('not filtered by type id', function () {
-              expectLeaveRequestsFilteredBy({ type_id: null });
+              expectLeaveRequestsFilteredBy(
+                { type_id: { IN: _.pluck(controller.absenceTypes, 'id') } });
             });
           });
         });
@@ -831,7 +848,7 @@ define([
 
     describe('when new leave request is created', function () {
       beforeEach(function () {
-        $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
+        pubSub.publish('LeaveRequest::new', jasmine.any(Object));
       });
 
       it('calls related contact API to update', function () {
@@ -841,7 +858,7 @@ define([
 
     describe('when new leave request is updated', function () {
       beforeEach(function () {
-        $rootScope.$emit('LeaveRequest::updatedByManager', jasmine.any(Object));
+        pubSub.publish('LeaveRequest::updatedByManager', jasmine.any(Object));
       });
 
       it('calls related contact API to update', function () {

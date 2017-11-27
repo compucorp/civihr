@@ -21,7 +21,7 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
 
     CRM_Core_Resources::singleton()
       ->addStyleFile('org.civicrm.hrjobcontract', 'css/hrjc.css')
-      ->addScriptFile('org.civicrm.hrjobcontract', CRM_Core_Config::singleton()->debug ? 'js/src/job-contract.js' : 'js/dist/job-contract.min.js', 1010)
+      ->addScriptFile('org.civicrm.hrjobcontract', 'js/dist/job-contract.min.js', 1010)
       ->addSettingsFactory(function () {
         $config = CRM_Core_Config::singleton();
 

@@ -5,22 +5,24 @@ define([
   'mocks/data/absence-period-data',
   'mocks/data/absence-type-data',
   'mocks/data/leave-balance-report.data',
+  'common/mocks/services/api/option-group-mock',
   'mocks/apis/absence-type-api-mock',
   'mocks/apis/entitlement-api-mock',
   'leave-absences/shared/models/entitlement.model',
   'leave-absences/shared/components/leave-balance-tab.component',
-  'leave-absences/shared/config'
+  'leave-absences/shared/config',
+  'common/services/pub-sub'
 ], function (_, absencePeriodMock, absenceTypeMock, reportMockData) {
   describe('LeaveBalanceReport.component', function () {
     var $componentController, $provide, $q, $rootScope, $scope, AbsencePeriod,
-      AbsenceType, ctrl, leaveBalanceReport, notificationService, Session,
-      sharedSettings;
+      AbsenceType, ctrl, leaveBalanceReport, notificationService, pubSub,
+      Session, sharedSettings;
     var loggedInContactId = 101;
     var filters = { any_filter: 'any value' };
     var userRole = 'admin';
 
-    beforeEach(module('leave-absences.mocks', 'leave-absences.models',
-    'leave-absences.components', function (_$provide_) {
+    beforeEach(module('common.services', 'leave-absences.mocks',
+    'leave-absences.models', 'leave-absences.components', function (_$provide_) {
       $provide = _$provide_;
     }));
 
@@ -43,12 +45,14 @@ define([
       });
     }));
 
-    beforeEach(inject(['shared-settings', function (_sharedSettings_) {
+    beforeEach(inject(['shared-settings', 'api.optionGroup.mock', function (_sharedSettings_, _OptionGroupAPIMock_) {
       sharedSettings = _sharedSettings_;
+
+      $provide.value('api.optionGroup', _OptionGroupAPIMock_);
     }]));
 
     beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_, _LeaveBalanceReport_, _Session_,
+    _AbsencePeriod_, _AbsenceType_, _LeaveBalanceReport_, _pubSub_, _Session_,
     _notificationService_) {
       $componentController = _$componentController_;
       $q = _$q_;
@@ -57,10 +61,12 @@ define([
       AbsenceType = _AbsenceType_;
       leaveBalanceReport = _LeaveBalanceReport_;
       notificationService = _notificationService_;
+      pubSub = _pubSub_;
       Session = _Session_;
 
       spyOn(AbsencePeriod, 'all').and.callThrough();
       spyOn(AbsenceType, 'all').and.callThrough();
+      spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
       spyOn(leaveBalanceReport, 'all').and.callThrough();
       spyOn(notificationService, 'error');
       spyOn(Session, 'get').and.returnValue($q.resolve({ contactId: loggedInContactId }));
@@ -147,8 +153,13 @@ define([
           });
         });
 
+        it('populates calculation units to loaded absence types', function () {
+          expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
+        });
+
         it('stores the absence types', function () {
-          expect(ctrl.absenceTypes).toEqual(absenceTypeMock.all().values);
+          expect(ctrl.absenceTypes[0]).toEqual(
+            jasmine.objectContaining(absenceTypeMock.all().values[0]));
         });
       });
 
@@ -302,7 +313,7 @@ define([
         setupController();
         spyOn(ctrl, 'loadReportCurrentPage');
         $rootScope.$digest();
-        $rootScope.$emit('LeaveRequest::new', jasmine.any(Object));
+        pubSub.publish('LeaveRequest::new', jasmine.any(Object));
         $rootScope.$digest();
       });
 

@@ -10,14 +10,17 @@ define([
   'use strict';
 
   describe('contractService', function () {
-    var contractService,
-      apiServiceMock, contactDetailsServiceMock, modelServiceMock,
-      rootScope;
+    var apiServiceMock, contactDetailsServiceMock, contractService,
+       modelServiceMock, $rootScope;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks',
       'contact-summary.templates'));
 
     beforeEach(module(function ($provide) {
+      $provide.constant('settings', {
+        CRM: { options: { 'HRJobDetails': { 'fieldName': 'fieldValues' } } }
+      });
+
       $provide.factory('apiService', function () {
         return apiServiceMock;
       });
@@ -35,7 +38,7 @@ define([
       apiServiceMock = $injector.get('apiServiceMock');
       contactDetailsServiceMock = $injector.get('contactDetailsServiceMock');
       modelServiceMock = $injector.get('modelServiceMock');
-      rootScope = $injector.get('$rootScope');
+      $rootScope = $injector.get('$rootScope');
     }));
 
     beforeEach(inject(function (_contractService_) {
@@ -66,13 +69,13 @@ define([
       beforeEach(function () {
         apiServiceMock.respondGet('HRJobContract', expectedContracts);
         apiServiceMock.respondGet('HRJobDetails', expectedContractDetails);
-        contactDetailsServiceMock.respond('get', {id: 123});
+        contactDetailsServiceMock.respond('get', { id: 123 });
 
         contractService.get().then(function (response) {
           contracts = response;
         });
 
-        rootScope.$digest();
+        $rootScope.$digest();
 
         apiServiceMock.flush();
         contactDetailsServiceMock.flush();
@@ -91,6 +94,44 @@ define([
             expect(contract.end_date).toBeDefined();
             expect(contract.title).toBeDefined();
           });
+        });
+      });
+
+      describe('getOptions()', function () {
+        var options;
+
+        describe('when options are fetched without field name', function () {
+          beforeEach(function () {
+            options = contractService.getOptions();
+
+            $rootScope.$digest();
+          });
+
+          it('returns the list of all contract options', function () {
+            expect(options).toEqual({ details: { fieldName: 'fieldValues' } });
+          });
+        });
+
+        describe('when options are fetched with specific field name', function () {
+          beforeEach(function () {
+            options = contractService.getOptions('fieldName');
+
+            $rootScope.$digest();
+          });
+
+          it('returns the list of contract options for given field name only', function () {
+            expect(options).toEqual({ details: 'fieldValues' });
+          });
+        });
+      });
+
+      describe('removeContract()', function () {
+        beforeEach(function () {
+          contractService.removeContract('1');
+        });
+
+        it('removes the contract form the list', function () {
+          expect(_.isEmpty(contractService.collection.get())).toBe(true);
         });
       });
     });

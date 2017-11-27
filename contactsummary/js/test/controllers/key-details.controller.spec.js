@@ -35,14 +35,24 @@ define([
       ctrlConstructor = _$controller_;
     }));
 
-    describe('constructor', function () {
-      it('Should subscribe for contract changes', function () {
+    describe('init()', function () {
+      beforeEach(function () {
         spyOn(contactDetailsServiceMock, 'get').and.callThrough();
         ctrlConstructor('KeyDetailsController');
-        expect(PubSubMock.subscribe).toHaveBeenCalledWith('contract-refresh', jasmine.any(Function));
+      });
+
+      it('subscribes for contract deleted pubSub event', function () {
+        expect(PubSubMock.subscribe).toHaveBeenCalledWith('Contract::deleted', jasmine.any(Function));
+      });
+
+      it('calls function to get contract options', function () {
+        expect(contractServiceMock.getOptions).toHaveBeenCalled();
+        expect(contactDetailsServiceMock.get).toHaveBeenCalled();
+      });
+
+      it('resets data for contracts and its details', function () {
         expect(contractServiceMock.resetContracts).toHaveBeenCalled();
         expect(contactDetailsServiceMock.data.item).toEqual({});
-        expect(contactDetailsServiceMock.get).toHaveBeenCalled();
       });
     });
   });

@@ -15,7 +15,7 @@ $row-margin-bottom: 15px;
 
   @media screen and (max-width: $screen-xs-max) {
     .chr_leave-request-date-picker-container {
-      padding-right: 0;
+      margin-bottom: 5px;
     }
   }
 }
@@ -164,5 +164,6 @@ $row-margin-bottom: 15px;
     background-color: inherit !important;
     color: inherit !important;
     cursor: pointer !important;
+    border-right: none;
   }
 }

@@ -511,6 +511,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1029();
     $this->upgrade_1030();
     $this->upgrade_1032();
+    $this->upgrade_1033();
   }
 
   function upgrade_1001() {
@@ -1141,6 +1142,72 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     CRM_Core_DAO::executeQuery($query);
 
     return TRUE;
+  }
+
+  /**
+   * Removes menu link pointing to an nonexistent option group and update
+   * dropdown links to use option group names instead of IDs.
+   *
+   * @return bool
+   */
+  public function upgrade_1033() {
+    $this->deletePensionTypeDropdownMenu();
+    $this->updateDropdownMenuItemsLinkToUseOptionGroupName();
+
+    return TRUE;
+  }
+
+  /**
+   * Removes the "Pension Type" item from the
+   *  "Administer -> Customize Data and Screens -> Dropdowns" menu
+   *
+   * The option group this menu item links to has been removed by PCHR-1820,
+   * but the menu item itself wasn't, so we're deleting it now.
+   *
+   * @return bool
+   */
+  private function deletePensionTypeDropdownMenu() {
+    civicrm_api3('Navigation', 'get', [
+      'name' => 'hrjc_pension_type',
+      'url' => ['LIKE' => 'civicrm/admin/options?gid%'],
+      'api.Navigation.delete' => ['id' => '$value.id'],
+    ]);
+
+    CRM_Core_BAO_Navigation::resetNavigation();
+  }
+
+  /**
+   * Update the URLs of all menu items pointing to Job Contracts options under
+   * the "Administer -> Customize Data and Screens -> Dropdowns" menu to have
+   * the option group name instead of its ID
+   *
+   * @return bool
+   */
+  private function updateDropdownMenuItemsLinkToUseOptionGroupName() {
+    $dropdownMenuItems = [
+      'hrjc_contract_type',
+      'hrjc_location',
+      'hrjc_pay_cycle',
+      'hrjc_benefit_name',
+      'hrjc_benefit_type',
+      'hrjc_deduction_name',
+      'hrjc_deduction_type',
+      'hrjc_revision_change_reason',
+      'hrjc_contract_end_reason',
+    ];
+
+    foreach ($dropdownMenuItems as $menuItem) {
+      civicrm_api3('Navigation', 'get', [
+        'name' => $menuItem,
+        'url' => ['LIKE' => 'civicrm/admin/options?gid%'],
+        'api.Navigation.create' => [
+          'id' => '$value.id',
+          'url' => "civicrm/admin/options/{$menuItem}?reset=1"
+        ],
+      ]);
+    }
+
+    CRM_Core_BAO_Navigation::resetNavigation();
   }
 
   /**

@@ -2,6 +2,7 @@
 
 require_once 'CRM/Core/Form.php';
 
+use CRM_HRCore_String_TimeUnitApplier as TimeUnitApplier;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_Service_EntitlementCalculator as EntitlementCalculator;
@@ -98,12 +99,14 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    */
   public function postProcess() {
     $values = $this->exportValues();
+    $createdDate = new DateTime();
     foreach($this->calculations as $calculation) {
       $absenceTypeID = $calculation->getAbsenceType()->id;
       $contactID = $calculation->getContact()['id'];
 
       LeavePeriodEntitlement::saveFromCalculation(
         $calculation,
+        $createdDate,
         $values['overridden_entitlement'][$contactID][$absenceTypeID],
         $values['comment'][$contactID][$absenceTypeID]
       );
@@ -259,8 +262,8 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
         '',
         [
           'class' => 'overridden-proposed-entitlement',
-          'maxlength' => 4,
-          'size' => 4
+          'maxlength' => 7,
+          'size' => 7
         ]
       );
 
@@ -306,6 +309,8 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
    *
    * This function takes into account if any of the proposed entitlements were
    * overridden on the page and will include the overridden value in the CSV.
+   *
+   * @throws \InvalidArgumentException
    */
   private function exportCSV() {
     $headers = [
@@ -313,7 +318,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
       'employee_name',
       'leave_type',
       'prev_year_entitlement',
-      'days_taken',
+      'used_in_previous_period',
       'remaining',
       'brought_forward',
       'period_pro_rata',
@@ -328,21 +333,47 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
       $contactID = $calculation->getContact()['id'];
       $absenceTypeID = $calculation->getAbsenceType()->id;
 
+      $calculationUnit = TimeUnitApplier::UNIT_DAYS;
+      if($calculation->isCalculationUnitInHours()) {
+        $calculationUnit = TimeUnitApplier::UNIT_HOURS;
+      }
+
       $row = [
         'employee_id' => $contactID,
         'employee_name' => $calculation->getContact()['display_name'],
         'leave_type' => $calculation->getAbsenceType()->title,
-        'prev_year_entitlement' => $calculation->getPreviousPeriodProposedEntitlement(),
-        'days_taken' => $calculation->getNumberOfDaysTakenOnThePreviousPeriod(),
-        'remaining' => $calculation->getNumberOfDaysRemainingInThePreviousPeriod(),
-        'brought_forward' => $calculation->getBroughtForward(),
-        'period_pro_rata' => $calculation->getProRata(),
-        'proposed_entitlement' => $calculation->getProposedEntitlement(),
+        'prev_year_entitlement' => TimeUnitApplier::apply(
+          $calculation->getPreviousPeriodProposedEntitlement(),
+          $calculationUnit
+        ),
+        'used_in_previous_period' => TimeUnitApplier::apply(
+          $calculation->getAmountUsedInPreviousPeriod(),
+          $calculationUnit
+        ),
+        'remaining' => TimeUnitApplier::apply(
+          $calculation->getPreviousPeriodBalance(),
+          $calculationUnit
+        ),
+        'brought_forward' => TimeUnitApplier::apply(
+          $calculation->getBroughtForward(),
+          $calculationUnit
+        ),
+        'period_pro_rata' => TimeUnitApplier::apply(
+          $calculation->getProRata(),
+          $calculationUnit
+        ),
+        'proposed_entitlement' => TimeUnitApplier::apply(
+          $calculation->getProposedEntitlement(),
+          $calculationUnit
+        ),
         'overridden' => 0
       ];
 
       if(!empty($formValues['overridden_entitlement'][$contactID][$absenceTypeID])) {
-        $row['proposed_entitlement'] = $formValues['overridden_entitlement'][$contactID][$absenceTypeID];
+        $row['proposed_entitlement'] = TimeUnitApplier::apply(
+          $formValues['overridden_entitlement'][$contactID][$absenceTypeID],
+          $calculationUnit
+        );
         $row['overridden'] = 1;
       }
 

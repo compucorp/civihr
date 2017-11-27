@@ -17,28 +17,23 @@ define(function () {
      */
     function open () {
       var modalInstance;
-      var lockScrollStyle = 'overflow: hidden; height: 100%; width: 100%;';
+      var lockScrollStyle = ';overflow: hidden; height: 100%; width: 100%';
       var elements = [
-        {
-          node: $document[0].body,
-          originalStyle: $document[0].body.getAttribute('style')
-        },
-        {
-          node: $document[0].getElementsByTagName('html')[0],
-          originalStyle: $document[0].getElementsByTagName('html')[0].getAttribute('style')
-        }
+        $document[0].body,
+        $document[0].getElementsByTagName('html')[0]
       ];
 
       elements.forEach(function (element) {
-        element.style = element.node.getAttribute('style');
-        element.node.setAttribute('style', element.style + ';' + lockScrollStyle);
+        element.setAttribute('style',
+          (element.getAttribute('style') || '') + lockScrollStyle);
       });
 
       modalInstance = originalOpenFunction.apply(this, arguments);
 
       modalInstance.closed.then(function () {
         elements.forEach(function (element) {
-          element.node.setAttribute('style', element.originalStyle);
+          element.setAttribute('style',
+            (element.getAttribute('style') || '').replace(lockScrollStyle, ''));
         });
       });
 

@@ -15,10 +15,12 @@ define([
     var vm = this;
 
     vm.ready = false;
+    vm.options = {};
 
     (function init () {
+      initContractOptions();
       getContacts();
-      pubSub.subscribe('contract-refresh', resetKeyDetails);
+      initListeners();
     }());
 
     /**
@@ -28,13 +30,14 @@ define([
       ContactDetails.get()
         .then(function (response) {
           vm.contactDetails = response;
-          return Contract.getPrimary();
+          return Contract.getCurrent();
         })
         .then(function (response) {
           if (_.isEmpty(response)) {
             vm.primaryContract = null;
             return;
           }
+
           vm.primaryContract = response;
         })
         .then(function (response) {
@@ -46,6 +49,20 @@ define([
         .finally(function () {
           vm.ready = true;
         });
+    }
+
+    /**
+     * Initialiazes the contract options
+     */
+    function initContractOptions () {
+      vm.options = Contract.getOptions();
+    }
+
+    /**
+     * Initialize Listeners
+     */
+    function initListeners () {
+      pubSub.subscribe('Contract::deleted', resetKeyDetails);
     }
 
     /**

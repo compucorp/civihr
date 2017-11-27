@@ -15,6 +15,7 @@
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
     'mocks/apis/work-pattern-api-mock',
+    'common/services/pub-sub',
     'leave-absences/my-leave/app'
   ], function (_, moment, helper, ContactData, AbsencePeriodData, AbsenceTypeData, LeaveRequestData, OptionGroupData, PublicHolidayData, WorkPatternData) {
     'use strict';
@@ -22,13 +23,14 @@
     describe('leaveCalendarMonth', function () {
       var $componentController, $log, $provide, $q, $rootScope, Calendar,
         LeaveRequest, OptionGroup, controller, daysInFebruary, february, leaveRequestInFebruary,
-        period2016, publicHolidays;
+        period2016, publicHolidays, pubSub;
       var currentContactId = CRM.vars.leaveAndAbsences.contactId;
       var contactIdsToReduceTo = null;
 
-      beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_) {
-        $provide = _$provide_;
-      }));
+      beforeEach(module('common.services', 'leave-absences.templates',
+        'leave-absences.mocks', 'my-leave', function (_$provide_) {
+          $provide = _$provide_;
+        }));
 
       beforeEach(inject(function (LeaveRequestAPIMock, WorkPatternAPIMock) {
         $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
@@ -36,7 +38,7 @@
       }));
 
       beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-        _Calendar_, _LeaveRequest_, _OptionGroup_, OptionGroupAPIMock) {
+        _Calendar_, _LeaveRequest_, _OptionGroup_, OptionGroupAPIMock, _pubSub_) {
         $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
@@ -50,6 +52,7 @@
         period2016 = _.clone(AbsencePeriodData.all().values[0]);
         publicHolidays = PublicHolidayData.all().values;
         leaveRequestInFebruary = LeaveRequestData.all().values[0];
+        pubSub = _pubSub_;
 
         spyOn($log, 'debug');
         spyOn(Calendar, 'get').and.callThrough();
@@ -109,51 +112,66 @@
           });
 
           describe("contacts' work pattern calendar", function () {
+            var calendarCallRecentsArgs;
+
+            beforeEach(function () {
+              calendarCallRecentsArgs = Calendar.get.calls.mostRecent().args;
+            });
+
             it('loads the work pattern calendars', function () {
               expect(Calendar.get).toHaveBeenCalled();
             });
 
             it('loads only the work pattern calendars of the currently loaded contacts', function () {
-              expect(Calendar.get.calls.mostRecent().args[0]).toEqual(controller.contacts.map(function (contact) {
-                return contact.id;
-              }));
+              expect(calendarCallRecentsArgs[0]).toEqual(_.pluck(controller.contacts, 'id'));
             });
 
             it("uses the selected months' first and last day as date delimiters", function () {
               var month = controller.month;
 
-              expect(Calendar.get.calls.mostRecent().args[1]).toBe(month.days[0].date);
-              expect(Calendar.get.calls.mostRecent().args[2]).toBe(month.days[month.days.length - 1].date);
+              expect(calendarCallRecentsArgs[1]).toBe(month.days[0].date);
+              expect(calendarCallRecentsArgs[2]).toBe(month.days[month.days.length - 1].date);
             });
           });
 
           describe('leave requests', function () {
+            var requestRecentCallFirstArg;
+
+            beforeEach(function () {
+              requestRecentCallFirstArg = LeaveRequest.all.calls.mostRecent().args[0];
+            });
+
             it('loads the leave requests', function () {
               expect(LeaveRequest.all).toHaveBeenCalled();
             });
 
-            it('loads only the approved, admin approved, or awaiting approval leave requests', function () {
-              expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
+            it('loads only the approved, admin approved, awaiting approval or more information required leave requests', function () {
+              expect(requestRecentCallFirstArg).toEqual(jasmine.objectContaining({
                 status_id: {'IN': [
                   OptionGroupData.specificObject('hrleaveandabsences_leave_request_status', 'name', 'approved').value,
                   OptionGroupData.specificObject('hrleaveandabsences_leave_request_status', 'name', 'admin_approved').value,
-                  OptionGroupData.specificObject('hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval').value
+                  OptionGroupData.specificObject('hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval').value,
+                  OptionGroupData.specificObject('hrleaveandabsences_leave_request_status', 'name', 'more_information_required').value
                 ]}
               }));
             });
 
+            it('loads leave requests for *enabled* absence types only', function () {
+              expect(requestRecentCallFirstArg).toEqual(jasmine.objectContaining({
+                type_id: { 'IN': _.pluck(controller.supportData.absenceTypes, 'id') }
+              }));
+            });
+
             it('loads only the leave requests belonging to the loaded contacts', function () {
-              expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
-                contact_id: { 'IN': controller.contacts.map(function (contact) {
-                  return contact.id;
-                })}
+              expect(requestRecentCallFirstArg).toEqual(jasmine.objectContaining({
+                contact_id: { 'IN': _.pluck(controller.contacts, 'id') }
               }));
             });
 
             it('loads all requests touching the specified month', function () {
               var month = controller.month;
 
-              expect(LeaveRequest.all.calls.mostRecent().args[0]).toEqual(
+              expect(requestRecentCallFirstArg).toEqual(
                 jasmine.objectContaining({
                   from_date: { to: month.days[month.days.length - 1].date },
                   to_date: { from: month.days[0].date }
@@ -387,9 +405,7 @@
         it('is indexed by contact id', function () {
           var indexes = Object.keys(getDayWithType('working_day').contactsData);
 
-          expect(indexes).toEqual(controller.contacts.map(function (contact) {
-            return contact.id;
-          }));
+          expect(indexes).toEqual(_.pluck(controller.contacts, 'id'));
         });
 
         describe('when the day is a weekend for a contact', function () {
@@ -566,7 +582,7 @@
             leaveRequestToDelete = leaveRequestInFebruary;
 
             LeaveRequest.all.calls.reset();
-            $rootScope.$emit('LeaveRequest::deleted', leaveRequestToDelete);
+            pubSub.publish('LeaveRequest::deleted', leaveRequestToDelete);
             $rootScope.$digest();
           });
 
@@ -587,7 +603,7 @@
             leaveRequestToAdd = modifyLeaveRequestData(leaveRequestToAdd, true);
 
             LeaveRequest.all.calls.reset();
-            $rootScope.$emit('LeaveRequest::new', leaveRequestToAdd);
+            pubSub.publish('LeaveRequest::new', leaveRequestToAdd);
             $rootScope.$digest();
           });
 
@@ -610,7 +626,7 @@
 
             LeaveRequest.all.calls.reset();
 
-            $rootScope.$emit('LeaveRequest::edit', leaveRequestToUpdate);
+            pubSub.publish('LeaveRequest::edit', leaveRequestToUpdate);
             $rootScope.$digest();
 
             newDays = getLeaveRequestDays(leaveRequestToUpdate);

@@ -23,11 +23,11 @@ define([
 
   controllers.controller('RequestCtrl', RequestCtrl);
 
-  RequestCtrl.$inject = ['$log', '$q', '$rootScope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup',
+  RequestCtrl.$inject = ['$log', '$q', '$rootScope', '$scope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup',
     'dialog', 'pubSub', 'directiveOptions', 'Contact', 'Session', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
     'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance'];
 
-  function RequestCtrl ($log, $q, $rootScope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub,
+  function RequestCtrl ($log, $q, $rootScope, $scope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub,
     directiveOptions, Contact, Session, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
     LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance) {
     $log.debug('RequestCtrl');
@@ -126,6 +126,23 @@ define([
     }());
 
     /**
+     * Amends request parameters before submit
+     */
+    function amendRequestParamsBeforeSave () {
+      if (vm.selectedAbsenceType.calculation_unit_name === 'hours') {
+        _.each(['from', 'to'], function (type) {
+          delete vm.request[type + '_date_type'];
+
+          if (getLeaveType() === 'toil') {
+            // from_date_amount and to_date_amount
+            // are mot used in TOIL but are requred by API
+            vm.request[type + '_date_amount'] = '0';
+          }
+        });
+      }
+    }
+
+    /**
      * Broadcasts an event when request has been updated from awaiting approval status to something else
      */
     function broadcastRequestUpdatedEvent () {
@@ -183,9 +200,9 @@ define([
      * @return {Promise}
      */
     function checkIfBalanceChangeHasChanged () {
-      if (!vm.isMode('edit') || vm.isRole('staff')) { return; }
+      if (!vm.isMode('edit') || vm.isRole('staff') || getLeaveType() === 'toil') { return; }
 
-      return vm.request.calculateBalanceChange()
+      return vm.request.calculateBalanceChange(vm.selectedAbsenceType.calculation_unit_name)
         .then(function (balanceChange) {
           if (+vm.balance.change.amount !== +balanceChange.amount) {
             promptBalanceChangeRecalculation(balanceChange);
@@ -239,7 +256,7 @@ define([
           return vm.request.delete()
             .then(function () {
               vm.dismissModal();
-              $rootScope.$emit('LeaveRequest::deleted', vm.request);
+              pubSub.publish('LeaveRequest::deleted', vm.request);
             });
         }
       });
@@ -693,7 +710,8 @@ define([
           id: entitlementItem.type_id,
           title: absenceType.title + ' ( ' + entitlementItem.remainder.current + ' ) ',
           remainder: entitlementItem.remainder.current,
-          allow_overuse: absenceType.allow_overuse
+          allow_overuse: absenceType.allow_overuse,
+          calculation_unit_name: absenceType.calculation_unit_name
         };
       });
     }
@@ -705,7 +723,7 @@ define([
      */
     function postSubmit (eventName) {
       broadcastRequestUpdatedEvent();
-      $rootScope.$emit(eventName, vm.request);
+      pubSub.publish(eventName, vm.request);
 
       vm.errors = [];
 
@@ -789,6 +807,7 @@ define([
       vm.submitting = true;
 
       changeStatusBeforeSave();
+      amendRequestParamsBeforeSave();
 
       return vm.request.isValid()
         .then(checkIfBalanceChangeHasChanged)
@@ -879,6 +898,7 @@ define([
      */
     function _loadAbsenceTypes () {
       return AbsenceType.all(getAbsenceTypeParams())
+        .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
           absenceTypesAndIds = {
             types: absenceTypes,

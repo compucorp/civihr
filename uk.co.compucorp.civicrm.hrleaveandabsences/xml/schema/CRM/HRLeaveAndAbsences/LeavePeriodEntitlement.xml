@@ -82,13 +82,13 @@
   </field>
 
   <field>
-    <name>comment_author_id</name>
+    <name>editor_id</name>
     <type>int unsigned</type>
-    <comment>FK to Contact. The contact that represents the user who added the comment to this entitlement</comment>
+    <comment>FK to Contact. The contact that represents the user who made changes to this entitlement</comment>
     <add>4.4</add>
   </field>
   <foreignKey>
-    <name>comment_author_id</name>
+    <name>editor_id</name>
     <table>civicrm_contact</table>
     <key>id</key>
     <add>4.4</add>
@@ -96,9 +96,9 @@
   </foreignKey>
 
   <field>
-    <name>comment_date</name>
+    <name>created_date</name>
     <type>datetime</type>
-    <comment>The date and time the comment for this entitlement was added/updated</comment>
+    <comment>The date and time this entitlement was added/updated</comment>
     <add>4.4</add>
   </field>
 

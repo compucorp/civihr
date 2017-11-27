@@ -275,6 +275,26 @@ class CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculationTest extends 
     $this->assertEquals($this->contract['period_end_date'], $calculation->getContractEndDate());
   }
 
+  public function testIsCalculationUnitInHoursShouldReturnTrueIfAbsenceTypeCalculationUnitIsInHours() {
+    $absenceType = $this->prophesize(AbsenceType::class);
+    $absenceType->isCalculationUnitInHours()
+                ->shouldBeCalled()
+                ->willReturn(true);
+
+    $calculation = new ContractEntitlementCalculation(new AbsencePeriod(), $this->contract, $absenceType->reveal());
+    $this->assertTrue($calculation->isCalculationUnitInHours());
+  }
+
+  public function testIsCalculationUnitInHoursShouldReturnFalseIfAbsenceTypeCalculationUnitIsNotInHours() {
+    $absenceType = $this->prophesize(AbsenceType::class);
+    $absenceType->isCalculationUnitInHours()
+                ->shouldBeCalled()
+                ->willReturn(false);
+
+    $calculation = new ContractEntitlementCalculation(new AbsencePeriod(), $this->contract, $absenceType->reveal());
+    $this->assertFalse($calculation->isCalculationUnitInHours());
+  }
+
   private function createJobLeaveEntitlement($type, $leaveAmount, $addPublicHolidays = false) {
     CRM_Hrjobcontract_BAO_HRJobLeave::create([
       'jobcontract_id' => $this->contract['id'],

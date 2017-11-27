@@ -11,7 +11,7 @@
 
     <p>3) Sum all Total entitlements for all contracts
     <br>
-    4) Add brought forward days to the Total entitlements for all contracts = "Period Entitlement".</p>
+    4) Add brought forward amount to the Total entitlements for all contracts = "Period Entitlement".</p>
 
     {assign var=contractsCalculations value=$calculation->getContractEntitlementCalculations()}
     {foreach from=$contractsCalculations item=contractCalculation name=contractsCalculation}
@@ -32,20 +32,28 @@
           1) ( (<span class="base-contractual-entitlement">{$contractualEntitlement}</span>) * (<span class="working-days-to-work">{$workingDaysToWork}</span> /
               <span class="working-days-in-period">{$workingDays}</span>) ) = {$proRata-$publicHolidays}
           <br>
-          2) ({$proRata-$publicHolidays}) + ({$publicHolidays}) = <span class="contract-{$number}-pro-rata">{$proRata}</span>
+          2) ({$proRata-$publicHolidays}) + ({$publicHolidays}) = <span
+            class="contract-{$number}-pro-rata">{$proRata}</span>
         </p>
       </div>
     {/foreach}
 
     Total:
+    {assign var=roundingUnit value='day'}
+    {assign var=calculationUnit value='days'}
+    {if $calculation->isCalculationUnitInHours()}
+      {assign var=roundingUnit value='hour'}
+      {assign var=calculationUnit value='hours'}
+    {/if}
     {assign var=periodProRata value=$calculation->getProRata()}
     {assign var=periodPublicHolidays value=$calculation->getNumberOfPublicHolidaysInEntitlement()}
     {assign var=broughtForward value=$calculation->getBroughtForward()}
     {assign var=periodEntitlement value=$calculation->getProposedEntitlement()}
     <p>
-      3) {$proRataCalculationDescription} (Rounded up to the nearest half day)
+      3) {$proRataCalculationDescription} (Rounded up to the nearest half {$roundingUnit})
       <br>
-      4) <span class="calculation-pro-rata">{$periodProRata}</span> + {$broughtForward} = Period entitlement: {$periodEntitlement}
+      4) <span class="calculation-pro-rata">{$periodProRata}</span> + {$broughtForward} = Period entitlement:
+      {$periodEntitlement|timeUnitApplier:$calculationUnit}
     </p>
   </div>
 </div>

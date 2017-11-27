@@ -2,8 +2,9 @@
 
 define([
   'common/angular',
+  'common/lodash',
   'common/moment'
-], function (angular, moment) {
+], function (angular, _, moment) {
   'use strict';
 
   KeyDatesController.__name = 'KeyDatesController';
@@ -14,14 +15,14 @@ define([
 
     var vm = this;
 
-    vm.ready = false;
     vm.dates = [];
     vm.activeContracts = 0;
     vm.activeRoles = 0;
+    vm.ready = false;
 
     (function init () {
       getContacts();
-      pubSub.subscribe('contract-refresh', resetKeyDates);
+      initSubscribers();
     }());
 
     /**
@@ -33,31 +34,35 @@ define([
       vm.dates.push({
         title: contract.title + ' (Start)',
         date: contract.start_date,
-        future: isDateInFuture(contract.start_date)
+        future: isDateNotInPast(contract.start_date)
       });
 
       if (contract.end_date) {
         vm.dates.push({
           title: contract.title + ' (End)',
           date: contract.end_date,
-          future: isDateInFuture(contract.end_date)
+          future: isDateNotInPast(contract.end_date)
         });
       }
     }
 
     /**
-     * Fetch Contacts from Server
+     * Fetch Contacts and Job Roles from Server
      */
     function getContacts () {
+      resetKeyDates();
+
       Contract.get()
         .then(function (response) {
-          angular.forEach(response, function (contract) {
-            addContractDates(contract);
+          if (!_.isEmpty(response)) {
+            angular.forEach(response, function (contract) {
+              addContractDates(contract);
 
-            if (contract.is_current === '1') {
-              vm.activeContracts++;
-            }
-          });
+              if (contract.is_current === '1') {
+                vm.activeContracts++;
+              }
+            });
+          }
 
           return JobRole.get();
         })
@@ -65,7 +70,7 @@ define([
           angular.forEach(response, function (role) {
             var endDate = moment(role.end_date);
 
-            if (!endDate.isValid() || isDateInFuture(endDate)) {
+            if (role.end_date === undefined || (endDate.isValid() && isDateNotInPast(endDate))) {
               vm.activeRoles++;
             }
           });
@@ -81,16 +86,40 @@ define([
      * @param {string} date
      * @return {boolean}
      */
-    function isDateInFuture (date) {
-      return moment().diff(date) < 0;
+    function isDateNotInPast (date) {
+      return moment().diff(date, 'days') <= 0;
     }
 
     /**
-     * Resets the dates and gets the contacts again
+     * Resets activeRoles and activeContracts counter and
+     * resets the list of key dates to empty
      */
     function resetKeyDates () {
+      vm.activeContracts = 0;
+      vm.activeRoles = 0;
       vm.dates = [];
-      getContacts();
+    }
+
+    // Init subscribers
+    function initSubscribers () {
+      $log.debug('Subcsribers initialiazed!');
+
+      var events = [
+        'Contract::created',
+        'Contract::updated',
+        'JobRole::created',
+        'JobRole::updated',
+        'JobRole::deleted'
+      ];
+
+      events.forEach(function (event) {
+        pubSub.subscribe(event, getContacts);
+      });
+
+      pubSub.subscribe('Contract::deleted', function (contract) {
+        Contract.removeContract(contract);
+        getContacts();
+      });
     }
   }
 

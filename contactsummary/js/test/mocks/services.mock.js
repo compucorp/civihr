@@ -163,6 +163,21 @@ define([
     return factory;
   }
 
+  jobRoleServiceMock.__name = 'jobRoleService';
+  function jobRoleServiceMock () {
+    var factory = { get: jasmine.any(Function) };
+
+    factory.jobRoles = [
+      {
+        'id': '15',
+        'title': 'Examle new',
+        'start_date': '2017-11-10'
+      }
+    ];
+
+    return factory;
+  }
+
   keyDetailsServiceMock.__name = 'keyDetailsService';
   keyDetailsServiceMock.$inject = ['baseServiceMock'];
   function keyDetailsServiceMock (Base) {
@@ -184,12 +199,14 @@ define([
   }
 
   contractServiceMock.__name = 'contractService';
-  contractServiceMock.$inject = ['baseServiceMock'];
-  function contractServiceMock (Base) {
+  contractServiceMock.$inject = ['baseServiceMock', '$q'];
+  function contractServiceMock (Base, $q) {
     var factory = Base.createInstance();
 
     factory.response = {};
     factory.resetContracts = jasmine.createSpy('');
+    factory.getOptions = jasmine.createSpy('');
+    factory.removeContract = jasmine.createSpy('');
 
     return factory;
   }
@@ -212,6 +229,7 @@ define([
     .factory('modelServiceMock', modelServiceMock)
     .factory('apiServiceMock', apiServiceMock)
     .factory('contactDetailsServiceMock', contactDetailsServiceMock)
+    .factory('jobRoleServiceMock', jobRoleServiceMock)
     .factory('keyDetailsServiceMock', 'settingsMock', keyDetailsServiceMock)
     .factory('keyDatesServiceMock', keyDatesServiceMock)
     .factory('contractServiceMock', contractServiceMock)
