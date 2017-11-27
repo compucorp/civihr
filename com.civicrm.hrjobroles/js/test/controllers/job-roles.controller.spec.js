@@ -6,21 +6,23 @@ define([
   'common/moment',
   'mocks/data/job-role.data',
   'common/angularMocks',
+  'common/services/pub-sub',
   'job-roles/modules/job-roles.module'
 ], function (angular, _, moment, Mock) {
   'use strict';
 
   describe('JobRolesController', function () {
-    var $controller, $filter, $q, $rootScope, dateValidation, jobRoleService, ctrl, scope, settingsData;
+    var $controller, $filter, $q, $rootScope, dateValidation, jobRoleService, ctrl, pubSub, scope, settingsData;
     var contactId = '123';
 
     beforeEach(module('hrjobroles'));
-    beforeEach(inject(function ($httpBackend, _$controller_, _$filter_, _$q_, _$rootScope_, _dateValidation_, _jobRoleService_) {
+    beforeEach(inject(function (_$controller_, _$filter_, $httpBackend, _$q_, _$rootScope_, _pubSub_, _dateValidation_, _jobRoleService_) {
       $controller = _$controller_;
       $filter = _$filter_;
       $q = _$q_;
       $rootScope = _$rootScope_;
 
+      pubSub = _pubSub_;
       dateValidation = _dateValidation_;
       jobRoleService = _jobRoleService_;
 
@@ -571,9 +573,41 @@ define([
       });
     });
 
+    describe('When contract or job role creating/deleting/updating events are published', function () {
+      var contractId = '123';
+
+      beforeEach(function () {
+        spyOn(pubSub, 'publish').and.callThrough();
+        spyOn(pubSub, 'subscribe').and.callThrough();
+        spyOn(jobRoleService, 'getContracts').and.returnValue($q.resolve({}));
+
+        initController();
+      });
+
+      describe('when contract is created', function () {
+        beforeEach(function () {
+          pubSub.publish('Contract::created', contractId);
+          $rootScope.$apply();
+        });
+
+        it('calls job role service to get new contract', function () {
+          expect(jobRoleService.getContracts).toHaveBeenCalledWith(contractId);
+        });
+      });
+
+      describe('when contract is deleted', function () {
+        beforeEach(function () {
+          pubSub.publish('Contract::deleted', {'contractId': contractId});
+        });
+
+        it('calls job role service to get new contract data', function () {
+          expect(jobRoleService.getContracts).toHaveBeenCalledWith(contractId);
+        });
+      });
+    });
+
     /**
-     *
-     *
+     * Converts date string to Date Obect
      */
     function convertToDateObject (dateString) {
       return $filter('formatDate')(dateString, Date);

@@ -50,44 +50,36 @@ define([
     function init () {
       var deferred = $q.defer();
 
-      if (_.isEmpty(factory.collection.get())) {
-        Contract.get().then(function (response) {
-          var contractIds = [];
+      Contract.get().then(function (response) {
+        var contractIds = [];
 
-          angular.forEach(response, function (contract) {
-            contractIds.push(contract.id);
+        angular.forEach(response, function (contract) {
+          contractIds.push(contract.id);
+        });
+
+        if (contractIds.length === 0) {
+          return $q.reject('No job roles found for contracts');
+        }
+
+        Api.post('HrJobRoles', {job_contract_id: {'IN': contractIds}}, 'get')
+        .then(function (response) {
+          var roles = response.values.map(function (role) {
+            return {
+              id: role.id,
+              title: role.title,
+              department: role.department,
+              status: role.status,
+              start_date: role.start_date,
+              end_date: role.end_date
+            };
           });
 
-          if (contractIds.length === 0) {
-            return $q.reject('No job roles found for contracts');
-          }
-
-          Api.post('HrJobRoles', {job_contract_id: {'IN': contractIds}}, 'get')
-            .then(function (response) {
-              if (response.values.length === 0) {
-                return $q.reject('No job roles found for contracts');
-              }
-
-              var roles = response.values.map(function (role) {
-                return {
-                  id: role.id,
-                  title: role.title,
-                  department: role.department,
-                  status: role.status,
-                  start_date: role.start_date,
-                  end_date: role.end_date
-                };
-              });
-
-              factory.collection.set(roles);
-            })
-            .finally(function () {
-              deferred.resolve();
-            });
+          factory.collection.set(roles);
+        })
+        .finally(function () {
+          deferred.resolve();
         });
-      } else {
-        deferred.resolve();
-      }
+      });
 
       return deferred.promise;
     }

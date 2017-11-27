@@ -30,13 +30,14 @@ define([
       ContactDetails.get()
         .then(function (response) {
           vm.contactDetails = response;
-          return Contract.getPrimary();
+          return Contract.getCurrent();
         })
         .then(function (response) {
           if (_.isEmpty(response)) {
             vm.primaryContract = null;
             return;
           }
+
           vm.primaryContract = response;
         })
         .then(function (response) {
@@ -61,7 +62,7 @@ define([
      * Initialize Listeners
      */
     function initListeners () {
-      pubSub.subscribe('contract-refresh', resetKeyDetails);
+      pubSub.subscribe('Contract::deleted', resetKeyDetails);
     }
 
     /**

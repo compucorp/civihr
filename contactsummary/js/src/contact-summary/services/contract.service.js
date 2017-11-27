@@ -20,146 +20,159 @@ define([
     factory.get = get;
     factory.getCollection = getCollection;
     factory.getContracts = getContracts;
+    factory.removeContract = removeContract;
     factory.getContractDetails = getContractDetails;
     factory.getLengthOfService = getLengthOfService;
     factory.getOptions = getOptions;
-    factory.getPrimary = getPrimary;
+    factory.getCurrent = getCurrent;
     factory.resetContracts = resetContracts;
 
     initializeCollection();
 
     return factory;
 
+    /**
+     * Returns job contracts
+     *
+     * @return {Promise}
+     */
+    function getJobContracts () {
+      return ContactDetails.get().then(function (contact) {
+        var data = {
+          contact_id: contact.id,
+          'api.HRJobContractRevision.getcurrentrevision': { jobcontract_id: '$value.id' }
+        };
+
+        return Api.get('HRJobContract', data);
+      });
+    }
+
+    /**
+     * Filter active contracts
+     *
+     * @param  {Array} contracts
+     * @return {Array}
+     */
+    function filterActiveContracts (contracts) {
+      return contracts.values.filter(function (contract) {
+        return parseInt(contract.deleted) === 0;
+      });
+    }
+
+    /**
+     * Assemble contracts
+     *
+     * @return {Promise}
+     */
     function assembleContracts () {
-      var deferred = $q.defer();
       var promises = [];
 
       angular.forEach(contracts, function (contract) {
-        var assembledContract = {};
-
-        assembledContract.id = contract.id;
-        assembledContract.is_primary = contract.is_primary;
-        assembledContract.is_current = contract.is_current;
-        assembledContract.revision_id = null;
-
-        if (contract.api_HRJobContractRevision_getcurrentrevision) {
-          assembledContract.revision_id = contract.api_HRJobContractRevision_getcurrentrevision.values.id;
-        }
-
         var promise = factory.getContractDetails(contract.id)
           .then(function (response) {
-            assembledContract.title = response.title;
-            assembledContract.start_date = response.period_start_date;
-            assembledContract.end_date = response.period_end_date;
-            assembledContract.type = response.contract_type;
-            assembledContract.pay = response.pay;
-            assembledContract.hours = response.hours;
+            var currentRevision = contract.api_HRJobContractRevision_getcurrentrevision;
+
+            return {
+              'id': contract.id,
+              'is_primary': contract.is_primary,
+              'is_current': contract.is_current,
+              'revision_id': currentRevision ? currentRevision.values.id : null,
+              'title': response.title,
+              'start_date': response.period_start_date,
+              'end_date': response.period_end_date,
+              'type': response.contract_type,
+              'pay': response.pay,
+              'hours': response.hours
+            };
           })
-          .then(function () {
+          .then(function (assembledContract) {
             factory.collection.insertItem(contract.id, assembledContract);
           });
 
         promises.push(promise);
       });
 
-      $q.all(promises)
+      return $q.all(promises)
         .catch(function (response) {
           $log.error('Something went wrong', response);
-        })
-        .finally(function () {
-          deferred.resolve();
         });
-
-      return deferred.promise;
     }
 
     /**
+     * Returns collection of contracts
      * @returns {*}
      */
     function get () {
-      /** @type {(contractService|ModelService)} */
-      return init().then(function () {
-        return factory.getCollection();
-      });
+      return init()
+        .then(function () {
+          return factory.getCollection();
+        });
     }
 
     function getCollection () {
       return factory.collection.get();
     }
 
+    /**
+     * Returns active job contracts
+     *
+     * @return {Promise}
+     */
     function getContracts () {
-      var deferred = $q.defer();
-      if (_.isEmpty(contracts)) {
-        ContactDetails.get()
-          .then(function (response) {
-            var data = {
-              contact_id: response.id,
-              'api.HRJobContractRevision.getcurrentrevision': {jobcontract_id: '$value.id'}
-            };
-
-            return Api.get('HRJobContract', data);
-          })
-          .then(function (response) {
-            var activeContracts = response.values.filter(function (contract) {
-              return parseInt(contract.deleted) === 0;
-            });
-
-            if (activeContracts.length === 0) {
-              return deferred.reject('No job contract found');
-            }
-
-            contracts = activeContracts;
-
-            deferred.resolve(contracts);
-          })
-          .catch(function (response) {
-            deferred.reject(response);
-          });
-      } else {
-        deferred.resolve(contracts);
+      if (!_.isEmpty(contracts)) {
+        return $q.resolve(contracts);
       }
 
-      return deferred.promise;
+      return getJobContracts()
+        .then(function (jobContracts) {
+          contracts = filterActiveContracts(jobContracts);
+
+          return contracts;
+        });
     }
 
     /**
-     * @param id
-     * @returns {*}
+     * Prepares the contract details with pay and hours
+     *
+     * @param contractId
+     * @returns {Promise}
      */
-    function getContractDetails (id) {
+    function getContractDetails (contractId) {
       var addPay = function (details) {
+        var jobPays = details.api_HRJobPay_get.values;
         var pay = {};
 
-        if (details.api_HRJobPay_get.values.length !== 0) {
-          pay.amount = details.api_HRJobPay_get.values[0].pay_amount;
-          pay.currency = details.api_HRJobPay_get.values[0].pay_currency;
+        if (jobPays.length !== 0) {
+          pay.amount = jobPays[0].pay_amount;
+          pay.currency = jobPays[0].pay_currency;
         }
 
         details.pay = pay;
       };
-
       var addHours = function (details) {
+        var jobHours = details.api_HRJobHour_get.values;
         var hours = {};
 
-        if (details.api_HRJobHour_get.values.length !== 0) {
-          hours.amount = details.api_HRJobHour_get.values[0].hours_amount;
-          hours.unit = details.api_HRJobHour_get.values[0].hours_unit;
+        if (jobHours.length !== 0) {
+          hours.amount = jobHours[0].hours_amount;
+          hours.unit = jobHours[0].hours_unit;
         }
 
         details.hours = hours;
       };
 
+      var cacheKey = 'getContractDetails_' + contractId;
       var data = {
-        jobcontract_id: id,
-        'api.HRJobPay.get': {'jobcontract_id': id},
-        'api.HRJobHour.get': {'jobcontract_id': id}
+        'jobcontract_id': contractId,
+        'api.HRJobPay.get': {'jobcontract_id': contractId},
+        'api.HRJobHour.get': {'jobcontract_id': contractId}
       };
 
-      if (!promiseCache.getContractDetails) {
-        promiseCache.getContractDetails = Api.post('HRJobDetails', data, 'get')
+      if (!promiseCache[cacheKey]) {
+        promiseCache[cacheKey] = Api.post('HRJobDetails', data, 'get')
           .then(function (response) {
             if (response.values.length === 0) {
-              return $q.reject('No details found for contract revision with ID ' + id);
+              return $q.reject('No details found for contract revision with ID ' + contractId);
             }
 
             var details = response.values[0];
@@ -171,7 +184,7 @@ define([
           });
       }
 
-      return promiseCache.getContractDetails;
+      return promiseCache[cacheKey];
     }
 
     /**
@@ -229,14 +242,14 @@ define([
     /**
      * A primary contract is:
      * 1. (If exists) a contract with is_primary=1 that is active, or
-     * 2. The most recent contract that is active
+     * 2. The most recent current contract that is active
      *
      * @return {Object}
      */
-    function getPrimary () {
+    function getCurrent () {
       return factory.get().then(function (response) {
         var sortedContracts = _.sortBy(response, function (o) {
-          return [o.end_date, +o.is_primary];
+          return [o.is_current];
         });
 
         return _.last(sortedContracts) || {};
@@ -244,18 +257,8 @@ define([
     }
 
     function init () {
-      var deferred = $q.defer();
-      if (_.isEmpty(factory.collection.get())) {
-        factory.getContracts()
-          .then(assembleContracts)
-          .finally(function () {
-            deferred.resolve();
-          });
-      } else {
-        deferred.resolve();
-      }
-
-      return deferred.promise;
+      return factory.getContracts()
+        .then(assembleContracts);
     }
 
     function initializeCollection () {
@@ -272,6 +275,9 @@ define([
         },
         get: function () {
           return this.items;
+        },
+        remove: function (id) {
+          delete (this.items[id]);
         }
       };
     }
@@ -283,6 +289,15 @@ define([
       contracts = [];
       promiseCache = {};
       initializeCollection();
+    }
+
+    /**
+     * Remove a contrats from a collection of contracts
+     * @param  {Object} contract
+     */
+    function removeContract (contract) {
+      _.remove(contracts, { id: contract.contractId });
+      factory.collection.remove(contract.contractId);
     }
   }
 
