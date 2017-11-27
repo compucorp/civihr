@@ -11753,29 +11753,17 @@ fieldset[disabled]
 }
 /* line 1, ../scss/hrjc/partials/_loader.scss */
 #hrjob-contract .hrjc-loader {
+<<<<<<< HEAD
   background: rgba(255, 255, 255, 0.5) url("../img/loading-overlay.gif") no-repeat center center;
   -moz-border-radius: 2px;
   -webkit-border-radius: 2px;
   border-radius: 2px;
+=======
+>>>>>>> PCHR-2938: Refactor spinner styles in jobcontract
   position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
+  top: 50%;
+  left: 50%;
   z-index: 1039;
-  -webkit-animation: fadein 0.3s;
-  -o-animation: fadein 0.3s;
-  animation: fadein 0.3s;
-}
-/* line 14, ../scss/hrjc/partials/_loader.scss */
-#hrjob-contract .fa-spin-loading {
-  position: absolute;
-  right: 25px;
-  top: 10px;
-}
-/* line 19, ../scss/hrjc/partials/_loader.scss */
-#hrjob-contract .fa-spin-loading.ng-hide {
-  display: none !important;
 }
 /* line 3, ../scss/hrjc/partials/_modals.scss */
 #hrjob-contract .modal-revision .modal-header .btn-group-action {
