@@ -1,12 +1,11 @@
 /* eslint-env amd */
 
-define(function () {
+define([
+  'job-contract/directives/directives'
+], function (directives) {
   'use strict';
 
-  hrjcLoader.__name = 'hrjcLoader';
-  hrjcLoader.$inject = ['$log', '$rootScope'];
-
-  function hrjcLoader ($log, $rootScope) {
+  directives.directive('hrjcLoader', ['$rootScope', '$log', function ($rootScope, $log) {
     $log.debug('Directive: hrjcLoader');
 
     return {
@@ -15,7 +14,7 @@ define(function () {
         var loaderSet = false;
         var positionSet = false;
 
-        loader.className = 'hrjc-loader spinner';
+        loader.className = 'hrjc-loader';
 
         function isPositioned () {
           var elPosition = window.getComputedStyle(el[0]).position;
@@ -54,7 +53,5 @@ define(function () {
         });
       }
     };
-  }
-
-  return hrjcLoader;
+  }]);
 });
