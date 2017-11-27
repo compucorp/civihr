@@ -9,6 +9,8 @@ use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
+use CRM_HRLeaveAndAbsences_Service_LeavePeriodEntitlement as LeavePeriodEntitlementService;
 
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
@@ -22,21 +24,42 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    */
   private $leaveBalanceChangeService;
 
-  public function __construct(JobContractService $jobContractService, LeaveBalanceChangeService $leaveBalanceChangeService) {
+  /**
+   * @var \CRM_HRLeaveAndAbsences_Service_LeavePeriodEntitlement
+   */
+  private $leavePeriodEntitlementService;
+
+  /**
+   * @var \CRM_HRLeaveAndAbsences_BAO_AbsenceType|null
+   *   An absence Type with MTPHL set to true
+   */
+  private $absenceType;
+
+  public function __construct(
+    JobContractService $jobContractService,
+    LeaveBalanceChangeService $leaveBalanceChangeService,
+    LeavePeriodEntitlementService $leavePeriodEntitlementService)
+  {
     $this->jobContractService = $jobContractService;
     $this->leaveBalanceChangeService = $leaveBalanceChangeService;
+    $this->leavePeriodEntitlementService = $leavePeriodEntitlementService;
+    $this->absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
   }
 
   /**
    * Creates Public Holiday Leave Requests for all the contacts with contracts
-   * overlapping the date of the given Public Holiday
+   * overlapping the date of the given Public Holiday.
+   *
+   * The Public Holiday leave request will not be created if contact has no
+   * entitlement for the absence type with MTPHL in the absence period the
+   * public holiday date falls in.
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
    */
   public function createForAllContacts(PublicHoliday $publicHoliday) {
-    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+    $absencePeriod = AbsencePeriod::getPeriodOverlappingDate(new DateTime($publicHoliday->date));
 
-    if(!$absenceType) {
+    if(!$absencePeriod || !$this->absenceType) {
       return;
     }
 
@@ -45,8 +68,13 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
       new DateTime($publicHoliday->date)
     );
 
+    $contactIDs = array_column($contracts, 'contact_id');
+    $entitlements = $this->getEntitlementsForContacts($contactIDs, $absencePeriod);
+
     foreach($contracts as $contract) {
-      $this->create($contract['contact_id'], $absenceType, $publicHoliday);
+      if($this->contactHasEntitlement($entitlements, $contract['contact_id'], $this->absenceType->id)) {
+        $this->create($contract['contact_id'], $this->absenceType, $publicHoliday);
+      }
     }
   }
 
@@ -57,30 +85,52 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * For each contract overlapping one Public Holiday, a Leave Request will be
    * created for the contract's contact and the public holiday date.
    *
+   * The Public Holiday leave request will not be created if contact has no
+   * entitlement for the absence type with MTPHL in the absence period the
+   * public holiday date falls in.
+   *
    * @param array $contactID
    *  If not empty, Public Holiday Leave Requests are created for only these contacts
    */
   public function createForAllInTheFuture(array $contactID = []) {
-    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
-
-    if(!$absenceType) {
+    if(!$this->absenceType) {
       return;
     }
 
-    $futurePublicHolidays = PublicHoliday::getAllInFuture();
-    $lastPublicHoliday = end($futurePublicHolidays);
+    $today = new DateTime();
+    $absencePeriods = AbsencePeriod::getPeriodsOverlappingDates($today);
 
-    $contracts = $this->jobContractService->getContractsForPeriod(
-      new DateTime(),
-      new DateTime($lastPublicHoliday->date),
-      $contactID
-    );
+    if(!$absencePeriods) {
+      return;
+    }
 
-    foreach($contracts as $contract) {
-      foreach($futurePublicHolidays as $publicHoliday) {
-        if($this->publicHolidayOverlapsContract($contract, $publicHoliday)) {
-          $this->create($contract['contact_id'], $absenceType, $publicHoliday);
-        }
+    $this->adjustPeriodDates($absencePeriods, $today);
+    foreach($absencePeriods as $absencePeriod) {
+      $this->createForAbsencePeriod($absencePeriod, $contactID);
+    }
+  }
+
+  /**
+   * Adjusts the absence periods array to conform to the start and end
+   * date interval. It does this by setting the from date of the first
+   * absence period to the startDate and the end date of the last absence
+   * period to the endDate if present.
+   *
+   * @param array $absencePeriods
+   * @param DateTime $startDate
+   * @param DateTime|null $endDate
+   */
+  private function adjustPeriodDates($absencePeriods, DateTime $startDate, DateTime $endDate = null){
+    $firstPeriod = reset($absencePeriods);
+
+    if(new DateTime($firstPeriod->start_date) < $startDate) {
+      $firstPeriod->start_date = $startDate->format('Y-m-d');
+    }
+
+    if($endDate) {
+      $lastPeriod = end($absencePeriods);
+      if(new DateTime($lastPeriod->end_date) > $endDate) {
+        $lastPeriod->end_date = $endDate->format('Y-m-d');
       }
     }
   }
@@ -88,23 +138,40 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   /**
    * Creates Public Holiday Leave Requests for all Public Holidays
    * overlapping the start and end dates of the given contract
+   * The Public Holiday leave request will not be created if contact has no
+   * entitlement for the absence type with MTPHL in the absence period the
+   * public holiday date falls in.
    *
    * @param int $contractID
    */
   public function createAllForContract($contractID) {
     $contract = $this->jobContractService->getContractByID($contractID);
 
-    if (!$contract) {
+    if (!$contract || !$this->absenceType) {
       return;
     }
 
-    $publicHolidays = PublicHoliday::getAllForPeriod(
-      $contract['period_start_date'],
-      $contract['period_end_date']
-    );
+    $contractStartDate = new DateTime($contract['period_start_date']);
+    $contractEndDate = $contract['period_end_date'] ? new DateTime($contract['period_end_date']) : null;
+    $absencePeriods = AbsencePeriod::getPeriodsOverlappingDates($contractStartDate, $contractEndDate);
 
-    foreach($publicHolidays as $publicHoliday) {
-      $this->createForContact($contract['contact_id'], $publicHoliday);
+    if(!$absencePeriods) {
+      return;
+    }
+
+    $this->adjustPeriodDates($absencePeriods, $contractStartDate, $contractEndDate);
+    foreach($absencePeriods as $absencePeriod) {
+      $publicHolidays = PublicHoliday::getAllForPeriod(
+        $absencePeriod->start_date,
+        $absencePeriod->end_date
+      );
+
+      $entitlements = $this->getEntitlementsForContacts([$contract['contact_id']], $absencePeriod);
+      foreach($publicHolidays as $publicHoliday) {
+        if($this->contactHasEntitlement($entitlements, $contract['contact_id'], $this->absenceType->id)) {
+          $this->create($contract['contact_id'], $this->absenceType, $publicHoliday);
+        }
+      }
     }
   }
 
@@ -116,13 +183,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
    */
   public function createForContact($contactID, PublicHoliday $publicHoliday) {
-    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
-
-    if (!$absenceType) {
+    if (!$this->absenceType) {
       return;
     }
 
-    $this->create($contactID, $absenceType, $publicHoliday);
+    $this->create($contactID, $this->absenceType, $publicHoliday);
   }
 
   /**
@@ -263,6 +328,96 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     }
 
     $this->createForAllInTheFuture($contacts);
+  }
+
+  /**
+   * Creates Public Holiday Leave Requests for all public Holidays
+   * within the given Absence Period ID for contacts with contracts and
+   * entitlements for the absence type with MTPHL within this period.
+   *
+   * The Public Holiday leave request will not be created if contact has no
+   * entitlement for the absence type with MTPHL in the absence period the
+   * public holiday date falls in.
+   *
+   * @param int $absencePeriodID
+   */
+  public function createForAllinAbsencePeriod($absencePeriodID) {
+    $absencePeriod = AbsencePeriod::findById($absencePeriodID);
+    $this->createForAbsencePeriod($absencePeriod);
+  }
+
+  /**
+   * Creates Public Holiday Leave Requests for all public Holidays
+   * within the given Absence Period for contacts with contracts and
+   * entitlements for the absence type with MTPHL within this period.
+   *
+   * The Public Holiday leave request will not be created if contact has no
+   * entitlement for the absence type with MTPHL in the absence period the
+   * public holiday date falls in.
+   *
+   * @param AbsencePeriod $absencePeriod
+   * @param array $contactID
+   *  If not empty, Public Holiday Leave Requests are created for only these contacts
+   */
+  private function createForAbsencePeriod($absencePeriod, array $contactID = []) {
+    if(!$this->absenceType) {
+      return;
+    }
+
+    $publicHolidays = PublicHoliday::getAllForPeriod(
+      $absencePeriod->start_date,
+      $absencePeriod->end_date
+    );
+
+    $contracts = $this->jobContractService->getContractsForPeriod(
+      new DateTime($absencePeriod->start_date),
+      new DateTime($absencePeriod->end_date),
+      $contactID
+    );
+
+    $contactIDs = array_column($contracts, 'contact_id');
+    $entitlements = $this->getEntitlementsForContacts($contactIDs, $absencePeriod);
+
+    foreach($contracts as $contract) {
+      foreach($publicHolidays as $publicHoliday) {
+        if($this->publicHolidayOverlapsContract($contract, $publicHoliday)) {
+          if($this->contactHasEntitlement($entitlements, $contract['contact_id'], $this->absenceType->id)) {
+            $this->create($contract['contact_id'], $this->absenceType, $publicHoliday);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Checks if the contract's contact has entitlement for the given
+   * absence type ID.
+   *
+   * @param array $entitlements
+   * @param int $contactID
+   * @param int $absenceTypeID
+   *
+   * @return bool
+   */
+  private function contactHasEntitlement($entitlements, $contactID, $absenceTypeID) {
+    return !empty($entitlements[$contactID][$absenceTypeID]) && $entitlements[$contactID][$absenceTypeID] != 0;
+  }
+
+  /**
+   * Returns the entitlements for the given contact(s) during the absence
+   * period for the absence type with MTPHL.
+   *
+   * @param array $contactIDs
+   * @param AbsencePeriod $absencePeriod
+   *
+   * @return array
+   */
+  private function getEntitlementsForContacts($contactIDs, AbsencePeriod $absencePeriod) {
+    return $this->leavePeriodEntitlementService->getEntitlementsForContacts(
+      $contactIDs,
+      $absencePeriod->id,
+      $this->absenceType->id
+    );
   }
 
   /**
