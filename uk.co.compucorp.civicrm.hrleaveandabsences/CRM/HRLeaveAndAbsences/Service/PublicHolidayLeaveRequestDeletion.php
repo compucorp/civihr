@@ -3,6 +3,7 @@
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
@@ -158,5 +159,32 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
     }
 
     $this->deleteAllInTheFuture($contacts);
+  }
+
+  /**
+   * Deletes all the Public Holiday Leave Requests for Public Holidays
+   * within the given Absence Period for all contacts with contracts
+   * within the period.
+   *
+   * @param int $absencePeriodID
+   */
+  public function deleteAllForAbsencePeriod($absencePeriodID) {
+    $absencePeriod = AbsencePeriod::findById($absencePeriodID);
+
+    $publicHolidays = PublicHoliday::getAllForPeriod(
+      $absencePeriod->start_date,
+      $absencePeriod->end_date
+    );
+
+    $contracts = $this->jobContractService->getContractsForPeriod(
+      new DateTime($absencePeriod->start_date),
+      new DateTime($absencePeriod->end_date)
+    );
+
+    foreach($contracts as $contract) {
+      foreach($publicHolidays as $publicHoliday) {
+        $this->deleteForContact($contract['contact_id'], $publicHoliday);
+      }
+    }
   }
 }
