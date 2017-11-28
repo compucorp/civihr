@@ -85,4 +85,17 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
     $this->creationLogic->createAllInFutureForWorkPatternContacts($workPatternID);
   }
 
+  /**
+   * Updates all the leave requests for Public Holidays for the absence
+   * period for the contacts with contracts during the period.
+   *
+   * @param int $absencePeriodID
+   *
+   * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion::deleteAllForAbsencePeriod()
+   * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation::createForAllinAbsencePeriod()
+   */
+  public function updateAllForAbsencePeriod($absencePeriodID) {
+    $this->deletionLogic->deleteAllForAbsencePeriod($absencePeriodID);
+    $this->creationLogic->createForAllinAbsencePeriod($absencePeriodID);
+  }
 }
