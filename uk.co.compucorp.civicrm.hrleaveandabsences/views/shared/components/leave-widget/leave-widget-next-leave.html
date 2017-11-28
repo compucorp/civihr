@@ -15,16 +15,30 @@
               <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.from_date.format('D')}}</span>
               <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.from_date.format('MMM')}}</span>
               <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.from_date.format('YYYY')}}</span>
-              <span class="date-range-calendar__time text-muted">
-                ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.from_date_type].label}})
+              <span
+                class="date-range-calendar__time text-muted"
+                ng-switch="nextLeave.nextLeaveRequest['type_id.calculation_unit_name']">
+                <span ng-switch-when="days">
+                  ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.from_date_type].label}})
+                </span>
+                <span ng-switch-when="hours">
+                  ({{nextLeave.nextLeaveRequest.from_date.format('HH:mm')}})
+                </span>
               </span>
             </div>
             <div class="date-range-calendar__to" ng-if="nextLeave.nextLeaveRequest.to_date && !nextLeave.nextLeaveRequest.to_date.isSame(nextLeave.nextLeaveRequest.from_date, 'day')">
               <span class="date-range-calendar__day">{{nextLeave.nextLeaveRequest.to_date.format('D')}}</span>
               <span class="date-range-calendar__month">{{nextLeave.nextLeaveRequest.to_date.format('MMM')}}</span>
               <span class="date-range-calendar__year">{{nextLeave.nextLeaveRequest.to_date.format('YYYY')}}</span>
-              <span class="date-range-calendar__time text-muted">
-                ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.to_date_type].label}})
+              <span
+                class="date-range-calendar__time text-muted"
+                ng-switch="nextLeave.nextLeaveRequest['type_id.calculation_unit_name']">
+                <span ng-switch-when="days">
+                  ({{nextLeave.dayTypes[nextLeave.nextLeaveRequest.to_date_type].label}})
+                </span>
+                <span ng-switch-when="hours">
+                  ({{nextLeave.nextLeaveRequest.to_date.format('HH:mm')}})
+                </span>
               </span>
             </div>
           </div>
@@ -49,7 +63,7 @@
   <div ng-if="nextLeave.nextLeaveRequest">
     <h4>Deduction</h4>
     <span class="leave-widget__next-leave__deduction">
-      {{nextLeave.nextLeaveRequest.balance_change | timeUnitApplier:'days'}}
+      {{nextLeave.nextLeaveRequest.balance_change | timeUnitApplier:nextLeave.nextLeaveRequest['type_id.calculation_unit_name']}}
     </span>
   </div>
 </div>

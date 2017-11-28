@@ -153,7 +153,7 @@ define([
     }
 
     /**
-     * Maps the absence type title to the next leave request.
+     * Maps the absence type title and calculation unit to the next leave request.
      */
     function mapAbsenceTypeToNextLeaveRequest () {
       var absenceType = _.find(vm.absenceTypes, function (absenceType) {
@@ -161,6 +161,7 @@ define([
       }) || {};
 
       vm.nextLeaveRequest['type_id.title'] = absenceType.title;
+      vm.nextLeaveRequest['type_id.calculation_unit_name'] = absenceType.calculation_unit_name;
     }
 
     /**
