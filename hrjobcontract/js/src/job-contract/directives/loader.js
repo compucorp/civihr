@@ -39,7 +39,7 @@ define([
         }
 
         /**
-         * Returns if the element has position value set
+         * Checks if the element has position value set
          *
          * @return {Boolean}
          */
@@ -50,13 +50,12 @@ define([
         }
 
         /**
-         * Init Listeners
+         * Initializes listeners
          */
         function initLIsteners () {
           $scope.$on('hrjc-loader-show', function () {
             appendLoader();
           });
-
           $scope.$on('hrjc-loader-hide', function () {
             removeLoader();
           });
