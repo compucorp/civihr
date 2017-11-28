@@ -13,6 +13,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLog as LeavePeriodEntitlementLog;
+use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest
@@ -1649,5 +1650,138 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
     //When the leave request is excluded, the entitlement balance is 5.
     $this->assertEquals(5, $periodEntitlement->getBalance([$leaveRequest->id]));
+  }
+
+  public function testItEnqueuesATaskToToUpdatePublicHolidayLeaveRequestsForContactThatPreviouslyHasNoEntitlementButNowHas() {
+    $type = AbsenceTypeFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate();
+    $this->setContractDates('2016-01-01', '2016-12-31');
+
+    $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
+      $this->contract['contact_id'],
+      $period->id,
+      $type->id
+    );
+
+    //Contact has no entitlement previously
+    $this->assertNull($periodEntitlement);
+
+    $broughtForward = 1;
+    $proRata = 10;
+    $calculation = $this->getEntitlementCalculationMock(
+      $period,
+      ['id' => $this->contract['contact_id']],
+      $type,
+      $broughtForward,
+      $proRata
+    );
+
+    //entitlement of 11 is created for contact
+    $createdDate = new DateTime();
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate);
+
+    $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
+      $this->contract['contact_id'],
+      $period->id,
+      $type->id
+    );
+
+    $this->assertEquals(11, $periodEntitlement->getEntitlement());
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_UpdatePublicHolidayLeaveRequestsForAbsencePeriod',
+      $item->data->callback[0]
+    );
+    $this->assertEquals($period->id, $item->data->arguments[0]);
+    $this->assertEquals([$this->contract['contact_id']], $item->data->arguments[1]);
+    $queue->deleteItem($item);
+  }
+
+  public function testItEnqueuesATaskToToUpdatePublicHolidayLeaveRequestsForContactThatPreviouslyHasEntitlementsButNowHasZero() {
+    $type = AbsenceTypeFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate();
+    $this->setContractDates('2016-01-01', '2016-12-31');
+    $this->registerCurrentLoggedInContactInSession($this->contract['contact_id']);
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $this->contract['contact_id'],
+      'period_id' => $period->id,
+      'type_id' => $type->id,
+    ]);
+
+    //Contact has initial entitlement of 5
+    $this->createLeaveBalanceChange($periodEntitlement->id, 5);
+
+    $calculation = $this->getEntitlementCalculationMock(
+      $period,
+      ['id' => $this->contract['contact_id']],
+      $type
+    );
+
+    $createdDate = new DateTime();
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate);
+
+    $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
+      $this->contract['contact_id'],
+      $period->id,
+      $type->id
+    );
+
+    //contact entitlement was updated to zero
+    $this->assertEquals(0, $periodEntitlement->getEntitlement());
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      'CRM_HRLeaveAndAbsences_Queue_Task_UpdatePublicHolidayLeaveRequestsForAbsencePeriod',
+      $item->data->callback[0]
+    );
+    $this->assertEquals($period->id, $item->data->arguments[0]);
+    $this->assertEquals([$this->contract['contact_id']], $item->data->arguments[1]);
+    $queue->deleteItem($item);
+  }
+
+  public function testItDoesNotEnqueuesATaskToToUpdatePublicHolidayLeaveRequestsForContactWhenNeitherPreviousOrNewEntitlementIsZeroOrNull() {
+    $type = AbsenceTypeFabricator::fabricate();
+    $period = AbsencePeriodFabricator::fabricate();
+    $this->setContractDates('2016-01-01', '2016-12-31');
+    $this->registerCurrentLoggedInContactInSession($this->contract['contact_id']);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => $this->contract['contact_id'],
+      'period_id' => $period->id,
+      'type_id' => $type->id,
+    ]);
+
+    //initial entitlement of 1
+    $this->createLeaveBalanceChange($periodEntitlement->id, 1);
+
+    $broughtForward = 5;
+    $calculation = $this->getEntitlementCalculationMock(
+      $period,
+      ['id' => $this->contract['contact_id']],
+      $type,
+      $broughtForward
+    );
+
+    //entitlement updated to 5
+    $createdDate = new DateTime();
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate);
+
+    $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
+      $this->contract['contact_id'],
+      $period->id,
+      $type->id
+    );
+
+    $this->assertEquals(5, $periodEntitlement->getEntitlement());
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(0, $queue->numberOfItems());
   }
 }
