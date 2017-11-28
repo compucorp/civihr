@@ -22,7 +22,7 @@ gulp.task('sass', ['sass:sync'], function () {
     .pipe(postcss([postcssPrefix({
       prefix: bootstrapNamespace + ' ',
       exclude: [
-        /^html/, /^body/, /page-civi/, /crm-container/, /spinner/, outsideNamespaceRegExp
+        /^html/, /^body/, /page-civi/, /crm-container/, outsideNamespaceRegExp
       ]
     })]))
     .pipe(transformSelectors(namespaceRootElements, { splitOnCommas: true }))
