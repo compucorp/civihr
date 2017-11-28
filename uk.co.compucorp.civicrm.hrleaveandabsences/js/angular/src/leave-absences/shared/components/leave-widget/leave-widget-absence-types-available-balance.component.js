@@ -91,9 +91,7 @@ define([
         'type_id': { IN: getContractEntitlementsIds() },
         'type_id.is_active': true,
         'overridden': true,
-        'options': {
-          or: [['type_id', 'overridden']]
-        }
+        'options': { or: [['type_id', 'overridden']] }
       }, true)
       .then(function (_entitlements_) {
         entitlements = _entitlements_;
