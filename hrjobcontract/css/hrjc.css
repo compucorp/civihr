@@ -11756,7 +11756,7 @@ fieldset[disabled]
   left: 50%;
   position: absolute;
   top: 50%;
-  z-index: 1039;
+  z-index: 1000;
 }
 /* line 3, ../scss/hrjc/partials/_modals.scss */
 #hrjob-contract .modal-revision .modal-header .btn-group-action {
