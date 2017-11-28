@@ -586,4 +586,44 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday1));
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday2));
   }
+
+  public function testCanDeleteAllPublicHolidayLeaveRequestsForAbsencePeriodForSpecificContact() {
+    $contact = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31'),
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    //pubic holiday is within the second absence period
+    $publicHoliday = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' =>  CRM_Utils_Date::processDate('2016-01-01')
+    ]);
+
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday);
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact2['id'], $publicHoliday);
+
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+
+    //Delete all Public holiday leave requests for absence period for first contact only
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
+    $deletionLogic->deleteAllForAbsencePeriod($period->id, [$contact['id']]);
+
+    //Leave Request for PublicHoliday will be deleted for contact1 only
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
+
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+  }
 }

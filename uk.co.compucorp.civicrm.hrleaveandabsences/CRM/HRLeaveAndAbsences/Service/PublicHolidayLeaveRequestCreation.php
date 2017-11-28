@@ -334,16 +334,19 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * Creates Public Holiday Leave Requests for all public Holidays
    * within the given Absence Period ID for contacts with contracts and
    * entitlements for the absence type with MTPHL within this period.
+   * If the contactID is present will create only for the contacts in the
+   * contactID array
    *
    * The Public Holiday leave request will not be created if contact has no
    * entitlement for the absence type with MTPHL in the absence period the
    * public holiday date falls in.
    *
    * @param int $absencePeriodID
+   * @param array $contactID
    */
-  public function createForAllinAbsencePeriod($absencePeriodID) {
+  public function createForAllinAbsencePeriod($absencePeriodID, array $contactID = []) {
     $absencePeriod = AbsencePeriod::findById($absencePeriodID);
-    $this->createForAbsencePeriod($absencePeriod);
+    $this->createForAbsencePeriod($absencePeriod, $contactID);
   }
 
   /**

@@ -166,9 +166,13 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
    * within the given Absence Period for all contacts with contracts
    * within the period.
    *
+   * If contactID is present, will only delete for the contacts in the
+   * array.
+   *
    * @param int $absencePeriodID
+   * @param array $contactID
    */
-  public function deleteAllForAbsencePeriod($absencePeriodID) {
+  public function deleteAllForAbsencePeriod($absencePeriodID, array $contactID = []) {
     $absencePeriod = AbsencePeriod::findById($absencePeriodID);
 
     $publicHolidays = PublicHoliday::getAllForPeriod(
@@ -178,7 +182,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
 
     $contracts = $this->jobContractService->getContractsForPeriod(
       new DateTime($absencePeriod->start_date),
-      new DateTime($absencePeriod->end_date)
+      new DateTime($absencePeriod->end_date),
+      $contactID
     );
 
     foreach($contracts as $contract) {
