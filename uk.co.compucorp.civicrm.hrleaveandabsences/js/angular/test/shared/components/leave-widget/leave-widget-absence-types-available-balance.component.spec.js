@@ -77,11 +77,12 @@ define([
 
         it('gets all entitlements for the contact in the absence period', function () {
           expect(Entitlement.all).toHaveBeenCalledWith({
-            contact_id: contactId,
-            period_id: absencePeriod.id,
-            type_id: { IN: getJobContractAbsenceEntitlements() },
-            overridden: true,
-            options: { or: [['type_id', 'overridden']] }
+            'contact_id': contactId,
+            'period_id': absencePeriod.id,
+            'type_id': { IN: getJobContractAbsenceEntitlements() },
+            'type_id.is_active': true,
+            'overridden': true,
+            'options': { or: [['type_id', 'overridden']] }
           }, true);
         });
 
