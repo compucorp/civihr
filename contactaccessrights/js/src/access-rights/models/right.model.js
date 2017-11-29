@@ -1,6 +1,6 @@
 define([
-  'access-rights/modules/models',
-  'access-rights/services/api/right',
+  'access-rights/modules/access-rights.models',
+  'access-rights/apis/right.api',
   'common/services/api',
   'common/models/model'
 ], function (models) {

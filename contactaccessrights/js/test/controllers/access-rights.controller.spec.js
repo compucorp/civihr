@@ -1,6 +1,6 @@
 define([
   'common/angularMocks',
-  'access-rights/controllers/access-rights-ctrl'
+  'access-rights/controllers/access-rights.controller'
 ], function () {
   'use strict';
 

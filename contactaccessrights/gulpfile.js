@@ -77,9 +77,9 @@ var test = (function () {
     /**
      * Runs the tests for a specific source file
      *
-     * Looks for a test file (*_test.js) in `test/`, using the same path
+     * Looks for a test file (*.spec.js) in `test/`, using the same path
      * of the source file in `src/access-rights/`
-     *   i.e. src/access-rights/models/model.js -> test/models/model_test.js
+     *   i.e. src/access-rights/models/model.js -> test/models/model.spec.js
      *
      * @throw {Error}
      */
@@ -87,7 +87,7 @@ var test = (function () {
       var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
       var testFile = srcFile
         .replace('src/access-rights/', 'test/')
-        .replace(srcFileNoExt + '.js', srcFileNoExt + '_test.js');
+        .replace(srcFileNoExt + '.js', srcFileNoExt + '.spec.js');
 
       try {
         var stats = fs.statSync(testFile);
@@ -109,7 +109,7 @@ var test = (function () {
       var configFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
       gulp.src(__dirname + '/js/karma.conf.js')
-        .pipe(replace('*_test.js', path.basename(testFile)))
+        .pipe(replace('*.spec.js', path.basename(testFile)))
         .pipe(rename(configFile))
         .pipe(gulp.dest(__dirname + '/js'))
         .on('end', function () {

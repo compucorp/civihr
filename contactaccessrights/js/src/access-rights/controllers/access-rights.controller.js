@@ -1,5 +1,5 @@
 define([
-  'access-rights/modules/controllers'
+  'access-rights/modules/access-rights.controllers'
 ], function (controllers) {
   'use strict';
 

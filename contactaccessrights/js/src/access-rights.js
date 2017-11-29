@@ -11,7 +11,7 @@
 
   require([
     'access-rights/app',
-    'access-rights/dom-initialization'
+    'dom-initialization'
   ], function (angular, domInitialization) {
     angular.bootstrap(domInitialization.addAppToDOM(), ['access-rights']);
   });

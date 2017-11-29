@@ -1,5 +1,5 @@
 define([
-  'access-rights/modules/models',
+  'access-rights/modules/access-rights.models',
   'common/services/api'
 ], function (models) {
   'use strict';

@@ -1,6 +1,6 @@
 define([
   'common/lodash',
-  'access-rights/modules/controllers'
+  'access-rights/modules/access-rights.controllers'
 ], function (_, controllers) {
   'use strict';
 

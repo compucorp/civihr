@@ -1,6 +1,6 @@
 define([
   'common/angularMocks',
-  'access-rights/models/location'
+  'access-rights/models/location.model'
 ], function () {
   'use strict';
 

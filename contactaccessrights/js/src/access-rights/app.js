@@ -4,11 +4,11 @@ define([
   'common/angularBootstrap',
   'common/modules/xeditable-civi',
   'common/directives/loading',
-  'access-rights/controllers/access-rights-ctrl',
-  'access-rights/controllers/access-rights-modal-ctrl',
-  'access-rights/models/region',
-  'access-rights/models/location',
-  'access-rights/models/right'
+  'access-rights/controllers/access-rights.controller',
+  'access-rights/controllers/access-rights-modal.controller',
+  'access-rights/models/region.model',
+  'access-rights/models/location.model',
+  'access-rights/models/right.model'
 ], function (angular) {
   'use strict'
 
