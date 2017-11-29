@@ -11,18 +11,18 @@ define([
   function AccessRightsModalController ($q, $modalInstance, Region, Location, Right) {
     var vm = this;
 
-    vm.errorMsg = '';
     vm.dataLoaded = false;
+    vm.errorMsg = '';
     vm.submitting = false;
     vm.availableData = {
       regions: [],
       locations: []
     };
-    vm.selectedData = {
+    vm.originalData = {
       locations: [],
       regions: []
     };
-    vm.originalData = {
+    vm.selectedData = {
       locations: [],
       regions: []
     };
