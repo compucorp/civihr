@@ -1,9 +1,8 @@
 define([
   'common/angular',
-  'common/ui-select',
-  'common/angularBootstrap',
-  'common/modules/xeditable-civi',
-  'common/directives/loading',
+  'access-rights/modules/access-rights.config',
+  'access-rights/modules/access-rights.core',
+  'access-rights/modules/access-rights.run',
   'access-rights/controllers/access-rights.controller',
   'access-rights/controllers/access-rights-modal.controller',
   'access-rights/models/region.model',
@@ -13,27 +12,12 @@ define([
   'use strict'
 
   angular.module('access-rights', [
-      'ngAnimate',
-      'ui.bootstrap',
-      'ui.select',
-      'common.directives',
-      'xeditable-civi',
-      'access-rights.controllers',
-      'access-rights.models'
-    ])
-    .run(['$log', 'editableOptions', 'editableThemes',
-      function ($log, editableOptions, editableThemes) {
-        $log.debug('app.run');
-        editableOptions.theme = 'bs3';
-      }
-    ])
-    .config(['$locationProvider', '$httpProvider', function ($locationProvider, $httpProvider) {
-      $locationProvider.html5Mode({
-        enabled: true,
-        requireBase: false
-      });
-      $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
-    }]);
+    'access-rights.core',
+    'access-rights.config',
+    'access-rights.run',
+    'access-rights.controllers',
+    'access-rights.models'
+  ]);
 
   return angular;
 });
