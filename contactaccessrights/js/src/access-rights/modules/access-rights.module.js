@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'common/angular',
   'access-rights/modules/access-rights.config',
@@ -9,7 +11,7 @@ define([
   'access-rights/models/location.model',
   'access-rights/models/right.model'
 ], function (angular) {
-  'use strict'
+  'use strict';
 
   angular.module('access-rights', [
     'access-rights.core',

@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'common/angular',
   'common/modules/apis'
