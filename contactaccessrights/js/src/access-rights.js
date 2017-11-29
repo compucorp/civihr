@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 (function () {
   'use strict';
 
@@ -15,5 +17,4 @@
   ], function (angular, domInitialization) {
     angular.bootstrap(domInitialization.addAppToDOM(), ['access-rights']);
   });
-
 })(require);
