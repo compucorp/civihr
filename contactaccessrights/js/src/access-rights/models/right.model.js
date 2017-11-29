@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'access-rights/modules/access-rights.models',
   'access-rights/apis/right.api',

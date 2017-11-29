@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'access-rights/modules/access-rights.models',
   'common/services/api/option-group',
