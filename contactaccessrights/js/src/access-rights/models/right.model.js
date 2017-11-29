@@ -1,14 +1,12 @@
 /* eslint-env amd */
 
-define([
-  'access-rights/modules/access-rights.models',
-  'access-rights/apis/right.api',
-  'common/services/api',
-  'common/models/model'
-], function (models) {
+define(function () {
   'use strict';
 
-  models.factory('Right', ['Model', 'rightApi', function (Model, api) {
+  Right.__name = 'Right';
+  Right.$inject = ['Model', 'rightApi'];
+
+  function Right (Model, api) {
     return Model.extend({
       getLocations: api.getLocations.bind(api),
       getRegions: api.getRegions.bind(api),
@@ -16,5 +14,7 @@ define([
       saveRegions: api.saveRegions.bind(api),
       saveLocations: api.saveLocations.bind(api)
     });
-  }]);
+  }
+
+  return Right;
 });

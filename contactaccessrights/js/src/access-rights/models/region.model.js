@@ -1,17 +1,20 @@
 /* eslint-env amd */
 
 define([
-  'access-rights/modules/access-rights.models',
-  'common/services/api/option-group',
-  'common/models/model'
-], function (models) {
+  'common/services/api/option-group'
+], function () {
   'use strict';
 
-  models.factory('Region', ['Model', 'api.optionGroup', function (Model, OptionGroup) {
+  Region.__name = 'Region';
+  Region.$inject = ['Model', 'api.optionGroup'];
+
+  function Region (Model, OptionGroup) {
     return Model.extend({
       getAll: function () {
         return OptionGroup.valuesOf('hrjc_region');
       }
     });
-  }]);
+  }
+
+  return Region;
 });

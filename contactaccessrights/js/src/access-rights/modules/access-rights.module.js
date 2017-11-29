@@ -6,10 +6,8 @@ define([
   'access-rights/modules/access-rights.config',
   'access-rights/modules/access-rights.controllers',
   'access-rights/modules/access-rights.core',
-  'access-rights/modules/access-rights.run',
-  'access-rights/models/region.model',
-  'access-rights/models/location.model',
-  'access-rights/models/right.model'
+  'access-rights/modules/access-rights.models',
+  'access-rights/modules/access-rights.run'
 ], function (angular) {
   'use strict';
 
