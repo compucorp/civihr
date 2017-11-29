@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'access-rights/modules/access-rights.controllers'
@@ -46,7 +48,7 @@ define([
           .then(function () {
             $modalInstance.dismiss('cancel');
           })
-          .catch(function (err) {
+          .catch(function () {
             vm.errorMsg = 'Error while saving data';
           })
           .finally(function () {
@@ -60,7 +62,7 @@ define([
        * @param  {string} type  Either "regions" or "locations"
        * @return {Promise}      The result of all promises
        */
-      function persistValues(type) {
+      function persistValues (type) {
         var originalData = vm.originalData[type];
         var selectedData = vm.selectedData[type];
 
@@ -90,11 +92,11 @@ define([
       /**
        * Loads the API data
        */
-      function init() {
+      function init () {
         $q.all([
-            Region.getAll(),
-            Location.getAll()
-          ])
+          Region.getAll(),
+          Location.getAll()
+        ])
           .then(function (values) {
             return {
               regions: values[0],
