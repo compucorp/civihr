@@ -18,7 +18,7 @@ define([
   'leave-absences/shared/instances/leave-request.instance',
   'leave-absences/shared/instances/sickness-request.instance',
   'leave-absences/shared/instances/toil-request.instance'
-], function (angular, controllers, _) {
+], function (angular, controllers, _, moment) {
   'use strict';
 
   controllers.controller('RequestCtrl', RequestCtrl);
@@ -99,15 +99,11 @@ define([
         initRoles(),
         loadAbsencePeriods(),
         loadStatuses()
-      ]).then(function () {
-        return $q.all([
-          initAbsencePeriod(),
-          initRequest()
-        ]);
-      })
+      ])
+      .then(initRequest)
+      .then(initOpenMode)
+      .then(initAbsencePeriod)
       .then(function () {
-        initOpenMode();
-
         return vm.canManage && !vm.isMode('edit') && loadManagees();
       })
       .then(function () {
@@ -388,11 +384,14 @@ define([
     }
 
     /**
-     * Inits absence period for the current date
+     * Initialises Absence Period.
+     * If a request is being created, the current period is selected.
+     * Otherwise, the period belonding to the request is selected.
      */
     function initAbsencePeriod () {
       vm.period = _.find(vm.absencePeriods, function (period) {
-        return period.current;
+        return (vm.isMode('create') ? !!period.current
+          : doesRequestBelongToPeriod(vm.request, period));
       });
     }
 
@@ -613,6 +612,18 @@ define([
      */
     function isMode (modeParam) {
       return vm.mode === modeParam;
+    }
+
+    /**
+     * Checks if Leave Request belongs to Absence Period
+     *
+     * @param  {LeaveRequestInstance} request
+     * @param  {AbsencePeriodInstance} period
+     * @return {Boolean}
+     */
+    function doesRequestBelongToPeriod (request, period) {
+      return (moment(request.from_date).isSameOrAfter(moment(period.start_date)) &&
+        moment(request.to_date).isSameOrBefore(moment(period.end_date)));
     }
 
     /**

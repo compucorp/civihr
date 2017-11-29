@@ -678,6 +678,13 @@
           it('does not load contacts', function () {
             expect(controller.managedContacts.length).toEqual(0);
           });
+
+          it('has absence period matched with leave request dates', function () {
+            expect(moment(controller.period.start_date).isSameOrBefore(
+              moment(controller.request.from_date))).toBeTruthy();
+            expect(moment(controller.period.end_date).isSameOrAfter(
+              moment(controller.request.to_date))).toBeTruthy();
+          });
         });
       });
 
