@@ -2,14 +2,14 @@
 
 define([
   'common/angularMocks',
-  'access-rights/controllers/access-rights.controller'
+  'access-rights/modules/access-rights.module'
 ], function () {
   'use strict';
 
   describe('AccessRightsCtrl', function () {
     var ctrl, modalSpy;
 
-    beforeEach(module('access-rights.controllers'));
+    beforeEach(module('access-rights'));
     beforeEach(inject(function (_$controller_, _$rootScope_) {
       modalSpy = jasmine.createSpyObj('modalSpy', ['open']);
       ctrl = _$controller_('AccessRightsCtrl', {

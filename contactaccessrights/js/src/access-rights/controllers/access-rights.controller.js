@@ -1,27 +1,28 @@
 /* eslint-env amd */
 
-define([
-  'access-rights/modules/access-rights.controllers'
-], function (controllers) {
+define(function () {
   'use strict';
 
-  controllers.controller('AccessRightsCtrl', ['$rootElement', '$uibModal',
-    function ($rootElement, $modal) {
-      return {
+  AccessRightsCtrl.__name = 'AccessRightsCtrl';
+  AccessRightsCtrl.$inject = ['$rootElement', '$uibModal'];
 
-        /**
-         * Opens the permissions modal
-         */
-        openModal: function () {
-          $modal.open({
-            appendTo: $rootElement.children().eq(0),
-            controller: 'AccessRightsModalCtrl',
-            controllerAs: 'modalCtrl',
-            bindToController: true,
-            templateUrl: CRM.vars.contactAccessRights.baseURL + '/views/access-rights-modal.html'
-          });
-        }
-      };
-    }
-  ]);
+  function AccessRightsCtrl ($rootElement, $modal) {
+    return {
+
+      /**
+       * Opens the permissions modal
+       */
+      openModal: function () {
+        $modal.open({
+          appendTo: $rootElement.children().eq(0),
+          controller: 'AccessRightsModalCtrl',
+          controllerAs: 'modalCtrl',
+          bindToController: true,
+          templateUrl: CRM.vars.contactAccessRights.baseURL + '/views/access-rights-modal.html'
+        });
+      }
+    };
+  }
+
+  return AccessRightsCtrl;
 });

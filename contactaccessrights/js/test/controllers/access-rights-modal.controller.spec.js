@@ -2,17 +2,14 @@
 
 define([
   'common/angularMocks',
-  'access-rights/controllers/access-rights-modal.controller',
-  'access-rights/models/region.model',
-  'access-rights/models/location.model',
-  'access-rights/models/right.model'
+  'access-rights/modules/access-rights.module'
 ], function (_) {
   'use strict';
 
   describe('AccessRightsModalCtrl', function () {
     var ctrl, $scope, $q, modalInstanceSpy, regionSpy, locationSpy, rightSpy;
 
-    beforeEach(module('access-rights.models', 'access-rights.controllers'));
+    beforeEach(module('access-rights'));
     beforeEach(inject(function (_$controller_, _$rootScope_, _$q_) {
       $scope = _$rootScope_.$new();
       $q = _$q_;
