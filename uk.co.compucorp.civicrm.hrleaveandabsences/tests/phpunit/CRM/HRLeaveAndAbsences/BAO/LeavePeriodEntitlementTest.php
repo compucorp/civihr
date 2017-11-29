@@ -793,7 +793,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
                 ->method('getProRata')
                 ->will($this->returnValue($proRata));
 
-    $calculation->expects($this->once())
+    $calculation->expects($this->any())
                 ->method('getBroughtForwardExpirationDate')
                 ->will($this->returnValue('2016-01-01'));
 
@@ -1714,6 +1714,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
     //Contact has initial entitlement of 5
     $this->createLeaveBalanceChange($periodEntitlement->id, 5);
+
 
     $calculation = $this->getEntitlementCalculationMock(
       $period,
