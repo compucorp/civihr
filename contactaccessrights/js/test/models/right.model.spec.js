@@ -16,7 +16,7 @@ define([
         'deleteByIds', 'saveRegions', 'saveLocations'
       ]);
       $provide.value('Model', modelSpy);
-      $provide.value('rightApi', apiSpy);
+      $provide.value('RightsAPI', apiSpy);
       $provide.value('$location', {
         search: function () {
           return {

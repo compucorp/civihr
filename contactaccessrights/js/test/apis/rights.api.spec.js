@@ -21,7 +21,7 @@ define([
         }
       });
     }));
-    beforeEach(inject(function (rightApi) {}));
+    beforeEach(inject(function (RightsAPI) {}));
 
     it('calls api.extend with correct parameters', function () {
       expect(apiSpy.extend.calls.count()).toBe(1);

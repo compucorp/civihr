@@ -3,10 +3,10 @@
 define(function () {
   'use strict';
 
-  rightApi.__name = 'rightApi';
-  rightApi.$inject = ['api', '$q', '$location'];
+  RightsAPI.__name = 'RightsAPI';
+  RightsAPI.$inject = ['api', '$q', '$location'];
 
-  function rightApi (api, $q, $location) {
+  function RightsAPI (api, $q, $location) {
     var entityName = 'Rights';
     var additionalParams = {
       'contact_id': $location.search().cid
@@ -47,5 +47,5 @@ define(function () {
     });
   }
 
-  return rightApi;
+  return RightsAPI;
 });
