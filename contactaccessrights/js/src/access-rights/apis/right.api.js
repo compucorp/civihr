@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'access-rights/modules/access-rights.models',
   'common/services/api'
@@ -30,7 +32,7 @@ define([
             'contact_id': $location.search().cid,
             'entity_id': id,
             'entity_type': 'hrjc_region'
-          })
+          });
         }.bind(this)));
       },
       saveLocations: function (ids) {
@@ -39,7 +41,7 @@ define([
             'contact_id': $location.search().cid,
             'entity_id': id,
             'entity_type': 'hrjc_location'
-          })
+          });
         }.bind(this)));
       }
     });
