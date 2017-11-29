@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
   'access-rights/controllers/access-rights.controller'

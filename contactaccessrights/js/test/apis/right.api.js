@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
   'access-rights/models/right.model'
@@ -15,7 +17,7 @@ define([
         search: function () {
           return {
             cid: 1
-          }
+          };
         }
       });
     }));
@@ -119,6 +121,5 @@ define([
         }]);
       });
     });
-
   });
 });

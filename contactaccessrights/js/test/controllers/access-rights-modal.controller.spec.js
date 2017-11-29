@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
   'access-rights/controllers/access-rights-modal.controller',
@@ -25,7 +27,6 @@ define([
       $scope.$digest();
     }));
 
-
     /**
      * Creates a mocked entity
      *
@@ -33,7 +34,7 @@ define([
      * @param  {bool} isRegion      Whether it's about a region
      * @return {object}             The mocked object
      */
-    function getEntityMock(sequential, isRegion) {
+    function getEntityMock (sequential, isRegion) {
       var difference = isRegion ? 0 : 10;
       return {
         id: sequential + difference,
@@ -41,11 +42,10 @@ define([
       };
     }
 
-
     /**
      * Jasmine spies initialization
      */
-    function initSpies() {
+    function initSpies () {
       modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss']);
       regionSpy = jasmine.createSpyObj('regionSpy', ['getAll']);
       locationSpy = jasmine.createSpyObj('locationSpy', ['getAll']);
@@ -98,7 +98,6 @@ define([
     });
 
     describe('submit', function () {
-
       describe('new Locations', function () {
         var newIds;
         beforeEach(function () {
@@ -191,7 +190,6 @@ define([
             expect(ctrl.errorMsg.length).not.toBe(0);
           });
         });
-
       });
 
       describe('removed Regions', function () {
@@ -234,6 +232,5 @@ define([
         });
       });
     });
-
   });
 });

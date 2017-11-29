@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
   'access-rights/models/location.model'
@@ -5,7 +7,7 @@ define([
   'use strict';
 
   describe('Location', function () {
-    var $provide, modelSpy, apiSpy;
+    var modelSpy, apiSpy;
 
     beforeEach(module('access-rights.models', function ($provide) {
       modelSpy = jasmine.createSpyObj('modelSpy', ['extend']);
@@ -23,7 +25,7 @@ define([
     });
 
     describe('getAll', function () {
-      beforeEach(function(){
+      beforeEach(function () {
         modelSpy.extend.calls.mostRecent().args[0].getAll();
       });
 
@@ -31,6 +33,5 @@ define([
         expect(apiSpy.valuesOf.calls.count()).toBe(1);
       });
     });
-
   });
 });
