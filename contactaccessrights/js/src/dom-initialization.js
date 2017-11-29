@@ -17,8 +17,8 @@ define([
     addAppToDOM: function () {
       var actionsElement = angular.element('.crm-actions-ribbon ul#actions');
       var appElement = angular.element('<li id="access-rights"> ' +
-          '<div ng-controller="AccessRightsCtrl as $ctrl" id="bootstrap-theme"> ' +
-            '<a href class="edit button pull-right" ng-click="$ctrl.openModal()" id="manage-roles-and-teams"> ' +
+          '<div ng-controller="AccessRightsController as accessRights" id="bootstrap-theme"> ' +
+            '<a href class="edit button pull-right" ng-click="accessRights.openModal()" id="manage-roles-and-teams"> ' +
               '<div class="crm-i fa-edit"></div> Manage roles and teams ' +
             '</a> ' +
           '</div> ' +

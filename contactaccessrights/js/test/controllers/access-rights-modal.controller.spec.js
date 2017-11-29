@@ -6,7 +6,7 @@ define([
 ], function (_) {
   'use strict';
 
-  describe('AccessRightsModalCtrl', function () {
+  describe('AccessRightsModalController', function () {
     var ctrl, $scope, $q, modalInstanceSpy, regionSpy, locationSpy, rightSpy;
 
     beforeEach(module('access-rights'));
@@ -14,7 +14,7 @@ define([
       $scope = _$rootScope_.$new();
       $q = _$q_;
       initSpies();
-      ctrl = _$controller_('AccessRightsModalCtrl', {
+      ctrl = _$controller_('AccessRightsModalController', {
         $scope: $scope,
         $uibModalInstance: modalInstanceSpy,
         Region: regionSpy,

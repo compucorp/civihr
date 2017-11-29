@@ -5,56 +5,73 @@ define([
 ], function (_) {
   'use strict';
 
-  AccessRightsModalCtrl.__name = 'AccessRightsModalCtrl';
-  AccessRightsModalCtrl.$inject = ['$q', '$uibModalInstance', 'Region', 'Location', 'Right'];
+  AccessRightsModalController.__name = 'AccessRightsModalController';
+  AccessRightsModalController.$inject = ['$q', '$uibModalInstance', 'Region', 'Location', 'Right'];
 
-  function AccessRightsModalCtrl ($q, $modalInstance, Region, Location, Right) {
+  function AccessRightsModalController ($q, $modalInstance, Region, Location, Right) {
     var vm = this;
 
+    vm.errorMsg = '';
+    vm.dataLoaded = false;
     vm.submitting = false;
-
     vm.availableData = {
       regions: [],
       locations: []
     };
-
     vm.selectedData = {
       locations: [],
       regions: []
     };
-
     vm.originalData = {
       locations: [],
       regions: []
     };
 
-    vm.errorMsg = '';
+    vm.cancel = cancel;
+    vm.submit = submit;
 
-    vm.dataLoaded = false;
+    (function init () {
+      $q.all([
+        Region.getAll(),
+        Location.getAll()
+      ])
+      .then(function (values) {
+        return {
+          regions: values[0],
+          locations: values[1]
+        };
+      })
+      .then(function (values) {
+        return $q.all(_.map(values, function (value, key) {
+          vm.availableData[key] = value;
+          return Right['get' + _.capitalize(key)]();
+        }));
+      })
+      .then(function (values) {
+        return {
+          regions: values[0],
+          locations: values[1]
+        };
+      })
+      .then(function (values) {
+        Object.keys(values).forEach(function (key) {
+          vm.originalData[key] = values[key].values;
+          vm.selectedData[key] = values[key].values.map(function (entity) {
+            return entity.entity_id;
+          });
+        });
+      })
+      .then(function () {
+        vm.dataLoaded = true;
+      });
+    }());
 
     /**
      * Closes the modal
      */
-    vm.cancel = function () {
+    function cancel () {
       $modalInstance.dismiss('cancel');
-    };
-
-    /**
-     * Saves data and closes the modal
-     */
-    vm.submit = function () {
-      vm.submitting = true;
-      $q.all([persistValues('regions'), persistValues('locations')])
-        .then(function () {
-          $modalInstance.dismiss('cancel');
-        })
-        .catch(function () {
-          vm.errorMsg = 'Error while saving data';
-        })
-        .finally(function () {
-          vm.submitting = true;
-        });
-    };
+    }
 
     /**
      * Saves the new values, and deletes the removed ones
@@ -90,45 +107,23 @@ define([
     }
 
     /**
-     * Loads the API data
+     * Saves data and closes the modal
      */
-    function init () {
-      $q.all([
-        Region.getAll(),
-        Location.getAll()
-      ])
-        .then(function (values) {
-          return {
-            regions: values[0],
-            locations: values[1]
-          };
-        })
-        .then(function (values) {
-          return $q.all(_.map(values, function (value, key) {
-            vm.availableData[key] = value;
-            return Right['get' + _.capitalize(key)]();
-          }));
-        })
-        .then(function (values) {
-          return {
-            regions: values[0],
-            locations: values[1]
-          };
-        })
-        .then(function (values) {
-          Object.keys(values).forEach(function (key) {
-            vm.originalData[key] = values[key].values;
-            vm.selectedData[key] = values[key].values.map(function (entity) {
-              return entity.entity_id;
-            });
-          });
-        })
+    function submit () {
+      vm.submitting = true;
+
+      $q.all([persistValues('regions'), persistValues('locations')])
         .then(function () {
-          vm.dataLoaded = true;
+          $modalInstance.dismiss('cancel');
+        })
+        .catch(function () {
+          vm.errorMsg = 'Error while saving data';
+        })
+        .finally(function () {
+          vm.submitting = true;
         });
     }
-    init();
   }
 
-  return AccessRightsModalCtrl;
+  return AccessRightsModalController;
 });

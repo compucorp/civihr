@@ -3,26 +3,27 @@
 define(function () {
   'use strict';
 
-  AccessRightsCtrl.__name = 'AccessRightsCtrl';
-  AccessRightsCtrl.$inject = ['$rootElement', '$uibModal'];
+  AccessRightsController.__name = 'AccessRightsController';
+  AccessRightsController.$inject = ['$rootElement', '$uibModal'];
 
-  function AccessRightsCtrl ($rootElement, $modal) {
-    return {
+  function AccessRightsController ($rootElement, $modal) {
+    var vm = this;
 
-      /**
-       * Opens the permissions modal
-       */
-      openModal: function () {
-        $modal.open({
-          appendTo: $rootElement.children().eq(0),
-          controller: 'AccessRightsModalCtrl',
-          controllerAs: 'modalCtrl',
-          bindToController: true,
-          templateUrl: CRM.vars.contactAccessRights.baseURL + '/views/access-rights-modal.html'
-        });
-      }
-    };
+    vm.openModal = openModal;
+
+    /**
+     * Opens the permissions modal
+     */
+    function openModal () {
+      $modal.open({
+        appendTo: $rootElement.children().eq(0),
+        controller: 'AccessRightsModalController',
+        controllerAs: 'modalCtrl',
+        bindToController: true,
+        templateUrl: CRM.vars.contactAccessRights.baseURL + '/views/access-rights-modal.html'
+      });
+    }
   }
 
-  return AccessRightsCtrl;
+  return AccessRightsController;
 });
