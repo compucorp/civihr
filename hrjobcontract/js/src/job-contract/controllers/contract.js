@@ -209,7 +209,7 @@ define([
               return action || 'view';
             },
             content: function () {
-              return null;
+              return {};
             },
             entity: function () {
               if (!revisionEntityIdObj) {
