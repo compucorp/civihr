@@ -1,12 +1,12 @@
 /* eslint-env amd */
 
-define([
-  'access-rights/modules/access-rights.models',
-  'common/services/api'
-], function (models) {
+define(function () {
   'use strict';
 
-  models.factory('rightApi', ['api', '$q', '$location', function (api, $q, $location) {
+  rightApi.__name = 'rightApi';
+  rightApi.$inject = ['api', '$q', '$location'];
+
+  function rightApi (api, $q, $location) {
     var entityName = 'Rights';
     var additionalParams = {
       'contact_id': $location.search().cid
@@ -45,5 +45,7 @@ define([
         }.bind(this)));
       }
     });
-  }]);
+  }
+
+  return rightApi;
 });
