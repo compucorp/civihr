@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'job-contract/modules/job-contract.controllers'
@@ -18,7 +20,7 @@ define([
       /**
        * Initializes the controller by setting properties and adding watchers
        */
-      function init() {
+      function init () {
         loadNumberOfPublicHolidays();
         addListeners();
       }
@@ -26,7 +28,7 @@ define([
       /**
        * Loads the number of Public Holidays in Current Period
        */
-      function loadNumberOfPublicHolidays() {
+      function loadNumberOfPublicHolidays () {
         UtilsService.getNumberOfPublicHolidaysInCurrentPeriod()
           .then(function (number) {
             vm.numberOfPublicHolidays = number;
@@ -36,7 +38,7 @@ define([
       /**
        * Attach listeners to $scope
        */
-      function addListeners() {
+      function addListeners () {
         $scope.$watch('entity.leave', toggleAddPublicHolidayRadios, true);
       }
 
@@ -57,7 +59,7 @@ define([
 
         if (newLeaveWithPublicHolidays) {
           newValue.forEach(function (value) {
-            if (value.leave_type != newLeaveWithPublicHolidays.leave_type) {
+            if (value.leave_type !== newLeaveWithPublicHolidays.leave_type) {
               value.add_public_holidays = false;
             }
           });

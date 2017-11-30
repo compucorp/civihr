@@ -1,4 +1,4 @@
-/* eslint-env amd, jasmine */
+/* eslint-env amd */
 
 define([
   'job-contract/modules/job-contract.controllers',

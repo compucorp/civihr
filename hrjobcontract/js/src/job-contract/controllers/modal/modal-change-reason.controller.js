@@ -1,17 +1,21 @@
+/* eslint-env amd */
+
 define([
   'common/moment',
   'job-contract/modules/job-contract.controllers',
   'job-contract/services/contract.service'
-], function(moment, controllers) {
+], function (moment, controllers) {
   'use strict';
 
   controllers.controller('ModalChangeReasonCtrl', ['$scope', '$log', '$uibModalInstance', 'content', 'date', 'reasonId', 'settings', 'ContractRevisionService',
-    function($scope, $log, $modalInstance, content, date, reasonId, settings, ContractRevisionService) {
+    function ($scope, $log, $modalInstance, content, date, reasonId, settings, ContractRevisionService) {
+      var copy;
+
       $log.debug('Controller: ModalChangeReasonCtrl');
 
-      var content = content || {},
-        copy = content.copy || {};
+      content = content || {};
 
+      copy = content.copy || {};
       copy.title = copy.title || 'Revision data';
 
       $scope.change_reason = reasonId || '';
@@ -19,19 +23,19 @@ define([
       $scope.effective_date = date || '';
       $scope.isPast = false;
 
-      $scope.dpOpen = function($event, opened) {
+      $scope.dpOpen = function ($event, opened) {
         $event.preventDefault();
         $event.stopPropagation();
 
         $scope[opened] = true;
-      }
+      };
 
-      $scope.save = function() {
+      $scope.save = function () {
         ContractRevisionService.validateEffectiveDate({
-            contact_id: settings.contactId,
-            effective_date: $scope.effective_date
-          })
-          .then(function(result) {
+          contact_id: settings.contactId,
+          effective_date: $scope.effective_date
+        })
+          .then(function (result) {
             if (result.success) {
               $modalInstance.close({
                 reasonId: $scope.change_reason,
@@ -44,11 +48,11 @@ define([
           });
       };
 
-      $scope.cancel = function() {
+      $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
       };
 
-      $scope.$watch('effective_date', function(dateSelected) {
+      $scope.$watch('effective_date', function (dateSelected) {
         $scope.isPast = (new Date(dateSelected).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0));
       });
     }
