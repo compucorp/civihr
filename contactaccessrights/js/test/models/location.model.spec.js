@@ -1,11 +1,13 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
-  'access-rights/models/region'
+  'access-rights/modules/access-rights.models'
 ], function () {
   'use strict';
 
-  describe('Region', function () {
-    var $provide, modelSpy, apiSpy;
+  describe('Location', function () {
+    var modelSpy, apiSpy;
 
     beforeEach(module('access-rights.models', function ($provide) {
       modelSpy = jasmine.createSpyObj('modelSpy', ['extend']);
@@ -14,7 +16,7 @@ define([
       $provide.value('api.optionGroup', apiSpy);
       $provide.value('Model', modelSpy);
     }));
-    beforeEach(inject(function (Region) {}));
+    beforeEach(inject(function (Location) {}));
 
     it('calls modelSpy.extend with correct parameters', function () {
       expect(modelSpy.extend.calls.count()).toBe(1);
@@ -23,7 +25,7 @@ define([
     });
 
     describe('getAll', function () {
-      beforeEach(function(){
+      beforeEach(function () {
         modelSpy.extend.calls.mostRecent().args[0].getAll();
       });
 
@@ -31,6 +33,5 @@ define([
         expect(apiSpy.valuesOf.calls.count()).toBe(1);
       });
     });
-
   });
 });

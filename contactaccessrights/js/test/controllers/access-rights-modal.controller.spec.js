@@ -1,21 +1,20 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
-  'access-rights/controllers/access-rights-modal-ctrl',
-  'access-rights/models/region',
-  'access-rights/models/location',
-  'access-rights/models/right'
+  'access-rights/modules/access-rights.module'
 ], function (_) {
   'use strict';
 
-  describe('AccessRightsModalCtrl', function () {
+  describe('AccessRightsModalController', function () {
     var ctrl, $scope, $q, modalInstanceSpy, regionSpy, locationSpy, rightSpy;
 
-    beforeEach(module('access-rights.models', 'access-rights.controllers'));
+    beforeEach(module('access-rights'));
     beforeEach(inject(function (_$controller_, _$rootScope_, _$q_) {
       $scope = _$rootScope_.$new();
       $q = _$q_;
       initSpies();
-      ctrl = _$controller_('AccessRightsModalCtrl', {
+      ctrl = _$controller_('AccessRightsModalController', {
         $scope: $scope,
         $uibModalInstance: modalInstanceSpy,
         Region: regionSpy,
@@ -25,7 +24,6 @@ define([
       $scope.$digest();
     }));
 
-
     /**
      * Creates a mocked entity
      *
@@ -33,7 +31,7 @@ define([
      * @param  {bool} isRegion      Whether it's about a region
      * @return {object}             The mocked object
      */
-    function getEntityMock(sequential, isRegion) {
+    function getEntityMock (sequential, isRegion) {
       var difference = isRegion ? 0 : 10;
       return {
         id: sequential + difference,
@@ -41,11 +39,10 @@ define([
       };
     }
 
-
     /**
      * Jasmine spies initialization
      */
-    function initSpies() {
+    function initSpies () {
       modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss']);
       regionSpy = jasmine.createSpyObj('regionSpy', ['getAll']);
       locationSpy = jasmine.createSpyObj('locationSpy', ['getAll']);
@@ -98,7 +95,6 @@ define([
     });
 
     describe('submit', function () {
-
       describe('new Locations', function () {
         var newIds;
         beforeEach(function () {
@@ -191,7 +187,6 @@ define([
             expect(ctrl.errorMsg.length).not.toBe(0);
           });
         });
-
       });
 
       describe('removed Regions', function () {
@@ -234,6 +229,5 @@ define([
         });
       });
     });
-
   });
 });

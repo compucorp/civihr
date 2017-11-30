@@ -41,7 +41,7 @@ module.exports = function (config) {
 
       // the test files
       {
-        pattern: extPath + 'js/test/**/*_test.js',
+        pattern: extPath + 'js/test/**/*.spec.js',
         included: false
       },
 
