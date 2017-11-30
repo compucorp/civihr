@@ -103,9 +103,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
       $contactID
     );
 
-    foreach($contracts as $contract) {
+    $contactIDs = array_unique(array_column($contracts, 'contact_id'));
+
+    foreach($contactIDs as $contactID) {
       foreach($futurePublicHolidays as $publicHoliday) {
-        $this->deleteForContact($contract['contact_id'], $publicHoliday);
+        $this->deleteForContact($contactID, $publicHoliday);
       }
     }
   }
@@ -184,9 +186,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
       $contactID
     );
 
-    foreach($contracts as $contract) {
+    $contactIDs = array_unique(array_column($contracts, 'contact_id'));
+
+    foreach($contactIDs as $contactID) {
       foreach($publicHolidays as $publicHoliday) {
-        $this->deleteForContact($contract['contact_id'], $publicHoliday);
+        $this->deleteForContact($contactID, $publicHoliday);
       }
     }
   }

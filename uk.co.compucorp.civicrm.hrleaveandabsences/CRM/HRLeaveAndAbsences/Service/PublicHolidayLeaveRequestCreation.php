@@ -359,7 +359,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
       $contactID
     );
 
-    $contactIDs = array_column($contracts, 'contact_id');
+    $contactIDs = array_unique(array_column($contracts, 'contact_id'));
     $entitlements = $this->getEntitlementsForContacts($contactIDs, $absencePeriod);
 
     foreach($contracts as $contract) {
