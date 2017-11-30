@@ -113,7 +113,7 @@ define([
     function initController (pensionType) {
       var pension = {};
 
-      pension.pensionType = pensionType || null;
+      pension.pension_type = pensionType || null;
       $scope = $rootScope.$new();
       $scope.entity = {};
       $scope.entity.pension = pension;
