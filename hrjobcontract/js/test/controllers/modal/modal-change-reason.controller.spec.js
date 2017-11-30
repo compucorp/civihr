@@ -1,7 +1,7 @@
 define([
     'common/moment',
     'common/angularMocks',
-    'job-contract/controllers/modal/modal-change-reason'
+    'job-contract/controllers/modal/modal-change-reason.controller'
 ], function(moment) {
   'use strict';
 
