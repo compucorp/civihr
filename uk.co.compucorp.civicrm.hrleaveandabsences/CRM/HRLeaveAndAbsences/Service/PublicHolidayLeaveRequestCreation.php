@@ -72,8 +72,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     $entitlements = $this->getEntitlementsForContacts($contactIDs, $absencePeriod);
 
     foreach($contracts as $contract) {
-      if($this->contactHasEntitlement($entitlements, $contract['contact_id'], $this->absenceType->id)) {
-        $this->create($contract['contact_id'], $this->absenceType, $publicHoliday);
+      if($this->contactHasEntitlement($entitlements, $contract['contact_id'])) {
+        $this->create($contract['contact_id'], $publicHoliday);
       }
     }
   }
@@ -168,8 +168,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
       $entitlements = $this->getEntitlementsForContacts([$contract['contact_id']], $absencePeriod);
       foreach($publicHolidays as $publicHoliday) {
-        if($this->contactHasEntitlement($entitlements, $contract['contact_id'], $this->absenceType->id)) {
-          $this->create($contract['contact_id'], $this->absenceType, $publicHoliday);
+        if($this->contactHasEntitlement($entitlements, $contract['contact_id'])) {
+          $this->createForContact($contract['contact_id'], $publicHoliday);
         }
       }
     }
@@ -187,7 +187,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
       return;
     }
 
-    $this->create($contactID, $this->absenceType, $publicHoliday);
+    $this->create($contactID, $publicHoliday);
   }
 
   /**
@@ -198,16 +198,15 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * Leave Request for the given $contactID and $publicHoliday.
    *
    * @param int $contactID
-   * @param \CRM_HRLeaveAndAbsences_BAO_AbsenceType $absenceType
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
    */
-  private function create($contactID, AbsenceType $absenceType, PublicHoliday $publicHoliday) {
+  private function create($contactID, PublicHoliday $publicHoliday) {
     $existingLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
     if($existingLeaveRequest) {
       return;
     }
 
-    $leaveRequest = $this->createLeaveRequest($contactID, $absenceType, $publicHoliday);
+    $leaveRequest = $this->createLeaveRequest($contactID, $this->absenceType, $publicHoliday);
     $this->createLeaveBalanceChangeRecord($leaveRequest);
     $this->recalculateExpiredBalanceChange($leaveRequest);
   }
@@ -366,8 +365,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     foreach($contracts as $contract) {
       foreach($publicHolidays as $publicHoliday) {
         if($this->publicHolidayOverlapsContract($contract, $publicHoliday)) {
-          if($this->contactHasEntitlement($entitlements, $contract['contact_id'], $this->absenceType->id)) {
-            $this->create($contract['contact_id'], $this->absenceType, $publicHoliday);
+          if($this->contactHasEntitlement($entitlements, $contract['contact_id'])) {
+            $this->createForContact($contract['contact_id'], $publicHoliday);
           }
         }
       }
@@ -380,12 +379,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    *
    * @param array $entitlements
    * @param int $contactID
-   * @param int $absenceTypeID
    *
    * @return bool
    */
-  private function contactHasEntitlement($entitlements, $contactID, $absenceTypeID) {
-    return !empty($entitlements[$contactID][$absenceTypeID]) && $entitlements[$contactID][$absenceTypeID] != 0;
+  private function contactHasEntitlement($entitlements, $contactID) {
+    return !empty($entitlements[$contactID][$this->absenceType->id]) && $entitlements[$contactID][$this->absenceType->id] > 0;
   }
 
   /**
