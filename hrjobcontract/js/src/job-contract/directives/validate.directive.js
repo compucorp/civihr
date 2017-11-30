@@ -1,12 +1,14 @@
 /* eslint-env amd */
 
 define([
-  'common/angular',
-  'job-contract/modules/job-contract.directives'
-], function (angular, directives) {
+  'common/angular'
+], function (angular) {
   'use strict';
 
-  directives.directive('hrjcValidate', ['$log', function ($log) {
+  hrjcValidate.__name = 'hrjcValidate';
+  hrjcValidate.$inject = ['$log'];
+
+  function hrjcValidate ($log) {
     $log.debug('Directive: hrjcValidate');
 
     return {
@@ -69,5 +71,7 @@ define([
         });
       }
     };
-  }]);
+  }
+
+  return hrjcValidate;
 });

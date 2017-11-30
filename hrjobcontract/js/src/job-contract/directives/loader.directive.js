@@ -1,11 +1,12 @@
 /* eslint-env amd */
 
-define([
-  'job-contract/modules/job-contract.directives'
-], function (directives) {
+define(function () {
   'use strict';
 
-  directives.directive('hrjcLoader', ['$rootScope', '$log', function ($rootScope, $log) {
+  hrjcLoader.__name = 'hrjcLoader';
+  hrjcLoader.$inject = ['$rootScope', '$log'];
+
+  function hrjcLoader ($rootScope, $log) {
     $log.debug('Directive: hrjcLoader');
 
     return {
@@ -53,5 +54,7 @@ define([
         });
       }
     };
-  }]);
+  }
+
+  return hrjcLoader;
 });

@@ -1,11 +1,12 @@
 /* eslint-env amd */
 
-define([
-  'job-contract/modules/job-contract.directives'
-], function (directives) {
+define(function () {
   'use strict';
 
-  directives.directive('hrjcNumber', ['$log', function ($log) {
+  hrjcNumber.__name = 'hrjcNumber';
+  hrjcNumber.$inject = ['$log'];
+
+  function hrjcNumber ($log) {
     $log.debug('Directive: hrjcNumber');
 
     return {
@@ -38,5 +39,7 @@ define([
         });
       }
     };
-  }]);
+  }
+
+  return hrjcNumber;
 });
