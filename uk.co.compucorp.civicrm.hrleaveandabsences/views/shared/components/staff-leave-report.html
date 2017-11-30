@@ -159,7 +159,14 @@
                                 title="({{ absenceType.calculation_unit_label | lowercase }})">
                                 {{ (request.type_id == absenceType.id ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '') }}
                               </td>
-                              <td></td>
+                              <td>
+                                <leave-request-actions
+                                  leave-request="request"
+                                  role="$root.section === 'my-leave' ? 'staff' : report.role"
+                                  absence-types="report.absenceTypes"
+                                  leave-request-statuses="report.leaveRequestStatuses">
+                                </leave-request-actions>
+                              </td>
                             </tr>
                           </tbody>
                         </table>
