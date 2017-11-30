@@ -15,7 +15,7 @@ define([
       return { id: leave.leave_type, calculation_unit: _.sample(calculationUnitsMock).value };
     });
 
-    beforeEach(module('hrjc'));
+    beforeEach(module('job-contract'));
 
     beforeEach(inject(function (_$httpBackend_, _$q_, _$rootScope_, _AbsenceType_, _Contract_, _ContractService_) {
       $httpBackend = _$httpBackend_;

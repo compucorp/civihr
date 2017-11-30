@@ -7,7 +7,7 @@ define([
   describe('FormPensionCtrl', function() {
     var ctrl, $controller, $rootScope, $scope, $httpBackend, $q, ContactService, response, params;
 
-    beforeEach(module('hrjc'));
+    beforeEach(module('job-contract'));
 
     beforeEach(function() {
       inject(function(_$controller_, _$rootScope_, _$httpBackend_, _$q_, _ContactService_) {

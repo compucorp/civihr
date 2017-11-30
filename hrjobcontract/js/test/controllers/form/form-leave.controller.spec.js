@@ -8,7 +8,7 @@ define([
   describe('FormLeaveCtrl', function () {
     var ctrl, $controller, $rootScope, $scope, UtilsService;
 
-    beforeEach(module('hrjc'));
+    beforeEach(module('job-contract'));
 
     beforeEach(inject(function (_$controller_, _$rootScope_, _UtilsService_, $q) {
       $controller = _$controller_;

@@ -17,7 +17,7 @@ define([
     // Populate contract mock leaves with values
     contractMock.contractEntity.leave = contractMock.contractLeaves.values;
 
-    beforeEach(module('hrjc', 'job-contract.templates', function ($provide) {
+    beforeEach(module('job-contract', 'job-contract.templates', function ($provide) {
       $window = { location: jasmine.createSpyObj('location', ['assign']) };
 
       $provide.value('$window', $window);

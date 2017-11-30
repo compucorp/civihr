@@ -3,5 +3,5 @@ define([
 ], function (angular) {
     'use strict';
 
-    return angular.module('hrjc.services', []);
+    return angular.module('job-contract.services', []);
 });

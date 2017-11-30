@@ -10,7 +10,7 @@ define([
   describe('ContractPensionService', function () {
     var $httpBackend, $rootScope, ContractPensionService;
 
-    beforeEach(module('hrjc'));
+    beforeEach(module('job-contract'));
 
     beforeEach(inject(function (_ContractPensionService_, _$httpBackend_, _$rootScope_) {
       ContractPensionService = _ContractPensionService_;

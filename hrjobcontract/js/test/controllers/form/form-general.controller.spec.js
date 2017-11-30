@@ -11,7 +11,7 @@ define([
     var ctrl, $controller, $provide, $rootScope, $scope;
 
     beforeEach(function () {
-      module('hrjc', 'common.mocks', function (_$provide_) {
+      module('job-contract', 'common.mocks', function (_$provide_) {
           $provide = _$provide_;
       });
       inject(['HR_settingsMock', function (HR_settingsMock) {

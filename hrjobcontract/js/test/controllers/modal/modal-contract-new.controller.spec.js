@@ -7,7 +7,7 @@ define([
   describe('ModalContractNewCtrl', function() {
     var ctrl, $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock, ContractHealthService;
 
-    beforeEach(module('hrjc'));
+    beforeEach(module('job-contract'));
 
     beforeEach(module(function($provide) {
       $provide.factory('ContractHealthService', function() {

@@ -9,7 +9,7 @@ define([
     var $q, $rootScope, $scope, $controller, ctrl, modalInstanceSpy, ContractRevisionServiceMock, ContractRevisionServiceSpy;
 
     beforeEach(function(){
-      module('hrjc.controllers')
+      module('job-contract.controllers')
       module(function($provide) {
         $provide.value('ContractRevisionService', ContractRevisionServiceMock);
       });

@@ -9,7 +9,7 @@ define([
     var ctrl, $rootScope, $controller, $scope, $q, $uibModal, $httpBackend, $uibModalInstanceMock,
       $uibModalMock, ContractDetailsService, ContractHealthService;
 
-    beforeEach(module('hrjc'));
+    beforeEach(module('job-contract'));
 
     beforeEach(module(function($provide) {
       $provide.factory('ContractHealthService', function() {

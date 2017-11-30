@@ -11,7 +11,7 @@ define([
   describe('ContractRevisionList', function () {
     var $rootScope, $httpBackend, ContractRevisionList, promise;
 
-    beforeEach(module('hrjc'));
+    beforeEach(module('job-contract'));
 
     beforeEach(inject(function ( _$rootScope_, _$httpBackend_, _ContractRevisionList_) {
       $rootScope = _$rootScope_;

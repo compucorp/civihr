@@ -7,7 +7,7 @@ define([
   describe('FormHourCtrl', function () {
     var ctrl, $controller, $rootScope, $scope;
 
-    beforeEach(module('hrjc'));
+    beforeEach(module('job-contract'));
     beforeEach(function () {
       inject(function (_$controller_, _$rootScope_) {
         $controller = _$controller_;

@@ -11,7 +11,7 @@ define([
   describe('ContractHealthService', function () {
     var $httpBackend, $rootScope, promise, ContractHealthService;
 
-    beforeEach(module('hrjc'));
+    beforeEach(module('job-contract'));
     beforeEach(inject(function (_ContractHealthService_, _$httpBackend_,
     _$rootScope_) {
       ContractHealthService = _ContractHealthService_;

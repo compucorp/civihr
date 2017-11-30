@@ -8,7 +8,7 @@ define([
   describe('UtilsService', function () {
     var UtilsService, API;
 
-    beforeEach(module('hrjc'));
+    beforeEach(module('job-contract'));
     beforeEach(inject(function (_UtilsService_, _API_) {
       UtilsService = _UtilsService_;
       API = _API_;

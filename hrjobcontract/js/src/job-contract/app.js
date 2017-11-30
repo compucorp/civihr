@@ -44,7 +44,7 @@ define([
 ], function (angular) {
   'use strict';
 
-  angular.module('hrjc', [
+  angular.module('job-contract', [
     'ngAnimate',
     'compuNgRoute',
     'ngResource',
@@ -56,10 +56,10 @@ define([
     'common.directives',
     'common.filters',
     'leave-absences.models',
-    'hrjc.controllers',
-    'hrjc.directives',
-    'hrjc.filters',
-    'hrjc.services'
+    'job-contract.controllers',
+    'job-contract.directives',
+    'job-contract.filters',
+    'job-contract.services'
   ])
     .constant('settings', {
       classNamePrefix: 'hrjc-',

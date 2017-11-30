@@ -11,7 +11,7 @@ define([
   describe('ContractLeaveService', function () {
     var $httpBackend, $rootScope, ContractLeaveService;
 
-    beforeEach(module('hrjc'));
+    beforeEach(module('job-contract'));
 
     beforeEach(inject(function (_ContractLeaveService_, _$httpBackend_, _$rootScope_) {
       ContractLeaveService = _ContractLeaveService_;
