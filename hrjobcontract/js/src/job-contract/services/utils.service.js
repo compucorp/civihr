@@ -1,14 +1,16 @@
+/* eslint-env amd */
+
 define([
+  'common/angular',
   'job-contract/modules/job-contract.services'
-], function(services) {
+], function (angular, services) {
   'use strict';
 
-  services.factory('API', ['$resource', '$q', 'settings', '$log', function($resource, $q, settings, $log) {
+  services.factory('API', ['$resource', '$q', 'settings', '$log', function ($resource, $q, settings, $log) {
     $log.debug('Service: UtilsService');
 
     return {
-      resource: function(entity, action, json) {
-
+      resource: function (entity, action, json) {
         if ((!entity || typeof entity !== 'string') ||
           (!action || typeof action !== 'string') ||
           (json && typeof json !== 'object')) {
@@ -19,57 +21,54 @@ define([
           action: action,
           entity: entity,
           json: json
-        })
+        });
       },
-      getOne: function(entity, params) {
-
+      getOne: function (entity, params) {
         if ((!entity || typeof entity !== 'string') ||
           (params && typeof params !== 'object')) {
           return null;
         }
 
-        var deffered = $q.defer(),
-          json = angular.extend({
-            sequential: 1
-          }, params),
-          val;
+        var deffered = $q.defer();
+        var json = angular.extend({
+          sequential: 1
+        }, params);
+        var val;
 
-        this.resource(entity, 'get', json).get(function(data) {
+        this.resource(entity, 'get', json).get(function (data) {
           val = data.values;
-          deffered.resolve(val.length == 1 ? val[0] : null);
-        }, function() {
+          deffered.resolve(val.length === 1 ? val[0] : null);
+        }, function () {
           deffered.reject('Unable to fetch data');
         });
 
         return deffered.promise;
       },
-      get: function(entity, params) {
-
+      get: function (entity, params) {
         if ((!entity || typeof entity !== 'string') ||
           (params && typeof params !== 'object')) {
           return null;
         }
 
-        var deffered = $q.defer(),
-          json = angular.extend({
-            sequential: 1
-          }, params);
+        var deffered = $q.defer();
+        var json = angular.extend({
+          sequential: 1
+        }, params);
 
-        this.resource(entity, 'get', json).get(function(data) {
+        this.resource(entity, 'get', json).get(function (data) {
           deffered.resolve(data.values);
-        }, function() {
+        }, function () {
           deffered.reject('Unable to fetch data');
         });
 
         return deffered.promise;
       }
-    }
+    };
   }]);
 
-  services.factory('testAPI', ['$resource', 'settings', function($resource, settings) {
+  services.factory('testAPI', ['$resource', 'settings', function ($resource, settings) {
     return {
-      resource: function(entity, action, json) {
-
+      resource: function (entity, action, json) {
         if ((!entity || typeof entity !== 'string') ||
           (!action || typeof action !== 'string') ||
           (json && typeof json !== 'object')) {
@@ -80,12 +79,12 @@ define([
           action: action,
           entity: entity,
           json: json
-        })
+        });
       }
-    }
+    };
   }]);
 
-  services.factory('UtilsService', ['API', 'testAPI', 'settings', '$q', '$log', '$timeout', function(API, testAPI, settings, $q, $log, $timeout) {
+  services.factory('UtilsService', ['API', 'testAPI', 'settings', '$q', '$log', '$timeout', function (API, testAPI, settings, $q, $log, $timeout) {
     return {
 
       /**
@@ -99,11 +98,11 @@ define([
        *
        * @returns {Promise}
        */
-      getAbsenceTypes: function(){
+      getAbsenceTypes: function () {
         var deffered = $q.defer();
 
-        API.resource('AbsenceType','get', {
-          "return": "id,title,default_entitlement,add_public_holiday_to_entitlement"
+        API.resource('AbsenceType', 'get', {
+          'return': 'id,title,default_entitlement,add_public_holiday_to_entitlement'
         }).get(function (data) {
           angular.forEach(data.values, function (value) {
             value.add_public_holiday_to_entitlement = !!parseInt(value.add_public_holiday_to_entitlement);
@@ -114,36 +113,36 @@ define([
           });
 
           deffered.resolve(data.values);
-        },function () {
+        }, function () {
           deffered.reject('Unable to fetch absence types');
         });
 
         return deffered.promise;
       },
 
-      getHoursLocation: function() {
+      getHoursLocation: function () {
         var deffered = $q.defer();
 
         API.resource('HRHoursLocation', 'get', {
           sequential: 1,
           is_active: 1
-        }).get(function(data) {
+        }).get(function (data) {
           deffered.resolve(data.values);
-        }, function() {
+        }, function () {
           deffered.reject('Unable to fetch standard hours');
         });
 
         return deffered.promise;
       },
-      getPayScaleGrade: function() {
+      getPayScaleGrade: function () {
         var deffered = $q.defer();
 
         API.resource('HRPayScale', 'get', {
           sequential: 1,
           is_active: 1
-        }).get(function(data) {
+        }).get(function (data) {
           deffered.resolve(data.values);
-        }, function() {
+        }, function () {
           deffered.reject('Unable to fetch standard hours');
         });
 
@@ -156,7 +155,7 @@ define([
        *
        * @returns {Promise}
        */
-      getNumberOfPublicHolidaysInCurrentPeriod: function() {
+      getNumberOfPublicHolidaysInCurrentPeriod: function () {
         var deffered = $q.defer();
 
         API.resource('PublicHoliday', 'getcountforcurrentperiod', {
@@ -172,30 +171,29 @@ define([
         return deffered.promise;
       },
 
-      prepareEntityIds: function(entityObj, contractId, revisionId) {
-
-        function setIds(entityObj) {
+      prepareEntityIds: function (entityObj, contractId, revisionId) {
+        function setIds (entityObj) {
           entityObj.jobcontract_id = contractId;
           delete entityObj.id;
           revisionId ? entityObj.jobcontract_revision_id = revisionId : delete entityObj.jobcontract_revision_id;
         }
 
         if (angular.isArray(entityObj)) {
-          var i = 0,
-            len = entityObj.length;
+          var i = 0;
+          var len = entityObj.length;
+
           for (i; i < len; i++) {
             setIds(entityObj[i]);
           }
-          return
+
+          return;
         }
 
         if (angular.isObject(entityObj)) {
           setIds(entityObj);
-          return
         }
-
       },
-      errorHandler: function(data, msg, deffered) {
+      errorHandler: function (data, msg, deffered) {
         var errorMsg;
 
         if (data.is_error) {
@@ -232,12 +230,12 @@ define([
        *
        * @param {int} contactId
        */
-      getManageEntitlementsPageURL: function(contactId) {
+      getManageEntitlementsPageURL: function (contactId) {
         var path = 'civicrm/admin/leaveandabsences/periods/manage_entitlements';
         var returnPath = 'civicrm/contact/view';
-        var returnUrl = CRM.url(returnPath, { cid: contactId, selectedChild : 'hrjobcontract' });
-        return CRM.url(path, { cid: contactId, returnUrl : returnUrl });
+        var returnUrl = CRM.url(returnPath, { cid: contactId, selectedChild: 'hrjobcontract' });
+        return CRM.url(path, { cid: contactId, returnUrl: returnUrl });
       }
-    }
+    };
   }]);
 });

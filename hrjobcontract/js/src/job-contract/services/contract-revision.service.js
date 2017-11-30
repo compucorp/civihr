@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'job-contract/modules/job-contract.services',
@@ -16,7 +18,7 @@ define([
        * @param {Date} dateObj
        * @return {string/any}
        */
-      function convertToDateString(dateObj) {
+      function convertToDateString (dateObj) {
         var dateString = $filter('formatDate')(dateObj, 'YYYY-MM-DD');
 
         return dateString !== 'Unspecified' ? dateString : dateObj;
@@ -50,5 +52,5 @@ define([
           });
         }
       });
-  }]);
+    }]);
 });

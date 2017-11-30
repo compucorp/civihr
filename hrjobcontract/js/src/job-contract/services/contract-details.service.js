@@ -1,11 +1,14 @@
+/* eslint-env amd */
+
 define([
+  'common/angular',
   'job-contract/modules/job-contract.services',
   'job-contract/services/utils.service'
-], function(services) {
+], function (angular, services) {
   'use strict';
 
   services.factory('ContractDetailsService', ['$filter', '$resource', 'settings', '$q', 'UtilsService', '$log',
-    function($filter, $resource, settings, $q, UtilsService, $log) {
+    function ($filter, $resource, settings, $q, UtilsService, $log) {
       $log.debug('Service: ContractDetailsService');
 
       var ContractDetails = $resource(settings.pathRest, {
@@ -20,14 +23,14 @@ define([
        * @param {Date} dateObj
        * @param {string/any}
        */
-      function convertToDateString(dateObj) {
+      function convertToDateString (dateObj) {
         var dateString = $filter('formatDate')(dateObj, 'YYYY-MM-DD');
 
         return dateString !== 'Unspecified' ? dateString : dateObj;
       }
 
       return {
-        validateDates: function(params) {
+        validateDates: function (params) {
           if ((!params || typeof params !== 'object') ||
             (!params.contact_id) ||
             (!params.period_start_date)) {
@@ -40,15 +43,15 @@ define([
           params.sequential = 0;
           params.debug = settings.debug;
 
-          var deffered = $q.defer(),
-            val;
+          var deffered = $q.defer();
+          var val;
 
           ContractDetails.save({
-              action: 'validatedates',
-              json: params
-            },
+            action: 'validatedates',
+            json: params
+          },
             null,
-            function(data) {
+            function (data) {
               if (UtilsService.errorHandler(data, 'Unable to fetch API "validatedates" response', deffered)) {
                 return;
               }
@@ -58,41 +61,39 @@ define([
             });
           return deffered.promise;
         },
-        getOne: function(params) {
-
+        getOne: function (params) {
           if ((!params || typeof params !== 'object') ||
             (!params.jobcontract_id && !params.jobcontract_revision_id) ||
-            (params.jobcontract_id && typeof + params.jobcontract_id !== 'number') ||
-            (params.jobcontract_revision_id && typeof + params.jobcontract_revision_id !== 'number')) {
+            (params.jobcontract_id && typeof +params.jobcontract_id !== 'number') ||
+            (params.jobcontract_revision_id && typeof +params.jobcontract_revision_id !== 'number')) {
             return null;
           }
 
           params.sequential = 1;
           params.debug = settings.debug;
 
-          var deffered = $q.defer(),
-            val;
+          var deffered = $q.defer();
+          var val;
 
           ContractDetails.get({
             json: params
-          }, function(data) {
-
+          }, function (data) {
             if (UtilsService.errorHandler(data, 'Unable to fetch contract details', deffered)) {
-              return
+              return;
             }
 
             val = data.values;
-            deffered.resolve(val.length == 1 ? val[0] : null);
+            deffered.resolve(val.length === 1 ? val[0] : null);
           },
-          function() {
+          function () {
             deffered.reject('Unable to fetch contract details');
           });
 
           return deffered.promise;
         },
-        getOptions: function(fieldName, callAPI) {
-          var deffered = $q.defer(),
-            data;
+        getOptions: function (fieldName, callAPI) {
+          var deffered = $q.defer();
+          var data;
 
           if (!callAPI) {
             data = settings.CRM.options.HRJobDetails || {};
@@ -103,13 +104,12 @@ define([
 
             deffered.resolve(data || {});
           } else {
-            //TODO call2API
+            // TODO call2API
           }
 
           return deffered.promise;
         },
-        getFields: function(params) {
-
+        getFields: function (params) {
           if (params && typeof params !== 'object') {
             return null;
           }
@@ -118,8 +118,8 @@ define([
             params = {};
           }
 
-          var deffered = $q.defer(),
-            crmFields = settings.CRM.fields;
+          var deffered = $q.defer();
+          var crmFields = settings.CRM.fields;
 
           if (crmFields && crmFields.HRJobDetails) {
             deffered.resolve(crmFields.HRJobDetails);
@@ -130,22 +130,20 @@ define([
               action: 'getfields',
               json: params
             },
-            function(data) {
-
+            function (data) {
               if (!data.values) {
                 deffered.reject('Unable to fetch contract details fields');
               }
 
               deffered.resolve(data.values);
-            }, function() {
+            }, function () {
               deffered.reject('Unable to fetch contract details fields');
             });
           }
 
           return deffered.promise;
         },
-        save: function(contractDetails) {
-
+        save: function (contractDetails) {
           if (!contractDetails || typeof contractDetails !== 'object') {
             return null;
           }
@@ -153,41 +151,39 @@ define([
           contractDetails.period_start_date = convertToDateString(contractDetails.period_start_date);
           contractDetails.period_end_date = convertToDateString(contractDetails.period_end_date);
 
-          var deffered = $q.defer(),
-            params = angular.extend({
-              sequential: 1,
-              debug: settings.debug
-            }, contractDetails),
-            val;
+          var deffered = $q.defer();
+          var params = angular.extend({
+            sequential: 1,
+            debug: settings.debug
+          }, contractDetails);
+          var val;
 
           ContractDetails.save({
             action: 'create',
             json: params
           },
           null,
-          function(data) {
-
+          function (data) {
             if (UtilsService.errorHandler(data, 'Unable to create contract details', deffered)) {
-              return
+              return;
             }
 
             val = data.values;
-            deffered.resolve(val.length == 1 ? val[0] : null);
+            deffered.resolve(val.length === 1 ? val[0] : null);
           },
-          function() {
+          function () {
             deffered.reject('Unable to create contract details');
           });
 
           return deffered.promise;
         },
-        model: function(fields) {
-
+        model: function (fields) {
           var deffered = $q.defer();
 
-          function createModel(fields) {
-            var i = 0,
-              len = fields.length,
-              model = {};
+          function createModel (fields) {
+            var i = 0;
+            var len = fields.length;
+            var model = {};
 
             for (i; i < len; i++) {
               model[fields[i].name] = '';
@@ -211,14 +207,14 @@ define([
           if (fields) {
             deffered.resolve(createModel(fields));
           } else {
-            this.getFields().then(function(fields) {
+            this.getFields().then(function (fields) {
               deffered.resolve(createModel(fields));
             });
           }
 
           return deffered.promise;
         }
-      }
+      };
     }
   ]);
 });

@@ -1,21 +1,22 @@
+/* eslint-env amd */
+
 define([
   'job-contract/modules/job-contract.services',
   'job-contract/services/utils.service'
-], function(services) {
+], function (services) {
   'use strict';
 
   services.factory('ContractFilesService', ['$resource', 'settings', '$q', 'UtilsService', 'FileUploader', '$log',
-    function($resource, settings, $q, UtilsService, FileUploader, $log) {
+    function ($resource, settings, $q, UtilsService, FileUploader, $log) {
       $log.debug('Service: ContractFilesService');
 
       var ContractFiles = $resource(settings.pathFile + ':action');
       FileUploader.prototype.queueDelete = [];
 
       return {
-        delete: function(fileId, entityId, entityTable) {
-
-          if ((!fileId || typeof + fileId !== 'number') ||
-            (!entityId || typeof + entityId !== 'number') ||
+        delete: function (fileId, entityId, entityTable) {
+          if ((!fileId || typeof +fileId !== 'number') ||
+            (!entityId || typeof +entityId !== 'number') ||
             (!entityTable || typeof entityTable !== 'string')) {
             return null;
           }
@@ -29,26 +30,25 @@ define([
             fileID: fileId
           },
           null,
-          function(data) {
+          function (data) {
             if (data.values && !+data.values[0].result) {
               data.is_error = 1;
             }
 
             if (UtilsService.errorHandler(data, 'Unable to delete file', deffered)) {
-              return
+              return;
             }
 
             deffered.resolve(data.values[0]);
           },
-          function() {
+          function () {
             deffered.reject('Unable to delete file');
           });
 
           return deffered.promise;
         },
-        get: function(entityId, entityTable) {
-
-          if ((!entityId || typeof + entityId !== 'number') ||
+        get: function (entityId, entityTable) {
+          if ((!entityId || typeof +entityId !== 'number') ||
             (!entityTable || typeof entityTable !== 'string')) {
             return null;
           }
@@ -60,22 +60,20 @@ define([
             entityTable: entityTable,
             entityID: entityId
           },
-          function(data) {
-
+          function (data) {
             if (UtilsService.errorHandler(data, 'Unable to fetch files', deffered)) {
-              return
+              return;
             }
 
             deffered.resolve(data.values);
           },
-          function() {
+          function () {
             deffered.reject('Unable to fetch files');
           });
 
           return deffered.promise;
         },
-        uploader: function(entityTable, queueLimit) {
-
+        uploader: function (entityTable, queueLimit) {
           if (!entityTable || typeof entityTable !== 'string') {
             return null;
           }
@@ -85,7 +83,7 @@ define([
             formData: [{
               entityTable: entityTable
             }]
-          }
+          };
 
           if (queueLimit && typeof queueLimit === 'number') {
             uploaderSettings.queueLimit = queueLimit;
@@ -93,27 +91,26 @@ define([
 
           return new FileUploader(uploaderSettings);
         },
-        upload: function(uploaderInstance, revisionId) {
-
+        upload: function (uploaderInstance, revisionId) {
           if (!uploaderInstance || typeof uploaderInstance !== 'object' ||
-            !revisionId || typeof + revisionId !== 'number') {
+            !revisionId || typeof +revisionId !== 'number') {
             return null;
           }
 
-          var deffered = $q.defer(),
-            results = [];
+          var deffered = $q.defer();
+          var results = [];
 
-          uploaderInstance.onBeforeUploadItem = function(item) {
+          uploaderInstance.onBeforeUploadItem = function (item) {
             item.formData.push({
               entityID: revisionId
             });
           };
 
-          uploaderInstance.onCompleteItem = function(item, response) {
+          uploaderInstance.onCompleteItem = function (item, response) {
             results.push(response);
           };
 
-          uploaderInstance.onErrorItem = function(item, response, status, headers) {
+          uploaderInstance.onErrorItem = function (item, response, status, headers) {
             deffered.reject('Could not upload file: ' + item.file.name);
             $log.error(' ===== Item Error: ' + status + ' ======');
             $log.error(' =====  - item ======');
@@ -124,15 +121,15 @@ define([
             $log.error(headers);
           };
 
-          uploaderInstance.onCompleteAll = function() {
+          uploaderInstance.onCompleteAll = function () {
             deffered.resolve(results);
           };
 
           uploaderInstance.uploadAll();
 
-          return deffered.promise
+          return deffered.promise;
         }
-      }
+      };
     }
   ]);
 });
