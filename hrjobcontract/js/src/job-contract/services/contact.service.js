@@ -1,6 +1,6 @@
 define([
     'job-contract/services/services',
-    'job-contract/services/utils'
+    'job-contract/services/utils.service'
 ], function (services) {
     'use strict';
 

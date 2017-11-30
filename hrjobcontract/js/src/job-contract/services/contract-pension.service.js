@@ -1,68 +1,24 @@
 define([
   'job-contract/services/services',
-  'job-contract/services/utils'
+  'job-contract/services/utils.service'
 ], function(services) {
   'use strict';
 
-  services.factory('ContractDetailsService', ['$filter', '$resource', 'settings', '$q', 'UtilsService', '$log',
-    function($filter, $resource, settings, $q, UtilsService, $log) {
-      $log.debug('Service: ContractDetailsService');
+  services.factory('ContractPensionService', ['$resource', 'settings', '$q', 'UtilsService', '$log',
+    function($resource, settings, $q, UtilsService, $log) {
+      $log.debug('Service: ContractPensionService');
 
-      var ContractDetails = $resource(settings.pathRest, {
+      var ContractPension = $resource(settings.pathRest, {
         action: 'get',
-        entity: 'HRJobDetails',
+        entity: 'HRJobPension',
         json: {}
       });
 
-      /**
-       * If parameter passed is a Date object, it converts it into a string
-       *
-       * @param {Date} dateObj
-       * @param {string/any}
-       */
-      function convertToDateString(dateObj) {
-        var dateString = $filter('formatDate')(dateObj, 'YYYY-MM-DD');
-
-        return dateString !== 'Unspecified' ? dateString : dateObj;
-      }
-
       return {
-        validateDates: function(params) {
-          if ((!params || typeof params !== 'object') ||
-            (!params.contact_id) ||
-            (!params.period_start_date)) {
-            return null;
-          }
-
-          params.period_start_date = convertToDateString(params.period_start_date);
-          params.period_end_date = convertToDateString(params.period_end_date);
-
-          params.sequential = 0;
-          params.debug = settings.debug;
-
-          var deffered = $q.defer(),
-            val;
-
-          ContractDetails.save({
-              action: 'validatedates',
-              json: params
-            },
-            null,
-            function(data) {
-              if (UtilsService.errorHandler(data, 'Unable to fetch API "validatedates" response', deffered)) {
-                return;
-              }
-
-              val = data.values;
-              deffered.resolve(val);
-            });
-          return deffered.promise;
-        },
         getOne: function(params) {
 
           if ((!params || typeof params !== 'object') ||
-            (!params.jobcontract_id && !params.jobcontract_revision_id) ||
-            (params.jobcontract_id && typeof + params.jobcontract_id !== 'number') ||
+            (!params.jobcontract_revision_id) ||
             (params.jobcontract_revision_id && typeof + params.jobcontract_revision_id !== 'number')) {
             return null;
           }
@@ -73,11 +29,12 @@ define([
           var deffered = $q.defer(),
             val;
 
-          ContractDetails.get({
+          ContractPension.get({
             json: params
-          }, function(data) {
+          },
+          function(data) {
 
-            if (UtilsService.errorHandler(data, 'Unable to fetch contract details', deffered)) {
+            if (UtilsService.errorHandler(data, 'Unable to fetch contract pension', deffered)) {
               return
             }
 
@@ -85,7 +42,7 @@ define([
             deffered.resolve(val.length == 1 ? val[0] : null);
           },
           function() {
-            deffered.reject('Unable to fetch contract details');
+            deffered.reject('Unable to fetch contract pension');
           });
 
           return deffered.promise;
@@ -95,10 +52,10 @@ define([
             data;
 
           if (!callAPI) {
-            data = settings.CRM.options.HRJobDetails || {};
+            var data = settings.CRM.options.HRJobPension || {};
 
             if (fieldName && typeof fieldName === 'string') {
-              data = data[fieldName];
+              data = data[optionGroup];
             }
 
             deffered.resolve(data || {});
@@ -121,53 +78,51 @@ define([
           var deffered = $q.defer(),
             crmFields = settings.CRM.fields;
 
-          if (crmFields && crmFields.HRJobDetails) {
-            deffered.resolve(crmFields.HRJobDetails);
+          if (crmFields && crmFields.HRJobPension) {
+            deffered.resolve(crmFields.HRJobPension);
           } else {
             params.sequential = 1;
 
-            ContractDetails.get({
+            ContractPension.get({
               action: 'getfields',
               json: params
             },
             function(data) {
 
               if (!data.values) {
-                deffered.reject('Unable to fetch contract details fields');
+                deffered.reject('Unable to fetch contract pension fields');
               }
 
               deffered.resolve(data.values);
-            }, function() {
-              deffered.reject('Unable to fetch contract details fields');
+            },
+            function() {
+              deffered.reject('Unable to fetch contract pension fields');
             });
           }
 
           return deffered.promise;
         },
-        save: function(contractDetails) {
+        save: function(contractPension) {
 
-          if (!contractDetails || typeof contractDetails !== 'object') {
+          if (!contractPension || typeof contractPension !== 'object') {
             return null;
           }
-
-          contractDetails.period_start_date = convertToDateString(contractDetails.period_start_date);
-          contractDetails.period_end_date = convertToDateString(contractDetails.period_end_date);
 
           var deffered = $q.defer(),
             params = angular.extend({
               sequential: 1,
               debug: settings.debug
-            }, contractDetails),
+            }, contractPension),
             val;
 
-          ContractDetails.save({
+          ContractPension.save({
             action: 'create',
             json: params
           },
           null,
           function(data) {
 
-            if (UtilsService.errorHandler(data, 'Unable to create contract details', deffered)) {
+            if (UtilsService.errorHandler(data, 'Unable to create contract pension', deffered)) {
               return
             }
 
@@ -175,7 +130,7 @@ define([
             deffered.resolve(val.length == 1 ? val[0] : null);
           },
           function() {
-            deffered.reject('Unable to create contract details');
+            deffered.reject('Unable to create contract pension');
           });
 
           return deffered.promise;
@@ -199,10 +154,6 @@ define([
 
             if (typeof model.jobcontract_revision_id !== 'undefined') {
               model.jobcontract_revision_id = null;
-            }
-
-            if (typeof model.location !== 'undefined') {
-              model.location = null;
             }
 
             return model;

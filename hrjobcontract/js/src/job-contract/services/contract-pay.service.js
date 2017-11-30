@@ -1,16 +1,16 @@
 define([
   'job-contract/services/services',
-  'job-contract/services/utils'
+  'job-contract/services/utils.service'
 ], function(services) {
   'use strict';
 
-  services.factory('ContractPensionService', ['$resource', 'settings', '$q', 'UtilsService', '$log',
+  services.factory('ContractPayService', ['$resource', 'settings', '$q', 'UtilsService', '$log',
     function($resource, settings, $q, UtilsService, $log) {
-      $log.debug('Service: ContractPensionService');
+      $log.debug('Service: ContractPayService');
 
-      var ContractPension = $resource(settings.pathRest, {
+      var ContractPay = $resource(settings.pathRest, {
         action: 'get',
-        entity: 'HRJobPension',
+        entity: 'HRJobPay',
         json: {}
       });
 
@@ -29,12 +29,12 @@ define([
           var deffered = $q.defer(),
             val;
 
-          ContractPension.get({
+          ContractPay.get({
             json: params
           },
           function(data) {
 
-            if (UtilsService.errorHandler(data, 'Unable to fetch contract pension', deffered)) {
+            if (UtilsService.errorHandler(data, 'Unable to fetch contract pay', deffered)) {
               return
             }
 
@@ -42,7 +42,7 @@ define([
             deffered.resolve(val.length == 1 ? val[0] : null);
           },
           function() {
-            deffered.reject('Unable to fetch contract pension');
+            deffered.reject('Unable to fetch contract pay');
           });
 
           return deffered.promise;
@@ -52,7 +52,7 @@ define([
             data;
 
           if (!callAPI) {
-            var data = settings.CRM.options.HRJobPension || {};
+            var data = settings.CRM.options.HRJobPay || {};
 
             if (fieldName && typeof fieldName === 'string') {
               data = data[optionGroup];
@@ -78,33 +78,33 @@ define([
           var deffered = $q.defer(),
             crmFields = settings.CRM.fields;
 
-          if (crmFields && crmFields.HRJobPension) {
-            deffered.resolve(crmFields.HRJobPension);
+          if (crmFields && crmFields.HRJobPay) {
+            deffered.resolve(crmFields.HRJobPay);
           } else {
             params.sequential = 1;
 
-            ContractPension.get({
+            ContractPay.get({
               action: 'getfields',
               json: params
             },
             function(data) {
 
               if (!data.values) {
-                deffered.reject('Unable to fetch contract pension fields');
+                deffered.reject('Unable to fetch contract pay fields');
               }
 
               deffered.resolve(data.values);
             },
             function() {
-              deffered.reject('Unable to fetch contract pension fields');
+              deffered.reject('Unable to fetch contract pay fields');
             });
           }
 
           return deffered.promise;
         },
-        save: function(contractPension) {
+        save: function(contractPay) {
 
-          if (!contractPension || typeof contractPension !== 'object') {
+          if (!contractPay || typeof contractPay !== 'object') {
             return null;
           }
 
@@ -112,17 +112,17 @@ define([
             params = angular.extend({
               sequential: 1,
               debug: settings.debug
-            }, contractPension),
+            }, contractPay),
             val;
 
-          ContractPension.save({
+          ContractPay.save({
             action: 'create',
             json: params
           },
           null,
           function(data) {
 
-            if (UtilsService.errorHandler(data, 'Unable to create contract pension', deffered)) {
+            if (UtilsService.errorHandler(data, 'Unable to create contract pay', deffered)) {
               return
             }
 
@@ -130,7 +130,7 @@ define([
             deffered.resolve(val.length == 1 ? val[0] : null);
           },
           function() {
-            deffered.reject('Unable to create contract pension');
+            deffered.reject('Unable to create contract pay');
           });
 
           return deffered.promise;
@@ -154,6 +154,14 @@ define([
 
             if (typeof model.jobcontract_revision_id !== 'undefined') {
               model.jobcontract_revision_id = null;
+            }
+
+            if (typeof model.annual_benefits !== 'undefined') {
+              model.annual_benefits = [];
+            }
+
+            if (typeof model.annual_deductions !== 'undefined') {
+              model.annual_deductions = [];
             }
 
             return model;

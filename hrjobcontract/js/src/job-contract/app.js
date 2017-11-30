@@ -39,8 +39,8 @@ define([
   'job-contract/filters/format-period.filter',
   'job-contract/filters/parse-int.filter',
   'job-contract/services/services',
-  'job-contract/services/contract',
-  'job-contract/services/contract-revision-list',
+  'job-contract/services/contract.service',
+  'job-contract/services/contract-revision-list.service',
   'job-contract/vendor/job-summary'
 ], function (angular) {
   'use strict';

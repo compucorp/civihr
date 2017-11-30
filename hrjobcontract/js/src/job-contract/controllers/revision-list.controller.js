@@ -1,7 +1,7 @@
 define([
   'common/lodash',
   'job-contract/controllers/controllers',
-  'job-contract/services/contract'
+  'job-contract/services/contract.service'
 ], function(_, controllers) {
   'use strict';
 

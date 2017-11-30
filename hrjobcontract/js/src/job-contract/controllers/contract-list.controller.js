@@ -4,14 +4,14 @@ define([
   'common/angular',
   'common/lodash',
   'job-contract/controllers/controllers',
-  'job-contract/filters/get-obj-by-id',
-  'job-contract/services/contract-details',
-  'job-contract/services/contract-hour',
-  'job-contract/services/contract-health',
-  'job-contract/services/contract-leave',
-  'job-contract/services/contract-pay',
-  'job-contract/services/contract-pension',
-  'job-contract/services/utils',
+  'job-contract/filters/get-obj-by-id.filter',
+  'job-contract/services/contract-details.service',
+  'job-contract/services/contract-hour.service',
+  'job-contract/services/contract-health.service',
+  'job-contract/services/contract-leave.service',
+  'job-contract/services/contract-pay.service',
+  'job-contract/services/contract-pension.service',
+  'job-contract/services/utils.service',
   'common/services/pub-sub'
 ], function (angular, _, controllers) {
   'use strict';

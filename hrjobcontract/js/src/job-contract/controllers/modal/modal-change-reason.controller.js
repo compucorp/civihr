@@ -1,7 +1,7 @@
 define([
   'common/moment',
   'job-contract/controllers/controllers',
-  'job-contract/services/contract'
+  'job-contract/services/contract.service'
 ], function(moment, controllers) {
   'use strict';
 

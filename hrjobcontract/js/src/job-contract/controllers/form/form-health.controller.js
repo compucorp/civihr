@@ -2,7 +2,7 @@
 
 define([
   'job-contract/controllers/controllers',
-  'job-contract/services/contact'
+  'job-contract/services/contact.service'
 ], function (controllers) {
   'use strict';
 
