@@ -1,8 +1,7 @@
 /* eslint-env amd */
 
 define([
-  'common/moment',
-  'common/filters/angular-date/format-date'
+  'common/moment'
 ], function (moment) {
   'use strict';
 

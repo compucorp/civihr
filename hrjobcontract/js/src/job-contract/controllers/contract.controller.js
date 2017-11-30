@@ -2,8 +2,7 @@
 
 define([
   'common/lodash',
-  'common/moment',
-  'common/filters/angular-date/format-date'
+  'common/moment'
 ], function (_, moment) {
   'use strict';
 

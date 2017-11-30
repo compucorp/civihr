@@ -3,12 +3,14 @@
 define([
   'common/angular',
   'common/ui-select',
-  'common/services/dom-event-trigger',
-  'common/services/angular-date/date-format',
+  'common/directives/angular-date/date-input',
+  'common/filters/angular-date/format-date',
+  'common/filters/time-unit-applier.filter',
   'common/modules/routers/compu-ng-route',
   'common/modules/directives',
-  'common/directives/angular-date/date-input',
-  'common/filters/time-unit-applier.filter',
+  'common/services/dom-event-trigger',
+  'common/services/pub-sub',
+  'common/services/angular-date/date-format',
   'leave-absences/shared/models/absence-type.model',
   'job-contract/vendor/fraction',
   'job-contract/vendor/job-summary'

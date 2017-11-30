@@ -2,8 +2,7 @@
 
 define([
   'common/angular',
-  'common/lodash',
-  'common/services/pub-sub'
+  'common/lodash'
 ], function (angular, _) {
   'use strict';
 

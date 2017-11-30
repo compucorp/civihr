@@ -3,8 +3,7 @@
 define([
   'common/angular',
   'common/lodash',
-  'common/moment',
-  'common/services/pub-sub'
+  'common/moment'
 ], function (angular, _, moment) {
   'use strict';
 
