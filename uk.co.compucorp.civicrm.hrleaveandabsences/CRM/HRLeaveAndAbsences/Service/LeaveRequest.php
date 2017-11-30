@@ -6,6 +6,8 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix as LeaveRequestStatusMatrixService;
+use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestDeletion as PublicHolidayLeaveRequestDeletionFactory;
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Factory_LeaveBalanceChangeCalculation as LeaveBalanceChangeCalculationFactory;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
@@ -24,6 +26,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @var \CRM_HRLeaveAndAbsences_Service_LeaveRequestRights
    */
   private $leaveRequestRightsService;
+
+  /**
+   * @var \CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion
+   */
+  private $publicHolidayLeaveRequestDeletionService;
 
   /**
    * @var \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
@@ -59,6 +66,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     $this->leaveBalanceChangeService = $leaveBalanceChangeService;
     $this->leaveRequestStatusMatrixService = $leaveRequestStatusMatrixService;
     $this->leaveRequestRightsService = $leaveRequestRightsService;
+    $publicHolidayLeaveRequestDeletionFactory = new PublicHolidayLeaveRequestDeletionFactory();
+    $this->publicHolidayLeaveRequestDeletionService = $publicHolidayLeaveRequestDeletionFactory::create();
   }
 
   /**
@@ -129,7 +138,14 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
       throw new RuntimeException('You are not allowed to delete a leave request for this employee');
     }
 
-    LeaveRequest::softDelete($leaveRequestID);
+    if($leaveRequest->request_type == LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY) {
+      $publicHoliday = new PublicHoliday();
+      $publicHoliday->date = $leaveRequest->from_date;
+      $this->publicHolidayLeaveRequestDeletionService->deleteForContact($leaveRequest->contact_id, $publicHoliday);
+    }
+    else {
+      LeaveRequest::softDelete($leaveRequestID);
+    }
   }
 
   /**

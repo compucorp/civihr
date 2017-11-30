@@ -3,6 +3,7 @@
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
@@ -11,6 +12,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 
 
 /**
@@ -231,6 +233,47 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $leaveRequestRecord->id = $leaveRequest->id;
     $leaveRequestRecord->find(true);
     $this->assertEquals(1, $leaveRequestRecord->is_deleted);
+  }
+
+  public function testPublicHolidayLeaveRequestIsDeletedAndBalanceRecalculatedForOverlappingLeaveRequestDate() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = CRM_Utils_Date::processDate('2016-10-10');
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'from_date' => CRM_Utils_Date::processDate($publicHoliday->date),
+      'to_date' => CRM_Utils_Date::processDate($publicHoliday->date),
+      'contact_id' => $this->leaveContact,
+      'type_id' => 1,
+      'status_id' => 1
+    ], TRUE);
+
+    $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+
+    PublicHolidayLeaveRequestFabricator::fabricate($this->leaveContact, $publicHoliday);
+    $publicHolidayLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($this->leaveContact, $publicHoliday);
+
+    //Balance change for Leave request will be zero since a public holiday leave request is created
+    //for same date.
+    $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->delete($publicHolidayLeaveRequest->id);
+
+    //After deletion the public holiday leave request is no longer present and the leave request balance
+    //change is back to what it was before the public holiday leave request was created.
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($this->leaveContact, $publicHoliday));
+    $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
   }
 
   /**
