@@ -98,7 +98,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     }
 
     $today = new DateTime();
-    $absencePeriods = AbsencePeriod::getPeriodsOverlappingDates($today);
+    $absencePeriods = AbsencePeriod::getPeriodsBetweenDates($today);
 
     if(!$absencePeriods) {
       return;
@@ -153,7 +153,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
     $contractStartDate = new DateTime($contract['period_start_date']);
     $contractEndDate = $contract['period_end_date'] ? new DateTime($contract['period_end_date']) : null;
-    $absencePeriods = AbsencePeriod::getPeriodsOverlappingDates($contractStartDate, $contractEndDate);
+    $absencePeriods = AbsencePeriod::getPeriodsBetweenDates($contractStartDate, $contractEndDate);
 
     if(!$absencePeriods) {
       return;

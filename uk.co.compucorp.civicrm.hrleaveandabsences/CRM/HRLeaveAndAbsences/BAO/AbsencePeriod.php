@@ -583,7 +583,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
   }
 
   /**
-   * Returns the absence periods overlapping the given start and
+   * Returns the absence periods between the given start and
    * end dates ordered by the weight in ascending order. When
    * the end date is not present, it returns only the absence
    * periods with end dates >= to the start date.
@@ -594,7 +594,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * @return CRM_HRLeaveAndAbsences_BAO_AbsencePeriod[]
    *   An empty array is returned when there are no absence periods
    */
-  public static function getPeriodsOverlappingDates(DateTime $fromDate, DateTime $toDate = null) {
+  public static function getPeriodsBetweenDates(DateTime $fromDate, DateTime $toDate = null) {
     $tableName = self::getTableName();
 
     $query = "SELECT * FROM {$tableName} WHERE end_date >= %1";

@@ -804,7 +804,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     $this->assertNull($absencePeriod);
   }
 
-  public function testGetPeriodsOverlappingDatesReturnsPeriodsOverlappingTheFromAndToDates() {
+  public function testGetPeriodsBetweenDatesReturnsPeriodsOverlappingTheFromAndToDates() {
     $period5 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-11-05'),
       'end_date' => CRM_Utils_Date::processDate('2016-12-31'),
@@ -840,7 +840,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     //ascending order.
     $fromDate = new DateTime('2016-04-20');
     $toDate = new DateTime('2016-10-25');
-    $absencePeriods = AbsencePeriod::getPeriodsOverlappingDates($fromDate, $toDate);
+    $absencePeriods = AbsencePeriod::getPeriodsBetweenDates($fromDate, $toDate);
     $this->assertCount(3, $absencePeriods);
 
     //Since the periods should be arranged in ascending order by weight
@@ -853,7 +853,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     //So overlapping periods should be period 4, 5
     $fromDate = new DateTime('2016-09-05');
     $toDate = new DateTime('2016-12-31');
-    $absencePeriods = AbsencePeriod::getPeriodsOverlappingDates($fromDate, $toDate);
+    $absencePeriods = AbsencePeriod::getPeriodsBetweenDates($fromDate, $toDate);
     $this->assertCount(2, $absencePeriods);
 
     //Since the periods should be arranged in ascending order by weight
@@ -861,7 +861,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     $this->assertEquals($period5->id, $absencePeriods[1]->id);
   }
 
-  public function testGetPeriodsOverlappingDatesReturnsPeriodsWithEndDateGreaterThanOrEqualToTheStartDateWhenEndDateIsNull() {
+  public function testGetPeriodsBetweenDatesReturnsPeriodsWithEndDateGreaterThanOrEqualToTheStartDateWhenEndDateIsNull() {
     $period5 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-11-05'),
       'end_date' => CRM_Utils_Date::processDate('2016-12-31'),
@@ -895,7 +895,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     //From Date is exactly the start date of period 2
     //Overlapping periods should be period 2,3,4,5
     $fromDate = new DateTime('2016-04-10');
-    $absencePeriods = AbsencePeriod::getPeriodsOverlappingDates($fromDate, null);
+    $absencePeriods = AbsencePeriod::getPeriodsBetweenDates($fromDate, null);
     $this->assertCount(4, $absencePeriods);
 
     //Since the periods should be arranged in ascending order by weight
@@ -905,7 +905,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     $this->assertEquals($period5->id, $absencePeriods[3]->id);
   }
 
-  public function testGetPeriodsOverlappingDatesReturnsEmptyWhenNoOverlappingPeriodsAreFound() {
+  public function testGetPeriodsBetweenDatesReturnsEmptyWhenNoOverlappingPeriodsAreFound() {
     $period2 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-04-10'),
       'end_date' => CRM_Utils_Date::processDate('2016-05-20'),
@@ -920,7 +920,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
 
     $fromDate = new DateTime('2016-09-05');
     $toDate = new DateTime('2016-12-31');
-    $absencePeriods = AbsencePeriod::getPeriodsOverlappingDates($fromDate, $toDate);
+    $absencePeriods = AbsencePeriod::getPeriodsBetweenDates($fromDate, $toDate);
     $this->assertEmpty($absencePeriods);
   }
 }
