@@ -1,6 +1,6 @@
 define([
   'common/lodash',
-  'job-contract/controllers/controllers'
+  'job-contract/modules/job-contract.controllers'
 ], function (_, controllers) {
   'use strict';
 

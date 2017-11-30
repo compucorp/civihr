@@ -1,5 +1,5 @@
 define([
-    'job-contract/controllers/controllers'
+    'job-contract/modules/job-contract.controllers'
 ], function (controllers) {
     'use strict';
 

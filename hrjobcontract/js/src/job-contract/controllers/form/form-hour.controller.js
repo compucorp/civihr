@@ -1,6 +1,6 @@
 define([
   'job-contract/vendor/fraction',
-  'job-contract/controllers/controllers'
+  'job-contract/modules/job-contract.controllers'
 ], function (Fraction, controllers) {
   'use strict';
 

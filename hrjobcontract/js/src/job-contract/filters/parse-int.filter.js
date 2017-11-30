@@ -1,5 +1,5 @@
 define([
-    'job-contract/filters/filters'
+    'job-contract/modules/job-contract.filters'
 ], function (filters) {
     'use strict';
 

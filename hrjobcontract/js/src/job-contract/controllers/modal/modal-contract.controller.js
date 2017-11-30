@@ -3,7 +3,7 @@
 define([
   'common/angular',
   'common/lodash',
-  'job-contract/controllers/controllers',
+  'job-contract/modules/job-contract.controllers',
   'job-contract/services/contract.service',
   'job-contract/services/contract-revision.service',
   'job-contract/services/contract-details.service',

@@ -1,5 +1,5 @@
 define([
-    'job-contract/directives/directives'
+    'job-contract/modules/job-contract.directives'
 ], function (directives) {
     'use strict';
 

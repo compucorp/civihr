@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'job-contract/controllers/controllers',
+  'job-contract/modules/job-contract.controllers',
   'job-contract/services/contact.service'
 ], function (controllers) {
   'use strict';

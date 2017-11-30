@@ -1,6 +1,6 @@
 define([
     'common/moment',
-    'job-contract/controllers/controllers',
+    'job-contract/modules/job-contract.controllers',
     'common/filters/angular-date/format-date'
 ], function (moment, controllers){
   'use strict';
@@ -73,18 +73,18 @@ define([
        * dates, in years, months and days. Calculation includes both start and
        * end dates in duration.
        *
-       * Special handling for month and year diffs is used by moment.js, 
-       * optimized to ensure that duration from 1st day of month to last day of 
-       * month is calculated as "1 month".  This implies that duration between 
-       * nth day of a month and (n-1)th day of next month is exactly "1 month" 
+       * Special handling for month and year diffs is used by moment.js,
+       * optimized to ensure that duration from 1st day of month to last day of
+       * month is calculated as "1 month".  This implies that duration between
+       * nth day of a month and (n-1)th day of next month is exactly "1 month"
        * (eg. 2017-01-15 => 2017-02-14 = "1 month").  The analogue is expected
        * of years calculation (ie. duration between nth day of a month and
-       * (n-1)th day of that same month in next year is calculated as "1 year", 
-       * even on leap years). 
-       * 
+       * (n-1)th day of that same month in next year is calculated as "1 year",
+       * even on leap years).
+       *
        * @param  {Date} dateStart
        * @param  {Date} dateEnd
-       * 
+       *
        * @return {string}
        *   Duration in years, months and days
        */
