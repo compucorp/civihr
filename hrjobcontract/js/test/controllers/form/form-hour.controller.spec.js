@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
   'job-contract/modules/job-contract.module'
@@ -5,7 +7,7 @@ define([
   'use strict';
 
   describe('FormHourCtrl', function () {
-    var ctrl, $controller, $rootScope, $scope;
+    var $controller, $rootScope, $scope;
 
     beforeEach(module('job-contract'));
     beforeEach(function () {
@@ -16,17 +18,16 @@ define([
       initController();
     });
 
-    describe('FormHourCtrl', function() {
-      describe('updateHours', function() {
-        it('should always change the hours_amount based on hours_type', function() {
+    describe('FormHourCtrl', function () {
+      describe('updateHours', function () {
+        it('should always change the hours_amount based on hours_type', function () {
           expect($scope.entity.hour.hours_amount).toBe('');
           $scope.entity.hour.hours_type = '8';
           $scope.$digest();
           expect($scope.entity.hour.hours_amount).toBe('40.00');
-
         });
 
-        it('should not change the hours_amount if it had been set', function() {
+        it('should not change the hours_amount if it had been set', function () {
           expect($scope.entity.hour.hours_amount).toBe('');
 
           $scope.entity.hour.hours_amount = '25';
@@ -42,7 +43,7 @@ define([
      *
      * @param  {Object} scopeData additional data to put in the entity details
      */
-    function initController(scopeData) {
+    function initController (scopeData) {
       $scope = $rootScope.$new();
       $scope.entity = {
         hour: {
@@ -60,21 +61,21 @@ define([
       $scope.utils = {
         hoursLocation: [
           {
-            'id':'1',
+            'id': '1',
             'location': 'Head office',
             'standard_hours': '40.00',
             'pay_frequency': 'Week',
             'is_active': '1'
           },
           {
-            'id':'2',
+            'id': '2',
             'location': 'Other office',
             'standard_hours': '8.00',
             'pay_frequency': 'Day',
             'is_active': '1'
           },
           {
-            'id':'3',
+            'id': '3',
             'location': 'Small office',
             'standard_hours': '36.00',
             'pay_frequency': 'Week',
@@ -83,7 +84,7 @@ define([
         ]
       };
 
-      ctrl = $controller('FormHourCtrl', { $scope: $scope });
+      $controller('FormHourCtrl', { $scope: $scope });
     }
   });
 });

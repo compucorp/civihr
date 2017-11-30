@@ -1,4 +1,3 @@
-/* globals inject */
 /* eslint-env amd, jasmine */
 
 define([
@@ -13,7 +12,7 @@ define([
 
     beforeEach(module('job-contract'));
 
-    beforeEach(inject(function ( _$rootScope_, _$httpBackend_, _ContractRevisionList_) {
+    beforeEach(inject(function (_$rootScope_, _$httpBackend_, _ContractRevisionList_) {
       $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
       ContractRevisionList = _ContractRevisionList_;

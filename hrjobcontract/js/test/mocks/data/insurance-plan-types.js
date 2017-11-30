@@ -1,17 +1,19 @@
-define(function() {
+/* eslint-env amd */
+
+define(function () {
   return {
-    "is_error": 0,
-    "version": 3,
-    "count": 2,
-    "values": [
+    'is_error': 0,
+    'version': 3,
+    'count': 2,
+    'values': [
       {
-        "key": "Family",
-        "value": "Family"
-        },
+        'key': 'Family',
+        'value': 'Family'
+      },
       {
-        "key": "Individual",
-        "value": "Individual"
-        }
-      ]
+        'key': 'Individual',
+        'value': 'Individual'
+      }
+    ]
   };
 });

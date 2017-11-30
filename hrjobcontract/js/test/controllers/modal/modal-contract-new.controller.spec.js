@@ -1,23 +1,25 @@
+/* eslint-env amd, jasmine */
+
 define([
   'mocks/data/insurance-plan-types',
   'job-contract/modules/job-contract.module'
-], function(InsurancePlanTypesMock) {
+], function (InsurancePlanTypesMock) {
   'use strict';
 
-  describe('ModalContractNewCtrl', function() {
-    var ctrl, $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock, ContractHealthService;
+  describe('ModalContractNewCtrl', function () {
+    var $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock, ContractHealthService;
 
     beforeEach(module('job-contract'));
 
-    beforeEach(module(function($provide) {
-      $provide.factory('ContractHealthService', function() {
+    beforeEach(module(function ($provide) {
+      $provide.factory('ContractHealthService', function () {
         return {
-          getOptions: function() {}
-        }
+          getOptions: function () {}
+        };
       });
     }));
 
-    beforeEach(inject(function(_$controller_, _$rootScope_, _$httpBackend_, _$q_,
+    beforeEach(inject(function (_$controller_, _$rootScope_, _$httpBackend_, _$q_,
       _ContractDetailsService_, _ContractHealthService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
@@ -26,7 +28,7 @@ define([
       $q = _$q_;
     }));
 
-    beforeEach(function() {
+    beforeEach(function () {
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});
       $httpBackend.whenGET(/action=get&entity=HRHoursLocation/).respond({});
       $httpBackend.whenGET(/action=get&entity=HRPayScale/).respond({});
@@ -40,7 +42,7 @@ define([
       $httpBackend.whenGET(/views.*/).respond({});
     });
 
-    beforeEach(function() {
+    beforeEach(function () {
       var health = {};
 
       $rootScope.$digest();
@@ -51,38 +53,38 @@ define([
       };
     });
 
-    beforeEach(function() {
+    beforeEach(function () {
       mockUIBModalInstance();
       contractHealthServiceSpy();
       makeController();
     });
 
-    describe("init()", function() {
-      beforeEach(function() {
+    describe('init()', function () {
+      beforeEach(function () {
         $rootScope.$digest();
       });
 
       var result = {
-        Family: "Family",
-        Individual: "Individual"
+        Family: 'Family',
+        Individual: 'Individual'
       };
 
-      it("calls getOptions() form ContractHealthService", function() {
+      it('calls getOptions() form ContractHealthService', function () {
         expect(ContractHealthService.getOptions).toHaveBeenCalled();
       });
 
-      it("fetches health insurance plan types", function() {
-        expect($rootScope.options.health.plan_type).toEqual(result)
+      it('fetches health insurance plan types', function () {
+        expect($rootScope.options.health.plan_type).toEqual(result);
       });
 
-      it("fetches life insurance plan types", function() {
-        expect($rootScope.options.health.plan_type_life_insurance).toEqual(result)
+      it('fetches life insurance plan types', function () {
+        expect($rootScope.options.health.plan_type_life_insurance).toEqual(result);
       });
     });
 
-    function makeController() {
+    function makeController () {
       $scope = $rootScope.$new();
-      ctrl = $controller('ModalContractNewCtrl', {
+      $controller('ModalContractNewCtrl', {
         $scope: $scope,
         $rootScope: $rootScope,
         model: {},
@@ -93,7 +95,7 @@ define([
       });
     }
 
-    function mockUIBModalInstance() {
+    function mockUIBModalInstance () {
       $uibModalInstanceMock = {
         opened: {
           then: jasmine.createSpy()
@@ -101,8 +103,8 @@ define([
       };
     }
 
-    function contractHealthServiceSpy() {
-      spyOn(ContractHealthService, "getOptions").and.callFake(function() {
+    function contractHealthServiceSpy () {
+      spyOn(ContractHealthService, 'getOptions').and.callFake(function () {
         return $q.resolve(InsurancePlanTypesMock.values);
       });
     }

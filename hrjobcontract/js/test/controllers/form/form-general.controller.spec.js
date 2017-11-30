@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/lodash',
   'common/moment',
@@ -8,14 +10,14 @@ define([
   'use strict';
 
   describe('FormGeneralCtrl', function () {
-    var ctrl, $controller, $provide, $rootScope, $scope;
+    var $controller, $provide, $rootScope, $scope;
 
     beforeEach(function () {
       module('job-contract', 'common.mocks', function (_$provide_) {
-          $provide = _$provide_;
+        $provide = _$provide_;
       });
-      inject(['HR_settingsMock', function (HR_settingsMock) {
-          $provide.value('HR_settings', HR_settingsMock);
+      inject(['HR_settingsMock', function (hrSettingsMock) {
+        $provide.value('HR_settings', hrSettingsMock);
       }]);
     });
 
@@ -40,7 +42,7 @@ define([
         beforeEach(function () {
           initController({
             period_start_date: moment('2016-01-01').toDate(),
-            period_end_date: moment('2016-02-11').toDate(),
+            period_end_date: moment('2016-02-11').toDate()
           });
         });
 
@@ -70,11 +72,11 @@ define([
           expect($scope.datepickerOptions.end.minDate).toEqual(moment('2015-11-22').toDate());
         });
 
-        it('sets duration calculating number of days including start and end dates', function() {
+        it('sets duration calculating number of days including start and end dates', function () {
           expect($scope.duration).toEqual('17 days');
         });
 
-        it('calculates duration from nth day of a month to (n-1)th day of next month as 1 month', function() {
+        it('calculates duration from nth day of a month to (n-1)th day of next month as 1 month', function () {
           for (var year = 2016; year < 2018; year++) {
             for (var month = 1; month < 13; month++) {
               var startMonthString = month < 10 ? '0' + month.toString() : month.toString();
@@ -100,7 +102,7 @@ define([
           }
         });
 
-        it('calculates duration from first to last day of months as absolute number of years and months with no day fraction', function() {
+        it('calculates duration from first to last day of months as absolute number of years and months with no day fraction', function () {
           _.assign($scope.entity.details, {
             period_start_date: moment('2017-02-01').toDate(),
             period_end_date: moment('2017-03-31').toDate()
@@ -116,7 +118,7 @@ define([
           expect($scope.duration.trim()).toEqual('2 years 5 months');
         });
 
-        it('calculates duration from last day february in a leap year to last day of february on next year as a year and a day', function() {
+        it('calculates duration from last day february in a leap year to last day of february on next year as a year and a day', function () {
           _.assign($scope.entity.details, {
             period_start_date: moment('2016-02-29').toDate(),
             period_end_date: moment('2017-02-28').toDate()
@@ -132,13 +134,13 @@ define([
      *
      * @param  {Object} scopeData additional data to put in the entity details
      */
-    function initController(scopeData) {
+    function initController (scopeData) {
       $scope = $rootScope.$new();
       $scope.entity = {
         details: _.assign({}, scopeData)
       };
 
-      ctrl = $controller('FormGeneralCtrl', { $scope: $scope });
+      $controller('FormGeneralCtrl', { $scope: $scope });
     }
   });
 });
