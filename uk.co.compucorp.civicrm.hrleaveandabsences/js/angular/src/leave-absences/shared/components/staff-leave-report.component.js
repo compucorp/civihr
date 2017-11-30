@@ -41,12 +41,12 @@ define([
       page: true
     };
     vm.sections = {
-      approved: { open: false, data: [], loading: false, loadFn: loadApprovedRequests },
-      entitlements: { open: false, data: [], loading: false, loadFn: loadEntitlementsBreakdown },
-      expired: { open: false, data: [], loading: false, loadFn: loadExpiredBalanceChanges },
-      holidays: { open: false, data: [], loading: false, loadFn: loadPublicHolidaysRequests },
-      pending: { open: false, data: [], loading: false, loadFn: loadPendingRequests },
-      other: { open: false, data: [], loading: false, loadFn: loadOtherRequests }
+      approved: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadApprovedRequests },
+      entitlements: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadEntitlementsBreakdown },
+      expired: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadExpiredBalanceChanges },
+      holidays: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadPublicHolidaysRequests },
+      pending: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadPendingRequests },
+      other: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadOtherRequests }
     };
 
     /**
@@ -121,8 +121,8 @@ define([
     }
 
     /**
-     * Calls the load function of the given data, and puts the section
-     * in and out of loading mode
+     * Calls the load function of the given data, indexes the loaded data,
+     * and puts the section in and out of loading mode
      *
      * @param  {Object} section
      * @return {Promise}
@@ -130,9 +130,11 @@ define([
     function callSectionLoadFn (section) {
       section.loading = true;
 
-      return section.loadFn().then(function () {
-        section.loading = false;
-      });
+      return section.loadFn()
+        .then(indexSectionData.bind(this, section))
+        .then(function () {
+          section.loading = false;
+        });
     }
 
     /**
@@ -143,6 +145,16 @@ define([
         .forEach(function (section) {
           section.data = [];
         });
+    }
+
+    /**
+     * Indexes the leave request data of a section and stores it in the
+     * dataIndex attribute.
+     *
+     * @param {Object} section - the section object that contains data to index.
+     */
+    function indexSectionData (section) {
+      section.dataIndex = _.indexBy(section.data, 'id');
     }
 
     /**
@@ -224,7 +236,7 @@ define([
       .then(function (results) {
         _.forEach(vm.absenceTypes, function (absenceType) {
           absenceType.balanceChanges = {
-            publicHolidays: results[0][absenceType.id],
+            holidays: results[0][absenceType.id],
             approved: results[1][absenceType.id],
             pending: results[2][absenceType.id]
           };
@@ -453,34 +465,24 @@ define([
 
     /**
      * Removes the given leave request from the section it currently belongs to
-     * (only the "approved", "pending", and "other" sections support request removal)
-     *
-     * If the leave request belonged to either the "approved" or "pending" section,
-     * then the numbers of the section will be recalculated
+     * and the number of their sections are recalculated.
      *
      * @param  {LeaveRequestInstance} leaveRequest
-     * @param  {Boolean} moveToOther If true, it moves the leave request to
-     *         the "other" section (if the section has already cached data)
-     * @return {Promise}
      */
-    function removeLeaveRequestFromItsSection (leaveRequest, moveToOther) {
-      var sectionBelonged;
+    function removeLeaveRequestFromItsSection (leaveRequest) {
+      _.forEach(vm.sections, function (section, sectionName) {
+        var requestIndexInSection = section.dataIndex[leaveRequest.id];
 
-      ['approved', 'pending', 'other'].forEach(function (sectionName) {
-        var sections = _.remove(vm.sections[sectionName].data, function (dataEntry) {
+        if (!requestIndexInSection) {
+          return;
+        }
+
+        _.remove(section.data, function (dataEntry) {
           return dataEntry.id === leaveRequest.id;
         });
-
-        sections.length && (sectionBelonged = sectionName);
+        delete section.dataIndex[leaveRequest.id];
+        updateSectionNumbersWithLeaveRequestBalanceChange(leaveRequest, sectionName);
       });
-
-      if (sectionBelonged !== 'other') {
-        updateSectionNumbersWithLeaveRequestBalanceChange(leaveRequest, sectionBelonged);
-
-        if (moveToOther && vm.sections.other.data.length) {
-          vm.sections.other.data.push(leaveRequest);
-        }
-      }
     }
 
     /**

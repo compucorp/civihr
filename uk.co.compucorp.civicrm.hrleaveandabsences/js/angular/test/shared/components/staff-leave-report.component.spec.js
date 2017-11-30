@@ -227,7 +227,7 @@
 
                 it('has stored them in each absence type', function () {
                   _.forEach(controller.absenceTypes, function (absenceType) {
-                    var balanceChanges = absenceType.balanceChanges.publicHolidays;
+                    var balanceChanges = absenceType.balanceChanges.holidays;
 
                     expect(balanceChanges).toBeDefined();
                     expect(balanceChanges).toBe(mockData[absenceType.id]);
@@ -688,6 +688,7 @@
 
           beforeEach(function () {
             oldList = controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+            controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
             oldBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
 
             leaveRequest1.delete();
@@ -720,6 +721,7 @@
 
           beforeEach(function () {
             controller.sections.approved.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+            controller.sections.approved.dataIndex = _.indexBy(controller.sections.approved.data, 'id');
             oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
 
             leaveRequest1.delete();
@@ -740,6 +742,7 @@
 
           beforeEach(function () {
             controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+            controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
             oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
 
             leaveRequest1.delete();

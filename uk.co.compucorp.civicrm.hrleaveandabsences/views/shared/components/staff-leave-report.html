@@ -118,7 +118,7 @@
                   <td></td>
                   <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
                     title="({{ absenceType.calculation_unit_label | lowercase }})">
-                    {{ absenceType.balanceChanges.publicHolidays | timeUnitApplier : absenceType.calculation_unit_name }}
+                    {{ absenceType.balanceChanges.holidays | timeUnitApplier : absenceType.calculation_unit_name }}
                   </td>
                   <td></td>
                 </tr>
