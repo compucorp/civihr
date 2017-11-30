@@ -106,7 +106,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
     $this->adjustPeriodDates($absencePeriods, $today);
     foreach($absencePeriods as $absencePeriod) {
-      $this->createForAbsencePeriod($absencePeriod, $contactID);
+      $this->createAllForAbsencePeriod($absencePeriod, $contactID);
     }
   }
 
@@ -332,7 +332,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
   /**
    * Creates Public Holiday Leave Requests for all public Holidays
-   * within the given Absence Period ID for contacts with contracts and
+   * within the given Absence Period for contacts with contracts and
    * entitlements for the absence type with MTPHL within this period.
    * If the contactID is present will create only for the contacts in the
    * contactID array
@@ -341,28 +341,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * entitlement for the absence type with MTPHL in the absence period the
    * public holiday date falls in.
    *
-   * @param int $absencePeriodID
-   * @param array $contactID
-   */
-  public function createForAllinAbsencePeriod($absencePeriodID, array $contactID = []) {
-    $absencePeriod = AbsencePeriod::findById($absencePeriodID);
-    $this->createForAbsencePeriod($absencePeriod, $contactID);
-  }
-
-  /**
-   * Creates Public Holiday Leave Requests for all public Holidays
-   * within the given Absence Period for contacts with contracts and
-   * entitlements for the absence type with MTPHL within this period.
-   *
-   * The Public Holiday leave request will not be created if contact has no
-   * entitlement for the absence type with MTPHL in the absence period the
-   * public holiday date falls in.
-   *
    * @param AbsencePeriod $absencePeriod
    * @param array $contactID
-   *  If not empty, Public Holiday Leave Requests are created for only these contacts
    */
-  private function createForAbsencePeriod($absencePeriod, array $contactID = []) {
+  public function createAllForAbsencePeriod($absencePeriod, array $contactID = []) {
     if(!$this->absenceType) {
       return;
     }

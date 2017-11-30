@@ -854,7 +854,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' =>  CRM_Utils_Date::processDate('2017-02-01')
     ]);
 
-    $this->getCreationLogic()->createForAllInAbsencePeriod($period->id);
+    $this->getCreationLogic()->createAllForAbsencePeriod($period);
 
     //The first public holiday is before the absence period and the last public holiday is
     //after the absence period. So the balance will be -2 for both contacts
@@ -910,7 +910,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' =>  CRM_Utils_Date::processDate('2016-09-01')
     ]);
 
-    $this->getCreationLogic()->createForAllInAbsencePeriod($period->id, [$contact['id']]);
+    $this->getCreationLogic()->createAllForAbsencePeriod($period, [$contact['id']]);
 
     //Public holiday leave requests will only be created for the first contact.
     $this->assertEquals(-2, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
@@ -976,7 +976,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' =>  CRM_Utils_Date::processDate('2016-10-01')
     ]);
 
-    $this->getCreationLogic()->createForAllInAbsencePeriod($period->id);
+    $this->getCreationLogic()->createAllForAbsencePeriod($period);
 
     //So the balance will be -3 for the first contact
     //the second contact has no entitlement for the period so no public holiday

@@ -3,6 +3,7 @@
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as CreationLogic;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as DeletionLogic;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
 
@@ -99,7 +100,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
    * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation::createForAllinAbsencePeriod()
    */
   public function updateAllForAbsencePeriod($absencePeriodID, array $contactID = []) {
-    $this->deletionLogic->deleteAllForAbsencePeriod($absencePeriodID, $contactID);
-    $this->creationLogic->createForAllinAbsencePeriod($absencePeriodID, $contactID);
+    $absencePeriod = AbsencePeriod::findById($absencePeriodID);
+    $this->deletionLogic->deleteAllForAbsencePeriod($absencePeriod, $contactID);
+    $this->creationLogic->createAllForAbsencePeriod($absencePeriod, $contactID);
   }
 }

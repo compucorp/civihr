@@ -576,7 +576,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     //Delete all Public holiday leave requests for absence period 2.
     $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
-    $deletionLogic->deleteAllForAbsencePeriod($period2->id);
+    $deletionLogic->deleteAllForAbsencePeriod($period2);
 
     //Leave Request for PublicHoliday2 which falls within the absence period will be deleted for both contacts
     //While that of Public Holiday1 will not be deleted.
@@ -619,7 +619,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     //Delete all Public holiday leave requests for absence period for first contact only
     $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
-    $deletionLogic->deleteAllForAbsencePeriod($period->id, [$contact['id']]);
+    $deletionLogic->deleteAllForAbsencePeriod($period, [$contact['id']]);
 
     //Leave Request for PublicHoliday will be deleted for contact1 only
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
