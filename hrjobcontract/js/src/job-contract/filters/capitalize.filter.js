@@ -1,15 +1,18 @@
 /* eslint-env amd */
 
-define([
-  'job-contract/modules/job-contract.filters'
-], function (filters) {
+define(function () {
   'use strict';
 
-  filters.filter('capitalize', ['$log', function ($log) {
+  capitalize.__name = 'capitalize';
+  capitalize.$inject = ['$log'];
+
+  function capitalize ($log) {
     $log.debug('Filter: capitalize');
 
     return function (input) {
       return (input) ? input.replace(/([^\W_]+[^\s-]*) */g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); }) : '';
     };
-  }]);
+  }
+
+  return capitalize;
 });

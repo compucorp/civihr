@@ -1,11 +1,12 @@
 /* eslint-env amd */
 
-define([
-  'job-contract/modules/job-contract.filters'
-], function (filters) {
+define(function () {
   'use strict';
 
-  filters.filter('getObjById', ['$log', function ($log) {
+  getObjById.__name = 'getObjById';
+  getObjById.$inject = ['$log'];
+
+  function getObjById ($log) {
     $log.debug('Filter: getObjById');
 
     return function (input, id, key) {
@@ -23,5 +24,7 @@ define([
       }
       return null;
     };
-  }]);
+  }
+
+  return getObjById;
 });

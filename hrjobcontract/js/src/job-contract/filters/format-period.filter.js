@@ -1,15 +1,18 @@
 /* eslint-env amd */
 
-define([
-  'job-contract/modules/job-contract.filters'
-], function (filters) {
+define(function () {
   'use strict';
 
-  filters.filter('formatPeriod', ['$filter', '$log', function ($filter, $log) {
+  formatPeriod.__name = 'formatPeriod';
+  formatPeriod.$inject = ['$filter', '$log'];
+
+  function formatPeriod ($filter, $log) {
     $log.debug('Filter: formatPeriod');
 
     return function (period) {
       return period ? $filter('date')(period, 'yyyy/MM/dd') : 'Unspecified';
     };
-  }]);
+  }
+
+  return formatPeriod;
 });

@@ -10,11 +10,6 @@ define([
   'job-contract/modules/job-contract.filters',
   'job-contract/modules/job-contract.run',
   'job-contract/modules/job-contract.services',
-  'job-contract/filters/capitalize.filter',
-  'job-contract/filters/get-obj-by-id.filter',
-  'job-contract/filters/format-amount.filter',
-  'job-contract/filters/format-period.filter',
-  'job-contract/filters/parse-int.filter',
   'job-contract/services/contract.service',
   'job-contract/services/contract-revision-list.service'
 ], function (angular) {

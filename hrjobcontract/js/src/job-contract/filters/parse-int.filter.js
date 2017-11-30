@@ -1,15 +1,18 @@
 /* eslint-env amd */
 
-define([
-  'job-contract/modules/job-contract.filters'
-], function (filters) {
+define(function () {
   'use strict';
 
-  filters.filter('parseInt', ['$log', function ($log) {
+  parseInt.__name = 'parseInt';
+  parseInt.$inject = ['$log'];
+
+  function parseInt ($log) {
     $log.debug('Filter: parseInt');
 
     return function (input) {
       return input ? parseInt(input) : null;
     };
-  }]);
+  }
+
+  return parseInt;
 });
