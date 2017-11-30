@@ -73,7 +73,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
     foreach($contracts as $contract) {
       if($this->contactHasEntitlement($entitlements, $contract['contact_id'])) {
-        $this->create($contract['contact_id'], $publicHoliday);
+        $this->createForContact($contract['contact_id'], $publicHoliday);
       }
     }
   }
@@ -187,20 +187,6 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
       return;
     }
 
-    $this->create($contactID, $publicHoliday);
-  }
-
-  /**
-   * Creates a Public Holiday Leave Request for the given $contactID, Absence
-   * Type and Public Holiday.
-   *
-   * The Leave Request will only be created if there's no existing Public Holiday
-   * Leave Request for the given $contactID and $publicHoliday.
-   *
-   * @param int $contactID
-   * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
-   */
-  private function create($contactID, PublicHoliday $publicHoliday) {
     $existingLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
     if($existingLeaveRequest) {
       return;
