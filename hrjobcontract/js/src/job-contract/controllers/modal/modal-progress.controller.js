@@ -1,38 +1,43 @@
 /* eslint-env amd */
 
-define([
-  'job-contract/modules/job-contract.controllers'
-], function (controllers) {
+define(function () {
   'use strict';
 
-  controllers.controller('ModalProgressCtrl', ['$scope', '$uibModalInstance', '$q', '$timeout', 'uploader',
-    'promiseFilesUpload', '$log',
-    function ($scope, $modalInstance, $q, $timeout, uploader, promiseFilesUpload, $log) {
-      $log.debug('Controller: ModalProgressCtrl');
+  ModalProgressCtrl.__name = 'ModalProgressCtrl';
+  ModalProgressCtrl.$inject = [
+    '$scope', '$uibModalInstance', '$q', '$timeout', 'uploader',
+    'promiseFilesUpload', '$log'
+  ];
 
-      var entityName, fieldName;
+  function ModalProgressCtrl ($scope, $modalInstance, $q, $timeout, uploader,
+    promiseFilesUpload, $log) {
+    $log.debug('Controller: ModalProgressCtrl');
 
-      $scope.uploader = uploader;
+    var entityName, fieldName;
 
-      for (entityName in uploader) {
-        for (fieldName in uploader[entityName]) {
-          if (uploader[entityName][fieldName].queue.length) {
-            uploader[entityName][fieldName].item = uploader[entityName][fieldName].queue[0].file.name;
-          }
-          uploader[entityName][fieldName].onProgressItem = function (item) {
-            this.item = item.file.name;
-          };
+    $scope.uploader = uploader;
+
+    for (entityName in uploader) {
+      for (fieldName in uploader[entityName]) {
+        if (uploader[entityName][fieldName].queue.length) {
+          uploader[entityName][fieldName].item = uploader[entityName][fieldName].queue[0].file.name;
         }
+        uploader[entityName][fieldName].onProgressItem = function (item) {
+          this.item = item.file.name;
+        };
       }
+    }
 
-      $q.all(promiseFilesUpload).then(function (results) {
-        $timeout(function () {
-          $modalInstance.close(results);
-        }, 500);
-      });
+    $q.all(promiseFilesUpload).then(function (results) {
+      $timeout(function () {
+        $modalInstance.close(results);
+      }, 500);
+    });
 
-      $scope.cancel = function () {
-        $modalInstance.dismiss('File upload canceled');
-      };
-    }]);
+    $scope.cancel = function () {
+      $modalInstance.dismiss('File upload canceled');
+    };
+  }
+
+  return ModalProgressCtrl;
 });

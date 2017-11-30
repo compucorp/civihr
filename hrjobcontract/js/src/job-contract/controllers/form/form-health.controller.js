@@ -1,44 +1,46 @@
 /* eslint-env amd */
 
 define([
-  'job-contract/modules/job-contract.controllers',
   'job-contract/services/contact.service'
-], function (controllers) {
+], function () {
   'use strict';
 
-  controllers.controller('FormHealthCtrl', ['$scope', 'ContactService', '$log',
-    function ($scope, ContactService, $log) {
-      $log.debug('Controller: FormHealthCtrl');
+  FormHealthCtrl.__name = 'FormHealthCtrl';
+  FormHealthCtrl.$inject = ['$scope', 'ContactService', '$log'];
 
-      $scope.contacts = {
-        Health_Insurance_Provider: [],
-        Life_Insurance_Provider: []
-      };
+  function FormHealthCtrl ($scope, ContactService, $log) {
+    $log.debug('Controller: FormHealthCtrl');
 
-      $scope.refreshContacts = function (input, contactSubType) {
-        if (!input) {
-          return;
-        }
+    $scope.contacts = {
+      Health_Insurance_Provider: [],
+      Life_Insurance_Provider: []
+    };
 
-        ContactService.search(input, {
-          contact_type: 'Organization',
-          contact_sub_type: contactSubType
-        }).then(function (results) {
-          $scope.contacts[contactSubType] = results;
-        });
-      };
-
-      if ($scope.entity.health.provider) {
-        ContactService.getOne($scope.entity.health.provider).then(function (result) {
-          $scope.contacts.Health_Insurance_Provider.push(result);
-        });
+    $scope.refreshContacts = function (input, contactSubType) {
+      if (!input) {
+        return;
       }
 
-      if ($scope.entity.health.provider_life_insurance) {
-        ContactService.getOne($scope.entity.health.provider_life_insurance).then(function (result) {
-          $scope.contacts.Life_Insurance_Provider.push(result);
-        });
-      }
+      ContactService.search(input, {
+        contact_type: 'Organization',
+        contact_sub_type: contactSubType
+      }).then(function (results) {
+        $scope.contacts[contactSubType] = results;
+      });
+    };
+
+    if ($scope.entity.health.provider) {
+      ContactService.getOne($scope.entity.health.provider).then(function (result) {
+        $scope.contacts.Health_Insurance_Provider.push(result);
+      });
     }
-  ]);
+
+    if ($scope.entity.health.provider_life_insurance) {
+      ContactService.getOne($scope.entity.health.provider_life_insurance).then(function (result) {
+        $scope.contacts.Life_Insurance_Provider.push(result);
+      });
+    }
+  }
+
+  return FormHealthCtrl;
 });

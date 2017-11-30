@@ -2,59 +2,65 @@
 
 define([
   'common/moment',
-  'job-contract/modules/job-contract.controllers',
   'job-contract/services/contract.service'
-], function (moment, controllers) {
+], function (moment) {
   'use strict';
 
-  controllers.controller('ModalChangeReasonCtrl', ['$scope', '$log', '$uibModalInstance', 'content', 'date', 'reasonId', 'settings', 'ContractRevisionService',
-    function ($scope, $log, $modalInstance, content, date, reasonId, settings, ContractRevisionService) {
-      var copy;
+  ModalChangeReasonCtrl.__name = 'ModalChangeReasonCtrl';
+  ModalChangeReasonCtrl.$inject = [
+    '$scope', '$log', '$uibModalInstance', 'content', 'date', 'reasonId',
+    'settings', 'ContractRevisionService'
+  ];
 
-      $log.debug('Controller: ModalChangeReasonCtrl');
+  function ModalChangeReasonCtrl ($scope, $log, $modalInstance, content, date,
+    reasonId, settings, ContractRevisionService) {
+    var copy;
 
-      content = content || {};
+    $log.debug('Controller: ModalChangeReasonCtrl');
 
-      copy = content.copy || {};
-      copy.title = copy.title || 'Revision data';
+    content = content || {};
 
-      $scope.change_reason = reasonId || '';
-      $scope.copy = copy;
-      $scope.effective_date = date || '';
-      $scope.isPast = false;
+    copy = content.copy || {};
+    copy.title = copy.title || 'Revision data';
 
-      $scope.dpOpen = function ($event, opened) {
-        $event.preventDefault();
-        $event.stopPropagation();
+    $scope.change_reason = reasonId || '';
+    $scope.copy = copy;
+    $scope.effective_date = date || '';
+    $scope.isPast = false;
 
-        $scope[opened] = true;
-      };
+    $scope.dpOpen = function ($event, opened) {
+      $event.preventDefault();
+      $event.stopPropagation();
 
-      $scope.save = function () {
-        ContractRevisionService.validateEffectiveDate({
-          contact_id: settings.contactId,
-          effective_date: $scope.effective_date
-        })
-          .then(function (result) {
-            if (result.success) {
-              $modalInstance.close({
-                reasonId: $scope.change_reason,
-                date: $scope.effective_date ? moment($scope.effective_date).format('YYYY-MM-DD') : ''
-              });
-            } else {
-              CRM.alert(result.message, 'Error', 'error');
-              $scope.$broadcast('hrjc-loader-hide');
-            }
-          });
-      };
+      $scope[opened] = true;
+    };
 
-      $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
-      };
+    $scope.save = function () {
+      ContractRevisionService.validateEffectiveDate({
+        contact_id: settings.contactId,
+        effective_date: $scope.effective_date
+      })
+        .then(function (result) {
+          if (result.success) {
+            $modalInstance.close({
+              reasonId: $scope.change_reason,
+              date: $scope.effective_date ? moment($scope.effective_date).format('YYYY-MM-DD') : ''
+            });
+          } else {
+            CRM.alert(result.message, 'Error', 'error');
+            $scope.$broadcast('hrjc-loader-hide');
+          }
+        });
+    };
 
-      $scope.$watch('effective_date', function (dateSelected) {
-        $scope.isPast = (new Date(dateSelected).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0));
-      });
-    }
-  ]);
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+
+    $scope.$watch('effective_date', function (dateSelected) {
+      $scope.isPast = (new Date(dateSelected).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0));
+    });
+  }
+
+  return ModalChangeReasonCtrl;
 });
