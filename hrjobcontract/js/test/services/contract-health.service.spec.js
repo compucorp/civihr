@@ -4,7 +4,7 @@
 define([
   'mocks/data/contract-revision',
   'mocks/data/insurance-plan-types',
-  'job-contract/app'
+  'job-contract/modules/job-contract.module'
 ], function (ContractMock, InsuranceMock) {
   'use strict';
 

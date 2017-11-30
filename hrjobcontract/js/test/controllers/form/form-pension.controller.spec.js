@@ -1,6 +1,6 @@
 define([
   'mocks/data/contact',
-  'job-contract/app'
+  'job-contract/modules/job-contract.module'
 ], function(ContactMock) {
   'use strict';
 

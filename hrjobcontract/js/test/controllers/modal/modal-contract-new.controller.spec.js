@@ -1,6 +1,6 @@
 define([
   'mocks/data/insurance-plan-types',
-  'job-contract/app'
+  'job-contract/modules/job-contract.module'
 ], function(InsurancePlanTypesMock) {
   'use strict';
 

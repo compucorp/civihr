@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'job-contract/app'
+  'job-contract/modules/job-contract.module'
 ], function () {
   'use strict';
 

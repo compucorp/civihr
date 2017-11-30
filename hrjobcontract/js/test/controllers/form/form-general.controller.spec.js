@@ -3,7 +3,7 @@ define([
   'common/moment',
   'common/angularMocks',
   'common/mocks/services/hr-settings-mock',
-  'job-contract/app'
+  'job-contract/modules/job-contract.module'
 ], function (_, moment) {
   'use strict';
 

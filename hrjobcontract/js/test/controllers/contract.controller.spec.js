@@ -5,7 +5,7 @@ define([
   'common/moment',
   'mocks/data/contract',
   'common/angularMocks',
-  'job-contract/app'
+  'job-contract/modules/job-contract.module'
 ], function (_, moment, contractMock) {
   'use strict';
 
