@@ -9,31 +9,32 @@ use CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix as LeaveRequestStatu
 use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestDeletion as PublicHolidayLeaveRequestDeletionFactory;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Factory_LeaveBalanceChangeCalculation as LeaveBalanceChangeCalculationFactory;
+use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as PublicHolidayLeaveRequestDeletionService;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
 
   /**
-   * @var \LeaveBalanceChangeService
+   * @var LeaveBalanceChangeService
    */
   protected $leaveBalanceChangeService;
 
   /**
-   * @var \CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix
+   * @var LeaveRequestStatusMatrixService
    */
   private $leaveRequestStatusMatrixService;
 
   /**
-   * @var \CRM_HRLeaveAndAbsences_Service_LeaveRequestRights
+   * @var LeaveRequestRightsService
    */
   private $leaveRequestRightsService;
 
   /**
-   * @var \CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion
+   * @var PublicHolidayLeaveRequestDeletionService
    */
   private $publicHolidayLeaveRequestDeletionService;
 
   /**
-   * @var \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
+   * @var LeaveRequest
    *   The leave request object before it gets updated.
    */
   protected $oldLeaveRequest;
@@ -66,8 +67,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     $this->leaveBalanceChangeService = $leaveBalanceChangeService;
     $this->leaveRequestStatusMatrixService = $leaveRequestStatusMatrixService;
     $this->leaveRequestRightsService = $leaveRequestRightsService;
-    $publicHolidayLeaveRequestDeletionFactory = new PublicHolidayLeaveRequestDeletionFactory();
-    $this->publicHolidayLeaveRequestDeletionService = $publicHolidayLeaveRequestDeletionFactory::create();
+    $this->publicHolidayLeaveRequestDeletionService = PublicHolidayLeaveRequestDeletionFactory::create();
   }
 
   /**

@@ -13,7 +13,7 @@ class CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestDeletion {
   /**
    * Returns a new instance of a PublicHolidayLeaveRequestDeletion Service
    *
-   * @return \CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion
+   * @return PublicHolidayLeaveRequestDeletion
    */
   public static function create() {
     $jobContractService = new JobContractService();
