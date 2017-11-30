@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 (function (CRM, require) {
   var extPath = CRM.jobContractTabApp.path + 'js/src/job-contract';
 
@@ -20,7 +22,7 @@
   ], function () {
     'use strict';
 
-    document.dispatchEvent(typeof window.CustomEvent == "function" ? new CustomEvent('hrjcReady') : (function(){
+    document.dispatchEvent(typeof window.CustomEvent === 'function' ? new window.CustomEvent('hrjcReady') : (function () {
       var e = document.createEvent('Event');
       e.initEvent('hrjcReady', true, true);
       return e;

@@ -1,3 +1,4 @@
+
 module.exports = function (config) {
   var civicrmPath = '../../../../../';
   var civihrPath = 'tools/extensions/civihr/';
