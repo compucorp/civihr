@@ -1,90 +1,14 @@
 /* eslint-env amd */
 
 define([
-  'common/angular',
-  'job-contract/modules/job-contract.services'
-], function (angular, services) {
+  'common/angular'
+], function (angular) {
   'use strict';
 
-  services.factory('API', ['$resource', '$q', 'settings', '$log', function ($resource, $q, settings, $log) {
-    $log.debug('Service: UtilsService');
+  UtilsService.__name = 'UtilsService';
+  UtilsService.$inject = ['API', 'settings', '$q', '$log', '$timeout'];
 
-    return {
-      resource: function (entity, action, json) {
-        if ((!entity || typeof entity !== 'string') ||
-          (!action || typeof action !== 'string') ||
-          (json && typeof json !== 'object')) {
-          return null;
-        }
-
-        return $resource(settings.pathRest, {
-          action: action,
-          entity: entity,
-          json: json
-        });
-      },
-      getOne: function (entity, params) {
-        if ((!entity || typeof entity !== 'string') ||
-          (params && typeof params !== 'object')) {
-          return null;
-        }
-
-        var deffered = $q.defer();
-        var json = angular.extend({
-          sequential: 1
-        }, params);
-        var val;
-
-        this.resource(entity, 'get', json).get(function (data) {
-          val = data.values;
-          deffered.resolve(val.length === 1 ? val[0] : null);
-        }, function () {
-          deffered.reject('Unable to fetch data');
-        });
-
-        return deffered.promise;
-      },
-      get: function (entity, params) {
-        if ((!entity || typeof entity !== 'string') ||
-          (params && typeof params !== 'object')) {
-          return null;
-        }
-
-        var deffered = $q.defer();
-        var json = angular.extend({
-          sequential: 1
-        }, params);
-
-        this.resource(entity, 'get', json).get(function (data) {
-          deffered.resolve(data.values);
-        }, function () {
-          deffered.reject('Unable to fetch data');
-        });
-
-        return deffered.promise;
-      }
-    };
-  }]);
-
-  services.factory('testAPI', ['$resource', 'settings', function ($resource, settings) {
-    return {
-      resource: function (entity, action, json) {
-        if ((!entity || typeof entity !== 'string') ||
-          (!action || typeof action !== 'string') ||
-          (json && typeof json !== 'object')) {
-          return null;
-        }
-
-        return $resource(settings.pathApp + 'js/data/' + entity + '.json', {
-          action: action,
-          entity: entity,
-          json: json
-        });
-      }
-    };
-  }]);
-
-  services.factory('UtilsService', ['API', 'testAPI', 'settings', '$q', '$log', '$timeout', function (API, testAPI, settings, $q, $log, $timeout) {
+  function UtilsService (API, settings, $q, $log, $timeout) {
     return {
 
       /**
@@ -237,5 +161,7 @@ define([
         return CRM.url(path, { cid: contactId, returnUrl: returnUrl });
       }
     };
-  }]);
+  }
+
+  return UtilsService;
 });

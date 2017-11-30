@@ -1,8 +1,7 @@
 /* eslint-env amd */
 
 define([
-  'common/moment',
-  'job-contract/services/contract.service'
+  'common/moment'
 ], function (moment) {
   'use strict';
 

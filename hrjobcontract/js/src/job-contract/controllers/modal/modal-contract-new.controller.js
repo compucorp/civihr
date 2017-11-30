@@ -4,15 +4,6 @@ define([
   'common/angular',
   'common/lodash',
   'common/moment',
-  'job-contract/services/contract.service',
-  'job-contract/services/contract-details.service',
-  'job-contract/services/contract-hour.service',
-  'job-contract/services/contract-pay.service',
-  'job-contract/services/contract-leave.service',
-  'job-contract/services/contract-health.service',
-  'job-contract/services/contract-pension.service',
-  'job-contract/services/contract-files.service',
-  'job-contract/services/utils.service',
   'common/services/pub-sub'
 ], function (angular, _, moment) {
   'use strict';

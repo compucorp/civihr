@@ -9,9 +9,7 @@ define([
   'job-contract/modules/job-contract.directives',
   'job-contract/modules/job-contract.filters',
   'job-contract/modules/job-contract.run',
-  'job-contract/modules/job-contract.services',
-  'job-contract/services/contract.service',
-  'job-contract/services/contract-revision-list.service'
+  'job-contract/modules/job-contract.services'
 ], function (angular) {
   'use strict';
 

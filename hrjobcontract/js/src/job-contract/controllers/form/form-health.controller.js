@@ -1,8 +1,6 @@
 /* eslint-env amd */
 
-define([
-  'job-contract/services/contact.service'
-], function () {
+define(function () {
   'use strict';
 
   FormHealthCtrl.__name = 'FormHealthCtrl';

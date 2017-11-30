@@ -2,8 +2,7 @@
 
 define([
   'common/angular',
-  'common/lodash',
-  'job-contract/services/contract.service'
+  'common/lodash'
 ], function (angular, _) {
   'use strict';
 
