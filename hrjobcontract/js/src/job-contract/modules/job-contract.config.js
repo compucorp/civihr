@@ -23,7 +23,7 @@ define([
         }]
       })
       .when('/', {
-        controller: 'ContractListCtrl',
+        controller: 'ContractListController',
         templateUrl: settings.pathApp + 'views/contractList.html',
         resolve: {
           contractList: ['ContractService', function (ContractService) {

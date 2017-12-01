@@ -3,27 +3,30 @@
 define(function () {
   'use strict';
 
-  ModalDialogCtrl.__name = 'ModalDialogCtrl';
-  ModalDialogCtrl.$inject = [
-    '$scope', '$uibModalInstance', '$timeout', 'content', '$log'
+  ModalDialogController.__name = 'ModalDialogController';
+  ModalDialogController.$inject = [
+    '$log', '$scope', '$timeout', '$uibModalInstance', 'content'
   ];
 
-  function ModalDialogCtrl ($scope, $modalInstance, $timeout, content, $log) {
-    $log.debug('Controller: ModalDialogCtrl');
+  function ModalDialogController ($log, $scope, $timeout, $modalInstance, content) {
+    $log.debug('Controller: ModalDialogController');
 
-    $scope.title = content.title || 'CiviHR Job Contract';
-    $scope.msg = content.msg || '';
-    $scope.copyConfirm = content.copyConfirm || 'Yes';
     $scope.copyCancel = content.copyCancel || 'Cancel';
+    $scope.copyConfirm = content.copyConfirm || 'Yes';
+    $scope.msg = content.msg || '';
+    $scope.title = content.title || 'CiviHR Job Contract';
 
-    $scope.confirm = function (action) {
-      $modalInstance.close(action || true);
-    };
+    $scope.cancel = cancel;
+    $scope.confirm = confirm;
 
-    $scope.cancel = function () {
+    function cancel () {
       $modalInstance.dismiss('Cancel');
-    };
+    }
+
+    function confirm (action) {
+      $modalInstance.close(action || true);
+    }
   }
 
-  return ModalDialogCtrl;
+  return ModalDialogController;
 });

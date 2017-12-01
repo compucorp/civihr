@@ -6,22 +6,23 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  ContractListCtrl.__name = 'ContractListCtrl';
-  ContractListCtrl.$inject = [
-    '$scope', '$rootElement', '$rootScope', '$uibModal', '$q', '$filter', '$sce',
-    'contractList', 'ContractService', 'ContractDetailsService', 'ContractHourService',
-    'ContractPayService', 'ContractLeaveService', 'ContractHealthService',
-    'ContractPensionService', 'UtilsService', 'settings', '$log', 'pubSub', '$window'
+  ContractListController.__name = 'ContractListController';
+  ContractListController.$inject = [
+    '$filter', '$log', '$q', '$rootElement', '$rootScope', '$sce', '$scope', '$window',
+    '$uibModal', 'contractList', 'ContractService', 'ContractDetailsService',
+    'ContractHourService', 'ContractPayService', 'ContractLeaveService', 'ContractHealthService',
+    'ContractPensionService', 'UtilsService', 'settings', 'pubSub'
   ];
 
-  function ContractListCtrl ($scope, $rootElement, $rootScope, $modal, $q,
-    $filter, $sce, contractList, ContractService, ContractDetailsService,
-    ContractHourService, ContractPayService, ContractLeaveService,
-    ContractHealthService, ContractPensionService, UtilsService, settings, $log,
-    pubSub, $window) {
-    $log.debug('Controller: ContractListCtrl');
+  function ContractListController ($filter, $log, $q, $rootElement, $rootScope,
+    $sce, $scope, $window, $modal, contractList, ContractService, ContractDetailsService,
+    ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
+    ContractPensionService, UtilsService, settings, pubSub) {
+    $log.debug('Controller: ContractListController');
 
     var entityName;
+    var promiseFields = {};
+    var promiseModel = {};
     var entityServices = {
       details: ContractDetailsService,
       hour: ContractHourService,
@@ -35,16 +36,10 @@ define([
       payScaleGrade: UtilsService.getPayScaleGrade(),
       absenceTypes: UtilsService.getAbsenceTypes()
     };
-    var promiseFields = {};
-    var promiseModel = {};
 
-    $scope.contractListLoaded = false;
     $scope.contractCurrent = [];
+    $scope.contractListLoaded = false;
     $scope.contractPast = [];
-    $scope.utils = {
-      contractListLen: contractList.length
-    };
-
     $scope.tooltips = {
       changeContractTerms: $sce.trustAsHtml('<div>' +
         '<p class="text-left"><strong>Change Contract Terms:</strong><br>' +
@@ -58,75 +53,108 @@ define([
         'of the contract.</p>' +
         '</div>')
     };
+    $scope.utils = {
+      contractListLen: contractList.length
+    };
 
-    for (entityName in entityServices) {
-      promiseFields[entityName] = entityServices[entityName].getFields();
-    }
+    $scope.delete = deleteContract;
+    $scope.modalContract = modalContract;
+    $scope.toggleIsPrimary = toggleIsPrimary;
 
-    $q.all(promiseFields).then(function (fields) {
-      $scope.fields = fields;
-
-      $log.debug('FIELDS:');
-      $log.debug(fields);
-
+    (function init () {
       for (entityName in entityServices) {
-        promiseModel[entityName] = entityServices[entityName].model(fields[entityName]);
+        promiseFields[entityName] = entityServices[entityName].getFields();
       }
 
-      return $q.all(promiseModel);
-    }).then(function (model) {
-      $scope.model = model;
+      $q.all(promiseFields).then(function (fields) {
+        $scope.fields = fields;
 
-      $log.debug('MODEL:');
-      $log.debug(model);
+        $log.debug('FIELDS:');
+        $log.debug(fields);
 
-      contractList = $filter('orderBy')(contractList, '-is_primary');
+        for (entityName in entityServices) {
+          promiseModel[entityName] = entityServices[entityName].model(fields[entityName]);
+        }
 
-      angular.forEach(contractList, function (contract) {
-        +contract.is_current ? $scope.contractCurrent.push(contract) : $scope.contractPast.push(contract);
+        return $q.all(promiseModel);
+      })
+      .then(function (model) {
+        $scope.model = model;
+
+        $log.debug('MODEL:');
+        $log.debug(model);
+
+        contractList = $filter('orderBy')(contractList, '-is_primary');
+
+        angular.forEach(contractList, function (contract) {
+          +contract.is_current ? $scope.contractCurrent.push(contract) : $scope.contractPast.push(contract);
+        });
+
+        $scope.$watchCollection('contractCurrent', function () {
+          $scope.utils.contractListLen = $scope.contractCurrent.length + $scope.contractPast.length;
+        });
+
+        $scope.$watchCollection('contractPast', function () {
+          $scope.utils.contractListLen = $scope.contractCurrent.length + $scope.contractPast.length;
+        });
+
+        $rootScope.$broadcast('hrjc-loader-hide');
+        $scope.contractListLoaded = true;
       });
 
-      $scope.$watchCollection('contractCurrent', function () {
-        $scope.utils.contractListLen = $scope.contractCurrent.length + $scope.contractPast.length;
+      $q.all(promiseUtils).then(function (utils) {
+        angular.extend($scope.utils, utils);
       });
+    }());
 
-      $scope.$watchCollection('contractPast', function () {
-        $scope.utils.contractListLen = $scope.contractCurrent.length + $scope.contractPast.length;
-      });
-
-      $rootScope.$broadcast('hrjc-loader-hide');
-      $scope.contractListLoaded = true;
-    });
-
-    $q.all(promiseUtils).then(function (utils) {
-      angular.extend($scope.utils, utils);
-    });
-
-    $scope.toggleIsPrimary = function (contractId) {
-      function unsetIsPrimary (contractArray) {
+    function deleteContract (contractId) {
+      function removeContractById (contractArray, id) {
         var i = 0;
         var len = contractArray.length;
 
         for (i; i < len; i++) {
-          if (+contractArray[i].id !== +contractId && +contractArray[i].is_primary) {
-            contractArray[i].is_primary = '0';
-
-            return contractArray[i].id;
+          if (+contractArray[i].id === +id) {
+            $scope.$emit('hrjc-loader-hide');
+            contractArray.splice(i, 1);
+            return id;
           }
         }
 
         return null;
       }
 
-      unsetIsPrimary($scope.contractCurrent) || unsetIsPrimary($scope.contractPast);
+      var modalInstance = $modal.open({
+        appendTo: $rootElement.find('div').eq(0),
+        templateUrl: settings.pathApp + 'views/modalDialog.html',
+        size: 'sm',
+        controller: 'ModalDialogController',
+        resolve: {
+          content: function () {
+            return {
+              msg: 'Are you sure you want to delete this job contract?'
+            };
+          }
+        }
+      });
 
-      ($filter('getObjById')($scope.contractCurrent, contractId) || $filter('getObjById')($scope.contractPast, contractId) || {}).is_primary = '1';
+      modalInstance.result.then(function (confirm) {
+        if (confirm) {
+          $scope.$emit('hrjc-loader-show');
+          ContractService.delete(contractId).then(function (result) {
+            if (!result.is_error) {
+              ContractService.updateHeaderInfo();
+              removeContractById($scope.contractCurrent, contractId) || removeContractById($scope.contractPast, contractId);
+              pubSub.publish('Contract::deleted', {
+                contactId: settings.contactId,
+                contractId: contractId
+              });
+            }
+          });
+        }
+      });
+    }
 
-      $scope.contractCurrent = $filter('orderBy')($scope.contractCurrent, '-is_primary');
-      $scope.contractPast = $filter('orderBy')($scope.contractPast, '-is_primary');
-    };
-
-    $scope.modalContract = function (action) {
+    function modalContract (action) {
       if (!action || action !== 'new') {
         return null;
       }
@@ -136,7 +164,7 @@ define([
         appendTo: $rootElement.find('div').eq(0),
         templateUrl: settings.pathApp + 'views/modalForm.html?v=2222',
         size: 'lg',
-        controller: 'ModalContractNewCtrl',
+        controller: 'ModalContractNewController',
         windowClass: 'modal-contract',
         resolve: {
           model: function () {
@@ -162,55 +190,32 @@ define([
 
         $window.location.assign(UtilsService.getManageEntitlementsPageURL(contract.contact_id));
       });
-    };
+    }
 
-    $scope.delete = function (contractId) {
-      function removeContractById (contractArray, id) {
+    function toggleIsPrimary (contractId) {
+      function unsetIsPrimary (contractArray) {
         var i = 0;
         var len = contractArray.length;
 
         for (i; i < len; i++) {
-          if (+contractArray[i].id === +id) {
-            $scope.$emit('hrjc-loader-hide');
-            contractArray.splice(i, 1);
-            return id;
+          if (+contractArray[i].id !== +contractId && +contractArray[i].is_primary) {
+            contractArray[i].is_primary = '0';
+
+            return contractArray[i].id;
           }
         }
 
         return null;
       }
 
-      var modalInstance = $modal.open({
-        appendTo: $rootElement.find('div').eq(0),
-        templateUrl: settings.pathApp + 'views/modalDialog.html',
-        size: 'sm',
-        controller: 'ModalDialogCtrl',
-        resolve: {
-          content: function () {
-            return {
-              msg: 'Are you sure you want to delete this job contract?'
-            };
-          }
-        }
-      });
+      unsetIsPrimary($scope.contractCurrent) || unsetIsPrimary($scope.contractPast);
 
-      modalInstance.result.then(function (confirm) {
-        if (confirm) {
-          $scope.$emit('hrjc-loader-show');
-          ContractService.delete(contractId).then(function (result) {
-            if (!result.is_error) {
-              ContractService.updateHeaderInfo();
-              removeContractById($scope.contractCurrent, contractId) || removeContractById($scope.contractPast, contractId);
-              pubSub.publish('Contract::deleted', {
-                contactId: settings.contactId,
-                contractId: contractId
-              });
-            }
-          });
-        }
-      });
-    };
+      ($filter('getObjById')($scope.contractCurrent, contractId) || $filter('getObjById')($scope.contractPast, contractId) || {}).is_primary = '1';
+
+      $scope.contractCurrent = $filter('orderBy')($scope.contractCurrent, '-is_primary');
+      $scope.contractPast = $filter('orderBy')($scope.contractPast, '-is_primary');
+    }
   }
 
-  return ContractListCtrl;
+  return ContractListController;
 });

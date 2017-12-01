@@ -9,7 +9,7 @@ define([
 ], function (_, moment) {
   'use strict';
 
-  describe('FormGeneralCtrl', function () {
+  describe('FormGeneralController', function () {
     var $controller, $provide, $rootScope, $scope;
 
     beforeEach(function () {
@@ -140,7 +140,7 @@ define([
         details: _.assign({}, scopeData)
       };
 
-      $controller('FormGeneralCtrl', { $scope: $scope });
+      $controller('FormGeneralController', { $scope: $scope });
     }
   });
 });

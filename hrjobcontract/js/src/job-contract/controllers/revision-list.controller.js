@@ -6,29 +6,30 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  RevisionListCtrl.__name = 'RevisionListCtrl';
-  RevisionListCtrl.$inject = [
-    '$rootScope', '$scope', '$filter', '$q', '$uibModal', '$rootElement',
+  RevisionListController.__name = 'RevisionListController';
+  RevisionListController.$inject = [
+    '$filter', '$log', '$q', '$rootElement', '$rootScope', '$scope', '$uibModal',
     'settings', 'ContractService', 'ContractDetailsService', 'ContractHourService',
-    'ContractPayService', 'ContractFilesService', '$log', 'ContractRevisionService',
+    'ContractPayService', 'ContractFilesService', 'ContractRevisionService',
     'ContractRevisionList'
   ];
 
-  function RevisionListCtrl ($rootScope, $scope, $filter, $q, $modal, $rootElement,
-    settings, ContractService, ContractDetailsService, ContractHourService,
-    ContractPayService, ContractFilesService, $log, ContractRevisionService,
+  function RevisionListController ($filter, $log, $q, $rootElement, $rootScope,
+    $scope, $modal, settings, ContractService, ContractDetailsService,
+    ContractHourService, ContractPayService, ContractFilesService, ContractRevisionService,
     ContractRevisionList) {
-    $log.debug('Controller: RevisionListCtrl');
+    $log.debug('Controller: RevisionListController');
 
     var contractId = $scope.contract.id;
     var revisionDataListLocal = $scope.revisionDataList;
 
+    $scope.changeReasons = $rootScope.options.contract.change_reason;
     $scope.currentPage = 1;
     $scope.itemsPerPage = 5;
     $scope.maxSize = 5;
-    $scope.changeReasons = $rootScope.options.contract.change_reason;
     $scope.sortCol = 'revisionEntityIdObj.effective_date';
     $scope.sortReverse = true;
+    $scope.urlCSV = urlCSVBuild();
     $scope.display = {
       effectiveDate: true,
       position: true,
@@ -40,7 +41,14 @@ define([
       changeReason: true
     };
 
-    function init () {
+    $scope.createPage = createPage;
+    $scope.deleteRevision = deleteRevision;
+    $scope.modalRevisionEdit = modalRevisionEdit;
+    $scope.sortBy = sortBy;
+
+    (function init () {
+      initWatchers();
+
       if (!$scope.revisionDataList) {
         $scope.$broadcast('hrjc-loader-show');
 
@@ -51,6 +59,128 @@ define([
           $scope.$broadcast('hrjc-loader-hide');
         });
       }
+    }());
+
+    function createPage () {
+      var start = (($scope.currentPage - 1) * $scope.itemsPerPage);
+      var end = start + $scope.itemsPerPage;
+
+      $scope.revisionDataListPage = revisionDataListLocal.slice(start, end);
+    }
+
+    function deleteRevision (revisionId, e) {
+      if ($scope.revisionList.length === 1) {
+        e.stopPropagation();
+        return;
+      }
+
+      if (!revisionId || typeof +revisionId !== 'number') {
+        return;
+      }
+
+      var modalInstance = $modal.open({
+        appendTo: $rootElement.find('div').eq(0),
+        templateUrl: settings.pathApp + 'views/modalDialog.html',
+        size: 'sm',
+        controller: 'ModalDialogController',
+        resolve: {
+          content: function () {
+            return {
+              msg: 'Are you sure you want to delete this job contract revision?'
+            };
+          }
+        }
+      });
+
+      modalInstance.result.then(function (confirm) {
+        if (confirm) {
+          $scope.$broadcast('hrjc-loader-show');
+          ContractService.deleteRevision(revisionId).then(function (results) {
+            var i = 0;
+            var len = $scope.revisionList.length;
+
+            if (!results.is_error) {
+              for (i; i < len; i++) {
+                if ($scope.revisionList[i].id === revisionId) {
+                  $scope.revisionList.splice(i, 1);
+                  $scope.revisionDataList.splice(i, 1);
+                  break;
+                }
+              }
+
+              $scope.sortBy();
+              $scope.createPage();
+
+              if ($scope.revisionCurrent.id !== setCurrentRevision()) {
+                $scope.$emit('updateContractView');
+                return;
+              }
+
+              $scope.$broadcast('hrjc-loader-hide');
+            }
+          });
+        }
+      });
+    }
+
+    function initWatchers () {
+      $scope.$watch('currentPage', function () {
+        $scope.createPage();
+      });
+
+      $scope.$watch('revisionDataList.length', function (lengthNow, lengthPrev) {
+        revisionDataListLocal = $scope.revisionDataList;
+        if (lengthNow > lengthPrev) {
+          setCurrentRevision();
+        }
+        $scope.sortBy();
+        $scope.createPage();
+      });
+    }
+
+    function modalRevisionEdit (revisionEntityIdObj) {
+      var date = revisionEntityIdObj.effective_date;
+      var reasonId = revisionEntityIdObj.change_reason;
+      var modalChangeReason = $modal.open({
+        appendTo: $rootElement.find('div').eq(0),
+        templateUrl: settings.pathApp + 'views/modalChangeReason.html?v=' + (new Date()).getTime(),
+        controller: 'ModalChangeReasonController',
+        resolve: {
+          content: function () {
+            return {
+              copy: {
+                title: 'Edit revision data'
+              }
+            };
+          },
+          date: function () {
+            return date;
+          },
+          reasonId: function () {
+            return reasonId;
+          }
+        }
+      });
+
+      modalChangeReason.result.then(function (results) {
+        if (results.date !== date || results.reasonId !== reasonId) {
+          ContractService.saveRevision({
+            id: revisionEntityIdObj.id,
+            change_reason: results.reasonId,
+            effective_date: results.date
+          }).then(function () {
+            revisionEntityIdObj.effective_date = results.date;
+            revisionEntityIdObj.change_reason = results.reasonId;
+
+            $scope.sortBy();
+            $scope.createPage();
+
+            if ($scope.revisionCurrent.id !== setCurrentRevision()) {
+              $scope.$emit('updateContractView');
+            }
+          });
+        }
+      });
     }
 
     function setCurrentRevision () {
@@ -77,6 +207,22 @@ define([
         return revisionCurrent.id;
       }
       return null;
+    }
+
+    function sortBy (sortCol, sortReverse) {
+      if (typeof sortCol !== 'undefined') {
+        if ($scope.sortCol === sortCol) {
+          $scope.sortReverse = !$scope.sortReverse;
+        } else {
+          $scope.sortCol = sortCol;
+        }
+      }
+
+      if (typeof sortReverse !== 'undefined') {
+        $scope.sortReverse = sortReverse;
+      }
+
+      revisionDataListLocal = $filter('orderBy')($scope.revisionDataList, $scope.sortCol, $scope.sortReverse);
     }
 
     function urlCSVBuild () {
@@ -119,147 +265,7 @@ define([
 
       return url;
     }
-
-    init();
-
-    $scope.createPage = function () {
-      var start = (($scope.currentPage - 1) * $scope.itemsPerPage);
-      var end = start + $scope.itemsPerPage;
-
-      $scope.revisionDataListPage = revisionDataListLocal.slice(start, end);
-    };
-
-    $scope.sortBy = function (sortCol, sortReverse) {
-      if (typeof sortCol !== 'undefined') {
-        if ($scope.sortCol === sortCol) {
-          $scope.sortReverse = !$scope.sortReverse;
-        } else {
-          $scope.sortCol = sortCol;
-        }
-      }
-
-      if (typeof sortReverse !== 'undefined') {
-        $scope.sortReverse = sortReverse;
-      }
-
-      revisionDataListLocal = $filter('orderBy')($scope.revisionDataList, $scope.sortCol, $scope.sortReverse);
-    };
-
-    $scope.urlCSV = urlCSVBuild();
-
-    $scope.deleteRevision = function (revisionId, e) {
-      if ($scope.revisionList.length === 1) {
-        e.stopPropagation();
-        return;
-      }
-
-      if (!revisionId || typeof +revisionId !== 'number') {
-        return;
-      }
-
-      var modalInstance = $modal.open({
-        appendTo: $rootElement.find('div').eq(0),
-        templateUrl: settings.pathApp + 'views/modalDialog.html',
-        size: 'sm',
-        controller: 'ModalDialogCtrl',
-        resolve: {
-          content: function () {
-            return {
-              msg: 'Are you sure you want to delete this job contract revision?'
-            };
-          }
-        }
-      });
-
-      modalInstance.result.then(function (confirm) {
-        if (confirm) {
-          $scope.$broadcast('hrjc-loader-show');
-          ContractService.deleteRevision(revisionId).then(function (results) {
-            var i = 0;
-            var len = $scope.revisionList.length;
-
-            if (!results.is_error) {
-              for (i; i < len; i++) {
-                if ($scope.revisionList[i].id === revisionId) {
-                  $scope.revisionList.splice(i, 1);
-                  $scope.revisionDataList.splice(i, 1);
-                  break;
-                }
-              }
-
-              $scope.sortBy();
-              $scope.createPage();
-
-              if ($scope.revisionCurrent.id !== setCurrentRevision()) {
-                $scope.$emit('updateContractView');
-                return;
-              }
-
-              $scope.$broadcast('hrjc-loader-hide');
-            }
-          });
-        }
-      });
-    };
-
-    $scope.modalRevisionEdit = function (revisionEntityIdObj) {
-      var date = revisionEntityIdObj.effective_date;
-      var reasonId = revisionEntityIdObj.change_reason;
-      var modalChangeReason = $modal.open({
-        appendTo: $rootElement.find('div').eq(0),
-        templateUrl: settings.pathApp + 'views/modalChangeReason.html?v=' + (new Date()).getTime(),
-        controller: 'ModalChangeReasonCtrl',
-        resolve: {
-          content: function () {
-            return {
-              copy: {
-                title: 'Edit revision data'
-              }
-            };
-          },
-          date: function () {
-            return date;
-          },
-          reasonId: function () {
-            return reasonId;
-          }
-        }
-      });
-
-      modalChangeReason.result.then(function (results) {
-        if (results.date !== date || results.reasonId !== reasonId) {
-          ContractService.saveRevision({
-            id: revisionEntityIdObj.id,
-            change_reason: results.reasonId,
-            effective_date: results.date
-          }).then(function () {
-            revisionEntityIdObj.effective_date = results.date;
-            revisionEntityIdObj.change_reason = results.reasonId;
-
-            $scope.sortBy();
-            $scope.createPage();
-
-            if ($scope.revisionCurrent.id !== setCurrentRevision()) {
-              $scope.$emit('updateContractView');
-            }
-          });
-        }
-      });
-    };
-
-    $scope.$watch('currentPage', function () {
-      $scope.createPage();
-    });
-
-    $scope.$watch('revisionDataList.length', function (lengthNow, lengthPrev) {
-      revisionDataListLocal = $scope.revisionDataList;
-      if (lengthNow > lengthPrev) {
-        setCurrentRevision();
-      }
-      $scope.sortBy();
-      $scope.createPage();
-    });
   }
 
-  return RevisionListCtrl;
+  return RevisionListController;
 });

@@ -7,52 +7,37 @@ define([
 ], function (angular, _, moment) {
   'use strict';
 
-  ModalContractNewCtrl.__name = 'ModalContractNewCtrl';
-  ModalContractNewCtrl.$inject = [
-    '$rootScope', '$scope', '$uibModalInstance', '$q', '$uibModal', '$rootElement',
-    '$sce', 'Contract', 'ContractService', 'ContractDetailsService', 'ContractHourService',
-    'ContractPayService', 'ContractLeaveService', 'ContractHealthService',
-    'ContractPensionService', 'ContractFilesService', 'model', 'UtilsService',
-    'utils', 'settings', '$log', 'pubSub'
+  ModalContractNewController.__name = 'ModalContractNewController';
+  ModalContractNewController.$inject = [
+    '$log', '$q', '$rootElement', '$rootScope', '$sce', '$scope', '$uibModalInstance',
+    '$uibModal', 'Contract', 'ContractService', 'ContractDetailsService',
+    'ContractHourService', 'ContractPayService', 'ContractLeaveService',
+    'ContractHealthService', 'ContractPensionService', 'ContractFilesService',
+    'model', 'UtilsService', 'utils', 'settings', 'pubSub'
   ];
 
-  function ModalContractNewCtrl ($rootScope, $scope, $modalInstance, $q, $modal,
-    $rootElement, $sce, Contract, ContractService, ContractDetailsService,
+  function ModalContractNewController ($log, $q, $rootElement, $rootScope, $sce,
+    $scope, $modalInstance, $modal, Contract, ContractService, ContractDetailsService,
     ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
     ContractPensionService, ContractFilesService, model, UtilsService, utils,
-    settings, $log, pubSub) {
-    $log.debug('Controller: ModalContractNewCtrl');
+    settings, pubSub) {
+    $log.debug('Controller: ModalContractNewController');
 
     $scope.allowSave = true;
     $scope.action = 'new';
+    $scope.entity = {};
+    $scope.fileMaxSize = settings.CRM.maxFileSize || 0;
+    $scope.isDisabled = false;
+    $scope.showIsPrimary = utils.contractListLen;
+    $scope.utils = utils;
     $scope.copy = {
       close: 'Cancel',
       save: 'Add New Job Contract',
       title: 'Add New Job Contract'
     };
-    $scope.entity = {};
-    $scope.isDisabled = false;
-    $scope.showIsPrimary = utils.contractListLen;
-
-    $scope.fileMaxSize = settings.CRM.maxFileSize || 0;
-    $scope.uploader = {
-      details: {
-        contract_file: ContractFilesService.uploader('civicrm_hrjobcontract_details')
-      },
-      pension: {
-        evidence_file: ContractFilesService.uploader('civicrm_hrjobcontract_pension', 1)
-      }
-    };
-    $scope.utils = utils;
-
-    angular.copy(model, $scope.entity);
     $scope.entity.contract = {
       is_primary: 0
     };
-
-    // Since we are adding a new Contract, we set the values for each leave type with the AbsenceTypes values
-    setDefaultLeaveValuesFromAbsenceType();
-
     $scope.tooltips = {
       fileSize: $sce.trustAsHtml('<p>' +
         'THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.' +
@@ -84,9 +69,23 @@ define([
         'headcount would be 15.' +
         '</div>')
     };
+    $scope.uploader = {
+      details: {
+        contract_file: ContractFilesService.uploader('civicrm_hrjobcontract_details')
+      },
+      pension: {
+        evidence_file: ContractFilesService.uploader('civicrm_hrjobcontract_pension', 1)
+      }
+    };
+
+    $scope.cancel = cancel;
+    $scope.filesValidate = filesValidate;
+    $scope.save = save;
 
     // Init
     (function init () {
+      angular.copy(model, $scope.entity);
+
       angular.forEach($scope.uploader, function (entity) {
         angular.forEach(entity, function (field) {
           field.onAfterAddingAll = function () {
@@ -95,13 +94,44 @@ define([
         });
       });
 
+      // Since we are adding a new Contract, we set the values for each leave type with the AbsenceTypes values
+      setDefaultLeaveValuesFromAbsenceType();
+
       $rootScope.$broadcast('hrjc-loader-show');
       fetchInsurancePlanTypes().then(function () {
         $rootScope.$broadcast('hrjc-loader-hide');
       });
     }());
 
-    $scope.filesValidate = function () {
+    function cancel () {
+      $modalInstance.dismiss('cancel');
+    }
+
+    /**
+     * Shows a confirmation dialog warning the user that, if they proceed, the staff
+     * leave entitlement will be updated.
+     *
+     * @returns {*}
+     */
+    function confirmUpdateEntitlements () {
+      var modalUpdateEntitlements = $modal.open({
+        appendTo: $rootElement.find('div').eq(0),
+        size: 'sm',
+        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
+        controller: 'ModalDialogController',
+        resolve: {
+          content: {
+            title: 'Update leave entitlements?',
+            msg: 'The system will now update the staff member leave entitlement.',
+            copyConfirm: 'Proceed'
+          }
+        }
+      });
+
+      return modalUpdateEntitlements.result;
+    }
+
+    function filesValidate () {
       var entityName, fieldName, i, len, uploaderEntity, uploaderEntityField, uploaderEntityFieldQueue;
       var fileMaxSize = $scope.fileMaxSize;
       var isValid = true;
@@ -123,57 +153,6 @@ define([
       }
 
       $scope.contractForm.$setValidity('maxFileSize', isValid);
-    };
-
-    $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
-    };
-
-    $scope.save = function () {
-      $scope.$broadcast('hrjc-loader-show');
-
-      ContractDetailsService.validateDates({
-        contact_id: settings.contactId,
-        period_start_date: $scope.entity.details.period_start_date,
-        period_end_date: $scope.entity.details.period_end_date
-      }).then(function (result) {
-        if (result.success) {
-          confirmUpdateEntitlements()
-            .then(function () {
-              saveContract();
-            },
-              function () {
-                $scope.$broadcast('hrjc-loader-hide');
-              });
-        } else {
-          CRM.alert(result.message, 'Error', 'error');
-          $scope.$broadcast('hrjc-loader-hide');
-        }
-      }, function (reason) {});
-    };
-
-    /**
-     * Shows a confirmation dialog warning the user that, if they proceed, the staff
-     * leave entitlement will be updated.
-     *
-     * @returns {*}
-     */
-    function confirmUpdateEntitlements () {
-      var modalUpdateEntitlements = $modal.open({
-        appendTo: $rootElement.find('div').eq(0),
-        size: 'sm',
-        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
-        controller: 'ModalDialogCtrl',
-        resolve: {
-          content: {
-            title: 'Update leave entitlements?',
-            msg: 'The system will now update the staff member leave entitlement.',
-            copyConfirm: 'Proceed'
-          }
-        }
-      });
-
-      return modalUpdateEntitlements.result;
     }
 
     /**
@@ -239,7 +218,7 @@ define([
               appendTo: $rootElement.find('div').eq(0),
               templateUrl: settings.pathApp + 'views/modalProgress.html',
               size: 'sm',
-              controller: 'ModalProgressCtrl',
+              controller: 'ModalProgressController',
               resolve: {
                 uploader: function () {
                   return uploader;
@@ -297,6 +276,29 @@ define([
       }));
     }
 
+    function save () {
+      $scope.$broadcast('hrjc-loader-show');
+
+      ContractDetailsService.validateDates({
+        contact_id: settings.contactId,
+        period_start_date: $scope.entity.details.period_start_date,
+        period_end_date: $scope.entity.details.period_end_date
+      }).then(function (result) {
+        if (result.success) {
+          confirmUpdateEntitlements()
+            .then(function () {
+              saveContract();
+            },
+              function () {
+                $scope.$broadcast('hrjc-loader-hide');
+              });
+        } else {
+          CRM.alert(result.message, 'Error', 'error');
+          $scope.$broadcast('hrjc-loader-hide');
+        }
+      }, function (reason) {});
+    }
+
     /**
      * This method sets the Leave default values based on their respective Absence Type.
      *
@@ -316,5 +318,5 @@ define([
     }
   }
 
-  return ModalContractNewCtrl;
+  return ModalContractNewController;
 });

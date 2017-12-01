@@ -6,7 +6,7 @@ define([
 ], function (InsurancePlanTypesMock) {
   'use strict';
 
-  describe('ModalContractNewCtrl', function () {
+  describe('ModalContractNewController', function () {
     var $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock, ContractHealthService;
 
     beforeEach(module('job-contract'));
@@ -84,7 +84,7 @@ define([
 
     function makeController () {
       $scope = $rootScope.$new();
-      $controller('ModalContractNewCtrl', {
+      $controller('ModalContractNewController', {
         $scope: $scope,
         $rootScope: $rootScope,
         model: {},

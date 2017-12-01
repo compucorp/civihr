@@ -5,17 +5,17 @@ define([
 ], function (angular) {
   'use strict';
 
-  ModalRevisionCtrl.__name = 'ModalRevisionCtrl';
-  ModalRevisionCtrl.$inject = [
-    '$scope', '$rootScope', '$uibModalInstance', '$filter', '$q', 'settings',
+  ModalRevisionController.__name = 'ModalRevisionController';
+  ModalRevisionController.$inject = [
+    '$filter', '$log', '$q', '$rootScope', '$scope', '$uibModalInstance', 'settings',
     'revisionDataList', 'revisionList', 'entity', 'fields', 'model', 'modalContract',
-    'utils', 'ContactService', '$log'
+    'utils', 'ContactService'
   ];
 
-  function ModalRevisionCtrl ($scope, $rootScope, $modalInstance, $filter, $q,
+  function ModalRevisionController ($filter, $log, $q, $rootScope, $scope, $modalInstance,
     settings, revisionDataList, revisionList, entity, fields, model, modalContract,
-    utils, ContactService, $log) {
-    $log.debug('Controller: ModalRevisionCtrl');
+    utils, ContactService) {
+    $log.debug('Controller: ModalRevisionController');
 
     $scope.$broadcast('hrjc-loader-show');
     $scope.currentPage = 1;
@@ -29,8 +29,37 @@ define([
     $scope.maxSize = 5;
     $scope.modalContract = modalContract;
     $scope.sortReverse = true;
+    $scope.urlCSV = urlCSVBuild();
 
-    (function () {
+    $scope.cancel = cancel;
+    $scope.createPage = createPage;
+    $scope.sortBy = sortBy;
+    $scope.toggleFieldsSelected = toggleFieldsSelected;
+
+    (function init () {
+      initA();
+      initB();
+      initC();
+      initWatchers();
+
+      $scope.sortBy();
+      $modalInstance.opened.then(function () {
+        $rootScope.$broadcast('hrjc-loader-hide');
+      });
+    }());
+
+    function cancel () {
+      $modalInstance.dismiss('cancel');
+    }
+
+    function createPage () {
+      var start = (($scope.currentPage - 1) * $scope.itemsPerPage);
+      var end = start + $scope.itemsPerPage;
+
+      $scope.revisionDataListPage = $scope.revisionDataList.slice(start, end);
+    }
+
+    function initA () {
       var i = 0;
       var len = $scope.fields.length;
       var field;
@@ -72,9 +101,9 @@ define([
         isArray: false,
         extends: true
       });
-    })();
+    }
 
-    (function () {
+    function initB () {
       var i = 0;
       var iNext;
       var isLast;
@@ -113,93 +142,122 @@ define([
         });
         $scope.revisionDataList.push(revisionDataList[i]);
       }
-    })();
+    }
 
-    switch (entity) {
-      case 'hour':
-        (function () {
-          var hoursLocation;
+    function initC () {
+      switch (entity) {
+        case 'hour':
+          (function () {
+            var hoursLocation;
+            angular.forEach($scope.revisionDataList, function (revisionData) {
+              if (revisionData.location_standard_hours) {
+                hoursLocation = $filter('filter')(utils.hoursLocation, {id: revisionData.location_standard_hours})[0];
+                revisionData.location_standard_hours = hoursLocation.location + ': ' +
+                                hoursLocation.standard_hours + 'h per ' +
+                                hoursLocation.periodicity;
+              }
+            });
+          })();
+          break;
+        case 'health':
           angular.forEach($scope.revisionDataList, function (revisionData) {
-            if (revisionData.location_standard_hours) {
-              hoursLocation = $filter('filter')(utils.hoursLocation, {id: revisionData.location_standard_hours})[0];
-              revisionData.location_standard_hours = hoursLocation.location + ': ' +
-                              hoursLocation.standard_hours + 'h per ' +
-                              hoursLocation.periodicity;
+            if (revisionData.provider) {
+              ContactService.getOne(revisionData.provider).then(function (contact) {
+                revisionData.provider = contact.label;
+              });
+            }
+
+            if (revisionData.provider_life_insurance) {
+              ContactService.getOne(revisionData.provider_life_insurance).then(function (contact) {
+                revisionData.provider_life_insurance = contact.label;
+              });
             }
           });
-        })();
-        break;
-      case 'health':
-        angular.forEach($scope.revisionDataList, function (revisionData) {
-          if (revisionData.provider) {
-            ContactService.getOne(revisionData.provider).then(function (contact) {
-              revisionData.provider = contact.label;
+          break;
+        case 'pay':
+          (function () {
+            var payScaleGrade;
+            angular.forEach($scope.revisionDataList, function (revisionData) {
+              if (revisionData.pay_scale) {
+                payScaleGrade = $filter('filter')(utils.payScaleGrade, {id: revisionData.pay_scale})[0] || $filter('filter')(utils.payScaleGrade, {pay_scale: revisionData.pay_scale})[0];
+                revisionData.pay_scale = payScaleGrade.pay_scale +
+                                (payScaleGrade.currency ? ' - ' + $rootScope.options.pay.pay_currency[payScaleGrade.currency] : '') +
+                                (payScaleGrade.amount ? ' ' + payScaleGrade.amount : '') +
+                                (payScaleGrade.pay_frequency ? ' per ' + payScaleGrade.pay_frequency : '');
+              }
             });
-          }
+          })();
 
-          if (revisionData.provider_life_insurance) {
-            ContactService.getOne(revisionData.provider_life_insurance).then(function (contact) {
-              revisionData.provider_life_insurance = contact.label;
-            });
-          }
-        });
-        break;
-      case 'pay':
-        (function () {
-          var payScaleGrade;
-          angular.forEach($scope.revisionDataList, function (revisionData) {
-            if (revisionData.pay_scale) {
-              payScaleGrade = $filter('filter')(utils.payScaleGrade, {id: revisionData.pay_scale})[0] || $filter('filter')(utils.payScaleGrade, {pay_scale: revisionData.pay_scale})[0];
-              revisionData.pay_scale = payScaleGrade.pay_scale +
-                              (payScaleGrade.currency ? ' - ' + $rootScope.options.pay.pay_currency[payScaleGrade.currency] : '') +
-                              (payScaleGrade.amount ? ' ' + payScaleGrade.amount : '') +
-                              (payScaleGrade.pay_frequency ? ' per ' + payScaleGrade.pay_frequency : '');
-            }
-          });
-        })();
+          $filter('filter')($scope.fields, {name: 'pay_is_auto_est'})[0].pseudoconstant = true;
 
-        $filter('filter')($scope.fields, {name: 'pay_is_auto_est'})[0].pseudoconstant = true;
+          $scope.subFields = {
+            annual_benefits: [{
+              name: 'name',
+              title: 'Benefit',
+              pseudoconstant: 'benefit_name'
+            }, {
+              name: 'type',
+              title: 'Type',
+              pseudoconstant: 'benefit_type'
+            }, {
+              name: 'amount_pct',
+              title: '% amount',
+              pseudoconstant: false
+            }, {
+              name: 'amount_abs',
+              title: 'Absolute amount',
+              pseudoconstant: false
+            }],
+            annual_deductions: [{
+              name: 'name',
+              title: 'Deduction',
+              pseudoconstant: 'deduction_name'
+            }, {
+              name: 'type',
+              title: 'Type',
+              pseudoconstant: 'deduction_type'
+            }, {
+              name: 'amount_pct',
+              title: '% amount',
+              pseudoconstant: false
+            }, {
+              name: 'amount_abs',
+              title: 'Absolute amount',
+              pseudoconstant: false
+            }]
+          };
+          break;
+        case 'pension':
+          $filter('filter')($scope.fields, {name: 'is_enrolled'})[0].pseudoconstant = true;
+          break;
+      }
+    }
 
-        $scope.subFields = {
-          annual_benefits: [{
-            name: 'name',
-            title: 'Benefit',
-            pseudoconstant: 'benefit_name'
-          }, {
-            name: 'type',
-            title: 'Type',
-            pseudoconstant: 'benefit_type'
-          }, {
-            name: 'amount_pct',
-            title: '% amount',
-            pseudoconstant: false
-          }, {
-            name: 'amount_abs',
-            title: 'Absolute amount',
-            pseudoconstant: false
-          }],
-          annual_deductions: [{
-            name: 'name',
-            title: 'Deduction',
-            pseudoconstant: 'deduction_name'
-          }, {
-            name: 'type',
-            title: 'Type',
-            pseudoconstant: 'deduction_type'
-          }, {
-            name: 'amount_pct',
-            title: '% amount',
-            pseudoconstant: false
-          }, {
-            name: 'amount_abs',
-            title: 'Absolute amount',
-            pseudoconstant: false
-          }]
-        };
-        break;
-      case 'pension':
-        $filter('filter')($scope.fields, {name: 'is_enrolled'})[0].pseudoconstant = true;
-        break;
+    function initWatchers () {
+      $scope.$watch('currentPage', function () {
+        $scope.createPage();
+      });
+    }
+
+    function sortBy (sortCol, sortReverse) {
+      if (typeof sortCol !== 'undefined') {
+        if ($scope.sortCol === sortCol) {
+          $scope.sortReverse = !$scope.sortReverse;
+        } else {
+          $scope.sortCol = sortCol;
+        }
+      }
+
+      if (typeof sortReverse !== 'undefined') {
+        $scope.sortReverse = sortReverse;
+      }
+
+      $scope.revisionDataList = $filter('orderBy')($scope.revisionDataList, $scope.sortCol, $scope.sortReverse);
+    }
+
+    function toggleFieldsSelected (field) {
+      field.selected = !field.selected;
+      $scope.urlCSV = urlCSVBuild();
     }
 
     function urlCSVBuild () {
@@ -246,49 +304,7 @@ define([
 
       return url;
     }
-    $scope.urlCSV = urlCSVBuild();
-
-    $scope.createPage = function () {
-      var start = (($scope.currentPage - 1) * $scope.itemsPerPage);
-      var end = start + $scope.itemsPerPage;
-
-      $scope.revisionDataListPage = $scope.revisionDataList.slice(start, end);
-    };
-
-    $scope.sortBy = function (sortCol, sortReverse) {
-      if (typeof sortCol !== 'undefined') {
-        if ($scope.sortCol === sortCol) {
-          $scope.sortReverse = !$scope.sortReverse;
-        } else {
-          $scope.sortCol = sortCol;
-        }
-      }
-
-      if (typeof sortReverse !== 'undefined') {
-        $scope.sortReverse = sortReverse;
-      }
-
-      $scope.revisionDataList = $filter('orderBy')($scope.revisionDataList, $scope.sortCol, $scope.sortReverse);
-    };
-    $scope.sortBy();
-
-    $scope.toggleFieldsSelected = function (field) {
-      field.selected = !field.selected;
-      $scope.urlCSV = urlCSVBuild();
-    };
-
-    $modalInstance.opened.then(function () {
-      $rootScope.$broadcast('hrjc-loader-hide');
-    });
-
-    $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
-    };
-
-    $scope.$watch('currentPage', function () {
-      $scope.createPage();
-    });
   }
 
-  return ModalRevisionCtrl;
+  return ModalRevisionController;
 });

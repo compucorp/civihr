@@ -17,26 +17,26 @@ define([
   'job-contract/controllers/modal/modal-dialog.controller',
   'job-contract/controllers/modal/modal-progress.controller',
   'job-contract/controllers/modal/modal-revision.controller'
-], function (angular, ContractCtrl, ContractListCtrl, RevisionListCtrl, FormGeneralCtrl,
-  FormHealthCtrl, FormHourCtrl, FormLeaveCtrl, FormPayCtrl, FormPensionCtrl,
-  ModalChangeReasonCtrl, ModalContractNewCtrl, ModalContractCtrl, ModalDialogCtrl,
-  ModalProgressCtrl, ModalRevisionCtrl) {
+], function (angular, ContractController, ContractListController, RevisionListController, FormGeneralController,
+  FormHealthController, FormHourController, FormLeaveController, FormPayController, FormPensionController,
+  ModalChangeReasonController, ModalContractNewController, ModalContractController, ModalDialogController,
+  ModalProgressController, ModalRevisionController) {
   'use strict';
 
   return angular.module('job-contract.controllers', [])
-    .controller(ContractCtrl.__name, ContractCtrl)
-    .controller(ContractListCtrl.__name, ContractListCtrl)
-    .controller(RevisionListCtrl.__name, RevisionListCtrl)
-    .controller(FormGeneralCtrl.__name, FormGeneralCtrl)
-    .controller(FormHealthCtrl.__name, FormHealthCtrl)
-    .controller(FormHourCtrl.__name, FormHourCtrl)
-    .controller(FormLeaveCtrl.__name, FormLeaveCtrl)
-    .controller(FormPayCtrl.__name, FormPayCtrl)
-    .controller(FormPensionCtrl.__name, FormPensionCtrl)
-    .controller(ModalChangeReasonCtrl.__name, ModalChangeReasonCtrl)
-    .controller(ModalContractNewCtrl.__name, ModalContractNewCtrl)
-    .controller(ModalContractCtrl.__name, ModalContractCtrl)
-    .controller(ModalDialogCtrl.__name, ModalDialogCtrl)
-    .controller(ModalProgressCtrl.__name, ModalProgressCtrl)
-    .controller(ModalRevisionCtrl.__name, ModalRevisionCtrl);
+    .controller(ContractController.__name, ContractController)
+    .controller(ContractListController.__name, ContractListController)
+    .controller(RevisionListController.__name, RevisionListController)
+    .controller(FormGeneralController.__name, FormGeneralController)
+    .controller(FormHealthController.__name, FormHealthController)
+    .controller(FormHourController.__name, FormHourController)
+    .controller(FormLeaveController.__name, FormLeaveController)
+    .controller(FormPayController.__name, FormPayController)
+    .controller(FormPensionController.__name, FormPensionController)
+    .controller(ModalChangeReasonController.__name, ModalChangeReasonController)
+    .controller(ModalContractNewController.__name, ModalContractNewController)
+    .controller(ModalContractController.__name, ModalContractController)
+    .controller(ModalDialogController.__name, ModalDialogController)
+    .controller(ModalProgressController.__name, ModalProgressController)
+    .controller(ModalRevisionController.__name, ModalRevisionController);
 });

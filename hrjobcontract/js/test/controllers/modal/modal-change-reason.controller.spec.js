@@ -3,11 +3,11 @@
 define([
   'common/moment',
   'common/angularMocks',
-  'job-contract/controllers/modal/modal-change-reason.controller'
+  'job-contract/modules/job-contract.module'
 ], function (moment) {
   'use strict';
 
-  describe('ModalChangeReasonCtrl', function () {
+  describe('ModalChangeReasonController', function () {
     var $q, $rootScope, $scope, $controller, modalInstanceSpy, ContractRevisionServiceMock, ContractRevisionServiceSpy;
 
     beforeEach(function () {
@@ -104,7 +104,7 @@ define([
       $scope.effective_date = '';
       $scope.isPast = false;
 
-      $controller('ModalChangeReasonCtrl', {
+      $controller('ModalChangeReasonController', {
         $scope: $rootScope,
         $uibModalInstance: modalInstanceSpy,
         content: 'some string',

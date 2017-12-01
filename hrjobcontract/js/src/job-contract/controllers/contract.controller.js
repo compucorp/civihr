@@ -6,20 +6,21 @@ define([
 ], function (_, moment) {
   'use strict';
 
-  ContractCtrl.__name = 'ContractCtrl';
-  ContractCtrl.$inject = [
-    '$scope', '$route', '$filter', '$uibModal', '$rootElement', '$q', '$window',
+  ContractController.__name = 'ContractController';
+  ContractController.$inject = [
+    '$filter', '$log', '$q', '$rootElement', '$route', '$scope', '$window', '$uibModal',
     'settings', 'API', 'ContractService', 'ContractDetailsService', 'ContractHourService',
     'ContractPayService', 'ContractLeaveService', 'ContractHealthService',
     'ContractPensionService', 'ContractFilesService', 'ContactService',
-    'ContractRevisionList', '$log', 'UtilsService'
+    'ContractRevisionList', 'UtilsService'
   ];
 
-  function ContractCtrl ($scope, $route, $filter, $modal, $rootElement, $q, $window,
+  function ContractController ($filter, $log, $q, $rootElement, $route, $scope, $window, $modal,
     settings, API, ContractService, ContractDetailsService, ContractHourService,
-    ContractPayService, ContractLeaveService, ContractHealthService, ContractPensionService,
-    ContractFilesService, ContactService, ContractRevisionList, $log, UtilsService) {
-    $log.debug('Controller: ContractCtrl');
+    ContractPayService, ContractLeaveService, ContractHealthService,
+    ContractPensionService, ContractFilesService, ContactService,
+    ContractRevisionList, UtilsService) {
+    $log.debug('Controller: ContractController');
 
     var promiseFiles;
     var contractId = $scope.contract.id;
@@ -33,117 +34,44 @@ define([
     $scope.revisionList = [];
     $scope.revisionDataList = [];
 
-    _.extend($scope, _.cloneDeep($scope.model));
+    $scope.modalContract = modalContract;
+    $scope.modalRevision = modalRevision;
+    $scope.showRevisions = showRevisions;
+    vm.fetchRevisionDetails = fetchRevisionDetails;
 
-    function updateContractView (newScope) {
-      var contractRevisionIdObj = {
-        id: null,
-        jobcontract_id: contractId,
-        jobcontract_revision_id: newScope.details.jobcontract_revision_id
-      };
+    (function init () {
+      initListeners();
 
-      _.extend($scope.details, newScope.details);
-      _.extend($scope.hour, newScope.hour || contractRevisionIdObj);
-      _.extend($scope.pay, newScope.pay || contractRevisionIdObj);
+      _.extend($scope, _.cloneDeep($scope.model));
 
-      if (newScope.health &&
-        newScope.health.provider &&
-        newScope.health.provider !== $scope.health.provider) {
-        ContactService.getOne(newScope.health.provider).then(function (contact) {
-          $scope.health.provider_contact = contact;
-        });
-      }
+      ContractService
+        .fullDetails(contractId)
+        .then(function (results) {
+          updateContractView(results);
 
-      if (newScope.health &&
-        newScope.health.provider_life_insurance &&
-        newScope.health.provider_life_insurance !== $scope.health.provider_life_insurance) {
-        ContactService.getOne(newScope.health.provider_life_insurance).then(function (contact) {
-          $scope.health.provider_life_insurance_contact = contact;
-        });
-      }
+          $scope.contractLoaded = true;
 
-      _.extend($scope.health, newScope.health || contractRevisionIdObj);
-      _.extend($scope.pension, newScope.pension || contractRevisionIdObj);
+          $scope.$watch('contract.is_primary', function () {
+            $scope.isCollapsed = !+$scope.contract.is_primary;
+          });
 
-      _.each($scope.leave, function (leaveType, leaveTypeId) {
-        _.extend(leaveType, newScope.leave ? newScope.leave[leaveTypeId] || contractRevisionIdObj : contractRevisionIdObj);
-      });
-    }
-
-    /**
-     * Updates the contract list view,
-     * by sorting the contract into current or past
-     * depending on the period end date of the contract.
-     *
-     * @param {string || date} newEndDate the date specified by the user
-     */
-    function updateContractList (newEndDate) {
-      var isCurrentContract = !newEndDate ? true : (moment().diff(newEndDate, 'day') <= 0);
-      var contract = $scope.$parent.contract;
-      var currentContracts = $scope.$parent.contractCurrent;
-      var pastContracts = $scope.$parent.contractPast;
-      var currentContractIndex = currentContracts.indexOf(contract);
-      var pastContractIndex = pastContracts.indexOf(contract);
-
-      if (isCurrentContract) {
-        contract.is_current = '1';
-        if (currentContractIndex + 1) {
-          _.extend(currentContracts[currentContractIndex], contract);
-        } else {
-          pastContracts.splice(pastContractIndex);
-          currentContracts.push(contract);
-        }
-      } else {
-        contract.is_current = '0';
-        if (pastContractIndex + 1) {
-          _.extend(pastContracts[pastContractIndex], contract);
-        } else {
-          pastContracts.push(contract);
-          currentContracts.splice(currentContractIndex);
-        }
-      }
-    }
-
-    function updateContractFiles () {
-      promiseFiles = $q.all({
-        details: ContractFilesService.get($scope.details.jobcontract_revision_id, 'civicrm_hrjobcontract_details'),
-        pension: ContractFilesService.get($scope.pension.jobcontract_revision_id, 'civicrm_hrjobcontract_pension')
-      });
-
-      promiseFiles.then(function (files) {
-        $scope.files = files;
-      });
-
-      return promiseFiles;
-    }
-
-    ContractService
-      .fullDetails(contractId)
-      .then(function (results) {
-        updateContractView(results);
-
-        $scope.contractLoaded = true;
-
-        $scope.$watch('contract.is_primary', function () {
-          $scope.isCollapsed = !+$scope.contract.is_primary;
-        });
-
-        $scope.$broadcast('hrjc-loader-show');
-        // Fetching revision list form ContractRevisionList service
-        ContractRevisionList.fetchRevisions(contractId).then(function (result) {
-          $scope.revisionList = result.revisionList;
-          $scope.revisionDataList = result.revisionDataList;
-          $scope.$broadcast('hrjc-loader-hide');
-        });
-      })
-      .then(updateContractFiles);
+          $scope.$broadcast('hrjc-loader-show');
+          // Fetching revision list form ContractRevisionList service
+          ContractRevisionList.fetchRevisions(contractId).then(function (result) {
+            $scope.revisionList = result.revisionList;
+            $scope.revisionDataList = result.revisionDataList;
+            $scope.$broadcast('hrjc-loader-hide');
+          });
+        })
+        .then(updateContractFiles);
+    }());
 
     /**
      * Fetches the Revision Details for given revision
      * @param  {object} revision
      * @return {object}
      */
-    vm.fetchRevisionDetails = function (revision) {
+    function fetchRevisionDetails (revision) {
       var entity, revisionDetails;
 
       return $q.all([
@@ -188,14 +116,28 @@ define([
 
         return entity;
       });
-    };
+    }
 
-    $scope.modalContract = function (action, revisionEntityIdObj) {
+    function initListeners () {
+      $scope.$on('updateContractView', function () {
+        $scope.$broadcast('hrjc-loader-show');
+
+        ContractService
+          .fullDetails($scope.revisionCurrent.jobcontract_id)
+          .then(function (results) {
+            updateContractView(results);
+            $scope.$broadcast('hrjc-loader-hide');
+          })
+          .then(updateContractFiles);
+      });
+    }
+
+    function modalContract (action, revisionEntityIdObj) {
       var modalInstance, dateEffectiveRevisionCreated, dateEffectiveRevisionCurrent,
         dateToday, revisionData, isCurrentRevision, i, objExt;
       var revisionListEntitiesView = ['details', 'hour', 'pay'];
       var options = {
-        controller: 'ModalContractCtrl',
+        controller: 'ModalContractController',
         appendTo: $rootElement.find('div').eq(0),
         templateUrl: settings.pathApp + 'views/modalForm.html?v=4448',
         windowClass: 'modal-contract',
@@ -338,16 +280,9 @@ define([
         CRM.refreshParent('#hrjobroles');
         $window.location.assign(UtilsService.getManageEntitlementsPageURL($scope.contract.contact_id));
       });
-    };
+    }
 
-    /**
-     * Marks that the revisions (in a different tab) have been shown
-     */
-    $scope.showRevisions = function () {
-      $scope.revisionsShown = true;
-    };
-
-    $scope.modalRevision = function (entity) {
+    function modalRevision (entity) {
       var options;
       var promiseEntityRevisionDataList = [];
       var apiMethod = entity !== 'leave' ? 'getOne' : 'get';
@@ -368,7 +303,7 @@ define([
       options = {
         appendTo: $rootElement.find('div').eq(0),
         size: 'lg',
-        controller: 'ModalRevisionCtrl',
+        controller: 'ModalRevisionController',
         templateUrl: settings.pathApp + 'views/modalRevision.html?v=1234',
         windowClass: 'modal-revision',
         resolve: {
@@ -396,20 +331,97 @@ define([
         }
       };
       return $modal.open(options);
-    };
+    }
 
-    $scope.$on('updateContractView', function () {
-      $scope.$broadcast('hrjc-loader-show');
+    /**
+     * Marks that the revisions (in a different tab) have been shown
+     */
+    function showRevisions () {
+      $scope.revisionsShown = true;
+    }
 
-      ContractService
-        .fullDetails($scope.revisionCurrent.jobcontract_id)
-        .then(function (results) {
-          updateContractView(results);
-          $scope.$broadcast('hrjc-loader-hide');
-        })
-        .then(updateContractFiles);
-    });
+    function updateContractView (newScope) {
+      var contractRevisionIdObj = {
+        id: null,
+        jobcontract_id: contractId,
+        jobcontract_revision_id: newScope.details.jobcontract_revision_id
+      };
+
+      _.extend($scope.details, newScope.details);
+      _.extend($scope.hour, newScope.hour || contractRevisionIdObj);
+      _.extend($scope.pay, newScope.pay || contractRevisionIdObj);
+
+      if (newScope.health &&
+        newScope.health.provider &&
+        newScope.health.provider !== $scope.health.provider) {
+        ContactService.getOne(newScope.health.provider).then(function (contact) {
+          $scope.health.provider_contact = contact;
+        });
+      }
+
+      if (newScope.health &&
+        newScope.health.provider_life_insurance &&
+        newScope.health.provider_life_insurance !== $scope.health.provider_life_insurance) {
+        ContactService.getOne(newScope.health.provider_life_insurance).then(function (contact) {
+          $scope.health.provider_life_insurance_contact = contact;
+        });
+      }
+
+      _.extend($scope.health, newScope.health || contractRevisionIdObj);
+      _.extend($scope.pension, newScope.pension || contractRevisionIdObj);
+
+      _.each($scope.leave, function (leaveType, leaveTypeId) {
+        _.extend(leaveType, newScope.leave ? newScope.leave[leaveTypeId] || contractRevisionIdObj : contractRevisionIdObj);
+      });
+    }
+
+    /**
+     * Updates the contract list view,
+     * by sorting the contract into current or past
+     * depending on the period end date of the contract.
+     *
+     * @param {string || date} newEndDate the date specified by the user
+     */
+    function updateContractList (newEndDate) {
+      var isCurrentContract = !newEndDate ? true : (moment().diff(newEndDate, 'day') <= 0);
+      var contract = $scope.$parent.contract;
+      var currentContracts = $scope.$parent.contractCurrent;
+      var pastContracts = $scope.$parent.contractPast;
+      var currentContractIndex = currentContracts.indexOf(contract);
+      var pastContractIndex = pastContracts.indexOf(contract);
+
+      if (isCurrentContract) {
+        contract.is_current = '1';
+        if (currentContractIndex + 1) {
+          _.extend(currentContracts[currentContractIndex], contract);
+        } else {
+          pastContracts.splice(pastContractIndex);
+          currentContracts.push(contract);
+        }
+      } else {
+        contract.is_current = '0';
+        if (pastContractIndex + 1) {
+          _.extend(pastContracts[pastContractIndex], contract);
+        } else {
+          pastContracts.push(contract);
+          currentContracts.splice(currentContractIndex);
+        }
+      }
+    }
+
+    function updateContractFiles () {
+      promiseFiles = $q.all({
+        details: ContractFilesService.get($scope.details.jobcontract_revision_id, 'civicrm_hrjobcontract_details'),
+        pension: ContractFilesService.get($scope.pension.jobcontract_revision_id, 'civicrm_hrjobcontract_pension')
+      });
+
+      promiseFiles.then(function (files) {
+        $scope.files = files;
+      });
+
+      return promiseFiles;
+    }
   }
 
-  return ContractCtrl;
+  return ContractController;
 });

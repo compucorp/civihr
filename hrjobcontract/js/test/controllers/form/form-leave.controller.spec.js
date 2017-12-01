@@ -5,7 +5,7 @@ define([
 ], function () {
   'use strict';
 
-  describe('FormLeaveCtrl', function () {
+  describe('FormLeaveController', function () {
     var ctrl, $controller, $rootScope, $scope, UtilsService;
 
     beforeEach(module('job-contract'));
@@ -70,7 +70,7 @@ define([
      */
     function initController () {
       $scope = $rootScope.$new();
-      ctrl = $controller('FormLeaveCtrl', { $scope: $scope });
+      ctrl = $controller('FormLeaveController', { $scope: $scope });
     }
   });
 });

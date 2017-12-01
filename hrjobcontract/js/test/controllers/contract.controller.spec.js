@@ -9,7 +9,7 @@ define([
 ], function (_, moment, contractMock) {
   'use strict';
 
-  describe('ContractCtrl', function () {
+  describe('ContractController', function () {
     var $controller, $httpBackend, $modal, $q, $rootScope, $scope, $window,
       AbsenceType, ContractService, UtilsService;
     var calculationUnitsMock = [{ value: 1, name: 'days' }, { value: 2, name: 'hours' }];
@@ -151,7 +151,7 @@ define([
       $scope.$parent.contractCurrent = [];
       $scope.$parent.contractPast = [];
 
-      $controller('ContractCtrl', {
+      $controller('ContractController', {
         $scope: $scope,
         $modal: $modal
       });

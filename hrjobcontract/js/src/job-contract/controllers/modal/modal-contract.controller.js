@@ -6,8 +6,8 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  ModalContractCtrl.__name = 'ModalContractCtrl';
-  ModalContractCtrl.$inject = [
+  ModalContractController.__name = 'ModalContractController';
+  ModalContractController.$inject = [
     '$scope', '$uibModal', '$uibModalInstance', '$q', '$rootElement', '$rootScope',
     '$filter', 'ContractService', 'ContractRevisionService', 'ContractDetailsService',
     'ContractHourService', 'ContractPayService', 'ContractLeaveService',
@@ -16,12 +16,12 @@ define([
     '$log', 'pubSub'
   ];
 
-  function ModalContractCtrl ($scope, $modal, $modalInstance, $q, $rootElement,
+  function ModalContractController ($scope, $modal, $modalInstance, $q, $rootElement,
     $rootScope, $filter, ContractService, ContractRevisionService, ContractDetailsService,
     ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
     ContractPensionService, ContractFilesService, action, entity, content, files,
     UtilsService, utils, settings, $log, pubSub) {
-    $log.debug('Controller: ModalContractCtrl');
+    $log.debug('Controller: ModalContractController');
 
     var copy = content.copy || {};
 
@@ -105,7 +105,7 @@ define([
         appendTo: $rootElement.find('div').eq(0),
         templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
         size: 'sm',
-        controller: 'ModalDialogCtrl',
+        controller: 'ModalDialogController',
         resolve: {
           content: function () {
             return {
@@ -231,7 +231,7 @@ define([
         appendTo: $rootElement.find('div').eq(0),
         size: 'sm',
         templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
-        controller: 'ModalDialogCtrl',
+        controller: 'ModalDialogController',
         resolve: {
           content: {
             title: 'Update leave entitlements?',
@@ -262,7 +262,7 @@ define([
       var modalChangeReason = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
         templateUrl: settings.pathApp + 'views/modalChangeReason.html?v=' + (new Date()).getTime(),
-        controller: 'ModalChangeReasonCtrl',
+        controller: 'ModalChangeReasonController',
         resolve: {
           content: function () {
             return {
@@ -283,7 +283,7 @@ define([
       var modalConfirmEdit = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
         templateUrl: settings.pathApp + 'views/modalConfirmEdit.html?v=' + (new Date()).getTime(),
-        controller: 'ModalDialogCtrl',
+        controller: 'ModalDialogController',
         resolve: {
           content: function () {
             return {
@@ -363,7 +363,7 @@ define([
             appendTo: $rootElement.find('div').eq(0),
             templateUrl: settings.pathApp + 'views/modalProgress.html?v=' + (new Date()).getTime(),
             size: 'sm',
-            controller: 'ModalProgressCtrl',
+            controller: 'ModalProgressController',
             resolve: {
               uploader: function () {
                 return uploader;
@@ -550,7 +550,7 @@ define([
               appendTo: $rootElement.find('div').eq(0),
               templateUrl: settings.pathApp + 'views/modalProgress.html',
               size: 'sm',
-              controller: 'ModalProgressCtrl',
+              controller: 'ModalProgressController',
               resolve: {
                 uploader: function () {
                   return uploader;
@@ -595,5 +595,5 @@ define([
     }
   }
 
-  return ModalContractCtrl;
+  return ModalContractController;
 });

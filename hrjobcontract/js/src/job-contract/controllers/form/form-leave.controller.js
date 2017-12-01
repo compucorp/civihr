@@ -5,25 +5,23 @@ define([
 ], function (_) {
   'use strict';
 
-  FormLeaveCtrl.__name = 'FormLeaveCtrl';
-  FormLeaveCtrl.$inject = ['$scope', '$log', 'UtilsService'];
+  FormLeaveController.__name = 'FormLeaveController';
+  FormLeaveController.$inject = ['$log', '$scope', 'UtilsService'];
 
-  function FormLeaveCtrl ($scope, $log, UtilsService) {
-    $log.debug('Controller: FormLeaveCtrl');
+  function FormLeaveController ($log, $scope, UtilsService) {
+    $log.debug('Controller: FormLeaveController');
 
     var vm = {};
 
     vm.numberOfPublicHolidays = 0;
 
-    init();
-
     /**
      * Initializes the controller by setting properties and adding watchers
      */
-    function init () {
+    (function init () {
       loadNumberOfPublicHolidays();
-      addListeners();
-    }
+      initWatchers();
+    }());
 
     /**
      * Loads the number of Public Holidays in Current Period
@@ -38,7 +36,7 @@ define([
     /**
      * Attach listeners to $scope
      */
-    function addListeners () {
+    function initWatchers () {
       $scope.$watch('entity.leave', toggleAddPublicHolidayRadios, true);
     }
 
@@ -69,5 +67,5 @@ define([
     return vm;
   }
 
-  return FormLeaveCtrl;
+  return FormLeaveController;
 });

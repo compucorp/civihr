@@ -3,15 +3,17 @@
 define(function () {
   'use strict';
 
-  FormPensionCtrl.__name = 'FormPensionCtrl';
-  FormPensionCtrl.$inject = ['$scope', 'settings', 'ContactService', '$log'];
+  FormPensionController.__name = 'FormPensionController';
+  FormPensionController.$inject = ['$log', '$scope', 'settings', 'ContactService'];
 
-  function FormPensionCtrl ($scope, settings, ContactService, $log) {
-    $log.debug('Controller: FormPensionCtrl');
+  function FormPensionController ($log, $scope, settings, ContactService) {
+    $log.debug('Controller: FormPensionController');
 
     $scope.contacts = {
       Pension_Provider: []
     };
+
+    $scope.refreshContacts = refreshContacts;
 
     (function init () {
       if ($scope.entity.pension.pension_type) {
@@ -21,7 +23,7 @@ define(function () {
       }
     }());
 
-    $scope.refreshContacts = function (input, contactSubType) {
+    function refreshContacts (input, contactSubType) {
       if (!input) {
         return;
       }
@@ -32,8 +34,8 @@ define(function () {
       }).then(function (contactSubTypes) {
         $scope.contacts[contactSubType] = contactSubTypes;
       });
-    };
+    }
   }
 
-  return FormPensionCtrl;
+  return FormPensionController;
 });

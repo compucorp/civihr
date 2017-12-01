@@ -5,70 +5,29 @@ define([
 ], function (moment) {
   'use strict';
 
-  FormGeneralCtrl.__name = 'FormGeneralCtrl';
-  FormGeneralCtrl.$inject = ['$scope', '$log', 'HR_settings'];
+  FormGeneralController.__name = 'FormGeneralController';
+  FormGeneralController.$inject = ['$log', '$scope', 'HR_settings'];
 
-  function FormGeneralCtrl ($scope, $log, hrSettings) {
-    $log.debug('Controller: FormGeneralCtrl');
+  function FormGeneralController ($log, $scope, hrSettings) {
+    $log.debug('Controller: FormGeneralController');
 
     var entityDetails = $scope.entity.details;
 
     $scope.format = hrSettings.DATE_FORMAT;
     $scope.datepickerOptions = initDatepickerOptions();
 
-    $scope.dpOpen = function ($event, opened) {
+    $scope.dpOpen = dbOpen;
+
+    (function init () {
+      initWatchers();
+    }());
+
+    function dbOpen ($event, opened) {
       $event.preventDefault();
       $event.stopPropagation();
 
       $scope[opened] = true;
-    };
-
-    $scope.$watch('entity.details.period_start_date', function () {
-      $scope.datepickerOptions.end.minDate = getLimitDate(entityDetails.period_start_date, 'min');
-      $scope.duration = duration(entityDetails.period_start_date, entityDetails.period_end_date);
-    });
-
-    $scope.$watch('entity.details.period_end_date', function () {
-      if (entityDetails.period_end_date) {
-        $scope.datepickerOptions.start.maxDate = getLimitDate(entityDetails.period_end_date, 'max');
-      } else {
-        $scope.datepickerOptions.start.maxDate = null;
-        entityDetails.end_reason = null;
-      }
-
-      $scope.duration = duration(entityDetails.period_start_date, entityDetails.period_end_date);
-    });
-
-    $scope.$watch('entity.details.position', function (newVal, oldVal) {
-      if (newVal !== oldVal && entityDetails.title === oldVal) {
-        $scope.contractForm.detailsTitle.$setViewValue(newVal);
-        $scope.contractForm.detailsTitle.$render();
-      }
-    });
-
-    $scope.$watch('entity.details.notice_amount', function (newVal, oldVal) {
-      if (+newVal && !entityDetails.notice_unit) {
-        $scope.contractForm.detailsNoticeUnit.$setValidity('required', false);
-        $scope.contractForm.detailsNoticeUnit.$dirty = true;
-      }
-
-      if (newVal !== oldVal && entityDetails.notice_amount_employee === oldVal) {
-        entityDetails.notice_amount_employee = newVal;
-      }
-    });
-
-    $scope.$watch('entity.details.notice_amount_employee', function (newVal) {
-      if (+newVal && !entityDetails.notice_unit_employee) {
-        $scope.contractForm.detailsNoticeUnitEmployee.$setValidity('required', false);
-        $scope.contractForm.detailsNoticeUnitEmployee.$dirty = true;
-      }
-    });
-
-    $scope.$watch('entity.details.notice_unit', function (newVal, oldVal) {
-      if (newVal !== oldVal && entityDetails.notice_unit_employee === oldVal) {
-        entityDetails.notice_unit_employee = newVal;
-      }
-    });
+    }
 
     /**
      * Calculates the duration of the period between the given start and end
@@ -143,7 +102,56 @@ define([
         }
       };
     }
+
+    function initWatchers () {
+      $scope.$watch('entity.details.period_start_date', function () {
+        $scope.datepickerOptions.end.minDate = getLimitDate(entityDetails.period_start_date, 'min');
+        $scope.duration = duration(entityDetails.period_start_date, entityDetails.period_end_date);
+      });
+
+      $scope.$watch('entity.details.period_end_date', function () {
+        if (entityDetails.period_end_date) {
+          $scope.datepickerOptions.start.maxDate = getLimitDate(entityDetails.period_end_date, 'max');
+        } else {
+          $scope.datepickerOptions.start.maxDate = null;
+          entityDetails.end_reason = null;
+        }
+
+        $scope.duration = duration(entityDetails.period_start_date, entityDetails.period_end_date);
+      });
+
+      $scope.$watch('entity.details.position', function (newVal, oldVal) {
+        if (newVal !== oldVal && entityDetails.title === oldVal) {
+          $scope.contractForm.detailsTitle.$setViewValue(newVal);
+          $scope.contractForm.detailsTitle.$render();
+        }
+      });
+
+      $scope.$watch('entity.details.notice_amount', function (newVal, oldVal) {
+        if (+newVal && !entityDetails.notice_unit) {
+          $scope.contractForm.detailsNoticeUnit.$setValidity('required', false);
+          $scope.contractForm.detailsNoticeUnit.$dirty = true;
+        }
+
+        if (newVal !== oldVal && entityDetails.notice_amount_employee === oldVal) {
+          entityDetails.notice_amount_employee = newVal;
+        }
+      });
+
+      $scope.$watch('entity.details.notice_amount_employee', function (newVal) {
+        if (+newVal && !entityDetails.notice_unit_employee) {
+          $scope.contractForm.detailsNoticeUnitEmployee.$setValidity('required', false);
+          $scope.contractForm.detailsNoticeUnitEmployee.$dirty = true;
+        }
+      });
+
+      $scope.$watch('entity.details.notice_unit', function (newVal, oldVal) {
+        if (newVal !== oldVal && entityDetails.notice_unit_employee === oldVal) {
+          entityDetails.notice_unit_employee = newVal;
+        }
+      });
+    }
   }
 
-  return FormGeneralCtrl;
+  return FormGeneralController;
 });

@@ -6,7 +6,7 @@ define([
 ], function (ContactMock) {
   'use strict';
 
-  describe('FormPensionCtrl', function () {
+  describe('FormPensionController', function () {
     var $controller, $rootScope, $scope, $q, ContactService, response, params;
 
     beforeEach(module('job-contract'));
@@ -106,7 +106,7 @@ define([
     });
 
     /**
-     * Creates FormPensionCtrl Controller
+     * Creates FormPensionController Controller
      * @param  integer pensionType
      * Note: Pension Type is set to null if no value is passed
      */
@@ -118,7 +118,7 @@ define([
       $scope.entity = {};
       $scope.entity.pension = pension;
 
-      $controller('FormPensionCtrl', {
+      $controller('FormPensionController', {
         $scope: $scope,
         ContactService: ContactService
       });

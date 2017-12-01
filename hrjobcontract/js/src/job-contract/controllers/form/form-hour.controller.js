@@ -5,11 +5,11 @@ define([
 ], function (Fraction) {
   'use strict';
 
-  FormHourCtrl.__name = 'FormHourCtrl';
-  FormHourCtrl.$inject = ['$scope', '$rootScope', '$filter', '$log'];
+  FormHourController.__name = 'FormHourController';
+  FormHourController.$inject = ['$log', '$filter', '$rootScope', '$scope'];
 
-  function FormHourCtrl ($scope, $rootScope, $filter, $log) {
-    $log.debug('Controller: FormHourCtrl');
+  function FormHourController ($log, $filter, $rootScope, $scope) {
+    $log.debug('Controller: FormHourController');
 
     var entityHour = $scope.entity.hour;
     var utilsHoursLocation = $scope.utils.hoursLocation;
@@ -22,8 +22,40 @@ define([
 
     $scope.hrsTypeDefined = false;
     $scope.hrsAmountDefined = false;
-    entityHour.location_standard_hours = entityHour.location_standard_hours || '1';
-    locStandHrs = $filter('getObjById')(utilsHoursLocation, entityHour.location_standard_hours);
+
+    (function init () {
+      entityHour.location_standard_hours = entityHour.location_standard_hours || '1';
+      locStandHrs = $filter('getObjById')(utilsHoursLocation, entityHour.location_standard_hours);
+
+      initWatchers();
+    }());
+
+    function initWatchers () {
+      $scope.$watch('entity.hour.location_standard_hours', function (locStandHrsId) {
+        locStandHrs = $filter('getObjById')(utilsHoursLocation, locStandHrsId);
+        updateHours(locStandHrs, entityHour.hours_type);
+        updateFTE(locStandHrs.standard_hours, entityHour.hours_amount);
+      });
+
+      $scope.$watch('entity.hour.hours_type', function (hrsTypeId, hrsTypeIdPrev) {
+        if (hrsTypeId !== hrsTypeIdPrev) {
+          updateHours(locStandHrs, hrsTypeId);
+          updateFTE(locStandHrs.standard_hours, entityHour.hours_amount);
+        }
+      });
+
+      $scope.$watch('entity.hour.hours_amount', function (hrsAmount, hrsAmountPrev) {
+        if (hrsAmount !== hrsAmountPrev) {
+          updateFTE(locStandHrs.standard_hours, hrsAmount);
+        }
+      });
+
+      $scope.$watch('entity.hour.hours_unit', function (hrsUnit, hrsUnitPrev) {
+        if (hrsUnit !== hrsUnitPrev) {
+          updateFTE(locStandHrs.standard_hours, entityHour.hours_amount);
+        }
+      });
+    }
 
     function updateHours (locStandHrs, hrsTypeId) {
       $scope.hrsTypeDefined = !!entityHour.hours_type;
@@ -63,32 +95,7 @@ define([
 
       $scope.fteFraction = entityHour.fte_num + '/' + entityHour.fte_denom;
     }
-
-    $scope.$watch('entity.hour.location_standard_hours', function (locStandHrsId) {
-      locStandHrs = $filter('getObjById')(utilsHoursLocation, locStandHrsId);
-      updateHours(locStandHrs, entityHour.hours_type);
-      updateFTE(locStandHrs.standard_hours, entityHour.hours_amount);
-    });
-
-    $scope.$watch('entity.hour.hours_type', function (hrsTypeId, hrsTypeIdPrev) {
-      if (hrsTypeId !== hrsTypeIdPrev) {
-        updateHours(locStandHrs, hrsTypeId);
-        updateFTE(locStandHrs.standard_hours, entityHour.hours_amount);
-      }
-    });
-
-    $scope.$watch('entity.hour.hours_amount', function (hrsAmount, hrsAmountPrev) {
-      if (hrsAmount !== hrsAmountPrev) {
-        updateFTE(locStandHrs.standard_hours, hrsAmount);
-      }
-    });
-
-    $scope.$watch('entity.hour.hours_unit', function (hrsUnit, hrsUnitPrev) {
-      if (hrsUnit !== hrsUnitPrev) {
-        updateFTE(locStandHrs.standard_hours, entityHour.hours_amount);
-      }
-    });
   }
 
-  return FormHourCtrl;
+  return FormHourController;
 });

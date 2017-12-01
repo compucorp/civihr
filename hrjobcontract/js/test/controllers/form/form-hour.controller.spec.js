@@ -6,7 +6,7 @@ define([
 ], function (angular) {
   'use strict';
 
-  describe('FormHourCtrl', function () {
+  describe('FormHourController', function () {
     var $controller, $rootScope, $scope;
 
     beforeEach(module('job-contract'));
@@ -18,7 +18,7 @@ define([
       initController();
     });
 
-    describe('FormHourCtrl', function () {
+    describe('FormHourController', function () {
       describe('updateHours', function () {
         it('should always change the hours_amount based on hours_type', function () {
           expect($scope.entity.hour.hours_amount).toBe('');
@@ -84,7 +84,7 @@ define([
         ]
       };
 
-      $controller('FormHourCtrl', { $scope: $scope });
+      $controller('FormHourController', { $scope: $scope });
     }
   });
 });
