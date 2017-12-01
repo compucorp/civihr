@@ -173,10 +173,15 @@ define([
     /**
      * Change handler when changing no. of days like Multiple Days or Single Day.
      * It will reset dates, day types, change balance.
+     *
+     * @return {Promise}
      */
     function changeInNoOfDays () {
       vm._reset();
       vm._calculateOpeningAndClosingBalance();
+
+      return $q.resolve()
+        .then(vm.changeInNoOfDaysExtended ? vm.changeInNoOfDaysExtended : _.noop);
     }
 
     /**

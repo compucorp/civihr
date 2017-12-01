@@ -17,8 +17,8 @@ define([
 
     vm.calculateBalanceChange = calculateBalanceChange;
     vm.calculateToilExpiryDate = calculateToilExpiryDate;
+    vm.changeInNoOfDaysExtended = changeInNoOfDaysExtended;
     vm.checkSubmitConditions = checkSubmitConditions;
-    vm.changeInNoOfDays = changeInNoOfDays;
     vm.clearExpiryDate = clearExpiryDate;
     vm.initChildController = initChildController;
     vm.setDatesFromUIExtended = setDatesFromUIExtended;
@@ -111,14 +111,11 @@ define([
     /**
      * Extends parent method. Fires calculation of expiry date when the
      * number of days changes and the expiry date can be calculated.
+     *
+     * @return {Promise}
      */
-    function changeInNoOfDays () {
-      vm._reset();
-      vm._calculateOpeningAndClosingBalance();
-
-      if (canCalculateExpiryDate()) {
-        vm.calculateToilExpiryDate();
-      }
+    function changeInNoOfDaysExtended () {
+      return canCalculateExpiryDate() ? calculateToilExpiryDate() : _.noop;
     }
 
     /**
