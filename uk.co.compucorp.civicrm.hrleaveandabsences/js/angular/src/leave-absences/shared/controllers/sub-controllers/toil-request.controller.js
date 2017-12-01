@@ -21,7 +21,6 @@ define([
     vm.changeInNoOfDays = changeInNoOfDays;
     vm.clearExpiryDate = clearExpiryDate;
     vm.initChildController = initChildController;
-    vm.loadAbsencePeriodDatesTypes = loadAbsencePeriodDatesTypes;
     vm.setDatesFromUIExtended = setDatesFromUIExtended;
     vm.updateExpiryDate = updateExpiryDate;
     vm._canCalculateChange = _canCalculateChange;
@@ -220,35 +219,6 @@ define([
       .then(function (canExpire) {
         vm.requestCanExpire = canExpire;
       });
-    }
-
-    /**
-     * Overwrites the parent funtion. Inits UI values, and loads absence types
-     * and calendar.
-     *
-     * @param {Date} date - the selected date
-     * @return {Promise}
-     */
-    function loadAbsencePeriodDatesTypes (date) {
-      var oldPeriodId = vm.period.id;
-
-      return vm._checkAndSetAbsencePeriod(date)
-        .then(function () {
-          var isInCurrentPeriod = oldPeriodId === vm.period.id;
-
-          if (!isInCurrentPeriod) {
-            if (vm.uiOptions.multipleDays) {
-              vm.uiOptions.showBalance = false;
-              vm.uiOptions.toDate = null;
-              vm.request.to_date = null;
-            }
-
-            return $q.all([
-              vm._loadAbsenceTypes(),
-              vm._loadCalendar()
-            ]);
-          }
-        });
     }
 
     /**
