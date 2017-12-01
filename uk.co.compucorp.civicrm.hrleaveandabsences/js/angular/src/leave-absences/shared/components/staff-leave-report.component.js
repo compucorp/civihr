@@ -41,12 +41,12 @@ define([
       page: true
     };
     vm.sections = {
-      approved: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadApprovedRequests },
-      entitlements: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadEntitlementsBreakdown },
-      expired: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadExpiredBalanceChanges },
-      holidays: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadPublicHolidaysRequests },
-      pending: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadPendingRequests },
-      other: { open: false, data: [], dataIndex: {}, loading: false, loadFn: loadOtherRequests }
+      approved: { open: false, data: [], dataIndex: {}, loading: false, loadLeaveRequests: loadApprovedRequests },
+      entitlements: { open: false, data: [], dataIndex: {}, loading: false, loadLeaveRequests: loadEntitlementsBreakdown },
+      expired: { open: false, data: [], dataIndex: {}, loading: false, loadLeaveRequests: loadExpiredBalanceChanges },
+      holidays: { open: false, data: [], dataIndex: {}, loading: false, loadLeaveRequests: loadPublicHolidaysRequests },
+      pending: { open: false, data: [], dataIndex: {}, loading: false, loadLeaveRequests: loadPendingRequests },
+      other: { open: false, data: [], dataIndex: {}, loading: false, loadLeaveRequests: loadOtherRequests }
     };
 
     /**
@@ -92,7 +92,7 @@ define([
       section.open = !section.open;
 
       if (section.open && !section.data.length) {
-        callSectionLoadFn(section);
+        loadSectionLeaveRequests(section);
       }
     };
 
@@ -121,16 +121,16 @@ define([
     }
 
     /**
-     * Calls the load function of the given data, indexes the loaded data,
+     * Loads the leave requests for each section, indexes the loaded data,
      * and puts the section in and out of loading mode
      *
      * @param  {Object} section
      * @return {Promise}
      */
-    function callSectionLoadFn (section) {
+    function loadSectionLeaveRequests (section) {
       section.loading = true;
 
-      return section.loadFn()
+      return section.loadLeaveRequests()
         .then(indexSectionData.bind(this, section))
         .then(function () {
           section.loading = false;
@@ -338,9 +338,7 @@ define([
         .filter(function (section) {
           return section.open;
         })
-        .map(function (section) {
-          return callSectionLoadFn(section);
-        }));
+        .map(loadSectionLeaveRequests));
     }
 
     /**
