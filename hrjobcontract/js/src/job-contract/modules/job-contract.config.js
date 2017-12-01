@@ -8,12 +8,12 @@ define([
   angular.module('job-contract.config', ['job-contract.constants']).config(config);
 
   config.$inject = [
-    'settings', '$routeProvider', '$resourceProvider', '$logProvider',
-    '$httpProvider', 'uibDatepickerConfig', 'uiSelectConfig'
+    '$httpProvider', '$logProvider', '$resourceProvider', '$routeProvider',
+    'uibDatepickerConfig', 'uiSelectConfig', 'settings'
   ];
 
-  function config (settings, $routeProvider, $resourceProvider, $logProvider,
-    $httpProvider, datepickerConfig, uiSelectConfig) {
+  function config ($httpProvider, $logProvider, $resourceProvider, $routeProvider,
+    datepickerConfig, uiSelectConfig, settings) {
     $logProvider.debugEnabled(settings.debug);
 
     $routeProvider

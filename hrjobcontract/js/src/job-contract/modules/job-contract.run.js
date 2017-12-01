@@ -8,12 +8,12 @@ define([
   angular.module('job-contract.run', ['job-contract.constants']).run(run);
 
   run.$inject = [
-    'settings', '$rootScope', '$q', '$log', 'ContractService', 'ContractDetailsService',
+    '$log', '$q', '$rootScope', 'settings', 'ContractService', 'ContractDetailsService',
     'ContractHourService', 'ContractPayService', 'ContractLeaveService',
     'ContractHealthService', 'ContractPensionService'
   ];
 
-  function run (settings, $rootScope, $q, $log, ContractService, ContractDetailsService,
+  function run ($log, $q, $rootScope, settings, ContractService, ContractDetailsService,
     ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
     ContractPensionService) {
     $log.debug('app.run');
@@ -29,7 +29,8 @@ define([
       leave: ContractLeaveService.getOptions(),
       health: ContractHealthService.getOptions(),
       pension: ContractPensionService.getOptions()
-    }).then(function (results) {
+    })
+    .then(function (results) {
       results.pay.pay_is_auto_est = ['No', 'Yes'];
       results.pension.is_enrolled = ['No', 'Yes', 'Opted out'];
 
