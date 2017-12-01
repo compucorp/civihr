@@ -13,7 +13,7 @@ define([
     beforeEach(function () {
       module('job-contract.controllers');
       module(function ($provide) {
-        $provide.value('ContractRevisionService', ContractRevisionServiceMock);
+        $provide.value('contractRevisionService', ContractRevisionServiceMock);
       });
 
       ContractRevisionServiceMock = {
@@ -21,11 +21,11 @@ define([
       };
     });
 
-    beforeEach(inject(function (_$controller_, _$rootScope_, _$q_, ContractRevisionService) {
+    beforeEach(inject(function (_$controller_, _$rootScope_, _$q_, contractRevisionService) {
       $controller = _$controller_;
       $q = _$q_;
       $rootScope = _$rootScope_;
-      ContractRevisionServiceSpy = ContractRevisionService;
+      ContractRevisionServiceSpy = contractRevisionService;
 
       modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
 
@@ -111,7 +111,7 @@ define([
         date: '',
         reasonId: '',
         settings: '',
-        ContractRevisionService: ContractRevisionServiceSpy
+        contractRevisionService: ContractRevisionServiceSpy
       });
     }
   });

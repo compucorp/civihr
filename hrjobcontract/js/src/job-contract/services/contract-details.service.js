@@ -5,29 +5,17 @@ define([
 ], function (angular) {
   'use strict';
 
-  ContractDetailsService.__name = 'ContractDetailsService';
-  ContractDetailsService.$inject = ['$filter', '$resource', 'settings', '$q', 'UtilsService', '$log'];
+  contractDetailsService.__name = 'contractDetailsService';
+  contractDetailsService.$inject = ['$filter', '$resource', 'settings', '$q', 'utilsService', '$log'];
 
-  function ContractDetailsService ($filter, $resource, settings, $q, UtilsService, $log) {
-    $log.debug('Service: ContractDetailsService');
+  function contractDetailsService ($filter, $resource, settings, $q, utilsService, $log) {
+    $log.debug('Service: contractDetailsService');
 
     var ContractDetails = $resource(settings.pathRest, {
       action: 'get',
       entity: 'HRJobDetails',
       json: {}
     });
-
-    /**
-     * If parameter passed is a Date object, it converts it into a string
-     *
-     * @param {Date} dateObj
-     * @param {string/any}
-     */
-    function convertToDateString (dateObj) {
-      var dateString = $filter('formatDate')(dateObj, 'YYYY-MM-DD');
-
-      return dateString !== 'Unspecified' ? dateString : dateObj;
-    }
 
     return {
       validateDates: function (params) {
@@ -52,7 +40,7 @@ define([
         },
           null,
           function (data) {
-            if (UtilsService.errorHandler(data, 'Unable to fetch API "validatedates" response', deffered)) {
+            if (utilsService.errorHandler(data, 'Unable to fetch API "validatedates" response', deffered)) {
               return;
             }
 
@@ -78,7 +66,7 @@ define([
         ContractDetails.get({
           json: params
         }, function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to fetch contract details', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to fetch contract details', deffered)) {
             return;
           }
 
@@ -164,7 +152,7 @@ define([
         },
         null,
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to create contract details', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to create contract details', deffered)) {
             return;
           }
 
@@ -215,7 +203,19 @@ define([
         return deffered.promise;
       }
     };
+
+    /**
+     * If parameter passed is a Date object, it converts it into a string
+     *
+     * @param {Date} dateObj
+     * @param {string/any}
+     */
+    function convertToDateString (dateObj) {
+      var dateString = $filter('formatDate')(dateObj, 'YYYY-MM-DD');
+
+      return dateString !== 'Unspecified' ? dateString : dateObj;
+    }
   }
 
-  return ContractDetailsService;
+  return contractDetailsService;
 });

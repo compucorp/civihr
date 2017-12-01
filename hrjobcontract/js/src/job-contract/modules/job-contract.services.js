@@ -16,25 +16,25 @@ define([
   'job-contract/services/contract-revision.service',
   'job-contract/services/contract-service.service',
   'job-contract/services/utils.service'
-], function (angular, API, ContactService, Contract, ContractDetailsService,
-  ContractFilesService, ContractHealthService, ContractHourService, ContractLeaveService,
-  ContractPayService, ContractPensionService, ContractRevisionList, ContractRevisionService,
-  ContractService, UtilsService) {
+], function (angular, apiService, contactService, contract, contractDetailsService,
+  contractFilesService, contractHealthService, contractHourService, contractLeaveService,
+  contractPayService, contractPensionService, contractRevisionListService, contractRevisionService,
+  contractService, utilsService) {
   'use strict';
 
   return angular.module('job-contract.services', [])
-    .factory(API.__name, API)
-    .factory(ContactService.__name, ContactService)
-    .factory(Contract.__name, Contract)
-    .factory(ContractDetailsService.__name, ContractDetailsService)
-    .factory(ContractFilesService.__name, ContractFilesService)
-    .factory(ContractHealthService.__name, ContractHealthService)
-    .factory(ContractHourService.__name, ContractHourService)
-    .factory(ContractLeaveService.__name, ContractLeaveService)
-    .factory(ContractPayService.__name, ContractPayService)
-    .factory(ContractPensionService.__name, ContractPensionService)
-    .factory(ContractRevisionList.__name, ContractRevisionList)
-    .factory(ContractRevisionService.__name, ContractRevisionService)
-    .factory(ContractService.__name, ContractService)
-    .factory(UtilsService.__name, UtilsService);
+    .factory(apiService.__name, apiService)
+    .factory(contactService.__name, contactService)
+    .factory(contract.__name, contract)
+    .factory(contractDetailsService.__name, contractDetailsService)
+    .factory(contractFilesService.__name, contractFilesService)
+    .factory(contractHealthService.__name, contractHealthService)
+    .factory(contractHourService.__name, contractHourService)
+    .factory(contractLeaveService.__name, contractLeaveService)
+    .factory(contractPayService.__name, contractPayService)
+    .factory(contractPensionService.__name, contractPensionService)
+    .factory(contractRevisionListService.__name, contractRevisionListService)
+    .factory(contractRevisionService.__name, contractRevisionService)
+    .factory(contractService.__name, contractService)
+    .factory(utilsService.__name, utilsService);
 });

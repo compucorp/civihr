@@ -5,13 +5,13 @@ define([
 ], function (angular) {
   'use strict';
 
-  ContractPensionService.__name = 'ContractPensionService';
-  ContractPensionService.$inject = [
-    '$resource', 'settings', '$q', 'UtilsService', '$log'
+  contractPensionService.__name = 'contractPensionService';
+  contractPensionService.$inject = [
+    '$resource', 'settings', '$q', 'utilsService', '$log'
   ];
 
-  function ContractPensionService ($resource, settings, $q, UtilsService, $log) {
-    $log.debug('Service: ContractPensionService');
+  function contractPensionService ($resource, settings, $q, utilsService, $log) {
+    $log.debug('Service: contractPensionService');
 
     var ContractPension = $resource(settings.pathRest, {
       action: 'get',
@@ -37,7 +37,7 @@ define([
           json: params
         },
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to fetch contract pension', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to fetch contract pension', deffered)) {
             return;
           }
 
@@ -121,7 +121,7 @@ define([
         },
         null,
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to create contract pension', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to create contract pension', deffered)) {
             return;
           }
 
@@ -170,5 +170,5 @@ define([
     };
   }
 
-  return ContractPensionService;
+  return contractPensionService;
 });

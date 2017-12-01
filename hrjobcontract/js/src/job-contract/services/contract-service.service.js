@@ -5,46 +5,15 @@ define([
 ], function (_) {
   'use strict';
 
-  ContractService.__name = 'ContractService';
-  ContractService.$inject = [
-    '$log', '$q', 'Contract', 'ContractRevisionService', 'settings', 'UtilsService',
+  contractService.__name = 'contractService';
+  contractService.$inject = [
+    '$log', '$q', 'Contract', 'contractRevisionService', 'settings', 'utilsService',
     'DOMEventTrigger', 'AbsenceType'
   ];
 
-  function ContractService ($log, $q, Contract, ContractRevisionService, settings,
-    UtilsService, DOMEventTrigger, AbsenceType) {
-    $log.debug('Service: ContractService');
-
-    /**
-     * The API returns values as strings, so we convert them to booleans to
-     * make it easy to use them inside conditions
-     *
-     * @param {Object} contract as returned by the API
-     * @param {Object} absenceTypes indexed by their IDs
-     */
-    function adjustAddPublicHolidaysValue (contract, absenceTypes) {
-      _.each(contract.leave, function (leave) {
-        leave.add_public_holidays =
-          absenceTypes[leave.leave_type].calculation_unit_name !== 'hours' &&
-          !!parseInt(leave.add_public_holidays);
-      });
-    }
-
-    /**
-     * Filters out disabled or non-existing anymore Absence Types
-     * from the contract leave details
-     *
-     * @param  {Object} contractLeaves leave property of contract (as returned by the API)
-     * @param  {Array}  absenceTypes as returned by API
-     * @return {Array}  filtered out contract leave details
-     */
-    function filterOutDisabledAbsenceTypes (contractLeaves, absenceTypes) {
-      return _.filter(contractLeaves, function (leave) {
-        if (_.find(absenceTypes, { id: leave.leave_type })) {
-          return leave;
-        }
-      });
-    }
+  function contractService ($log, $q, Contract, contractRevisionService, settings,
+    utilsService, DOMEventTrigger, AbsenceType) {
+    $log.debug('Service: contractService');
 
     return {
       get: function (contactId) {
@@ -65,7 +34,7 @@ define([
           Contract.get({
             json: params
           }, function (data) {
-            if (UtilsService.errorHandler(data, 'Unable to fetch contract list', deffered)) {
+            if (utilsService.errorHandler(data, 'Unable to fetch contract list', deffered)) {
               return;
             }
 
@@ -166,7 +135,7 @@ define([
           return null;
         }
 
-        ContractRevisionService.get({
+        contractRevisionService.get({
           json: params
         }, function (data) {
           deffered.resolve(data.values);
@@ -232,7 +201,7 @@ define([
           return null;
         }
 
-        ContractRevisionService.save({
+        contractRevisionService.save({
           action: 'create',
           json: params
         }, null, function (data) {
@@ -272,7 +241,7 @@ define([
           return null;
         }
 
-        ContractRevisionService.save({
+        contractRevisionService.save({
           action: 'create',
           json: {
             sequential: 1,
@@ -323,7 +292,38 @@ define([
         return deferred.promise;
       }
     };
+
+    /**
+     * The API returns values as strings, so we convert them to booleans to
+     * make it easy to use them inside conditions
+     *
+     * @param {Object} contract as returned by the API
+     * @param {Object} absenceTypes indexed by their IDs
+     */
+    function adjustAddPublicHolidaysValue (contract, absenceTypes) {
+      _.each(contract.leave, function (leave) {
+        leave.add_public_holidays =
+          absenceTypes[leave.leave_type].calculation_unit_name !== 'hours' &&
+          !!parseInt(leave.add_public_holidays);
+      });
+    }
+
+    /**
+     * Filters out disabled or non-existing anymore Absence Types
+     * from the contract leave details
+     *
+     * @param  {Object} contractLeaves leave property of contract (as returned by the API)
+     * @param  {Array}  absenceTypes as returned by API
+     * @return {Array}  filtered out contract leave details
+     */
+    function filterOutDisabledAbsenceTypes (contractLeaves, absenceTypes) {
+      return _.filter(contractLeaves, function (leave) {
+        if (_.find(absenceTypes, { id: leave.leave_type })) {
+          return leave;
+        }
+      });
+    }
   }
 
-  return ContractService;
+  return contractService;
 });

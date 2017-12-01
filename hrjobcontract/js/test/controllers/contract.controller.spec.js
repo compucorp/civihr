@@ -11,7 +11,7 @@ define([
 
   describe('ContractController', function () {
     var $controller, $httpBackend, $modal, $q, $rootScope, $scope, $window,
-      AbsenceType, ContractService, UtilsService;
+      AbsenceType, contractService, utilsService;
     var calculationUnitsMock = [{ value: 1, name: 'days' }, { value: 2, name: 'hours' }];
 
     // Populate contract mock leaves with values
@@ -24,7 +24,7 @@ define([
     }));
 
     beforeEach(inject(function (_$controller_, _$rootScope_, _$uibModal_, _$q_,
-    _$httpBackend_, _$window_, _AbsenceType_, _ContractService_, _UtilsService_) {
+    _$httpBackend_, _$window_, _AbsenceType_, _contractService_, _utilsService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $q = _$q_;
@@ -34,13 +34,13 @@ define([
       $rootScope = _$rootScope_;
       $window = _$window_;
       AbsenceType = _AbsenceType_;
-      ContractService = _ContractService_;
-      UtilsService = _UtilsService_;
+      contractService = _contractService_;
+      utilsService = _utilsService_;
 
       mockBackendCalls();
       spyOn(AbsenceType, 'all').and.callThrough();
       spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
-      spyOn(ContractService, 'fullDetails').and.callThrough();
+      spyOn(contractService, 'fullDetails').and.callThrough();
       makeController();
     }));
 
@@ -51,7 +51,7 @@ define([
       });
 
       it('retrieves contract full details', function () {
-        expect(ContractService.fullDetails).toHaveBeenCalled();
+        expect(contractService.fullDetails).toHaveBeenCalled();
       });
     });
 
@@ -112,7 +112,7 @@ define([
         var url;
 
         beforeEach(function () {
-          url = UtilsService.getManageEntitlementsPageURL($scope.contract.contact_id);
+          url = utilsService.getManageEntitlementsPageURL($scope.contract.contact_id);
 
           createModalSpy();
           $scope.modalContract('edit');

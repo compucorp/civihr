@@ -10,16 +10,16 @@ define([
   ModalContractNewController.__name = 'ModalContractNewController';
   ModalContractNewController.$inject = [
     '$log', '$q', '$rootElement', '$rootScope', '$sce', '$scope', '$uibModalInstance',
-    '$uibModal', 'Contract', 'ContractService', 'ContractDetailsService',
-    'ContractHourService', 'ContractPayService', 'ContractLeaveService',
-    'ContractHealthService', 'ContractPensionService', 'ContractFilesService',
-    'model', 'UtilsService', 'utils', 'settings', 'pubSub'
+    '$uibModal', 'Contract', 'contractService', 'contractDetailsService',
+    'contractHourService', 'contractPayService', 'contractLeaveService',
+    'contractHealthService', 'contractPensionService', 'contractFilesService',
+    'model', 'utilsService', 'utils', 'settings', 'pubSub'
   ];
 
   function ModalContractNewController ($log, $q, $rootElement, $rootScope, $sce,
-    $scope, $modalInstance, $modal, Contract, ContractService, ContractDetailsService,
-    ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
-    ContractPensionService, ContractFilesService, model, UtilsService, utils,
+    $scope, $modalInstance, $modal, Contract, contractService, contractDetailsService,
+    contractHourService, contractPayService, contractLeaveService, contractHealthService,
+    contractPensionService, contractFilesService, model, utilsService, utils,
     settings, pubSub) {
     $log.debug('Controller: ModalContractNewController');
 
@@ -71,10 +71,10 @@ define([
     };
     $scope.uploader = {
       details: {
-        contract_file: ContractFilesService.uploader('civicrm_hrjobcontract_details')
+        contract_file: contractFilesService.uploader('civicrm_hrjobcontract_details')
       },
       pension: {
-        evidence_file: ContractFilesService.uploader('civicrm_hrjobcontract_pension', 1)
+        evidence_file: contractFilesService.uploader('civicrm_hrjobcontract_pension', 1)
       }
     };
 
@@ -183,34 +183,34 @@ define([
 
         contract.is_current = !entityDetails.period_end_date || moment().diff(entityDetails.period_end_date, 'day') <= 0;
 
-        UtilsService.prepareEntityIds(entityDetails, contractId);
+        utilsService.prepareEntityIds(entityDetails, contractId);
 
-        ContractDetailsService.save(entityDetails).then(function (results) {
+        contractDetailsService.save(entityDetails).then(function (results) {
           revisionId = results.jobcontract_revision_id;
         }, function (reason) {
           CRM.alert(reason, 'Error', 'error');
-          ContractService.delete(contractId);
+          contractService.delete(contractId);
           $modalInstance.dismiss();
           return $q.reject();
         }).then(function () {
           angular.forEach($scope.entity, function (entity) {
-            UtilsService.prepareEntityIds(entity, contractId, revisionId);
+            utilsService.prepareEntityIds(entity, contractId, revisionId);
           });
 
           promiseContractNew = [
-            ContractHourService.save(entityHour),
-            ContractPayService.save(entityPay),
-            ContractLeaveService.save(entityLeave),
-            ContractHealthService.save(entityHealth),
-            ContractPensionService.save(entityPension)
+            contractHourService.save(entityHour),
+            contractPayService.save(entityPay),
+            contractLeaveService.save(entityLeave),
+            contractHealthService.save(entityHealth),
+            contractPensionService.save(entityPension)
           ];
 
           if ($scope.uploader.details.contract_file.queue.length) {
-            promiseUpload.push(ContractFilesService.upload(uploader.details.contract_file, revisionId));
+            promiseUpload.push(contractFilesService.upload(uploader.details.contract_file, revisionId));
           }
 
           if ($scope.uploader.pension.evidence_file.queue.length) {
-            promiseUpload.push(ContractFilesService.upload(uploader.pension.evidence_file, revisionId));
+            promiseUpload.push(contractFilesService.upload(uploader.pension.evidence_file, revisionId));
           }
 
           if (promiseUpload.length) {
@@ -241,7 +241,7 @@ define([
         },
           function (reason) {
             CRM.alert(reason, 'Error', 'error');
-            ContractService.delete(contractId).then(function (result) {
+            contractService.delete(contractId).then(function (result) {
               $scope.$broadcast('hrjc-loader-hide');
               if (result.is_error) {
                 CRM.alert((result.error_message || 'Unknown error'), 'Error', 'error');
@@ -267,7 +267,7 @@ define([
         { name: 'hrjobcontract_health_health_plan_type', key: 'plan_type' },
         { name: 'hrjobcontract_health_life_insurance_plan_type', key: 'plan_type_life_insurance' }
       ].map(function (planTypeData) {
-        ContractHealthService.getOptions(planTypeData.name, true)
+        contractHealthService.getOptions(planTypeData.name, true)
         .then(function (planTypes) {
           $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
             acc[type.key] = type.value;
@@ -279,7 +279,7 @@ define([
     function save () {
       $scope.$broadcast('hrjc-loader-show');
 
-      ContractDetailsService.validateDates({
+      contractDetailsService.validateDates({
         contact_id: settings.contactId,
         period_start_date: $scope.entity.details.period_start_date,
         period_end_date: $scope.entity.details.period_end_date

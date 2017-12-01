@@ -3,13 +3,13 @@
 define(function () {
   'use strict';
 
-  ContractFilesService.__name = 'ContractFilesService';
-  ContractFilesService.$inject = [
-    '$resource', 'settings', '$q', 'UtilsService', 'FileUploader', '$log'
+  contractFilesService.__name = 'contractFilesService';
+  contractFilesService.$inject = [
+    '$resource', 'settings', '$q', 'utilsService', 'FileUploader', '$log'
   ];
 
-  function ContractFilesService ($resource, settings, $q, UtilsService, FileUploader, $log) {
-    $log.debug('Service: ContractFilesService');
+  function contractFilesService ($resource, settings, $q, utilsService, FileUploader, $log) {
+    $log.debug('Service: contractFilesService');
 
     var ContractFiles = $resource(settings.pathFile + ':action');
     FileUploader.prototype.queueDelete = [];
@@ -36,7 +36,7 @@ define(function () {
             data.is_error = 1;
           }
 
-          if (UtilsService.errorHandler(data, 'Unable to delete file', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to delete file', deffered)) {
             return;
           }
 
@@ -62,7 +62,7 @@ define(function () {
           entityID: entityId
         },
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to fetch files', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to fetch files', deffered)) {
             return;
           }
 
@@ -133,5 +133,5 @@ define(function () {
     };
   }
 
-  return ContractFilesService;
+  return contractFilesService;
 });

@@ -7,15 +7,15 @@ define([
   'use strict';
 
   describe('FormPensionController', function () {
-    var $controller, $rootScope, $scope, $q, ContactService, response, params;
+    var $controller, $rootScope, $scope, $q, contactService, response, params;
 
     beforeEach(module('job-contract'));
 
     beforeEach(function () {
-      inject(function (_$controller_, _$rootScope_, _$q_, _ContactService_) {
+      inject(function (_$controller_, _$rootScope_, _$q_, _contactService_) {
         $controller = _$controller_;
         $rootScope = _$rootScope_;
-        ContactService = _ContactService_;
+        contactService = _contactService_;
         $q = _$q_;
         params = {
           contact_type: 'Organization',
@@ -37,7 +37,7 @@ define([
         });
 
         it("calls contact's service api to get one contact", function () {
-          expect(ContactService.getOne).toHaveBeenCalled();
+          expect(contactService.getOne).toHaveBeenCalled();
         });
 
         it("sets the values for contact's pension provider", function () {
@@ -59,7 +59,7 @@ define([
         });
 
         it("does not call contact's service api to get one contact", function () {
-          expect(ContactService.getOne).not.toHaveBeenCalled();
+          expect(contactService.getOne).not.toHaveBeenCalled();
         });
 
         it("does not set the values for contact's pension provider", function () {
@@ -83,7 +83,7 @@ define([
         });
 
         it('does not call search()', function () {
-          expect(ContactService.search).not.toHaveBeenCalled();
+          expect(contactService.search).not.toHaveBeenCalled();
         });
       });
 
@@ -94,11 +94,11 @@ define([
         });
 
         it('calls contacts service api to search for contacts', function () {
-          expect(ContactService.search).toHaveBeenCalled();
+          expect(contactService.search).toHaveBeenCalled();
         });
 
         it('sets contact sub types data in contacts collection', function () {
-          expect(ContactService.search).toHaveBeenCalled();
+          expect(contactService.search).toHaveBeenCalled();
           expect($scope.contacts[params.contact_sub_type].length).toBe(1);
           expect($scope.contacts[params.contact_sub_type]).toEqual(ContactMock.contactSearchData.values);
         });
@@ -120,16 +120,16 @@ define([
 
       $controller('FormPensionController', {
         $scope: $scope,
-        ContactService: ContactService
+        contactService: contactService
       });
     }
 
     function contactServiceSpy () {
-      spyOn(ContactService, 'getOne').and.callFake(function () {
+      spyOn(contactService, 'getOne').and.callFake(function () {
         return $q.resolve(ContactMock.contact.values[0]);
       });
 
-      spyOn(ContactService, 'search').and.callFake(function () {
+      spyOn(contactService, 'search').and.callFake(function () {
         return $q.resolve(ContactMock.contactSearchData.values);
       });
     }

@@ -8,11 +8,11 @@ define([
   ModalChangeReasonController.__name = 'ModalChangeReasonController';
   ModalChangeReasonController.$inject = [
     '$log', '$scope', '$uibModalInstance', 'content', 'date', 'reasonId',
-    'settings', 'ContractRevisionService'
+    'settings', 'contractRevisionService'
   ];
 
   function ModalChangeReasonController ($log, $scope, $modalInstance, content, date,
-    reasonId, settings, ContractRevisionService) {
+    reasonId, settings, contractRevisionService) {
     var copy;
 
     $log.debug('Controller: ModalChangeReasonController');
@@ -52,7 +52,7 @@ define([
     }
 
     function save () {
-      ContractRevisionService.validateEffectiveDate({
+      contractRevisionService.validateEffectiveDate({
         contact_id: settings.contactId,
         effective_date: $scope.effective_date
       })

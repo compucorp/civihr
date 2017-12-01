@@ -6,16 +6,16 @@ define([
   'use strict';
 
   describe('FormLeaveController', function () {
-    var ctrl, $controller, $rootScope, $scope, UtilsService;
+    var ctrl, $controller, $rootScope, $scope, utilsService;
 
     beforeEach(module('job-contract'));
 
-    beforeEach(inject(function (_$controller_, _$rootScope_, _UtilsService_, $q) {
+    beforeEach(inject(function (_$controller_, _$rootScope_, _utilsService_, $q) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
-      UtilsService = _UtilsService_;
+      utilsService = _utilsService_;
 
-      spyOn(UtilsService, 'getNumberOfPublicHolidaysInCurrentPeriod').and.callFake(function () {
+      spyOn(utilsService, 'getNumberOfPublicHolidaysInCurrentPeriod').and.callFake(function () {
         var deferred = $q.defer();
 
         deferred.resolve(2);
@@ -32,7 +32,7 @@ define([
       });
 
       it('loads the number of public holidays', function () {
-        expect(UtilsService.getNumberOfPublicHolidaysInCurrentPeriod).toHaveBeenCalled();
+        expect(utilsService.getNumberOfPublicHolidaysInCurrentPeriod).toHaveBeenCalled();
         expect(ctrl.numberOfPublicHolidays).toBe(2);
       });
     });

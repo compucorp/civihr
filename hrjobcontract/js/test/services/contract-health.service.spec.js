@@ -7,13 +7,13 @@ define([
 ], function (ContractMock, InsuranceMock) {
   'use strict';
 
-  describe('ContractHealthService', function () {
-    var $httpBackend, $rootScope, promise, ContractHealthService;
+  describe('contractHealthService', function () {
+    var $httpBackend, $rootScope, promise, contractHealthService;
 
     beforeEach(module('job-contract'));
-    beforeEach(inject(function (_ContractHealthService_, _$httpBackend_,
+    beforeEach(inject(function (_contractHealthService_, _$httpBackend_,
     _$rootScope_) {
-      ContractHealthService = _ContractHealthService_;
+      contractHealthService = _contractHealthService_;
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
     }));
@@ -26,7 +26,7 @@ define([
 
     describe('getOne()', function () {
       it('returns job contract revision id', function () {
-        ContractHealthService.getOne({
+        contractHealthService.getOne({
           jobcontract_revision_id: 68
         }).then(function (result) {
           expect(result).toEqual(ContractMock.contractRevision.values[0]);
@@ -39,7 +39,7 @@ define([
     describe('getOptions()', function () {
       describe('when calling the api with paramater "hrjobcontract_health_health_plan_type"', function () {
         beforeEach(function () {
-          promise = ContractHealthService.getOptions('hrjobcontract_health_health_plan_type', true);
+          promise = contractHealthService.getOptions('hrjobcontract_health_health_plan_type', true);
         });
 
         it('returns insurance plan types list', function () {
@@ -53,7 +53,7 @@ define([
 
       describe('when calling the api with paramater "hrjobcontract_health_life_insurance_plan_type"', function () {
         beforeEach(function () {
-          promise = ContractHealthService.getOptions('hrjobcontract_health_life_insurance_plan_type', true);
+          promise = contractHealthService.getOptions('hrjobcontract_health_life_insurance_plan_type', true);
         });
 
         it('returns life insurance plan types list', function () {
@@ -67,7 +67,7 @@ define([
 
       describe('when called api with empty insurance type', function () {
         beforeEach(function () {
-          promise = ContractHealthService.getOptions('', false);
+          promise = contractHealthService.getOptions('', false);
         });
 
         it('returns empty list insurance plan types', function () {

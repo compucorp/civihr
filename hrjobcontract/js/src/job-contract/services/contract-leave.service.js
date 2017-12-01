@@ -5,44 +5,19 @@ define([
 ], function (_) {
   'use strict';
 
-  ContractLeaveService.__name = 'ContractLeaveService';
-  ContractLeaveService.$inject = [
-    '$resource', '$q', 'settings', 'UtilsService', '$log', 'AbsenceType'
+  contractLeaveService.__name = 'contractLeaveService';
+  contractLeaveService.$inject = [
+    '$resource', '$q', 'settings', 'utilsService', '$log', 'AbsenceType'
   ];
 
-  function ContractLeaveService ($resource, $q, settings, UtilsService, $log, AbsenceType) {
-    $log.debug('Service: ContractLeaveService');
+  function contractLeaveService ($resource, $q, settings, utilsService, $log, AbsenceType) {
+    $log.debug('Service: contractLeaveService');
 
     var ContractLeave = $resource(settings.pathRest, {
       action: 'get',
       entity: 'HRJobLeave',
       json: {}
     });
-
-    /**
-     * The API returns values as strings, so we convert them to booleans to
-     * make it easy to use them inside conditions
-     *
-     * @param {Object} values - The values object as returned by the API
-     */
-    function adjustAddPublicHolidaysValue (values) {
-      _.each(values, function (value) {
-        value.add_public_holidays = !!parseInt(value.add_public_holidays);
-      });
-    }
-
-    /**
-     * Gets Absence Types and populates calculation units to them
-     *
-     * @return {Promise} resolved with absence types
-     */
-    function getAbsenceTypes () {
-      return AbsenceType.all({ options: { sort: 'id ASC' } })
-      .then(AbsenceType.loadCalculationUnits)
-      .then(function (absenceTypes) {
-        return _.indexBy(absenceTypes, 'id');
-      });
-    }
 
     return {
       getOne: function (params) {
@@ -63,7 +38,7 @@ define([
           json: params
         },
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to fetch contract leave', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to fetch contract leave', deffered)) {
             return;
           }
 
@@ -148,7 +123,7 @@ define([
         },
         null,
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to create contract leave', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to create contract leave', deffered)) {
             return;
           }
 
@@ -241,7 +216,32 @@ define([
         return deffered.promise;
       }
     };
+
+    /**
+     * The API returns values as strings, so we convert them to booleans to
+     * make it easy to use them inside conditions
+     *
+     * @param {Object} values - The values object as returned by the API
+     */
+    function adjustAddPublicHolidaysValue (values) {
+      _.each(values, function (value) {
+        value.add_public_holidays = !!parseInt(value.add_public_holidays);
+      });
+    }
+
+    /**
+     * Gets Absence Types and populates calculation units to them
+     *
+     * @return {Promise} resolved with absence types
+     */
+    function getAbsenceTypes () {
+      return AbsenceType.all({ options: { sort: 'id ASC' } })
+      .then(AbsenceType.loadCalculationUnits)
+      .then(function (absenceTypes) {
+        return _.indexBy(absenceTypes, 'id');
+      });
+    }
   }
 
-  return ContractLeaveService;
+  return contractLeaveService;
 });

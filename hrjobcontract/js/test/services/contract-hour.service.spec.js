@@ -6,12 +6,12 @@ define([
 ], function (MockContract) {
   'use strict';
 
-  describe('ContractHourService', function () {
-    var $httpBackend, $rootScope, ContractHourService;
+  describe('contractHourService', function () {
+    var $httpBackend, $rootScope, contractHourService;
 
     beforeEach(module('job-contract'));
-    beforeEach(inject(function (_ContractHourService_, _$httpBackend_, _$rootScope_) {
-      ContractHourService = _ContractHourService_;
+    beforeEach(inject(function (_contractHourService_, _$httpBackend_, _$rootScope_) {
+      contractHourService = _contractHourService_;
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
 
@@ -26,7 +26,7 @@ define([
 
     describe('getOne()', function () {
       it('calls getOne() to return expected contract hour data', function () {
-        ContractHourService.getOne({ jobcontract_revision_id: 68 }).then(function (result) {
+        contractHourService.getOne({ jobcontract_revision_id: 68 }).then(function (result) {
           expect(result).toEqual(MockContract.contractHour.values[0]);
         });
       });

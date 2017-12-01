@@ -8,8 +8,8 @@ define([
 ], function (_, angular, contractMock) {
   'use strict';
 
-  describe('ContractLeaveService', function () {
-    var $httpBackend, $q, $rootScope, AbsenceType, Contract, ContractService;
+  describe('contractService', function () {
+    var $httpBackend, $q, $rootScope, AbsenceType, Contract, contractService;
     var calculationUnitsMock = [{ value: 1, name: 'days' }, { value: 2, name: 'hours' }];
     var absenceTypesMock = _.map(contractMock.contractEntity.leave, function (leave, index) {
       return { id: leave.leave_type, calculation_unit: _.sample(calculationUnitsMock).value };
@@ -17,13 +17,13 @@ define([
 
     beforeEach(module('job-contract'));
 
-    beforeEach(inject(function (_$httpBackend_, _$q_, _$rootScope_, _AbsenceType_, _Contract_, _ContractService_) {
+    beforeEach(inject(function (_$httpBackend_, _$q_, _$rootScope_, _AbsenceType_, _Contract_, _contractService_) {
       $httpBackend = _$httpBackend_;
       $q = _$q_;
       $rootScope = _$rootScope_;
       AbsenceType = _AbsenceType_;
       Contract = _Contract_;
-      ContractService = _ContractService_;
+      contractService = _contractService_;
 
       mockBackendCalls();
       spyOn(AbsenceType, 'all').and.callThrough();
@@ -35,7 +35,7 @@ define([
       var contractId = 1;
 
       beforeEach(function () {
-        ContractService.fullDetails(contractId);
+        contractService.fullDetails(contractId);
         $httpBackend.flush();
         $rootScope.$digest();
       });

@@ -5,26 +5,14 @@ define([
 ], function (_) {
   'use strict';
 
-  ContractRevisionService.__name = 'ContractRevisionService';
-  ContractRevisionService.$inject = [
-    '$filter', '$resource', 'settings', '$q', 'UtilsService', '$log'
+  contractRevisionService.__name = 'contractRevisionService';
+  contractRevisionService.$inject = [
+    '$filter', '$resource', 'settings', '$q', 'utilsService', '$log'
   ];
 
-  function ContractRevisionService ($filter, $resource, settings, $q,
-    UtilsService, $log) {
-    $log.debug('Service: ContractRevisionService');
-
-    /**
-     * If parameter passed is a Date object, it converts it into a string
-     *
-     * @param {Date} dateObj
-     * @return {string/any}
-     */
-    function convertToDateString (dateObj) {
-      var dateString = $filter('formatDate')(dateObj, 'YYYY-MM-DD');
-
-      return dateString !== 'Unspecified' ? dateString : dateObj;
-    }
+  function contractRevisionService ($filter, $resource, settings, $q,
+    utilsService, $log) {
+    $log.debug('Service: contractRevisionService');
 
     return _.assign($resource(settings.pathRest, {
       action: 'get',
@@ -54,7 +42,19 @@ define([
         });
       }
     });
+
+    /**
+     * If parameter passed is a Date object, it converts it into a string
+     *
+     * @param {Date} dateObj
+     * @return {string/any}
+     */
+    function convertToDateString (dateObj) {
+      var dateString = $filter('formatDate')(dateObj, 'YYYY-MM-DD');
+
+      return dateString !== 'Unspecified' ? dateString : dateObj;
+    }
   }
 
-  return ContractRevisionService;
+  return contractRevisionService;
 });

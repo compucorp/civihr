@@ -9,12 +9,12 @@ define([
   ModalRevisionController.$inject = [
     '$filter', '$log', '$q', '$rootScope', '$scope', '$uibModalInstance', 'settings',
     'revisionDataList', 'revisionList', 'entity', 'fields', 'model', 'modalContract',
-    'utils', 'ContactService'
+    'utils', 'contactService'
   ];
 
   function ModalRevisionController ($filter, $log, $q, $rootScope, $scope, $modalInstance,
     settings, revisionDataList, revisionList, entity, fields, model, modalContract,
-    utils, ContactService) {
+    utils, contactService) {
     $log.debug('Controller: ModalRevisionController');
 
     $scope.$broadcast('hrjc-loader-show');
@@ -162,13 +162,13 @@ define([
         case 'health':
           angular.forEach($scope.revisionDataList, function (revisionData) {
             if (revisionData.provider) {
-              ContactService.getOne(revisionData.provider).then(function (contact) {
+              contactService.getOne(revisionData.provider).then(function (contact) {
                 revisionData.provider = contact.label;
               });
             }
 
             if (revisionData.provider_life_insurance) {
-              ContactService.getOne(revisionData.provider_life_insurance).then(function (contact) {
+              contactService.getOne(revisionData.provider_life_insurance).then(function (contact) {
                 revisionData.provider_life_insurance = contact.label;
               });
             }

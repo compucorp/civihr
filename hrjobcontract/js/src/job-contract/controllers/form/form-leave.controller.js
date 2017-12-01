@@ -6,9 +6,9 @@ define([
   'use strict';
 
   FormLeaveController.__name = 'FormLeaveController';
-  FormLeaveController.$inject = ['$log', '$scope', 'UtilsService'];
+  FormLeaveController.$inject = ['$log', '$scope', 'utilsService'];
 
-  function FormLeaveController ($log, $scope, UtilsService) {
+  function FormLeaveController ($log, $scope, utilsService) {
     $log.debug('Controller: FormLeaveController');
 
     var vm = {};
@@ -27,7 +27,7 @@ define([
      * Loads the number of Public Holidays in Current Period
      */
     function loadNumberOfPublicHolidays () {
-      UtilsService.getNumberOfPublicHolidaysInCurrentPeriod()
+      utilsService.getNumberOfPublicHolidaysInCurrentPeriod()
         .then(function (number) {
           vm.numberOfPublicHolidays = number;
         });

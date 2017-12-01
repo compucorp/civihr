@@ -3,11 +3,11 @@
 define(function () {
   'use strict';
 
-  ContactService.__name = 'ContactService';
-  ContactService.$inject = ['$resource', 'settings', '$q', 'UtilsService', '$log'];
+  contactService.__name = 'contactService';
+  contactService.$inject = ['$resource', 'settings', '$q', 'utilsService', '$log'];
 
-  function ContactService ($resource, settings, $q, UtilsService, $log) {
-    $log.debug('Service: ContactService');
+  function contactService ($resource, settings, $q, utilsService, $log) {
+    $log.debug('Service: contactService');
 
     var Contact = $resource(settings.pathRest, {
       action: 'getlist',
@@ -28,7 +28,7 @@ define(function () {
           id: id,
           debug: settings.debug
         }}, function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to fetch contact', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to fetch contact', deffered)) {
             return;
           }
 
@@ -55,7 +55,7 @@ define(function () {
           params: params,
           debug: settings.debug
         }}, function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to fetch contact list', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to fetch contact list', deffered)) {
             return;
           }
 
@@ -69,5 +69,5 @@ define(function () {
     };
   }
 
-  return ContactService;
+  return contactService;
 });

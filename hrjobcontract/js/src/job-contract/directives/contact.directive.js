@@ -4,9 +4,9 @@ define(function () {
   'use strict';
 
   hrjcContact.__name = 'hrjcContact';
-  hrjcContact.$inject = ['$compile', '$log', 'settings', 'ContactService'];
+  hrjcContact.$inject = ['$compile', '$log', 'settings', 'contactService'];
 
-  function hrjcContact ($compile, $log, settings, ContactService) {
+  function hrjcContact ($compile, $log, settings, contactService) {
     $log.debug('Directive: hrjcContact');
 
     return {
@@ -22,7 +22,7 @@ define(function () {
         }
 
         $scope.$watch('contactId', function (contactId) {
-          ContactService.getOne($scope.contactId).then(function (contact) {
+          contactService.getOne($scope.contactId).then(function (contact) {
             $scope.contact = contact;
 
             if ($scope.renderAsLink) {

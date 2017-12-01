@@ -9,15 +9,15 @@ define([
   RevisionListController.__name = 'RevisionListController';
   RevisionListController.$inject = [
     '$filter', '$log', '$q', '$rootElement', '$rootScope', '$scope', '$uibModal',
-    'settings', 'ContractService', 'ContractDetailsService', 'ContractHourService',
-    'ContractPayService', 'ContractFilesService', 'ContractRevisionService',
-    'ContractRevisionList'
+    'settings', 'contractService', 'contractDetailsService', 'contractHourService',
+    'contractPayService', 'contractFilesService', 'contractRevisionService',
+    'contractRevisionListService'
   ];
 
   function RevisionListController ($filter, $log, $q, $rootElement, $rootScope,
-    $scope, $modal, settings, ContractService, ContractDetailsService,
-    ContractHourService, ContractPayService, ContractFilesService, ContractRevisionService,
-    ContractRevisionList) {
+    $scope, $modal, settings, contractService, contractDetailsService,
+    contractHourService, contractPayService, contractFilesService, contractRevisionService,
+    contractRevisionListService) {
     $log.debug('Controller: RevisionListController');
 
     var contractId = $scope.contract.id;
@@ -52,8 +52,8 @@ define([
       if (!$scope.revisionDataList) {
         $scope.$broadcast('hrjc-loader-show');
 
-        // Fetching revision list form ContractRevisionList service
-        ContractRevisionList.fetchRevisions(contractId).then(function (result) {
+        // Fetching revision list form contractRevisionListService service
+        contractRevisionListService.fetchRevisions(contractId).then(function (result) {
           $scope.revisionList = result.revisionList;
           $scope.revisionDataList = result.revisionDataList;
           $scope.$broadcast('hrjc-loader-hide');
@@ -95,7 +95,7 @@ define([
       modalInstance.result.then(function (confirm) {
         if (confirm) {
           $scope.$broadcast('hrjc-loader-show');
-          ContractService.deleteRevision(revisionId).then(function (results) {
+          contractService.deleteRevision(revisionId).then(function (results) {
             var i = 0;
             var len = $scope.revisionList.length;
 
@@ -164,7 +164,7 @@ define([
 
       modalChangeReason.result.then(function (results) {
         if (results.date !== date || results.reasonId !== reasonId) {
-          ContractService.saveRevision({
+          contractService.saveRevision({
             id: revisionEntityIdObj.id,
             change_reason: results.reasonId,
             effective_date: results.date

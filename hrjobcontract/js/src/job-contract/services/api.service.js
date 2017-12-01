@@ -5,11 +5,11 @@ define([
 ], function (angular) {
   'use strict';
 
-  API.__name = 'API';
-  API.$inject = ['$resource', '$q', 'settings', '$log'];
+  apiService.__name = 'apiService';
+  apiService.$inject = ['$resource', '$q', 'settings', '$log'];
 
-  function API ($resource, $q, settings, $log) {
-    $log.debug('Service: UtilsService');
+  function apiService ($resource, $q, settings, $log) {
+    $log.debug('Service: apiService');
 
     return {
       resource: function (entity, action, json) {
@@ -68,5 +68,5 @@ define([
     };
   }
 
-  return API;
+  return apiService;
 });

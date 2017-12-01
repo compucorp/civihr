@@ -9,12 +9,12 @@ define([
 
   describe('ModalContractController', function () {
     var $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock,
-      $uibModalMock, ContractDetailsService, ContractHealthService;
+      $uibModalMock, contractDetailsService, contractHealthService;
 
     beforeEach(module('job-contract'));
 
     beforeEach(module(function ($provide) {
-      $provide.factory('ContractHealthService', function () {
+      $provide.factory('contractHealthService', function () {
         return {
           getOptions: function () {},
           getFields: jasmine.createSpy(),
@@ -24,12 +24,12 @@ define([
     }));
 
     beforeEach(inject(function (_$controller_, _$rootScope_, _$httpBackend_, _$q_,
-      _ContractDetailsService_, _ContractHealthService_) {
+      _contractDetailsService_, _contractHealthService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
-      ContractDetailsService = _ContractDetailsService_;
-      ContractHealthService = _ContractHealthService_;
+      contractDetailsService = _contractDetailsService_;
+      contractHealthService = _contractHealthService_;
       $q = _$q_;
     }));
 
@@ -82,8 +82,8 @@ define([
         Individual: 'Individual'
       };
 
-      it('calls getOptions() form ContractHealthService', function () {
-        expect(ContractHealthService.getOptions).toHaveBeenCalled();
+      it('calls getOptions() form contractHealthService', function () {
+        expect(contractHealthService.getOptions).toHaveBeenCalled();
       });
 
       it('fetches health insurance plan types', function () {
@@ -102,8 +102,8 @@ define([
           $rootScope.$digest();
         });
 
-        it('calls to validate the dates form ContractDetailsService', function () {
-          expect(ContractDetailsService.validateDates).toHaveBeenCalled();
+        it('calls to validate the dates form contractDetailsService', function () {
+          expect(contractDetailsService.validateDates).toHaveBeenCalled();
         });
 
         it('gets confirmation fron user to save contract data', function () {
@@ -149,7 +149,7 @@ define([
         $rootScope: $rootScope,
         $uibModal: $uibModalMock,
         $uibModalInstance: $uibModalInstanceMock,
-        ContractDetailsService: ContractDetailsService,
+        contractDetailsService: contractDetailsService,
         action: 'edit',
         entity: MockContract.contractEntity,
         content: {
@@ -185,7 +185,7 @@ define([
     }
 
     function createContractDetailsServiceSpy (status) {
-      spyOn(ContractDetailsService, 'validateDates').and.callFake(function () {
+      spyOn(contractDetailsService, 'validateDates').and.callFake(function () {
         var deferred = $q.defer();
         deferred.resolve({
           success: status
@@ -200,7 +200,7 @@ define([
     }
 
     function contractHealthServiceSpy () {
-      spyOn(ContractHealthService, 'getOptions').and.callFake(function () {
+      spyOn(contractHealthService, 'getOptions').and.callFake(function () {
         return $q.resolve(InsurancePlanTypesMock.values);
       });
     }

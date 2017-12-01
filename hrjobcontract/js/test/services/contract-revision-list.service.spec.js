@@ -7,15 +7,15 @@ define([
 ], function (angular, MockContract) {
   'use strict';
 
-  describe('ContractRevisionList', function () {
-    var $rootScope, $httpBackend, ContractRevisionList, promise;
+  describe('contractRevisionListService', function () {
+    var $rootScope, $httpBackend, contractRevisionListService, promise;
 
     beforeEach(module('job-contract'));
 
-    beforeEach(inject(function (_$rootScope_, _$httpBackend_, _ContractRevisionList_) {
+    beforeEach(inject(function (_$rootScope_, _$httpBackend_, _contractRevisionListService_) {
       $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
-      ContractRevisionList = _ContractRevisionList_;
+      contractRevisionListService = _contractRevisionListService_;
 
       $httpBackend.whenGET(/action=get&entity=HRJobContractRevision/).respond(MockContract.contractRevisionData);
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});
@@ -26,7 +26,7 @@ define([
 
     describe('fetchRevisions()', function () {
       beforeEach(function () {
-        promise = ContractRevisionList.fetchRevisions(MockContract.contractRevisionData.values[0].id);
+        promise = contractRevisionListService.fetchRevisions(MockContract.contractRevisionData.values[0].id);
       });
 
       afterEach(function () {

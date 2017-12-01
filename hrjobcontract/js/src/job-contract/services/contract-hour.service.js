@@ -5,13 +5,13 @@ define([
 ], function (angular) {
   'use strict';
 
-  ContractHourService.__name = 'ContractHourService';
-  ContractHourService.$inject = [
-    '$resource', 'settings', '$q', 'UtilsService', '$log'
+  contractHourService.__name = 'contractHourService';
+  contractHourService.$inject = [
+    '$resource', 'settings', '$q', 'utilsService', '$log'
   ];
 
-  function ContractHourService ($resource, settings, $q, UtilsService, $log) {
-    $log.debug('Service: ContractHourService');
+  function contractHourService ($resource, settings, $q, utilsService, $log) {
+    $log.debug('Service: contractHourService');
 
     var ContractHour = $resource(settings.pathRest, {
       action: 'get',
@@ -37,7 +37,7 @@ define([
           json: params
         },
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to fetch contract hours', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to fetch contract hours', deffered)) {
             return;
           }
 
@@ -121,7 +121,7 @@ define([
         },
         null,
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to create contract hours', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to create contract hours', deffered)) {
             return;
           }
 
@@ -170,5 +170,5 @@ define([
     };
   }
 
-  return ContractHourService;
+  return contractHourService;
 });

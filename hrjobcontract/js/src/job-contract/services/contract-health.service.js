@@ -5,13 +5,13 @@ define([
 ], function (angular) {
   'use strict';
 
-  ContractHealthService.__name = 'ContractHealthService';
-  ContractHealthService.$inject = [
-    '$resource', 'settings', '$q', 'UtilsService', '$log'
+  contractHealthService.__name = 'contractHealthService';
+  contractHealthService.$inject = [
+    '$resource', 'settings', '$q', 'utilsService', '$log'
   ];
 
-  function ContractHealthService ($resource, settings, $q, UtilsService, $log) {
-    $log.debug('Service: ContractHealthService');
+  function contractHealthService ($resource, settings, $q, utilsService, $log) {
+    $log.debug('Service: contractHealthService');
 
     var ContractHealth = $resource(settings.pathRest, {
       action: 'get',
@@ -37,7 +37,7 @@ define([
           json: params
         },
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to fetch contract Health', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to fetch contract Health', deffered)) {
             return;
           }
 
@@ -140,7 +140,7 @@ define([
         },
         null,
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to create contract insurance', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to create contract insurance', deffered)) {
             return;
           }
 
@@ -189,5 +189,5 @@ define([
     };
   }
 
-  return ContractHealthService;
+  return contractHealthService;
 });

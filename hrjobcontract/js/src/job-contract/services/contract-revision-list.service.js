@@ -5,15 +5,19 @@ define([
 ], function (_) {
   'use strict';
 
-  ContractRevisionList.__name = 'ContractRevisionList';
-  ContractRevisionList.$inject = [
-    '$filter', '$q', '$log', 'ContractService', 'ContractFilesService',
-    'ContractRevisionService'
+  contractRevisionListService.__name = 'contractRevisionListService';
+  contractRevisionListService.$inject = [
+    '$filter', '$q', '$log', 'contractService', 'contractFilesService',
+    'contractRevisionService'
   ];
 
-  function ContractRevisionList ($filter, $q, $log, ContractService,
-    ContractFilesService, ContractRevisionService) {
-    $log.debug('Service: ContractRevisionList');
+  function contractRevisionListService ($filter, $q, $log, contractService,
+    contractFilesService, contractRevisionService) {
+    $log.debug('Service: contractRevisionListService');
+
+    return {
+      fetchRevisions: fetchRevisions
+    };
 
     /**
      * Takes in a bulk of data, the result of a joined api call, and
@@ -53,9 +57,9 @@ define([
 
       return $q.all({
         files: {
-          details: ContractFilesService.get(revision.details_revision_id, 'civicrm_hrjobcontract_details')
+          details: contractFilesService.get(revision.details_revision_id, 'civicrm_hrjobcontract_details')
         },
-        aggregated: ContractRevisionService.get({
+        aggregated: contractRevisionService.get({
           action: 'getsingle',
           json: {
             sequential: 1,
@@ -92,7 +96,7 @@ define([
       var RevisionList = [];
       var deferred = $q.defer();
 
-      ContractService.getRevision(contractId)
+      contractService.getRevision(contractId)
         .then(function (revisionList) {
           RevisionList = $filter('orderBy')(revisionList, ['-effective_date', '-id']);
 
@@ -107,11 +111,7 @@ define([
 
       return deferred.promise;
     }
-
-    return {
-      fetchRevisions: fetchRevisions
-    };
   }
 
-  return ContractRevisionList;
+  return contractRevisionListService;
 });

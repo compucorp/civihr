@@ -9,32 +9,32 @@ define([
   ContractListController.__name = 'ContractListController';
   ContractListController.$inject = [
     '$filter', '$log', '$q', '$rootElement', '$rootScope', '$sce', '$scope', '$window',
-    '$uibModal', 'contractList', 'ContractService', 'ContractDetailsService',
-    'ContractHourService', 'ContractPayService', 'ContractLeaveService', 'ContractHealthService',
-    'ContractPensionService', 'UtilsService', 'settings', 'pubSub'
+    '$uibModal', 'contractList', 'contractService', 'contractDetailsService',
+    'contractHourService', 'contractPayService', 'contractLeaveService', 'contractHealthService',
+    'contractPensionService', 'utilsService', 'settings', 'pubSub'
   ];
 
   function ContractListController ($filter, $log, $q, $rootElement, $rootScope,
-    $sce, $scope, $window, $modal, contractList, ContractService, ContractDetailsService,
-    ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
-    ContractPensionService, UtilsService, settings, pubSub) {
+    $sce, $scope, $window, $modal, contractList, contractService, contractDetailsService,
+    contractHourService, contractPayService, contractLeaveService, contractHealthService,
+    contractPensionService, utilsService, settings, pubSub) {
     $log.debug('Controller: ContractListController');
 
     var entityName;
     var promiseFields = {};
     var promiseModel = {};
     var entityServices = {
-      details: ContractDetailsService,
-      hour: ContractHourService,
-      pay: ContractPayService,
-      leave: ContractLeaveService,
-      health: ContractHealthService,
-      pension: ContractPensionService
+      details: contractDetailsService,
+      hour: contractHourService,
+      pay: contractPayService,
+      leave: contractLeaveService,
+      health: contractHealthService,
+      pension: contractPensionService
     };
     var promiseUtils = {
-      hoursLocation: UtilsService.getHoursLocation(),
-      payScaleGrade: UtilsService.getPayScaleGrade(),
-      absenceTypes: UtilsService.getAbsenceTypes()
+      hoursLocation: utilsService.getHoursLocation(),
+      payScaleGrade: utilsService.getPayScaleGrade(),
+      absenceTypes: utilsService.getAbsenceTypes()
     };
 
     $scope.contractCurrent = [];
@@ -140,9 +140,9 @@ define([
       modalInstance.result.then(function (confirm) {
         if (confirm) {
           $scope.$emit('hrjc-loader-show');
-          ContractService.delete(contractId).then(function (result) {
+          contractService.delete(contractId).then(function (result) {
             if (!result.is_error) {
-              ContractService.updateHeaderInfo();
+              contractService.updateHeaderInfo();
               removeContractById($scope.contractCurrent, contractId) || removeContractById($scope.contractPast, contractId);
               pubSub.publish('Contract::deleted', {
                 contactId: settings.contactId,
@@ -181,14 +181,14 @@ define([
       modalInstance = $modal.open(options);
 
       modalInstance.result.then(function (contract) {
-        ContractService.updateHeaderInfo();
+        contractService.updateHeaderInfo();
         +contract.is_current ? $scope.contractCurrent.push(contract) : $scope.contractPast.push(contract);
 
         if (+contract.is_primary) {
           $scope.toggleIsPrimary(contract.id);
         }
 
-        $window.location.assign(UtilsService.getManageEntitlementsPageURL(contract.contact_id));
+        $window.location.assign(utilsService.getManageEntitlementsPageURL(contract.contact_id));
       });
     }
 

@@ -5,10 +5,10 @@ define([
 ], function (angular) {
   'use strict';
 
-  UtilsService.__name = 'UtilsService';
-  UtilsService.$inject = ['API', 'settings', '$q', '$log', '$timeout'];
+  utilsService.__name = 'utilsService';
+  utilsService.$inject = ['apiService', 'settings', '$q', '$log', '$timeout'];
 
-  function UtilsService (API, settings, $q, $log, $timeout) {
+  function utilsService (API, settings, $q, $log, $timeout) {
     return {
 
       /**
@@ -163,5 +163,5 @@ define([
     };
   }
 
-  return UtilsService;
+  return utilsService;
 });

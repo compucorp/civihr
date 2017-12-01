@@ -7,13 +7,13 @@ define([
 ], function (angular, MockContract) {
   'use strict';
 
-  describe('ContractLeaveService', function () {
-    var $httpBackend, $rootScope, ContractLeaveService;
+  describe('contractLeaveService', function () {
+    var $httpBackend, $rootScope, contractLeaveService;
 
     beforeEach(module('job-contract'));
 
-    beforeEach(inject(function (_ContractLeaveService_, _$httpBackend_, _$rootScope_) {
-      ContractLeaveService = _ContractLeaveService_;
+    beforeEach(inject(function (_contractLeaveService_, _$httpBackend_, _$rootScope_) {
+      contractLeaveService = _contractLeaveService_;
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
 
@@ -38,7 +38,7 @@ define([
       });
 
       it('calls getOne() and returns expected contract leaves', function () {
-        ContractLeaveService.getOne({ jobcontract_revision_id: 68 }).then(function (result) {
+        contractLeaveService.getOne({ jobcontract_revision_id: 68 }).then(function (result) {
           expect(result).toEqual(contractLeaves);
         });
       });

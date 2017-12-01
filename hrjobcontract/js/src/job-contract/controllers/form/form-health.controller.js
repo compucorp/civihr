@@ -4,9 +4,9 @@ define(function () {
   'use strict';
 
   FormHealthController.__name = 'FormHealthController';
-  FormHealthController.$inject = ['$log', '$scope', 'ContactService'];
+  FormHealthController.$inject = ['$log', '$scope', 'contactService'];
 
-  function FormHealthController ($log, $scope, ContactService) {
+  function FormHealthController ($log, $scope, contactService) {
     $log.debug('Controller: FormHealthController');
 
     $scope.contacts = {
@@ -18,13 +18,13 @@ define(function () {
 
     (function init () {
       if ($scope.entity.health.provider) {
-        ContactService.getOne($scope.entity.health.provider).then(function (result) {
+        contactService.getOne($scope.entity.health.provider).then(function (result) {
           $scope.contacts.Health_Insurance_Provider.push(result);
         });
       }
 
       if ($scope.entity.health.provider_life_insurance) {
-        ContactService.getOne($scope.entity.health.provider_life_insurance).then(function (result) {
+        contactService.getOne($scope.entity.health.provider_life_insurance).then(function (result) {
           $scope.contacts.Life_Insurance_Provider.push(result);
         });
       }
@@ -35,7 +35,7 @@ define(function () {
         return;
       }
 
-      ContactService.search(input, {
+      contactService.search(input, {
         contact_type: 'Organization',
         contact_sub_type: contactSubType
       }).then(function (results) {

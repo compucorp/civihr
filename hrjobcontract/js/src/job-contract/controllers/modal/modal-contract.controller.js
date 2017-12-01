@@ -9,18 +9,18 @@ define([
   ModalContractController.__name = 'ModalContractController';
   ModalContractController.$inject = [
     '$scope', '$uibModal', '$uibModalInstance', '$q', '$rootElement', '$rootScope',
-    '$filter', 'ContractService', 'ContractRevisionService', 'ContractDetailsService',
-    'ContractHourService', 'ContractPayService', 'ContractLeaveService',
-    'ContractHealthService', 'ContractPensionService', 'ContractFilesService',
-    'action', 'entity', 'content', 'files', 'UtilsService', 'utils', 'settings',
+    '$filter', 'contractService', 'contractRevisionService', 'contractDetailsService',
+    'contractHourService', 'contractPayService', 'contractLeaveService',
+    'contractHealthService', 'contractPensionService', 'contractFilesService',
+    'action', 'entity', 'content', 'files', 'utilsService', 'utils', 'settings',
     '$log', 'pubSub'
   ];
 
   function ModalContractController ($scope, $modal, $modalInstance, $q, $rootElement,
-    $rootScope, $filter, ContractService, ContractRevisionService, ContractDetailsService,
-    ContractHourService, ContractPayService, ContractLeaveService, ContractHealthService,
-    ContractPensionService, ContractFilesService, action, entity, content, files,
-    UtilsService, utils, settings, $log, pubSub) {
+    $rootScope, $filter, contractService, contractRevisionService, contractDetailsService,
+    contractHourService, contractPayService, contractLeaveService, contractHealthService,
+    contractPensionService, contractFilesService, action, entity, content, files,
+    utilsService, utils, settings, $log, pubSub) {
     $log.debug('Controller: ModalContractController');
 
     var copy = content.copy || {};
@@ -41,10 +41,10 @@ define([
     $scope.showIsPrimary = utils.contractListLen > 1 && action !== 'change';
     $scope.uploader = {
       details: {
-        contract_file: ContractFilesService.uploader('civicrm_hrjobcontract_details')
+        contract_file: contractFilesService.uploader('civicrm_hrjobcontract_details')
       },
       pension: {
-        evidence_file: ContractFilesService.uploader('civicrm_hrjobcontract_pension', 1)
+        evidence_file: contractFilesService.uploader('civicrm_hrjobcontract_pension', 1)
       }
     };
     $scope.utils = utils;
@@ -160,7 +160,7 @@ define([
     if ($scope.allowSave) {
       $scope.save = function () {
         $scope.$broadcast('hrjc-loader-show');
-        ContractDetailsService.validateDates({
+        contractDetailsService.validateDates({
           contact_id: settings.contactId,
           period_start_date: $scope.entity.details.period_start_date,
           period_end_date: $scope.entity.details.period_end_date,
@@ -306,13 +306,13 @@ define([
       var uploader = $scope.uploader;
 
       var promiseContractEdit = {
-        contract: ContractService.save(entityNew.contract),
-        details: ContractDetailsService.save(entityNew.details),
-        hour: ContractHourService.save(entityNew.hour),
-        pay: ContractPayService.save(entityNew.pay),
-        leave: ContractLeaveService.save(entityNew.leave),
-        health: ContractHealthService.save(entityNew.health),
-        pension: ContractPensionService.save(entityNew.pension)
+        contract: contractService.save(entityNew.contract),
+        details: contractDetailsService.save(entityNew.details),
+        hour: contractHourService.save(entityNew.hour),
+        pay: contractPayService.save(entityNew.pay),
+        leave: contractLeaveService.save(entityNew.leave),
+        health: contractHealthService.save(entityNew.health),
+        pension: contractPensionService.save(entityNew.pension)
       };
       var promiseFilesEditUpload = [];
       var promiseFilesEditDelete = [];
@@ -322,7 +322,7 @@ define([
         len = filesTrash[entityName].length;
         for (i; i < len; i++) {
           file = filesTrash[entityName][i];
-          promiseFilesEditDelete.push(ContractFilesService.delete(file.fileID, file.entityID, file.entityTable));
+          promiseFilesEditDelete.push(contractFilesService.delete(file.fileID, file.entityID, file.entityTable));
         }
       }
 
@@ -342,11 +342,11 @@ define([
         });
 
         if (uploader.details.contract_file.queue.length) {
-          promiseFilesEditUpload.push(ContractFilesService.upload(uploader.details.contract_file, entityNew.details.jobcontract_revision_id));
+          promiseFilesEditUpload.push(contractFilesService.upload(uploader.details.contract_file, entityNew.details.jobcontract_revision_id));
         }
 
         if (uploader.pension.evidence_file.queue.length) {
-          promiseFilesEditUpload.push(ContractFilesService.upload(uploader.pension.evidence_file, entityNew.pension.jobcontract_revision_id));
+          promiseFilesEditUpload.push(contractFilesService.upload(uploader.pension.evidence_file, entityNew.pension.jobcontract_revision_id));
         }
 
         // TODO (incorrect date format in the API response)
@@ -392,7 +392,7 @@ define([
     function contractChange (reasonId, date) {
       $scope.$broadcast('hrjc-loader-show');
 
-      ContractRevisionService.validateEffectiveDate({
+      contractRevisionService.validateEffectiveDate({
         contact_id: settings.contactId,
         effective_date: date
       }).then(function (result) {
@@ -419,12 +419,12 @@ define([
       var promiseFilesChangeDelete = [];
       var promiseFilesChangeUpload = [];
       var entityServices = {
-        details: ContractDetailsService,
-        hour: ContractHourService,
-        pay: ContractPayService,
-        leave: ContractLeaveService,
-        health: ContractHealthService,
-        pension: ContractPensionService
+        details: contractDetailsService,
+        hour: contractHourService,
+        pay: contractPayService,
+        leave: contractLeaveService,
+        health: contractHealthService,
+        pension: contractPensionService
       };
 
       for (entityName in entityServices) {
@@ -455,7 +455,7 @@ define([
       }
 
       if (entityChangedListLen) {
-        UtilsService.prepareEntityIds(entityChangedList[0].data, entity.contract.id);
+        utilsService.prepareEntityIds(entityChangedList[0].data, entity.contract.id);
 
         entityChangedList[0].service.save(entityChangedList[0].data).then(function (results) {
           i = 1;
@@ -465,12 +465,12 @@ define([
           for (i; i < entityChangedListLen; i++) {
             entityName = entityChangedList[i].name;
 
-            UtilsService.prepareEntityIds(entityChangedList[i].data, entity.contract.id, revisionId);
+            utilsService.prepareEntityIds(entityChangedList[i].data, entity.contract.id, revisionId);
             promiseContractChange[entityName] = entityChangedList[i].service.save(entityChangedList[i].data);
           }
 
           return $q.all(angular.extend(promiseContractChange, {
-            revisionCreated: ContractService.saveRevision({
+            revisionCreated: contractService.saveRevision({
               id: revisionId,
               change_reason: reasonId,
               effective_date: date
@@ -487,7 +487,7 @@ define([
               entityFilesTrashLen = filesTrash[entityName].length;
               for (i; i < entityFilesTrashLen; i++) {
                 file = filesTrash[entityName][i];
-                promiseFilesChangeDelete.push(ContractFilesService.delete(file.fileID, revisionId, file.entityTable));
+                promiseFilesChangeDelete.push(contractFilesService.delete(file.fileID, revisionId, file.entityTable));
               }
             }
           }
@@ -539,7 +539,7 @@ define([
                 }
 
                 if (fieldQueueLen) {
-                  promiseFilesChangeUpload.push(ContractFilesService.upload(field, revisionId));
+                  promiseFilesChangeUpload.push(contractFilesService.upload(field, revisionId));
                 }
               }
             }
@@ -585,7 +585,7 @@ define([
         { name: 'hrjobcontract_health_health_plan_type', key: 'plan_type' },
         { name: 'hrjobcontract_health_life_insurance_plan_type', key: 'plan_type_life_insurance' }
       ].map(function (planTypeData) {
-        ContractHealthService.getOptions(planTypeData.name, true)
+        contractHealthService.getOptions(planTypeData.name, true)
         .then(function (planTypes) {
           $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
             acc[type.key] = type.value;

@@ -7,12 +7,12 @@ define([
   'use strict';
 
   describe('ModalContractNewController', function () {
-    var $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock, ContractHealthService;
+    var $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock, contractHealthService;
 
     beforeEach(module('job-contract'));
 
     beforeEach(module(function ($provide) {
-      $provide.factory('ContractHealthService', function () {
+      $provide.factory('contractHealthService', function () {
         return {
           getOptions: function () {}
         };
@@ -20,11 +20,11 @@ define([
     }));
 
     beforeEach(inject(function (_$controller_, _$rootScope_, _$httpBackend_, _$q_,
-      _ContractDetailsService_, _ContractHealthService_) {
+      _contractDetailsService_, _contractHealthService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
-      ContractHealthService = _ContractHealthService_;
+      contractHealthService = _contractHealthService_;
       $q = _$q_;
     }));
 
@@ -69,8 +69,8 @@ define([
         Individual: 'Individual'
       };
 
-      it('calls getOptions() form ContractHealthService', function () {
-        expect(ContractHealthService.getOptions).toHaveBeenCalled();
+      it('calls getOptions() form contractHealthService', function () {
+        expect(contractHealthService.getOptions).toHaveBeenCalled();
       });
 
       it('fetches health insurance plan types', function () {
@@ -104,7 +104,7 @@ define([
     }
 
     function contractHealthServiceSpy () {
-      spyOn(ContractHealthService, 'getOptions').and.callFake(function () {
+      spyOn(contractHealthService, 'getOptions').and.callFake(function () {
         return $q.resolve(InsurancePlanTypesMock.values);
       });
     }

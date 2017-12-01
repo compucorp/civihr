@@ -26,8 +26,8 @@ define([
         controller: 'ContractListController',
         templateUrl: settings.pathApp + 'views/contractList.html',
         resolve: {
-          contractList: ['ContractService', function (ContractService) {
-            return ContractService.get();
+          contractList: ['contractService', function (contractService) {
+            return contractService.get();
           }]
         }
       }

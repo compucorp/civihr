@@ -5,13 +5,13 @@ define([
 ], function (angular) {
   'use strict';
 
-  ContractPayService.__name = 'ContractPayService';
-  ContractPayService.$inject = [
-    '$resource', 'settings', '$q', 'UtilsService', '$log'
+  contractPayService.__name = 'contractPayService';
+  contractPayService.$inject = [
+    '$resource', 'settings', '$q', 'utilsService', '$log'
   ];
 
-  function ContractPayService ($resource, settings, $q, UtilsService, $log) {
-    $log.debug('Service: ContractPayService');
+  function contractPayService ($resource, settings, $q, utilsService, $log) {
+    $log.debug('Service: contractPayService');
 
     var ContractPay = $resource(settings.pathRest, {
       action: 'get',
@@ -37,7 +37,7 @@ define([
           json: params
         },
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to fetch contract pay', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to fetch contract pay', deffered)) {
             return;
           }
 
@@ -121,7 +121,7 @@ define([
         },
         null,
         function (data) {
-          if (UtilsService.errorHandler(data, 'Unable to create contract pay', deffered)) {
+          if (utilsService.errorHandler(data, 'Unable to create contract pay', deffered)) {
             return;
           }
 
@@ -178,5 +178,5 @@ define([
     };
   }
 
-  return ContractPayService;
+  return contractPayService;
 });
