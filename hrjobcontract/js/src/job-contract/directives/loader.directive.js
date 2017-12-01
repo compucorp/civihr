@@ -4,9 +4,9 @@ define(function () {
   'use strict';
 
   hrjcLoader.__name = 'hrjcLoader';
-  hrjcLoader.$inject = ['$rootScope', '$log'];
+  hrjcLoader.$inject = ['$log', '$rootScope'];
 
-  function hrjcLoader ($rootScope, $log) {
+  function hrjcLoader ($log, $rootScope) {
     $log.debug('Directive: hrjcLoader');
 
     return {

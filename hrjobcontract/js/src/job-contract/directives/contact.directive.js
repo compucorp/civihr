@@ -4,9 +4,9 @@ define(function () {
   'use strict';
 
   hrjcContact.__name = 'hrjcContact';
-  hrjcContact.$inject = ['$compile', 'ContactService', 'settings', '$log'];
+  hrjcContact.$inject = ['$compile', '$log', 'settings', 'ContactService'];
 
-  function hrjcContact ($compile, ContactService, settings, $log) {
+  function hrjcContact ($compile, $log, settings, ContactService) {
     $log.debug('Directive: hrjcContact');
 
     return {
