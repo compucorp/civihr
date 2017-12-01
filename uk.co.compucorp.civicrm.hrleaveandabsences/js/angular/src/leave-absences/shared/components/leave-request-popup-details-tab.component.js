@@ -113,17 +113,12 @@ define([
 
     vm.attemptCalculateBalanceChange = attemptCalculateBalanceChange;
     vm.calculateBalanceChange = calculateBalanceChange;
+    vm.canCalculateChange = canCalculateChange;
     vm.changeInNoOfDays = changeInNoOfDays;
-    vm.isLeaveType = isLeaveType;
+    vm.convertDateFormatFromServer = convertDateFormatFromServer;
+    vm.convertDateToServerFormat = convertDateToServerFormat;
     vm.isNotWorkingDay = isNotWorkingDay;
     vm.setDatesFromUI = setDatesFromUI;
-    vm.toggleBalance = toggleBalance;
-    vm._canCalculateChange = _canCalculateChange;
-    vm._calculateOpeningAndClosingBalance = _calculateOpeningAndClosingBalance;
-    vm._convertDateFormatFromServer = _convertDateFormatFromServer;
-    vm._convertDateToServerFormat = _convertDateToServerFormat;
-    vm._loadCalendar = _loadCalendar;
-    vm._reset = _reset;
     vm.$onDestroy = unsubscribeFromEvents;
 
     (function init () {
@@ -136,7 +131,7 @@ define([
       vm.initChildController()
       .then(function () {
         return $q.all([
-          vm._loadCalendar(),
+          loadCalendar(),
           loadDayTypes()
         ]);
       })
@@ -171,14 +166,49 @@ define([
     }
 
     /**
+     * Calculates and updates opening and closing balances.
+     *
+     * For the opening balance, when in edit mode, if the selected absence type
+     * is the same as the request absence type, the opening balance is the
+     * original opening balance value, otherwise it's the leave balance
+     * remainder.
+     *
+     * The closing balance is the opening balance + change amount.
+     */
+    function calculateOpeningAndClosingBalance () {
+      if (originalOpeningBalance &&
+        originalOpeningBalance.absenceTypeId === vm.selectedAbsenceType.id) {
+        vm.balance.opening = originalOpeningBalance.value || 0;
+      } else {
+        vm.balance.opening = vm.selectedAbsenceType.remainder;
+      }
+      // the change is negative so adding it will actually subtract it
+      vm.balance.closing = vm.balance.opening + vm.balance.change.amount;
+    }
+
+    /**
+     * If change can be calculated
+     */
+    function canCalculateChange () {
+      var canCalculate = !!vm.request.from_date && !!vm.request.to_date;
+
+      if (isCalculationUnit('days')) {
+        canCalculate = canCalculate &&
+          !!vm.request.from_date_type && !!vm.request.to_date_type;
+      }
+
+      return canCalculate;
+    }
+
+    /**
      * Change handler when changing no. of days like Multiple Days or Single Day.
      * It will reset dates, day types, change balance.
      *
      * @return {Promise}
      */
     function changeInNoOfDays () {
-      vm._reset();
-      vm._calculateOpeningAndClosingBalance();
+      reset();
+      calculateOpeningAndClosingBalance();
 
       return $q.resolve()
         .then(vm.changeInNoOfDaysExtended ? vm.changeInNoOfDaysExtended : _.noop);
@@ -199,7 +229,7 @@ define([
         .then(function (_periodHasBeenChanged_) {
           periodHasBeenChanged = _periodHasBeenChanged_;
 
-          return _loadCalendar();
+          return loadCalendar();
         })
         .then(function () {
           return loadAndSetTimeRangesFromWorkPattern(
@@ -217,6 +247,26 @@ define([
           }
         })
         .catch(handleError);
+    }
+
+    /**
+     * Converts given date to javascript date as expected by uib-datepicker
+     *
+     * @param {String} date from server
+     * @return {Date}
+     */
+    function convertDateFormatFromServer (date) {
+      return moment(date, sharedSettings.serverDateFormat).toDate();
+    }
+
+    /**
+     * Converts given date to server format
+     *
+     * @param {Date} date
+     * @return {String} date converted to server format
+     */
+    function convertDateToServerFormat (date) {
+      return moment(date).format(sharedSettings.serverDateFormat);
     }
 
     /**
@@ -250,7 +300,7 @@ define([
 
       // Make a copy of the list
       listToReturn = _.cloneDeep(vm.requestDayTypes);
-      date = vm._convertDateToServerFormat(date);
+      date = convertDateToServerFormat(date);
 
       return PublicHoliday.isPublicHoliday(date)
         .then(function (result) {
@@ -387,14 +437,14 @@ define([
 
       if (!vm.isMode('create')) {
         attributes = vm.request.attributes();
-        vm.uiOptions.fromDate = vm._convertDateFormatFromServer(vm.request.from_date);
+        vm.uiOptions.fromDate = convertDateFormatFromServer(vm.request.from_date);
 
         return loadAbsencePeriodDateTypes(vm.uiOptions.fromDate, 'from')
           .then(function () {
             // to_date and type has been reset in above call so reinitialize from clone
             vm.request.to_date = attributes.to_date;
             vm.request.to_date_type = attributes.to_date_type;
-            vm.uiOptions.toDate = vm._convertDateFormatFromServer(vm.request.to_date);
+            vm.uiOptions.toDate = convertDateFormatFromServer(vm.request.to_date);
 
             return loadAbsencePeriodDateTypes(vm.uiOptions.toDate, 'to');
           });
@@ -555,6 +605,18 @@ define([
     }
 
     /**
+     * Initializes user's calendar (work patterns)
+     *
+     * @return {Promise}
+     */
+    function loadCalendar () {
+      return Calendar.get(vm.request.contact_id, vm.period.start_date, vm.period.end_date)
+        .then(function (usersCalendar) {
+          vm.calendar = usersCalendar;
+        });
+    }
+
+    /**
      * It filters the breakdown to obtain the ones for currently selected page.
      */
     function pageChanged () {
@@ -586,7 +648,7 @@ define([
       setDatesToRequest(); // @TODO find a way to not call it twice
       toggleBalance();
 
-      if (!vm._canCalculateChange()) {
+      if (!vm.canCalculateChange()) {
         return $q.resolve();
       }
 
@@ -607,8 +669,8 @@ define([
      * @return {Boolean}
      */
     function requestHasSameDates (request) {
-      return _convertDateToServerFormat(request.from_date) ===
-        _convertDateToServerFormat(request.to_date);
+      return convertDateToServerFormat(request.from_date) ===
+        convertDateToServerFormat(request.to_date);
     }
 
     /**
@@ -620,7 +682,7 @@ define([
       if (balanceChange) {
         vm.balance.change = balanceChange;
 
-        vm._calculateOpeningAndClosingBalance();
+        calculateOpeningAndClosingBalance();
         rePaginate();
       }
 
@@ -632,7 +694,7 @@ define([
      */
     function setDaysSelectionMode () {
       if ((!vm.isMode('create') && requestHasSameDates(vm.request)) ||
-        (vm.isMode('create') && (vm.isLeaveType('sickness') || isCalculationUnit('hours')))) {
+        (vm.isMode('create') && (isLeaveType('sickness') || isCalculationUnit('hours')))) {
         vm.uiOptions.multipleDays = false;
       } else {
         vm.uiOptions.multipleDays = true;
@@ -684,73 +746,6 @@ define([
     }
 
     /**
-     * If change can be calculated
-     */
-    function _canCalculateChange () {
-      var canCalculate = !!vm.request.from_date && !!vm.request.to_date;
-
-      if (isCalculationUnit('days')) {
-        canCalculate = canCalculate &&
-          !!vm.request.from_date_type && !!vm.request.to_date_type;
-      }
-
-      return canCalculate;
-    }
-
-    /**
-     * Calculates and updates opening and closing balances.
-     *
-     * For the opening balance, when in edit mode, if the selected absence type
-     * is the same as the request absence type, the opening balance is the
-     * original opening balance value, otherwise it's the leave balance
-     * remainder.
-     *
-     * The closing balance is the opening balance + change amount.
-     */
-    function _calculateOpeningAndClosingBalance () {
-      if (originalOpeningBalance &&
-        originalOpeningBalance.absenceTypeId === vm.selectedAbsenceType.id) {
-        vm.balance.opening = originalOpeningBalance.value || 0;
-      } else {
-        vm.balance.opening = vm.selectedAbsenceType.remainder;
-      }
-      // the change is negative so adding it will actually subtract it
-      vm.balance.closing = vm.balance.opening + vm.balance.change.amount;
-    }
-
-    /**
-     * Converts given date to javascript date as expected by uib-datepicker
-     *
-     * @param {String} date from server
-     * @return {Date}
-     */
-    function _convertDateFormatFromServer (date) {
-      return moment(date, sharedSettings.serverDateFormat).toDate();
-    }
-
-    /**
-     * Converts given date to server format
-     *
-     * @param {Date} date
-     * @return {String} date converted to server format
-     */
-    function _convertDateToServerFormat (date) {
-      return moment(date).format(sharedSettings.serverDateFormat);
-    }
-
-    /**
-     * Initializes user's calendar (work patterns)
-     *
-     * @return {Promise}
-     */
-    function _loadCalendar () {
-      return Calendar.get(vm.request.contact_id, vm.period.start_date, vm.period.end_date)
-        .then(function (usersCalendar) {
-          vm.calendar = usersCalendar;
-        });
-    }
-
-    /**
      * Sets absence period for the changed date if it exists
      *
      * @param {String} dateType from|to
@@ -782,8 +777,8 @@ define([
       var request = vm.request;
       var times = options.times;
 
-      request.from_date = options.fromDate ? vm._convertDateToServerFormat(options.fromDate) : null;
-      request.to_date = options.toDate ? vm._convertDateToServerFormat(options.toDate) : null;
+      request.from_date = options.fromDate ? convertDateToServerFormat(options.fromDate) : null;
+      request.to_date = options.toDate ? convertDateToServerFormat(options.toDate) : null;
 
       if (isCalculationUnit('hours') && !isLeaveType('toil')) {
         request.from_date = request.from_date && times.from.time ? request.from_date + ' ' + times.from.time : null;
@@ -845,11 +840,22 @@ define([
           vm.uiOptions.toDate = vm.uiOptions.fromDate;
         }
       } else {
-        vm.uiOptions.date.to.options.minDate = vm._convertDateFormatFromServer(vm.period.start_date);
+        vm.uiOptions.date.to.options.minDate = convertDateFormatFromServer(vm.period.start_date);
         vm.uiOptions.date.to.options.initDate = vm.uiOptions.date.to.options.minDate;
       }
 
-      vm.uiOptions.date.to.options.maxDate = vm._convertDateFormatFromServer(vm.period.end_date);
+      vm.uiOptions.date.to.options.maxDate = convertDateFormatFromServer(vm.period.end_date);
+    }
+
+    /**
+     * Resets data in dates, types, balance.
+     */
+    function reset () {
+      vm.uiOptions.toDate = vm.uiOptions.fromDate;
+      vm.request.to_date_type = vm.request.from_date_type;
+      vm.request.to_date = vm.request.from_date;
+
+      attemptCalculateBalanceChange();
     }
 
     /**
@@ -865,21 +871,10 @@ define([
     }
 
     /**
-     * Resets data in dates, types, balance.
-     */
-    function _reset () {
-      vm.uiOptions.toDate = vm.uiOptions.fromDate;
-      vm.request.to_date_type = vm.request.from_date_type;
-      vm.request.to_date = vm.request.from_date;
-
-      attemptCalculateBalanceChange();
-    }
-
-    /**
      * Shows or hides the balance breakdown depending on various conditions
      */
     function toggleBalance () {
-      vm.uiOptions.showBalance = vm._canCalculateChange();
+      vm.uiOptions.showBalance = vm.canCalculateChange();
     }
   }
 });

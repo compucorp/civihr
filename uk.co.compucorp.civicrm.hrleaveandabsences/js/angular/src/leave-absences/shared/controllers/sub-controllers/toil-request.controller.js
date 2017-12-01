@@ -17,13 +17,13 @@ define([
 
     vm.calculateBalanceChange = calculateBalanceChange;
     vm.calculateToilExpiryDate = calculateToilExpiryDate;
+    vm.canCalculateChange = canCalculateChange;
     vm.changeInNoOfDaysExtended = changeInNoOfDaysExtended;
     vm.checkSubmitConditions = checkSubmitConditions;
     vm.clearExpiryDate = clearExpiryDate;
     vm.initChildController = initChildController;
     vm.setDatesFromUIExtended = setDatesFromUIExtended;
     vm.updateExpiryDate = updateExpiryDate;
-    vm._canCalculateChange = _canCalculateChange;
 
     (function init () {
       initAccrueValueWatcher();
@@ -39,16 +39,6 @@ define([
       vm.balance.change.amount = +vm.request.toil_to_accrue;
 
       return $q.resolve(vm.balance.change);
-    }
-
-    /**
-     * Checks if balance can be calculated
-     * (overrides the parent's implementation)
-     *
-     * @return {Boolean}
-     */
-    function _canCalculateChange () {
-      return !!vm.request.toil_to_accrue;
     }
 
     /**
@@ -85,6 +75,16 @@ define([
 
         return expiryDate;
       });
+    }
+
+    /**
+     * Checks if balance can be calculated
+     * (overrides the parent's implementation)
+     *
+     * @return {Boolean}
+     */
+    function canCalculateChange () {
+      return !!vm.request.toil_to_accrue;
     }
 
     /**
@@ -191,7 +191,7 @@ define([
      */
     function initExpiryDate () {
       if (vm.canManage) {
-        vm.uiOptions.expiryDate = vm._convertDateFormatFromServer(vm.request.toil_expiry_date);
+        vm.uiOptions.expiryDate = vm.convertDateFormatFromServer(vm.request.toil_expiry_date);
       }
     }
 
@@ -244,7 +244,7 @@ define([
      */
     function updateExpiryDate () {
       if (vm.uiOptions.expiryDate) {
-        vm.request.toil_expiry_date = vm._convertDateToServerFormat(vm.uiOptions.expiryDate);
+        vm.request.toil_expiry_date = vm.convertDateToServerFormat(vm.uiOptions.expiryDate);
       }
     }
   }

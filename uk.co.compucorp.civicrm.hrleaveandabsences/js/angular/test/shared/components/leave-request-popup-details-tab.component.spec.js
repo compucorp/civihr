@@ -101,6 +101,14 @@ define([
           expect($log.debug).toHaveBeenCalled();
         });
 
+        it('has public functions that are needed for views', function () {
+          ['attemptCalculateBalanceChange', 'changeInNoOfDays',
+            'isNotWorkingDay', 'setDatesFromUI']
+            .forEach(function (func) {
+              expect(controller[func]).toEqual(jasmine.any(Function));
+            });
+        });
+
         describe('initChildController()', function () {
           it('has days of work pattern loaded', function () {
             expect(controller.calendar).toBeDefined();
@@ -1150,7 +1158,7 @@ define([
             beforeEach(function () {
               oldExpiryDate = controller.request.toil_expiry_date;
               controller.uiOptions.expiryDate = new Date();
-              newExpiryDate = controller._convertDateToServerFormat(controller.uiOptions.expiryDate);
+              newExpiryDate = controller.convertDateToServerFormat(controller.uiOptions.expiryDate);
               controller.updateExpiryDate();
             });
 
