@@ -22,31 +22,34 @@ define([
     vm.clearExpiryDate = clearExpiryDate;
     vm.initChildController = initChildController;
     vm.loadAbsencePeriodDatesTypes = loadAbsencePeriodDatesTypes;
-    vm.updateAbsencePeriodDatesTypes = updateAbsencePeriodDatesTypes;
+    vm.setDatesFromUIExtended = setDatesFromUIExtended;
     vm.updateExpiryDate = updateExpiryDate;
+    vm._canCalculateChange = _canCalculateChange;
 
     (function init () {
       initAccrueValueWatcher();
     })();
 
     /**
-     * Calculate change in balance, it updates balance variables.
-     * It overrides the parent's implementation
+     * Calculates change in balance
+     * (overrides the parent's implementation)
      *
-     * @return {Promise} empty promise if all required params are not set otherwise promise from server
+     * @return {Promise} resolves with the balance change
      */
     function calculateBalanceChange () {
-      vm.uiOptions.showBalance = false;
+      vm.balance.change.amount = +vm.request.toil_to_accrue;
 
-      if (vm.request.toil_to_accrue) {
-        vm.loading.showBalanceChange = true;
-        vm._toggleBalance();
-        vm.balance.change.amount = +vm.request.toil_to_accrue;
-        vm._calculateOpeningAndClosingBalance();
-        vm.uiOptions.showBalance = true;
-        vm.request.to_date_type = vm.request.from_date_type = '1';
-        vm.loading.showBalanceChange = false;
-      }
+      return $q.resolve(vm.balance.change);
+    }
+
+    /**
+     * Checks if balance can be calculated
+     * (overrides the parent's implementation)
+     *
+     * @return {Boolean}
+     */
+    function _canCalculateChange () {
+      return !!vm.request.toil_to_accrue;
     }
 
     /**
@@ -204,7 +207,7 @@ define([
 
       $rootScope.$watch(
         function () { return vm.request.toil_to_accrue; },
-        function () { calculateBalanceChange(); });
+        function () { vm.attemptCalculateBalanceChange(); });
     }
 
     /**
@@ -261,23 +264,12 @@ define([
     }
 
     /**
-     * Overwrites the parent function. It calculates the expiry date when
-     * the `from` or `to` date change value.
+     * Extends the parent's setDatesFromUI() function
      *
-     * @param {Date} date - the selected date
      * @return {Promise}
      */
-    function updateAbsencePeriodDatesTypes (date) {
-      return vm.loadAbsencePeriodDatesTypes(date)
-        .then(function () {
-          vm._setMinMaxDate();
-          vm._setDates();
-          vm.updateBalance();
-          vm.calculateToilExpiryDate();
-        })
-        .catch(function (error) {
-          vm.errors = [error];
-        });
+    function setDatesFromUIExtended () {
+      return vm.calculateToilExpiryDate();
     }
 
     /**

@@ -712,6 +712,35 @@
           it('does not contain admin in the list of managees', function () {
             expect(_.find(controller.managedContacts, { 'id': adminId })).toBeUndefined();
           });
+
+          describe('on absence period change', function () {
+            beforeEach(function () {
+              $rootScope.$broadcast('LeaveRequestPopup::absencePeriodChanged');
+            });
+
+            it('starts reloading entitlements', function () {
+              expect(controller.loading.entitlements).toBeTruthy();
+            });
+
+            describe('once it started reloading entitlements', function () {
+              beforeEach(function () {
+                spyOn($rootScope, '$emit').and.callThrough();
+                $rootScope.$digest();
+              });
+
+              it('loads entitlements', function () {
+                expect(EntitlementAPI.all).toHaveBeenCalled();
+              });
+
+              it('finishes loading entitlements', function () {
+                expect(controller.loading.entitlements).toBeFalsy();
+              });
+
+              it('broadcasts absence types with updated entitlements back', function () {
+                expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequestPopup::updateBalance', controller.absenceTypes);
+              });
+            });
+          });
         });
       });
 

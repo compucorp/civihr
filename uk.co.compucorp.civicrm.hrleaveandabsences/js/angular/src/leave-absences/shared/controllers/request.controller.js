@@ -49,7 +49,7 @@ define([
     vm.errors = [];
     vm.fileUploader = null;
     vm.staffMemberSelectionComplete = false;
-    vm.loading = { absenceTypes: true };
+    vm.loading = { absenceTypes: true, entitlements: true };
     vm.managedContacts = [];
     vm.mode = ''; // can be edit, create, view
     vm.newStatusOnSave = null;
@@ -125,8 +125,8 @@ define([
      * Amends request parameters before submit
      */
     function amendRequestParamsBeforeSave () {
-      if (vm.selectedAbsenceType.calculation_unit_name === 'hours') {
-        _.each(['from', 'to'], function (type) {
+      _.each(['from', 'to'], function (type) {
+        if (vm.selectedAbsenceType.calculation_unit_name === 'hours') {
           delete vm.request[type + '_date_type'];
 
           if (getLeaveType() === 'toil') {
@@ -134,8 +134,10 @@ define([
             // are mot used in TOIL but are requred by API
             vm.request[type + '_date_amount'] = '0';
           }
-        });
-      }
+        } else {
+          delete vm.request[type + '_date_amount'];
+        }
+      });
     }
 
     /**
@@ -476,6 +478,7 @@ define([
     function initListeners () {
       listeners.push(
         $rootScope.$on('LeaveRequestPopup::requestObjectUpdated', setInitialAttributes),
+        $rootScope.$on('LeaveRequestPopup::absencePeriodChanged', reloadEntitlements),
         $rootScope.$on('LeaveRequestPopup::handleError', function (__, errors) { handleError(errors); }),
         $rootScope.$on('LeaveRequestPopup::childComponent::register', function () { childComponentsCount++; })
       );
@@ -760,19 +763,34 @@ define([
     }
 
     /**
+     * Reloads entitlements for the currently set absence period,
+     * notifies child controllers and passes updated absence types to them
+     *
+     * @return {Promise}
+     */
+    function reloadEntitlements () {
+      vm.loading.entitlements = true;
+
+      return setAbsenceTypesFromEntitlements()
+        .then(function () {
+          $rootScope.$emit('LeaveRequestPopup::updateBalance', vm.absenceTypes);
+        });
+    }
+
+    /**
      * Sets entitlements and sets the absences type available for the user.
      * It depends on absenceTypesAndIds to be set to list of absence types and ids
      *
-     * @param {Object} absenceTypesAndIds contains all absencetypes and their ids
      * @return {Promise}
      */
-    function setAbsenceTypesFromEntitlements (absenceTypesAndIds) {
+    function setAbsenceTypesFromEntitlements () {
       return Entitlement.all({
         contact_id: vm.request.contact_id,
         period_id: vm.period.id,
         type_id: { IN: absenceTypesAndIds.ids }
       }, true) // `true` because we want to use the 'future' balance for calculation
         .then(function (entitlements) {
+          vm.loading.entitlements = false;
           // create a list of absence types with a `balance` property
           vm.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
 
@@ -918,7 +936,7 @@ define([
             })
           };
 
-          return setAbsenceTypesFromEntitlements(absenceTypesAndIds);
+          return setAbsenceTypesFromEntitlements();
         });
     }
   }

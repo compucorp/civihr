@@ -242,8 +242,11 @@ define([
             beforeEach(function () {
               beforeChangeAbsenceType = controller.absenceTypes[0];
               controller.request.type_id = controller.absenceTypes[1].id;
-              controller.updateBalance();
+
+              $rootScope.$broadcast('LeaveRequestPopup::updateBalance');
+
               afterChangeAbsenceType = controller.absenceTypes[1];
+
               $rootScope.$digest();
             });
 
@@ -369,7 +372,9 @@ define([
                 controller.uiOptions.multipleDays = true;
                 // select all_day to get multiple day mock data
                 setTestDates(date2016, date2016);
+
                 controller.request.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
+
                 controller.calculateBalanceChange();
                 $rootScope.$digest();
               });
@@ -503,7 +508,6 @@ define([
                   timeToObject = controller.uiOptions.times.to;
 
                   setTestDates(date2016, date2017);
-                  $rootScope.$digest();
                 });
 
                 it('turns loading indicator off', function () {
@@ -547,7 +551,6 @@ define([
                     spyOn($rootScope, '$broadcast');
                     spyOn(request, 'getWorkDayForDate').and.returnValue($q.reject());
                     setTestDates(date2016, date2017);
-                    $rootScope.$digest();
                   });
 
                   it('flushes and disables time and deduction fields', function () {
@@ -660,7 +663,12 @@ define([
               beforeEach(function () {
                 controller.uiOptions.toDate = null;
                 oldPeriodId = controller.period.id;
+                spyOn($rootScope, '$broadcast').and.callThrough();
                 setTestDates(date2016);
+              });
+
+              it('notifies the parent controller that the period has been changed', function () {
+                expect($rootScope.$broadcast).toHaveBeenCalledWith('LeaveRequestPopup::absencePeriodChanged');
               });
 
               it('changes absence period', function () {
@@ -717,39 +725,46 @@ define([
                 minDate = moment(getUTCDate(date2016)).add(1, 'd').toDate();
               });
 
-              it('sets min date to from date', function () {
-                expect(controller.uiOptions.date.to.options.minDate).toEqual(minDate);
-              });
-
-              it('sets init date to from date', function () {
-                expect(controller.uiOptions.date.to.options.initDate).toEqual(minDate);
-              });
-
-              describe('and from date is less than to date', function () {
+              describe('when parent controller responds back', function () {
                 beforeEach(function () {
-                  from = '9/12/2016';
-                  to = '10/12/2016';
-
-                  setTestDates(null, to);
-                  setTestDates(from);
+                  $rootScope.$emit('LeaveRequestPopup::updateBalance');
+                  $rootScope.$digest();
                 });
 
-                it('does not reset to date to equal from date', function () {
-                  expect(controller.request.to_date).not.toEqual(controller.request.from_date);
-                });
-              });
-
-              describe('and from date is greater than to date', function () {
-                beforeEach(function () {
-                  from = '11/12/2016';
-                  to = '10/12/2016';
-
-                  setTestDates(null, to);
-                  setTestDates(from);
+                it('sets min date to from date', function () {
+                  expect(controller.uiOptions.date.to.options.minDate).toEqual(minDate);
                 });
 
-                it('changes to date to equal to date', function () {
-                  expect(controller.request.to_date).toEqual(controller.request.from_date);
+                it('sets init date to from date', function () {
+                  expect(controller.uiOptions.date.to.options.initDate).toEqual(minDate);
+                });
+
+                describe('and from date is less than to date', function () {
+                  beforeEach(function () {
+                    from = '9/12/2016';
+                    to = '10/12/2016';
+
+                    setTestDates(null, to);
+                    setTestDates(from);
+                  });
+
+                  it('does not reset to date to equal from date', function () {
+                    expect(controller.request.to_date).not.toEqual(controller.request.from_date);
+                  });
+                });
+
+                describe('and from date is greater than to date', function () {
+                  beforeEach(function () {
+                    from = '11/12/2016';
+                    to = '10/12/2016';
+
+                    setTestDates(null, to);
+                    setTestDates(from);
+                  });
+
+                  it('changes to date to equal to date', function () {
+                    expect(controller.request.to_date).toEqual(controller.request.from_date);
+                  });
                 });
               });
             });
@@ -949,16 +964,13 @@ define([
 
           describe('when request states multiple days', function () {
             beforeEach(function () {
-              sicknessRequest.from_date = date2016;
-              sicknessRequest.to_date = date2017;
-
               compileComponent({
                 mode: 'edit',
                 leaveType: 'sick',
                 request: sicknessRequest,
                 selectedAbsenceType: selectedAbsenceType
               });
-
+              setTestDates(date2016, date2017);
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
             });
@@ -970,14 +982,11 @@ define([
 
           describe('when request states a single day', function () {
             beforeEach(function () {
-              sicknessRequest.from_date = date2016;
-              sicknessRequest.to_date = date2016;
-
               compileComponent({
                 request: sicknessRequest,
                 leaveType: 'sick'
               });
-
+              setTestDates(date2016, date2016);
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
             });
@@ -1040,6 +1049,8 @@ define([
               controller.request.toilDurationHours = 1;
               controller.request.updateDuration();
               controller.request.toil_to_accrue = toilAccrue.value;
+
+              $rootScope.$apply();
             });
 
             it('sets expiry date', function () {
@@ -1240,7 +1251,9 @@ define([
         beforeEach(function () {
           controller.request.type_id = absenceTypes[1].id;
           expectedOpeningBalance = absenceTypes[1].remainder;
-          controller.updateBalance();
+
+          $rootScope.$broadcast('LeaveRequestPopup::updateBalance');
+          $rootScope.$digest();
         });
 
         it('uses the opening balance for that leave type', function () {
@@ -1258,6 +1271,7 @@ define([
         beforeEach(function () {
           request = leaveRequestData.all().values[0];
           request.status_id = getStatusValueFromName(sharedSettings.statusNames.adminApproved);
+          expectedOpeningBalance = absenceTypes[0].remainder - request.balance_change;
 
           compileComponent({
             mode: 'edit',
@@ -1272,11 +1286,18 @@ define([
         });
       });
 
-      describe('when status is not approved', function () {
+      describe('when status is "Awaiting Approval"', function () {
         beforeEach(function () {
-          controller.request.status_id = getStatusValueFromName(sharedSettings.statusNames.awaitingApproval);
+          request = leaveRequestData.all().values[0];
+          request.status_id = getStatusValueFromName(sharedSettings.statusNames.awaitingApproval);
           expectedOpeningBalance = absenceTypes[0].remainder;
-          controller.updateBalance();
+
+          compileComponent({
+            mode: 'edit',
+            request: LeaveRequestInstance.init(request),
+            role: 'manager',
+            selectedAbsenceType: absenceTypes[0]
+          });
         });
 
         it('has absence type remainder as opening balance', function () {
@@ -1294,14 +1315,14 @@ define([
           role: 'admin',
           selectedAbsenceType: absenceTypes[0]
         });
-        spyOn(controller, 'calculateBalanceChange').and.callThrough();
+        spyOn(controller, 'attemptCalculateBalanceChange').and.callThrough();
       });
 
       describe('when the calculation unit is "hours"', function () {
         beforeEach(function () {
           selectedAbsenceType.calculation_unit_name = 'hours';
 
-          spyOn(controller, '_setDateAndTypes').and.callThrough();
+          spyOn(controller, 'setDatesFromUI').and.callThrough();
         });
 
         describe('when from/to deductions values are set but not changed', function () {
@@ -1314,7 +1335,7 @@ define([
           });
 
           it('does not call the balance change calculation function', function () {
-            expect(controller.calculateBalanceChange).not.toHaveBeenCalled();
+            expect(controller.attemptCalculateBalanceChange).not.toHaveBeenCalled();
           });
 
           describe('when from/to deductions values are changed', function () {
@@ -1326,32 +1347,40 @@ define([
             });
 
             it('calls the balance change calculation function', function () {
-              expect(controller.calculateBalanceChange).toHaveBeenCalled();
+              expect(controller.attemptCalculateBalanceChange).toHaveBeenCalled();
             });
           });
         });
 
         describe('when "from" time value is changed in UI', function () {
+          var fromTime = '19:00';
+
           beforeEach(function () {
-            controller.uiOptions.times.from.time = '19:00';
+            setTestDates(date2016);
+
+            controller.uiOptions.times.from.time = fromTime;
 
             $rootScope.$digest();
           });
 
           it('updates the time in the request instance', function () {
-            expect(controller._setDateAndTypes).toHaveBeenCalled();
+            expect(moment(controller.request.from_date).format('HH:mm')).toBe(fromTime);
           });
         });
 
         describe('when "to" time value is changed in UI', function () {
+          var toTime = '12:45';
+
           beforeEach(function () {
-            controller.uiOptions.times.to.time = '12:45';
+            setTestDates(undefined, date2017);
+
+            controller.uiOptions.times.to.time = toTime;
 
             $rootScope.$digest();
           });
 
           it('updates the time in the request instance', function () {
-            expect(controller._setDateAndTypes).toHaveBeenCalled();
+            expect(moment(controller.request.to_date).format('HH:mm')).toBe(toTime);
           });
         });
       });
@@ -1375,16 +1404,29 @@ define([
         });
       });
 
-      describe('when from/to dates are changed', function () {
+      describe('when dates are changed', function () {
         beforeEach(function () {
-          controller.uiOptions.fromDate = '1989-04-14';
-
           spyOn(controller.request, 'getWorkDayForDate').and.returnValue($q.reject());
-          $rootScope.$digest();
         });
 
-        it('loads the time and deduction ranges', function () {
-          expect(controller.request.getWorkDayForDate).toHaveBeenCalled();
+        describe('when "from" date is changed', function () {
+          beforeEach(function () {
+            setTestDates(date2016);
+          });
+
+          it('loads the time and deduction ranges', function () {
+            expect(controller.request.getWorkDayForDate).toHaveBeenCalled();
+          });
+        });
+
+        describe('when "to" date is changed', function () {
+          beforeEach(function () {
+            setTestDates(null, date2016);
+          });
+
+          it('loads the time and deduction ranges', function () {
+            expect(controller.request.getWorkDayForDate).toHaveBeenCalled();
+          });
         });
       });
     });
@@ -1494,13 +1536,13 @@ define([
     function setTestDates (from, to) {
       if (from) {
         controller.uiOptions.fromDate = getUTCDate(from);
-        controller.updateAbsencePeriodDatesTypes(controller.uiOptions.fromDate, 'from');
+        controller.setDatesFromUI('from');
         $rootScope.$digest();
       }
 
       if (to) {
         controller.uiOptions.toDate = getUTCDate(to);
-        controller.updateAbsencePeriodDatesTypes(controller.uiOptions.toDate, 'to');
+        controller.setDatesFromUI('to');
         $rootScope.$digest();
       }
     }

@@ -40,7 +40,7 @@
             is-open="detailsTab.uiOptions.date.from.show"
             ng-readonly="true"
             ng-disabled="__isNotEditable"
-            ng-change="detailsTab.updateAbsencePeriodDatesTypes(detailsTab.uiOptions.fromDate, 'from')"/>
+            ng-change="detailsTab.setDatesFromUI('from')"/>
         </div>
       </div>
       <div class="col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
@@ -55,7 +55,7 @@
               ng-disabled="__isNotEditable"
               ng-options="dayType.value as dayType.label for dayType in detailsTab.requestFromDayTypes"
               ng-model="detailsTab.request.from_date_type"
-              ng-change="detailsTab.calculateBalanceChange()">
+              ng-change="detailsTab.attemptCalculateBalanceChange()">
               <option value="">Select</option>
             </select>
             <span class="crm_custom-select__arrow"></span>
@@ -126,7 +126,7 @@
               is-open="detailsTab.uiOptions.date.to.show"
               ng-readonly="true"
               ng-disabled="__isNotEditable"
-              ng-change="detailsTab.updateAbsencePeriodDatesTypes(detailsTab.uiOptions.toDate, 'to')"/>
+              ng-change="detailsTab.setDatesFromUI('to')"/>
           </div>
         </div>
         <div class="col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
@@ -141,7 +141,7 @@
                 ng-disabled="__isNotEditable"
                 ng-options="dayType.value as dayType.label for dayType in detailsTab.requestToDayTypes"
                 ng-model="detailsTab.request.to_date_type"
-                ng-change="detailsTab.calculateBalanceChange()">
+                ng-change="detailsTab.attemptCalculateBalanceChange()">
                 <option value="">Select</option>
               </select>
               <span class="crm_custom-select__arrow"></span>

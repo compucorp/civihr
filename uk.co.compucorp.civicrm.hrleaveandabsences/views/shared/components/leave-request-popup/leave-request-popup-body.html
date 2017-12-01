@@ -29,7 +29,7 @@
           <select
             class="no-select2"
             ng-hide="$ctrl.absenceTypes.length === 0"
-            ng-disabled="!$ctrl.isRole('admin') && ($ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create')))"
+            ng-disabled="!$ctrl.isRole('admin') && ($ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))) || $ctrl.loading.entitlements"
             name="absenceTypeSelect"
             ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes"
             ng-model="$ctrl.request.type_id"
