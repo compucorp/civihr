@@ -35,10 +35,10 @@ define([
        * @return {Promise} resolved with absence types
        */
       function getAbsenceTypes () {
-        return AbsenceType.all({ options: { sort: 'id ASC' } })
+        return AbsenceType.all({ options: { sort: 'weight ASC' } })
         .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
-          return _.indexBy(absenceTypes, 'id');
+          return absenceTypes;
         });
       }
 
