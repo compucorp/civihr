@@ -69,8 +69,10 @@ define([
         _.extend($scope.health, newScope.health || contractRevisionIdObj);
         _.extend($scope.pension, newScope.pension || contractRevisionIdObj);
 
-        _.each($scope.leave, function (leaveType, leaveTypeId) {
-          _.extend(leaveType, newScope.leave ? newScope.leave[leaveTypeId] || contractRevisionIdObj : contractRevisionIdObj);
+        _.each($scope.leave, function (leaveType) {
+          _.extend(leaveType, newScope.leave
+            ? _.find(newScope.leave, { leave_type: leaveType.leave_type }) ||
+            contractRevisionIdObj : contractRevisionIdObj);
         });
       }
 
@@ -186,8 +188,10 @@ define([
           _.extend(entity.health, revisionDetails.health);
           _.extend(entity.pay, revisionDetails.pay);
           _.extend(entity.pension, revisionDetails.pension);
-          _.each(entity.leave, function (leaveType, leaveTypeId) {
-            _.extend(leaveType, revisionDetails.leave ? revisionDetails.leave[leaveTypeId] : '');
+          _.each(entity.leave, function (leaveType) {
+            _.extend(leaveType, revisionDetails.leave
+              ? _.find(revisionDetails.leave, { leave_type: leaveType.leave_type })
+              : '');
           });
 
           return entity;

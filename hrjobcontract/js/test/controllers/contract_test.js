@@ -8,6 +8,7 @@ define([
   'job-contract/app'
 ], function (_, moment, contractMock) {
   'use strict';
+  var controller;
 
   describe('ContractCtrl', function () {
     var $controller, $httpBackend, $modal, $q, $rootScope, $scope, $window,
@@ -52,6 +53,43 @@ define([
 
       it('retrieves contract full details', function () {
         expect(ContractService.fullDetails).toHaveBeenCalled();
+      });
+
+      describe('when loads the leave data', function () {
+        var leave = _.sample(contractMock.contractLeaves.values);
+
+        beforeEach(function () {
+          $scope.leave = [{ leave_type: leave.leave_type }];
+          $scope.revisionCurrent.jobcontract_id = 1;
+          $scope.$emit('updateContractView');
+          $scope.$digest();
+          $httpBackend.flush();
+        });
+
+        it('maps Absence Types and Job Contract data correctly', function () {
+          expect($scope.leave[0].leave_amount).toEqual(leave.leave_amount);
+        });
+      });
+
+      describe('when fetches revision details', function () {
+        var result;
+        var leave = _.sample(contractMock.contractLeaves.values);
+
+        beforeEach(function () {
+          $scope.model = {
+            leave: [{ leave_type: leave.leave_type }]
+          }
+          controller.fetchRevisionDetails(contractMock.contractRevisionData.values[0])
+            .then(function (_result_) {
+              result = _result_;
+            });
+          $scope.$digest();
+          $httpBackend.flush();
+        });
+
+        it('maps Absence Types and Job Contract data correctly', function () {
+          expect(result.leave[0].leave_amount).toEqual(leave.leave_amount);
+        });
       });
     });
 
@@ -151,7 +189,7 @@ define([
       $scope.$parent.contractCurrent = [];
       $scope.$parent.contractPast = [];
 
-      $controller('ContractCtrl', {
+      controller = $controller('ContractCtrl', {
         $scope: $scope,
         $modal: $modal
       });
@@ -189,6 +227,12 @@ define([
       $httpBackend.whenGET(/action=getcurrentcontract&entity=HRJobContract/).respond({ 'values': [] });
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(contractMock.contract);
       $httpBackend.whenGET(/action=getsingle&entity=HRJobContractRevision/).respond({ 'values': [] });
+      $httpBackend.whenGET(/action=get&entity=HRJobDetails/).respond({ 'values': contractMock.contractEntity.details });
+      $httpBackend.whenGET(/action=get&entity=HRJobHour/).respond(contractMock.contractHour);
+      $httpBackend.whenGET(/action=get&entity=HRJobHealth/).respond({ 'values': [] });
+      $httpBackend.whenGET(/action=get&entity=HRJobPay/).respond({ 'values': [] });
+      $httpBackend.whenGET(/action=get&entity=HRJobPension/).respond({ 'values': [] });
+      $httpBackend.whenGET(/action=get&entity=HRJobLeave/).respond(contractMock.contractLeaves);
       $httpBackend.whenGET(/hrjobcontract\/file\/list/).respond({ 'values': [] });
       // @NOTE This is a temporary solution until we can import mocks
       // from other extensions such as Leave and Absence extension
