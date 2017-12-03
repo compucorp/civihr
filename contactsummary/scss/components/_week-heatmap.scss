@@ -6,7 +6,7 @@ ul.week-heatmap {
   li {
     background-color: $brand-success;
     border-radius: $border-radius-small;
-    color: $crm-white;
+    color: $crm-cancel-color;
     display: inline-block;
     font-size: $font-size-h3;
     font-weight: $crm-font-weight-h1;
@@ -23,6 +23,7 @@ ul.week-heatmap {
   }
 
   li.week-heatmap__high {
+    color: $crm-white;
     background-color: $brand-danger;
   }
 
