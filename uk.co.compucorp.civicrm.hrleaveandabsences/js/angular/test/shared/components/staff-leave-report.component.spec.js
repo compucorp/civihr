@@ -759,6 +759,33 @@
         });
       });
 
+      describe('when the request is cancelled', function () {
+        var leaveRequest1, leaveRequest2, leaveRequest3;
+
+        beforeEach(function () {
+          leaveRequest1 = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
+          leaveRequest2 = LeaveRequestInstance.init(leaveRequestMock.all().values[1], true);
+          leaveRequest3 = LeaveRequestInstance.init(leaveRequestMock.all().values[2], true);
+
+          controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+          controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
+          controller.sections.other.open = true;
+
+          leaveRequest1.cancel();
+          pubSub.publish('LeaveRequest::cancel', leaveRequest1);
+          $rootScope.$digest();
+        });
+
+        it('removes the leave request from its section', function () {
+          expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(false);
+        });
+
+        it('adds the leave reuqest to the "Cancelled and Other" section', function () {
+          expect(_.includes(controller.sections.other.data, leaveRequest1)).toBe(true);
+          expect(controller.sections.other.dataIndex[leaveRequest1.id]).toBe(leaveRequest1);
+        });
+      });
+
       /**
        * Returns the value of the given leave request status
        *

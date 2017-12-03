@@ -76,6 +76,19 @@ define([
     })();
 
     /**
+     * Adds a leave request to the provided section's data and index.
+     *
+     * @param {LeaveRequestInstance} leaveRequest - The Leave Request to add
+     *   to the section.
+     * @param {Object} section - The section object that will hold the leave
+     *   request.
+     */
+    function addLeaveRequestToSection (leaveRequest, section) {
+      section.data.push(leaveRequest);
+      section.dataIndex[leaveRequest.id] = leaveRequest;
+    }
+
+    /**
      * Labels the given period according to whether it's current or not
      *
      * @param  {AbsencePeriodInstance} period
@@ -421,6 +434,10 @@ define([
     function registerEvents () {
       pubSub.subscribe('LeaveRequest::new', function () { vm.refresh(); });
       pubSub.subscribe('LeaveRequest::edit', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::cancel', function (leaveRequest) {
+        removeLeaveRequestFromItsSection(leaveRequest);
+        vm.sections.other.open && addLeaveRequestToSection(leaveRequest, vm.sections.other);
+      });
       pubSub.subscribe('LeaveRequest::delete', function (leaveRequest) {
         removeLeaveRequestFromItsSection(leaveRequest);
       });

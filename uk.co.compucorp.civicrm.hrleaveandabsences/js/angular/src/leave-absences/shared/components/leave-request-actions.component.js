@@ -235,6 +235,8 @@ define([
      * @param {String} action
      */
     function publishEvents (action) {
+      var nonEditActions = ['delete', 'cancel'];
+
       var awaitingApprovalStatusValue = _.find(vm.leaveRequestStatuses, function (status) {
         return status.name === sharedSettings.statusNames.awaitingApproval;
       }).value;
@@ -244,8 +246,8 @@ define([
         pubSub.publish('ManagerBadge:: Update Count');
       }
 
-      if (action === 'delete') {
-        pubSub.publish('LeaveRequest::delete', vm.leaveRequest);
+      if (_.includes(nonEditActions, action)) {
+        pubSub.publish('LeaveRequest::' + action, vm.leaveRequest);
       } else {
         pubSub.publish('LeaveRequest::edit', vm.leaveRequest);
       }
