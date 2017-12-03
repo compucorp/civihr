@@ -444,8 +444,9 @@ define([
     }
 
     /**
-     * Removes the given leave request from the section it currently belongs to
-     * and the number of their sections are recalculated.
+     * Removes the given leave request from the section it currently belongs to.
+     * After the request is removed, it recalculates the balance change
+     * for the section.
      *
      * @param  {LeaveRequestInstance} leaveRequest
      */
