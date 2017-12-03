@@ -49,56 +49,11 @@ define([
       other: { open: false, data: [], dataIndex: {}, loading: false, loadLeaveRequests: loadOtherRequests }
     };
 
-    /**
-     * Labels the given period according to whether it's current or not
-     *
-     * @param  {AbsencePeriodInstance} period
-     * @return {string}
-     */
-    vm.labelPeriod = function (period) {
-      return period.current ? 'Current Period (' + period.title + ')' : period.title;
-    };
+    vm.labelPeriod = labelPeriod;
+    vm.refresh = refresh;
+    vm.toggleSection = toggleSection;
 
-    /**
-     * Refreshes all data that is dependend on the selected absence period,
-     * and clears the cached data of closed sections
-     */
-    vm.refresh = function () {
-      vm.loading.content = true;
-
-      $q.all([
-        loadEntitlements(),
-        loadBalanceChanges()
-      ])
-      .then(function () {
-        vm.loading.content = false;
-      })
-      .then(function () {
-        return $q.all([
-          loadOpenSectionsData(),
-          clearSectionsData()
-        ]);
-      });
-    };
-
-    /**
-     * Opens/closes the given section. When opening it triggers the
-     * load function if no cached data is present
-     *
-     * @param {string} sectionName
-     */
-    vm.toggleSection = function (sectionName) {
-      var section = vm.sections[sectionName];
-      section.open = !section.open;
-
-      if (section.open && !section.data.length) {
-        loadSectionLeaveRequests(section);
-      }
-    };
-
-    init();
-
-    function init () {
+    (function init () {
       $q.all([
         loadStatuses(),
         loadAbsenceTypes(),
@@ -118,6 +73,16 @@ define([
       });
 
       registerEvents();
+    })();
+
+    /**
+     * Labels the given period according to whether it's current or not
+     *
+     * @param  {AbsencePeriodInstance} period
+     * @return {string}
+     */
+    function labelPeriod (period) {
+      return period.current ? 'Current Period (' + period.title + ')' : period.title;
     }
 
     /**
@@ -496,6 +461,43 @@ define([
 
       absenceType.balanceChanges[section] -= leaveRequest.balance_change;
       absenceType.remainder[remainderType] -= leaveRequest.balance_change;
+    }
+
+    /**
+     * Refreshes all data that is dependend on the selected absence period,
+     * and clears the cached data of closed sections
+     */
+    function refresh () {
+      vm.loading.content = true;
+
+      $q.all([
+        loadEntitlements(),
+        loadBalanceChanges()
+      ])
+      .then(function () {
+        vm.loading.content = false;
+      })
+      .then(function () {
+        return $q.all([
+          loadOpenSectionsData(),
+          clearSectionsData()
+        ]);
+      });
+    }
+
+    /**
+     * Opens/closes the given section. When opening it triggers the
+     * load function if no cached data is present
+     *
+     * @param {string} sectionName
+     */
+    function toggleSection (sectionName) {
+      var section = vm.sections[sectionName];
+      section.open = !section.open;
+
+      if (section.open && !section.data.length) {
+        loadSectionLeaveRequests(section);
+      }
     }
 
     /**
