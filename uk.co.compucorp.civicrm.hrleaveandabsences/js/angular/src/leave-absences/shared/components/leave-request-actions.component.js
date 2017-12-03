@@ -244,8 +244,11 @@ define([
         pubSub.publish('ManagerBadge:: Update Count');
       }
 
-      pubSub.publish('LeaveRequest::' + (action === 'delete' ? 'deleted' : 'edit'),
-        vm.leaveRequest);
+      if (action === 'delete') {
+        pubSub.publish('LeaveRequest::delete', vm.leaveRequest);
+      } else {
+        pubSub.publish('LeaveRequest::edit', vm.leaveRequest);
+      }
     }
 
     /**

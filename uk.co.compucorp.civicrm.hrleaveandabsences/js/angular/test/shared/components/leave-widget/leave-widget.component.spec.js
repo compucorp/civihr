@@ -158,7 +158,7 @@ define([
 
         describe('when a leave request is deleted', function () {
           beforeEach(function () {
-            pubSub.publish('LeaveRequest::deleted');
+            pubSub.publish('LeaveRequest::delete');
             $rootScope.$digest();
           });
 

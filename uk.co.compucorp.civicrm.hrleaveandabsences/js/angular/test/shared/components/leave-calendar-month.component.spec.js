@@ -582,7 +582,7 @@
             leaveRequestToDelete = leaveRequestInFebruary;
 
             LeaveRequest.all.calls.reset();
-            pubSub.publish('LeaveRequest::deleted', leaveRequestToDelete);
+            pubSub.publish('LeaveRequest::delete', leaveRequestToDelete);
             $rootScope.$digest();
           });
 

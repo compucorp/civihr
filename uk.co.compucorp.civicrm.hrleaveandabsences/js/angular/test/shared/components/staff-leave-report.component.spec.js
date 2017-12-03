@@ -692,7 +692,7 @@
             oldBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
 
             leaveRequest1.delete();
-            pubSub.publish('LeaveRequest::deleted', leaveRequest1);
+            pubSub.publish('LeaveRequest::delete', leaveRequest1);
             $rootScope.$digest();
 
             newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
@@ -725,7 +725,7 @@
             oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
 
             leaveRequest1.delete();
-            pubSub.publish('LeaveRequest::deleted', leaveRequest1);
+            pubSub.publish('LeaveRequest::delete', leaveRequest1);
             $rootScope.$digest();
 
             newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
@@ -746,7 +746,7 @@
             oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
 
             leaveRequest1.delete();
-            pubSub.publish('LeaveRequest::deleted', leaveRequest1);
+            pubSub.publish('LeaveRequest::delete', leaveRequest1);
             $rootScope.$digest();
 
             newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;

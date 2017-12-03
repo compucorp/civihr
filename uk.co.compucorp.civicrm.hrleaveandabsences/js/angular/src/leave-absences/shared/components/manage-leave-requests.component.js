@@ -528,7 +528,7 @@ define([
       pubSub.subscribe('LeaveRequest::updatedByManager', function () { vm.refresh(); });
       pubSub.subscribe('LeaveRequest::new', function () { vm.refresh(); });
       pubSub.subscribe('LeaveRequest::edit', function () { vm.refresh(); });
-      pubSub.subscribe('LeaveRequest::deleted', function () { vm.refresh(); });
+      pubSub.subscribe('LeaveRequest::delete', function () { vm.refresh(); });
     }
 
     /**

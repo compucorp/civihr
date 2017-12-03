@@ -421,7 +421,7 @@ define([
     function registerEvents () {
       pubSub.subscribe('LeaveRequest::new', function () { vm.refresh(); });
       pubSub.subscribe('LeaveRequest::edit', function () { vm.refresh(); });
-      pubSub.subscribe('LeaveRequest::deleted', function (leaveRequest) {
+      pubSub.subscribe('LeaveRequest::delete', function (leaveRequest) {
         removeLeaveRequestFromItsSection(leaveRequest);
       });
     }

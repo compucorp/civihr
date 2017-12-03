@@ -256,7 +256,7 @@ define([
           return vm.request.delete()
             .then(function () {
               vm.dismissModal();
-              pubSub.publish('LeaveRequest::deleted', vm.request);
+              pubSub.publish('LeaveRequest::delete', vm.request);
             });
         }
       });
