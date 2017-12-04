@@ -247,6 +247,8 @@ define([
       }, true)
       .then(function (entitlements) {
         vm.entitlements = entitlements;
+
+        return entitlements;
       })
       .then(function () {
         vm.absenceTypesFiltered = _.filter(vm.absenceTypes, function (absenceType) {

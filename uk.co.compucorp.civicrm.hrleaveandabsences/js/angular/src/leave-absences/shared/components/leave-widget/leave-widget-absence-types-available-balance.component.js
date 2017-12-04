@@ -26,6 +26,8 @@ define([
     var entitlements;
     var vm = this;
 
+    vm.leaveEntitlements = [];
+
     vm.$onChanges = $onChanges;
 
     /**
@@ -41,7 +43,10 @@ define([
      */
     function $onChanges () {
       if (areBindingsReady()) {
-        loadDependencies();
+        loadDependencies().then(function () {
+          vm.leaveEntitlements = Entitlement.getLeaveEntitlements(
+            vm.absenceTypes, entitlements);
+        });
       }
     }
 
@@ -95,29 +100,6 @@ define([
       }, true)
       .then(function (_entitlements_) {
         entitlements = _entitlements_;
-
-        mapAbsenceTypesWithTheirEntitlements();
-      });
-    }
-
-    /**
-     * Maps absence types with their entitlements. Only absence types the user
-     * is entitled to are mapped (entitlement.value > 0). The .remainder.future
-     * is used to display the current balance for approved and open requestes.
-     */
-    function mapAbsenceTypesWithTheirEntitlements () {
-      vm.absenceTypeEntitlements = [];
-
-      _.each(vm.absenceTypes, function (absenceType) {
-        var entitlement = _.find(entitlements, function (entitlement) {
-          return +absenceType.id === +entitlement.type_id;
-        });
-
-        if (entitlement) {
-          vm.absenceTypeEntitlements.push(_.assign({
-            balance: entitlement && entitlement.remainder.future
-          }, absenceType));
-        }
       });
     }
   }

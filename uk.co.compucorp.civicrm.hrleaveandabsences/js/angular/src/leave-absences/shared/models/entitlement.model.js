@@ -74,6 +74,32 @@ define([
         },
 
         /**
+         * Returns an array of leave entitlements which have a value greater
+         * than zero, allows for overuse, or allows accruals of leave requests.
+         *
+         * @param {Array} absenceTypes - An array of absence types.
+         * @param {Array} entitlements - An array of entitlements.
+         * @return {Array}
+         */
+        getLeaveEntitlements: function (absenceTypes, entitlements) {
+          var entitlement;
+          var indexedEntitlements = _.indexBy(entitlements, 'type_id');
+
+          return absenceTypes.map(function (absenceType) {
+            entitlement = indexedEntitlements[absenceType.id];
+
+            return {
+              absenceType: absenceType,
+              entitlement: entitlement
+            };
+          }).filter(function (leaveEntitlement) {
+            return leaveEntitlement.entitlement && leaveEntitlement.entitlement.value > 0 ||
+              leaveEntitlement.absenceType.allow_overuse === '1' ||
+              leaveEntitlement.absenceType.allow_accruals_request === '1';
+          });
+        },
+
+        /**
          * Returns all Leave Entitlement Log entries. Can filter by contact and
          * period id.
          *

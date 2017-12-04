@@ -96,25 +96,14 @@ define([
               type_id: { IN: getJobContractAbsenceEntitlements() }
             }, true)
             .then(function (entitlements) {
-              expectedEntitlements = [];
-              _.each(absenceTypes, function (absenceType) {
-                var entitlement = _.find(entitlements, function (entitlement) {
-                  return +absenceType.id === +entitlement.type_id;
-                });
-
-                if (entitlement) {
-                  expectedEntitlements.push(_.assign({
-                    balance: entitlement && entitlement.remainder.future
-                  }, absenceType));
-                }
-              });
+              expectedEntitlements = Entitlement.getLeaveEntitlements(absenceTypes, entitlements);
             });
 
             $rootScope.$digest();
           });
 
           it('stores the absence types the user has entitlements for', function () {
-            expect(ctrl.absenceTypeEntitlements).toEqual(expectedEntitlements);
+            expect(ctrl.leaveEntitlements).toEqual(expectedEntitlements);
           });
 
           it('fires a leave widget child is ready event', function () {
