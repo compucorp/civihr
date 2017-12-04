@@ -3,6 +3,7 @@
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as CreationLogic;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as DeletionLogic;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
 
@@ -85,4 +86,22 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
     $this->creationLogic->createAllInFutureForWorkPatternContacts($workPatternID);
   }
 
+  /**
+   * Updates all the leave requests for Public Holidays for the absence
+   * period for the contacts with contracts during the period.
+   *
+   * If contactID is present, it will update only for the contacts in the
+   * array.
+   *
+   * @param int $absencePeriodID
+   * @param array $contactID
+   *
+   * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion::deleteAllForAbsencePeriod()
+   * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation::createForAllinAbsencePeriod()
+   */
+  public function updateAllForAbsencePeriod($absencePeriodID, array $contactID = []) {
+    $absencePeriod = AbsencePeriod::findById($absencePeriodID);
+    $this->deletionLogic->deleteAllForAbsencePeriod($absencePeriod, $contactID);
+    $this->creationLogic->createAllForAbsencePeriod($absencePeriod, $contactID);
+  }
 }
