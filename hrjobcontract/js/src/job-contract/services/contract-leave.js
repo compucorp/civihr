@@ -210,13 +210,14 @@ define([
               return this.leave_amount;
             };
 
-            _.each(leaveType, function (type, typeId) {
+            _.each(leaveType, function (type) {
               modelEntry.leave_type = type.id;
               modelEntry.leave_type_title = type.title;
               modelEntry.leave_calculation_unit_name = type.calculation_unit_name;
               modelEntry.leave_calculation_unit_label = type.calculation_unit_label;
-              modelEntry.leave_amount = 0;
+              modelEntry.leave_amount = parseFloat(type.default_entitlement);
               modelEntry.is_add_public_holidays_readonly = type.calculation_unit_name === 'hours';
+              modelEntry.add_public_holidays = !!parseInt(type.add_public_holiday_to_entitlement);
 
               model.push(_.cloneDeep(modelEntry));
             });

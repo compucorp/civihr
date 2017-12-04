@@ -48,13 +48,30 @@ define([
     });
 
     describe('model()', function () {
+      var result;
+      var leaveMocks = _.cloneDeep(MockContract.contractLeaves.values);
+      var randomLeaveIndex = _.random(0, leaveMocks.length - 1);
+      var leaveMock = leaveMocks[randomLeaveIndex];
+
+
       beforeEach(function () {
         spyOn(AbsenceType, 'all').and.callThrough();
-        ContractLeaveService.model();
+        ContractLeaveService.model([{ name: 'leave_type' }]).then(function (_result_) {
+          result = _result_;
+        });
+        $rootScope.$digest();
       });
 
       it('fetches Absence Types sorted by weight', function () {
         expect(AbsenceType.all).toHaveBeenCalledWith(jasmine.objectContaining({ options: { sort: 'weight ASC' } }));
+      });
+
+      it('sets default entitlement', function () {
+        expect(result[randomLeaveIndex].leave_amount).toBe(+leaveMock.default_entitlement);
+      });
+
+      it('sets default "Add Public Holidays" flag', function () {
+        expect(result[randomLeaveIndex].add_public_holidays).toBe(!!+leaveMock.add_public_holiday_to_entitlement);
       });
     });
 
@@ -68,8 +85,8 @@ define([
       // @NOTE This is a temporary solution until we can import mocks
       // from other extensions such as Leave and Absence extension
       $httpBackend.whenGET(/action=get&entity=AbsenceType/).respond({ 'values':
-        _.map(MockContract.contractEntity.leave, function (leave, index) {
-          return { id: leave.leave_type, calculation_unit: _.sample(calculationUnitsMock).value };
+        _.map(MockContract.contractEntity.leave, function (leave) {
+          return _.assign(leave, { calculation_unit: _.sample(calculationUnitsMock).value });
         })
       });
       $httpBackend.whenGET(/action=get&entity=OptionValue/).respond({ 'values': calculationUnitsMock });
