@@ -3,22 +3,22 @@
 
 define([
   'common/angular',
+  'common/lodash',
   'mocks/data/contract',
   'job-contract/app'
-], function (angular, MockContract) {
+], function (angular, _, MockContract) {
   'use strict';
 
   describe('ContractLeaveService', function () {
-    var $httpBackend, $q, $rootScope, AbsenceType, ContractLeaveService;
+    var $httpBackend, $rootScope, AbsenceType, ContractLeaveService;
     var calculationUnitsMock = [{ value: 1, name: 'days' }, { value: 2, name: 'hours' }];
 
     beforeEach(module('hrjc'));
 
-    beforeEach(inject(function (_$httpBackend_, _$q_, _$rootScope_, _AbsenceType_, _ContractLeaveService_) {
+    beforeEach(inject(function (_$httpBackend_, _$rootScope_, _AbsenceType_, _ContractLeaveService_) {
       AbsenceType = _AbsenceType_;
       ContractLeaveService = _ContractLeaveService_;
       $httpBackend = _$httpBackend_;
-      $q = _$q_;
       $rootScope = _$rootScope_;
 
       mockBackendCalls();
@@ -53,7 +53,6 @@ define([
       var randomLeaveIndex = _.random(0, leaveMocks.length - 1);
       var leaveMock = leaveMocks[randomLeaveIndex];
 
-
       beforeEach(function () {
         spyOn(AbsenceType, 'all').and.callThrough();
         ContractLeaveService.model([{ name: 'leave_type' }]).then(function (_result_) {
@@ -66,8 +65,8 @@ define([
         expect(AbsenceType.all).toHaveBeenCalledWith(jasmine.objectContaining({ options: { sort: 'weight ASC' } }));
       });
 
-      it('sets default entitlement', function () {
-        expect(result[randomLeaveIndex].leave_amount).toBe(+leaveMock.default_entitlement);
+      it('sets entitlement to 0 for Absence Types created after the Job Contract was saved last time', function () {
+        expect(result[randomLeaveIndex].leave_amount).toBe(0);
       });
 
       it('sets default "Add Public Holidays" flag', function () {

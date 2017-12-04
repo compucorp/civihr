@@ -8,10 +8,9 @@ define([
   'job-contract/app'
 ], function (_, moment, contractMock) {
   'use strict';
-  var controller;
 
   describe('ContractCtrl', function () {
-    var $controller, $httpBackend, $modal, $q, $rootScope, $scope, $window,
+    var $controller, $httpBackend, $modal, $q, $rootScope, $scope, $window, controller,
       AbsenceType, ContractService, UtilsService;
     var calculationUnitsMock = [{ value: 1, name: 'days' }, { value: 2, name: 'hours' }];
 
@@ -55,19 +54,33 @@ define([
         expect(ContractService.fullDetails).toHaveBeenCalled();
       });
 
-      describe('when loads the leave data', function () {
-        var leave = _.sample(contractMock.contractLeaves.values);
+      describe('when it loads the leave data', function () {
+        var leaveMocks = contractMock.contractLeaves.values;
+        var testCases = {
+          'sorted by id': _.cloneDeep(leaveMocks),
+          'reordered': _.shuffle(_.cloneDeep(leaveMocks)),
+          'reordered and have extra entry': _.shuffle(_.cloneDeep(leaveMocks).push({ leave_type: '808' })),
+          'reordered and lacks entries': _.shuffle(_.cloneDeep(leaveMocks).splice(0, 1))
+        };
 
-        beforeEach(function () {
-          $scope.leave = [{ leave_type: leave.leave_type }];
-          $scope.revisionCurrent.jobcontract_id = 1;
-          $scope.$emit('updateContractView');
-          $scope.$digest();
-          $httpBackend.flush();
-        });
+        _.each(testCases, function (testData, testCase) {
+          describe('when Absence Types are ' + testCase, function () {
+            beforeEach(function () {
+              $scope.leave = testData;
+              $scope.revisionCurrent.jobcontract_id = 1;
 
-        it('maps Absence Types and Job Contract data correctly', function () {
-          expect($scope.leave[0].leave_amount).toEqual(leave.leave_amount);
+              $scope.$emit('updateContractView');
+              $scope.$digest();
+              $httpBackend.flush();
+            });
+
+            it('maps Absence Types and Job Contract data correctly', function () {
+              _.each($scope.leave, function (entry) {
+                expect(entry.leave_amount).toEqual(
+                  _.find(leaveMocks, { leave_type: entry.leave_type }).leave_amount);
+              });
+            });
+          });
         });
       });
 
@@ -78,7 +91,7 @@ define([
         beforeEach(function () {
           $scope.model = {
             leave: [{ leave_type: leave.leave_type }]
-          }
+          };
           controller.fetchRevisionDetails(contractMock.contractRevisionData.values[0])
             .then(function (_result_) {
               result = _result_;

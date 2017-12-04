@@ -36,10 +36,7 @@ define([
        */
       function getAbsenceTypes () {
         return AbsenceType.all({ options: { sort: 'weight ASC' } })
-        .then(AbsenceType.loadCalculationUnits)
-        .then(function (absenceTypes) {
-          return absenceTypes;
-        });
+          .then(AbsenceType.loadCalculationUnits);
       }
 
       return {
@@ -215,9 +212,9 @@ define([
               modelEntry.leave_type_title = type.title;
               modelEntry.leave_calculation_unit_name = type.calculation_unit_name;
               modelEntry.leave_calculation_unit_label = type.calculation_unit_label;
-              modelEntry.leave_amount = parseFloat(type.default_entitlement);
+              modelEntry.leave_amount = 0;
               modelEntry.is_add_public_holidays_readonly = type.calculation_unit_name === 'hours';
-              modelEntry.add_public_holidays = !!parseInt(type.add_public_holiday_to_entitlement);
+              modelEntry.add_public_holidays = !!+type.add_public_holiday_to_entitlement;
 
               model.push(_.cloneDeep(modelEntry));
             });
