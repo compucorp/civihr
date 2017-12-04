@@ -41,30 +41,19 @@ define([
 
       /**
        * Maps Absence Types with the leave data from the Contract
-       * or sets default revision data if Contract leave data does not exists yet
-       *
-       * @param {Array} leaveData
-       * @param {Object} contractRevisionIdObj
-       */
-      function mapAbsenceTypesWithContractLeaveData (leaveData, contractRevisionIdObj) {
-        _.each($scope.leave, function (leaveType) {
-          _.extend(leaveType, leaveData
-            ? _.find(leaveData, { leave_type: leaveType.leave_type }) ||
-            contractRevisionIdObj : contractRevisionIdObj);
-        });
-      }
-
-      /**
-       * Maps Absence Types with the leave data from the Revision
+       * or sets default revision data if Contract leave data does not exists yet, if presented
        *
        * @param {Array} leaveEntity
        * @param {Array} leaveData
+       * @param {Object} contractRevisionIdObj optional
        */
-      function mapLeaveEntityWithRevisionLeaveData (leaveEntity, leaveData) {
-        _.each(leaveEntity, function (leaveType) {
-          _.extend(leaveType, leaveData
-            ? _.find(leaveData, { leave_type: leaveType.leave_type })
-            : '');
+      function mapAbsenceTypesWithContractLeaveData (leaveEntity, leaveData, contractRevisionIdObj) {
+        contractRevisionIdObj = contractRevisionIdObj || '';
+
+        _.each(leaveEntity, function (entity) {
+          _.extend(entity, leaveData
+            ? _.find(leaveData, { leave_type: entity.leave_type }) ||
+            contractRevisionIdObj : contractRevisionIdObj);
         });
       }
 
@@ -97,7 +86,7 @@ define([
 
         _.extend($scope.health, newScope.health || contractRevisionIdObj);
         _.extend($scope.pension, newScope.pension || contractRevisionIdObj);
-        mapAbsenceTypesWithContractLeaveData(newScope.leave, contractRevisionIdObj);
+        mapAbsenceTypesWithContractLeaveData($scope.leave, newScope.leave, contractRevisionIdObj);
       }
 
       /**
@@ -212,7 +201,7 @@ define([
           _.extend(entity.health, revisionDetails.health);
           _.extend(entity.pay, revisionDetails.pay);
           _.extend(entity.pension, revisionDetails.pension);
-          mapLeaveEntityWithRevisionLeaveData(entity.leave, revisionDetails.leave);
+          mapAbsenceTypesWithContractLeaveData(entity.leave, revisionDetails.leave);
 
           return entity;
         });

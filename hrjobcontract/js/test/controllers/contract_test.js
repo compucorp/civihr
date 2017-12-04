@@ -76,8 +76,9 @@ define([
 
             it('maps Absence Types and Job Contract data correctly', function () {
               _.each($scope.leave, function (entry) {
-                expect(entry.leave_amount).toEqual(
-                  _.find(leaveMocks, { leave_type: entry.leave_type }).leave_amount);
+                expect(entry.leave_amount).toEqual(_.find(leaveMocks, {
+                  leave_type: entry.leave_type
+                }).leave_amount);
               });
             });
           });
