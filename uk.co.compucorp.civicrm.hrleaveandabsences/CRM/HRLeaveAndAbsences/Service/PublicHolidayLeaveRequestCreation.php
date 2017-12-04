@@ -360,6 +360,40 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   }
 
   /**
+   * Creates Public Holiday Leave Requests for all Public Holidays in all
+   * absence periods for all contacts. It does not re-create a leave request
+   * that already exists.
+   *
+   * The Public Holiday leave request will not be created if a contact has no
+   * entitlement for the absence type with MTPHL in the absence period the
+   * public holiday date falls in or If the contact does not have a contract
+   * overlapping the public holiday date.
+   *
+   */
+  public function createForAll() {
+    $absencePeriods = $this->getAllAbsencePeriods();
+
+    if(!$absencePeriods || !$this->absenceType) {
+      return;
+    }
+
+    foreach($absencePeriods as $absencePeriod) {
+      $this->createAllForAbsencePeriod($absencePeriod);
+    }
+  }
+
+  private function getAllAbsencePeriods() {
+    $absencePeriod = new AbsencePeriod();
+    $absencePeriod->find();
+
+    $absencePeriods = [];
+    while($absencePeriod->fetch()) {
+      $absencePeriods[] = clone $absencePeriod;
+    }
+
+    return $absencePeriods;
+  }
+  /**
    * Checks if the contract's contact has entitlement for the given
    * absence type ID.
    *

@@ -1246,6 +1246,76 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement2));
   }
 
+  public function testCreateForAllWillCreatePublicHolidayLeaveRequestsForAllPublicHolidaysInAllPeriodsForAllContacts() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2017-06-30'),
+    ]);
+
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-07-01'),
+      'end_date'   => CRM_Utils_Date::processDate('+5 days'),
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('2017-01-01')]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('2017-01-01')]
+    );
+
+    $publicHoliday1 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' =>  CRM_Utils_Date::processDate('2017-01-01')
+    ]);
+
+    $publicHoliday2 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' =>  CRM_Utils_Date::processDate('2017-05-05')
+    ]);
+
+    $publicHoliday3 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' =>  CRM_Utils_Date::processDate('tomorrow')
+    ]);
+
+    $publicHoliday4 = PublicHolidayFabricator::fabricateWithoutValidation([
+      'date' =>  CRM_Utils_Date::processDate('+7 days')
+    ]);
+
+    //create public holiday leave requests for public holiday 1 for contact1
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact1['id'], $publicHoliday1);
+    $publicHolidayRequestContact1 = LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday1);
+
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday2));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday3));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday1));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday2));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday3));
+
+    //Create public holiday requests for all contacts for all periods.
+    $this->getCreationLogicWithEntitlementsMock([$contact1['id'], $contact2['id']])->createForAll();
+
+    //We need to check that the public holiday1 created for contact1 earlier was not touched since it
+    //already exists.
+    $publicHolidayRequest = LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday1);
+    $this->assertEquals($publicHolidayRequestContact1->id, $publicHolidayRequest->id);
+
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday2));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday3));
+
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday1));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday2));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday3));
+
+    //The public holiday4 des not exist in any absence period, so will not be created for either contact
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday4));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday4));
+  }
+
   private function getCreationLogicWithEntitlementsMock($contactIDs) {
     return $this->getCreationLogic($contactIDs, true);
   }
