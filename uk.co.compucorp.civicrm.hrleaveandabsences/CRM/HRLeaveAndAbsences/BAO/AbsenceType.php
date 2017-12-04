@@ -566,7 +566,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   private static function enqueuePublicHolidayLeaveRequestUpdateTask() {
     $task = new CRM_Queue_Task(
-      ['CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests', 'run'],
+      ['CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllPublicHolidayLeaveRequestsExceptThoseAlreadyCreatedInThePast', 'run'],
       []
     );
 
