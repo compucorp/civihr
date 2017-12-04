@@ -9,8 +9,7 @@ define([
     bindings: {
       absencePeriod: '<',
       absenceTypes: '<',
-      contactId: '<',
-      jobContract: '<'
+      contactId: '<'
     },
     controller: leaveWidgetBalanceController,
     controllerAs: 'leaveWidgetBalance',
@@ -56,17 +55,7 @@ define([
      * @return {Boolean}
      */
     function areBindingsReady () {
-      return vm.absenceTypes && vm.absencePeriod && vm.contactId &&
-        vm.jobContract;
-    }
-
-    /**
-     * Returns a list of IDs of absence types the contact has entitlements for
-     *
-     * @return {Array}
-     */
-    function getContractEntitlementsIds () {
-      return _.pluck(vm.jobContract.info.leave, 'leave_type');
+      return vm.absenceTypes && vm.absencePeriod && vm.contactId;
     }
 
     /**
@@ -83,8 +72,7 @@ define([
     }
 
     /**
-     * Loads entitlements for the selected user and absence period and maps
-     * the entitlements to their corresponding absence type.
+     * Loads entitlements for the selected user and absence period.
      *
      * @return {Promise} - Returns an empty promise when all entitlements have
      * been loaded and mapped.
@@ -93,10 +81,7 @@ define([
       return Entitlement.all({
         'contact_id': vm.contactId,
         'period_id': vm.absencePeriod.id,
-        'type_id': { IN: getContractEntitlementsIds() },
-        'type_id.is_active': true,
-        'overridden': true,
-        'options': { or: [['type_id', 'overridden']] }
+        'type_id.is_active': true
       }, true)
       .then(function (_entitlements_) {
         entitlements = _entitlements_;
