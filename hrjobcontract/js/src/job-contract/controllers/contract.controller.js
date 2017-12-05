@@ -110,7 +110,6 @@ define([
         _.extend(entity.health, revisionDetails.health);
         _.extend(entity.pay, revisionDetails.pay);
         _.extend(entity.pension, revisionDetails.pension);
-
         mapAbsenceTypesWithContractLeaveData(entity.leave, revisionDetails.leave);
 
         return entity;
@@ -386,7 +385,6 @@ define([
 
       _.extend($scope.health, newScope.health || contractRevisionIdObj);
       _.extend($scope.pension, newScope.pension || contractRevisionIdObj);
-
       mapAbsenceTypesWithContractLeaveData($scope.leave, newScope.leave, contractRevisionIdObj);
     }
 
