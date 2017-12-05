@@ -8,7 +8,7 @@ define([
 ], function (_) {
   'use strict';
 
-  fdescribe('Entitlement', function () {
+  describe('Entitlement', function () {
     var $provide, $rootScope, Entitlement, EntitlementAPI,
       EntitlementLogAPI;
 

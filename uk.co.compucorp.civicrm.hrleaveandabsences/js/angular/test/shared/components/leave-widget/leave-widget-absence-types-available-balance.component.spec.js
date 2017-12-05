@@ -6,7 +6,7 @@ define([
   'mocks/apis/entitlement-api-mock',
   'leave-absences/shared/components/leave-widget/leave-widget-absence-types-available-balance.component'
 ], function (_, controllerOnChanges) {
-  fdescribe('leaveWidgetAbsenceTypesAvailableBalance', function () {
+  describe('leaveWidgetAbsenceTypesAvailableBalance', function () {
     var $componentController, $provide, $rootScope, $scope,
       absencePeriod, absenceTypes, ctrl, Entitlement;
     var childComponentName = 'leave-widget-absence-types-available-balance';
