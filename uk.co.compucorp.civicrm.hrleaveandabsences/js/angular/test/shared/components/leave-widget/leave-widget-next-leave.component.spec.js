@@ -103,7 +103,7 @@ define([
       });
 
       describe('after loading dependencies', function () {
-        var expectedDayTypes, expectedNextLeave, expectedRequestStatus;
+        var absenceType, expectedDayTypes, expectedNextLeave, expectedRequestStatus;
 
         beforeEach(function () {
           expectedDayTypes = _.indexBy(OptionGroupData.getCollection(
@@ -118,7 +118,9 @@ define([
           }, null, null, null, false)
           .then(function (response) {
             expectedNextLeave = response.list[0];
-            expectedNextLeave['type_id.title'] = getAbsenceTypeTitleFor(expectedNextLeave);
+            absenceType = getAbsenceTypeForLeave(expectedNextLeave);
+            expectedNextLeave['type_id.title'] = absenceType.title;
+            expectedNextLeave['type_id.calculation_unit_name'] = absenceType.calculation_unit_name;
             expectedNextLeave.balance_change = Math.abs(expectedNextLeave.balance_change);
             expectedNextLeave.from_date = moment(expectedNextLeave.from_date);
             expectedNextLeave.to_date = moment(expectedNextLeave.to_date);
@@ -178,17 +180,17 @@ define([
     });
 
     /**
-     * Returns the absence type title related to the leave request.
+     * Returns the absence type related to the leave request.
      *
      * @param {LeaveRequestInstance} leaveRequest
      * @return {String}
      */
-    function getAbsenceTypeTitleFor (leaveRequest) {
+    function getAbsenceTypeForLeave (leaveRequest) {
       var absenceType = _.find(absenceTypes, function (type) {
         return +type.id === +leaveRequest.type_id;
       });
 
-      return absenceType.title;
+      return absenceType;
     }
   });
 });

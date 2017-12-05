@@ -1,10 +1,12 @@
-define([
-  'access-rights/modules/models',
-  'common/services/api'
-], function (models) {
+/* eslint-env amd */
+
+define(function () {
   'use strict';
 
-  models.factory('rightApi', ['api', '$q', '$location', function (api, $q, $location) {
+  RightsAPI.__name = 'RightsAPI';
+  RightsAPI.$inject = ['api', '$q', '$location'];
+
+  function RightsAPI (api, $q, $location) {
     var entityName = 'Rights';
     var additionalParams = {
       'contact_id': $location.search().cid
@@ -30,7 +32,7 @@ define([
             'contact_id': $location.search().cid,
             'entity_id': id,
             'entity_type': 'hrjc_region'
-          })
+          });
         }.bind(this)));
       },
       saveLocations: function (ids) {
@@ -39,9 +41,11 @@ define([
             'contact_id': $location.search().cid,
             'entity_id': id,
             'entity_type': 'hrjc_location'
-          })
+          });
         }.bind(this)));
       }
     });
-  }]);
+  }
+
+  return RightsAPI;
 });

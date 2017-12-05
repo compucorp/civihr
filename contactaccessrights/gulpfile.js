@@ -47,18 +47,17 @@ gulp.task('test', function (done) {
 gulp.task('default', ['requirejs-bundle', 'sass', 'test', 'watch']);
 
 var test = (function () {
-
   /**
    * Runs the karma server which does a single run of the test/s
    *
    * @param {string} configFile - The full path to the karma config file
    * @param {Function} cb - The callback to call when the server closes
    */
-  function runServer(configFile, cb) {
+  function runServer (configFile, cb) {
     var reporters = argv.reporters ? argv.reporters.split(',') : ['progress'];
 
     new karma.Server({
-      configFile: __dirname + '/js/' + configFile,
+      configFile: path.join(__dirname, '/js/', configFile),
       reporters: reporters,
       singleRun: true
     }, function () {
@@ -77,9 +76,9 @@ var test = (function () {
     /**
      * Runs the tests for a specific source file
      *
-     * Looks for a test file (*_test.js) in `test/`, using the same path
+     * Looks for a test file (*.spec.js) in `test/`, using the same path
      * of the source file in `src/access-rights/`
-     *   i.e. src/access-rights/models/model.js -> test/models/model_test.js
+     *   i.e. src/access-rights/models/model.js -> test/models/model.spec.js
      *
      * @throw {Error}
      */
@@ -87,7 +86,7 @@ var test = (function () {
       var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
       var testFile = srcFile
         .replace('src/access-rights/', 'test/')
-        .replace(srcFileNoExt + '.js', srcFileNoExt + '_test.js');
+        .replace(srcFileNoExt + '.js', srcFileNoExt + '.spec.js');
 
       try {
         var stats = fs.statSync(testFile);
@@ -108,13 +107,13 @@ var test = (function () {
     single: function (testFile) {
       var configFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
-      gulp.src(__dirname + '/js/karma.conf.js')
-        .pipe(replace('*_test.js', path.basename(testFile)))
+      gulp.src(path.join(__dirname, '/js/karma.conf.js'))
+        .pipe(replace('*.spec.js', path.basename(testFile)))
         .pipe(rename(configFile))
-        .pipe(gulp.dest(__dirname + '/js'))
+        .pipe(gulp.dest(path.join(__dirname, '/js')))
         .on('end', function () {
           runServer(configFile, function () {
-            gulp.src(__dirname + '/js/' + configFile, {
+            gulp.src(path.join(__dirname, '/js/', configFile), {
               read: false
             }).pipe(clean());
           });

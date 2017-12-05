@@ -1,11 +1,13 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
-  'access-rights/models/right'
+  'access-rights/modules/access-rights.models'
 ], function () {
   'use strict';
 
   describe('Right', function () {
-    var $provide, modelSpy, apiSpy;
+    var modelSpy, apiSpy;
 
     beforeEach(module('access-rights.models', function ($provide) {
       modelSpy = jasmine.createSpyObj('modelSpy', ['extend']);
@@ -14,12 +16,12 @@ define([
         'deleteByIds', 'saveRegions', 'saveLocations'
       ]);
       $provide.value('Model', modelSpy);
-      $provide.value('rightApi', apiSpy);
+      $provide.value('RightsAPI', apiSpy);
       $provide.value('$location', {
         search: function () {
           return {
             cid: 1
-          }
+          };
         }
       });
     }));
@@ -90,6 +92,5 @@ define([
         expect(apiSpy.saveLocations.calls.argsFor(0)).toEqual([ids]);
       });
     });
-
   });
 });

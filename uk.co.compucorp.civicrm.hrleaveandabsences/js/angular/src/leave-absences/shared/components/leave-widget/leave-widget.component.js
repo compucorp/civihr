@@ -176,12 +176,14 @@ define([
      * @return {Promise}
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({ is_active: true }).then(function (types) {
-        vm.absenceTypes = types;
-        vm.sicknessAbsenceTypes = types.filter(function (type) {
-          return +type.is_sick;
+      return AbsenceType.all({ is_active: true })
+        .then(AbsenceType.loadCalculationUnits)
+        .then(function (types) {
+          vm.absenceTypes = types;
+          vm.sicknessAbsenceTypes = types.filter(function (type) {
+            return +type.is_sick;
+          });
         });
-      });
     }
 
     /**
@@ -229,10 +231,10 @@ define([
      */
     function loadAbsencePeriod () {
       return AbsencePeriod.all()
-      .then(findAbsencePeriodToDisplay)
-      .then(function (currentOrLastPeriod) {
-        vm.absencePeriod = currentOrLastPeriod;
-      });
+        .then(findAbsencePeriodToDisplay)
+        .then(function (currentOrLastPeriod) {
+          vm.absencePeriod = currentOrLastPeriod;
+        });
     }
   }
 });

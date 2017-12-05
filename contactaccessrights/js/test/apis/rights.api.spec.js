@@ -1,13 +1,15 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
-  'access-rights/models/right'
+  'access-rights/modules/access-rights.apis'
 ], function () {
   'use strict';
 
   describe('Right API', function () {
     var apiSpy;
 
-    beforeEach(module('access-rights.models', function ($provide) {
+    beforeEach(module('access-rights.apis', function ($provide) {
       apiSpy = jasmine.createSpyObj('apiSpy', ['extend', 'sendGET', 'sendPOST']);
       apiSpy.extend.and.returnValue({});
       $provide.value('api', apiSpy);
@@ -15,11 +17,11 @@ define([
         search: function () {
           return {
             cid: 1
-          }
+          };
         }
       });
     }));
-    beforeEach(inject(function (rightApi) {}));
+    beforeEach(inject(function (RightsAPI) {}));
 
     it('calls api.extend with correct parameters', function () {
       expect(apiSpy.extend.calls.count()).toBe(1);
@@ -119,6 +121,5 @@ define([
         }]);
       });
     });
-
   });
 });
