@@ -630,7 +630,7 @@ define([
       updateOpeningBalance();
       setHoursDeductionsToRequest();
       setMinMaxDatesToUI();
-      setDatesToRequest(); // @TODO find a way to not call it twice
+      setDatesToRequest();
       toggleBalance();
 
       if (!vm.canCalculateChange()) {

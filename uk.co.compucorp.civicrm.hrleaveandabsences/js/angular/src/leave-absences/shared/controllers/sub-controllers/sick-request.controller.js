@@ -25,7 +25,7 @@ define([
      * @return {Boolean}
      */
     function checkSubmitConditions () {
-      return parentCtrl._canCalculateChange() && parentCtrl.request.sickness_reason;
+      return parentCtrl.canCalculateChange() && !!parentCtrl.request.sickness_reason;
     }
 
     /**

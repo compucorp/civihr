@@ -1016,6 +1016,28 @@ define([
               expect(controller.isChecked(failDocumentId)).toBeFalsy();
             });
           });
+
+          describe('when checking if can submit', function () {
+            describe('when sickness reason is not chosen', function () {
+              beforeEach(function () {
+                controller.request.sickness_reason = null;
+              });
+
+              it('does not allow to submit', function () {
+                expect(controller.checkSubmitConditions()).toBeFalsy();
+              });
+            });
+
+            describe('when sickness reason is chosen', function () {
+              beforeEach(function () {
+                controller.request.sickness_reason = '2';
+              });
+
+              it('does not allow to submit', function () {
+                expect(controller.checkSubmitConditions()).toBeTruthy();
+              });
+            });
+          });
         });
       });
     });
