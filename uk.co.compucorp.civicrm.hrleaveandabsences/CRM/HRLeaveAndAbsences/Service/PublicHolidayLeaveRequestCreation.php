@@ -92,7 +92,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * @param array $contactID
    *  If not empty, Public Holiday Leave Requests are created for only these contacts
    */
-  public function createForAllInTheFuture(array $contactID = []) {
+  public function createAllInTheFuture(array $contactID = []) {
     if(!$this->absenceType) {
       return;
     }
@@ -312,7 +312,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
       );
     }
 
-    $this->createForAllInTheFuture($contacts);
+    $this->createAllInTheFuture($contacts);
   }
 
   /**
@@ -370,7 +370,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * overlapping the public holiday date.
    *
    */
-  public function createForAll() {
+  public function createAll() {
     $absencePeriods = $this->getAllAbsencePeriods();
 
     if(!$absencePeriods || !$this->absenceType) {

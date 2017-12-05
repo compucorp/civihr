@@ -153,7 +153,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' =>  CRM_Utils_Date::processDate('+5 days')
     ]);
 
-    $this->getCreationLogicWithEntitlementsMock([$contact['id']])->createForAllInTheFuture();
+    $this->getCreationLogicWithEntitlementsMock([$contact['id']])->createAllInTheFuture();
 
     // It's -2 instead of -3 because the first public holiday is in the past
     // and we should not create a leave request for it
@@ -179,11 +179,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' => $date->format('Ymd')
     ]);
 
-    $this->getCreationLogicWithEntitlementsMock([$contact['id']])->createForAllInTheFuture();
+    $this->getCreationLogicWithEntitlementsMock([$contact['id']])->createAllInTheFuture();
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
 
-    $this->getCreationLogicWithEntitlementsMock([$contact['id']])->createForAllInTheFuture();
+    $this->getCreationLogicWithEntitlementsMock([$contact['id']])->createAllInTheFuture();
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
   }
@@ -205,7 +205,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' =>  CRM_Utils_Date::processDate('tomorrow')
     ]);
 
-    $this->getCreationLogicWithEntitlementsMock([$contact['id']])->createForAllInTheFuture();
+    $this->getCreationLogicWithEntitlementsMock([$contact['id']])->createAllInTheFuture();
 
     // The Balance is still 0 because no Leave Request was created
     $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
@@ -503,7 +503,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' => $date->format('Ymd')
     ]);
 
-    $this->getCreationLogicWithEntitlementsMock([$contact['id']])->createForAllInTheFuture();
+    $this->getCreationLogicWithEntitlementsMock([$contact['id']])->createAllInTheFuture();
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($contact['id'], $date->format('Ymd')));
     $this->assertEquals(0, $this->countNumberOfLeaveRequests($contact2['id'], $date->format('Ymd')));
@@ -1171,7 +1171,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'date' =>  CRM_Utils_Date::processDate('+9 days')
     ]);
 
-    $this->getCreationLogic([$contact['id']])->createForAllInTheFuture();
+    $this->getCreationLogic([$contact['id']])->createAllInTheFuture();
 
     //Only Public holiday leave request for the second public holiday is created because it falls
     //within the date where the contact has entitlement.
@@ -1297,7 +1297,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday3));
 
     //Create public holiday requests for all contacts for all periods.
-    $this->getCreationLogicWithEntitlementsMock([$contact1['id'], $contact2['id']])->createForAll();
+    $this->getCreationLogicWithEntitlementsMock([$contact1['id'], $contact2['id']])->createAll();
 
     //We need to check that the public holiday1 created for contact1 earlier was not touched since it
     //already exists.

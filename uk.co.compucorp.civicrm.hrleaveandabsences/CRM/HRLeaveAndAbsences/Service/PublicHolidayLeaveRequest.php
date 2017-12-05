@@ -34,7 +34,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
    */
   public function updateAllInTheFuture() {
     $this->deletionLogic->deleteAllInTheFuture();
-    $this->creationLogic->createForAllInTheFuture();
+    $this->creationLogic->createAllInTheFuture();
   }
 
   /**
@@ -54,9 +54,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
    * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion::deleteAllInTheFuture()
    * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation::createForAll()
    */
-  public function updateAllExceptThoseAlreadyCreatedInThePast() {
+  public function updateAll() {
     $this->deletionLogic->deleteAllInTheFuture();
-    $this->creationLogic->createForAll();
+    $this->creationLogic->createAll();
   }
 
   /**

@@ -7,13 +7,13 @@ use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestService as PublicHol
  * PublicHolidayLeaveRequestUpdates queue is processed.
  *
  * Basically, it uses the PublicHolidayLeaveRequest service to update all leave
- * requests for public holidays except those already created in the past.
+ * requests for public holidays.
  */
-class CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllPublicHolidayLeaveRequestsExceptThoseAlreadyCreatedInThePast {
+class CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllPublicHolidayLeaveRequests {
 
   public static function run(CRM_Queue_TaskContext $ctx) {
     $service = PublicHolidayLeaveRequestServiceFactory::create();
-    $service->updateAllExceptThoseAlreadyCreatedInThePast();
+    $service->updateAll();
   }
 
 }

@@ -51,11 +51,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
 
     $creationLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestCreation::class)
                               ->disableOriginalConstructor()
-                              ->setMethods(['createForAllInTheFuture'])
+                              ->setMethods(['createAllInTheFuture'])
                               ->getMock();
 
     $creationLogicMock->expects($this->once())
-                      ->method('createForAllInTheFuture');
+                      ->method('createAllInTheFuture');
 
     $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
     $service->updateAllInTheFuture();
@@ -83,7 +83,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
     $service->updateAllForAbsencePeriod($absencePeriod->id);
   }
 
-  public function testUpdateAllPublicHolidayLeaveRequestsExceptThoseAlreadyCreatedInThePast() {
+  public function testUpdateAllPublicHolidayLeaveRequests() {
     $deletionLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestDeletion::class)
       ->disableOriginalConstructor()
       ->setMethods(['deleteAllInTheFuture'])
@@ -94,14 +94,14 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
 
     $creationLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestCreation::class)
       ->disableOriginalConstructor()
-      ->setMethods(['createForAll'])
+      ->setMethods(['createAll'])
       ->getMock();
 
     $creationLogicMock->expects($this->once())
-      ->method('createForAll');
+      ->method('createAll');
 
     $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
-    $service->updateAllExceptThoseAlreadyCreatedInThePast();
+    $service->updateAll();
   }
 
   public function testUpdateAllLeaveRequestsInTheFutureForWorkPatternContacts() {
