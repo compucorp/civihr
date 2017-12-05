@@ -582,17 +582,38 @@
             leaveRequestToDelete = leaveRequestInFebruary;
 
             LeaveRequest.all.calls.reset();
-            pubSub.publish('LeaveRequest::delete', leaveRequestToDelete);
-            $rootScope.$digest();
           });
 
-          it('does not re-fetch the leave requests from the backend', function () {
-            expect(LeaveRequest.all).not.toHaveBeenCalled();
+          describe('leave request delete event', function () {
+            beforeEach(function () {
+              pubSub.publish('LeaveRequest::delete', leaveRequestToDelete);
+              $rootScope.$digest();
+            });
+
+            itHandlesLeaveRequestDeleteEvent();
           });
 
-          it('resets the properties of each day that the leave request spans', function () {
-            expect(getLeaveRequestDays(leaveRequestToDelete).every(isDayContactDataNull)).toBe(true);
+          describe('leave request status update event', function () {
+            beforeEach(function () {
+              pubSub.publish('LeaveRequest::statusUpdate', {
+                status: 'delete',
+                leaveRequest: leaveRequestToDelete
+              });
+              $rootScope.$digest();
+            });
+
+            itHandlesLeaveRequestDeleteEvent();
           });
+
+          function itHandlesLeaveRequestDeleteEvent () {
+            it('does not re-fetch the leave requests from the backend', function () {
+              expect(LeaveRequest.all).not.toHaveBeenCalled();
+            });
+
+            it('resets the properties of each day that the leave request spans', function () {
+              expect(getLeaveRequestDays(leaveRequestToDelete).every(isDayContactDataNull)).toBe(true);
+            });
+          }
         });
 
         describe('when a leave request is added', function () {
@@ -625,24 +646,44 @@
             leaveRequestToUpdate = modifyLeaveRequestData(leaveRequestToUpdate);
 
             LeaveRequest.all.calls.reset();
-
-            pubSub.publish('LeaveRequest::edit', leaveRequestToUpdate);
-            $rootScope.$digest();
-
-            newDays = getLeaveRequestDays(leaveRequestToUpdate);
           });
 
-          it('does not re-fetch the leave requests from the backend', function () {
-            expect(LeaveRequest.all).not.toHaveBeenCalled();
+          describe('leave request edit event', function () {
+            beforeEach(function () {
+              pubSub.publish('LeaveRequest::edit', leaveRequestToUpdate);
+              $rootScope.$digest();
+
+              newDays = getLeaveRequestDays(leaveRequestToUpdate);
+            });
+
+            itHandlesLeaveRequestStatusUpdate();
           });
 
-          it('resets the properties of the days that the leave request does not span anymore', function () {
-            expect(oldDays.every(isDayContactDataNull)).toBe(true);
+          describe('leave request status update event', function () {
+            beforeEach(function () {
+              pubSub.publish('LeaveRequest::statusUpdate', {
+                status: 'cancel',
+                leaveRequest: leaveRequestToUpdate
+              });
+              $rootScope.$digest();
+
+              newDays = getLeaveRequestDays(leaveRequestToUpdate);
+            });
           });
 
-          it('sets the properties of the days that the leave request now spans', function () {
-            expect(newDays.every(isDayContactDataNull)).toBe(false);
-          });
+          function itHandlesLeaveRequestStatusUpdate () {
+            it('does not re-fetch the leave requests from the backend', function () {
+              expect(LeaveRequest.all).not.toHaveBeenCalled();
+            });
+
+            it('resets the properties of the days that the leave request does not span anymore', function () {
+              expect(oldDays.every(isDayContactDataNull)).toBe(true);
+            });
+
+            it('sets the properties of the days that the leave request now spans', function () {
+              expect(newDays.every(isDayContactDataNull)).toBe(false);
+            });
+          }
         });
 
         function modifyLeaveRequestData (leaveRequest, modifyId) {

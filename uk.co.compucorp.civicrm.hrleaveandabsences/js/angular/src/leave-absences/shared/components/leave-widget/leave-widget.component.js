@@ -141,7 +141,8 @@ define([
     function initWatchersForWidgetRefresh () {
       var listOfEvents = ['LeaveRequest::new', 'LeaveRequest::edit',
         'LeaveRequest::delete', 'LeaveRequest::updatedByManager',
-        'contract:created', 'contract:deleted', 'contract-refresh'];
+        'LeaveRequest::edit', 'contract:created', 'contract:deleted',
+        'contract-refresh'];
 
       listOfEvents.forEach(function (eventName) {
         pubSub.subscribe(eventName, loadDependencies);

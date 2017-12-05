@@ -208,6 +208,13 @@ define([
       eventListeners.push(pubSub.subscribe('LeaveRequest::edit', updateLeaveRequest));
       eventListeners.push(pubSub.subscribe('LeaveRequest::updatedByManager', updateLeaveRequest));
       eventListeners.push(pubSub.subscribe('LeaveRequest::delete', deleteLeaveRequest));
+      eventListeners.push(pubSub.subscribe('LeaveRequest::statusUpdate', function (statusUpdate) {
+        if (statusUpdate.status === 'delete') {
+          deleteLeaveRequest(statusUpdate.leaveRequest);
+        } else {
+          updateLeaveRequest(statusUpdate.leaveRequest);
+        }
+      }));
     }
 
     /**
