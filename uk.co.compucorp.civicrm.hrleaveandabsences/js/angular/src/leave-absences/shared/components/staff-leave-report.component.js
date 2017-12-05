@@ -107,33 +107,6 @@ define([
     }
 
     /**
-     * Labels the given period according to whether it's current or not
-     *
-     * @param  {AbsencePeriodInstance} period
-     * @return {string}
-     */
-    function labelPeriod (period) {
-      return period.current ? 'Current Period (' + period.title + ')' : period.title;
-    }
-
-    /**
-     * Loads the leave requests for each section, indexes the loaded data,
-     * and puts the section in and out of loading mode
-     *
-     * @param  {Object} section
-     * @return {Promise}
-     */
-    function loadSectionLeaveRequests (section) {
-      section.loading = true;
-
-      return section.loadLeaveRequests()
-        .then(indexSectionData.bind(this, section))
-        .then(function () {
-          section.loading = false;
-        });
-    }
-
-    /**
      * Clears the cached data of all sections
      */
     function clearSectionsData () {
@@ -171,16 +144,13 @@ define([
     }
 
     /**
-     * NOTE: This should be just temporary, see PCHR-1810
-     * Loads all the possible statuses of a leave request
+     * Labels the given period according to whether it's current or not
      *
-     * @return {Promise}
+     * @param  {AbsencePeriodInstance} period
+     * @return {string}
      */
-    function loadStatuses () {
-      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
-        .then(function (statuses) {
-          vm.leaveRequestStatuses = _.indexBy(statuses, 'value');
-        });
+    function labelPeriod (period) {
+      return period.current ? 'Current Period (' + period.title + ')' : period.title;
     }
 
     /**
@@ -412,6 +382,36 @@ define([
       .then(function (leaveRequests) {
         vm.sections.holidays.data = leaveRequests.list;
       });
+    }
+
+    /**
+     * Loads the leave requests for each section, indexes the loaded data,
+     * and puts the section in and out of loading mode
+     *
+     * @param  {Object} section
+     * @return {Promise}
+     */
+    function loadSectionLeaveRequests (section) {
+      section.loading = true;
+
+      return section.loadLeaveRequests()
+        .then(indexSectionData.bind(this, section))
+        .then(function () {
+          section.loading = false;
+        });
+    }
+
+    /**
+     * NOTE: This should be just temporary, see PCHR-1810
+     * Loads all the possible statuses of a leave request
+     *
+     * @return {Promise}
+     */
+    function loadStatuses () {
+      return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
+        .then(function (statuses) {
+          vm.leaveRequestStatuses = _.indexBy(statuses, 'value');
+        });
     }
 
     /**
