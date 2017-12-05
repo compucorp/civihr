@@ -5,6 +5,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementLog as LeavePeriodEntitlementLog;
+use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement
@@ -138,6 +139,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       $absenceTypeID = $calculation->getAbsenceType()->id;
       $contactID = $calculation->getContact()['id'];
       $params = [];
+      $oldEntitlement = null;
 
       $leavePeriodEntitlement = self::getPeriodEntitlementForContact(
         $contactID,
@@ -147,6 +149,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
 
       if ($leavePeriodEntitlement) {
         self::logChanges($leavePeriodEntitlement);
+        $oldEntitlement = $leavePeriodEntitlement->getEntitlement();
         $params['id'] = $leavePeriodEntitlement->id;
       }
 
@@ -165,6 +168,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       self::saveLeaveBalanceChange($calculation, $periodEntitlement, $overriddenEntitlement);
 
       $transaction->commit();
+
+      $newEntitlement = $periodEntitlement->getEntitlement();
+      self::enqueuePublicHolidayLeaveRequestUpdateTask(
+        $oldEntitlement,
+        $newEntitlement,
+        $contactID,
+        $absencePeriodID
+      );
+
     } catch(\Exception $ex) {
       $transaction->rollback();
     }
@@ -820,5 +832,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
       'comment' => $leavePeriodEntitlement->comment,
       'created_date' => $createdDate
     ]);
+  }
+
+  /**
+   * Enqueue a new task to update Public Holiday Leave Requests
+   * for the Absence Period if there is a change in entitlements
+   * for the contact. i.e If the contact has no entitlement before
+   * and now has entitlement or If the contact has entitlement before
+   * and now the entitlement has been removed(zero entitlement).
+   *
+   * @param float|null $oldEntitlement
+   * @param float $newEntitlement
+   * @param int $contactID
+   * @param int $absencePeriodID
+   */
+  private static function enqueuePublicHolidayLeaveRequestUpdateTask($oldEntitlement, $newEntitlement, $contactID, $absencePeriodID) {
+    if(!$oldEntitlement || !$newEntitlement) {
+      $task = new CRM_Queue_Task(
+        ['CRM_HRLeaveAndAbsences_Queue_Task_UpdatePublicHolidayLeaveRequestsForAbsencePeriod', 'run'],
+        [$absencePeriodID, [$contactID]]
+      );
+
+      PublicHolidayLeaveRequestUpdatesQueue::createItem($task);
+    }
   }
 }

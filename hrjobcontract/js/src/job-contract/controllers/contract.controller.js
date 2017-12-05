@@ -110,9 +110,8 @@ define([
         _.extend(entity.health, revisionDetails.health);
         _.extend(entity.pay, revisionDetails.pay);
         _.extend(entity.pension, revisionDetails.pension);
-        _.each(entity.leave, function (leaveType, leaveTypeId) {
-          _.extend(leaveType, revisionDetails.leave ? revisionDetails.leave[leaveTypeId] : '');
-        });
+
+        mapAbsenceTypesWithContractLeaveData(entity.leave, revisionDetails.leave);
 
         return entity;
       });
@@ -129,6 +128,24 @@ define([
             $scope.$broadcast('hrjc-loader-hide');
           })
           .then(updateContractFiles);
+      });
+    }
+
+    /**
+     * Maps Absence Types with the leave data from the Contract
+     * or sets default revision data if Contract leave data does not exists yet, if presented
+     *
+     * @param {Array} leaveEntity
+     * @param {Array} leaveData
+     * @param {Object} contractRevisionIdObj optional
+     */
+    function mapAbsenceTypesWithContractLeaveData (leaveEntity, leaveData, contractRevisionIdObj) {
+      contractRevisionIdObj = contractRevisionIdObj || '';
+
+      _.each(leaveEntity, function (entity) {
+        _.extend(entity, leaveData
+          ? _.find(leaveData, { leave_type: entity.leave_type }) ||
+          contractRevisionIdObj : contractRevisionIdObj);
       });
     }
 
@@ -370,9 +387,7 @@ define([
       _.extend($scope.health, newScope.health || contractRevisionIdObj);
       _.extend($scope.pension, newScope.pension || contractRevisionIdObj);
 
-      _.each($scope.leave, function (leaveType, leaveTypeId) {
-        _.extend(leaveType, newScope.leave ? newScope.leave[leaveTypeId] || contractRevisionIdObj : contractRevisionIdObj);
-      });
+      mapAbsenceTypesWithContractLeaveData($scope.leave, newScope.leave, contractRevisionIdObj);
     }
 
     /**

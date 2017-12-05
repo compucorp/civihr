@@ -9,10 +9,11 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestService;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as PublicHolidayLeaveRequestCreation;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as PublicHolidayLeaveRequestDeletion;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 
 /**
 * Class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest
@@ -20,6 +21,8 @@ use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as PublicHo
 * @group headless
 */
 class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseHeadlessTest {
+
+  use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -56,6 +59,28 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
 
     $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
     $service->updateAllInTheFuture();
+  }
+
+  public function testUpdateAllPublicHolidayLeaveRequestsInAbsencePeriod() {
+    $deletionLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestDeletion::class)
+      ->disableOriginalConstructor()
+      ->setMethods(['deleteAllForAbsencePeriod'])
+      ->getMock();
+
+    $deletionLogicMock->expects($this->once())
+      ->method('deleteAllForAbsencePeriod');
+
+    $creationLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestCreation::class)
+      ->disableOriginalConstructor()
+      ->setMethods(['createAllForAbsencePeriod'])
+      ->getMock();
+
+    $creationLogicMock->expects($this->once())
+      ->method('createAllForAbsencePeriod');
+
+    $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
+    $absencePeriod = AbsencePeriodFabricator::fabricate();
+    $service->updateAllForAbsencePeriod($absencePeriod->id);
   }
 
   public function testUpdateAllLeaveRequestsInTheFutureForWorkPatternContacts() {
@@ -118,6 +143,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
    * created after the contract gets saved.
    */
   public function testItUpdateAllWhenTheContractDetailsAreCreated() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('last monday'),
+      'end_date'   => CRM_Utils_Date::processDate('+8 months'),
+    ]);
+
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
     //All the days selected for the public holidays are working days for the 40hr work week
     $datePublicHoliday1 = new DateTime('last monday');
@@ -129,6 +159,14 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
     PublicHolidayFabricator::fabricateWithoutValidation(['date' => $datePublicHoliday3->format('YmdHis')]);
 
     $contact = ContactFabricator::fabricate();
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contact['id'],
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 1);
 
     $leaveRequest = new LeaveRequest();
     $leaveRequest->contact_id = $contact['id'];
@@ -163,6 +201,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
    * created after the contract gets saved.
    */
   public function testItUpdateAllInTheFutureWhenTheContractDetailsAreUpdated() {
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('next monday'),
+      'end_date'   => CRM_Utils_Date::processDate('+2 months'),
+    ]);
+
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
     //All the days selected for the public holidays are working days for the 40hr work week
     $datePublicHoliday1 = new DateTime('next monday');
@@ -172,6 +215,14 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
     PublicHolidayFabricator::fabricateWithoutValidation(['date' => $datePublicHoliday2->format('YmdHis')]);
 
     $contact = ContactFabricator::fabricate();
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $this->absenceType->id,
+      'contact_id' => $contact['id'],
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 1);
 
     $leaveRequest = new LeaveRequest();
     $leaveRequest->contact_id = $contact['id'];

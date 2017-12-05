@@ -56,58 +56,74 @@ define(function () {
         {
           'id': '375',
           'leave_type': '1',
-          'leave_amount': '0',
+          'leave_amount': '11',
           'add_public_holidays': '0',
-          'jobcontract_revision_id': '99'
+          'jobcontract_revision_id': '99',
+          'default_entitlement': '1',
+          'add_public_holiday_to_entitlement': '0'
         },
         {
           'id': '376',
           'leave_type': '2',
-          'leave_amount': '0',
+          'leave_amount': '22',
           'add_public_holidays': '0',
-          'jobcontract_revision_id': '99'
+          'jobcontract_revision_id': '99',
+          'default_entitlement': '2',
+          'add_public_holiday_to_entitlement': '1'
         },
         {
           'id': '377',
           'leave_type': '3',
-          'leave_amount': '0',
+          'leave_amount': '33',
           'add_public_holidays': '0',
-          'jobcontract_revision_id': '99'
+          'jobcontract_revision_id': '99',
+          'default_entitlement': '3',
+          'add_public_holiday_to_entitlement': '0'
         },
         {
           'id': '378',
           'leave_type': '4',
-          'leave_amount': '0',
+          'leave_amount': '44',
           'add_public_holidays': '0',
-          'jobcontract_revision_id': '99'
+          'jobcontract_revision_id': '99',
+          'default_entitlement': '4',
+          'add_public_holiday_to_entitlement': '1'
         },
         {
           'id': '379',
           'leave_type': '5',
-          'leave_amount': '0',
+          'leave_amount': '55',
           'add_public_holidays': '0',
-          'jobcontract_revision_id': '99'
+          'jobcontract_revision_id': '99',
+          'default_entitlement': '5',
+          'add_public_holiday_to_entitlement': '0'
         },
         {
           'id': '380',
           'leave_type': '6',
-          'leave_amount': '0',
+          'leave_amount': '66',
           'add_public_holidays': '0',
-          'jobcontract_revision_id': '99'
+          'jobcontract_revision_id': '99',
+          'default_entitlement': '6',
+          'add_public_holiday_to_entitlement': '1'
         },
         {
           'id': '381',
           'leave_type': '7',
-          'leave_amount': '0',
+          'leave_amount': '77',
           'add_public_holidays': '0',
-          'jobcontract_revision_id': '99'
+          'jobcontract_revision_id': '99',
+          'default_entitlement': '7',
+          'add_public_holiday_to_entitlement': '0'
         },
         {
           'id': '382',
           'leave_type': '8',
-          'leave_amount': '0',
+          'leave_amount': '88',
           'add_public_holidays': '0',
-          'jobcontract_revision_id': '99'
+          'jobcontract_revision_id': '99',
+          'default_entitlement': '8',
+          'add_public_holiday_to_entitlement': '1'
         }
       ]
     },

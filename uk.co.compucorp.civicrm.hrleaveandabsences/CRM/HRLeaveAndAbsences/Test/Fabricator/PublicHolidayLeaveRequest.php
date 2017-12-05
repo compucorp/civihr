@@ -4,6 +4,7 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as PublicHolidayLeaveRequestCreation;
+use CRM_HRLeaveAndAbsences_Service_LeavePeriodEntitlement as LeavePeriodEntitlementService;
 
 class CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest {
 
@@ -26,7 +27,12 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest {
     if ($mockBalanceChangeService) {
       $leaveBalanceChangeService = $mockBalanceChangeService;
     }
-    $creationLogic = new PublicHolidayLeaveRequestCreation(new JobContractService(), $leaveBalanceChangeService);
+    $leavePeriodEntitlementService = new LeavePeriodEntitlementService();
+    $creationLogic = new PublicHolidayLeaveRequestCreation(
+      new JobContractService(),
+      $leaveBalanceChangeService,
+      $leavePeriodEntitlementService
+    );
     $creationLogic->createForContact($contactID, $publicHoliday);
   }
 }
