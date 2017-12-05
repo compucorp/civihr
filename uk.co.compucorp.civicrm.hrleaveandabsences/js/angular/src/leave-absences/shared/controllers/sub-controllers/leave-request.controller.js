@@ -5,9 +5,9 @@ define([
 ], function (controllers) {
   controllers.controller('LeaveRequestCtrl', LeaveRequestCtrl);
 
-  LeaveRequestCtrl.$inject = ['$log', '$q', 'parentCtrl'];
+  LeaveRequestCtrl.$inject = ['$controller', '$log', '$q', 'parentCtrl'];
 
-  function LeaveRequestCtrl ($log, $q, parentCtrl) {
+  function LeaveRequestCtrl ($controller, $log, $q, parentCtrl) {
     $log.debug('LeaveRequestCtrl');
 
     var vm = parentCtrl;
@@ -21,7 +21,7 @@ define([
      * @return {Boolean}
      */
     function checkSubmitConditions () {
-      return vm._canCalculateChange();
+      return vm.canCalculateChange();
     }
 
     /**
