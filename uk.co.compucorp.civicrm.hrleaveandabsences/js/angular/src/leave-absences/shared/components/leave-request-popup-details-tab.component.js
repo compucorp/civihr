@@ -112,7 +112,6 @@ define([
     };
 
     vm.attemptCalculateBalanceChange = attemptCalculateBalanceChange;
-    vm.calculateBalanceChange = calculateBalanceChange;
     vm.canCalculateChange = canCalculateChange;
     vm.changeInNoOfDays = changeInNoOfDays;
     vm.convertDateFormatFromServer = convertDateFormatFromServer;
@@ -150,20 +149,6 @@ define([
         vm.loading.tab = false;
       });
     }());
-
-    /**
-     * Calculate change in balance, it updates local balance variables.
-     *
-     * @return {Promise} empty promise if all required params are not set
-     *   otherwise promise from server
-     */
-    function calculateBalanceChange () {
-      vm.loading.showBalanceChange = true;
-
-      return vm.request.calculateBalanceChange(vm.selectedAbsenceType.calculation_unit_name)
-        .then(setBalanceChange)
-        .catch(handleError);
-    }
 
     /**
      * Calculates and updates opening and closing balances.
@@ -801,6 +786,7 @@ define([
     function setDatesFromUI (dateType) {
       resetAfterDateChange(dateType);
       setDatesToRequest();
+
       return $q.resolve()
         .then(vm.setDatesFromUIExtended ? vm.setDatesFromUIExtended : _.noop)
         .then(function () {

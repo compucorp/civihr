@@ -362,7 +362,7 @@ define([
               beforeEach(function () {
                 // select half_day_am to get single day mock data
                 controller.request.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'half_day_am');
-                controller.calculateBalanceChange();
+                controller.attemptCalculateBalanceChange();
                 $rootScope.$digest();
               });
 
@@ -383,7 +383,7 @@ define([
 
                 controller.request.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
 
-                controller.calculateBalanceChange();
+                controller.attemptCalculateBalanceChange();
                 $rootScope.$digest();
               });
 
