@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/contract',
+  'mocks/data/contract.data',
   'job-contract/modules/job-contract.module'
 ], function (MockContract) {
   'use strict';

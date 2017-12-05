@@ -1,8 +1,8 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/contract',
-  'mocks/data/insurance-plan-types',
+  'mocks/data/contract.data',
+  'mocks/data/insurance-plan-types.data',
   'job-contract/modules/job-contract.module'
 ], function (MockContract, InsurancePlanTypesMock) {
   'use strict';

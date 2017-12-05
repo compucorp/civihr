@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/contract',
+  'mocks/data/contract.data',
   'common/angularMocks',
   'job-contract/modules/job-contract.module'
 ], function (_, moment, contractMock) {

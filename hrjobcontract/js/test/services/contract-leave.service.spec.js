@@ -3,7 +3,7 @@
 define([
   'common/angular',
   'common/lodash',
-  'mocks/data/contract',
+  'mocks/data/contract.data',
   'job-contract/modules/job-contract.module'
 ], function (angular, _, MockContract) {
   'use strict';

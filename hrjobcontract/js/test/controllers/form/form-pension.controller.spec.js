@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/contact',
+  'mocks/data/contact.data',
   'job-contract/modules/job-contract.module'
 ], function (ContactMock) {
   'use strict';
