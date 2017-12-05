@@ -151,6 +151,29 @@ define([
     }());
 
     /**
+     * Adjusts dates in UI.
+     * "To" date must not be earlier than "From" date in case of a Single day request.
+     * "To" date must be after "From" date in case of a Multiple day request.
+     */
+    function adjustDatesInUI () {
+      var toDate = moment(vm.uiOptions.toDate);
+
+      if (vm.uiOptions.toDate) {
+        if (!vm.uiOptions.multipleDays) {
+          if (toDate.isBefore(vm.uiOptions.fromDate)) {
+            vm.uiOptions.toDate = vm.uiOptions.fromDate;
+          }
+        } else {
+          if (toDate.isSameOrBefore(vm.uiOptions.fromDate) || toDate.isAfter(vm.period.end_date)) {
+            vm.uiOptions.toDate = undefined;
+
+            resetAfterDateChange('to');
+          }
+        }
+      }
+    }
+
+    /**
      * Calculates and updates opening and closing balances.
      *
      * For the opening balance, when in edit mode, if the selected absence type
@@ -784,7 +807,7 @@ define([
      * @return {Promise}
      */
     function setDatesFromUI (dateType) {
-      resetAfterDateChange(dateType);
+      resetAfterDateChange(dateType, true);
       setDatesToRequest();
 
       return $q.resolve()
@@ -808,27 +831,19 @@ define([
      * Sets the min and max for to date from absence period. It also sets the
      * init/starting date which user can select from. For multiple days request
      * user can select to date which is one more than the the start date.
-     *
-     * @TODO there is a usecase that is not handled yet: change FROM date
-     * to the future absence period and then set back to the previous one -
-     * the TO date will not be reset, it should though.
-     * @TODO not sure why it sets same TO date as FROM date and not +1 day (?)
      */
     function setMinMaxDatesToUI () {
       if (vm.uiOptions.fromDate) {
-        var nextFromDay = moment(vm.uiOptions.fromDate).add(1, 'd').toDate();
+        var nextFromDay = moment(vm.uiOptions.fromDate).add(1, 'day').toDate();
 
         vm.uiOptions.date.to.options.minDate = nextFromDay;
         vm.uiOptions.date.to.options.initDate = nextFromDay;
-
-        // also re-set to date if from date is changing and less than to date
-        if (vm.uiOptions.toDate && moment(vm.uiOptions.toDate).isBefore(vm.uiOptions.fromDate)) {
-          vm.uiOptions.toDate = vm.uiOptions.fromDate;
-        }
       } else {
         vm.uiOptions.date.to.options.minDate = convertDateFormatFromServer(vm.period.start_date);
         vm.uiOptions.date.to.options.initDate = vm.uiOptions.date.to.options.minDate;
       }
+
+      adjustDatesInUI();
 
       vm.uiOptions.date.to.options.maxDate = convertDateFormatFromServer(vm.period.end_date);
     }
@@ -848,10 +863,14 @@ define([
      * Show that data is loading by showing spinners instead of UI fields
      *
      * @param {String} dateType from|to
+     * @param {Boolean} showLoader
      */
-    function resetAfterDateChange (dateType) {
+    function resetAfterDateChange (dateType, showLoader) {
       vm['request' + _.startCase(dateType) + 'DayTypes'] = [];
-      vm.loading[dateType + 'DayTypes'] = true;
+
+      if (showLoader) {
+        vm.loading[dateType + 'DayTypes'] = true;
+      }
 
       toggleBalance();
     }

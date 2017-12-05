@@ -21,7 +21,9 @@ define([
 
     var date2013 = '02/02/2013';
     var date2016 = '01/12/2016';
-    var date2017 = '02/02/2017';
+    var date2016To = '02/12/2016';
+    var date2017 = '01/02/2017';
+    var date2017To = '02/02/2017';
     var dateServer2017 = '2017-02-02';
 
     beforeEach(module('common.mocks', 'leave-absences.templates',
@@ -220,7 +222,7 @@ define([
           var toDate;
 
           beforeEach(function () {
-            setTestDates(date2016, date2016);
+            setTestDates(date2016, date2016To);
             toDate = moment(controller.uiOptions.toDate).format(sharedSettings.serverDateFormat);
           });
 
@@ -235,7 +237,7 @@ define([
 
         describe('from and to dates are selected', function () {
           beforeEach(function () {
-            setTestDates(date2016, date2016);
+            setTestDates(date2016, date2016To);
           });
 
           it('does show balance change', function () {
@@ -322,7 +324,7 @@ define([
 
           describe('when to date is selected', function () {
             beforeEach(function () {
-              setTestDates(date2016, date2016);
+              setTestDates(date2016, date2016To);
             });
 
             it('sets to date', function () {
@@ -347,7 +349,7 @@ define([
 
           describe('when from and to are selected', function () {
             beforeEach(function () {
-              setTestDates(date2016, date2016);
+              setTestDates(date2016, date2016To);
             });
 
             it('calculates balance change', function () {
@@ -379,7 +381,7 @@ define([
               beforeEach(function () {
                 controller.uiOptions.multipleDays = true;
                 // select all_day to get multiple day mock data
-                setTestDates(date2016, date2016);
+                setTestDates(date2016, date2016To);
 
                 controller.request.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
 
@@ -399,7 +401,7 @@ define([
 
           describe('when balance change is expanded during pagination', function () {
             beforeEach(function () {
-              setTestDates(date2016, date2016);
+              setTestDates(date2016, date2016To);
             });
 
             it('paginates by 7 items', function () {
@@ -709,7 +711,7 @@ define([
 
             describe('and to date is selected', function () {
               beforeEach(function () {
-                setTestDates(date2016, date2016);
+                setTestDates(date2016, date2016To);
               });
 
               it('selects date from selected absence period without errors', function () {
@@ -770,10 +772,38 @@ define([
                     setTestDates(from);
                   });
 
-                  it('changes to date to equal to date', function () {
-                    expect(controller.request.to_date).toEqual(controller.request.from_date);
+                  it('resets To date', function () {
+                    expect(controller.request.to_date).toEqual(null);
+                  });
+
+                  it('resets To day types', function () {
+                    expect(controller.requestToDayTypes).toEqual([]);
+                  });
+
+                  it('does not show day types being loaded', function () {
+                    expect(controller.loading.ToDayTypes).toBeFalsy();
                   });
                 });
+              });
+            });
+
+            describe('when setting "from" date that matches earlier absence period', function () {
+              beforeEach(function () {
+                setTestDates(date2017, date2017To);
+                setTestDates(date2016);
+                $rootScope.$broadcast('LeaveRequestPopup::updateBalance');
+              });
+
+              it('resets "to" date', function () {
+                expect(controller.request.to_date).toEqual(null);
+              });
+
+              it('resets "to" day types', function () {
+                expect(controller.requestToDayTypes).toEqual([]);
+              });
+
+              it('does not show "to" day types being loaded', function () {
+                expect(controller.loading.ToDayTypes).toBeFalsy();
               });
             });
           });
@@ -926,7 +956,7 @@ define([
 
         describe('with selected reason', function () {
           beforeEach(function () {
-            setTestDates(date2016, date2016);
+            setTestDates(date2016, date2016To);
             setReason();
           });
 
@@ -994,7 +1024,7 @@ define([
                 request: sicknessRequest,
                 leaveType: 'sick'
               });
-              setTestDates(date2016, date2016);
+              setTestDates(date2016, date2016To);
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
             });
@@ -1161,7 +1191,7 @@ define([
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
             controller.request.type_id = params.selectedAbsenceType.id;
-            setTestDates(date2016, date2016);
+            setTestDates(date2016, date2016To);
             controller.calculateToilExpiryDate();
             $rootScope.$digest();
 
