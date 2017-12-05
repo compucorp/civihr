@@ -6,7 +6,7 @@ define([
   'mocks/apis/entitlement-api-mock',
   'leave-absences/shared/components/leave-widget/leave-widget-absence-types-available-balance.component'
 ], function (_, controllerOnChanges) {
-  describe('leaveWidgetAbsenceTypesAvailableBalance', function () {
+  fdescribe('leaveWidgetAbsenceTypesAvailableBalance', function () {
     var $componentController, $provide, $rootScope, $scope,
       absencePeriod, absenceTypes, ctrl, Entitlement;
     var childComponentName = 'leave-widget-absence-types-available-balance';
@@ -87,7 +87,21 @@ define([
               period_id: absencePeriod.id
             }, true)
             .then(function (entitlements) {
-              expectedEntitlements = Entitlement.getLeaveEntitlements(absenceTypes, entitlements);
+              var indexedEntitlements = _.indexBy(entitlements, 'type_id');
+
+              expectedEntitlements = ctrl.absenceTypes.map(function (absenceType) {
+                var entitlement = indexedEntitlements[absenceType.id];
+
+                return {
+                  entitlement: entitlement,
+                  absenceType: absenceType
+                };
+              })
+              .filter(function (leaveEntitlement) {
+                return leaveEntitlement.entitlement && leaveEntitlement.entitlement.value > 0 ||
+                  leaveEntitlement.absenceType.allow_overuse === '1' ||
+                  leaveEntitlement.absenceType.allow_accruals_request === '1';
+              });
             });
 
             $rootScope.$digest();

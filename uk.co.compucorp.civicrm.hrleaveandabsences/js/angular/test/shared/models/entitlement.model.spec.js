@@ -3,14 +3,13 @@
 define([
   'common/lodash',
   'leave-absences/shared/models/entitlement.model',
-  'mocks/apis/absence-type-api-mock',
   'mocks/apis/entitlement-api-mock',
   'mocks/apis/entitlement-log-api-mock'
 ], function (_) {
   'use strict';
 
-  describe('Entitlement', function () {
-    var $provide, $rootScope, AbsenceType, Entitlement, EntitlementAPI,
+  fdescribe('Entitlement', function () {
+    var $provide, $rootScope, Entitlement, EntitlementAPI,
       EntitlementLogAPI;
 
     beforeEach(module('leave-absences.models', 'leave-absences.mocks', function (_$provide_) {
@@ -19,14 +18,12 @@ define([
 
     beforeEach(inject(function (AbsenceTypeAPIMock, EntitlementAPIMock,
     EntitlementLogAPIMock) {
-      $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
       $provide.value('EntitlementAPI', EntitlementAPIMock);
       $provide.value('EntitlementLogAPI', EntitlementLogAPIMock);
     }));
 
     beforeEach(inject(function (_$rootScope_, _AbsenceType_, _Entitlement_,
     _EntitlementAPI_, _EntitlementLogAPI_) {
-      AbsenceType = _AbsenceType_;
       Entitlement = _Entitlement_;
       EntitlementAPI = _EntitlementAPI_;
       EntitlementLogAPI = _EntitlementLogAPI_;
@@ -43,8 +40,7 @@ define([
     });
 
     it('has expected interface', function () {
-      expect(Object.keys(Entitlement)).toEqual(['all', 'breakdown',
-        'getLeaveEntitlements', 'logs']);
+      expect(Object.keys(Entitlement)).toEqual(['all', 'breakdown', 'logs']);
     });
 
     describe('all()', function () {
@@ -116,41 +112,6 @@ define([
             });
           });
         });
-      });
-    });
-
-    describe('getLeaveEntitlements', function () {
-      var entitlement, leaveEntitlements, result;
-
-      beforeEach(function () {
-        var absenceTypes, entitlements;
-
-        AbsenceType.all().then(function (_absenceTypes_) {
-          absenceTypes = _absenceTypes_;
-        });
-        Entitlement.all().then(function (_entitlements_) {
-          entitlements = _.indexBy(_entitlements_, 'type_id');
-        });
-        $rootScope.$digest();
-
-        leaveEntitlements = absenceTypes.map(function (absenceType) {
-          entitlement = entitlements[absenceType.id];
-
-          return {
-            entitlement: entitlement,
-            absenceType: absenceType
-          };
-        })
-        .filter(function (leaveEntitlement) {
-          return leaveEntitlement.entitlement && leaveEntitlement.entitlement.value > 0 ||
-            leaveEntitlement.absenceType.allow_overuse === '1' ||
-            leaveEntitlement.absenceType.allow_accruals_request === '1';
-        });
-        result = Entitlement.getLeaveEntitlements(absenceTypes, entitlements);
-      });
-
-      it('returns an array of leave entitlements', function () {
-        expect(result).toEqual(leaveEntitlements);
       });
     });
 

@@ -43,8 +43,8 @@ define([
     function $onChanges () {
       if (areBindingsReady()) {
         loadDependencies().then(function () {
-          vm.leaveEntitlements = Entitlement.getLeaveEntitlements(
-            vm.absenceTypes, entitlements);
+          vm.leaveEntitlements = getLeaveEntitlements(vm.absenceTypes,
+            entitlements);
         });
       }
     }
@@ -85,6 +85,32 @@ define([
       }, true)
       .then(function (_entitlements_) {
         entitlements = _entitlements_;
+      });
+    }
+
+    /**
+     * Returns an array of leave entitlements which have a value greater
+     * than zero, allows for overuse, or allows accruals of leave requests.
+     *
+     * @param {Array} absenceTypes - An array of absence types.
+     * @param {Array} entitlements - An array of entitlements.
+     * @return {Array}
+     */
+    function getLeaveEntitlements (absenceTypes, entitlements) {
+      var entitlement;
+      var indexedEntitlements = _.indexBy(entitlements, 'type_id');
+
+      return absenceTypes.map(function (absenceType) {
+        entitlement = indexedEntitlements[absenceType.id];
+
+        return {
+          absenceType: absenceType,
+          entitlement: entitlement
+        };
+      }).filter(function (leaveEntitlement) {
+        return leaveEntitlement.entitlement && leaveEntitlement.entitlement.value > 0 ||
+          leaveEntitlement.absenceType.allow_overuse === '1' ||
+          leaveEntitlement.absenceType.allow_accruals_request === '1';
       });
     }
   }
