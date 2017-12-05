@@ -367,7 +367,7 @@ define([
     }
 
     /**
-     * Loads the leave requests associated to public holidays
+     * Loads leave requests associated to public holidays
      *
      * @return {Promise}
      */
@@ -385,7 +385,7 @@ define([
     }
 
     /**
-     * Loads the leave requests for each section, indexes the loaded data,
+     * Loads leave requests for each section, indexes the loaded data,
      * and puts the section in and out of loading mode
      *
      * @param  {Object} section
