@@ -14,12 +14,12 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="leaveEntitlement in leaveWidgetBalance.leaveEntitlements">
+      <tr ng-repeat="absenceType in leaveWidgetBalance.absenceTypes">
         <td class="leave-widget__types-name">
-          {{leaveEntitlement.absenceType.title}}
+          {{absenceType.title}}
         </td>
         <td class="leave-widget__types-balance">
-          {{leaveEntitlement.entitlement.remainder.future | timeUnitApplier:leaveEntitlement.absenceType.calculation_unit_name}}
+          {{absenceType.entitlement.remainder.future | timeUnitApplier:absenceType.calculation_unit_name}}
         </td>
       </tr>
     </tbody>

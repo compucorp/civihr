@@ -16,13 +16,13 @@ define([
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (AbsenceTypeAPIMock, EntitlementAPIMock,
+    beforeEach(inject(function (EntitlementAPIMock,
     EntitlementLogAPIMock) {
       $provide.value('EntitlementAPI', EntitlementAPIMock);
       $provide.value('EntitlementLogAPI', EntitlementLogAPIMock);
     }));
 
-    beforeEach(inject(function (_$rootScope_, _AbsenceType_, _Entitlement_,
+    beforeEach(inject(function (_$rootScope_, _Entitlement_,
     _EntitlementAPI_, _EntitlementLogAPI_) {
       Entitlement = _Entitlement_;
       EntitlementAPI = _EntitlementAPI_;

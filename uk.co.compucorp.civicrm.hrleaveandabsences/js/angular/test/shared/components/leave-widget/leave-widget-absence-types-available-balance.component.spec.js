@@ -89,18 +89,19 @@ define([
             .then(function (entitlements) {
               var indexedEntitlements = _.indexBy(entitlements, 'type_id');
 
-              expectedEntitlements = ctrl.absenceTypes.map(function (absenceType) {
+              expectedEntitlements = absenceTypes.map(function (absenceType) {
                 var entitlement = indexedEntitlements[absenceType.id];
 
-                return {
-                  entitlement: entitlement,
-                  absenceType: absenceType
-                };
+                return _.assign({
+                  entitlement: entitlement
+                }, absenceType);
               })
-              .filter(function (leaveEntitlement) {
-                return leaveEntitlement.entitlement && leaveEntitlement.entitlement.value > 0 ||
-                  leaveEntitlement.absenceType.allow_overuse === '1' ||
-                  leaveEntitlement.absenceType.allow_accruals_request === '1';
+              .filter(function (absenceType) {
+                var hasEntitlement = absenceType.entitlement && absenceType.entitlement.value > 0;
+                var allowOveruse = absenceType.allow_overuse === '1';
+                var allowAccrual = absenceType.allow_accruals_request === '1';
+
+                return hasEntitlement || allowOveruse || allowAccrual;
               });
             });
 
@@ -108,7 +109,7 @@ define([
           });
 
           it('stores the absence types the user has entitlements for', function () {
-            expect(ctrl.leaveEntitlements).toEqual(expectedEntitlements);
+            expect(ctrl.absenceTypes).toEqual(expectedEntitlements);
           });
 
           it('fires a leave widget child is ready event', function () {

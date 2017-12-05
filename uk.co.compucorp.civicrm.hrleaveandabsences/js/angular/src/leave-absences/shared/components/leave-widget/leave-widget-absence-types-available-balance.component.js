@@ -22,10 +22,8 @@ define([
 
   function leaveWidgetBalanceController ($scope, Entitlement) {
     var childComponentName = 'leave-widget-absence-types-available-balance';
-    var entitlements;
+    var entitlementsByAbsenceType;
     var vm = this;
-
-    vm.leaveEntitlements = [];
 
     vm.$onChanges = $onChanges;
 
@@ -38,13 +36,15 @@ define([
 
     /**
      * Implements the $onChanges controller method. It watches for changes in
-     * the component bindings.
+     * the component bindings. After bindings are ready, it loads dependencies,
+     * maps absence types with their entitlements, and then filters only absence
+     * types the contact is entitled to.
      */
     function $onChanges () {
       if (areBindingsReady()) {
         loadDependencies().then(function () {
-          vm.leaveEntitlements = getLeaveEntitlements(vm.absenceTypes,
-            entitlements);
+          mapAbsenceTypesWithTheirEntitlements();
+          filterEntitledAbsenceTypes();
         });
       }
     }
@@ -56,6 +56,20 @@ define([
      */
     function areBindingsReady () {
       return vm.absenceTypes && vm.absencePeriod && vm.contactId;
+    }
+
+    /**
+     * Filters absence types entitled (value > 0), that allow overuse, or
+     * can be accrued.
+     */
+    function filterEntitledAbsenceTypes () {
+      vm.absenceTypes = vm.absenceTypes.filter(function (absenceType) {
+        var hasEntitlement = absenceType.entitlement && absenceType.entitlement.value > 0;
+        var allowOveruse = absenceType.allow_overuse === '1';
+        var allowAccrual = absenceType.allow_accruals_request === '1';
+
+        return hasEntitlement || allowOveruse || allowAccrual;
+      });
     }
 
     /**
@@ -83,34 +97,19 @@ define([
         'period_id': vm.absencePeriod.id,
         'type_id.is_active': true
       }, true)
-      .then(function (_entitlements_) {
-        entitlements = _entitlements_;
+      .then(function (entitlements) {
+        entitlementsByAbsenceType = _.indexBy(entitlements, 'type_id');
       });
     }
 
     /**
-     * Returns an array of leave entitlements which have a value greater
-     * than zero, allows for overuse, or allows accruals of leave requests.
-     *
-     * @param {Array} absenceTypes - An array of absence types.
-     * @param {Array} entitlements - An array of entitlements.
-     * @return {Array}
+     * Maps each absence type with their corresponding entitlement.
      */
-    function getLeaveEntitlements (absenceTypes, entitlements) {
-      var entitlement;
-      var indexedEntitlements = _.indexBy(entitlements, 'type_id');
-
-      return absenceTypes.map(function (absenceType) {
-        entitlement = indexedEntitlements[absenceType.id];
-
-        return {
-          absenceType: absenceType,
-          entitlement: entitlement
-        };
-      }).filter(function (leaveEntitlement) {
-        return leaveEntitlement.entitlement && leaveEntitlement.entitlement.value > 0 ||
-          leaveEntitlement.absenceType.allow_overuse === '1' ||
-          leaveEntitlement.absenceType.allow_accruals_request === '1';
+    function mapAbsenceTypesWithTheirEntitlements () {
+      vm.absenceTypes = vm.absenceTypes.map(function (absenceType) {
+        return _.assign({
+          entitlement: entitlementsByAbsenceType[absenceType.id]
+        }, absenceType);
       });
     }
   }
