@@ -1246,7 +1246,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement2));
   }
 
-  public function testCreateForAllWillCreatePublicHolidayLeaveRequestsForAllPublicHolidaysInAllPeriodsForAllContacts() {
+  public function testCreateAllWillCreatePublicHolidayLeaveRequestsForAllPublicHolidaysInAllPeriodsForAllContacts() {
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
 
