@@ -22,7 +22,6 @@ define([
 
   function leaveWidgetBalanceController ($scope, Entitlement) {
     var childComponentName = 'leave-widget-absence-types-available-balance';
-    var entitlementsByAbsenceType;
     var vm = this;
 
     vm.$onChanges = $onChanges;
@@ -36,15 +35,25 @@ define([
 
     /**
      * Implements the $onChanges controller method. It watches for changes in
-     * the component bindings. After bindings are ready, it loads dependencies,
+     * the component bindings. After bindings are ready, it loads entitlements,
      * maps absence types with their entitlements, and then filters only absence
      * types the contact is entitled to.
+     *
+     * When the absence types are ready for use it triggers a child is ready event.
      */
     function $onChanges () {
       if (areBindingsReady()) {
-        loadDependencies().then(function () {
-          mapAbsenceTypesWithTheirEntitlements();
-          filterEntitledAbsenceTypes();
+        loadEntitlements()
+        .then(function (entitlements) {
+          return _.indexBy(entitlements, 'type_id');
+        })
+        .then(mapAbsenceTypesWithTheirEntitlements)
+        .then(filterAbsenceTypesThatCanBeEntitled)
+        .then(function (filteredAbsenceTypes) {
+          vm.absenceTypes = filteredAbsenceTypes;
+        })
+        .then(function () {
+          $scope.$emit('LeaveWidget::childIsReady', childComponentName);
         });
       }
     }
@@ -59,29 +68,22 @@ define([
     }
 
     /**
-     * Filters absence types entitled (value > 0), that allow overuse, or
-     * can be accrued.
+     * Filters absence types that an absence type can be entitled to the user
+     * if the associated entitlement value is greater than zero,
+     * the absence type can be negative, or it allows for accrual of
+     * leave requests.
+     *
+     * @param {Array} absenceTypes - A list of absence types with their
+     * associated entitlement.
+     * @return {Array}
      */
-    function filterEntitledAbsenceTypes () {
-      vm.absenceTypes = vm.absenceTypes.filter(function (absenceType) {
+    function filterAbsenceTypesThatCanBeEntitled (absenceTypes) {
+      return absenceTypes.filter(function (absenceType) {
         var hasEntitlement = absenceType.entitlement && absenceType.entitlement.value > 0;
         var allowOveruse = absenceType.allow_overuse === '1';
         var allowAccrual = absenceType.allow_accruals_request === '1';
 
         return hasEntitlement || allowOveruse || allowAccrual;
-      });
-    }
-
-    /**
-     * Loads all the component dependencies (entitlements in this case) and
-     * emits a child is ready event.
-     *
-     * @return {Promise} - Returns an empty promise when all dependencies have
-     * loaded.
-     */
-    function loadDependencies () {
-      return loadEntitlements().then(function () {
-        $scope.$emit('LeaveWidget::childIsReady', childComponentName);
       });
     }
 
@@ -96,17 +98,18 @@ define([
         'contact_id': vm.contactId,
         'period_id': vm.absencePeriod.id,
         'type_id.is_active': true
-      }, true)
-      .then(function (entitlements) {
-        entitlementsByAbsenceType = _.indexBy(entitlements, 'type_id');
-      });
+      }, true);
     }
 
     /**
      * Maps each absence type with their corresponding entitlement.
+     *
+     * @param {Object} entitlementsByAbsenceType - An index of entitlements
+     *   indexed by their absence type.
+     * @return {Array}
      */
-    function mapAbsenceTypesWithTheirEntitlements () {
-      vm.absenceTypes = vm.absenceTypes.map(function (absenceType) {
+    function mapAbsenceTypesWithTheirEntitlements (entitlementsByAbsenceType) {
+      return vm.absenceTypes.map(function (absenceType) {
         return _.assign({
           entitlement: entitlementsByAbsenceType[absenceType.id]
         }, absenceType);
