@@ -27,6 +27,10 @@ define([
     $log.debug('Component: staff-leave-report');
 
     var requestSort = 'from_date ASC';
+    var statusUpdateHandlers = {
+      delete: removeLeaveRequestFromItsSection,
+      cancel: cancelLeaveRequestStatusHandler
+    };
     var vm = this;
 
     vm.absencePeriods = [];
@@ -89,6 +93,20 @@ define([
     }
 
     /**
+     * Handles the cancel status update of leave request by removing them from
+     * their current section and adding them to the "Cancelled and Other" section
+     * in case the other section is open.
+     *
+     * @param {LeaveRequestInstance} leaveRequest - the leave request that
+     *   triggered the cancel status update.
+     */
+    function cancelLeaveRequestStatusHandler (leaveRequest) {
+      removeLeaveRequestFromItsSection(leaveRequest);
+      vm.sections.other.open && addLeaveRequestToSection(leaveRequest,
+        vm.sections.other);
+    }
+
+    /**
      * Labels the given period according to whether it's current or not
      *
      * @param  {AbsencePeriodInstance} period
@@ -123,6 +141,23 @@ define([
         .forEach(function (section) {
           section.data = [];
         });
+    }
+
+    /**
+     * Forwards the status update event to a specific status handler. If none
+     * exists for the given status, a refresh is triggered.
+     *
+     * @param {Object} statusUpdate - the status update event data. Contains
+     *   the status and the leave request that triggered the event.
+     */
+    function handleStatusUpdate (statusUpdate) {
+      var handler = statusUpdateHandlers[statusUpdate.status];
+
+      if (handler) {
+        handler(statusUpdate.leaveRequest);
+      } else {
+        vm.refresh();
+      }
     }
 
     /**
@@ -434,10 +469,7 @@ define([
     function registerEvents () {
       pubSub.subscribe('LeaveRequest::new', function () { vm.refresh(); });
       pubSub.subscribe('LeaveRequest::edit', function () { vm.refresh(); });
-      pubSub.subscribe('LeaveRequest::cancel', function (leaveRequest) {
-        removeLeaveRequestFromItsSection(leaveRequest);
-        vm.sections.other.open && addLeaveRequestToSection(leaveRequest, vm.sections.other);
-      });
+      pubSub.subscribe('LeaveRequest::statusUpdate', handleStatusUpdate);
       pubSub.subscribe('LeaveRequest::delete', function (leaveRequest) {
         removeLeaveRequestFromItsSection(leaveRequest);
       });

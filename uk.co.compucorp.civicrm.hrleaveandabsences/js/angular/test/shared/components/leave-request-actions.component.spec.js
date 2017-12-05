@@ -527,7 +527,10 @@ define([
 
           it('emits an event', function () {
             expect(pubSub.publish)
-              .toHaveBeenCalledWith('LeaveRequest::edit', leaveRequest);
+              .toHaveBeenCalledWith('LeaveRequest::statusUpdate', {
+                status: action,
+                leaveRequest: leaveRequest
+              });
           });
         });
 

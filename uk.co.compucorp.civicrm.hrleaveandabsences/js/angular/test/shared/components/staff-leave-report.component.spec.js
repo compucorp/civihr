@@ -684,36 +684,63 @@
         });
 
         describe('basic tests', function () {
-          var newBalanceChange, oldList, oldBalanceChange;
+          var testData;
 
           beforeEach(function () {
-            oldList = controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+            controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
             controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
-            oldBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+            testData = {
+              leaveRequest: leaveRequest1,
+              oldBalanceChange: controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending,
+              oldList: controller.sections.pending.data
+            };
 
             leaveRequest1.delete();
-            pubSub.publish('LeaveRequest::delete', leaveRequest1);
-            $rootScope.$digest();
-
-            newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
           });
 
-          it('sends the deletion request', function () {
-            expect(leaveRequest1.delete).toHaveBeenCalled();
+          describe('Leave request delete event', function () {
+            beforeEach(function () {
+              pubSub.publish('LeaveRequest::delete', leaveRequest1);
+              $rootScope.$digest();
+
+              testData.newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+            });
+
+            itHandlesTheDeleteStatusUpdate();
           });
 
-          it('removes the leave request from its section', function () {
-            expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(false);
+          describe('Leave request status update event', function () {
+            beforeEach(function () {
+              pubSub.publish('LeaveRequest::statusUpdate', {
+                status: 'delete',
+                leaveRequest: leaveRequest1
+              });
+              $rootScope.$digest();
+
+              testData.newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+            });
+
+            itHandlesTheDeleteStatusUpdate();
           });
 
-          it('removes the leave request without creating a new array', function () {
-            expect(controller.sections.pending.data).toBe(oldList);
-          });
+          function itHandlesTheDeleteStatusUpdate () {
+            it('sends the deletion request', function () {
+              expect(testData.leaveRequest.delete).toHaveBeenCalled();
+            });
 
-          it('updates the balance changes for the section the leave request was in', function () {
-            expect(newBalanceChange).not.toBe(oldBalanceChange);
-            expect(newBalanceChange).toBe(oldBalanceChange - leaveRequest1.balance_change);
-          });
+            it('removes the leave request from its section', function () {
+              expect(_.includes(controller.sections.pending.data, testData.leaveRequest)).toBe(false);
+            });
+
+            it('removes the leave request without creating a new array', function () {
+              expect(controller.sections.pending.data).toBe(testData.oldList);
+            });
+
+            it('updates the balance changes for the section the leave request was in', function () {
+              expect(testData.newBalanceChange).not.toBe(testData.oldBalanceChange);
+              expect(testData.newBalanceChange).toBe(testData.oldBalanceChange - testData.leaveRequest.balance_change);
+            });
+          }
         });
 
         describe('when the leave request was already approved', function () {
@@ -772,7 +799,10 @@
           controller.sections.other.open = true;
 
           leaveRequest1.cancel();
-          pubSub.publish('LeaveRequest::cancel', leaveRequest1);
+          pubSub.publish('LeaveRequest::statusUpdate', {
+            status: 'cancel',
+            leaveRequest: leaveRequest1
+          });
           $rootScope.$digest();
         });
 
