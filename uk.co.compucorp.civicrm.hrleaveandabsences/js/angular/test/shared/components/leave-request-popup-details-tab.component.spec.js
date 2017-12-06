@@ -103,16 +103,8 @@ define([
           expect($log.debug).toHaveBeenCalled();
         });
 
-        it('has public functions that are needed for views', function () {
-          [
-            'attemptCalculateBalanceChange',
-            'changeInNoOfDays',
-            'isNotWorkingDay',
-            'setDatesFromUI',
-            'isLeaveType'
-          ].forEach(function (func) {
-            expect(controller[func]).toEqual(jasmine.any(Function));
-          });
+        it('has leave type as "leave"', function () {
+          expect(controller.isLeaveType('leave')).toBeTruthy();
         });
 
         describe('initChildController()', function () {
@@ -156,6 +148,15 @@ define([
             it('is selected by default', function () {
               expect(controller.uiOptions.multipleDays).toBeTruthy();
             });
+          });
+        });
+
+        describe('isNotWorkingDay()', function () {
+          it('checks if not a working day by the given day type', function () {
+            expect(controller.isNotWorkingDay('weekend')).toBeTruthy();
+            expect(controller.isNotWorkingDay('non_working_day')).toBeTruthy();
+            expect(controller.isNotWorkingDay('public_holiday')).toBeTruthy();
+            expect(controller.isNotWorkingDay('christmas_eve')).toBeFalsy();
           });
         });
 
@@ -948,7 +949,7 @@ define([
           expect($log.debug).toHaveBeenCalled();
         });
 
-        it('sets leave type as "sickness"', function () {
+        it('has leave type as "sickness"', function () {
           expect(controller.isLeaveType('sickness')).toBeTruthy();
         });
 
@@ -959,6 +960,15 @@ define([
 
           it('loads documents option types', function () {
             expect(controller.sicknessDocumentTypes.length).toBeGreaterThan(0);
+          });
+        });
+
+        describe('isDocumentInRequest()', function () {
+          var documents = optionGroupMock.getCollection('hrleaveandabsences_leave_request_required_document');
+
+          it('checks if the document is in the request', function () {
+            expect(controller.isDocumentInRequest(documents[0].value)).toBeTruthy();
+            expect(controller.isDocumentInRequest('non-existing-document')).toBeFalsy();
           });
         });
 
@@ -1098,6 +1108,10 @@ define([
 
         it('is initialized', function () {
           expect($log.debug).toHaveBeenCalled();
+        });
+
+        it('has leave type as "toil"', function () {
+          expect(controller.isLeaveType('toil')).toBeTruthy();
         });
 
         it('loads toil amounts', function () {
@@ -1246,12 +1260,27 @@ define([
                 controller.updateExpiryDate();
               });
 
+              it('has role as "staff"', function () {
+                expect(controller.isRole('staff')).toBeTruthy();
+              });
+
               it('has expired date set by manager', function () {
                 expect(controller.request.toil_expiry_date).toEqual(oldExpiryDate);
               });
 
               it('has toil amount set by manager', function () {
                 expect(controller.request.toil_to_accrue).toEqual(originalToilToAccrue.value);
+              });
+            });
+
+            describe('clears expiry date', function () {
+              beforeEach(function () {
+                controller.clearExpiryDate();
+              });
+
+              it('resets expiry date in both UI and request', function () {
+                expect(controller.request.toil_expiry_date).toBeFalsy();
+                expect(controller.uiOptions.expiryDate).toBeFalsy();
               });
             });
           });
