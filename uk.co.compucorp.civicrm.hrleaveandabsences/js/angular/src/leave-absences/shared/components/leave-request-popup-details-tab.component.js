@@ -116,6 +116,7 @@ define([
     vm.changeInNoOfDays = changeInNoOfDays;
     vm.convertDateFormatFromServer = convertDateFormatFromServer;
     vm.convertDateToServerFormat = convertDateToServerFormat;
+    vm.isLeaveType = isLeaveType;
     vm.isNotWorkingDay = isNotWorkingDay;
     vm.setDatesFromUI = setDatesFromUI;
     vm.$onDestroy = unsubscribeFromEvents;

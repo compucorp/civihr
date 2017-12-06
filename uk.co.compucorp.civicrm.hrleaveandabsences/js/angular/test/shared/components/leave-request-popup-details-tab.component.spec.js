@@ -104,11 +104,15 @@ define([
         });
 
         it('has public functions that are needed for views', function () {
-          ['attemptCalculateBalanceChange', 'changeInNoOfDays',
-            'isNotWorkingDay', 'setDatesFromUI']
-            .forEach(function (func) {
-              expect(controller[func]).toEqual(jasmine.any(Function));
-            });
+          [
+            'attemptCalculateBalanceChange',
+            'changeInNoOfDays',
+            'isNotWorkingDay',
+            'setDatesFromUI',
+            'isLeaveType'
+          ].forEach(function (func) {
+            expect(controller[func]).toEqual(jasmine.any(Function));
+          });
         });
 
         describe('initChildController()', function () {
@@ -942,6 +946,10 @@ define([
 
         it('is initialized', function () {
           expect($log.debug).toHaveBeenCalled();
+        });
+
+        it('sets leave type as "sickness"', function () {
+          expect(controller.isLeaveType('sickness')).toBeTruthy();
         });
 
         describe('initChildController()', function () {
