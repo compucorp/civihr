@@ -213,15 +213,16 @@ define([
 
     /**
      * Change handler when changing no. of days like Multiple Days or Single Day.
-     * It will reset dates, day types, change balance.
+     * It will reset dates and day types and attempt to calculate balance balance change.
      *
      * @return {Promise}
      */
     function changeInNoOfDays () {
-      reset();
-      calculateOpeningAndClosingBalance();
+      vm.uiOptions.toDate = vm.uiOptions.fromDate;
+      vm.request.to_date_type = vm.request.from_date_type;
 
       return $q.resolve()
+        .then(attemptCalculateBalanceChange)
         .then(vm.changeInNoOfDaysExtended ? vm.changeInNoOfDaysExtended : _.noop);
     }
 
@@ -844,17 +845,6 @@ define([
       adjustDatesInUI();
 
       vm.uiOptions.date.to.options.maxDate = convertDateFormatFromServer(vm.period.end_date);
-    }
-
-    /**
-     * Resets data in dates, types, balance.
-     */
-    function reset () {
-      vm.uiOptions.toDate = vm.uiOptions.fromDate;
-      vm.request.to_date_type = vm.request.from_date_type;
-      vm.request.to_date = vm.request.from_date;
-
-      attemptCalculateBalanceChange();
     }
 
     /**
