@@ -99,8 +99,7 @@ define([
           amount: 0,
           maxAmount: 0,
           disabled: true,
-          loading: false,
-          skipValueSetting: false
+          loading: false
         },
         to: {
           time: '',
@@ -109,8 +108,7 @@ define([
           amount: 0,
           maxAmount: 0,
           disabled: true,
-          loading: false,
-          skipValueSetting: false
+          loading: false
         }
       }
     };
@@ -490,12 +488,13 @@ define([
       var request = vm.request;
 
       if (!vm.isMode('create') && isCalculationUnit('hours')) {
-        _.each(['from', 'to'], function (type) {
-          times[type].skipValueSetting = true;
-          times[type].time = extractTimeFromServerDate(request[type + '_date']);
-          times[type].amount = request[type + '_date_amount'];
-          times[type].maxAmount = times[type].amount;
-        });
+        return $q.all(['from', 'to'].map(function (type) {
+          return loadAndSetTimeRangesFromWorkPattern(vm.uiOptions[type + 'Date'], type, true)
+            .then(function () {
+              times[type].time = extractTimeFromServerDate(request[type + '_date']);
+              times[type].amount = request[type + '_date_amount'];
+            });
+        }));
       }
     }
 
@@ -592,28 +591,21 @@ define([
 
       timeObject.loading = true;
       timeObject.disabled = true;
-
-      if (!timeObject.skipValueSetting) {
-        timeObject.time = '';
-        timeObject.amount = '0';
-      }
+      timeObject.time = '';
+      timeObject.amount = '0';
 
       return vm.request.getWorkDayForDate(date)
         .then(function (response) {
           timeObject.min = response.time_from || '00:00';
           timeObject.max = response.time_to || '00:00';
           timeObject.maxAmount = response.number_of_hours.toString() || '0';
+          timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
+          timeObject.amount = timeObject.maxAmount;
           timeObject.disabled = false;
-
-          if (!timeObject.skipValueSetting) {
-            timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
-            timeObject.amount = timeObject.maxAmount;
-          }
         })
         .catch(handleError)
         .finally(function () {
           timeObject.loading = false;
-          timeObject.skipValueSetting = false;
         });
     }
 
