@@ -159,7 +159,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    * Create all the default relationship types
    */
   private function createDefaultRelationshipTypes() {
-    foreach($this->defaultRelationshipsTypes() as $relationshipType) {
+    foreach ($this->defaultRelationshipsTypes() as $relationshipType) {
       civicrm_api3('RelationshipType', 'create', [
         'name_a_b' => $relationshipType['name_a_b'],
         'label_a_b' => $relationshipType['name_b_a'],
@@ -177,7 +177,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    * Removes default relationship types
    */
   private function removeDefaultRelationshipTypes() {
-    foreach($this->defaultRelationshipsTypes() as $relationshipType) {
+    foreach ($this->defaultRelationshipsTypes() as $relationshipType) {
       // chained API call to delete the relationship type
       civicrm_api3('RelationshipType', 'get', [
         'name_b_a' => $relationshipType['name_b_a'],
@@ -193,7 +193,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    *   0: disable , 1: enable
    */
   public function toggleRelationshipTypes($setActive) {
-    foreach($this->defaultRelationshipsTypes() as $relationshipType) {
+    foreach ($this->defaultRelationshipsTypes() as $relationshipType) {
       // chained API call to activate/disable the relationship type
       civicrm_api3('RelationshipType', 'get', [
         'name_b_a' => $relationshipType['name_b_a'],
@@ -236,15 +236,16 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    * @param string $key
    *   Extension unique key
    *
-   * @return boolean
+   * @return bool
    */
-  private function isExtensionEnabled($key)  {
+  private function isExtensionEnabled($key) {
     $isEnabled = CRM_Core_DAO::getFieldValue(
       'CRM_Core_DAO_Extension',
       $key,
       'is_active',
       'full_name'
     );
-    return  !empty($isEnabled) ? true : false;
+    return !empty($isEnabled) ? TRUE : FALSE;
   }
+
 }
