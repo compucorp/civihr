@@ -47,8 +47,10 @@
         <crm-loading
           show="!detailsTab.loading.fromDayTypes"
           class="chr_leave-request-modal__small_spinner"
-          ng-if="detailsTab.selectedAbsenceType.calculation_unit_name == 'days'">
-          <div class="crm_custom-select crm_custom-select--full">
+          ng-if="detailsTab.selectedAbsenceType.calculation_unit_name == 'days'"
+          ng-switch="!detailsTab.isNotWorkingDay(detailsTab.requestToDayTypes[0].name)">
+          <div class="crm_custom-select crm_custom-select--full"
+            ng-switch-when="true">
             <select
               class="no-select2"
               name="fromDayTypeSelect"
@@ -59,6 +61,9 @@
               <option value="">Select</option>
             </select>
             <span class="crm_custom-select__arrow"></span>
+          </div>
+          <div ng-switch-when="false" class="control-label">
+            {{ detailsTab.requestFromDayTypes[0].label }}
           </div>
         </crm-loading>
         <crm-loading show="!detailsTab.uiOptions.times.from.loading"
@@ -133,8 +138,10 @@
           <crm-loading
             ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'days'"
             show="!detailsTab.loading.toDayTypes"
-            class="chr_leave-request-modal__small_spinner">
-            <div class="crm_custom-select crm_custom-select--full">
+            class="chr_leave-request-modal__small_spinner"
+            ng-switch="!detailsTab.isNotWorkingDay(detailsTab.requestToDayTypes[0].name)">
+            <div class="crm_custom-select crm_custom-select--full"
+              ng-switch-when="true">
               <select
                 class="no-select2"
                 name="toDayTypeSelect"
@@ -145,6 +152,9 @@
                 <option value="">Select</option>
               </select>
               <span class="crm_custom-select__arrow"></span>
+            </div>
+            <div ng-switch-when="false" class="control-label">
+              {{ detailsTab.requestToDayTypes[0].label }}
             </div>
           </crm-loading>
           <crm-loading show="!detailsTab.uiOptions.times.to.loading"
