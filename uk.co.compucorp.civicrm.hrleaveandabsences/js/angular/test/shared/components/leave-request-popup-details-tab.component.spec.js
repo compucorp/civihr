@@ -1237,6 +1237,7 @@ define([
               mode: 'edit',
               request: toilRequest
             });
+            spyOn(controller, 'attemptCalculateBalanceChange').and.callThrough();
 
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
@@ -1244,6 +1245,10 @@ define([
             absenceType = _.find(controller.absenceTypes, function (absenceType) {
               return absenceType.id === controller.request.type_id;
             });
+          });
+
+          it('does not calculate balance yet', function () {
+            expect(controller.attemptCalculateBalanceChange).not.toHaveBeenCalled();
           });
 
           it('sets balance', function () {
@@ -1254,7 +1259,7 @@ define([
             expect(absenceType.id).toEqual(toilRequest.type_id);
           });
 
-          it('does show balance', function () {
+          it('shows balance', function () {
             expect(controller.uiOptions.showBalance).toBeTruthy();
           });
         });

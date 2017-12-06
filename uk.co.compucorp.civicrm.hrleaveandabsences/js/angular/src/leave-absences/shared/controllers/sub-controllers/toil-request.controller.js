@@ -203,7 +203,11 @@ define([
 
       $rootScope.$watch(
         function () { return vm.request.toil_to_accrue; },
-        function () { vm.attemptCalculateBalanceChange(); });
+        function (oldValue, newValue) {
+          if (+oldValue !== +newValue) {
+            vm.attemptCalculateBalanceChange();
+          }
+        });
     }
 
     /**
