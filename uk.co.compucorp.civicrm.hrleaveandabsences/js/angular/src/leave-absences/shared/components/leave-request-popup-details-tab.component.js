@@ -470,11 +470,12 @@ define([
     function initListeners () {
       listeners.push(
         $rootScope.$on('LeaveRequestPopup::updateBalance', function (event, absenceTypes) {
+          var previousAbsenceTypeId = vm.selectedAbsenceType.id;
           if (absenceTypes) {
             vm.absenceTypes = absenceTypes;
           }
           setSelectedAbsenceType();
-          setDaysSelectionMode();
+          (previousAbsenceTypeId !== vm.selectedAbsenceType.id) && setDaysSelectionMode();
           attemptCalculateBalanceChange();
         })
       );

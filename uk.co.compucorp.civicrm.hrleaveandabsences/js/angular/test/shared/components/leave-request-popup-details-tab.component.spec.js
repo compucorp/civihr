@@ -784,9 +784,17 @@ define([
               });
 
               describe('when parent controller responds back', function () {
+                var previousMultipleDaysOptionValue;
+
                 beforeEach(function () {
+                  previousMultipleDaysOptionValue = controller.uiOptions.multipleDays;
+
                   $rootScope.$emit('LeaveRequestPopup::updateBalance');
                   $rootScope.$digest();
+                });
+
+                it('does not affect the "single/multiple days" option', function () {
+                  expect(controller.uiOptions.multipleDays).toBe(previousMultipleDaysOptionValue);
                 });
 
                 it('sets min date to from date', function () {
