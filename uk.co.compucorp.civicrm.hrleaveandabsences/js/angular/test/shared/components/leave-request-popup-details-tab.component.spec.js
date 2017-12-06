@@ -1122,6 +1122,22 @@ define([
           expect(controller.uiOptions.multipleDays).toBe(true);
         });
 
+        describe('setDatesFromUIExtended()', function () {
+          var promiseIsResolved = false;
+
+          beforeEach(function () {
+            spyOn(controller, 'calculateToilExpiryDate').and.returnValue($q.reject());
+            controller.setDatesFromUIExtended().then(function () {
+              promiseIsResolved = true;
+            });
+            $rootScope.$digest();
+          });
+
+          it('resolves disregarding of the result of calculateToilExpiryDate()', function () {
+            expect(promiseIsResolved).toBeTruthy();
+          });
+        });
+
         describe('create', function () {
           describe('with selected duration and dates', function () {
             beforeEach(function () {

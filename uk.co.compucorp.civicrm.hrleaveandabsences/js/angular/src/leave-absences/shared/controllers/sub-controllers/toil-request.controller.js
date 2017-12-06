@@ -236,7 +236,7 @@ define([
      * @return {Promise}
      */
     function setDatesFromUIExtended () {
-      return vm.calculateToilExpiryDate();
+      return vm.calculateToilExpiryDate().catch($q.resolve);
     }
 
     /**
