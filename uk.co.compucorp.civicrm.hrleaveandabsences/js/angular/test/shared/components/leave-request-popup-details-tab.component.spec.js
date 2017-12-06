@@ -616,6 +616,9 @@ define([
 
           describe('when user edits the request', function () {
             var leaveRequest;
+            var fromDeduction = '1.5';
+            var toDeduction = '4.75';
+
             beforeEach(function () {
               var status = optionGroupMock.specificValue(
                 'hrleaveandabsences_leave_request_status', 'value', '3');
@@ -624,8 +627,8 @@ define([
               selectedAbsenceType.calculation_unit_name = 'hours';
               leaveRequest.contact_id = '' + CRM.vars.leaveAndAbsences.contactId;
               leaveRequest.type_id = selectedAbsenceType.id;
-              leaveRequest.from_date_amount = '1.5';
-              leaveRequest.to_date_amount = '4.75';
+              leaveRequest.from_date_amount = fromDeduction;
+              leaveRequest.to_date_amount = toDeduction;
 
               compileComponent({
                 mode: 'edit',
@@ -648,6 +651,26 @@ define([
 
             it('does not recalculate the balance', function () {
               expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
+            });
+
+            describe('when deduction is greater than allowed', function () {
+              var maxDeduction = (Math.min(fromDeduction, toDeduction) - 0.001).toString();
+
+              beforeEach(function () {
+                spyOn(controller.request, 'getWorkDayForDate').and
+                  .returnValue($q.resolve({ number_of_hours: maxDeduction }));
+                compileComponent({
+                  mode: 'edit',
+                  request: leaveRequest
+                });
+                $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+                $rootScope.$digest();
+              });
+
+              it('resets both "from" and "to" to their maximum allowed values', function () {
+                expect(controller.request.from_date_amount).toBe(maxDeduction);
+                expect(controller.request.to_date_amount).toBe(maxDeduction);
+              });
             });
           });
         });

@@ -492,9 +492,9 @@ define([
           return loadAndSetTimeRangesFromWorkPattern(vm.uiOptions[type + 'Date'], type, true)
             .then(function () {
               times[type].time = extractTimeFromServerDate(request[type + '_date']);
-              times[type].amount = request[type + '_date_amount'];
+              times[type].amount = Math.min(request[type + '_date_amount'], times[type].maxAmount).toString();
             });
-        }));
+        })).then(setHoursDeductionsToRequest);
       }
     }
 
