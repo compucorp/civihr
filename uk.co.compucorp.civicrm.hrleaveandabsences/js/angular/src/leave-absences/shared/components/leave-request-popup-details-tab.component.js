@@ -94,6 +94,8 @@ define([
       times: {
         from: {
           time: '',
+          min: '00:00',
+          max: '00:00',
           amount: 0,
           maxAmount: 0,
           disabled: true,
@@ -102,6 +104,8 @@ define([
         },
         to: {
           time: '',
+          min: '00:00',
+          max: '00:00',
           amount: 0,
           maxAmount: 0,
           disabled: true,
@@ -861,15 +865,25 @@ define([
     }
 
     /**
-     * Show that data is loading by showing spinners instead of UI fields
+     * Reset day types, times and deductions.
+     * Optionally show loading spinners.
      *
      * @param {String} dateType from|to
      * @param {Boolean} showLoader
      */
     function resetAfterDateChange (dateType, showLoader) {
+      var time = vm.uiOptions.times[dateType];
+
       vm['request' + _.startCase(dateType) + 'DayTypes'] = [];
+      time.time = '';
+      time.min = '00:00';
+      time.max = '00:00';
+      time.amount = 0;
+      time.maxAmount = 0;
+      time.disabled = true;
 
       if (showLoader) {
+        time.loading = true;
         vm.loading[dateType + 'DayTypes'] = true;
       }
 

@@ -579,6 +579,27 @@ define([
                       'LeaveRequestPopup::handleError', jasmine.any(Array));
                   });
                 });
+
+                describe('and from date is greater than to date', function () {
+                  var timesTo;
+
+                  beforeEach(function () {
+                    timesTo = controller.uiOptions.times.to;
+                    controller.uiOptions.multipleDays = true;
+
+                    setTestDates(null, '10/12/2016');
+                    setTestDates('11/12/2016');
+                  });
+
+                  it('resets "to" times and durations', function () {
+                    expect(timesTo.time).toBe('');
+                    expect(timesTo.min).toBe('00:00');
+                    expect(timesTo.max).toBe('00:00');
+                    expect(timesTo.amount).toBe(0);
+                    expect(timesTo.maxAmount).toBe(0);
+                    expect(timesTo.disabled).toBe(true);
+                  });
+                });
               });
             });
 
