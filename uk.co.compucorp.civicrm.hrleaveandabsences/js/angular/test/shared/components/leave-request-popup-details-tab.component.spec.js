@@ -968,6 +968,11 @@ define([
           controller.request.type_id = selectedAbsenceType.id;
         });
 
+        it('retrieves original balance breakdown', function () {
+          expect(LeaveRequestAPI.getBalanceChangeBreakdown).toHaveBeenCalled();
+          expect(controller.loading.showBalanceChange).toBe(false);
+        });
+
         it('sets mode to view', function () {
           expect(controller.isMode('view')).toBeTruthy();
         });

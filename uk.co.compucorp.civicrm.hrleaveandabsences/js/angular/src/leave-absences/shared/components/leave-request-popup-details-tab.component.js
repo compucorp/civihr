@@ -401,7 +401,7 @@ define([
      * @return {Promise}
      */
     function initBalanceChange () {
-      return (vm.isMode('edit') ? getOriginalBalanceChange() : attemptCalculateBalanceChange());
+      return (!vm.isMode('create') ? getOriginalBalanceChange() : attemptCalculateBalanceChange());
     }
 
     /**
