@@ -78,8 +78,7 @@ define([
     }
 
     /**
-     * Checks if balance can be calculated
-     * (overrides the parent's implementation)
+     * Checks if change can be calculated
      *
      * @return {Boolean}
      */

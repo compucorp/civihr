@@ -114,7 +114,6 @@ define([
     };
 
     vm.attemptCalculateBalanceChange = attemptCalculateBalanceChange;
-    vm.canCalculateChange = canCalculateChange;
     vm.changeInNoOfDays = changeInNoOfDays;
     vm.convertDateFormatFromServer = convertDateFormatFromServer;
     vm.convertDateToServerFormat = convertDateToServerFormat;
@@ -195,20 +194,6 @@ define([
       }
       // the change is negative so adding it will actually subtract it
       vm.balance.closing = vm.balance.opening + vm.balance.change.amount;
-    }
-
-    /**
-     * If change can be calculated
-     */
-    function canCalculateChange () {
-      var canCalculate = !!vm.request.from_date && !!vm.request.to_date;
-
-      if (isCalculationUnit('days')) {
-        canCalculate = canCalculate &&
-          !!vm.request.from_date_type && !!vm.request.to_date_type;
-      }
-
-      return canCalculate;
     }
 
     /**

@@ -11,17 +11,33 @@ define([
     $log.debug('LeaveRequestCtrl');
 
     parentCtrl.calculateBalanceChange = calculateBalanceChange;
+    parentCtrl.canCalculateChange = canCalculateChange;
     parentCtrl.checkSubmitConditions = checkSubmitConditions;
     parentCtrl.initChildController = initChildController;
 
     /**
-     * Calculate change in balance, it updates local balance variables.
+     * Calculates balance change
      *
-     * @return {Promise} empty promise if all required params are not set
-     *   otherwise promise from server
+     * @return {Promise}
      */
     function calculateBalanceChange () {
       return parentCtrl.request.calculateBalanceChange(parentCtrl.selectedAbsenceType.calculation_unit_name);
+    }
+
+    /**
+     * Checks if change can be calculated
+     *
+     * @return {Boolean}
+     */
+    function canCalculateChange () {
+      var canCalculate = !!parentCtrl.request.from_date && !!parentCtrl.request.to_date;
+
+      if (parentCtrl.selectedAbsenceType.calculation_unit_name === 'days') {
+        canCalculate = canCalculate &&
+          !!parentCtrl.request.from_date_type && !!parentCtrl.request.to_date_type;
+      }
+
+      return canCalculate;
     }
 
     /**
