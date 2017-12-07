@@ -17,31 +17,33 @@ class CRM_HRCore_Service_CiviHRStatisticsJSONConvertor {
    * @return string
    */
   public static function toJson(CiviHRStatistics $stats) {
-    $array = [
+    $statsAsArray = [
       'siteUrl' => $stats->getSiteUrl(),
       'siteName' => $stats->getSiteName(),
       'generationDate' => self::formatDate($stats->getGenerationDate()),
     ];
 
-    self::addRoleLoginData($stats, $array);
+    self::addRoleLoginData($stats, $statsAsArray);
 
     foreach ($stats->getEntityCounts() as $entity => $count) {
-      $array[$entity . 'Count'] = $count;
+      $statsAsArray[$entity . 'Count'] = $count;
     }
 
     foreach ($stats->getContactSubtypeCounts() as $subtype => $count) {
-      $array['contactPerSubTypeCount'][$subtype] = $count;
+      $statsAsArray['contactPerSubTypeCount'][$subtype] = $count;
     }
 
     foreach ($stats->getReportConfigurations() as $config) {
-      $array['reportConfigurations'][] = self::reportConfigurationToArray($config);
+      $configAsArray = self::reportConfigurationToArray($config);
+      $statsAsArray['reportConfigurations'][] = $configAsArray;
     }
 
     foreach ($stats->getReportConfigurationAgeGroups() as $ageGroup) {
-      $array['reportConfigurationAgeGroups'][] = self::ageGroupToArray($ageGroup);
+      $ageGroupAsArray = self::ageGroupToArray($ageGroup);
+      $statsAsArray['reportConfigurationAgeGroups'][] = $ageGroupAsArray;
     }
 
-    return json_encode($array);
+    return json_encode($statsAsArray);
   }
 
   /**
@@ -65,7 +67,8 @@ class CRM_HRCore_Service_CiviHRStatisticsJSONConvertor {
 
     foreach ($stats->getMostRecentLogins() as $role => $mostRecentLogin) {
       if (!in_array($role, $defaultRoles)) {
-        $array['lastLoginOtherRoles'][$role] = self::formatDate($mostRecentLogin);
+        $formattedDate = self::formatDate($mostRecentLogin);
+        $array['lastLoginOtherRoles'][$role] = $formattedDate;
       }
     }
   }
