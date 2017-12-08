@@ -34,7 +34,29 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
    */
   public function updateAllInTheFuture() {
     $this->deletionLogic->deleteAllInTheFuture();
-    $this->creationLogic->createForAllInTheFuture();
+    $this->creationLogic->createAllInTheFuture();
+  }
+
+  /**
+   * Creates/Updates all the Leave Requests for Public Holidays in all absence periods.
+   * Those already created in the past are left untouched.
+   *
+   * In a situation where a public holiday was added in the past when there is no
+   * absence type with MTPHL = Yes, when the absence type's MTPHL is set to Yes,
+   * leave requests will be created for all public holidays including those in the
+   * past with no leave requests associated or those that does not have leave requests
+   * created for all qualified contacts.
+   *
+   * Basically, this uses the Deletion Logic to delete all the leave requests
+   * for public holidays in the future and then uses the Creation Logic to
+   * create leave requests for all public holidays.
+   *
+   * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion::deleteAllInTheFuture()
+   * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation::createForAll()
+   */
+  public function updateAll() {
+    $this->deletionLogic->deleteAllInTheFuture();
+    $this->creationLogic->createAll();
   }
 
   /**
