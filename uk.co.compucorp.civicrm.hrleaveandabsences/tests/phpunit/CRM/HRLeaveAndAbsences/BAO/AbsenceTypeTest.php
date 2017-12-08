@@ -467,7 +467,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
     $item = $queue->claimItem();
     $this->assertEquals(
-      'CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests',
+      'CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllPublicHolidayLeaveRequests',
       $item->data->callback[0]
     );
   }
