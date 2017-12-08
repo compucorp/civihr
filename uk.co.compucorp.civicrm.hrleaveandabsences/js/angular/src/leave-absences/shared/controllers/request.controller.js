@@ -81,7 +81,6 @@ define([
     vm.isRole = isRole;
     vm.submit = submit;
     vm.updateBalance = updateBalance;
-    vm._loadAbsenceTypes = _loadAbsenceTypes;
 
     /**
      * Initializes the controller on loading the dialog
@@ -101,8 +100,8 @@ define([
         loadStatuses()
       ])
       .then(initRequest)
-      .then(initOpenMode)
-      .then(initAbsencePeriod)
+      .then(setModalMode)
+      .then(setInitialAbsencePeriod)
       .then(function () {
         return vm.canManage && !vm.isMode('edit') && loadManagees();
       })
@@ -122,22 +121,25 @@ define([
     }());
 
     /**
-     * Amends request parameters before submit
+     * Removes [type]_date_amount param from the leave request in case of TOIL or days unit.
+     * In other cases, such as hours unit, removes [type]_date_type param.
+     * This is a requirement of the back-end not to pass such params in different cases.
+     *
+     * @param {String} type from|to
+     */
+    function amendDatesAndDateTypesBeforeSave (type) {
+      if (vm.selectedAbsenceType.calculation_unit_name === 'days' || isLeaveType('toil')) {
+        delete vm.request[type + '_date_amount'];
+      } else {
+        delete vm.request[type + '_date_type'];
+      }
+    }
+
+    /**
+     * Amends request parameters before submit as per back-end requirements.
      */
     function amendRequestParamsBeforeSave () {
-      _.each(['from', 'to'], function (type) {
-        if (vm.selectedAbsenceType.calculation_unit_name === 'hours') {
-          delete vm.request[type + '_date_type'];
-
-          if (getLeaveType() === 'toil') {
-            // from_date_amount and to_date_amount
-            // are mot used in TOIL but are requred by API
-            vm.request[type + '_date_amount'] = '0';
-          }
-        } else {
-          delete vm.request[type + '_date_amount'];
-        }
-      });
+      ['from', 'to'].forEach(amendDatesAndDateTypesBeforeSave);
     }
 
     /**
@@ -320,17 +322,6 @@ define([
     }
 
     /**
-     * Gets currently selected absence type from leave request type_id
-     *
-     * @return {Object} absence type object
-     */
-    function getSelectedAbsenceType () {
-      return _.find(vm.absenceTypes, function (absenceType) {
-        return absenceType.id === vm.request.type_id;
-      });
-    }
-
-    /**
      * Returns an array of statuses depending on the previous status value
      * This is used to populate the dropdown with array of statuses.
      *
@@ -386,18 +377,6 @@ define([
     }
 
     /**
-     * Initialises Absence Period.
-     * If a request is being created, the current period is selected.
-     * Otherwise, the period belonding to the request is selected.
-     */
-    function initAbsencePeriod () {
-      vm.period = _.find(vm.absencePeriods, function (period) {
-        return (vm.isMode('create') ? !!period.current
-          : doesRequestBelongToPeriod(vm.request, period));
-      });
-    }
-
-    /**
      * Initializes after contact is selected either directly or by manager
      *
      * @return {Promise}
@@ -410,26 +389,23 @@ define([
         return $q.reject('The contact id was not set');
       }
 
-      return $q.all([
-        vm._loadAbsenceTypes()
-      ])
-      .then(function () {
-        setInitialAbsenceTypes();
-        initStatus();
-        initContact();
-
-        if (vm.isMode('edit')) {
-          setInitialAttributes();
-        }
-
-        vm.postContactSelection = false;
-        vm.staffMemberSelectionComplete = true;
-      })
-      .catch(function (error) {
-        if (error !== NO_ENTITLEMENT_ERROR) {
-          return $q.reject(error);
-        }
-      });
+      return $q.resolve()
+        .then(loadAbsenceTypes)
+        .then(loadEntitlements)
+        .then(setAbsenceTypesFromEntitlements)
+        .then(setInitialAbsenceType)
+        .then(initStatus)
+        .then(initContact)
+        .then(vm.isMode('edit') ? setInitialAttributes : _.noop)
+        .then(function () {
+          vm.postContactSelection = false;
+          vm.staffMemberSelectionComplete = true;
+        })
+        .catch(function (error) {
+          if (error !== NO_ENTITLEMENT_ERROR) {
+            return $q.reject(error);
+          }
+        });
     }
 
     /**
@@ -482,29 +458,6 @@ define([
         $rootScope.$on('LeaveRequestPopup::handleError', function (__, errors) { handleError(errors); }),
         $rootScope.$on('LeaveRequestPopup::childComponent::register', function () { childComponentsCount++; })
       );
-    }
-
-    /**
-     * Initialises open mode of the dialog
-     */
-    function initOpenMode () {
-      var viewModeStatuses;
-
-      if (vm.request.id) {
-        viewModeStatuses = [
-          vm.requestStatuses[sharedSettings.statusNames.approved].value,
-          vm.requestStatuses[sharedSettings.statusNames.adminApproved].value,
-          vm.requestStatuses[sharedSettings.statusNames.rejected].value,
-          vm.requestStatuses[sharedSettings.statusNames.cancelled].value
-        ];
-        vm.mode = 'edit';
-
-        if (vm.isRole('staff') && viewModeStatuses.indexOf(vm.request.status_id) > -1) {
-          vm.mode = 'view';
-        }
-      } else {
-        vm.mode = 'create';
-      }
     }
 
     /**
@@ -618,15 +571,18 @@ define([
     }
 
     /**
-     * Checks if Leave Request belongs to Absence Period
+     * Checks if the leave request dates are within the given period
      *
      * @param  {LeaveRequestInstance} request
      * @param  {AbsencePeriodInstance} period
      * @return {Boolean}
      */
-    function doesRequestBelongToPeriod (request, period) {
-      return (moment(request.from_date).isSameOrAfter(moment(period.start_date)) &&
-        moment(request.to_date).isSameOrBefore(moment(period.end_date)));
+    function isRequestInPeriod (request, period) {
+      var requestFromDate = moment(request.from_date);
+      var requestToDate = moment(request.to_date);
+
+      return (requestFromDate.isSameOrAfter(period.start_date) &&
+        requestToDate.isSameOrBefore(period.end_date));
     }
 
     /**
@@ -646,6 +602,44 @@ define([
       return AbsencePeriod.all()
         .then(function (periods) {
           vm.absencePeriods = periods;
+        });
+    }
+
+    /**
+     * Initializes values for absence types and entitlements when the
+     * leave request popup model is displayed
+     *
+     * @return {Promise}
+     */
+    function loadAbsenceTypes () {
+      return AbsenceType.all(getAbsenceTypeParams())
+        .then(AbsenceType.loadCalculationUnits)
+        .then(function (absenceTypes) {
+          absenceTypesAndIds = {
+            types: absenceTypes,
+            ids: absenceTypes.map(function (absenceType) {
+              return absenceType.id;
+            })
+          };
+        });
+    }
+
+    /**
+     * Loads entitlements for the current contact
+     * for the available absence types and the selected absence period
+     *
+     * @return {Promise}
+     */
+    function loadEntitlements () {
+      vm.loading.entitlements = true;
+
+      return Entitlement.all({
+        contact_id: vm.request.contact_id,
+        period_id: vm.period.id,
+        type_id: { IN: absenceTypesAndIds.ids }
+      }, true) // `true` because we want to use the 'future' balance for calculation
+        .finally(function () {
+          vm.loading.entitlements = false;
         });
     }
 
@@ -769,9 +763,8 @@ define([
      * @return {Promise}
      */
     function reloadEntitlements () {
-      vm.loading.entitlements = true;
-
-      return setAbsenceTypesFromEntitlements()
+      return loadEntitlements()
+        .then(setAbsenceTypesFromEntitlements)
         .then(function () {
           $rootScope.$emit('LeaveRequestPopup::updateBalance', vm.absenceTypes);
         });
@@ -781,36 +774,43 @@ define([
      * Sets entitlements and sets the absences type available for the user.
      * It depends on absenceTypesAndIds to be set to list of absence types and ids
      *
+     * @param  {Array} entitlements collection of entitlements instances
      * @return {Promise}
      */
-    function setAbsenceTypesFromEntitlements () {
-      return Entitlement.all({
-        contact_id: vm.request.contact_id,
-        period_id: vm.period.id,
-        type_id: { IN: absenceTypesAndIds.ids }
-      }, true) // `true` because we want to use the 'future' balance for calculation
-        .then(function (entitlements) {
-          vm.loading.entitlements = false;
-          // create a list of absence types with a `balance` property
-          vm.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
+    function setAbsenceTypesFromEntitlements (entitlements) {
+      vm.absenceTypes = mapAbsenceTypesWithBalance(absenceTypesAndIds.types, entitlements);
 
-          if (!vm.absenceTypes.length) {
-            return $q.reject(NO_ENTITLEMENT_ERROR);
-          }
-        });
+      if (!vm.absenceTypes.length) {
+        return $q.reject(NO_ENTITLEMENT_ERROR);
+      }
     }
 
     /**
-     * Set initial values to absence types when opening the popup
+     * Sets initial Absence Period depending on the mode.
+     * If a request is being created, the current period is selected.
+     * Otherwise, the period belonding to the request is selected.
      */
-    function setInitialAbsenceTypes () {
+    function setInitialAbsencePeriod () {
+      vm.period = _.find(vm.absencePeriods, function (period) {
+        return (vm.isMode('create')
+          ? period.current
+          : isRequestInPeriod(vm.request, period));
+      });
+    }
+
+    /**
+     * Sets initial Absence Type depending on the mode.
+     * It assigns the first absence type to the leave request in "create" mode,
+     * otherwise, it sets the absence type of the current leave request
+     */
+    function setInitialAbsenceType () {
       if (vm.isMode('create')) {
-        // Assign the first absence type to the leave request
         vm.selectedAbsenceType = vm.absenceTypes[0];
         vm.request.type_id = vm.selectedAbsenceType.id;
       } else {
-        // Either View or Edit Mode
-        vm.selectedAbsenceType = getSelectedAbsenceType();
+        vm.selectedAbsenceType = _.find(vm.absenceTypes, function (absenceType) {
+          return absenceType.id === vm.request.type_id;
+        });
       }
     }
 
@@ -819,6 +819,30 @@ define([
      */
     function setInitialAttributes () {
       initialLeaveRequestAttributes = angular.copy(vm.request.attributes());
+    }
+
+    /**
+     * Sets modal mode to "create" in case of no leave request or
+     * to "edit" or "view" depending on the status of the leave request
+     */
+    function setModalMode () {
+      var viewModeStatuses;
+
+      if (vm.request.id) {
+        viewModeStatuses = [
+          vm.requestStatuses[sharedSettings.statusNames.approved].value,
+          vm.requestStatuses[sharedSettings.statusNames.adminApproved].value,
+          vm.requestStatuses[sharedSettings.statusNames.rejected].value,
+          vm.requestStatuses[sharedSettings.statusNames.cancelled].value
+        ];
+        vm.mode = 'edit';
+
+        if (vm.isRole('staff') && viewModeStatuses.indexOf(vm.request.status_id) > -1) {
+          vm.mode = 'view';
+        }
+      } else {
+        vm.mode = 'create';
+      }
     }
 
     /**
@@ -917,27 +941,6 @@ define([
      */
     function updateBalance () {
       $rootScope.$broadcast('LeaveRequestPopup::updateBalance');
-    }
-
-    /**
-     * Initializes values for absence types and entitlements when the
-     * leave request popup model is displayed
-     *
-     * @return {Promise}
-     */
-    function _loadAbsenceTypes () {
-      return AbsenceType.all(getAbsenceTypeParams())
-        .then(AbsenceType.loadCalculationUnits)
-        .then(function (absenceTypes) {
-          absenceTypesAndIds = {
-            types: absenceTypes,
-            ids: absenceTypes.map(function (absenceType) {
-              return absenceType.id;
-            })
-          };
-
-          return setAbsenceTypesFromEntitlements();
-        });
     }
   }
 });

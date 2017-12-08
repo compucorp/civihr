@@ -15,9 +15,9 @@ define([
     $controller('LeaveRequestCtrl', { parentCtrl: parentCtrl });
 
     parentCtrl.checkSubmitConditions = checkSubmitConditions;
+    parentCtrl.initChildController = initChildController;
     parentCtrl.isChecked = isChecked;
     parentCtrl.isDocumentInRequest = isDocumentInRequest;
-    parentCtrl.initChildController = initChildController;
 
     /**
      * Checks if submit button can be enabled for user and returns true if successful

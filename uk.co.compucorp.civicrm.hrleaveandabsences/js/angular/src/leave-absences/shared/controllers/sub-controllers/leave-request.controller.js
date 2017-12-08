@@ -25,16 +25,26 @@ define([
     }
 
     /**
-     * Checks if change can be calculated
+     * Checks if the balance change can be calculated.
+     * Any request of "leave" type requires dates.
+     * Requests in "days" also require date types.
+     * Requests in "hours" also require deductions
      *
      * @return {Boolean}
      */
     function canCalculateChange () {
-      var canCalculate = !!parentCtrl.request.from_date && !!parentCtrl.request.to_date;
+      var request = parentCtrl.request;
+      var canCalculate = !!request.from_date && !!request.to_date;
+      var unit = parentCtrl.selectedAbsenceType.calculation_unit_name;
 
-      if (parentCtrl.selectedAbsenceType.calculation_unit_name === 'days') {
+      if (unit === 'days') {
         canCalculate = canCalculate &&
-          !!parentCtrl.request.from_date_type && !!parentCtrl.request.to_date_type;
+          !!request.from_date_type && !!request.to_date_type;
+      }
+
+      if (unit === 'hours') {
+        canCalculate = canCalculate &&
+          !isNaN(+request.from_date_amount) && !isNaN(+request.to_date_amount);
       }
 
       return canCalculate;
