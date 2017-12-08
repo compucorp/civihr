@@ -4,12 +4,12 @@ define([
   'common/lodash',
   'leave-absences/shared/modules/controllers'
 ], function (_, controllers) {
-  controllers.controller('ToilRequestCtrl', ToilRequestCtrl);
+  controllers.controller('RequestModalDetailsToilController', RequestModalDetailsToilController);
 
-  ToilRequestCtrl.$inject = ['$log', '$q', '$rootScope', 'api.optionGroup', 'AbsenceType', 'parentCtrl'];
+  RequestModalDetailsToilController.$inject = ['$log', '$q', '$rootScope', 'api.optionGroup', 'AbsenceType', 'parentCtrl'];
 
-  function ToilRequestCtrl ($log, $q, $rootScope, OptionGroup, AbsenceType, parentCtrl) {
-    $log.debug('ToilRequestCtrl');
+  function RequestModalDetailsToilController ($log, $q, $rootScope, OptionGroup, AbsenceType, parentCtrl) {
+    $log.debug('RequestModalDetailsToilController');
 
     parentCtrl.requestCanExpire = true;
 

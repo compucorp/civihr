@@ -123,7 +123,10 @@ define([
     vm.$onDestroy = unsubscribeFromEvents;
 
     (function init () {
-      $controller(_.capitalize(getLeaveType(vm.leaveType, vm.request)) + 'RequestCtrl', { parentCtrl: vm });
+      $controller(
+        'RequestModalDetails' + _.capitalize(getLeaveType(vm.leaveType, vm.request)) + 'Controller',
+        { parentCtrl: vm }
+      );
 
       vm.canManage = vm.isRole('manager') || vm.isRole('admin');
       vm.loading.tab = true;

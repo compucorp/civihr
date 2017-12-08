@@ -3,12 +3,12 @@
 define([
   'leave-absences/shared/modules/controllers'
 ], function (controllers) {
-  controllers.controller('LeaveRequestCtrl', LeaveRequestCtrl);
+  controllers.controller('RequestModalDetailsLeaveController', RequestModalDetailsLeaveController);
 
-  LeaveRequestCtrl.$inject = ['$controller', '$log', '$q', 'parentCtrl'];
+  RequestModalDetailsLeaveController.$inject = ['$controller', '$log', '$q', 'parentCtrl'];
 
-  function LeaveRequestCtrl ($controller, $log, $q, parentCtrl) {
-    $log.debug('LeaveRequestCtrl');
+  function RequestModalDetailsLeaveController ($controller, $log, $q, parentCtrl) {
+    $log.debug('RequestModalDetailsLeaveController');
 
     parentCtrl.calculateBalanceChange = calculateBalanceChange;
     parentCtrl.canCalculateChange = canCalculateChange;

@@ -4,15 +4,15 @@ define([
   'common/lodash',
   'leave-absences/shared/modules/controllers'
 ], function (_, controllers) {
-  controllers.controller('SicknessRequestCtrl', SicknessRequestCtrl);
+  controllers.controller('RequestModalDetailsSicknessController', RequestModalDetailsSicknessController);
 
-  SicknessRequestCtrl.$inject = ['$controller', '$log', '$q', 'api.optionGroup', 'parentCtrl'];
+  RequestModalDetailsSicknessController.$inject = ['$controller', '$log', '$q', 'api.optionGroup', 'parentCtrl'];
 
-  function SicknessRequestCtrl ($controller, $log, $q, OptionGroup, parentCtrl) {
-    $log.debug('SicknessRequestCtrl');
+  function RequestModalDetailsSicknessController ($controller, $log, $q, OptionGroup, parentCtrl) {
+    $log.debug('RequestModalDetailsSicknessController');
     // We need to extend parent controller with
     // calculateBalanceChange() function from Leave Request Controller
-    $controller('LeaveRequestCtrl', { parentCtrl: parentCtrl });
+    $controller('RequestModalDetailsLeaveController', { parentCtrl: parentCtrl });
 
     parentCtrl.checkSubmitConditions = checkSubmitConditions;
     parentCtrl.initChildController = initChildController;
