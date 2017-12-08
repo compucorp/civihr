@@ -27,7 +27,7 @@ define([
   'leave-absences/shared/components/leave-request-record-actions.component',
   'leave-absences/shared/components/manage-leave-requests.component',
   'leave-absences/shared/controllers/sub-controllers/request-modal-details-leave.controller',
-  'leave-absences/shared/controllers/sub-controllers/request-modal-details-sick.controller',
+  'leave-absences/shared/controllers/sub-controllers/request-modal-details-sickness.controller',
   'leave-absences/shared/controllers/sub-controllers/request-modal-details-toil.controller',
   'leave-absences/shared/models/absence-period.model',
   'leave-absences/shared/models/absence-type.model',
