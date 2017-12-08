@@ -332,7 +332,7 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
    */
   private static function enqueuePublicHolidayLeaveRequestUpdateTaskForContact($contactID) {
     $task = new CRM_Queue_Task(
-      ['CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests', 'run'],
+      [CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests::class, 'run'],
       [[$contactID]]
     );
 
@@ -348,7 +348,7 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
    *
    * @return bool
    */
-  private static function shouldEnqueuePublicHolidayLeaveRequestTask(contactWorkPattern $contactWorkPattern) {
+  private static function shouldEnqueuePublicHolidayLeaveRequestTask(ContactWorkPattern $contactWorkPattern) {
     if(!$contactWorkPattern->effective_end_date) {
       return true;
     }

@@ -584,7 +584,7 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     $this->assertEquals(0, $queue->numberOfItems());
   }
 
-  public function testTaskIsEnqueuedToUpdatePublicHolidayRequestsWhenEffectiveEndDateGreaterThanOrEqualToThanCurrentDate() {
+  public function testTaskIsEnqueuedToUpdatePublicHolidayRequestsWhenEffectiveEndDateGreaterThanOrEqualToTheCurrentDate() {
     $contactID = 2;
     //When the effective end date is today
     ContactWorkPattern::create([
@@ -599,7 +599,7 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
 
     $item = $queue->claimItem();
     $this->assertEquals(
-      'CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests',
+      CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests::class,
       $item->data->callback[0]
     );
     $this->assertEquals([$contactID], $item->data->arguments[0]);
@@ -618,7 +618,7 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
 
     $item = $queue->claimItem();
     $this->assertEquals(
-      'CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests',
+      CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests::class,
       $item->data->callback[0]
     );
     $this->assertEquals([$contactID], $item->data->arguments[0]);
@@ -638,7 +638,7 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
 
     $item = $queue->claimItem();
     $this->assertEquals(
-      'CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests',
+      CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests::class,
       $item->data->callback[0]
     );
     $this->assertEquals([$contactID], $item->data->arguments[0]);
