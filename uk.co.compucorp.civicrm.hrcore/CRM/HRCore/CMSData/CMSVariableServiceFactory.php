@@ -7,7 +7,10 @@ use CRM_HRCore_CMSData_Variable_DrupalVariableService as DrupalVariableService;
  * Responsible for creating a variable service depending on the CMS system.
  */
 class CRM_HRCore_CMSData_CMSVariableServiceFactory {
+
   /**
+   * Returns a service to interact with CMS variables
+   *
    * @return VariableAdapterInterface
    */
   public static function create() {
