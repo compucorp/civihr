@@ -3,12 +3,25 @@
 use CRM_HRCore_Model_CiviHRStatistics as CiviHRStatistics;
 use CRM_HRCore_Model_ReportConfiguration as ReportConfiguration;
 use CRM_HRCore_Model_ReportConfigurationAgeGroup as AgeGroup;
+use CRM_HRCore_CMSData_Variable_VariableServiceInterface as VariableServiceInterface;
 
 /**
  * Responsible for gathering all required site statistics that will be sent to
  * monitor site usage.
  */
 class CRM_HRCore_Service_CiviHRStatsGatherer {
+
+  /**
+   * @var VariableServiceInterface
+   */
+  protected $cmsVariableService;
+
+  /**
+   * @param VariableServiceInterface $cmsVariableService
+   */
+  public function __construct(VariableServiceInterface $cmsVariableService) {
+    $this->cmsVariableService = $cmsVariableService;
+  }
 
   /**
    * Fetch and set all required statistics.
@@ -18,7 +31,7 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
   public function gather() {
     $stats = new CiviHRStatistics();
     $stats->setGenerationDate(new \DateTime());
-    $stats->setSiteName(variable_get('site_name', 'Undefined Name'));
+    $stats->setSiteName($this->cmsVariableService->get('site_name'));
     $this->setBaseUrl($stats);
     $this->setEntityCounts($stats);
     $this->setContactSubtypes($stats);
@@ -34,8 +47,8 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
    * @param CiviHRStatistics $stats
    */
   private function setBaseUrl(CiviHRStatistics $stats) {
-    global $base_url;
-    $stats->setSiteUrl($base_url);
+    $config = & CRM_Core_Config::singleton();
+    $stats->setSiteUrl($config->userFrameworkBaseURL);
   }
 
   /**
@@ -46,12 +59,12 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
    */
   private function setEntityCounts(CiviHRStatistics $stats) {
     $entities = [
+      'contact',
       'assignment',
       'task',
       'document',
       'leaveRequest',
-      'vacancy',
-      'contact'
+      'HRVacancy',
     ];
 
     // standard entities
@@ -60,7 +73,7 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
     }
 
     // drupal users
-    $userCount = (int)civicrm_api3('UFMatch', 'getcount');
+    $userCount = (int) civicrm_api3('UFMatch', 'getcount');
     $stats->setEntityCount('drupalUser', $userCount);
 
     // leave request in last 100 days
@@ -82,8 +95,8 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
     $contactTypes = civicrm_api3('ContactType', 'get', $params)['values'];
     foreach ($contactTypes as $contactType) {
       $name = $contactType['name'];
-      $count = (int)civicrm_api3('Contact', 'getcount', ['type' => $name]);
-      $stats->setContactSubtypeCount($name, $count);
+      $count = civicrm_api3('Contact', 'getcount', ['contact_type' => $name]);
+      $stats->setContactSubtypeCount($name, (int) $count);
     }
   }
 
