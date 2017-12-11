@@ -4,6 +4,8 @@ use CRM_HRCore_Model_CiviHRStatistics as CiviHRStatistics;
 use CRM_HRCore_Model_ReportConfiguration as ReportConfiguration;
 use CRM_HRCore_Model_ReportConfigurationAgeGroup as AgeGroup;
 use CRM_HRCore_CMSData_Variable_VariableServiceInterface as VariableServiceInterface;
+use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
+use CRM_HRCore_CMSData_Variable_DrupalVariableService as DrupalVariableService;
 
 /**
  * Responsible for gathering all required site statistics that will be sent to
@@ -58,30 +60,45 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
    * @throws CiviCRM_API3_Exception
    */
   private function setEntityCounts(CiviHRStatistics $stats) {
-    $entities = [
-      'contact',
-      'assignment',
-      'task',
-      'document',
-      'leaveRequest',
-      'HRVacancy',
-    ];
+    $taskAssignmentsKey = 'uk.co.compucorp.civicrm.tasksassignments';
+    $leaveAndAbsenceKey = 'uk.co.compucorp.civicrm.hrleaveandabsences';
+    $recruitmentKey = 'org.civicrm.hrrecruitment';
 
-    // standard entities
-    foreach ($entities as $entity) {
-      $stats->setEntityCount($entity, (int) civicrm_api3($entity, 'getcount'));
+    $stats->setEntityCount('contact', $this->getEntityCount('Contact'));
+
+    if (ExtensionHelper::isExtensionEnabled($taskAssignmentsKey)) {
+      $stats->setEntityCount('assignment', $this->getEntityCount('Assignment'));
+      $stats->setEntityCount('task', $this->getEntityCount('Task'));
+      $stats->setEntityCount('document', $this->getEntityCount('Document'));
     }
 
-    // drupal users
-    $userCount = (int) civicrm_api3('UFMatch', 'getcount');
-    $stats->setEntityCount('drupalUser', $userCount);
+    if (ExtensionHelper::isExtensionEnabled($leaveAndAbsenceKey)) {
+      // leave requests in last 100 days
+      $format = 'Y-m-d H:i:s';
+      $oneHundredDaysAgo = (new \DateTime('today - 100 days'))->format($format);
+      $params = ['from_date' => ['>=' => $oneHundredDaysAgo]];
+      $last100DaysCount = (int) civicrm_api3('LeaveRequest', 'getcount', $params);
+      $stats->setEntityCount('leaveRequestInLast100Days', $last100DaysCount);
 
-    // leave request in last 100 days
-    $format = 'Y-m-d H:i:s';
-    $oneHundredDaysAgo = (new \DateTime('today - 100 days'))->format($format);
-    $params = ['from_date' => ['>=' => $oneHundredDaysAgo]];
-    $last100DaysCount = (int) civicrm_api3('LeaveRequest', 'getcount', $params);
-    $stats->setEntityCount('leaveRequestInLast100Days', $last100DaysCount);
+      // total leave requests
+      $leaveRequestCount = $this->getEntityCount('LeaveRequest');
+      $stats->setEntityCount('leaveRequest', $leaveRequestCount);
+    }
+
+    if (ExtensionHelper::isExtensionEnabled($recruitmentKey)) {
+      $stats->setEntityCount('vacancy', $this->getEntityCount('HRVacancy'));
+    }
+
+    $stats->setEntityCount('drupalUser', $this->getEntityCount('UFMatch'));
+  }
+
+  /**
+   * @param string $entity
+   *
+   * @return int
+   */
+  private function getEntityCount($entity) {
+    return (int) civicrm_api3($entity, 'getcount');
   }
 
   /**
@@ -106,6 +123,11 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
    * @param CiviHRStatistics $stats
    */
   private function setReportConfigurations(CiviHRStatistics $stats) {
+    // Reports are only available in Drupal
+    if (!$this->cmsVariableService instanceof DrupalVariableService) {
+      return;
+    }
+
     $query = db_select('reports_configuration', 'rc')->fields('rc');
     $result = $query->execute();
 
@@ -126,6 +148,11 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
    * @param CiviHRStatistics $stats
    */
   private function setAgeGroups(CiviHRStatistics $stats) {
+    // Reports are only available in Drupal
+    if (!$this->cmsVariableService instanceof DrupalVariableService) {
+      return;
+    }
+
     $query = db_select('reports_settings_age_group', 'ag')->fields('ag');
     $result = $query->execute();
 
