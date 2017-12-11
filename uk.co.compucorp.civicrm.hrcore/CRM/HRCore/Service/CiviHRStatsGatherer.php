@@ -93,6 +93,8 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
   }
 
   /**
+   * Gets the number of a certain entity in the system.
+   *
    * @param string $entity
    *
    * @return int
