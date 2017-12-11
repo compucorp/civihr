@@ -35,11 +35,8 @@ define([
        * @return {Promise} resolved with absence types
        */
       function getAbsenceTypes () {
-        return AbsenceType.all({ options: { sort: 'id ASC' } })
-        .then(AbsenceType.loadCalculationUnits)
-        .then(function (absenceTypes) {
-          return _.indexBy(absenceTypes, 'id');
-        });
+        return AbsenceType.all({ options: { sort: 'weight ASC' } })
+          .then(AbsenceType.loadCalculationUnits);
       }
 
       return {
@@ -210,13 +207,14 @@ define([
               return this.leave_amount;
             };
 
-            _.each(leaveType, function (type, typeId) {
+            _.each(leaveType, function (type) {
               modelEntry.leave_type = type.id;
               modelEntry.leave_type_title = type.title;
               modelEntry.leave_calculation_unit_name = type.calculation_unit_name;
               modelEntry.leave_calculation_unit_label = type.calculation_unit_label;
               modelEntry.leave_amount = 0;
               modelEntry.is_add_public_holidays_readonly = type.calculation_unit_name === 'hours';
+              modelEntry.add_public_holidays = !!+type.add_public_holiday_to_entitlement;
 
               model.push(_.cloneDeep(modelEntry));
             });

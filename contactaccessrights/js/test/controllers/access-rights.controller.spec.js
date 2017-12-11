@@ -1,16 +1,18 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
-  'access-rights/controllers/access-rights-ctrl'
+  'access-rights/modules/access-rights.module'
 ], function () {
   'use strict';
 
-  describe('AccessRightsCtrl', function () {
+  describe('AccessRightsController', function () {
     var ctrl, modalSpy;
 
-    beforeEach(module('access-rights.controllers'));
+    beforeEach(module('access-rights'));
     beforeEach(inject(function (_$controller_, _$rootScope_) {
       modalSpy = jasmine.createSpyObj('modalSpy', ['open']);
-      ctrl = _$controller_('AccessRightsCtrl', {
+      ctrl = _$controller_('AccessRightsController', {
         $scope: _$rootScope_.$new(),
         $uibModal: modalSpy
       });

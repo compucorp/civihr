@@ -42,4 +42,16 @@ trait CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait {
 
     return $periodEntitlement;
   }
+
+  public function createLeavePeriodEntitlementServiceForPublicHolidayLeaveRequestMock($entitlements) {
+    $leavePeriodEntitlementService = $this->getMockBuilder(CRM_HRLeaveAndAbsences_Service_LeavePeriodEntitlement::class)
+      ->setMethods(['getEntitlementsForContacts'])
+      ->getMock();
+
+    $leavePeriodEntitlementService->expects($this->any())
+      ->method('getEntitlementsForContacts')
+      ->will($this->returnValue($entitlements));
+
+    return $leavePeriodEntitlementService;
+  }
 }
