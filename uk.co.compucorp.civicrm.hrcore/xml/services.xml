@@ -23,5 +23,10 @@
                 factory-method="create"
                 class="CRM_HRCore_CMSData_Role_RoleServiceInterface"
         />
+        <service id="core.cache" class="CRM_Core_BAO_Cache"/>
+        <service id="civihr_stats_sender" class="CRM_HRCore_Service_StatsSender">
+            <argument type="service" id="core.cache"/>
+            <argument type="service" id="civihr_stats_gatherer"/>
+        </service>
     </services>
 </container>
