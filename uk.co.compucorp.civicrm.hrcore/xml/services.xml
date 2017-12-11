@@ -8,7 +8,7 @@
             <argument id="drupal_role_service"/>
         </service>
         <service id="civihr_stats_gatherer" class="CRM_HRCore_Service_CiviHRStatsGatherer">
-            <argument id="cms_variable_service"/>
+            <argument id="cms_variable_service" type="service"/>
         </service>
         <service
                 id="cms_variable_service"
