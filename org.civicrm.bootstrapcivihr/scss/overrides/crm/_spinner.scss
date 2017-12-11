@@ -6,6 +6,7 @@
   .dataTables_processing,
   .blockUI.blockOverlay {
     @include spinner('true'); // true for forcing to use the spinner size
-    margin: 11% 50% !important;
+    margin: 8% 50% !important;
+    opacity: 1 !important;
   }
 }
