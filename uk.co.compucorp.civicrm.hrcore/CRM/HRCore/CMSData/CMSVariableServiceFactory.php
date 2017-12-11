@@ -3,6 +3,9 @@
 use CRM_HRCore_CMSData_Variable_VariableServiceInterface as VariableAdapterInterface;
 use CRM_HRCore_CMSData_Variable_DrupalVariableService as DrupalVariableService;
 
+/**
+ * Responsible for creating a variable service depending on the CMS system.
+ */
 class CRM_HRCore_CMSData_CMSVariableServiceFactory {
   /**
    * @return VariableAdapterInterface
