@@ -11754,6 +11754,7 @@ fieldset[disabled]
 /* line 1, ../scss/hrjc/partials/_loader.scss */
 #hrjob-contract .hrjc-loader {
   left: 50%;
+  margin-top: 1%;
   position: absolute;
   top: 50%;
   z-index: 1000;
