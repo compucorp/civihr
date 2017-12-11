@@ -27,6 +27,7 @@
         <service id="civihr_stats_sender" class="CRM_HRCore_Service_StatsSender">
             <argument type="service" id="core.cache"/>
             <argument type="service" id="civihr_stats_gatherer"/>
+            <argument type="service" id="psr_log"/>
         </service>
     </services>
 </container>
