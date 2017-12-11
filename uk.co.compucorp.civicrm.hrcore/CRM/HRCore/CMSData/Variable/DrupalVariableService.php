@@ -2,6 +2,9 @@
 
 use CRM_HRCore_CMSData_Variable_VariableServiceInterface as VariableAdapterInterface;
 
+/**
+ * Fetches and sets variables using Drupal's variable functions.
+ */
 class CRM_HRCore_CMSData_Variable_DrupalVariableService implements VariableAdapterInterface {
 
   /**

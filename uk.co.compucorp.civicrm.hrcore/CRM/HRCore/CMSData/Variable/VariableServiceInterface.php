@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Implement this interface when providing a class to interact with system
+ * variables for a CMS.
+ */
 interface CRM_HRCore_CMSData_Variable_VariableServiceInterface {
 
   /**
