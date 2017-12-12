@@ -22,7 +22,7 @@ class CRM_HRCore_CMSData_PathsFactoryTest extends \PHPUnit_Framework_TestCase im
     $contactData = [];
     $pathsClass = CMSPathsFactory::create('Drupal', $contactData);
 
-    $this->assertInstanceOf(CRM_HRCore_CMSData_PathsInterface::class, $pathsClass);
+    $this->assertInstanceOf(CRM_HRCore_CMSData_Paths_PathsInterface::class, $pathsClass);
   }
 
   public function testItThrowsAnExceptionIfGivenAnUnrecognizedCMSName() {
