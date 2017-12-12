@@ -1,8 +1,10 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 use CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException as InvalidContactWorkPatternException;
+use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
 
 class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern {
 
@@ -31,6 +33,10 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
       self::endEmployeePreviousWorkPattern($params);
       $instance->save();
       $transaction->commit();
+
+      if (self::shouldEnqueuePublicHolidayLeaveRequestTask($instance)) {
+        self::enqueuePublicHolidayLeaveRequestUpdateTaskForContact($instance->contact_id);
+      }
 
     } catch (Exception $e) {
       $transaction->rollback();
@@ -316,5 +322,43 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern extends CRM_HRLeaveAndAbsenc
     }
 
     return $contacts;
+  }
+
+  /**
+   * Enqueues a public holiday leave request update task for the given
+   * contact ID.
+   *
+   * @param int $contactID
+   */
+  private static function enqueuePublicHolidayLeaveRequestUpdateTaskForContact($contactID) {
+    $task = new CRM_Queue_Task(
+      [CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests::class, 'run'],
+      [[$contactID]]
+    );
+
+    PublicHolidayLeaveRequestUpdatesQueue::createItem($task);
+  }
+
+  /**
+   * Checks whether the public holiday leave request task should be enqueued.
+   * The function will return true if the contact work pattern's effective end
+   * date is NULL or greater than today.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern $contactWorkPattern
+   *
+   * @return bool
+   */
+  private static function shouldEnqueuePublicHolidayLeaveRequestTask(ContactWorkPattern $contactWorkPattern) {
+    if(!$contactWorkPattern->effective_end_date) {
+      return true;
+    }
+
+    $today = new DateTime('today');
+
+    if(new DateTime($contactWorkPattern->effective_end_date) >= $today) {
+      return true;
+    }
+
+    return false;
   }
 }

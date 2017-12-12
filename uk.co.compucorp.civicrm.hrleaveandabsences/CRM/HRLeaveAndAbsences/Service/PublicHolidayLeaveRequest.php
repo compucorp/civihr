@@ -29,12 +29,14 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequest {
    * for public holidays in the future and, then, uses the Creation Logic to
    * create leave requests to public holidays in the future.
    *
+   * @param array $contactID
+   *
    * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion::deleteAllInTheFuture()
    * @see CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation::createForAllInTheFuture()
    */
-  public function updateAllInTheFuture() {
-    $this->deletionLogic->deleteAllInTheFuture();
-    $this->creationLogic->createAllInTheFuture();
+  public function updateAllInTheFuture(array $contactID = []) {
+    $this->deletionLogic->deleteAllInTheFuture($contactID);
+    $this->creationLogic->createAllInTheFuture($contactID);
   }
 
   /**
