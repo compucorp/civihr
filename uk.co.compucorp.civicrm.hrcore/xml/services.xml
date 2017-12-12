@@ -12,7 +12,7 @@
         </service>
         <service
                 id="cms_variable_service"
-                factory-class="CRM_HRCore_CMSData_CMSVariableServiceFactory"
+                factory-class="CRM_HRCore_CMSData_VariableServiceFactory"
                 factory-method="create"
                 class="CRM_HRCore_CMSData_Variable_VariableServiceInterface"
         />
