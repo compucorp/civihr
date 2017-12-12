@@ -1,17 +1,17 @@
 <?php
 
-use CRM_HRCore_CMSData_Variable_VariableServiceInterface as VariableAdapterInterface;
+use CRM_HRCore_CMSData_Variable_VariableServiceInterface as VariableServiceInterface;
 use CRM_HRCore_CMSData_Variable_DrupalVariableService as DrupalVariableService;
 
 /**
  * Responsible for creating a variable service depending on the CMS system.
  */
-class CRM_HRCore_CMSData_CMSVariableServiceFactory {
+class CRM_HRCore_CMSData_VariableServiceFactory {
 
   /**
    * Returns a service to interact with CMS variables
    *
-   * @return VariableAdapterInterface
+   * @return VariableServiceInterface
    */
   public static function create() {
     $userSystem = CRM_Core_Config::singleton()->userSystem;
