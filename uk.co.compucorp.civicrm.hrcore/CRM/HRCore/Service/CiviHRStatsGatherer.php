@@ -5,7 +5,6 @@ use CRM_HRCore_Model_ReportConfiguration as ReportConfiguration;
 use CRM_HRCore_Model_ReportConfigurationAgeGroup as AgeGroup;
 use CRM_HRCore_CMSData_Variable_VariableServiceInterface as VariableServiceInterface;
 use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
-use CRM_HRCore_CMSData_Variable_DrupalVariableService as DrupalVariableService;
 
 /**
  * Responsible for gathering all required site statistics that will be sent to
@@ -34,104 +33,99 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
     $stats = new CiviHRStatistics();
     $stats->setGenerationDate(new \DateTime());
     $stats->setSiteName($this->cmsVariableService->get('site_name'));
-    $this->setBaseUrl($stats);
-    $this->setEntityCounts($stats);
-    $this->setContactSubtypes($stats);
-    $this->setReportConfigurations($stats);
-    $this->setAgeGroups($stats);
+    $stats->setSiteUrl(CRM_Core_Config::singleton()->userFrameworkBaseURL);
+
+    foreach ($this->getEntityCounts() as $entity => $count) {
+      $stats->setEntityCount($entity, $count);
+    }
+
+    foreach ($this->getContactSubtypes() as $subtype => $count) {
+      $stats->setContactSubtypeCount($subtype, $count);
+    }
+
+    foreach ($this->getReportConfigurations() as $configuration) {
+      $stats->addReportConfiguration($configuration);
+    }
+
+    foreach ($this->getAgeGroups() as $group) {
+      $stats->addReportConfigurationAgeGroup($group);
+    }
 
     return $stats;
   }
 
   /**
-   * Sets the site base URL
+   * Fetches counts for all required entities
    *
-   * @param CiviHRStatistics $stats
+   * @return array
    */
-  private function setBaseUrl(CiviHRStatistics $stats) {
-    $config = & CRM_Core_Config::singleton();
-    $stats->setSiteUrl($config->userFrameworkBaseURL);
-  }
+  private function getEntityCounts() {
+    $entityCounts = [];
+    $entityCounts['contact'] = $this->getEntityCount('Contact');
+    $entityCounts['drupalUser'] = $this->getEntityCount('UFMatch');
+    $entityCounts += $this->getTaskAndAssignmentEntityCounts();
+    $entityCounts += $this->getLeaveAndAbsenceEntityCounts();
+    $entityCounts += $this->getRecruitmentEntityCounts();
 
-  /**
-   * Fetches counts and sets them for all required entities
-   *
-   * @param CiviHRStatistics $stats
-   * @throws CiviCRM_API3_Exception
-   */
-  private function setEntityCounts(CiviHRStatistics $stats) {
-    $taskAssignmentsKey = 'uk.co.compucorp.civicrm.tasksassignments';
-    $leaveAndAbsenceKey = 'uk.co.compucorp.civicrm.hrleaveandabsences';
-    $recruitmentKey = 'org.civicrm.hrrecruitment';
-
-    $stats->setEntityCount('contact', $this->getEntityCount('Contact'));
-
-    if (ExtensionHelper::isExtensionEnabled($taskAssignmentsKey)) {
-      $stats->setEntityCount('assignment', $this->getEntityCount('Assignment'));
-      $stats->setEntityCount('task', $this->getEntityCount('Task'));
-      $stats->setEntityCount('document', $this->getEntityCount('Document'));
-    }
-
-    if (ExtensionHelper::isExtensionEnabled($leaveAndAbsenceKey)) {
-      // leave requests in last 100 days
-      $format = 'Y-m-d H:i:s';
-      $oneHundredDaysAgo = (new \DateTime('today - 100 days'))->format($format);
-      $params = ['from_date' => ['>=' => $oneHundredDaysAgo]];
-      $last100DaysCount = (int) civicrm_api3('LeaveRequest', 'getcount', $params);
-      $stats->setEntityCount('leaveRequestInLast100Days', $last100DaysCount);
-
-      // total leave requests
-      $leaveRequestCount = $this->getEntityCount('LeaveRequest');
-      $stats->setEntityCount('leaveRequest', $leaveRequestCount);
-    }
-
-    if (ExtensionHelper::isExtensionEnabled($recruitmentKey)) {
-      $stats->setEntityCount('vacancy', $this->getEntityCount('HRVacancy'));
-    }
-
-    $stats->setEntityCount('drupalUser', $this->getEntityCount('UFMatch'));
+    return $entityCounts;
   }
 
   /**
    * Gets the number of a certain entity in the system.
    *
    * @param string $entity
+   *   The name of the entity to check
+   * @param array $params
+   *   Optional criteria for the count
    *
    * @return int
    */
-  private function getEntityCount($entity) {
-    return (int) civicrm_api3($entity, 'getcount');
+  private function getEntityCount($entity, $params = []) {
+    $params += ['is_deleted' => FALSE];
+
+    return (int) civicrm_api3($entity, 'getcount', $params);
   }
 
   /**
-   * Fetches contact subtypes
+   * Fetches counts for contact subtypes
    *
-   * @param CiviHRStatistics $stats
-   * @throws CiviCRM_API3_Exception
+   * @return array
    */
-  private function setContactSubtypes(CiviHRStatistics $stats) {
-    $params = ['parent_id' => ['IS NULL' => 1]];
-    $contactTypes = civicrm_api3('ContactType', 'get', $params)['values'];
+  private function getContactSubtypes() {
+    $contactTypes = civicrm_api3('ContactType', 'get')['values'];
+    $contactTypeCounts = [];
+
     foreach ($contactTypes as $contactType) {
       $name = $contactType['name'];
-      $count = civicrm_api3('Contact', 'getcount', ['contact_type' => $name]);
-      $stats->setContactSubtypeCount($name, (int) $count);
+
+      if (!empty($contactType['parent_id'])) {
+        $params = ['contact_sub_type' => $name];
+      } else {
+        $params = ['contact_type' => $name];
+      }
+
+      $contactTypeCounts[$name] = $this->getEntityCount('Contact', $params);
     }
+
+    return $contactTypeCounts;
   }
 
   /**
    * Fetches report configurations
    *
-   * @param CiviHRStatistics $stats
+   * @return array
    */
-  private function setReportConfigurations(CiviHRStatistics $stats) {
+  private function getReportConfigurations() {
+    $configurations = [];
+
     // Reports are only available in Drupal
-    if (!$this->cmsVariableService instanceof DrupalVariableService) {
-      return;
+    if (!$this->isDrupal()) {
+      return $configurations;
     }
 
     $query = db_select('reports_configuration', 'rc')->fields('rc');
     $result = $query->execute();
+
 
     while ($row = $result->fetchAssoc()) {
       $config = new ReportConfiguration();
@@ -140,19 +134,23 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
         ->setLabel($row['label'])
         ->setName($row['name'])
         ->setJsonConfig($row['json_config']);
-      $stats->addReportConfiguration($config);
+      $configurations[] = $config;
     }
+
+    return $configurations;
   }
 
   /**
-   * Sets age group settings
+   * Gets age group settings
    *
-   * @param CiviHRStatistics $stats
+   * @return array
    */
-  private function setAgeGroups(CiviHRStatistics $stats) {
+  private function getAgeGroups() {
+    $groups = [];
+
     // Reports are only available in Drupal
-    if (!$this->cmsVariableService instanceof DrupalVariableService) {
-      return;
+    if (!$this->isDrupal()) {
+      return $groups;
     }
 
     $query = db_select('reports_settings_age_group', 'ag')->fields('ag');
@@ -165,8 +163,87 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
         ->setLabel($row['label'])
         ->setAgeFrom($row['age_from'])
         ->setAgeTo($row['age_to']);
-      $stats->addReportConfigurationAgeGroup($group);
+      $groups[] = $group;
     }
+
+    return $groups;
+  }
+
+  /**
+   * Fetches entity counts for the leave and absence entities
+   *
+   * @return array
+   */
+  private function getLeaveAndAbsenceEntityCounts() {
+    $leaveAndAbsenceKey = 'uk.co.compucorp.civicrm.hrleaveandabsences';
+    $counts = [];
+
+    if (!ExtensionHelper::isExtensionEnabled($leaveAndAbsenceKey)) {
+      return $counts;
+    }
+
+    // leave requests in last 100 days
+    $format = 'Y-m-d H:i:s';
+    $oneHundredDaysAgo = new \DateTime('midnight today - 100 days');
+    $oneHundredDaysAgo = $oneHundredDaysAgo->format($format);
+    $params = ['from_date' => ['>=' => $oneHundredDaysAgo]];
+    $last100DaysCount = $this->getEntityCount('LeaveRequest', $params);
+    $counts['leaveRequestInLast100Days'] = $last100DaysCount;
+
+    // total leave requests
+    $leaveRequestCount = $this->getEntityCount('LeaveRequest');
+    $counts['leaveRequest'] = $leaveRequestCount;
+
+    return $counts;
+  }
+
+  /**
+   * Fetches entity counts for the tasks and assignments entities
+   *
+   * @return array
+   */
+  private function getTaskAndAssignmentEntityCounts() {
+    $taskAssignmentsKey = 'uk.co.compucorp.civicrm.tasksassignments';
+    $counts = [];
+
+    if (!ExtensionHelper::isExtensionEnabled($taskAssignmentsKey)) {
+      return $counts;
+    }
+
+    $counts['assignment'] = $this->getEntityCount('Assignment');
+    $counts['task'] = $this->getEntityCount('Task');
+    $counts['document'] = $this->getEntityCount('Document');
+
+    return $counts;
+  }
+
+  /**
+   * Fetches entity counts for the recruitment entities
+   *
+   * @return array
+   */
+  private function getRecruitmentEntityCounts() {
+    $recruitmentKey = 'org.civicrm.hrrecruitment';
+    $counts = [];
+
+    if (!ExtensionHelper::isExtensionEnabled($recruitmentKey)) {
+      return $counts;
+    }
+
+    $counts['vacancy'] = $this->getEntityCount('HRVacancy');
+
+    return $counts;
+  }
+
+  /**
+   * Checks if the underlying CMS system is Drupal
+   *
+   * @return bool
+   */
+  private function isDrupal() {
+    $userSystem = CRM_Core_Config::singleton()->userSystem;
+
+    return $userSystem instanceof CRM_Utils_System_Drupal;
   }
 
 }
