@@ -165,7 +165,7 @@
               <span ng-if="pension.pension_type" class="subfield"><strong>Pension Type:</strong> <span hrjc-contact="pension.pension_type" hrjc-contact-link="true"></span></span>
               <span ng-if="pension.er_contrib_pct" class="subfield"><strong>Employer Contribution (%):</strong> {{pension.er_contrib_pct}}</span>
               <span ng-if="pension.ee_contrib_pct" class="subfield"><strong>Employee Contribution (%):</strong> {{pension.ee_contrib_pct}}</span>
-              <span ng-if="pension.ee_contrib_abs | parseInt" class="subfield"><strong>Employee Contribution (absolute amount):</strong> {{pension.ee_contrib_abs | formatAmount}}</span>
+              <span ng-if="pension.ee_contrib_abs | parseInteger" class="subfield"><strong>Employee Contribution (absolute amount):</strong> {{pension.ee_contrib_abs | formatAmount}}</span>
             </p>
           </div>
           <div class="col-sm-2">
