@@ -1009,11 +1009,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
         if(!$isCalculationUnitInHours) {
           if($amount == -0.5) {
-            if ($date == $fromDate) {
+            if ($date->format('Y-m-d') == $fromDate->format('Y-m-d')) {
               $dayType = $fromDateType;
             }
 
-            if($date == $toDate) {
+            if($date->format('Y-m-d') == $toDate->format('Y-m-d')) {
               $dayType = $toDateType;
             }
           }
