@@ -1,12 +1,16 @@
 var _ = require('lodash');
 var argv = require('yargs').argv;
 var gulp = require('gulp');
+var SubTask = require('gulp-subtask')(gulp);
+var gutil = require("gulp-util");
 var clean = require('gulp-clean');
 var color = require('gulp-color');
 var file = require('gulp-file');
 var backstopjs = require('backstopjs');
 var fs = require('fs');
+var path = require('path');
 var Promise = require('es6-promise').Promise;
+var cv = require('civicrm-cv')({ mode: 'sync' });
 
 // BackstopJS tasks
 (function () {
@@ -150,3 +154,63 @@ var Promise = require('es6-promise').Promise;
       .value();
   }
 })();
+
+// Sass
+(function () {
+  var bulk = require('gulp-sass-bulk-import');
+  var civicrmScssRoot = require('civicrm-scssroot')();
+  var sass = require('gulp-sass');
+  var stripCssComments = require('gulp-strip-css-comments');
+
+  gulp.task('sass', ['sass:sync'], function () {
+    var extPath = getExtensionPath();
+    var customLogic = getExtensionCustomPluginLogic(extPath, 'sass')
+
+    return gulp.src(extPath + '/scss/*.scss')
+      .pipe(bulk())
+      .pipe(sass({
+        outputStyle: 'compressed',
+        includePaths: civicrmScssRoot.getPath(),
+        precision: 10
+      }).on('error', sass.logError))
+      .pipe(stripCssComments({ preserve: false }))
+      .pipe(customLogic ? customLogic.run() : gutil.noop())
+      .pipe(gulp.dest(extPath + '/css/'));
+  });
+
+  gulp.task('sass:sync', function () {
+    civicrmScssRoot.updateSync();
+  });
+}());
+
+function getExtensionCustomPluginLogic (extensionPath, pluginName) {
+  var filePath = path.join(extensionPath, '/gulp-tasks/', pluginName + '.js');
+
+  if (fs.existsSync(filePath)) {
+    return require(filePath)(new SubTask(pluginName + ':' + argv.ext));
+  } else {
+    return null;
+  }
+}
+
+function getExtensionPath () {
+  var path;
+
+  if (!argv.ext) {
+    throwError('sass', 'Extension name not found in task parameters');
+  }
+
+  try {
+    path = cv('path -x ' + argv.ext)[0].value;
+  } catch (err) {
+    throwError('sass', 'Extension "' + argv.ext + '" not found');
+  }
+
+  return path;
+}
+
+function throwError (plugin, msg) {
+  throw new gutil.PluginError(plugin, {
+    message: gutil.colors.red(msg),
+  });
+}
