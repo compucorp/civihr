@@ -30,3 +30,15 @@ function user_save($user, $params) {
 
   return $user;
 }
+
+function user_load() {
+  $user = new stdClass();
+
+  return $user;
+}
+
+function _get_uf_match_contact() {}
+
+function user_access() {
+  return TRUE;
+}
