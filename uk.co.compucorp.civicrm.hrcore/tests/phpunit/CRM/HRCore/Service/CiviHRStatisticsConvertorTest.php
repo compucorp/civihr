@@ -69,8 +69,8 @@ class CiviHRStatisticsConvertorTest extends PHPUnit_Framework_TestCase {
     $expected = file_get_contents($testFile);
     $asArray = json_decode($json, TRUE);
     $expectedAsArray = json_decode($expected, TRUE);
-    asort($asArray);
-    asort($expectedAsArray);
+    ksort($asArray);
+    ksort($expectedAsArray);
 
     $this->assertEquals($expectedAsArray, $asArray);
   }
