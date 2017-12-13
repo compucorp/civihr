@@ -1,6 +1,7 @@
 {
   "siteUrl": "compucorp.civihrhosting.co.uk",
   "siteName": "Compucorp",
+  "generationDate": "2012-04-23T18:25:43+0000",
   "lastCiviHRAdminLogin": "2012-04-23T18:25:43+0000",
   "lastCiviHRStaffLogin": "2012-04-23T18:25:43+0000",
   "lastCiviHRManagerLogin": "2012-04-23T18:25:43+0000",
@@ -21,7 +22,6 @@
   },
   "vacancyCount": 1,
   "reportConfigurationCount": 1,
-  "generationDate": "2012-04-23T18:25:43+0000",
   "reportConfigurations": [
     {
       "id": 1,
@@ -33,9 +33,9 @@
   "reportConfigurationAgeGroups": [
     {
       "id": 1,
+      "label": "Young",
       "age_from": 0,
-      "age_to": 25,
-      "label": "Young"
+      "age_to": 25
     }
   ]
 }

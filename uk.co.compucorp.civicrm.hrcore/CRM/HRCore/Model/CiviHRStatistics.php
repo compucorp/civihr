@@ -139,25 +139,25 @@ class CRM_HRCore_Model_CiviHRStatistics {
 
   /**
    * @param string $entity
-   *   The name of the entity, non case sensitive
+   *   The name of the entity, in camel case
    * @param int $count
    *   The count for that entity
    *
    * @return $this
    */
   public function setEntityCount($entity, $count) {
-    $this->entityCounts[strtolower($entity)] = $count;
+    $this->entityCounts[$entity] = $count;
 
     return $this;
   }
 
   /**
    * @param string $entity
-   *   The name of the entity, non case sensitive
+   *   The name of the entity, in camel case
    * @return int
    */
   public function getEntityCount($entity) {
-    return CRM_Utils_Array::value(strtolower($entity), $this->entityCounts, 0);
+    return CRM_Utils_Array::value($entity, $this->entityCounts, 0);
   }
 
   /**
