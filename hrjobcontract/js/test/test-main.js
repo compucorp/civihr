@@ -1,3 +1,4 @@
+
 var TEST_REGEXP = /(spec|test)\.js$/i;
 var allTestFiles = [];
 var mocksPath = CRM.jobContractTabApp.path + 'js/test/mocks';
