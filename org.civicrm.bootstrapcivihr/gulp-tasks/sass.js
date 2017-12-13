@@ -6,14 +6,21 @@ var bootstrapNamespace = '#bootstrap-theme';
 var outsideNamespaceRegExp = /^\.___outside-namespace/;
 
 module.exports = function (SubTask) {
-  return SubTask.pipe(postcss, [postcssPrefix({
-    prefix: bootstrapNamespace + ' ',
-    exclude: [
-      /^html/, /^body/, /page-civi/, /crm-container/, outsideNamespaceRegExp
-    ]
-  })])
-  .pipe(transformSelectors, namespaceRootElements, { splitOnCommas: true })
-  .pipe(transformSelectors, removeOutsideNamespaceMarker, { splitOnCommas: true });
+  return {
+    post: post
+  };
+
+  function post () {
+    return SubTask.pipe(postcss, [postcssPrefix({
+      prefix: bootstrapNamespace + ' ',
+      exclude: [
+        /^html/, /^body/, /page-civi/, /crm-container/, outsideNamespaceRegExp
+      ]
+    })])
+    .pipe(transformSelectors, namespaceRootElements, { splitOnCommas: true })
+    .pipe(transformSelectors, removeOutsideNamespaceMarker, { splitOnCommas: true })
+    .run();
+  }
 };
 
 /**
