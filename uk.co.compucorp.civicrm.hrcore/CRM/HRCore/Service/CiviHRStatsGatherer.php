@@ -183,10 +183,10 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
     }
 
     // leave requests in last 100 days
-    $format = 'Y-m-d H:i:s';
-    $oneHundredDaysAgo = new \DateTime('midnight today - 100 days');
-    $oneHundredDaysAgo = $oneHundredDaysAgo->format($format);
-    $params = ['from_date' => ['>=' => $oneHundredDaysAgo]];
+    $oneHundredDaysAgo = CRM_Utils_Date::processDate('midnight today - 100 days');
+    $today = CRM_Utils_Date::processDate('midnight today');
+
+    $params = ['from_date' => ['BETWEEN' => [$oneHundredDaysAgo, $today]]];
     $last100DaysCount = $this->getEntityCount('LeaveRequest', $params);
     $counts['leaveRequestInLast100Days'] = $last100DaysCount;
 
