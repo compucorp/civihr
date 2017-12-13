@@ -165,6 +165,10 @@
               });
             });
 
+            it('allows to change absence type', function () {
+              expect(controller.canChangeAbsenceType()).toBeTruthy();
+            });
+
             describe('leave request instance', function () {
               it('has new instance created', function () {
                 expect(controller.request).toEqual(jasmine.any(Object));
@@ -177,6 +181,45 @@
               it('does not have from/to dates set', function () {
                 expect(controller.request.from_date).toBeUndefined();
                 expect(controller.request.to_date).toBeUndefined();
+              });
+            });
+          });
+
+          describe('on absence period change', function () {
+            beforeEach(function () {
+              $rootScope.$broadcast('LeaveRequestPopup::absencePeriodChanged');
+            });
+
+            it('starts reloading entitlements', function () {
+              expect(controller.loading.entitlements).toBeTruthy();
+            });
+
+            it('does not allow to change absence type before entitlemenets are updated', function () {
+              expect(controller.canChangeAbsenceType()).toBeFalsy();
+            });
+
+            describe('once it started reloading entitlements', function () {
+              beforeEach(function () {
+                spyOn($rootScope, '$emit').and.callThrough();
+                $rootScope.$digest();
+              });
+
+              it('loads entitlements for the selected period', function () {
+                expect(EntitlementAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  period_id: controller.period.id
+                }), true);
+              });
+
+              it('finishes loading entitlements', function () {
+                expect(controller.loading.entitlements).toBeFalsy();
+              });
+
+              it('broadcasts absence types with updated entitlements back', function () {
+                expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequestPopup::updateBalance', controller.absenceTypes);
+              });
+
+              it('allows to change absence type again', function () {
+                expect(controller.canChangeAbsenceType()).toBeTruthy();
               });
             });
           });
@@ -298,6 +341,10 @@
             expect(controller.request.contact_id).toEqual(leaveRequest.contact_id);
           });
 
+          it('does not allow to change absence type', function () {
+            expect(controller.canChangeAbsenceType()).toBeFalsy();
+          });
+
           describe('on submit', function () {
             beforeEach(function () {
               spyOn(controller.request, 'update').and.callThrough();
@@ -407,7 +454,7 @@
         });
       });
 
-      describe('manager opens leave request popup', function () {
+      describe('manager opens leave request popup in edit mode', function () {
         beforeEach(function () {
           var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
           var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
@@ -446,6 +493,10 @@
 
           it('does not allow user to submit', function () {
             expect(controller.canSubmit()).toBeFalsy();
+          });
+
+          it('does not allow to change absence type', function () {
+            expect(controller.canChangeAbsenceType()).toBeFalsy();
           });
         });
 
@@ -528,7 +579,7 @@
 
               it('initiates the balance change recalculation', function () {
                 expect($rootScope.$emit).toHaveBeenCalledWith(
-                  'LeaveRequestPopup::updateBalance');
+                  'LeaveRequestPopup::recalculateBalanceChange');
               });
 
               it('recalculates the balance', function () {
@@ -679,11 +730,27 @@
             expect(controller.managedContacts.length).toEqual(0);
           });
 
-          it('has absence period matched with leave request dates', function () {
+          it('selects the absence period that contains the leave request dates', function () {
             expect(moment(controller.period.start_date).isSameOrBefore(
               moment(controller.request.from_date))).toBeTruthy();
             expect(moment(controller.period.end_date).isSameOrAfter(
               moment(controller.request.to_date))).toBeTruthy();
+          });
+        });
+      });
+
+      describe('admin opens leave request popup in view mode', function () {
+        beforeEach(function () {
+          var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
+          var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+          role = 'admin';
+          initTestController({ leaveRequest: leaveRequest });
+        });
+
+        describe('on initialization', function () {
+          it('allows to change absence type', function () {
+            expect(controller.canChangeAbsenceType()).toBeTruthy();
           });
         });
       });
@@ -711,35 +778,6 @@
 
           it('does not contain admin in the list of managees', function () {
             expect(_.find(controller.managedContacts, { 'id': adminId })).toBeUndefined();
-          });
-
-          describe('on absence period change', function () {
-            beforeEach(function () {
-              $rootScope.$broadcast('LeaveRequestPopup::absencePeriodChanged');
-            });
-
-            it('starts reloading entitlements', function () {
-              expect(controller.loading.entitlements).toBeTruthy();
-            });
-
-            describe('once it started reloading entitlements', function () {
-              beforeEach(function () {
-                spyOn($rootScope, '$emit').and.callThrough();
-                $rootScope.$digest();
-              });
-
-              it('loads entitlements', function () {
-                expect(EntitlementAPI.all).toHaveBeenCalled();
-              });
-
-              it('finishes loading entitlements', function () {
-                expect(controller.loading.entitlements).toBeFalsy();
-              });
-
-              it('broadcasts absence types with updated entitlements back', function () {
-                expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequestPopup::updateBalance', controller.absenceTypes);
-              });
-            });
           });
         });
       });

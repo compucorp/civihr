@@ -6,22 +6,21 @@ define([
 ], function (_, controllers) {
   controllers.controller('RequestModalDetailsToilController', RequestModalDetailsToilController);
 
-  RequestModalDetailsToilController.$inject = ['$log', '$q', '$rootScope', 'api.optionGroup', 'AbsenceType', 'parentCtrl'];
+  RequestModalDetailsToilController.$inject = ['$log', '$q', '$rootScope', 'api.optionGroup', 'AbsenceType', 'detailsController'];
 
-  function RequestModalDetailsToilController ($log, $q, $rootScope, OptionGroup, AbsenceType, parentCtrl) {
+  function RequestModalDetailsToilController ($log, $q, $rootScope, OptionGroup, AbsenceType, detailsController) {
     $log.debug('RequestModalDetailsToilController');
 
-    parentCtrl.requestCanExpire = true;
+    detailsController.requestCanExpire = true;
 
-    parentCtrl.calculateBalanceChange = calculateBalanceChange;
-    parentCtrl.calculateToilExpiryDate = calculateToilExpiryDate;
-    parentCtrl.canCalculateChange = canCalculateChange;
-    parentCtrl.changeInNoOfDaysExtended = changeInNoOfDaysExtended;
-    parentCtrl.checkSubmitConditions = checkSubmitConditions;
-    parentCtrl.clearExpiryDate = clearExpiryDate;
-    parentCtrl.initChildController = initChildController;
-    parentCtrl.setDatesFromUIExtended = setDatesFromUIExtended;
-    parentCtrl.updateExpiryDate = updateExpiryDate;
+    detailsController.calculateBalanceChange = calculateBalanceChange;
+    detailsController.canCalculateChange = canCalculateChange;
+    detailsController.checkSubmitConditions = checkSubmitConditions;
+    detailsController.clearExpiryDate = clearExpiryDate;
+    detailsController.initChildController = initChildController;
+    detailsController.onDateChange = onDateChange;
+    detailsController.setDaysSelectionModeExtended = setDaysSelectionModeExtended;
+    detailsController.updateExpiryDate = updateExpiryDate;
 
     (function init () {
       initAccrueValueWatcher();
@@ -34,9 +33,9 @@ define([
      * @return {Promise} resolves with the balance change
      */
     function calculateBalanceChange () {
-      parentCtrl.balance.change.amount = +parentCtrl.request.toil_to_accrue;
+      detailsController.balance.change.amount = +detailsController.request.toil_to_accrue;
 
-      return $q.resolve(parentCtrl.balance.change);
+      return $q.resolve(detailsController.balance.change);
     }
 
     /**
@@ -45,34 +44,33 @@ define([
      * @return {Promise}
      */
     function calculateToilExpiryDate () {
-      // blocks the expiry date from updating if this is an existing request
-      // and user is not a manager or admin
-      if (!parentCtrl.canManage && parentCtrl.request.id) {
-        return $q.resolve(parentCtrl.request.toil_expiry_date);
-      }
-
       // skips calculation of expiration date if request never expires
       // according to admin setting
-      if (!parentCtrl.requestCanExpire) {
-        parentCtrl.request.toil_expiry_date = false;
+      if (!detailsController.requestCanExpire) {
+        detailsController.request.toil_expiry_date = false;
+
         return $q.resolve(false);
       }
 
-      return getReferenceDate().catch(function (errors) {
-        if (errors.length) parentCtrl.errors = errors;
-        return $q.reject(errors);
-      }).then(function (referenceDate) {
-        return AbsenceType.calculateToilExpiryDate(
-          parentCtrl.request.type_id,
-          referenceDate
-        );
-      })
-      .then(function (expiryDate) {
-        parentCtrl.request.toil_expiry_date = expiryDate;
-        parentCtrl.uiOptions.expiryDate = new Date(expiryDate);
+      return getReferenceDate()
+        .catch(function (errors) {
+          if (errors.length) {
+            detailsController.errors = errors;
+          }
 
-        return expiryDate;
-      });
+          return $q.reject(errors);
+        }).then(function (referenceDate) {
+          return AbsenceType.calculateToilExpiryDate(
+            detailsController.request.type_id,
+            referenceDate
+          );
+        })
+        .then(function (expiryDate) {
+          detailsController.request.toil_expiry_date = expiryDate;
+          detailsController.uiOptions.expiryDate = new Date(expiryDate);
+
+          return expiryDate;
+        });
     }
 
     /**
@@ -81,7 +79,7 @@ define([
      * @return {Boolean}
      */
     function canCalculateChange () {
-      return !!parentCtrl.request.toil_to_accrue;
+      return !!detailsController.request.toil_to_accrue;
     }
 
     /**
@@ -91,8 +89,11 @@ define([
      * @return {Boolean}
      */
     function canCalculateExpiryDate () {
-      return (parentCtrl.uiOptions.multipleDays && parentCtrl.request.to_date) ||
-        (!parentCtrl.uiOptions.multipleDays && parentCtrl.request.from_date);
+      var requestExistsAndCantBeManaged = (!detailsController.canManage && detailsController.request.id);
+      var multipleDaysWithToDateSet = (detailsController.uiOptions.multipleDays && detailsController.request.to_date);
+      var singleDayWithFromDateSet = (!detailsController.uiOptions.multipleDays && detailsController.request.from_date);
+
+      return requestExistsAndCantBeManaged && (multipleDaysWithToDateSet || singleDayWithFromDateSet);
     }
 
     /**
@@ -101,26 +102,16 @@ define([
      * @return {Boolean}
      */
     function checkSubmitConditions () {
-      return !!parentCtrl.request.from_date && !!parentCtrl.request.to_date &&
-        !!parentCtrl.request.toil_duration && !!parentCtrl.request.toil_to_accrue;
-    }
-
-    /**
-     * Extends parent method. Fires calculation of expiry date when the
-     * number of days changes and the expiry date can be calculated.
-     *
-     * @return {Promise}
-     */
-    function changeInNoOfDaysExtended () {
-      return canCalculateExpiryDate() ? calculateToilExpiryDate() : _.noop;
+      return !!detailsController.request.from_date && !!detailsController.request.to_date &&
+        !!detailsController.request.toil_duration && !!detailsController.request.toil_to_accrue;
     }
 
     /**
      * Clears the request's expiry date and the UI expiry date picker.
      */
     function clearExpiryDate () {
-      parentCtrl.request.toil_expiry_date = false;
-      parentCtrl.uiOptions.expiryDate = null;
+      detailsController.request.toil_expiry_date = false;
+      detailsController.uiOptions.expiryDate = null;
     }
 
     /**
@@ -130,19 +121,16 @@ define([
      * @return {Promise}
      */
     function getReferenceDate () {
-      if (parentCtrl.uiOptions.multipleDays) {
-        return getReferenceDateForField({
-          hasErrors: !parentCtrl.request.to_date && !parentCtrl.request.from_date,
-          label: 'To Date',
-          value: parentCtrl.request.to_date
-        });
-      } else {
-        return getReferenceDateForField({
-          hasErrors: !parentCtrl.request.from_date,
-          label: 'From Date',
-          value: parentCtrl.request.from_date
-        });
-      }
+      var isMultipleDays = detailsController.uiOptions.multipleDays;
+      var request = detailsController.request;
+
+      return getReferenceDateForField({
+        hasErrors: isMultipleDays
+          ? !request.to_date && !request.from_date
+          : !request.from_date,
+        label: isMultipleDays ? 'To Date' : 'From Date',
+        value: isMultipleDays ? request.to_date : request.to_date
+      });
     }
 
     /**
@@ -173,36 +161,38 @@ define([
      * @return {Promise}
      */
     function initChildController () {
-      parentCtrl.request.to_date_type = parentCtrl.request.from_date_type = '1';
+      detailsController.request.to_date_type = detailsController.request.from_date_type = '1';
 
       return initRequestCanExpire()
-        .then(function () {
-          initExpiryDate();
-
-          return loadToilAmounts();
-        });
+        .then(initExpiryDate)
+        .then(loadToilAmounts);
     }
 
     /**
      * Initialize expiryDate on UI from server's toil_expiry_date
      */
     function initExpiryDate () {
-      if (parentCtrl.canManage) {
-        parentCtrl.uiOptions.expiryDate = parentCtrl.convertDateFormatFromServer(parentCtrl.request.toil_expiry_date);
+      if (detailsController.canManage) {
+        detailsController.uiOptions.expiryDate = detailsController.convertDateFormatFromServer(detailsController.request.toil_expiry_date);
       }
     }
 
     /**
-     * Initialises watcher for accrue value
+     * Initialises watcher for accrue value.
+     * When accrue value changes it, if possible, calculates the balance change.
      */
     function initAccrueValueWatcher () {
-      if (parentCtrl.isMode('view')) { return; }
+      if (detailsController.isMode('view')) {
+        return;
+      }
 
       $rootScope.$watch(
-        function () { return parentCtrl.request.toil_to_accrue; },
+        function () {
+          return detailsController.request.toil_to_accrue;
+        },
         function (oldValue, newValue) {
           if (+oldValue !== +newValue) {
-            parentCtrl.attemptCalculateBalanceChange();
+            detailsController.performBalanceChangeCalculation();
           }
         });
     }
@@ -213,9 +203,9 @@ define([
      * @return {Promise}
      */
     function initRequestCanExpire () {
-      return AbsenceType.canExpire(parentCtrl.request.type_id)
+      return AbsenceType.canExpire(detailsController.request.type_id)
       .then(function (canExpire) {
-        parentCtrl.requestCanExpire = canExpire;
+        detailsController.requestCanExpire = canExpire;
       });
     }
 
@@ -227,7 +217,7 @@ define([
     function loadToilAmounts () {
       return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts')
         .then(function (amounts) {
-          parentCtrl.toilAmounts = _.indexBy(amounts, 'value');
+          detailsController.toilAmounts = _.indexBy(amounts, 'value');
         });
     }
 
@@ -236,16 +226,27 @@ define([
      *
      * @return {Promise}
      */
-    function setDatesFromUIExtended () {
-      return parentCtrl.calculateToilExpiryDate().catch($q.resolve);
+    function onDateChange () {
+      return calculateToilExpiryDate().catch($q.resolve);
+    }
+
+    /**
+     * Extends setDaysSelectionMode() method from the details controller.
+     * Fires calculation of expiry date when the number of days changes
+     * and the expiry date can be calculated.
+     *
+     * @return {Promise}
+     */
+    function setDaysSelectionModeExtended () {
+      return canCalculateExpiryDate() ? calculateToilExpiryDate() : $q.resolve();
     }
 
     /**
      * Updates expiry date when user changes it on ui
      */
     function updateExpiryDate () {
-      if (parentCtrl.uiOptions.expiryDate) {
-        parentCtrl.request.toil_expiry_date = parentCtrl.convertDateToServerFormat(parentCtrl.uiOptions.expiryDate);
+      if (detailsController.uiOptions.expiryDate) {
+        detailsController.request.toil_expiry_date = detailsController.convertDateToServerFormat(detailsController.uiOptions.expiryDate);
       }
     }
   }

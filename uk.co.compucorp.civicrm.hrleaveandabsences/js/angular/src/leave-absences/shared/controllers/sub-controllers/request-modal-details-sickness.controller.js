@@ -6,18 +6,17 @@ define([
 ], function (_, controllers) {
   controllers.controller('RequestModalDetailsSicknessController', RequestModalDetailsSicknessController);
 
-  RequestModalDetailsSicknessController.$inject = ['$controller', '$log', '$q', 'api.optionGroup', 'parentCtrl'];
+  RequestModalDetailsSicknessController.$inject = ['$controller', '$log', '$q', 'api.optionGroup', 'detailsController'];
 
-  function RequestModalDetailsSicknessController ($controller, $log, $q, OptionGroup, parentCtrl) {
+  function RequestModalDetailsSicknessController ($controller, $log, $q, OptionGroup, detailsController) {
     $log.debug('RequestModalDetailsSicknessController');
-    // We need to extend parent controller with
-    // calculateBalanceChange() function from Leave Request Controller
-    $controller('RequestModalDetailsLeaveController', { parentCtrl: parentCtrl });
+    // Shares basic logic with the the leave controller
+    $controller('RequestModalDetailsLeaveController', { detailsController: detailsController });
 
-    parentCtrl.checkSubmitConditions = checkSubmitConditions;
-    parentCtrl.initChildController = initChildController;
-    parentCtrl.isChecked = isChecked;
-    parentCtrl.isDocumentInRequest = isDocumentInRequest;
+    detailsController.checkSubmitConditions = checkSubmitConditions;
+    detailsController.initChildController = initChildController;
+    detailsController.isChecked = isChecked;
+    detailsController.isDocumentInRequest = isDocumentInRequest;
 
     /**
      * Checks if submit button can be enabled for user and returns true if successful
@@ -25,7 +24,7 @@ define([
      * @return {Boolean}
      */
     function checkSubmitConditions () {
-      return parentCtrl.canCalculateChange() && !!parentCtrl.request.sickness_reason;
+      return !!(detailsController.canCalculateChange() && detailsController.request.sickness_reason);
     }
 
     /**
@@ -48,7 +47,7 @@ define([
      * @return {Boolean}
      */
     function isChecked (value) {
-      var docsArray = parentCtrl.request.getDocumentArray();
+      var docsArray = detailsController.request.getDocumentArray();
 
       return !!_.find(docsArray, function (document) {
         return document === value;
@@ -63,7 +62,7 @@ define([
      * @return {Boolean}
      */
     function isDocumentInRequest (value) {
-      return !!_.find(parentCtrl.sicknessDocumentTypes, function (document) {
+      return !!_.find(detailsController.sicknessDocumentTypes, function (document) {
         return document.value === value;
       });
     }
@@ -76,7 +75,7 @@ define([
     function loadDocuments () {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_required_document')
         .then(function (documentTypes) {
-          parentCtrl.sicknessDocumentTypes = documentTypes;
+          detailsController.sicknessDocumentTypes = documentTypes;
         });
     }
 
@@ -88,7 +87,7 @@ define([
     function loadReasons () {
       return OptionGroup.valuesOf('hrleaveandabsences_sickness_reason')
         .then(function (reasons) {
-          parentCtrl.sicknessReasons = _.indexBy(reasons, 'name');
+          detailsController.sicknessReasons = _.indexBy(reasons, 'name');
         });
     }
   }

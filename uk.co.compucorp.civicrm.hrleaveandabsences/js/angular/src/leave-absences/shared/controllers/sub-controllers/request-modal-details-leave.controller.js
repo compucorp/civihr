@@ -5,23 +5,23 @@ define([
 ], function (controllers) {
   controllers.controller('RequestModalDetailsLeaveController', RequestModalDetailsLeaveController);
 
-  RequestModalDetailsLeaveController.$inject = ['$controller', '$log', '$q', 'parentCtrl'];
+  RequestModalDetailsLeaveController.$inject = ['$controller', '$log', '$q', 'detailsController'];
 
-  function RequestModalDetailsLeaveController ($controller, $log, $q, parentCtrl) {
+  function RequestModalDetailsLeaveController ($controller, $log, $q, detailsController) {
     $log.debug('RequestModalDetailsLeaveController');
 
-    parentCtrl.calculateBalanceChange = calculateBalanceChange;
-    parentCtrl.canCalculateChange = canCalculateChange;
-    parentCtrl.checkSubmitConditions = checkSubmitConditions;
-    parentCtrl.initChildController = initChildController;
+    detailsController.calculateBalanceChange = calculateBalanceChange;
+    detailsController.canCalculateChange = canCalculateChange;
+    detailsController.checkSubmitConditions = checkSubmitConditions;
+    detailsController.initChildController = initChildController;
 
     /**
-     * Calculates balance change
+     * Calculates balance change by fetching the balance breakdown via the API
      *
      * @return {Promise}
      */
     function calculateBalanceChange () {
-      return parentCtrl.request.calculateBalanceChange(parentCtrl.selectedAbsenceType.calculation_unit_name);
+      return detailsController.request.calculateBalanceChange(detailsController.selectedAbsenceType.calculation_unit_name);
     }
 
     /**
@@ -33,9 +33,9 @@ define([
      * @return {Boolean}
      */
     function canCalculateChange () {
-      var request = parentCtrl.request;
+      var request = detailsController.request;
       var canCalculate = !!request.from_date && !!request.to_date;
-      var unit = parentCtrl.selectedAbsenceType.calculation_unit_name;
+      var unit = detailsController.selectedAbsenceType.calculation_unit_name;
 
       if (unit === 'days') {
         canCalculate = canCalculate &&
@@ -56,7 +56,7 @@ define([
      * @return {Boolean}
      */
     function checkSubmitConditions () {
-      return parentCtrl.canCalculateChange();
+      return detailsController.canCalculateChange();
     }
 
     /**

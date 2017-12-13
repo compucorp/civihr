@@ -29,11 +29,11 @@
           <select
             class="no-select2"
             ng-hide="$ctrl.absenceTypes.length === 0"
-            ng-disabled="!$ctrl.isRole('admin') && ($ctrl.isMode('view') || ($ctrl.isRole('manager') && !$ctrl.isMode('create'))) || $ctrl.loading.entitlements"
+            ng-disabled="!$ctrl.canChangeAbsenceType()"
             name="absenceTypeSelect"
             ng-options="absenceType.id as absenceType.title for absenceType in $ctrl.absenceTypes"
             ng-model="$ctrl.request.type_id"
-            ng-change="$ctrl.updateBalance()"></select>
+            ng-change="$ctrl.updateAbsenceType()"></select>
           <select
             class="no-select2"
             ng-show="$ctrl.absenceTypes.length === 0"

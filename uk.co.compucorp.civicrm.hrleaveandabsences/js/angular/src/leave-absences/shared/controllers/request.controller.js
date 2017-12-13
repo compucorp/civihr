@@ -67,6 +67,7 @@ define([
       }
     };
 
+    vm.canChangeAbsenceType = canChangeAbsenceType;
     vm.canSubmit = canSubmit;
     vm.closeAlert = closeAlert;
     vm.deleteLeaveRequest = deleteLeaveRequest;
@@ -80,7 +81,7 @@ define([
     vm.isMode = isMode;
     vm.isRole = isRole;
     vm.submit = submit;
-    vm.updateBalance = updateBalance;
+    vm.updateAbsenceType = updateAbsenceType;
 
     /**
      * Initializes the controller on loading the dialog
@@ -154,6 +155,35 @@ define([
         awaitingApprovalStatusValue !== vm.request.status_id) {
         pubSub.publish('ManagerBadge:: Update Count');
       }
+    }
+
+    /**
+     * Checks if Absence Type can be changed
+     * - Disregarding any conditions, if entitlements are being loaded you cannot change
+     * - Admins can always change, disregarding the mode
+     * - Neither managers nor staff can change in "view" mode
+     * - Managers can only change in "create" mode
+     *
+     * @return {Boolean}
+     */
+    function canChangeAbsenceType () {
+      if (vm.loading.entitlements) {
+        return false;
+      }
+
+      if (isRole('admin')) {
+        return true;
+      }
+
+      if (isMode('view')) {
+        return false;
+      }
+
+      if (isRole('manager') && !isMode('create')) {
+        return false;
+      }
+
+      return true;
     }
 
     /**
@@ -454,7 +484,13 @@ define([
     function initListeners () {
       listeners.push(
         $rootScope.$on('LeaveRequestPopup::requestObjectUpdated', setInitialAttributes),
-        $rootScope.$on('LeaveRequestPopup::absencePeriodChanged', reloadEntitlements),
+        $rootScope.$on('LeaveRequestPopup::absencePeriodChanged', function () {
+          loadEntitlements()
+            .then(setAbsenceTypesFromEntitlements)
+            .then(function () {
+              $rootScope.$emit('LeaveRequestPopup::updateBalance', vm.absenceTypes);
+            });
+        }),
         $rootScope.$on('LeaveRequestPopup::handleError', function (__, errors) { handleError(errors); }),
         $rootScope.$on('LeaveRequestPopup::childComponent::register', function () { childComponentsCount++; })
       );
@@ -751,23 +787,9 @@ define([
           'this leave request was created. ' +
           'Do you want to recalculate the balance change?',
         onConfirm: function () {
-          $rootScope.$emit('LeaveRequestPopup::updateBalance');
+          $rootScope.$emit('LeaveRequestPopup::recalculateBalanceChange');
         }
       });
-    }
-
-    /**
-     * Reloads entitlements for the currently set absence period,
-     * notifies child controllers and passes updated absence types to them
-     *
-     * @return {Promise}
-     */
-    function reloadEntitlements () {
-      return loadEntitlements()
-        .then(setAbsenceTypesFromEntitlements)
-        .then(function () {
-          $rootScope.$emit('LeaveRequestPopup::updateBalance', vm.absenceTypes);
-        });
     }
 
     /**
@@ -920,6 +942,13 @@ define([
     }
 
     /**
+     * Broadcast an event to update the selected absence type
+     */
+    function updateAbsenceType () {
+      $rootScope.$broadcast('LeaveRequestPopup::updateAbsenceType');
+    }
+
+    /**
      * Validates and updates the leave request
      *
      * @returns {Promise}
@@ -934,13 +963,6 @@ define([
             postSubmit('LeaveRequest::edit');
           }
         });
-    }
-
-    /**
-     * Broadcast an event to Update the Balance
-     */
-    function updateBalance () {
-      $rootScope.$broadcast('LeaveRequestPopup::updateBalance');
     }
   }
 });
