@@ -1,7 +1,7 @@
 <?php
 
 use CRM_HRCore_Service_CiviHRStatsGatherer as CiviHRStatsGatherer;
-use CRM_HRCore_CMSData_Variable_VariableServiceInterface as VariableServiceInterface;
+use CRM_HRCore_CMSData_SiteInformation_SiteInformationInterface as SiteInformationInterface;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
@@ -45,7 +45,7 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
       ->apply();
   }
 
-  public function testSiteNameWillMatchNameFromVariableService() {
+  public function testSiteNameWillMatchNameFromSiteInfoService() {
     $gatherer = $this->getGatherer();
     $stats = $gatherer->gather();
     $this->getGatherer();
@@ -234,10 +234,10 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
    * @return CRM_HRCore_Service_CiviHRStatsGatherer
    */
   private function getGatherer() {
-    $variableService = $this->prophesize(VariableServiceInterface::class);
-    $variableService->get('site_name')->willReturn('foo');
+    $siteInformation = $this->prophesize(SiteInformationInterface::class);
+    $siteInformation->getSiteName()->willReturn('foo');
 
-    return new CiviHRStatsGatherer($variableService->reveal());
+    return new CiviHRStatsGatherer($siteInformation->reveal());
   }
 
   /**

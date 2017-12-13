@@ -3,7 +3,7 @@
 use CRM_HRCore_Model_CiviHRStatistics as CiviHRStatistics;
 use CRM_HRCore_Model_ReportConfiguration as ReportConfiguration;
 use CRM_HRCore_Model_ReportConfigurationAgeGroup as AgeGroup;
-use CRM_HRCore_CMSData_Variable_VariableServiceInterface as VariableServiceInterface;
+use CRM_HRCore_CMSData_SiteInformation_SiteInformationInterface as SiteInformationInterface;
 use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
 
 /**
@@ -13,15 +13,15 @@ use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
 class CRM_HRCore_Service_CiviHRStatsGatherer {
 
   /**
-   * @var VariableServiceInterface
+   * @var SiteInformationInterface
    */
-  protected $cmsVariableService;
+  protected $siteInformation;
 
   /**
-   * @param VariableServiceInterface $cmsVariableService
+   * @param SiteInformationInterface $siteInformation
    */
-  public function __construct(VariableServiceInterface $cmsVariableService) {
-    $this->cmsVariableService = $cmsVariableService;
+  public function __construct(SiteInformationInterface $siteInformation) {
+    $this->siteInformation = $siteInformation;
   }
 
   /**
@@ -32,7 +32,7 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
   public function gather() {
     $stats = new CiviHRStatistics();
     $stats->setGenerationDate(new \DateTime());
-    $stats->setSiteName($this->cmsVariableService->get('site_name'));
+    $stats->setSiteName($this->siteInformation->getSiteName());
     $stats->setSiteUrl(CRM_Core_Config::singleton()->userFrameworkBaseURL);
 
     foreach ($this->getEntityCounts() as $entity => $count) {

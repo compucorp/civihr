@@ -8,13 +8,13 @@
             <argument id="drupal_role_service"/>
         </service>
         <service id="civihr_stats_gatherer" class="CRM_HRCore_Service_CiviHRStatsGatherer">
-            <argument id="cms_variable_service" type="service"/>
+            <argument id="cms_site_info" type="service"/>
         </service>
         <service
-                id="cms_variable_service"
-                factory-class="CRM_HRCore_CMSData_VariableServiceFactory"
+                id="cms_site_info"
+                factory-class="CRM_HRCore_CMSData_SiteInformationFactory"
                 factory-method="create"
-                class="CRM_HRCore_CMSData_Variable_VariableServiceInterface"
+                class="CRM_HRCore_CMSData_SiteInformation_SiteInformationInterface"
         />
     </services>
 </container>
