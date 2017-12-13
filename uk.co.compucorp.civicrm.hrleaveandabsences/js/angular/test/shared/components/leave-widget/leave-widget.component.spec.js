@@ -130,79 +130,15 @@ define([
       });
 
       describe('Leave requests updated', function () {
-        beforeEach(function () {
-          Contract.all.calls.reset();
-        });
+        var eventsThatTriggerAnUpdate = ['LeaveRequest::new', 'LeaveRequest::edit',
+          'LeaveRequest::delete', 'LeaveRequest::updatedByManager',
+          'LeaveRequest::edit', 'contract:created', 'contract:deleted',
+          'contract-refresh'];
 
-        describe('when a leave request is created', function () {
+        eventsThatTriggerAnUpdate.forEach(function (eventName) {
           beforeEach(function () {
-            pubSub.publish('LeaveRequest::new');
-            $rootScope.$digest();
-          });
-
-          it('reloads the dependencies', function () {
-            expect(Contract.all).toHaveBeenCalled();
-          });
-        });
-
-        describe('when a leave request is edited', function () {
-          beforeEach(function () {
-            pubSub.publish('LeaveRequest::edit');
-            $rootScope.$digest();
-          });
-
-          it('reloads the dependencies', function () {
-            expect(Contract.all).toHaveBeenCalled();
-          });
-        });
-
-        describe('when a leave request is deleted', function () {
-          beforeEach(function () {
-            pubSub.publish('LeaveRequest::deleted');
-            $rootScope.$digest();
-          });
-
-          it('reloads the dependencies', function () {
-            expect(Contract.all).toHaveBeenCalled();
-          });
-        });
-
-        describe('when a leave request is updated by a manager', function () {
-          beforeEach(function () {
-            pubSub.publish('LeaveRequest::updatedByManager');
-            $rootScope.$digest();
-          });
-
-          it('reloads the dependencies', function () {
-            expect(Contract.all).toHaveBeenCalled();
-          });
-        });
-
-        describe('when a contract is created', function () {
-          beforeEach(function () {
-            pubSub.publish('contract:created');
-            $rootScope.$digest();
-          });
-
-          it('reloads the dependencies', function () {
-            expect(Contract.all).toHaveBeenCalled();
-          });
-        });
-
-        describe('when a contract is deleted', function () {
-          beforeEach(function () {
-            pubSub.publish('contract:deleted');
-            $rootScope.$digest();
-          });
-
-          it('reloads the dependencies', function () {
-            expect(Contract.all).toHaveBeenCalled();
-          });
-        });
-
-        describe('when a contract is updated', function () {
-          beforeEach(function () {
-            pubSub.publish('contract-refresh');
+            Contract.all.calls.reset();
+            pubSub.publish(eventName);
             $rootScope.$digest();
           });
 

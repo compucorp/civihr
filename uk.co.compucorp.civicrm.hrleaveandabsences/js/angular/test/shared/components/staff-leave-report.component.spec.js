@@ -227,7 +227,7 @@
 
                 it('has stored them in each absence type', function () {
                   _.forEach(controller.absenceTypes, function (absenceType) {
-                    var balanceChanges = absenceType.balanceChanges.publicHolidays;
+                    var balanceChanges = absenceType.balanceChanges.holidays;
 
                     expect(balanceChanges).toBeDefined();
                     expect(balanceChanges).toBe(mockData[absenceType.id]);
@@ -684,35 +684,63 @@
         });
 
         describe('basic tests', function () {
-          var newBalanceChange, oldList, oldBalanceChange;
+          var testData;
 
           beforeEach(function () {
-            oldList = controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
-            oldBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+            controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+            controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
+            testData = {
+              leaveRequest: leaveRequest1,
+              oldBalanceChange: controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending,
+              oldList: controller.sections.pending.data
+            };
 
             leaveRequest1.delete();
-            pubSub.publish('LeaveRequest::deleted', leaveRequest1);
-            $rootScope.$digest();
-
-            newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
           });
 
-          it('sends the deletion request', function () {
-            expect(leaveRequest1.delete).toHaveBeenCalled();
+          describe('Leave request delete event', function () {
+            beforeEach(function () {
+              pubSub.publish('LeaveRequest::delete', leaveRequest1);
+              $rootScope.$digest();
+
+              testData.newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+            });
+
+            itHandlesTheDeleteStatusUpdate();
           });
 
-          it('removes the leave request from its section', function () {
-            expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(false);
+          describe('Leave request status update event', function () {
+            beforeEach(function () {
+              pubSub.publish('LeaveRequest::statusUpdate', {
+                status: 'delete',
+                leaveRequest: leaveRequest1
+              });
+              $rootScope.$digest();
+
+              testData.newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+            });
+
+            itHandlesTheDeleteStatusUpdate();
           });
 
-          it('removes the leave request without creating a new array', function () {
-            expect(controller.sections.pending.data).toBe(oldList);
-          });
+          function itHandlesTheDeleteStatusUpdate () {
+            it('sends the deletion request', function () {
+              expect(testData.leaveRequest.delete).toHaveBeenCalled();
+            });
 
-          it('updates the balance changes for the section the leave request was in', function () {
-            expect(newBalanceChange).not.toBe(oldBalanceChange);
-            expect(newBalanceChange).toBe(oldBalanceChange - leaveRequest1.balance_change);
-          });
+            it('removes the leave request from its section', function () {
+              expect(_.includes(controller.sections.pending.data, testData.leaveRequest)).toBe(false);
+            });
+
+            it('removes the leave request without creating a new array', function () {
+              expect(controller.sections.pending.data).toBe(testData.oldList);
+            });
+
+            it('updates the balance changes for the section the leave request was in', function () {
+              expect(testData.newBalanceChange).not.toBe(testData.oldBalanceChange);
+              expect(testData.newBalanceChange).toBe(testData.oldBalanceChange - testData.leaveRequest.balance_change);
+            });
+          }
         });
 
         describe('when the leave request was already approved', function () {
@@ -720,10 +748,11 @@
 
           beforeEach(function () {
             controller.sections.approved.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+            controller.sections.approved.dataIndex = _.indexBy(controller.sections.approved.data, 'id');
             oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
 
             leaveRequest1.delete();
-            pubSub.publish('LeaveRequest::deleted', leaveRequest1);
+            pubSub.publish('LeaveRequest::delete', leaveRequest1);
             $rootScope.$digest();
 
             newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
@@ -740,10 +769,11 @@
 
           beforeEach(function () {
             controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+            controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
             oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
 
             leaveRequest1.delete();
-            pubSub.publish('LeaveRequest::deleted', leaveRequest1);
+            pubSub.publish('LeaveRequest::delete', leaveRequest1);
             $rootScope.$digest();
 
             newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
@@ -753,6 +783,36 @@
             expect(newRemainder).not.toBe(oldRemainder);
             expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
           });
+        });
+      });
+
+      describe('when the request is cancelled', function () {
+        var leaveRequest1, leaveRequest2, leaveRequest3;
+
+        beforeEach(function () {
+          leaveRequest1 = LeaveRequestInstance.init(leaveRequestMock.all().values[0], true);
+          leaveRequest2 = LeaveRequestInstance.init(leaveRequestMock.all().values[1], true);
+          leaveRequest3 = LeaveRequestInstance.init(leaveRequestMock.all().values[2], true);
+
+          controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
+          controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
+          controller.sections.other.open = true;
+
+          leaveRequest1.cancel();
+          pubSub.publish('LeaveRequest::statusUpdate', {
+            status: 'cancel',
+            leaveRequest: leaveRequest1
+          });
+          $rootScope.$digest();
+        });
+
+        it('removes the leave request from its section', function () {
+          expect(_.includes(controller.sections.pending.data, leaveRequest1)).toBe(false);
+        });
+
+        it('adds the leave reuqest to the "Cancelled and Other" section', function () {
+          expect(_.includes(controller.sections.other.data, leaveRequest1)).toBe(true);
+          expect(controller.sections.other.dataIndex[leaveRequest1.id]).toBe(leaveRequest1);
         });
       });
 
