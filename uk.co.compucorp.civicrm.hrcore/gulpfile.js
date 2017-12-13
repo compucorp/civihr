@@ -162,19 +162,24 @@ var cv = require('civicrm-cv')({ mode: 'sync' });
   var sass = require('gulp-sass');
   var stripCssComments = require('gulp-strip-css-comments');
 
-  gulp.task('sass', ['sass:sync'], function () {
+  gulp.task('sass', ['sass:sync'], function (cb) {
     var extPath = getExtensionPath();
     var customLogic = getExtensionCustomPluginLogic(extPath, 'sass')
 
+    if (customLogic.full) {
+      return customLogic.full(cb);
+    }
+
     return gulp.src(extPath + '/scss/*.scss')
       .pipe(bulk())
+      .pipe(customLogic.pre ? customLogic.pre() : gutil.noop())
       .pipe(sass({
         outputStyle: 'compressed',
         includePaths: civicrmScssRoot.getPath(),
         precision: 10
       }).on('error', sass.logError))
       .pipe(stripCssComments({ preserve: false }))
-      .pipe(customLogic ? customLogic.run() : gutil.noop())
+      .pipe(customLogic.post ? customLogic.post() : gutil.noop())
       .pipe(gulp.dest(extPath + '/css/'));
   });
 
@@ -189,7 +194,7 @@ function getExtensionCustomPluginLogic (extensionPath, pluginName) {
   if (fs.existsSync(filePath)) {
     return require(filePath)(new SubTask(pluginName + ':' + argv.ext));
   } else {
-    return null;
+    return {};
   }
 }
 
