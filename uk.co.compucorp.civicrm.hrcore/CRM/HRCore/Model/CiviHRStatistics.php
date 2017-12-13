@@ -139,22 +139,25 @@ class CRM_HRCore_Model_CiviHRStatistics {
 
   /**
    * @param string $entity
+   *   The name of the entity, non case sensitive
    * @param int $count
+   *   The count for that entity
    *
    * @return $this
    */
   public function setEntityCount($entity, $count) {
-    $this->entityCounts[$entity] = $count;
+    $this->entityCounts[strtolower($entity)] = $count;
 
     return $this;
   }
 
   /**
    * @param string $entity
+   *   The name of the entity, non case sensitive
    * @return int
    */
   public function getEntityCount($entity) {
-    return CRM_Utils_Array::value($entity, $this->entityCounts, 0);
+    return CRM_Utils_Array::value(strtolower($entity), $this->entityCounts, 0);
   }
 
   /**
@@ -181,6 +184,15 @@ class CRM_HRCore_Model_CiviHRStatistics {
    */
   public function getContactSubtypeCounts() {
     return $this->contactSubtypeCount;
+  }
+
+  /**
+   * @param string $subtypeName
+   *
+   * @return int
+   */
+  public function getContactSubtypeCount($subtypeName) {
+    return CRM_Utils_Array::value($subtypeName, $this->contactSubtypeCount, 0);
   }
 
   /**
