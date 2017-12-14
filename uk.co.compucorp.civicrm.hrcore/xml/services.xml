@@ -7,7 +7,7 @@
         <service id="drupal_user_service" class="CRM_HRCore_Service_DrupalUserService">
             <argument id="drupal_role_service" type="service"/>
         </service>
-        <service id="civihr_stats_gatherer" class="CRM_HRCore_Service_CiviHRStatsGatherer">
+        <service id="civihr_stats_gatherer" class="CRM_HRCore_Service_Stats_StatsGatherer">
             <argument id="cms_site_info" type="service"/>
             <argument id="cms_role_service" type="service"/>
         </service>
@@ -24,10 +24,14 @@
                 class="CRM_HRCore_CMSData_Role_RoleServiceInterface"
         />
         <service id="core.cache" class="CRM_Core_BAO_Cache"/>
-        <service id="civihr_stats_sender" class="CRM_HRCore_Service_StatsSender">
-            <argument type="service" id="core.cache"/>
-            <argument type="service" id="civihr_stats_gatherer"/>
+        <service id="core.http_client" class="CRM_Utils_HttpClient"/>
+        <service id="civihr_stats_sender" class="CRM_HRCore_Service_Stats_StatsSender">
+            <argument type="service" id="core.http_client"/>
             <argument type="service" id="psr_log"/>
+        </service>
+        <service id="civihr_stats_cache" class="CRM_HRCore_Service_Stats_StatsCache">
+            <argument id="civihr_stats_gatherer" type="service"/>
+            <argument id="core.cache" type="service"/>
         </service>
     </services>
 </container>

@@ -1,11 +1,11 @@
 <?php
 
-use CRM_HRCore_Service_CiviHRStatisticsJSONConvertor as CiviHRStatisticsConvertor;
+use CRM_HRCore_Service_Stats_StatsJSONConvertor as CiviHRStatisticsConvertor;
 use CRM_HRCore_Model_CiviHRStatistics as CiviHRStatistics;
 use CRM_HRCore_Model_ReportConfigurationAgeGroup as AgeGroup;
 use CRM_HRCore_Model_ReportConfiguration as ReportConfiguration;
 
-class CiviHRStatisticsConvertorTest extends PHPUnit_Framework_TestCase {
+class StatsJSONConvertorTest extends PHPUnit_Framework_TestCase {
 
   public function testConversionOfEmptyStatsClass() {
     $stats = new CiviHRStatistics();
