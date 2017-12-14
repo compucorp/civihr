@@ -167,6 +167,8 @@ define([
         moment(vm.uiOptions.toDate).isSameOrBefore(vm.uiOptions.fromDate)
       ) {
         vm.uiOptions.toDate = null;
+
+        resetUIDayTypesTimeAndDeductions('to');
       }
     }
 
@@ -205,7 +207,6 @@ define([
      */
     function daysSelectionModeChangeHandler () {
       checkToDate();
-      resetUIDayTypesTimeAndDeductions('to');
       setRequestDates();
 
       return performBalanceChangeCalculation()
@@ -793,7 +794,7 @@ define([
      */
     function setDate (dateType) {
       setMinMaxDatesToUI();
-      checkToDate();
+      (dateType === 'from') && checkToDate();
       resetUIDayTypesTimeAndDeductions(dateType);
 
       vm.uiOptions.times[dateType].loading = true;
