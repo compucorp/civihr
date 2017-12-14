@@ -29,6 +29,7 @@
             <argument type="service" id="core.http_client"/>
             <argument type="service" id="psr_log"/>
         </service>
+        <service id="civihr.file_cache" class="CRM_HRCore_Service_FileCache"/>
         <service id="civihr_stats_cache" class="CRM_HRCore_Service_Stats_StatsCache">
             <argument id="civihr_stats_gatherer" type="service"/>
             <argument id="core.cache" type="service"/>
