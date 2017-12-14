@@ -1,6 +1,6 @@
 <?php
 
-use CRM_HRCore_Service_CiviHRStatsGatherer as CiviHRStatsGatherer;
+use CRM_HRCore_Service_Stats_StatsGatherer as CiviHRStatsGatherer;
 use CRM_HRCore_CMSData_SiteInformation_SiteInformationInterface as SiteInformationInterface;
 use CRM_HRCore_CMSData_Role_RoleServiceInterface as RoleServiceInterface;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
@@ -18,11 +18,12 @@ use CRM_Tasksassignments_Test_Fabricator_Assignment as AssignmentFabricator;
 use CRM_HRCore_Test_Fabricator_CaseType as CaseTypeFabricator;
 use CRM_HRCore_Test_Fabricator_ContactType as ContactTypeFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
+use CRM_HRCore_Service_Stats_StatsGatherer as StatsGatherer;
 
 /**
  * @group headless
  */
-class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
+class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   use CRM_HRCore_Test_Helpers_SessionHelpersTrait;
   use CRM_HRCore_Test_Helpers_TableCleanupTrait;
@@ -256,7 +257,7 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
   }
 
   /**
-   * @return CRM_HRCore_Service_CiviHRStatsGatherer
+   * @return StatsGatherer
    */
   private function getGatherer() {
     $siteInformation = $this->prophesize(SiteInformationInterface::class);

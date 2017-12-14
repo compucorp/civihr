@@ -11,7 +11,7 @@ use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
  * Responsible for gathering all required site statistics that will be sent to
  * monitor site usage.
  */
-class CRM_HRCore_Service_CiviHRStatsGatherer {
+class CRM_HRCore_Service_Stats_StatsGatherer {
 
   /**
    * @var SiteInformationInterface
