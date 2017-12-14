@@ -308,6 +308,8 @@ function civicrm_api3_leave_request_calculateBalanceChange($params) {
     }
   }
 
+  _civicrm_api3_leave_request_set_time_for_leave_dates($params);
+
   $result = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::calculateBalanceChange(
     $params['contact_id'],
     new DateTime($params['from_date']),
