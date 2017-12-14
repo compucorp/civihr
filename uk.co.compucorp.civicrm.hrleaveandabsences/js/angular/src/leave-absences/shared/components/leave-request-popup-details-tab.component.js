@@ -139,9 +139,13 @@ define([
           loadDayTypes()
         ]);
       })
-      .then(initDates)
-      .then(initTimes)
-      .then(setMinMaxDatesToUI)
+      .then(!vm.isMode('create') && initDates)
+      .then(function () {
+        if (!vm.isMode('create') && isCalculationUnit('hours')) {
+          return initTimes();
+        }
+      })
+      .then(!vm.isMode('create') && setMinMaxDatesToUI)
       .then(initOriginalOpeningBalance)
       .then(setOpeningBalance)
       .then(function () {
@@ -373,24 +377,19 @@ define([
      * @return {Promise}
      */
     function initDates () {
-      var attributes;
+      var attributes = vm.request.attributes();
 
-      if (!vm.isMode('create')) {
-        attributes = vm.request.attributes();
-        vm.uiOptions.fromDate = convertDateFormatFromServer(vm.request.from_date);
+      vm.uiOptions.fromDate = convertDateFormatFromServer(vm.request.from_date);
 
-        return loadDayTypesForDate(vm.uiOptions.fromDate, 'from')
-          .then(function () {
-            // to_date and type has been reset in above call so reinitialize from clone
-            vm.request.to_date = attributes.to_date;
-            vm.request.to_date_type = attributes.to_date_type;
-            vm.uiOptions.toDate = convertDateFormatFromServer(vm.request.to_date);
+      return loadDayTypesForDate(vm.uiOptions.fromDate, 'from')
+        .then(function () {
+          // to_date and type has been reset in above call so reinitialize from clone
+          vm.request.to_date = attributes.to_date;
+          vm.request.to_date_type = attributes.to_date_type;
+          vm.uiOptions.toDate = convertDateFormatFromServer(vm.request.to_date);
 
-            return loadDayTypesForDate(vm.uiOptions.toDate, 'to');
-          });
-      } else {
-        return $q.resolve();
-      }
+          return loadDayTypesForDate(vm.uiOptions.toDate, 'to');
+        });
     }
 
     /**
