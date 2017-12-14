@@ -162,10 +162,18 @@ define([
     }());
 
     /**
+     * Calculates closing balance which is opening balance minus change amount.
+     * We use "+" operation since the change amount is negative.
+     */
+    function calculateClosingBalance () {
+      vm.balance.closing = vm.balance.opening + vm.balance.change.amount;
+    }
+
+    /**
      * Checks To Date and flushes it if it is the same or before
      * the "from date" in case of the multiple day request.
      */
-    function checkToDate () {
+    function checkIfToDateIsGreaterThanFromDate () {
       if (
         vm.uiOptions.toDate && vm.uiOptions.fromDate && vm.uiOptions.multipleDays &&
         moment(vm.uiOptions.toDate).isSameOrBefore(vm.uiOptions.fromDate)
@@ -174,14 +182,6 @@ define([
 
         resetUIDayTypesTimeAndDeductions('to');
       }
-    }
-
-    /**
-     * Calculates closing balance which is opening balance minus change amount.
-     * We use "+" operation since the change amount is negative.
-     */
-    function calculateClosingBalance () {
-      vm.balance.closing = vm.balance.opening + vm.balance.change.amount;
     }
 
     /**
@@ -210,7 +210,7 @@ define([
      * @return {Promise}
      */
     function daysSelectionModeChangeHandler () {
-      checkToDate();
+      checkIfToDateIsGreaterThanFromDate();
       setRequestDates();
 
       return performBalanceChangeCalculation()
@@ -793,7 +793,7 @@ define([
      */
     function setDate (dateType) {
       setMinMaxDatesToUI();
-      (dateType === 'from') && checkToDate();
+      (dateType === 'from') && checkIfToDateIsGreaterThanFromDate();
       resetUIDayTypesTimeAndDeductions(dateType);
 
       vm.uiOptions.times[dateType].loading = true;
