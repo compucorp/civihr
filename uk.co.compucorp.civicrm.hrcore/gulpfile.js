@@ -168,8 +168,8 @@ var xml = require("xml-parse");
     var extPath = getExtensionPath();
     var customLogic = getExtensionCustomPluginLogic(extPath, 'sass')
 
-    if (customLogic.full) {
-      return customLogic.full(cb);
+    if (_.isFunction(customLogic)) {
+      return customLogic(cb);
     }
 
     return gulp.src(extPath + '/scss/*.scss')
