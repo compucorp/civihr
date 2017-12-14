@@ -48,7 +48,6 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
   public function testSiteNameWillMatchNameFromSiteInfoService() {
     $gatherer = $this->getGatherer();
     $stats = $gatherer->gather();
-    $this->getGatherer();
 
     $this->assertEquals('foo', $stats->getSiteName());
   }
@@ -214,20 +213,56 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
   }
 
   public function testDeletedEntitiesWillNotBeIncluded() {
+    $contactID = ContactFabricator::fabricate()['id'];
     $existingContactCount = $this->getCurrentContactCount();
-    $deletedContact = ContactFabricator::fabricate();
-    $deletedContactID = $deletedContact['id'];
-    civicrm_api3('Contact', 'delete', ['id' => $deletedContactID]);
-    $params = ['is_deleted' => 1, 'id' => $deletedContactID];
-    $stillExists = civicrm_api3('Contact', 'getcount', $params) == 1;
-
-    if (!$stillExists) {
-      $this->markTestSkipped('There was an error in soft deletion of contact');
-    }
+    TaskTypeFabricator::fabricate();
+    $this->setUpLeaveRequest($contactID);
+    $this->registerCurrentLoggedInContactInSession($contactID);
+    civicrm_api3(
+      'UFMatch',
+      'delete',
+      ['id' => UFMatchFabricator::fabricate()['id']]
+    );
+    civicrm_api3(
+      'Contact',
+      'delete',
+      ['id' => ContactFabricator::fabricate()['id']]
+    );
+    civicrm_api3(
+      'Task',
+      'delete',
+      ['id' => TaskFabricator::fabricate()['id']]
+    );
+    civicrm_api3(
+      'Assignment',
+      'delete',
+      ['id' => AssignmentFabricator::fabricate()->id]
+    );
+    civicrm_api3(
+      'Document',
+      'delete',
+      ['id' => DocumentFabricator::fabricate()->id]
+    );
+    civicrm_api3(
+      'LeaveRequest',
+      'delete',
+      ['id' => $this->fabricateLeaveRequest($contactID)->id]
+    );
+    civicrm_api3(
+      'HRVacancy',
+      'delete',
+      ['id' => HRVacancyFabricator::fabricate()['id']]
+    );
 
     $stats = $this->getGatherer()->gather();
 
     $this->assertEquals($existingContactCount, $stats->getEntityCount('contact'));
+    $this->assertEquals(0, $stats->getEntityCount('drupalUser'));
+    $this->assertEquals(0, $stats->getEntityCount('task'));
+    $this->assertEquals(0, $stats->getEntityCount('assignment'));
+    $this->assertEquals(0, $stats->getEntityCount('document'));
+    $this->assertEquals(0, $stats->getEntityCount('leaveRequest'));
+    $this->assertEquals(0, $stats->getEntityCount('vacancy'));
   }
 
   /**
@@ -244,13 +279,15 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
    * @param int $contactID
    * @param string $startDateString
    * @param string $endDateString
+   *
+   * @return CRM_HRLeaveAndAbsences_BAO_LeaveRequest
    */
   private function fabricateLeaveRequest(
     $contactID,
     $startDateString = 'today',
     $endDateString = 'tomorrow'
   ) {
-    LeaveRequestFabricator::fabricateWithoutValidation([
+    return LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contactID,
       'type_id' => $this->absenceTypeID,
       'from_date' => CRM_Utils_Date::processDate($startDateString),
