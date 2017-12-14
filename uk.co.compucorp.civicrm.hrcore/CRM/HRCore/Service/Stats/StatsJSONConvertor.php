@@ -7,7 +7,7 @@ use CRM_HRCore_Model_ReportConfigurationAgeGroup as AgeGroup;
 /**
  * Responsible for converting a CiviHRStatistics object to JSON
  */
-class CRM_HRCore_Service_CiviHRStatisticsJSONConvertor {
+class CRM_HRCore_Service_Stats_StatsJSONConvertor {
 
   /**
    * Takes a statistics class and converts it to a JSON string.
