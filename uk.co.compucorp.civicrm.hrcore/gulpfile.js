@@ -11,6 +11,8 @@ var fs = require('fs');
 var path = require('path');
 var Promise = require('es6-promise').Promise;
 var cv = require('civicrm-cv')({ mode: 'sync' });
+var findUp = require('find-up');
+var xml = require("xml-parse");
 
 // BackstopJS tasks
 (function () {
@@ -186,7 +188,25 @@ var cv = require('civicrm-cv')({ mode: 'sync' });
   gulp.task('sass:sync', function () {
     civicrmScssRoot.updateSync();
   });
+
+  gulp.task('sass:watch', function () {
+    gulp.watch('../**/scss/**/*.scss').on('change', function (file) {
+      var extensionName = getExtensionNameFromFile(file);
+
+      argv.ext = extensionName; // TEMP
+      gulp.start('sass');
+    });
+  });
 }());
+
+function getExtensionNameFromFile (file) {
+  var infoXMLPath = findUp.sync('info.xml', { cwd: file.path });
+  var parsedXML = xml.parse(fs.readFileSync(infoXMLPath, 'utf8'));
+
+  return _.find(parsedXML, function (node) {
+    return node.tagName && node.tagName === 'extension';
+  }).attributes.key;
+}
 
 function getExtensionCustomPluginLogic (extensionPath, pluginName) {
   var filePath = path.join(extensionPath, '/gulp-tasks/', pluginName + '.js');
