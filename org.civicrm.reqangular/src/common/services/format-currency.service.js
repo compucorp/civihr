@@ -114,6 +114,11 @@ define([
       // Remove all characters except decimal separator
       amount = amount.toString().replace(new RegExp(expression, 'g'), '');
 
+      // Return default amount
+      if (!amount) {
+        return '0' + separators.decimal + '00';
+      }
+
       // Find the index of first ocuring decimal separator
       decimalIndex = amount.indexOf(separators.decimal);
 
@@ -132,7 +137,9 @@ define([
 
       // if amountAfterDecimal exists, concat amountBeforeDecimal and amountAfterDecimal by separator
       // keeping only two values after decimal separator
-      return (decimalIndex !== -1) ? (amountBeforeDecimal.toString() + separators.decimal + amountAfterDecimal.substring(0, 2)) : amountBeforeDecimal;
+      return (decimalIndex !== -1)
+        ? (amountBeforeDecimal.toString() + separators.decimal + amountAfterDecimal.substring(0, 2))
+        : amountBeforeDecimal + separators.decimal + '00';
     }
   }
 });
