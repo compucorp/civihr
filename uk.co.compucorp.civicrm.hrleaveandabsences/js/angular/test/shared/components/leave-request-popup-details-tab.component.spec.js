@@ -689,6 +689,17 @@ define([
               expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
             });
 
+            describe('when recieved the balance change recalculation event', function () {
+              beforeEach(function () {
+                $rootScope.$emit('LeaveRequestPopup::recalculateBalanceChange');
+                $rootScope.$apply();
+              });
+
+              it('recalculates the balance change', function () {
+                expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
+              });
+            });
+
             describe('when deduction is greater than allowed', function () {
               var maxDeduction;
 

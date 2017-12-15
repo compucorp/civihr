@@ -474,7 +474,8 @@ define([
         // @TODO absence types with balances should be watched via $onChange
         $rootScope.$on('LeaveRequestPopup::absencePeriodBalancesUpdated', function (event, absenceTypesWithBalances) {
           updateBalances(absenceTypesWithBalances);
-        })
+        }),
+        $rootScope.$on('LeaveRequestPopup::recalculateBalanceChange', performBalanceChangeCalculation)
       );
     }
 

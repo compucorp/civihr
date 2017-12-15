@@ -581,11 +581,6 @@
                 expect($rootScope.$emit).toHaveBeenCalledWith(
                   'LeaveRequestPopup::recalculateBalanceChange');
               });
-
-              it('recalculates the balance', function () {
-                expect(controller.request.calculateBalanceChange).toHaveBeenCalledWith(
-                  controller.selectedAbsenceType.calculation_unit_name);
-              });
             });
           });
 
