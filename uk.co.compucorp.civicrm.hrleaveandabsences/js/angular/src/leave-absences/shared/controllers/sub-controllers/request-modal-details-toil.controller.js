@@ -18,7 +18,7 @@ define([
     detailsController.checkSubmitConditions = checkSubmitConditions;
     detailsController.clearExpiryDate = clearExpiryDate;
     detailsController.initChildController = initChildController;
-    detailsController.onDateChange = onDateChange;
+    detailsController.onDateChangeExtended = onDateChangeExtended;
     detailsController.setDaysSelectionModeExtended = setDaysSelectionModeExtended;
     detailsController.updateExpiryDate = updateExpiryDate;
 
@@ -222,11 +222,11 @@ define([
     }
 
     /**
-     * Extends the parent's setDatesFromUI() function
+     * Extends the parent's dateChangeHandler() function
      *
      * @return {Promise}
      */
-    function onDateChange () {
+    function onDateChangeExtended () {
       return calculateToilExpiryDate().catch($q.resolve);
     }
 

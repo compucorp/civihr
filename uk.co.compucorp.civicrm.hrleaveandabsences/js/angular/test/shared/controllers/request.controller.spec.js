@@ -215,7 +215,7 @@
               });
 
               it('broadcasts absence types with updated entitlements back', function () {
-                expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequestPopup::updateBalance', controller.absenceTypes);
+                expect($rootScope.$emit).toHaveBeenCalledWith('LeaveRequestPopup::absencePeriodBalancesUpdated', controller.absenceTypes);
               });
 
               it('allows to change absence type again', function () {

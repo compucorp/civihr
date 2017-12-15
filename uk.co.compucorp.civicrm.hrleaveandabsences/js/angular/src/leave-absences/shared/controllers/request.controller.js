@@ -488,7 +488,7 @@ define([
           loadEntitlements()
             .then(setAbsenceTypesFromEntitlements)
             .then(function () {
-              $rootScope.$emit('LeaveRequestPopup::updateBalance', vm.absenceTypes);
+              $rootScope.$emit('LeaveRequestPopup::absencePeriodBalancesUpdated', vm.absenceTypes);
             });
         }),
         $rootScope.$on('LeaveRequestPopup::handleError', function (__, errors) { handleError(errors); }),
@@ -942,10 +942,10 @@ define([
     }
 
     /**
-     * Broadcast an event to update the selected absence type
+     * Broadcast an event to notify that the selected absence type has been changed
      */
     function updateAbsenceType () {
-      $rootScope.$broadcast('LeaveRequestPopup::updateAbsenceType');
+      $rootScope.$broadcast('LeaveRequestPopup::absenceTypeChanged');
     }
 
     /**

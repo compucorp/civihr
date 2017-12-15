@@ -40,7 +40,7 @@
             is-open="detailsTab.uiOptions.date.from.show"
             ng-readonly="true"
             ng-disabled="__isNotEditable"
-            ng-change="detailsTab.setDate('from')"/>
+            ng-change="detailsTab.dateChangeHandler('from')"/>
         </div>
       </div>
       <div class="col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
@@ -57,7 +57,7 @@
               ng-disabled="__isNotEditable"
               ng-options="dayType.value as dayType.label for dayType in detailsTab.requestFromDayTypes"
               ng-model="detailsTab.request.from_date_type"
-              ng-change="detailsTab.performBalanceChangeCalculation()">
+              ng-change="detailsTab.dateTypeChangeHandler()">
               <option value="">Select</option>
             </select>
             <span class="crm_custom-select__arrow"></span>
@@ -131,7 +131,7 @@
               is-open="detailsTab.uiOptions.date.to.show"
               ng-readonly="true"
               ng-disabled="__isNotEditable"
-              ng-change="detailsTab.setDate('to')"/>
+              ng-change="detailsTab.dateChangeHandler('to')"/>
           </div>
         </div>
         <div class="col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
@@ -148,7 +148,7 @@
                 ng-disabled="__isNotEditable"
                 ng-options="dayType.value as dayType.label for dayType in detailsTab.requestToDayTypes"
                 ng-model="detailsTab.request.to_date_type"
-                ng-change="detailsTab.performBalanceChangeCalculation()">
+                ng-change="detailsTab.dateTypeChangeHandler()">
                 <option value="">Select</option>
               </select>
               <span class="crm_custom-select__arrow"></span>
