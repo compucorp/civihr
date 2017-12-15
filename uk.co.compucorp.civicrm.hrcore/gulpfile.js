@@ -199,6 +199,46 @@ var xml = require("xml-parse");
   });
 }());
 
+// RequireJS
+(function () {
+  var rjs = require('gulp-requirejs');
+  var readFiles = require('read-vinyl-file-stream');
+  var map = require('map-stream');
+
+  gulp.task('requirejs', function (cb) {
+    var extPath = getExtensionPath();
+    var customLogic = getExtensionCustomPluginLogic(extPath, 'requirejs')
+
+    if (_.isFunction(customLogic)) {
+      return customLogic(cb);
+    }
+
+    return gulp.src(extPath + '/js/build.js')
+      .pipe(customLogic.pre ? customLogic.pre() : gutil.noop())
+      .pipe(readFiles(function (content, file, stream, cb) {
+        var newContent = addExtentionPathToBuildConfig(content, extPath);
+
+        return cb(null, newContent);
+      }))
+      .pipe(map(function(file, cb) {
+        rjs(eval(file.contents.toString()))
+          .pipe(customLogic.post ? customLogic.post() : gutil.noop())
+          .pipe(gulp.dest('.'));
+
+        cb();
+      }));
+  });
+
+  function addExtentionPathToBuildConfig (file, extPath) {
+    var content = eval(file);
+
+    content.baseUrl = extPath + '/js/' + content.baseUrl;
+    content.out = extPath + '/js/' + content.out;
+
+    return '(' + JSON.stringify(content) + ')';
+  }
+}());
+
 function getExtensionNameFromFile (file) {
   var infoXMLPath = findUp.sync('info.xml', { cwd: file.path });
   var parsedXML = xml.parse(fs.readFileSync(infoXMLPath, 'utf8'));
