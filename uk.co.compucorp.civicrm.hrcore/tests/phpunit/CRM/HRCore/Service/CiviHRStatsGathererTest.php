@@ -16,6 +16,7 @@ use CRM_Tasksassignments_Test_Fabricator_Document as DocumentFabricator;
 use CRM_Tasksassignments_Test_Fabricator_Assignment as AssignmentFabricator;
 use CRM_HRCore_Test_Fabricator_CaseType as CaseTypeFabricator;
 use CRM_HRCore_Test_Fabricator_ContactType as ContactTypeFabricator;
+use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 
 /**
  * @group headless
@@ -24,6 +25,7 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   use CRM_HRCore_Test_Helpers_SessionHelpersTrait;
   use CRM_HRCore_Test_Helpers_TableCleanupTrait;
+  use CRM_HRCore_Test_Helpers_DomainConfigurationTrait;
 
   /**
    * Used in setup method for leave request fabrication
@@ -31,20 +33,6 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
    * @var int
    */
   private $absenceTypeID;
-
-  public function setUpHeadless() {
-    $requiredExtensions = [
-      'uk.co.compucorp.civicrm.tasksassignments',
-      'org.civicrm.hrrecruitment',
-      'uk.co.compucorp.civicrm.hrleaveandabsences',
-      'org.civicrm.hrjobcontract', // L&A depends on HRJobContract
-    ];
-
-    return \Civi\Test::headless()
-      ->installMe(__DIR__)
-      ->install($requiredExtensions)
-      ->apply();
-  }
 
   public function testSiteNameWillMatchNameFromSiteInfoService() {
     $gatherer = $this->getGatherer();
@@ -74,6 +62,12 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   public function testEntityCountsWillMatchExpectedCount() {
     $this->truncateTables(['civicrm_contact']);
+    $this->setDomainFromAddress('test@test.com', 'Test');
+
+    $documentType = OptionValueFabricator::fabricate([
+      'option_group_id' => 'activity_type',
+      'component_id' => 'CiviDocument'
+    ]);
 
     // expect 3
     ContactFabricator::fabricate();
@@ -90,15 +84,20 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
     // expect 1 Task
     TaskTypeFabricator::fabricate();
-    TaskFabricator::fabricate();
+    $params = [
+      'source_contact_id' => $contactID,
+      'target_contact_id' => $contactID,
+    ];
+    TaskFabricator::fabricate($params);
 
     // expect 1 Assignment
     CaseTypeFabricator::fabricate();
     AssignmentFabricator::fabricate();
 
     // expect 2 Documents
-    DocumentFabricator::fabricate();
-    DocumentFabricator::fabricate();
+    $params['activity_type_id'] = $documentType['value'];
+    DocumentFabricator::fabricate($params);
+    DocumentFabricator::fabricate($params);
 
     // expect 2 LeaveRequests
     $this->setUpLeaveRequest($contactID);
@@ -214,12 +213,17 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $contact = ContactFabricator::fabricate();
     civicrm_api3('Contact', 'delete', ['id' => $contact['id']]);
 
-    civicrm_api3('Task', 'delete', ['id' => TaskFabricator::fabricate()['id']]);
+    $params = [
+      'source_contact_id' => $contactID,
+      'target_contact_id' => $contactID
+    ];
+    $task = TaskFabricator::fabricate($params);
+    civicrm_api3('Task', 'delete', ['id' => $task['id']]);
 
     $assignment = AssignmentFabricator::fabricate();
     civicrm_api3('Assignment', 'delete', ['id' => $assignment->id]);
 
-    $document = DocumentFabricator::fabricate();
+    $document = DocumentFabricator::fabricate($params);
     civicrm_api3('Document', 'delete', ['id' => $document->id]);
 
     $leaveRequest = $this->fabricateLeaveRequest($contactID);
