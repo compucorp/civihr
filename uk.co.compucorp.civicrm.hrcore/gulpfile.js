@@ -201,8 +201,7 @@ var xml = require("xml-parse");
 
 // RequireJS
 (function () {
-  var rjs = require('gulp-requirejs');
-  var readFiles = require('read-vinyl-file-stream');
+  var exec = require('child_process').exec;
   var map = require('map-stream');
 
   gulp.task('requirejs', function (cb) {
@@ -215,18 +214,14 @@ var xml = require("xml-parse");
 
     return gulp.src(extPath + '/js/build.js')
       .pipe(customLogic.pre ? customLogic.pre() : gutil.noop())
-      .pipe(readFiles(function (content, file, stream, cb) {
-        var newContent = addExtentionPathToBuildConfig(content, extPath);
-
-        return cb(null, newContent);
+      .pipe(map(function (file, cb) {
+        exec('r.js -o ' + file.path, function (err, stdout, stderr) {
+          err && err.code && console.log(stdout);
+          cb();
+        });
       }))
-      .pipe(map(function(file, cb) {
-        rjs(eval(file.contents.toString()))
-          .pipe(customLogic.post ? customLogic.post() : gutil.noop())
-          .pipe(gulp.dest('.'));
-
-        cb();
-      }));
+      .pipe(customLogic.post ? customLogic.post() : gutil.noop())
+      .pipe(gulp.dest('.'));
   });
 
   function addExtentionPathToBuildConfig (file, extPath) {
