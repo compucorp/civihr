@@ -146,7 +146,7 @@ define([
           return initTimes();
         }
       })
-      .then(!vm.isMode('create') && setDatepickerBoundaries)
+      .then(!vm.isMode('create') && setDatepickerBoundariesForToDate)
       .then(initOriginalOpeningBalance)
       .then(setOpeningBalance)
       .then(function () {
@@ -226,11 +226,12 @@ define([
             vm.period = datePeriod;
           }
 
+          // @TODO this exception should belong to getAbsencePeriod()
           if (!vm.period.id) {
             return $q.reject('Please change date as it is not in any absence period');
           }
         })
-        .then(setDatepickerBoundaries)
+        .then(setDatepickerBoundariesForToDate)
         .then(function () {
           if (absencePeriodChanged) {
             return loadCalendar();
@@ -469,6 +470,7 @@ define([
         $rootScope.$on('LeaveRequestPopup::absenceTypeChanged', function () {
           updateAbsenceType();
         }),
+        // @TODO handle when absence period exists, but there are no entitlements for this period
         // @TODO absence types with balances should be watched via $onChange
         $rootScope.$on('LeaveRequestPopup::absencePeriodBalancesUpdated', function (event, absenceTypesWithBalances) {
           updateBalances(absenceTypesWithBalances);
@@ -726,7 +728,7 @@ define([
      * init/starting date which user can select from. For multiple days request
      * user can select to date which is one more than the the start date.
      */
-    function setDatepickerBoundaries () {
+    function setDatepickerBoundariesForToDate () {
       var dayAfterFromDate, initDate, minDate;
 
       if (vm.uiOptions.fromDate) {
