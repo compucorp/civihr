@@ -201,28 +201,41 @@ define([
      * @return {Promise}
      */
     function dateChangeHandler (dateType) {
-      var absencePeriodChanged = isAbsencePeriodChanged(dateType);
-
-      setDatepickerBoundaries();
-      (dateType === 'from') && resetToDateIfGreaterThanFromDate();
-      resetUIDayTypesTimeAndDeductions(dateType);
-
-      vm.uiOptions.times[dateType].loading = true;
-      vm.loading[dateType + 'DayTypes'] = true;
-      vm.uiOptions.times[dateType].disabled = true;
+      var absencePeriodChanged;
 
       return $q.resolve()
+        .then(function () {
+          setDatepickerBoundaries();
+          resetUIDayTypesTimeAndDeductions(dateType);
+
+          if (dateType === 'from') {
+            resetToDateIfGreaterThanFromDate();
+          }
+
+          vm.uiOptions.times[dateType].loading = true;
+          vm.loading[dateType + 'DayTypes'] = true;
+          vm.uiOptions.times[dateType].disabled = true;
+        })
         .then(vm.onDateChangeExtended)
         .then(function () {
+          return getAbsencePeriod(dateType);
+        })
+        .then(function (datePeriod) {
+          absencePeriodChanged = datePeriod.id !== vm.period.id;
+
           if (absencePeriodChanged) {
-            vm.period = getAbsencePeriod(dateType);
+            vm.period = datePeriod;
           }
 
           if (!vm.period.id) {
             return $q.reject('Please change date as it is not in any absence period');
           }
         })
-        .then(loadCalendar)
+        .then(function () {
+          if (absencePeriodChanged) {
+            return loadCalendar();
+          }
+        })
         .then(function () {
           return $q.all([
             isCalculationUnit('hours') && loadTimeRangesFromWorkPattern(dateType),
@@ -233,7 +246,6 @@ define([
           setRequestDateTimesAndDateTypes();
 
           if (absencePeriodChanged) {
-            setDatepickerBoundaries();
             $rootScope.$broadcast('LeaveRequestPopup::absencePeriodChanged');
           } else {
             return performBalanceChangeCalculation();
@@ -406,20 +418,6 @@ define([
      */
     function initBalanceChange () {
       return (!vm.isMode('create') ? getOriginalBalanceChange() : performBalanceChangeCalculation());
-    }
-
-    /**
-     * Checks if absence period changed or does not exist
-     * for the set date of the given type
-     *
-     * @param  {String} (from|to)
-     * @return {Boolean}
-     */
-    function isAbsencePeriodChanged (dateType) {
-      var previousAbsencePeriodId = vm.period.id;
-      var absencePeriod = getAbsencePeriod(dateType) || {};
-
-      return absencePeriod.id !== previousAbsencePeriodId;
     }
 
     /**

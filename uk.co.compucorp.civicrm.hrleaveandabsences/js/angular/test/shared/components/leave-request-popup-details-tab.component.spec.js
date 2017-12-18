@@ -201,6 +201,21 @@ define([
             expect(controller.request.from_date_type).toEqual('1');
           });
 
+          it('updates calendar', function () {
+            expect(WorkPatternAPI.getCalendar).toHaveBeenCalled();
+          });
+
+          describe('after another "from" date is selected from the same absence period', function () {
+            beforeEach(function () {
+              WorkPatternAPI.getCalendar.calls.reset();
+              setTestDates(date2016To);
+            });
+
+            it('does not update calendar', function () {
+              expect(WorkPatternAPI.getCalendar).not.toHaveBeenCalled();
+            });
+          });
+
           describe('and from date is weekend', function () {
             var testDate;
 
@@ -689,7 +704,7 @@ define([
               expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
             });
 
-            describe('when recieved the balance change recalculation event', function () {
+            describe('when received the balance change recalculation event', function () {
               beforeEach(function () {
                 $rootScope.$emit('LeaveRequestPopup::recalculateBalanceChange');
                 $rootScope.$apply();
@@ -752,6 +767,7 @@ define([
 
           describe('and after from date is selected', function () {
             beforeEach(function () {
+              WorkPatternAPI.getCalendar.calls.reset();
               setTestDates(date2017);
             });
 
