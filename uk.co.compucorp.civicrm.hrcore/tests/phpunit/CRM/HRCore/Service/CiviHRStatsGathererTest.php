@@ -23,6 +23,7 @@ use CRM_HRCore_Test_Fabricator_ContactType as ContactTypeFabricator;
 class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   use CRM_HRCore_Test_Helpers_SessionHelpersTrait;
+  use CRM_HRCore_Test_Helpers_TableCleanupTrait;
 
   /**
    * Used in setup method for leave request fabrication
@@ -72,11 +73,9 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
   }
 
   public function testEntityCountsWillMatchExpectedCount() {
-    $existingContactCount = $this->getCurrentContactCount();
+    $this->truncateTables(['civicrm_contact']);
 
-    // 2 : document fabricator creates a fabricated contact on each call
-    // 3 : created in this test
-    // expect 5 + existing Contacts
+    // expect 3
     ContactFabricator::fabricate();
     ContactFabricator::fabricate();
     $contactID = ContactFabricator::fabricateWithEmail()['id'];
@@ -108,8 +107,7 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
     $stats = $this->getGatherer()->gather();
 
-    $expectedContacts = 5 + $existingContactCount;
-    $this->assertEquals($expectedContacts, $stats->getEntityCount('contact'));
+    $this->assertEquals(3, $stats->getEntityCount('contact'));
     $this->assertEquals(1, $stats->getEntityCount('drupalUser'));
     $this->assertEquals(2, $stats->getEntityCount('vacancy'));
     $this->assertEquals(1, $stats->getEntityCount('task'));
@@ -144,13 +142,7 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
   }
 
   public function testContactSubtypeCountWillMatchExpectedCount() {
-    $existingContactCount = $this->getCurrentContactCount();
-    $existingOrganizationCount = $this->getCurrentContactCount(
-      ['contact_type' => 'Organization']
-    );
-    $existingIndividialCount = $this->getCurrentContactCount(
-      ['contact_type' => 'Individual']
-    );
+    $this->truncateTables(['civicrm_contact']);
 
     ContactTypeFabricator::fabricate(['name' => 'Cat']);
     ContactTypeFabricator::fabricate(['name' => 'Dog']);
@@ -197,9 +189,6 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
     $stats = $this->getGatherer()->gather();
 
-    $expectedContacts = $existingContactCount + 5;
-    $expectedOrgs = $existingOrganizationCount + 2;
-    $expectedIndividuals = $existingIndividialCount + 3;
     $organizationCount = $stats->getContactSubtypeCount('Organization');
     $individualCount = $stats->getContactSubtypeCount('Individual');
 
@@ -207,56 +196,41 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $this->assertEquals(1, $stats->getContactSubtypeCount('Dog'));
     $this->assertEquals(1, $stats->getContactSubtypeCount('CatClub'));
     $this->assertEquals(2, $stats->getContactSubtypeCount('Cat'));
-    $this->assertEquals($expectedOrgs, $organizationCount);
-    $this->assertEquals($expectedIndividuals, $individualCount);
-    $this->assertEquals($expectedContacts, $stats->getEntityCount('contact'));
+    $this->assertEquals(2, $organizationCount);
+    $this->assertEquals(3, $individualCount);
+    $this->assertEquals(5, $stats->getEntityCount('contact'));
   }
 
   public function testDeletedEntitiesWillNotBeIncluded() {
+    $this->truncateTables(['civicrm_contact']);
     $contactID = ContactFabricator::fabricate()['id'];
-    $existingContactCount = $this->getCurrentContactCount();
     TaskTypeFabricator::fabricate();
     $this->setUpLeaveRequest($contactID);
     $this->registerCurrentLoggedInContactInSession($contactID);
-    civicrm_api3(
-      'UFMatch',
-      'delete',
-      ['id' => UFMatchFabricator::fabricate()['id']]
-    );
-    civicrm_api3(
-      'Contact',
-      'delete',
-      ['id' => ContactFabricator::fabricate()['id']]
-    );
-    civicrm_api3(
-      'Task',
-      'delete',
-      ['id' => TaskFabricator::fabricate()['id']]
-    );
-    civicrm_api3(
-      'Assignment',
-      'delete',
-      ['id' => AssignmentFabricator::fabricate()->id]
-    );
-    civicrm_api3(
-      'Document',
-      'delete',
-      ['id' => DocumentFabricator::fabricate()->id]
-    );
-    civicrm_api3(
-      'LeaveRequest',
-      'delete',
-      ['id' => $this->fabricateLeaveRequest($contactID)->id]
-    );
-    civicrm_api3(
-      'HRVacancy',
-      'delete',
-      ['id' => HRVacancyFabricator::fabricate()['id']]
-    );
+
+    $ufMatch = UFMatchFabricator::fabricate();
+    civicrm_api3('UFMatch', 'delete', ['id' => $ufMatch['id']]);
+
+    $contact = ContactFabricator::fabricate();
+    civicrm_api3('Contact', 'delete', ['id' => $contact['id']]);
+
+    civicrm_api3('Task', 'delete', ['id' => TaskFabricator::fabricate()['id']]);
+
+    $assignment = AssignmentFabricator::fabricate();
+    civicrm_api3('Assignment', 'delete', ['id' => $assignment->id]);
+
+    $document = DocumentFabricator::fabricate();
+    civicrm_api3('Document', 'delete', ['id' => $document->id]);
+
+    $leaveRequest = $this->fabricateLeaveRequest($contactID);
+    civicrm_api3('LeaveRequest', 'delete', ['id' => $leaveRequest->id]);
+
+    $vacancy = HRVacancyFabricator::fabricate();
+    civicrm_api3('HRVacancy', 'delete', ['id' => $vacancy['id']]);
 
     $stats = $this->getGatherer()->gather();
 
-    $this->assertEquals($existingContactCount, $stats->getEntityCount('contact'));
+    $this->assertEquals(1, $stats->getEntityCount('contact'));
     $this->assertEquals(0, $stats->getEntityCount('drupalUser'));
     $this->assertEquals(0, $stats->getEntityCount('task'));
     $this->assertEquals(0, $stats->getEntityCount('assignment'));
@@ -318,16 +292,4 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     ]);
   }
 
-  /**
-   * Gets the number of active contacts now
-   *
-   * @param array $params
-   *
-   * @return int
-   */
-  private function getCurrentContactCount($params = []) {
-    $params['is_deleted'] = 0;
-
-    return (int) civicrm_api3('Contact', 'getcount', $params);
-  }
 }
