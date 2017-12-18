@@ -63,6 +63,16 @@
           expect(CRM.alert).toHaveBeenCalledWith(body, title, 'error', options);
         });
       });
+
+      describe('when passing only title', function () {
+        beforeEach(function () {
+          notificationService.success(title);
+        });
+
+        it('defaults body to the empty string', function () {
+          expect(CRM.alert).toHaveBeenCalledWith('', title, 'success', undefined);
+        });
+      });
     });
   });
 })(CRM);
