@@ -126,7 +126,7 @@ define([
         // Hold the whole number before decimal separator
         amountBeforeDecimal = +(amount.substring(0, decimalIndex));
         // Remove all non numeric characters form values after decimal separator
-        amountAfterDecimal = amount.substring(decimalIndex + 1).replace(/[^0-9]/g, '');
+        amountAfterDecimal = amount.substring(decimalIndex + 1).replace(/[^0-9]/g, '') || '00';
       } else {
         amountBeforeDecimal = +(amount.replace(/[^0-9]/g, ''));
       }
