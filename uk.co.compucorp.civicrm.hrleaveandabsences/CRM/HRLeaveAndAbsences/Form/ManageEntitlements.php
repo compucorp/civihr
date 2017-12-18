@@ -142,10 +142,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
   private function getAbsencePeriodFromRequest() {
     $periodId = CRM_Utils_Request::retrieve('id', 'Integer');
     if(!$periodId) {
-      $today = new DateTime('today');
-      $absencePeriods = AbsencePeriod::getPeriodsBetweenDates($today);
-
-      return $absencePeriods[0];
+      return AbsencePeriod::getClosestToCurrentDate();
     }
 
     return AbsencePeriod::findById((int)$periodId);

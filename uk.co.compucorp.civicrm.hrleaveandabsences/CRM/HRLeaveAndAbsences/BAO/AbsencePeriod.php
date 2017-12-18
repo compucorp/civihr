@@ -4,6 +4,7 @@ use CRM_HRCore_Date_BasicDatePeriod as BasicDatePeriod;
 use CRM_HRLeaveAndAbsences_Validator_Date as DateValidator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException as InvalidAbsencePeriodException;
 
 class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DAO_AbsencePeriod {
@@ -617,5 +618,84 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
     }
 
     return $absencePeriods;
+  }
+
+  /**
+   * Returns the closest Absence Period to the current date.
+   * The absence period could be before the current date or
+   * could be after or could even contain the current date.
+   *
+   * @return AbsencePeriod|null
+   *   Returns null if there are no absence periods.
+   */
+  public static function getClosestToCurrentDate() {
+    $firstPeriod = self::getFirst();
+
+    if(!$firstPeriod) {
+      return null;
+    }
+
+    $firstPeriodEndDate = new DateTime($firstPeriod->end_date);
+    $today = new DateTime('today');
+
+    if($firstPeriodEndDate < $today) {
+      $absencePeriods = self::getPeriodsBetweenDates($firstPeriodEndDate, $today);
+      $periodBeforeOrInCurrentDate = end($absencePeriods);
+      $nextPeriod = $periodBeforeOrInCurrentDate->getNextPeriod();
+      return self::getClosetPeriodToCurrentDate($periodBeforeOrInCurrentDate, $nextPeriod);
+    }
+
+
+    return $firstPeriod;
+  }
+
+  /**
+   * Returns the first Absence Period record.
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
+   */
+  private static function getFirst() {
+    $absencePeriod = new self();
+    $absencePeriod->orderBy('weight');
+    $absencePeriod->find(true);
+
+    if($absencePeriod->id) {
+      return $absencePeriod;
+    }
+
+    return null;
+  }
+
+  /**
+   * Returns the closest absence period to the current date i.e
+   * either of firstPeriod or secondPeriod.
+   * The days interval between today and the end date of the first
+   * period is compared with the days interval between today and the
+   * start date of the second period, the period with which the current
+   * date has the least days interval is returned as the closest period
+   * to the current date.
+   * If the secondPeriod is null, the firstPeriod is simply returned as
+   * the closest period.
+   *
+   * @param AbsencePeriod $firstPeriod
+   * @param AbsencePeriod|null $secondPeriod
+   *
+   * @return AbsencePeriod
+   */
+  private static function getClosetPeriodToCurrentDate(AbsencePeriod $firstPeriod, AbsencePeriod $secondPeriod = null) {
+    $currentDate = new DateTime('today');
+
+    if($secondPeriod) {
+      $firstPeriodEndDate = new DateTime($firstPeriod->end_date);
+      $secondPeriodStartDate = new DateTime($secondPeriod->start_date);
+      $daysDiffForFirstPeriod = $currentDate->diff($firstPeriodEndDate)->days;
+      $daysDiffForSecondPeriod = $currentDate->diff($secondPeriodStartDate)->days;
+
+      if($daysDiffForSecondPeriod < $daysDiffForFirstPeriod){
+        return $secondPeriod;
+      }
+    }
+
+    return $firstPeriod;
   }
 }

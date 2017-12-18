@@ -923,4 +923,94 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     $absencePeriods = AbsencePeriod::getPeriodsBetweenDates($fromDate, $toDate);
     $this->assertEmpty($absencePeriods);
   }
+
+  public function testGetClosestToCurrentDateReturnsCorrectlyWhenClosestPeriodIsPeriodAfterCurrentDate() {
+    $period1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('-5 days'),
+    ]);
+
+    $period2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('+1 day'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    //Period two is closer to the current date.
+    $closestPeriod = AbsencePeriod::getClosestToCurrentDate();
+    $this->assertEquals($period2->id, $closestPeriod->id);
+  }
+
+  public function testGetClosestToCurrentDateReturnsCorrectlyWhenClosestPeriodIsPeriodBeforeCurrentDate() {
+    $period1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('-3 days'),
+    ]);
+
+    $period2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('+7 day'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    //Period one is closer to the current date.
+    $closestPeriod = AbsencePeriod::getClosestToCurrentDate();
+    $this->assertEquals($period1->id, $closestPeriod->id);
+  }
+
+  public function testGetClosestToCurrentDateReturnsCorrectlyWhenClosestPeriodIsPeriodContainingTheCurrentDate() {
+    $period1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('-3 days'),
+    ]);
+
+    $period2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-2 day'),
+      'end_date' => CRM_Utils_Date::processDate('+5 days'),
+    ]);
+
+    $period3 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('+6 day'),
+      'end_date' => CRM_Utils_Date::processDate('+10 days'),
+    ]);
+
+    //Period two is closer to the current date and also contains the current date
+    $closestPeriod = AbsencePeriod::getClosestToCurrentDate();
+    $this->assertEquals($period2->id, $closestPeriod->id);
+  }
+
+  public function testGetClosestToCurrentDateReturnsCorrectlyWhenThereIsNoPeriodAfterTheCurrentDate() {
+    $period1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-10 days'),
+      'end_date' => CRM_Utils_Date::processDate('-9 days'),
+    ]);
+
+    $period2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('-8 days'),
+      'end_date' => CRM_Utils_Date::processDate('-7 days'),
+    ]);
+
+    //Period two is closer to the current date
+    $closestPeriod = AbsencePeriod::getClosestToCurrentDate();
+    $this->assertEquals($period2->id, $closestPeriod->id);
+  }
+
+  public function testGetClosestToCurrentDateReturnsCorrectlyWhenThereIsNoPeriodBeforeTheCurrentDate() {
+    $period1 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('+2 days'),
+      'end_date' => CRM_Utils_Date::processDate('+9 days'),
+    ]);
+
+    $period2 = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('+10 days'),
+      'end_date' => CRM_Utils_Date::processDate('+11 days'),
+    ]);
+
+    //Period one is closer to the current date
+    $closestPeriod = AbsencePeriod::getClosestToCurrentDate();
+    $this->assertEquals($period1->id, $closestPeriod->id);
+  }
+
+  public function testGetClosestToCurrentDateReturnsNullWhenThereIsNoAbsencePeriod() {
+    $closestPeriod = AbsencePeriod::getClosestToCurrentDate();
+    $this->assertNull($closestPeriod);
+  }
 }
