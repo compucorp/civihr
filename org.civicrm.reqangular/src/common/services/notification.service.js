@@ -11,7 +11,7 @@
       return _(['alert', 'success', 'info', 'error'])
         .map(function (type) {
           return [type, function (title, body, options) {
-            return CRM.alert(body, title, type, options);
+            return CRM.alert(body || '', title, type, options);
           }];
         })
         .zipObject()
