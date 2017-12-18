@@ -62,7 +62,7 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
   private function getEntityCounts() {
     $entityCounts = [];
     $entityCounts['contact'] = $this->getEntityCount('Contact');
-    $entityCounts['drupalUser'] = $this->getEntityCount('UFMatch');
+    $entityCounts['cmsUser'] = $this->getEntityCount('UFMatch');
     $entityCounts += $this->getTaskAndAssignmentEntityCounts();
     $entityCounts += $this->getLeaveAndAbsenceEntityCounts();
     $entityCounts += $this->getRecruitmentEntityCounts();

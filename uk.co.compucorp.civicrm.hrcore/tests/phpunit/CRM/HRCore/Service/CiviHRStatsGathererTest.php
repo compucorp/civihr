@@ -108,7 +108,7 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $stats = $this->getGatherer()->gather();
 
     $this->assertEquals(3, $stats->getEntityCount('contact'));
-    $this->assertEquals(1, $stats->getEntityCount('drupalUser'));
+    $this->assertEquals(1, $stats->getEntityCount('cmsUser'));
     $this->assertEquals(2, $stats->getEntityCount('vacancy'));
     $this->assertEquals(1, $stats->getEntityCount('task'));
     $this->assertEquals(1, $stats->getEntityCount('assignment'));
@@ -231,7 +231,7 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $stats = $this->getGatherer()->gather();
 
     $this->assertEquals(1, $stats->getEntityCount('contact'));
-    $this->assertEquals(0, $stats->getEntityCount('drupalUser'));
+    $this->assertEquals(0, $stats->getEntityCount('cmsUser'));
     $this->assertEquals(0, $stats->getEntityCount('task'));
     $this->assertEquals(0, $stats->getEntityCount('assignment'));
     $this->assertEquals(0, $stats->getEntityCount('document'));
