@@ -182,6 +182,8 @@ define([
           var fromDate;
 
           beforeEach(function () {
+            controller.period = {};
+
             setTestDates(date2016);
             fromDate = moment(controller.uiOptions.fromDate).format(sharedSettings.serverDateFormat);
           });
@@ -203,6 +205,12 @@ define([
 
           it('updates calendar', function () {
             expect(WorkPatternAPI.getCalendar).toHaveBeenCalled();
+          });
+
+          it('sets the datepicker boundaries', function () {
+            expect(controller.uiOptions.date.to.options.maxDate).toEqual(moment(controller.period.end_date).toDate());
+            expect(controller.uiOptions.date.to.options.minDate).toEqual(moment(controller.uiOptions.fromDate).add(1, 'day').toDate());
+            expect(controller.uiOptions.date.to.options.initDate).toEqual(controller.uiOptions.date.to.options.minDate);
           });
 
           describe('after another "from" date is selected from the same absence period', function () {

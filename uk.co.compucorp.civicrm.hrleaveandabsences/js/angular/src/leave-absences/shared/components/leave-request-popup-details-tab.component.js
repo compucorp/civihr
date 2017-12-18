@@ -205,7 +205,6 @@ define([
 
       return $q.resolve()
         .then(function () {
-          setDatepickerBoundaries();
           resetUIDayTypesTimeAndDeductions(dateType);
 
           if (dateType === 'from') {
@@ -231,6 +230,7 @@ define([
             return $q.reject('Please change date as it is not in any absence period');
           }
         })
+        .then(setDatepickerBoundaries)
         .then(function () {
           if (absencePeriodChanged) {
             return loadCalendar();
