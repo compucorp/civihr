@@ -27,7 +27,7 @@
       var $log, $rootScope, controller, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
         Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, pubSub,
-        WorkPatternAPI;
+        WorkPatternAPI, notification;
       var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
@@ -71,7 +71,7 @@
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_, _dialog_,
         _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_, _Entitlement_,
         _LeaveRequestInstance_, _LeaveRequest_, _LeaveRequestAPI_, _pubSub_,
-        _WorkPatternAPI_) {
+        _WorkPatternAPI_, _notificationService_) {
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
@@ -85,6 +85,8 @@
         AbsenceTypeAPI = _AbsenceTypeAPI_;
         AbsencePeriodAPI = _AbsencePeriodAPI_;
         pubSub = _pubSub_;
+        notification = _notificationService_;
+        window.alert = function () {}; // prevent alert from being logged in console
 
         LeaveRequestInstance = _LeaveRequestInstance_;
 
@@ -226,6 +228,7 @@
 
           describe('when submit with valid fields', function () {
             beforeEach(function () {
+              spyOn(notification, 'success').and.callThrough();
               LeaveRequestAPI.isValid.and.returnValue($q.resolve());
               LeaveRequestAPI.create.and.returnValue($q.resolve({ id: '1' }));
               controller.balance.closing = 1;
@@ -246,6 +249,10 @@
 
             it('sends event', function () {
               expect(pubSub.publish).toHaveBeenCalledWith('LeaveRequest::new', controller.request);
+            });
+
+            it('shows the success notification', function () {
+              expect(notification.success).toHaveBeenCalledWith('Leave request created successfully');
             });
           });
         });
@@ -348,6 +355,7 @@
 
             describe('and submits', function () {
               beforeEach(function () {
+                spyOn(notification, 'success').and.callThrough();
                 spyOn(controller.request, 'update').and.callThrough();
 
                 // entitlements are randomly generated so resetting them to positive here
@@ -377,6 +385,24 @@
 
               it('closes model popup', function () {
                 expect(modalInstanceSpy.dismiss).toHaveBeenCalled();
+              });
+
+              it('shows the success notification', function () {
+                expect(notification.success).toHaveBeenCalledWith('Leave request updated successfully');
+              });
+
+              describe('if TOIL', function () {
+                beforeEach(function () {
+                  controller.request.request_type = 'toil';
+
+                  notification.success.calls.reset();
+                  controller.submit();
+                  $scope.$apply();
+                });
+
+                it('shows the success notification', function () {
+                  expect(notification.success).toHaveBeenCalledWith('TOIL request updated successfully');
+                });
               });
             });
 

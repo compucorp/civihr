@@ -25,11 +25,13 @@ define([
 
   RequestCtrl.$inject = ['$log', '$q', '$rootScope', '$scope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup',
     'dialog', 'pubSub', 'directiveOptions', 'Contact', 'Session', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
-    'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance'];
+    'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance',
+    'notificationService'];
 
   function RequestCtrl ($log, $q, $rootScope, $scope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub,
     directiveOptions, Contact, Session, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
-    LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance) {
+    LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance,
+    notification) {
     $log.debug('RequestCtrl');
 
     var absenceTypesAndIds;
@@ -348,6 +350,19 @@ define([
       }
 
       return getAvailableStatusesForCurrentStatus();
+    }
+
+    /**
+     * Gets readable type title for the current request
+     *
+     * @return {String}
+     */
+    function getRequestTypeTitle () {
+      return {
+        'leave': 'Leave',
+        'sickness': 'Sickness',
+        'toil': 'TOIL'
+      }[getLeaveType()];
     }
 
     /**
@@ -793,6 +808,17 @@ define([
     }
 
     /**
+     * Shows message about request saving success
+     */
+    function showRequestSavingSuccessMessage () {
+      notification.success(
+        getRequestTypeTitle() + ' request ' +
+        (vm.mode === 'create' ? 'created' : 'updated') +
+        ' successfully'
+      );
+    }
+
+    /**
      * Submits the form, only if the leave request is valid, also emits event
      * to notify event subscribers about the the save.
      * Updates request based on role and mode
@@ -815,6 +841,7 @@ define([
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
         })
+        .then(showRequestSavingSuccessMessage)
         .catch(function (errors) {
           // if there is an error, put back the original status
           vm.request.status_id = originalStatus;
