@@ -940,7 +940,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
     $this->assertEquals($period2->id, $closestPeriod->id);
   }
 
-  public function testGetClosestToCurrentDateReturnsCorrectlyWhenClosestPeriodIsPeriodBeforeCurrentDate() {
+  public function testGetClosestToCurrentDateReturnsCorrectlyWhenClosestPeriodIsBeforeCurrentDateButAFuturePeriodAlsoExists() {
     $period1 = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('-10 days'),
       'end_date' => CRM_Utils_Date::processDate('-3 days'),
@@ -951,9 +951,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
       'end_date' => CRM_Utils_Date::processDate('+10 days'),
     ]);
 
-    //Period one is closer to the current date.
+    //Period one is closer to the current date but period two will be returned because
+    //more priority is given to absence periods in the future.
     $closestPeriod = AbsencePeriod::getClosestToCurrentDate();
-    $this->assertEquals($period1->id, $closestPeriod->id);
+    $this->assertEquals($period2->id, $closestPeriod->id);
   }
 
   public function testGetClosestToCurrentDateReturnsCorrectlyWhenClosestPeriodIsPeriodContainingTheCurrentDate() {

@@ -622,80 +622,45 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
 
   /**
    * Returns the closest Absence Period to the current date.
-   * The absence period could be before the current date or
-   * could be after or could even contain the current date.
+   * The absence period could be the one before the current date or
+   * could be after or could even be the one containing the
+   * current date.
+   *
+   * An absence period containing the current date is the most
+   * preferred, If it does not exist, then the next closest absence
+   * period in the future is preferred, If that does not exists, then
+   * the closest absence period in the past is considered.
    *
    * @return AbsencePeriod|null
    *   Returns null if there are no absence periods.
    */
   public static function getClosestToCurrentDate() {
-    $firstPeriod = self::getFirst();
-
-    if(!$firstPeriod) {
-      return null;
-    }
-
-    $firstPeriodEndDate = new DateTime($firstPeriod->end_date);
+    $absencePeriodTable = self::getTableName();
     $today = new DateTime('today');
 
-    if($firstPeriodEndDate < $today) {
-      $absencePeriods = self::getPeriodsBetweenDates($firstPeriodEndDate, $today);
-      $periodBeforeOrInCurrentDate = end($absencePeriods);
-      $nextPeriod = $periodBeforeOrInCurrentDate->getNextPeriod();
-      return self::getClosetPeriodToCurrentDate($periodBeforeOrInCurrentDate, $nextPeriod);
+    $query = "SELECT * FROM {$absencePeriodTable} 
+              WHERE end_date >= '{$today->format('Y-m-d')}'
+              ORDER BY start_date ASC LIMIT 1";
+
+    $absencePeriod = CRM_Core_DAO::executeQuery($query, [], true, self::class);
+
+    if ($absencePeriod->N != 1) {
+      $query = "SELECT * FROM {$absencePeriodTable}
+              WHERE end_date < '{$today->format('Y-m-d')}'
+              ORDER BY start_date DESC LIMIT 1";
+
+      $absencePeriod = CRM_Core_DAO::executeQuery($query, [], true, self::class);
     }
 
 
-    return $firstPeriod;
-  }
+    if($absencePeriod->N == 1) {
+      while($absencePeriod->fetch()) {
+        $absencePeriod = $absencePeriod;
+      }
 
-  /**
-   * Returns the first Absence Period record.
-   *
-   * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
-   */
-  private static function getFirst() {
-    $absencePeriod = new self();
-    $absencePeriod->orderBy('weight');
-    $absencePeriod->find(true);
-
-    if($absencePeriod->id) {
       return $absencePeriod;
     }
 
     return null;
-  }
-
-  /**
-   * Returns the closest absence period to the current date i.e
-   * either of firstPeriod or secondPeriod.
-   * The days interval between today and the end date of the first
-   * period is compared with the days interval between today and the
-   * start date of the second period, the period with which the current
-   * date has the least days interval is returned as the closest period
-   * to the current date.
-   * If the secondPeriod is null, the firstPeriod is simply returned as
-   * the closest period.
-   *
-   * @param AbsencePeriod $firstPeriod
-   * @param AbsencePeriod|null $secondPeriod
-   *
-   * @return AbsencePeriod
-   */
-  private static function getClosetPeriodToCurrentDate(AbsencePeriod $firstPeriod, AbsencePeriod $secondPeriod = null) {
-    $currentDate = new DateTime('today');
-
-    if($secondPeriod) {
-      $firstPeriodEndDate = new DateTime($firstPeriod->end_date);
-      $secondPeriodStartDate = new DateTime($secondPeriod->start_date);
-      $daysDiffForFirstPeriod = $currentDate->diff($firstPeriodEndDate)->days;
-      $daysDiffForSecondPeriod = $currentDate->diff($secondPeriodStartDate)->days;
-
-      if($daysDiffForSecondPeriod < $daysDiffForFirstPeriod){
-        return $secondPeriod;
-      }
-    }
-
-    return $firstPeriod;
   }
 }
