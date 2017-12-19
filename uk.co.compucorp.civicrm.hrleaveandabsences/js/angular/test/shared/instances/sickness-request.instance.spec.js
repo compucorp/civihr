@@ -54,6 +54,10 @@ define([
       it('initializes request type', function () {
         expect(instance.request_type).toEqual('sickness');
       });
+
+      it('has the type title as "Sickness"', function () {
+        expect(instance.type_title).toBe('Sickness');
+      });
     });
 
     describe('toggleDocument()', function () {

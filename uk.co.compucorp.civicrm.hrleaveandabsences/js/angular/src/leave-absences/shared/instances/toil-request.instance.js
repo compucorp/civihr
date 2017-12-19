@@ -23,7 +23,8 @@ define([
           var toilCustomData = {
             toilDurationHours: '0',
             toilDurationMinutes: '0',
-            request_type: 'toil'
+            request_type: 'toil',
+            type_title: 'TOIL'
           };
 
           return _.assign({}, LeaveRequestInstance.defaultCustomData(), toilCustomData);

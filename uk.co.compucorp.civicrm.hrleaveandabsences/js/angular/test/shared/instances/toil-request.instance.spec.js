@@ -52,6 +52,10 @@ define([
       it('initializes request type', function () {
         expect(instance.request_type).toEqual('toil');
       });
+
+      it('has the type title as "TOIL"', function () {
+        expect(instance.type_title).toBe('TOIL');
+      });
     });
 
     describe('updateDuration()', function () {

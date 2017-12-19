@@ -194,7 +194,8 @@ define([
           return {
             comments: [],
             files: [],
-            request_type: 'leave'
+            request_type: 'leave',
+            type_title: 'Leave'
           };
         },
 
