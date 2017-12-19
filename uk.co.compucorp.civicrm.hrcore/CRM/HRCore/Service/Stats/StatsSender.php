@@ -13,12 +13,18 @@ class CRM_HRCore_Service_Stats_StatsSender {
   /**
    * @var LoggerInterface
    */
-  protected $logger;
+  private $logger;
 
   /**
    * @var HttpClient
    */
   private $httpClient;
+
+  /**
+   * @var string
+   *   The default endpoint to post statistics to
+   */
+  private $statsEndpoint = 'https://civihr.org/civicrm/civihr-statistics';
 
   /**
    * @param HttpClient $httpClient
@@ -30,6 +36,11 @@ class CRM_HRCore_Service_Stats_StatsSender {
   ) {
     $this->httpClient = $httpClient;
     $this->logger = $logger;
+
+    // allow override
+    if (defined('CIVIHR_STATISTICS_ENDPOINT')) {
+      $this->statsEndpoint = CIVIHR_STATISTICS_ENDPOINT;
+    }
   }
 
   /**
@@ -38,7 +49,6 @@ class CRM_HRCore_Service_Stats_StatsSender {
    * @param CiviHRStatistics $stats
    */
   public function send(CiviHRStatistics $stats) {
-
     $json = StatsJSONConvertor::toJson($stats);
     $this->doRequest($json);
 
@@ -53,25 +63,16 @@ class CRM_HRCore_Service_Stats_StatsSender {
   }
 
   /**
-   * @param $json
+   * Send the JSON response body to the server.
+   *
+   * @param string $json
    */
   private function doRequest($json) {
-    $headers = [
-      'Content-Type: application/json',
-      'Content-Length: ' . strlen($json)
-    ];
+    $response = $this->httpClient->post($this->statsEndpoint, $json);
+    list($status, $responseBody) = $response;
 
-    $endpoint = 'http://localhost:8000';
-    if (defined('CIVIHR_STATISTICS_ENDPOINT')) {
-      $endpoint = CIVIHR_STATISTICS_ENDPOINT;
-    }
-
-    $response = $this->httpClient->post($endpoint, $json);
-    list ($status, $response) = $response;
-
-    // todo other checks are probably required on response
     if (HttpClient::STATUS_OK !== $status) {
-      $msg = sprintf('Failed sending CiviHR stats: %s', $response);
+      $msg = sprintf('Failed sending CiviHR stats: %s', $responseBody);
       if ($this->logger) {
         $this->logger->error($msg);
       }
