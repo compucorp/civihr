@@ -65,7 +65,7 @@ class StatsJSONConvertorTest extends PHPUnit_Framework_TestCase {
       ->addReportConfigurationAgeGroup($ageGroup);
 
     $json = CiviHRStatisticsConvertor::toJson($stats);
-    $testFile = __DIR__ . '/../Files/statistics_sample_request.json';
+    $testFile = __DIR__ . '/../../Files/statistics_sample_request.json';
     $expected = file_get_contents($testFile);
     $asArray = json_decode($json, TRUE);
     $expectedAsArray = json_decode($expected, TRUE);
