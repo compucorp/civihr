@@ -24,24 +24,16 @@ define([
       /**
        * Gets the instance for the given request fetched via API,
        * for example for "toil" request that would be `TOILRequestInstance`.
-       * Defaults to the `LeaveRequestInstance`.
        *
        * @param  {Object} requestObject a plain LeaveRequest object fetched via API
        * @return {Instance} instance of the request depending on its type
        */
       function initRequestInstance (requestObject) {
-        var requestInstance;
-        var requestType = requestObject.request_type;
-
-        if (requestType === 'sickness') {
-          requestInstance = SicknessRequestInstance;
-        } else if (requestType === 'toil') {
-          requestInstance = TOILRequestInstance;
-        } else {
-          requestInstance = LeaveRequestInstance;
-        }
-
-        return requestInstance.init(requestObject, true);
+        return {
+          'sickness': SicknessRequestInstance,
+          'toil': TOILRequestInstance,
+          'leave': LeaveRequestInstance
+        }[requestObject.request_type].init(requestObject, true);
       }
 
       return Model.extend({
