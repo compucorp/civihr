@@ -25,13 +25,11 @@ define([
 
   RequestCtrl.$inject = ['$log', '$q', '$rootScope', '$scope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup',
     'dialog', 'pubSub', 'directiveOptions', 'Contact', 'Session', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
-    'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance',
-    'notificationService'];
+    'LeaveRequest', 'LeaveRequestInstance', 'notificationService', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance'];
 
   function RequestCtrl ($log, $q, $rootScope, $scope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub,
     directiveOptions, Contact, Session, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
-    LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance,
-    notification) {
+    LeaveRequestInstance, notification, sharedSettings, SicknessRequestInstance, TOILRequestInstance) {
     $log.debug('RequestCtrl');
 
     var absenceTypesAndIds;
