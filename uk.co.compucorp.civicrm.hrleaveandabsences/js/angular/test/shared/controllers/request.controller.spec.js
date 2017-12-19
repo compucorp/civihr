@@ -26,8 +26,8 @@
     describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, controller, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
-        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, pubSub,
-        WorkPatternAPI, notification, TOILRequestInstance;
+        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, notification, pubSub,
+        TOILRequestInstance, WorkPatternAPI;
       var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
