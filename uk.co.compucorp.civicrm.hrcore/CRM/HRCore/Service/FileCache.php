@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Responsible for storing a persistent file cache. Serializes all data to be
+ * stored and returns the unserialized variable.
+ */
 class CRM_HRCore_Service_FileCache {
 
   /**
@@ -9,45 +13,54 @@ class CRM_HRCore_Service_FileCache {
   protected $cacheDir;
 
   public function __construct() {
-   $this->cacheDir = Civi::paths()->getPath('ext/civihr/filecache');
+    $this->cacheDir = Civi::paths()->getPath('ext/civihr/filecache');
 
-   if (!file_exists($this->cacheDir)) {
-     if (!mkdir($this->cacheDir, 0777, TRUE)) {
-       $err = sprintf('Could not create cache dir "%s"', $this->cacheDir);
-       throw new \Exception($err);
-     }
-   }
+    if (!file_exists($this->cacheDir)) {
+      if (!mkdir($this->cacheDir, 0777, TRUE)) {
+        $err = sprintf('Could not create cache dir "%s"', $this->cacheDir);
+        throw new \Exception($err);
+      }
+    }
   }
 
   /**
+   * Fetches the cache entry, returns it (unserialized) if it exists, or NULL if
+   * nothing was found for that key.
+   *
    * @param $key
-   * @return null|string
+   *
+   * @return mixed
    */
   public function get($key) {
     $filename = $this->getCacheFilePath($key);
     if (is_file($filename) && is_readable($filename)) {
-      return file_get_contents($filename);
+      return unserialize(file_get_contents($filename));
     }
 
     return NULL;
   }
 
   /**
+   * Takes any object or scalar value, serializes it and stores it in the cache
+   *
    * @param string $key
    * @param mixed $data
    */
   public function set($key, $data) {
+    $data = serialize($data);
     $filename = $this->getCacheFilePath($key);
     $isDir = file_exists($filename) && is_dir($filename);
     if (file_exists($filename)) {
       $isWritable = is_writable($filename);
-    } else {
+    }
+    else {
       $isWritable = is_writable(dirname($filename));
     }
 
     if ($isDir) {
       throw new \Exception('Cache file is a directory');
-    } elseif (!$isWritable) {
+    }
+    elseif (!$isWritable) {
       throw new \Exception(sprintf('Cannot write to %s', $filename));
     }
 
@@ -57,7 +70,9 @@ class CRM_HRCore_Service_FileCache {
   }
 
   /**
-   * @param $key
+   * Deletes the cache file for a certain key
+   *
+   * @param string $key
    */
   public function remove($key) {
     $filename = $this->getCacheFilePath($key);
@@ -69,7 +84,10 @@ class CRM_HRCore_Service_FileCache {
   }
 
   /**
-   * @param $key
+   * Gets the modified date for a cache entry. Returns NULL if cache doesn't
+   * exist
+   *
+   * @param string $key
    * @return DateTime|null
    */
   public function getModified($key) {
@@ -86,10 +104,13 @@ class CRM_HRCore_Service_FileCache {
   }
 
   /**
-   * @param $key
+   * Fetches the path to a cache file based on its key.
+   *
+   * @param string $key
    * @return string
    */
   private function getCacheFilePath($key) {
     return $this->cacheDir . DIRECTORY_SEPARATOR . $key;
   }
+
 }
