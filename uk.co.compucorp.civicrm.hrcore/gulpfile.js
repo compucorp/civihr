@@ -166,7 +166,7 @@ var xml = require("xml-parse");
   var stripCssComments = require('gulp-strip-css-comments');
 
   gulp.task('sass', function (cb) {
-    var sequence = amendTasksSequenceWithExtensionTasks(['sass:main'], 'sass');
+    var sequence = addExtensionCustomTasksToSequence(['sass:main'], 'sass');
 
     gulpSequence.apply(null, sequence)(cb);
   });
@@ -205,7 +205,7 @@ var xml = require("xml-parse");
   var find = require('find');
 
   gulp.task('requirejs', function (cb) {
-    var sequence = amendTasksSequenceWithExtensionTasks(['requirejs:main'], 'requirejs');
+    var sequence = addExtensionCustomTasksToSequence(['requirejs:main'], 'requirejs');
 
     gulpSequence.apply(null, sequence)(cb);
   });
@@ -220,27 +220,27 @@ var xml = require("xml-parse");
   });
 }());
 
-function amendTasksSequenceWithExtensionTasks(sequence, taskName) {
-  var extensionTasks = getExtensionCustomPluginLogic(getExtensionPath(), taskName)
+function addExtensionCustomTasksToSequence(sequence, taskName) {
+  var customTasks = getExtensionTasks(taskName)
 
-  if (_.isFunction(extensionTasks.main)) {
+  if (_.isFunction(customTasks.main)) {
     var mainIndex = _.findIndex(sequence, function (taskName) {
       return taskName.match(/:main$/);
     });
 
-    gulp.task(sequence[mainIndex], extensionTasks.main);
+    gulp.task(sequence[mainIndex], customTasks.main);
     sequence.splice(mainIndex, 1, sequence[mainIndex]);
   }
 
-  if (_.isArray(extensionTasks.pre)) {
-    extensionTasks.pre.forEach(function (task, index) {
+  if (_.isArray(customTasks.pre)) {
+    customTasks.pre.forEach(function (task, index) {
       gulp.task(task.name, task.fn);
       sequence.splice(index, 0, task.name);
     });
   }
 
-  if (_.isArray(extensionTasks.post)) {
-    _.each(extensionTasks.post, function (task) {
+  if (_.isArray(customTasks.post)) {
+    _.each(customTasks.post, function (task) {
       gulp.task(task.name, task.fn);
       sequence.push(task.name);
     });
@@ -258,11 +258,11 @@ function getExtensionNameFromFile (file) {
   }).attributes.key;
 }
 
-function getExtensionCustomPluginLogic (extensionPath, pluginName) {
-  var filePath = path.join(extensionPath, '/gulp-tasks/', pluginName + '.js');
+function getExtensionTasks (taskName) {
+  var filePath = path.join(getExtensionPath(), '/gulp-tasks/', taskName + '.js');
 
   if (fs.existsSync(filePath)) {
-    return require(filePath)(new SubTask(pluginName + ':' + argv.ext));
+    return require(filePath)(new SubTask(taskName + ':' + argv.ext));
   } else {
     return {};
   }
