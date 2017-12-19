@@ -139,7 +139,9 @@ class CRM_HRCore_Model_CiviHRStatistics {
 
   /**
    * @param string $entity
+   *   The name of the entity, in camel case
    * @param int $count
+   *   The count for that entity
    *
    * @return $this
    */
@@ -151,6 +153,7 @@ class CRM_HRCore_Model_CiviHRStatistics {
 
   /**
    * @param string $entity
+   *   The name of the entity, in camel case
    * @return int
    */
   public function getEntityCount($entity) {
@@ -181,6 +184,15 @@ class CRM_HRCore_Model_CiviHRStatistics {
    */
   public function getContactSubtypeCounts() {
     return $this->contactSubtypeCount;
+  }
+
+  /**
+   * @param string $subtypeName
+   *
+   * @return int
+   */
+  public function getContactSubtypeCount($subtypeName) {
+    return CRM_Utils_Array::value($subtypeName, $this->contactSubtypeCount, 0);
   }
 
   /**

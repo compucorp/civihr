@@ -1,6 +1,6 @@
 <?php
 
-interface CRM_HRCore_CMSData_PathsInterface {
+interface CRM_HRCore_CMSData_Paths_PathsInterface {
 
   /**
    * Returns the path of the default image

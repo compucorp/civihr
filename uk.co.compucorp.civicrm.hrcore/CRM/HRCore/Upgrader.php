@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
+
 /**
  * Collection of upgrade steps.
  */
@@ -220,7 +222,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     ];
 
     // (Recruiting Manager) should be included only if hrrecruitment extension is disabled.
-    if (!$this->isExtensionEnabled('org.civicrm.hrrecruitment')) {
+    if (!ExtensionHelper::isExtensionEnabled('org.civicrm.hrrecruitment')) {
       $list[] = [
         'name_a_b' => 'Recruiting Manager is',
         'name_b_a' => 'Recruiting Manager',
@@ -229,24 +231,6 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     }
 
     return $list;
-  }
-
-  /**
-   * Checks if an extension is installed or enabled
-   *
-   * @param string $key
-   *   Extension unique key
-   *
-   * @return bool
-   */
-  private function isExtensionEnabled($key) {
-    $isEnabled = CRM_Core_DAO::getFieldValue(
-      'CRM_Core_DAO_Extension',
-      $key,
-      'is_active',
-      'full_name'
-    );
-    return !empty($isEnabled) ? TRUE : FALSE;
   }
 
 }

@@ -51,7 +51,7 @@ class CiviHRStatisticsConvertorTest extends PHPUnit_Framework_TestCase {
       ->setMostRecentLoginForRole('CiviHR Admin Local', $dateForAll)
       ->setMostRecentLoginForRole('Administrator', $dateForAll)
       ->setMostRecentLoginForRole('CustomRole', $dateForAll)
-      ->setEntityCount('drupalUser', 21)
+      ->setEntityCount('cmsUser', 21)
       ->setEntityCount('assignment', 10)
       ->setEntityCount('task', 14)
       ->setEntityCount('document', 3)
@@ -69,8 +69,8 @@ class CiviHRStatisticsConvertorTest extends PHPUnit_Framework_TestCase {
     $expected = file_get_contents($testFile);
     $asArray = json_decode($json, TRUE);
     $expectedAsArray = json_decode($expected, TRUE);
-    asort($asArray);
-    asort($expectedAsArray);
+    ksort($asArray);
+    ksort($expectedAsArray);
 
     $this->assertEquals($expectedAsArray, $asArray);
   }
