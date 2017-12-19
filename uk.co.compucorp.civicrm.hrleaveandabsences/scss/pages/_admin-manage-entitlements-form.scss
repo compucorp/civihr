@@ -95,13 +95,13 @@
     margin-bottom: 2em;
 
     th {
-      background: $crm-table-heading-bg !important;
+      background: $gray-lighter !important;
     }
 
     th.proposed-entitlement-header {
       @include column-side-borders();
 
-      background: darken($crm-table-heading-bg, 5%) !important;
+      background: darken($gray-lighter, 5%) !important;
       min-width: 200px;
 
       .row > div {

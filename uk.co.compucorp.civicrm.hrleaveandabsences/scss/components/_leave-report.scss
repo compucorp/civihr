@@ -35,7 +35,7 @@
 
 
 .chr_leave-report__heading {
-  background-color: $crm-table-heading-bg;
+  background-color: $gray-lighter;
   border-bottom: 1px solid $chr-panel-border;
 
   .chr_leave-report__export-button {
@@ -60,7 +60,7 @@
 
         // The headings have a different background and different color than normal cells
         > th {
-          background: $crm-table-heading-bg;
+          background: $gray-lighter;
           border-bottom: 0;
           color: $gray-darker;
           text-transform: capitalize;
@@ -78,7 +78,7 @@
     > tfoot {
 
       > tr {
-        background: $crm-table-heading-bg;
+        background: $gray-lighter;
       }
     }
   }
