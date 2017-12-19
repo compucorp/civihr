@@ -17,7 +17,7 @@ class CRM_HRCore_CMSData_Role_DrupalRoleService implements RoleServiceInterface{
   /**
    * @inheritdoc
    */
-  public function getLatestLoginByRole($roleName) {
+  public function getLatestLoginForRole($roleName) {
     $rids = $this->getRoleIds([$roleName]);
     $rid = array_shift($rids);
 
