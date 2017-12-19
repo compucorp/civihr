@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var argv = require('yargs').argv;
 var gulp = require('gulp');
+var gulpSequence = require('gulp-sequence');
 var SubTask = require('gulp-subtask')(gulp);
 var gutil = require("gulp-util");
 var clean = require('gulp-clean');
@@ -202,37 +203,52 @@ var xml = require("xml-parse");
 // RequireJS
 (function () {
   var exec = require('child_process').exec;
-  var map = require('map-stream');
+  var find = require('find');
 
   gulp.task('requirejs', function (cb) {
-    var extPath = getExtensionPath();
-    var customLogic = getExtensionCustomPluginLogic(extPath, 'requirejs')
+    var sequence = amendTasksSequenceWithExtensionTasks(['requirejs:main'], 'requirejs');
 
-    if (_.isFunction(customLogic)) {
-      return customLogic(cb);
-    }
-
-    return gulp.src(extPath + '/js/build.js')
-      .pipe(customLogic.pre ? customLogic.pre() : gutil.noop())
-      .pipe(map(function (file, cb) {
-        exec('r.js -o ' + file.path, function (err, stdout, stderr) {
-          err && err.code && console.log(stdout);
-          cb();
-        });
-      }))
-      .pipe(customLogic.post ? customLogic.post() : gutil.noop())
-      .pipe(gulp.dest('.'));
+    gulpSequence.apply(null, sequence)(cb);
   });
 
-  function addExtentionPathToBuildConfig (file, extPath) {
-    var content = eval(file);
+  gulp.task('requirejs:main', function (done) {
+    var buildFile = find.fileSync('build.js', getExtensionPath() + '/js')[0];
 
-    content.baseUrl = extPath + '/js/' + content.baseUrl;
-    content.out = extPath + '/js/' + content.out;
-
-    return '(' + JSON.stringify(content) + ')';
-  }
+    exec('r.js -o ' + buildFile, function (err, stdout, stderr) {
+      err && err.code && console.log(stdout);
+      done();
+    });
+  });
 }());
+
+function amendTasksSequenceWithExtensionTasks(sequence, taskName) {
+  var extensionTasks = getExtensionCustomPluginLogic(getExtensionPath(), taskName)
+
+  if (_.isFunction(extensionTasks.main)) {
+    var mainIndex = _.findIndex(sequence, function (taskName) {
+      return taskName.match(/:main$/);
+    });
+
+    gulp.task(sequence[mainIndex], extensionTasks.main);
+    sequence.splice(mainIndex, 1, sequence[mainIndex]);
+  }
+
+  if (_.isArray(extensionTasks.pre)) {
+    extensionTasks.pre.forEach(function (task, index) {
+      gulp.task(task.name, task.fn);
+      sequence.splice(index, 0, task.name);
+    });
+  }
+
+  if (_.isArray(extensionTasks.post)) {
+    _.each(extensionTasks.post, function (task) {
+      gulp.task(task.name, task.fn);
+      sequence.push(task.name);
+    });
+  }
+
+  return sequence;
+}
 
 function getExtensionNameFromFile (file) {
   var infoXMLPath = findUp.sync('info.xml', { cwd: file.path });
