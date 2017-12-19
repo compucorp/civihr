@@ -1,3 +1,4 @@
+var gulp = require('gulp');
 var postcss = require('gulp-postcss');
 var postcssPrefix = require('postcss-prefix-selector');
 var transformSelectors = require('gulp-transform-selectors');
@@ -7,20 +8,26 @@ var outsideNamespaceRegExp = /^\.___outside-namespace/;
 
 module.exports = function (SubTask) {
   return {
-    post: post
-  };
+    post: [
+      {
+        name: 'sass:namespace',
+        fn: function () {
+          var cssDir = __dirname + '/../' + 'css/';
 
-  function post () {
-    return SubTask.pipe(postcss, [postcssPrefix({
-      prefix: bootstrapNamespace + ' ',
-      exclude: [
-        /^html/, /^body/, /page-civi/, /crm-container/, outsideNamespaceRegExp
-      ]
-    })])
-    .pipe(transformSelectors, namespaceRootElements, { splitOnCommas: true })
-    .pipe(transformSelectors, removeOutsideNamespaceMarker, { splitOnCommas: true })
-    .run();
-  }
+          return gulp.src(cssDir +  '*.css')
+            .pipe(postcss([postcssPrefix({
+              prefix: bootstrapNamespace + ' ',
+              exclude: [
+                /^html/, /^body/, /page-civi/, /crm-container/, outsideNamespaceRegExp
+              ]
+            })]))
+            .pipe(transformSelectors(namespaceRootElements, { splitOnCommas: true }))
+            .pipe(transformSelectors(removeOutsideNamespaceMarker, { splitOnCommas: true }))
+            .pipe(gulp.dest(cssDir));
+        }
+      }
+    ]
+  };
 };
 
 /**

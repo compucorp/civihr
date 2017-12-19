@@ -165,26 +165,25 @@ var xml = require("xml-parse");
   var sass = require('gulp-sass');
   var stripCssComments = require('gulp-strip-css-comments');
 
-  gulp.task('sass', ['sass:sync'], function (cb) {
+  gulp.task('sass', function (cb) {
+    var sequence = amendTasksSequenceWithExtensionTasks(['sass:main'], 'sass');
+
+    gulpSequence.apply(null, sequence)(cb);
+  });
+
+  gulp.task('sass:main', ['sass:sync'], function (cb) {
     var extPath = getExtensionPath();
-    var customLogic = getExtensionCustomPluginLogic(extPath, 'sass')
 
-    if (_.isFunction(customLogic)) {
-      return customLogic(cb);
-    }
-
-    return gulp.src(extPath + '/scss/*.scss')
+    return gulp.src(path.join(extPath, '/scss/*.scss'))
       .pipe(bulk())
-      .pipe(customLogic.pre ? customLogic.pre() : gutil.noop())
       .pipe(sass({
         outputStyle: 'compressed',
         includePaths: civicrmScssRoot.getPath(),
         precision: 10
       }).on('error', sass.logError))
       .pipe(stripCssComments({ preserve: false }))
-      .pipe(customLogic.post ? customLogic.post() : gutil.noop())
-      .pipe(gulp.dest(extPath + '/css/'));
-  });
+      .pipe(gulp.dest(path.join(extPath, '/css/')));
+  })
 
   gulp.task('sass:sync', function () {
     civicrmScssRoot.updateSync();
