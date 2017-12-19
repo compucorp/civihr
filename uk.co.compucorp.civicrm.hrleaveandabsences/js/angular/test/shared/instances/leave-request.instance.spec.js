@@ -79,6 +79,10 @@ define([
       it('sets the request type to "leave"', function () {
         expect(instance.request_type).toEqual('leave');
       });
+
+      it('has the type title as "Leave"', function () {
+        expect(instance.type_title).toBe('Leave');
+      });
     });
 
     describe('status change methods', function () {

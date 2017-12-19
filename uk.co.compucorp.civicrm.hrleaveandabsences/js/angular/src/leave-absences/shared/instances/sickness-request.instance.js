@@ -23,7 +23,8 @@ define([
           var sicknessCustomData = {
             sickness_reason: null,
             sickness_required_documents: '',
-            request_type: 'sickness'
+            request_type: 'sickness',
+            type_title: 'Sickness'
           };
 
           return _.assign({}, LeaveRequestInstance.defaultCustomData(), sicknessCustomData);

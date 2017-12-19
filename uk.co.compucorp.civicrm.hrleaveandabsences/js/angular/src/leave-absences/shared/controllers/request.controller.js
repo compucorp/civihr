@@ -353,19 +353,6 @@ define([
     }
 
     /**
-     * Gets readable type title for the current request
-     *
-     * @return {String}
-     */
-    function getRequestTypeTitle () {
-      return {
-        'leave': 'Leave',
-        'sickness': 'Sickness',
-        'toil': 'TOIL'
-      }[getLeaveType()];
-    }
-
-    /**
      * Gets status object for given status value
      *
      * @param {String} value - value of the status
@@ -812,7 +799,7 @@ define([
      */
     function showRequestSavingSuccessMessage () {
       notification.success(
-        getRequestTypeTitle() + ' request ' +
+        vm.request.type_title + ' request ' +
         (vm.mode === 'create' ? 'created' : 'updated') +
         ' successfully'
       );

@@ -27,7 +27,7 @@
       var $log, $rootScope, controller, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
         Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, pubSub,
-        WorkPatternAPI, notification;
+        WorkPatternAPI, notification, TOILRequestInstance;
       var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
@@ -71,7 +71,7 @@
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_, _dialog_,
         _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_, _Entitlement_,
         _LeaveRequestInstance_, _LeaveRequest_, _LeaveRequestAPI_, _pubSub_,
-        _WorkPatternAPI_, _notificationService_) {
+        _WorkPatternAPI_, _notificationService_, _TOILRequestInstance_) {
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
@@ -86,6 +86,7 @@
         AbsencePeriodAPI = _AbsencePeriodAPI_;
         pubSub = _pubSub_;
         notification = _notificationService_;
+        TOILRequestInstance = _TOILRequestInstance_;
         window.alert = function () {}; // prevent alert from being logged in console
 
         LeaveRequestInstance = _LeaveRequestInstance_;
@@ -395,11 +396,12 @@
 
               describe('if TOIL', function () {
                 beforeEach(function () {
-                  controller.request.request_type = 'toil';
+                  var toilRequest = TOILRequestInstance.init(mockData.findBy('request_type', 'toil'));
 
+                  initTestController({ leaveRequest: toilRequest });
                   notification.success.calls.reset();
                   controller.submit();
-                  $scope.$apply();
+                  $scope.$digest();
                 });
 
                 it('shows the success notification', function () {
