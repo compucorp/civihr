@@ -2,6 +2,7 @@
 
 use CRM_HRCore_Service_FileCache as FileCache;
 use CRM_HRCore_Test_BaseHeadlessTest as BaseHeadlessTest;
+use CRM_HRCore_Model_CiviHRStatistics as CiviHRStatistics;
 
 /**
  * @group headless
@@ -49,6 +50,24 @@ class FileCacheTest extends BaseHeadlessTest {
     $this->assertTrue($this->datesWithinSecondsOfEachOther($modified, $now, 2));
   }
 
+  public function testWillSerializeAndUnserializeObject() {
+    $cache = new FileCache();
+    $now = new \DateTime();
+    $cacheKey = 'test_stats';
+
+    $stats = new CiviHRStatistics();
+    $stats->setSiteUrl('test');
+    $stats->setMostRecentLoginForRole('test_role', $now);
+
+    $cache->set($cacheKey, $stats);
+    /** @var CiviHRStatistics $fetched */
+    $fetched = $cache->get($cacheKey);
+
+    $this->assertEquals('test', $fetched->getSiteUrl());
+    $this->assertEquals($now, $fetched->getMostRecentLoginByRole('test_role'));
+    $cache->remove($cacheKey);
+  }
+
   /**
    * Checks whether two dates are within the provided number of seconds from
    * each other
@@ -65,4 +84,5 @@ class FileCacheTest extends BaseHeadlessTest {
   ) {
     return abs($first->getTimestamp() - $second->getTimestamp()) <= $seconds;
   }
+
 }
