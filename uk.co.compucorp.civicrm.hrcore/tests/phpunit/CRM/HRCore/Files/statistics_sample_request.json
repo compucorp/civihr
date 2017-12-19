@@ -2,13 +2,13 @@
   "siteUrl": "compucorp.civihrhosting.co.uk",
   "siteName": "Compucorp",
   "generationDate": "2012-04-23T18:25:43+0000",
-  "lastCiviHRAdminLogin": "2012-04-23T18:25:43+0000",
-  "lastCiviHRStaffLogin": "2012-04-23T18:25:43+0000",
-  "lastCiviHRManagerLogin": "2012-04-23T18:25:43+0000",
-  "lastCiviHRAdminLocalLogin": "2012-04-23T18:25:43+0000",
-  "lastLoginOtherRoles": {
-    "Administrator": "2012-04-23T18:25:43+0000",
-    "CustomRole": "2012-04-23T18:25:43+0000"
+  "lastLoginByRole": {
+    "civihr_admin": "2012-04-23T18:25:43+0000",
+    "civihr_staff": "2012-04-23T18:25:43+0000",
+    "civihr_manager": "2012-04-23T18:25:43+0000",
+    "civihr_admin_local": "2012-04-23T18:25:43+0000",
+    "administrator": "2012-04-23T18:25:43+0000",
+    "custom_role": "2012-04-23T18:25:43+0000"
   },
   "cmsUserCount": 21,
   "assignmentCount": 10,
