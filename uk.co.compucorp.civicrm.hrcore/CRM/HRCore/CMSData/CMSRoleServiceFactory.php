@@ -10,16 +10,18 @@ use CRM_HRCore_CMSData_Role_RoleServiceInterface as RoleServiceInterface;
 class CRM_HRCore_CMSData_CMSRoleServiceFactory {
 
   /**
+   * Creates a service to interact with CMS roles based on the current CMS
+   *
    * @return RoleServiceInterface
    */
   public static function create() {
-    $userSystem = CRM_Core_Config::singleton()->userSystem;
+    $userFramework = CRM_Core_Config::singleton()->userFramework;
 
-    switch (get_class($userSystem)) {
-      case CRM_Utils_System_Drupal::class:
+    switch ($userFramework) {
+      case 'Drupal':
         return new DrupalRoleService();
       default:
-        $msg = sprintf('Unrecognized system "%s"', get_class($userSystem));
+        $msg = sprintf('Unrecognized system "%s"', $userFramework);
         throw new \Exception($msg);
     }
   }
