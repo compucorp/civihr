@@ -1,5 +1,5 @@
-var page = require('./../page');
-var data = require('./../../data/onboarding-wizard-data');
+var page = require('./page');
+var data = require('./../data/onboarding-wizard-data');
 
 module.exports = (function () {
   return page.extend({
@@ -11,13 +11,11 @@ module.exports = (function () {
     reachAddressPage: function () {
       var casper = this.casper;
 
-      casper.fillSelectors('form.webform-client-form', data.personalDetails, false);
-
       casper.click('.webform-next');
 
       return casper.waitForSelector('input[value="Address"]');
     },
-    
+
     /**
      * Navigate to Contact Info Page
      *
@@ -27,8 +25,6 @@ module.exports = (function () {
       var casper = this.casper;
 
       return this.reachAddressPage().then(function () {
-        casper.fillSelectors('form.webform-client-form', data.address, false);
-
         casper.click('.webform-next');
 
         return casper.waitForSelector('input[value="Contact Info"]');
@@ -44,8 +40,6 @@ module.exports = (function () {
       var casper = this.casper;
 
       return this.reachContactInfoPage().then(function () {
-        casper.fillSelectors('form.webform-client-form', data.contactInfo, false);
-
         casper.click('.webform-next');
 
         return casper.waitForSelector('input[value="Payroll"]');
@@ -61,8 +55,6 @@ module.exports = (function () {
       var casper = this.casper;
 
       return this.reachPayrollPage().then(function () {
-        casper.fillSelectors('form.webform-client-form', data.payroll, false);
-
         casper.click('.webform-next');
 
         return casper.waitForSelector('input[value="Emergency Contact"]');
@@ -78,8 +70,6 @@ module.exports = (function () {
       var casper = this.casper;
 
       return this.reachEmergencyContactPage().then(function () {
-        casper.fillSelectors('form.webform-client-form', data.emergencyContacts, false);
-
         casper.click('.webform-next');
 
         return casper.waitForSelector('input[value="Dependants"]', function () {
