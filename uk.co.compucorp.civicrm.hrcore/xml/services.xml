@@ -16,5 +16,11 @@
                 factory-method="create"
                 class="CRM_HRCore_CMSData_SiteInformation_SiteInformationInterface"
         />
+        <service
+                id="cms_role_service"
+                factory-class="CRM_HRCore_CMSData_CMSRoleServiceFactory"
+                factory-method="create"
+                class="CRM_HRCore_CMSData_Role_RoleServiceInterface"
+        />
     </services>
 </container>

@@ -3,7 +3,7 @@
 use CRM_HRCore_CMSData_Role_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_CMSData_Role_RoleServiceInterface as RoleServiceInterface;
 
-class CRM_HRCore_Service_CMSRoleServiceFactory {
+class CRM_HRCore_CMSData_CMSRoleServiceFactory {
 
   /**
    * @return RoleServiceInterface
