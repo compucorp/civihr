@@ -22,12 +22,11 @@ interface CRM_HRCore_CMSData_Role_RoleServiceInterface {
   public function getRoleNames();
 
   /**
-   * Looks up the most recent login for given role
+   * Looks up the most recent login for all system roles
    *
-   * @param string $roleName
-   *
-   * @return \DateTime|null
-   *   The login date, null if role does not exist or no user has ever logged in
+   * @return array
+   *   The login dates for each most recent user login, indexed by role. Login
+   *   date will be NULL if no user with that role has ever logged in.
    */
-  public function getLatestLoginForRole($roleName);
+  public function getLatestLoginByRole();
 }

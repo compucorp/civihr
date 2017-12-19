@@ -17,30 +17,31 @@ class CRM_HRCore_CMSData_Role_DrupalRoleService implements RoleServiceInterface{
   /**
    * @inheritdoc
    */
-  public function getLatestLoginForRole($roleName) {
-    $rids = $this->getRoleIds([$roleName]);
-    $rid = array_shift($rids);
-
-    if (empty($rid)) {
-      throw new \Exception(sprintf('Role "%s" not found', $roleName));
-    }
-
+  public function getLatestLoginByRole() {
     $query = db_select('users', 'u');
+    $query->fields('ur', ['rid']);
     $query->addExpression('MAX(u.login)');
     $query->leftJoin('users_roles', 'ur', 'ur.uid = u.uid');
-    $query->where('ur.rid = :rid', ['rid' => $rid]);
+    $query->groupBy('ur.rid');
 
-    $result = $query->execute()->fetchCol();
-    $latestLoginTimestamp = array_shift($result);
+    $result = $query->execute()->fetchAllKeyed();
 
-    if ($latestLoginTimestamp == 0) {
-      return NULL;
+    $returnArray = [];
+    $roleNames = $this->getRoleNames();
+
+    foreach ($result as $rid => $loginTimestamp) {
+      if (array_key_exists($rid, $roleNames)) {
+        $roleName = $roleNames[$rid];
+        $loginDate = NULL;
+        if ($loginTimestamp != 0) {
+          $loginDate = new \DateTime();
+          $loginDate->setTimestamp($loginTimestamp);
+        }
+        $returnArray[$roleName] = $loginDate;
+      }
     }
 
-    $latestLoginDate = new \DateTime();
-    $latestLoginDate->setTimestamp($latestLoginTimestamp);
-
-    return $latestLoginDate;
+    return $returnArray;
   }
 
   /**
