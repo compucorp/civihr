@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Implement this interface to interact with user roles on a certain CMS
+ */
 interface CRM_HRCore_CMSData_Role_RoleServiceInterface {
 
   /**

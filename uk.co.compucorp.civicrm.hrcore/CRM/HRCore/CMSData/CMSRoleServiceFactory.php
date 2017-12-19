@@ -3,6 +3,10 @@
 use CRM_HRCore_CMSData_Role_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_CMSData_Role_RoleServiceInterface as RoleServiceInterface;
 
+/**
+ * This factory is responsible for returning a class to interact with roles for
+ * the current CMS
+ */
 class CRM_HRCore_CMSData_CMSRoleServiceFactory {
 
   /**
