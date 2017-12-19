@@ -218,6 +218,15 @@ var xml = require("xml-parse");
       done();
     });
   });
+
+  gulp.task('requirejs:watch', function () {
+    gulp.watch('../**/src/**/*.js').on('change', function (file) {
+      var extensionName = getExtensionNameFromFile(file);
+
+      argv.ext = extensionName; // TEMP
+      gulp.start('requirejs');
+    });
+  });
 }());
 
 function addExtensionCustomTasksToSequence(sequence, taskName) {
