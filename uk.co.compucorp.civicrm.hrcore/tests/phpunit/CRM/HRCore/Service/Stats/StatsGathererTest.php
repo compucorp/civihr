@@ -1,6 +1,5 @@
 <?php
 
-use CRM_HRCore_Service_Stats_StatsGatherer as CiviHRStatsGatherer;
 use CRM_HRCore_CMSData_SiteInformation_SiteInformationInterface as SiteInformationInterface;
 use CRM_HRCore_CMSData_Role_RoleServiceInterface as RoleServiceInterface;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
