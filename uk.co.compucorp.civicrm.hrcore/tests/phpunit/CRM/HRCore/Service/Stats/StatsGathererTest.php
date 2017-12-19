@@ -268,7 +268,7 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
       'fake_role' => new \DateTime()
     ]);
 
-    return new CiviHRStatsGatherer(
+    return new StatsGatherer(
       $siteInformation->reveal(),
       $roleService->reveal()
     );
