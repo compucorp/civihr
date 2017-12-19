@@ -16,10 +16,7 @@ class CRM_HRCore_Service_FileCache {
     $this->cacheDir = Civi::paths()->getPath('ext/civihr/filecache');
 
     if (!file_exists($this->cacheDir)) {
-      if (!mkdir($this->cacheDir, 0777, TRUE)) {
-        $err = sprintf('Could not create cache dir "%s"', $this->cacheDir);
-        throw new \Exception($err);
-      }
+      $this->createCacheDir();
     }
   }
 
@@ -111,6 +108,16 @@ class CRM_HRCore_Service_FileCache {
    */
   private function getCacheFilePath($key) {
     return $this->cacheDir . DIRECTORY_SEPARATOR . $key;
+  }
+
+  /**
+   * Create the cache directory recursively. Throws an exception if it cannot.
+   */
+  private function createCacheDir() {
+    if (!mkdir($this->cacheDir, 0777, TRUE)) {
+      $err = sprintf('Could not create cache dir "%s"', $this->cacheDir);
+      throw new \Exception($err);
+    }
   }
 
 }
