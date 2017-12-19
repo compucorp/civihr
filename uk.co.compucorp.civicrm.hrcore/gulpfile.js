@@ -192,8 +192,8 @@ var xml = require("xml-parse");
   gulp.task('sass:watch', function () {
     gulp.watch('../**/scss/**/*.scss').on('change', function (file) {
       var extensionName = getExtensionNameFromFile(file);
-
       argv.ext = extensionName; // TEMP
+
       gulp.start('sass');
     });
   });
@@ -220,10 +220,10 @@ var xml = require("xml-parse");
   });
 
   gulp.task('requirejs:watch', function () {
-    gulp.watch('../**/src/**/*.js').on('change', function (file) {
+    gulp.watch('../**/js/src/**/*.js').on('change', function (file) {
       var extensionName = getExtensionNameFromFile(file);
-
       argv.ext = extensionName; // TEMP
+
       gulp.start('requirejs');
     });
   });
@@ -233,6 +233,9 @@ var xml = require("xml-parse");
 (function () {
   var find = require('find');
   var karma = require('karma');
+  var replace = require('gulp-replace');
+  var rename = require('gulp-rename');
+
   gulp.task('test', function (cb) {
     var sequence = addExtensionCustomTasksToSequence(['test:main'], 'test');
 
@@ -241,6 +244,19 @@ var xml = require("xml-parse");
 
   gulp.task('test:main', function () {
     test.all();
+  });
+
+  gulp.task('test:watch', function () {
+    gulp.watch([
+      '../**/js/**/test/**/*.spec.js',
+      '!../**/js/**/test/mocks/**/*.js',
+      '!../**/js/**/test/test-main.js'
+    ]).on('change', function (file) {
+      var extensionName = getExtensionNameFromFile(file);
+      argv.ext = extensionName; // TEMP
+
+      test.single(file.path);
+    });
   });
 
   var test = (function () {
@@ -300,16 +316,17 @@ var xml = require("xml-parse");
        * @param {string} testFile - The full path of a test file
        */
       single: function (testFile) {
-        var configFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
+        var extPathJS = path.join(getExtensionPath(), 'js/');
+        var tempConfigFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
         gulp
-          .src(path.join(__dirname, '/js/karma.conf.js'))
+          .src(path.join(extPathJS, 'karma.conf.js'))
           .pipe(replace('*.spec.js', path.basename(testFile)))
-          .pipe(rename(configFile))
-          .pipe(gulp.dest(path.join(__dirname, '/js')))
+          .pipe(rename(tempConfigFile))
+          .pipe(gulp.dest(extPathJS))
           .on('end', function () {
-            runServer(configFile, function () {
-              gulp.src(path.join(__dirname, '/js/', configFile), { read: false }).pipe(clean());
+            runServer(path.join(extPathJS, tempConfigFile), function () {
+              gulp.src(path.join(extPathJS, tempConfigFile), { read: false }).pipe(clean({ force: true }));
             });
           });
       }
