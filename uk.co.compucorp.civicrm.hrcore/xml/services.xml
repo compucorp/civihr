@@ -9,6 +9,7 @@
         </service>
         <service id="civihr_stats_gatherer" class="CRM_HRCore_Service_CiviHRStatsGatherer">
             <argument id="cms_site_info" type="service"/>
+            <argument id="cms_role_service" type="service"/>
         </service>
         <service
                 id="cms_site_info"
