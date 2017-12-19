@@ -123,7 +123,9 @@ define([
           });
         },
         find: function (id) {
-          return $q.resolve(mockData.singleDataSuccess());
+          return $q.resolve(
+            _.find(
+              _.cloneDeep(mockData.all().values), { id: id }));
         },
         isManagedBy: function (params) {
           return $q.resolve(mockData.isManagedBy().values);

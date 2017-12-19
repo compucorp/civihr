@@ -4,7 +4,9 @@ define([
   'leave-absences/shared/modules/models',
   'common/models/model',
   'leave-absences/shared/apis/leave-request.api',
-  'leave-absences/shared/instances/leave-request.instance'
+  'leave-absences/shared/instances/leave-request.instance',
+  'leave-absences/shared/instances/sickness-request.instance',
+  'leave-absences/shared/instances/toil-request.instance'
 ], function (models) {
   'use strict';
 
@@ -13,8 +15,34 @@ define([
     'Model',
     'LeaveRequestAPI',
     'LeaveRequestInstance',
-    function ($log, Model, leaveRequestAPI, instance) {
+    'SicknessRequestInstance',
+    'TOILRequestInstance',
+    function ($log, Model, leaveRequestAPI, LeaveRequestInstance,
+      SicknessRequestInstance, TOILRequestInstance) {
       $log.debug('LeaveRequest');
+
+      /**
+       * Gets the instance for the given request fetched via API,
+       * for example for "toil" request that would be `TOILRequestInstance`.
+       * Defaults to the `LeaveRequestInstance`.
+       *
+       * @param  {Object} requestObject a plain LeaveRequest object fetched via API
+       * @return {Instance} instance of the request depending on its type
+       */
+      function initRequestInstance (requestObject) {
+        var requestInstance;
+        var requestType = requestObject.request_type;
+
+        if (requestType === 'sickness') {
+          requestInstance = SicknessRequestInstance;
+        } else if (requestType === 'toil') {
+          requestInstance = TOILRequestInstance;
+        } else {
+          requestInstance = LeaveRequestInstance;
+        }
+
+        return requestInstance.init(requestObject, true);
+      }
 
       return Model.extend({
 
@@ -34,7 +62,7 @@ define([
           return leaveRequestAPI.all(this.processFilters(filters), pagination, sort, params, cache)
             .then(function (response) {
               response.list = response.list.map(function (leaveRequest) {
-                return instance.init(leaveRequest, true);
+                return initRequestInstance(leaveRequest);
               });
 
               return response;
@@ -66,7 +94,7 @@ define([
         find: function (id) {
           return leaveRequestAPI.find(id)
             .then(function (leaveRequest) {
-              return instance.init(leaveRequest, true);
+              return initRequestInstance(leaveRequest);
             });
         }
       });
