@@ -53,23 +53,9 @@ class CRM_HRCore_Service_CiviHRStatisticsJSONConvertor {
    * @param $array
    */
   private static function addRoleLoginData(CiviHRStatistics $stats, &$array) {
-    $defaultRoles = [
-      'CiviHR Admin',
-      'CiviHR Staff',
-      'CiviHR Manager',
-      'CiviHR Admin Local',
-    ];
-
-    foreach ($defaultRoles as $role) {
-      $key = sprintf('last%sLogin', str_replace(' ', '', $role));
-      $array[$key] = self::formatDate($stats->getMostRecentLoginByRole($role));
-    }
-
     foreach ($stats->getMostRecentLogins() as $role => $mostRecentLogin) {
-      if (!in_array($role, $defaultRoles)) {
-        $formattedDate = self::formatDate($mostRecentLogin);
-        $array['lastLoginOtherRoles'][$role] = $formattedDate;
-      }
+      $formattedDate = self::formatDate($mostRecentLogin);
+      $array['lastLoginByRole'][$role] = $formattedDate;
     }
   }
 
