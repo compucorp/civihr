@@ -8,7 +8,10 @@ var outsideNamespaceRegExp = /^\.___outside-namespace/;
 
 module.exports = function (SubTask) {
   return {
+    // @NOTE here bootstrapcivihr needs to apply the bootstrap namespace after
+    // the sass had been compiled.
     post: [
+      // @NOTE each task is an object with the name of the task and the actual code
       {
         name: 'sass:namespace',
         fn: function () {

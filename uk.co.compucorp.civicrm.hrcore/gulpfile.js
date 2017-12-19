@@ -2,7 +2,6 @@ var _ = require('lodash');
 var argv = require('yargs').argv;
 var gulp = require('gulp');
 var gulpSequence = require('gulp-sequence');
-var SubTask = require('gulp-subtask')(gulp);
 var gutil = require("gulp-util");
 var clean = require('gulp-clean');
 var color = require('gulp-color');
@@ -14,6 +13,11 @@ var Promise = require('es6-promise').Promise;
 var cv = require('civicrm-cv')({ mode: 'sync' });
 var findUp = require('find-up');
 var xml = require("xml-parse");
+
+// @NOTE all the tasks will be split into different modules
+
+// @NOTE the tasks have much in common when it comes to injecting pre/post tasks
+// and to watchers, so those pieces of logic will be probably abstracted
 
 // BackstopJS tasks
 (function () {
@@ -192,7 +196,10 @@ var xml = require("xml-parse");
   gulp.task('sass:watch', function () {
     gulp.watch('../**/scss/**/*.scss').on('change', function (file) {
       var extensionName = getExtensionNameFromFile(file);
-      argv.ext = extensionName; // TEMP
+
+      // @NOTE temporary, need to find a better way to globally set the extension
+      // name before calling the main task
+      argv.ext = extensionName;
 
       gulp.start('sass');
     });
@@ -213,6 +220,9 @@ var xml = require("xml-parse");
   gulp.task('requirejs:main', function (done) {
     var buildFile = find.fileSync('build.js', getExtensionPath() + '/js')[0];
 
+    // @NOTE unfortunately the gulp-requirejs module was severly limited, so
+    // I had to fall back to the original `r.js`. I will probably add a check
+    // if `r.js` is present in the local machine and throw an error if it isn't
     exec('r.js -o ' + buildFile, function (err, stdout, stderr) {
       err && err.code && console.log(stdout);
       done();
@@ -222,7 +232,7 @@ var xml = require("xml-parse");
   gulp.task('requirejs:watch', function () {
     gulp.watch('../**/js/src/**/*.js').on('change', function (file) {
       var extensionName = getExtensionNameFromFile(file);
-      argv.ext = extensionName; // TEMP
+      argv.ext = extensionName;
 
       gulp.start('requirejs');
     });
@@ -253,12 +263,13 @@ var xml = require("xml-parse");
       '!../**/js/**/test/test-main.js'
     ]).on('change', function (file) {
       var extensionName = getExtensionNameFromFile(file);
-      argv.ext = extensionName; // TEMP
+      argv.ext = extensionName;
 
       test.single(file.path);
     });
   });
 
+  // @NOTE this will be moved to a separate module
   var test = (function () {
     /**
      * Runs the karma server which does a single run of the test/s
@@ -280,24 +291,12 @@ var xml = require("xml-parse");
 
     return {
 
-      /**
-       * Runs all the tests
-       */
       all: function () {
+        // @NOTE reangular doesn't have a js/ folder, so this needs to be fixed
         var configFile = find.fileSync('karma.conf.js', getExtensionPath() + '/js')[0];
 
         runServer(configFile);
       },
-
-      /**
-       * Runs the tests for a specific source file
-       *
-       * Looks for a test file (*.spec.js) in `test/`, using the same path
-       * of the source file in `src/job-roles/`
-       *   i.e. src/job-roles/models/model.js -> test/models/model.spec.js
-       *
-       * @param {string} srcFile
-       */
       for: function (srcFile) {
         var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
         var testFile = srcFile
@@ -306,16 +305,8 @@ var xml = require("xml-parse");
 
         fs.statSync(testFile).isFile() && this.single(testFile);
       },
-
-      /**
-       * Runs a single test file
-       *
-       * It passes to the karma server a temporary config file
-       * which is deleted once the test has been run
-       *
-       * @param {string} testFile - The full path of a test file
-       */
       single: function (testFile) {
+        // @NOTE L&A has the tests under angular/js/, not js/, so this needs to be fixed
         var extPathJS = path.join(getExtensionPath(), 'js/');
         var tempConfigFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
@@ -334,10 +325,18 @@ var xml = require("xml-parse");
   })();
 }());
 
+/**
+ * Given an original sequence of tasks and the name of the "wrapper" task
+ * (requirejs, sass, etc) this functions finds if the current extension (in argv.ext)
+ * has any custom tasks to add before/after or to straight replace the main task
+ *
+ */
 function addExtensionCustomTasksToSequence(sequence, taskName) {
   var customTasks = getExtensionTasks(taskName)
 
+  // @NOTE the main task is directly a function
   if (_.isFunction(customTasks.main)) {
+    // @NOTE it replaces the old "<whatever>:main" task with the new function
     var mainIndex = _.findIndex(sequence, function (taskName) {
       return taskName.match(/:main$/);
     });
@@ -346,6 +345,7 @@ function addExtensionCustomTasksToSequence(sequence, taskName) {
     sequence.splice(mainIndex, 1, sequence[mainIndex]);
   }
 
+  // @NOTE it creates the "pre" tasks and add them to the beginning of the sequence
   if (_.isArray(customTasks.pre)) {
     customTasks.pre.forEach(function (task, index) {
       gulp.task(task.name, task.fn);
@@ -353,6 +353,7 @@ function addExtensionCustomTasksToSequence(sequence, taskName) {
     });
   }
 
+  // @NOTE it creates the "post" tasks and add them to the end of the sequence
   if (_.isArray(customTasks.post)) {
     _.each(customTasks.post, function (task) {
       gulp.task(task.name, task.fn);
@@ -363,6 +364,10 @@ function addExtensionCustomTasksToSequence(sequence, taskName) {
   return sequence;
 }
 
+/**
+ * Given a file, it finds the info.xml in one of the parent folders and reads
+ * the name of the extension from the "key" property of the <extension> tag
+ */
 function getExtensionNameFromFile (file) {
   var infoXMLPath = findUp.sync('info.xml', { cwd: file.path });
   var parsedXML = xml.parse(fs.readFileSync(infoXMLPath, 'utf8'));
@@ -372,16 +377,23 @@ function getExtensionNameFromFile (file) {
   }).attributes.key;
 }
 
+/**
+ * Given a task name, it looks into the current extension's gulp-task/ folder
+ * if there is any file with the name of the task
+ */
 function getExtensionTasks (taskName) {
   var filePath = path.join(getExtensionPath(), '/gulp-tasks/', taskName + '.js');
 
   if (fs.existsSync(filePath)) {
-    return require(filePath)(new SubTask(taskName + ':' + argv.ext));
+    return require(filePath)();
   } else {
     return {};
   }
 }
 
+/**
+ * Uses `cv` to get the path of the current extension
+ */
 function getExtensionPath () {
   var path;
 
@@ -398,6 +410,9 @@ function getExtensionPath () {
   return path;
 }
 
+/**
+ * A simple wrapper for displaying errors
+ */
 function throwError (plugin, msg) {
   throw new gutil.PluginError(plugin, {
     message: gutil.colors.red(msg),
