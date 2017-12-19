@@ -631,7 +631,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
    * period in the future is preferred, If that does not exists, then
    * the closest absence period in the past is considered.
    *
-   * @return AbsencePeriod|null
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
    *   Returns null if there are no absence periods.
    */
   public static function getClosestToCurrentDate() {
@@ -652,15 +652,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
       $absencePeriod = CRM_Core_DAO::executeQuery($query, [], true, self::class);
     }
 
-
-    if($absencePeriod->N == 1) {
-      while($absencePeriod->fetch()) {
-        $absencePeriod = $absencePeriod;
-      }
-
-      return $absencePeriod;
+    if ($absencePeriod->N !== 1) {
+      return null;
     }
 
-    return null;
+    $absencePeriod->fetch();
+
+    return $absencePeriod;
   }
 }
