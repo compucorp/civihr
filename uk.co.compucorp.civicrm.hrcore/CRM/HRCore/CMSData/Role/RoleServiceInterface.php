@@ -29,5 +29,5 @@ interface CRM_HRCore_CMSData_Role_RoleServiceInterface {
    * @return \DateTime|null
    *   The login date, null if role does not exist or no user has ever logged in
    */
-  public function getLatestLoginByRole($roleName);
+  public function getLatestLoginForRole($roleName);
 }
