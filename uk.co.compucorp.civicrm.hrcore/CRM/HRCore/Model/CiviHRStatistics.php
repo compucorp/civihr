@@ -112,11 +112,13 @@ class CRM_HRCore_Model_CiviHRStatistics {
 
   /**
    * @param $roleName
-   * @param DateTime $time
+   *   The name of the role
+   * @param DateTime|null $time
+   *   The most recent login time, NULL if no login exists
    *
    * @return $this
    */
-  public function setMostRecentLoginForRole($roleName, \DateTime $time) {
+  public function setMostRecentLoginForRole($roleName, $time) {
     $this->mostRecentLogins[$roleName] = $time;
 
     return $this;
