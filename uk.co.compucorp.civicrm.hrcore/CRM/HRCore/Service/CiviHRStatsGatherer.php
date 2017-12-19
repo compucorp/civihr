@@ -63,7 +63,7 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
     }
 
     foreach ($this->roleService->getRoleNames() as $rid => $roleName) {
-      $login = $this->roleService->getLatestLoginByRole($roleName);
+      $login = $this->roleService->getLatestLoginForRole($roleName);
       $stats->setMostRecentLoginForRole($roleName, $login);
     }
 
