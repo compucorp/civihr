@@ -62,9 +62,8 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
       $stats->addReportConfigurationAgeGroup($group);
     }
 
-    foreach ($this->roleService->getRoleNames() as $rid => $roleName) {
-      $login = $this->roleService->getLatestLoginForRole($roleName);
-      $stats->setMostRecentLoginForRole($roleName, $login);
+    foreach ($this->roleService->getLatestLoginByRole() as $role => $login) {
+      $stats->setMostRecentLoginForRole($role, $login);
     }
 
     return $stats;

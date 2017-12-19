@@ -264,7 +264,9 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
     $roleService = $this->prophesize(RoleServiceInterface::class);
     $roleService->getRoleNames()->willReturn([1 => 'fake_role']);
-    $roleService->getLatestLoginForRole('fake_role')->willReturn(new \DateTime());
+    $roleService->getLatestLoginByRole()->willReturn([
+      'fake_role' => new \DateTime()
+    ]);
 
     return new CiviHRStatsGatherer(
       $siteInformation->reveal(),
