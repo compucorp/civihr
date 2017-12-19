@@ -2,6 +2,9 @@
 
 use CRM_HRCore_CMSData_Role_RoleServiceInterface as RoleServiceInterface;
 
+/**
+ * Implementation of RoleServiceInterface to interact with a Drupal 7 system
+ */
 class CRM_HRCore_CMSData_Role_DrupalRoleService implements RoleServiceInterface{
 
   /**
