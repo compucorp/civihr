@@ -65,10 +65,10 @@ define([
         expect(LeaveRequestAPI.all).toHaveBeenCalled();
       });
 
-      it('returns according model instances', function () {
+      it('returns a collection of request instances types of which correspond to request types', function () {
         // It is expected that all types of leave requests are mocked
         expect(leaveRequestPromiseResult.list.every(function (modelInstance) {
-          return testIfModalInstanceCorrespondsToRequestType(modelInstance);
+          return getRequestInstanceType(modelInstance) === modelInstance.request_type;
         })).toBe(true);
       });
     });
@@ -104,39 +104,38 @@ define([
         });
       });
 
-      describe('tests per each request type', function () {
-        ['leave', 'sickness', 'toil'].forEach(function (requestType) {
-          describe('if the type is "' + requestType + '"', function () {
-            beforeEach(function () {
-              var requestId = LeaveRequestData.findBy('request_type', requestType).id;
+      ['leave', 'sickness', 'toil'].forEach(function (requestType) {
+        describe('when the request type is "' + requestType + '"', function () {
+          beforeEach(function () {
+            var requestId = LeaveRequestData.findBy('request_type', requestType).id;
 
-              LeaveRequest.find(requestId).then(function (promiseResult) {
-                leaveRequestPromiseResult = promiseResult;
-              });
-              $rootScope.$digest();
+            LeaveRequest.find(requestId).then(function (promiseResult) {
+              leaveRequestPromiseResult = promiseResult;
             });
+            $rootScope.$digest();
+          });
 
-            it('returns corresponding model instance', function () {
-              testIfModalInstanceCorrespondsToRequestType(leaveRequestPromiseResult);
-            });
+          it('it returns a model instance of the corresponding type', function () {
+            expect(getRequestInstanceType(leaveRequestPromiseResult)).toBe(leaveRequestPromiseResult.request_type);
           });
         });
       });
     });
 
     /**
-     * Tests if the request instance corresponds to the request type
-     * by checking if every method (or property) in the corresponding instance
-     * exists in the given request instance
+     * Gets request instance type of the given model instance
+     * by comparing all methods in the given model instance
+     * with all methods in each request instance
      *
-     * @param  {Object} modelInstance instance of the request
+     * @param  {Object} modelInstance
      * @return {Boolean}
      */
-    function testIfModalInstanceCorrespondsToRequestType (requestInstance) {
-      return _.every(requestInstances[requestInstance.request_type],
-        function (requestInstanceProperty, requestInstancePropertyKey) {
-          return !!requestInstance[requestInstancePropertyKey];
-        });
+    function getRequestInstanceType (modelInstance) {
+      return _.findKey(requestInstances, function (requestInstance) {
+        return _.isEqual(
+          _.difference(_.keysIn(modelInstance), _.keys(modelInstance)).sort(),
+          _.keysIn(requestInstance).sort());
+      });
     }
   });
 });
