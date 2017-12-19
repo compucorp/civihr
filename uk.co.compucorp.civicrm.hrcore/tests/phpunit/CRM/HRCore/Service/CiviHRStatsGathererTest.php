@@ -2,6 +2,7 @@
 
 use CRM_HRCore_Service_CiviHRStatsGatherer as CiviHRStatsGatherer;
 use CRM_HRCore_CMSData_SiteInformation_SiteInformationInterface as SiteInformationInterface;
+use CRM_HRCore_CMSData_Role_RoleServiceInterface as RoleServiceInterface;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
@@ -243,6 +244,17 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $this->assertEquals(0, $stats->getEntityCount('vacancy'));
   }
 
+  public function testLatestLoginWillBeSet() {
+    $stats = $this->getGatherer()->gather();
+    $login = $stats->getMostRecentLoginByRole('fake_role');
+    $comparisonFormat = 'Y-m-d H:i';
+    $now = new \DateTime();
+    $this->assertEquals(
+      $now->format($comparisonFormat),
+      $login->format($comparisonFormat)
+    );
+  }
+
   /**
    * @return CRM_HRCore_Service_CiviHRStatsGatherer
    */
@@ -250,7 +262,16 @@ class CiviHRStatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $siteInformation = $this->prophesize(SiteInformationInterface::class);
     $siteInformation->getSiteName()->willReturn('foo');
 
-    return new CiviHRStatsGatherer($siteInformation->reveal());
+    $roleService = $this->prophesize(RoleServiceInterface::class);
+    $roleService->getRoleNames()->willReturn([1 => 'fake_role']);
+    $roleService->getLatestLoginByRole()->willReturn([
+      'fake_role' => new \DateTime()
+    ]);
+
+    return new CiviHRStatsGatherer(
+      $siteInformation->reveal(),
+      $roleService->reveal()
+    );
   }
 
   /**

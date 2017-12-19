@@ -3,18 +3,25 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="drupal_role_service" class="CRM_HRCore_Service_DrupalRoleService"/>
+        <service id="drupal_role_service" class="CRM_HRCore_CMSData_Role_DrupalRoleService"/>
         <service id="drupal_user_service" class="CRM_HRCore_Service_DrupalUserService">
-            <argument id="drupal_role_service"/>
+            <argument id="drupal_role_service" type="service"/>
         </service>
         <service id="civihr_stats_gatherer" class="CRM_HRCore_Service_CiviHRStatsGatherer">
             <argument id="cms_site_info" type="service"/>
+            <argument id="cms_role_service" type="service"/>
         </service>
         <service
                 id="cms_site_info"
                 factory-class="CRM_HRCore_CMSData_SiteInformationFactory"
                 factory-method="create"
                 class="CRM_HRCore_CMSData_SiteInformation_SiteInformationInterface"
+        />
+        <service
+                id="cms_role_service"
+                factory-class="CRM_HRCore_CMSData_CMSRoleServiceFactory"
+                factory-method="create"
+                class="CRM_HRCore_CMSData_Role_RoleServiceInterface"
         />
     </services>
 </container>

@@ -4,6 +4,7 @@ use CRM_HRCore_Model_CiviHRStatistics as CiviHRStatistics;
 use CRM_HRCore_Model_ReportConfiguration as ReportConfiguration;
 use CRM_HRCore_Model_ReportConfigurationAgeGroup as AgeGroup;
 use CRM_HRCore_CMSData_SiteInformation_SiteInformationInterface as SiteInformationInterface;
+use CRM_HRCore_CMSData_Role_RoleServiceInterface as RoleServiceInterface;
 use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
 
 /**
@@ -18,10 +19,20 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
   protected $siteInformation;
 
   /**
-   * @param SiteInformationInterface $siteInformation
+   * @var RoleServiceInterface
    */
-  public function __construct(SiteInformationInterface $siteInformation) {
+  protected $roleService;
+
+  /**
+   * @param SiteInformationInterface $siteInformation
+   * @param RoleServiceInterface $roleService
+   */
+  public function __construct(
+    SiteInformationInterface $siteInformation,
+    RoleServiceInterface $roleService
+  ) {
     $this->siteInformation = $siteInformation;
+    $this->roleService = $roleService;
   }
 
   /**
@@ -49,6 +60,10 @@ class CRM_HRCore_Service_CiviHRStatsGatherer {
 
     foreach ($this->getAgeGroups() as $group) {
       $stats->addReportConfigurationAgeGroup($group);
+    }
+
+    foreach ($this->roleService->getLatestLoginByRole() as $role => $login) {
+      $stats->setMostRecentLoginForRole($role, $login);
     }
 
     return $stats;
