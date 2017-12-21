@@ -20,12 +20,12 @@ define([
          * Assigns the given work pattern to the given contact id, also sets
          * effective date, effective end date and change reason
          *
-         * @param {string} contactId
-         * @param {string} workPatternID
-         * @param {string} effectiveDate
-         * @param {string} effectiveEndDate
-         * @param {string} changeReason
-         * @param {object} params - additional parameters
+         * @param  {String} contactId
+         * @param  {String} workPatternID
+         * @param  {String} effectiveDate
+         * @param  {String} effectiveEndDate
+         * @param  {String} changeReason
+         * @param  {Object} params - additional parameters
          * @return {Promise}
          */
         assignWorkPattern: function (contactId, workPatternID, effectiveDate, effectiveEndDate, changeReason, params) {
@@ -33,9 +33,9 @@ define([
         },
 
         /**
-         * Return the default work pattern
+         * Gets the default work pattern
          *
-         * @return {Promise}
+         * @return {Promise} resolved with an instance of the default work pattern
          */
         default: function () {
           return workPatternAPI.get({ is_default: true })
@@ -47,7 +47,7 @@ define([
         /**
          * Unassign a work pattern by the given contact work pattern ID
          *
-         * @param {string} contactWorkPatternID
+         * @param  {String} contactWorkPatternID
          * @return {Promise}
          */
         unassignWorkPattern: function (contactWorkPatternID) {
@@ -55,12 +55,12 @@ define([
         },
 
         /**
-         * Returns the work patterns of the contact with the given id
+         * Gets work patterns of the contact with the given ID
          *
-         * @param {string} contactId
-         * @param {object} params - additional parameters
-         * @param {boolean} cache
-         * @return {Promise}
+         * @param  {String} contactId
+         * @param  {Object} params - additional parameters
+         * @param  {Boolean} cache
+         * @return {Promise} resolved with a collection of instances of work patterns
          */
         workPatternsOf: function (contactId, params, cache) {
           return workPatternAPI.workPatternsOf(contactId, params, cache)
