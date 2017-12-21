@@ -80,12 +80,12 @@
 
       /**
        * Gets the URL to the Manage Entitlement page
-       * for the contact for an absence period with a provided ID.
+       * for the contact and absence period provided
        *
-       * @param  {Number|String} absenceTypeId
+       * @param  {Number|String} absencePeriodId
        * @return {String}
        */
-      function getEditEntitlementsPageURL (absenceTypeId) {
+      function getEditEntitlementsPageURL (absencePeriodId) {
         var path = 'civicrm/admin/leaveandabsences/periods/manage_entitlements';
         var returnPath = 'civicrm/contact/view';
         var returnUrl = CRM.url(returnPath, {
@@ -94,7 +94,7 @@
         });
 
         return CRM.url(path, {
-          id: absenceTypeId,
+          id: absencePeriodId,
           cid: vm.contactId,
           returnUrl: returnUrl
         });
