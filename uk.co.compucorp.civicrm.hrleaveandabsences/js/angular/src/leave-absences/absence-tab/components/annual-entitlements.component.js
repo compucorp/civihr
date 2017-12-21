@@ -34,8 +34,8 @@
 
       vm.absencePeriods = [];
       vm.loading = { absencePeriods: true };
-      vm.editEntitlementsPageUrl = getEditEntitlementsPageURL(vm.contactId);
 
+      vm.getEditEntitlementsPageURL = getEditEntitlementsPageURL;
       vm.openAnnualEntitlementChangeLog = openAnnualEntitlementChangeLog;
       vm.showComment = showComment;
 
@@ -79,18 +79,25 @@
       }
 
       /**
-        * Returns the URL to the Manage Entitlement page.
+        * Gets the URL to the Manage Entitlement page
+        * for the contact for an absence period with a provided ID.
         *
-        * The given contact ID is added to the URL, as the cid parameter.
-        *
-        * @param  {Number} contactId
+        * @param  {Number|String} absenceTypeId
         * @return {String}
         */
-      function getEditEntitlementsPageURL (contactId) {
+      function getEditEntitlementsPageURL (absenceTypeId) {
         var path = 'civicrm/admin/leaveandabsences/periods/manage_entitlements';
         var returnPath = 'civicrm/contact/view';
-        var returnUrl = CRM.url(returnPath, { cid: contactId, selectedChild: 'absence' });
-        return CRM.url(path, { cid: contactId, returnUrl: returnUrl });
+        var returnUrl = CRM.url(returnPath, {
+          cid: vm.contactId,
+          selectedChild: 'absence'
+        });
+
+        return CRM.url(path, {
+          id: absenceTypeId,
+          cid: vm.contactId,
+          returnUrl: returnUrl
+        });
       }
 
       /**

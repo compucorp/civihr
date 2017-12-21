@@ -51,11 +51,12 @@ define([
     }));
 
     describe('basic tests', function () {
-      var expectedEntitlementURL = '/index.php?q=civicrm/admin/leaveandabsences/periods/manage_entitlements&cid=' +
-        contactId + '&returnUrl=%2Findex.php%3Fq%3Dcivicrm%2Fcontact%2Fview%26cid%3D202%26selectedChild%3Dabsence';
+      var sampleAbsencePeriod;
 
       beforeEach(function () {
         compileComponent();
+
+        sampleAbsencePeriod = _.sample(controller.absencePeriods);
       });
 
       it('is initialized', function () {
@@ -74,8 +75,13 @@ define([
         expect(controller.loading.absencePeriods).toEqual(false);
       });
 
-      it('navigates to a correct edit entitlements page', function () {
-        expect(controller.editEntitlementsPageUrl).toEqual(expectedEntitlementURL);
+      it('provides a navigation to a correct edit entitlements page', function () {
+        expect(controller.getEditEntitlementsPageURL(sampleAbsencePeriod.id)).toBe(
+          '/index.php?q=civicrm/admin/leaveandabsences/periods/manage_entitlements' +
+          '&id=' + sampleAbsencePeriod.id +
+          '&cid=' + contactId +
+          '&returnUrl=' + encodeURIComponent('/index.php?q=civicrm/contact/view' +
+            '&cid=' + contactId + '&selectedChild=absence'));
       });
 
       describe('absence period', function () {
