@@ -219,7 +219,7 @@ var xml = require("xml-parse");
   });
 
   gulp.task('requirejs:watch', function () {
-    gulp.watch('../**/js/src/**/*.js').on('change', function (file) {
+    gulp.watch('../**/js/**/src/**/*.js').on('change', function (file) {
       var extensionName = getExtensionNameFromFile(file);
       argv.ext = extensionName;
 
