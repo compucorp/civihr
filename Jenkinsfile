@@ -44,14 +44,8 @@ pipeline {
     stage('Build site') {
       steps {
         script {
-          // Setup Building branch with
-          // CIVIHR_BRANCH parameter from manually build with parameter
-          // or PR target branch (CHANGE_TARGET) from building pull request
-          // or branch (BRANCH_NAME) from building individual branch
-          def buildBranch = params.CIVIHR_BRANCH != '' ? params.CIVIHR_BRANCH : env.CHANGE_TARGET != null ? env.CHANGE_TARGET : env.BRANCH_NAME != null ? env.BRANCH_NAME : 'staging'
-
           // Build site with CV Buildkit
-          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.27 --hr-ver ${buildBranch} --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.27 --hr-ver staging --url $WEBURL --admin-pass $ADMIN_PASS"
           sh """
             cd $DRUPAL_MODULES_ROOT/civicrm
             wget -O attachments.patch https://gist.githubusercontent.com/davialexandre/199b3ebb2c69f43c07dde0f51fb02c8b/raw/0f11edad8049c6edddd7f865c801ecba5fa4c052/attachments-4.7.27.patch
