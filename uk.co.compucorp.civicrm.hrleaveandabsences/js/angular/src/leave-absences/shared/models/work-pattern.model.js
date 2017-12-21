@@ -38,9 +38,9 @@ define([
          * @return {Promise}
          */
         default: function () {
-          return workPatternAPI.get({ default: true })
+          return workPatternAPI.get({ is_default: true })
             .then(function (defaultWorkPattern) {
-              return instance.init(defaultWorkPattern[0], true);
+              return instance.init(_.first(defaultWorkPattern), true);
             });
         },
 
