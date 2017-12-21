@@ -28,9 +28,9 @@
       notification) {
       $log.debug('Component: annual-entitlements');
 
-      var vm = this;
-      var contacts = [];
       var allEntitlements = [];
+      var contacts = [];
+      var vm = this;
 
       vm.absencePeriods = [];
       vm.loading = { absencePeriods: true };
@@ -79,12 +79,12 @@
       }
 
       /**
-        * Gets the URL to the Manage Entitlement page
-        * for the contact for an absence period with a provided ID.
-        *
-        * @param  {Number|String} absenceTypeId
-        * @return {String}
-        */
+       * Gets the URL to the Manage Entitlement page
+       * for the contact for an absence period with a provided ID.
+       *
+       * @param  {Number|String} absenceTypeId
+       * @return {String}
+       */
       function getEditEntitlementsPageURL (absenceTypeId) {
         var path = 'civicrm/admin/leaveandabsences/periods/manage_entitlements';
         var returnPath = 'civicrm/contact/view';
@@ -113,7 +113,7 @@
       }
 
       /**
-       * Loads entitlements comments authors
+       * Loads authors of comments to the entitlements
        *
        * @return {Promise}
        */
@@ -141,8 +141,8 @@
       }
 
       /**
-       * Opens the Annual entitlement change log modal for the current
-       * contact and the given period.
+       * Opens the Annual entitlement change log modal
+       * for the current contact and the given period
        */
       function openAnnualEntitlementChangeLog (periodId) {
         $uibModal.open({
@@ -190,14 +190,13 @@
       /**
        * Shows a comment to the entitlement
        *
+       * @NOTE There is no support for footer in notificationService at the moment.
+       * This code should be refactored as soon as notificationService supports footer.
+       * At the moment the footer is constructed via rich HTML directly via body text
+       *
        * @param {Object} comment
        */
       function showComment (comment) {
-        /*
-         * @NOTE There is no support for footer in notificationService at the moment.
-         * This code should be refactored as soon as notificationService supports footer.
-         * At the moment the footer is constructed via rich HTML directly via body text
-         */
         var text = comment.message +
           '<br/><br/><strong>Last updated:' +
           '<br/>By: ' + comment.author_name +
