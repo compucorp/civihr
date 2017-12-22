@@ -122,14 +122,14 @@ define([
     }());
 
     /**
-     * Removes [type]_date_amount param from the leave request in case of TOIL or days unit.
+     * Removes [type]_date_amount param from the leave request in case of days unit.
      * In other cases, such as hours unit, removes [type]_date_type param.
-     * This is a requirement of the back-end not to pass such params in different cases.
+     * This is a requirement of the back-end not to pass such params depending on the case.
      *
      * @param {String} type from|to
      */
     function amendDatesAndDateTypesBeforeSave (type) {
-      if (vm.selectedAbsenceType.calculation_unit_name === 'days' || isLeaveType('toil')) {
+      if (vm.selectedAbsenceType.calculation_unit_name === 'days') {
         delete vm.request[type + '_date_amount'];
       } else {
         delete vm.request[type + '_date_type'];

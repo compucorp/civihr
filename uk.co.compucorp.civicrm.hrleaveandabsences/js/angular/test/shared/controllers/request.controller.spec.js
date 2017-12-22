@@ -272,23 +272,50 @@
               LeaveRequestAPI.isValid.and.returnValue($q.resolve());
               LeaveRequestAPI.create.and.returnValue($q.resolve({ id: '1' }));
               controller.balance.closing = 1;
-
-              controller.submit();
-              $scope.$digest();
+              controller.request.from_date_amount = 1;
+              controller.request.to_date_amount = 1;
+              controller.request.from_date_type = 1;
+              controller.request.to_date_type = 1;
             });
 
-            it('is successful', function () {
-              expect(controller.errors.length).toBe(0);
-              expect(controller.request.id).toBeDefined();
+            describe('basic tests', function () {
+              beforeEach(function () {
+                controller.submit();
+                $scope.$digest();
+              });
+
+              it('is successful', function () {
+                expect(controller.errors.length).toBe(0);
+                expect(controller.request.id).toBeDefined();
+              });
+
+              it('calls corresponding API end points', function () {
+                expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
+                expect(LeaveRequestAPI.create).toHaveBeenCalled();
+              });
+
+              it('sends event', function () {
+                expect(pubSub.publish).toHaveBeenCalledWith('LeaveRequest::new', controller.request);
+              });
+
+              it('does not send kek in hours parameters to the server', function () {
+                expect(controller.request['from_date_amount']).not.toBeDefined();
+                expect(controller.request['from_date_amount']).not.toBeDefined();
+              });
             });
 
-            it('calls corresponding API end points', function () {
-              expect(LeaveRequestAPI.isValid).toHaveBeenCalled();
-              expect(LeaveRequestAPI.create).toHaveBeenCalled();
-            });
+            describe('when calculation unit is "hours"', function () {
+              beforeEach(function () {
+                controller.selectedAbsenceType.calculation_unit_name = 'hours';
 
-            it('sends event', function () {
-              expect(pubSub.publish).toHaveBeenCalledWith('LeaveRequest::new', controller.request);
+                controller.submit();
+                $scope.$digest();
+              });
+
+              it('does not send deduction in hours parameters to the server', function () {
+                expect(controller.request['from_date_type']).not.toBeDefined();
+                expect(controller.request['from_date_type']).not.toBeDefined();
+              });
             });
           });
         });
