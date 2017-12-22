@@ -14,11 +14,7 @@ class CRM_HRContactActionsMenu_Hook_AddContactMenuActionsTest extends BaseHeadle
 
   private $groupTitle;
 
-  public function setUp() {
-    CRM_Utils_Hook::singleton()->setHook('addContactMenuActions', array($this, 'hook_civicrm_addContactMenuActions'));
-  }
-
-  public function hook_civicrm_addContactMenuActions(ActionsMenu $menu) {
+  public function hook_addContactMenuActions(ActionsMenu $menu) {
     $this->groupTitle = 'Test Group';
     $testGroup = new ActionsGroup($this->groupTitle);
     $menu->addToMainPanel($testGroup);
