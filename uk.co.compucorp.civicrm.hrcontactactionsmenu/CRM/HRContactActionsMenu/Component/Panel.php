@@ -4,6 +4,10 @@ use CRM_HRContactActionsMenu_Component_Group as ActionsGroup;
 
 /**
  * Class CRM_HRContactActionsMenu_Component_Panel
+ *
+ * The is class allows menu action groups to be added
+ * to either of two menu panels namely the main and
+ * the highlighted panel.
  */
 class CRM_HRContactActionsMenu_Component_Panel {
   /**

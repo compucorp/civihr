@@ -4,6 +4,9 @@ use CRM_HRContactActionsMenu_Component_GroupItem as ActionsGroupItemInterface;
 
 /**
  * Class CRM_HRContactActionsMenu_Component_GroupButtonItem
+ *
+ * This class implements the ActionsGroupItemInterface
+ * and allows a button menu item to be created.
  */
 class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroupItemInterface {
 

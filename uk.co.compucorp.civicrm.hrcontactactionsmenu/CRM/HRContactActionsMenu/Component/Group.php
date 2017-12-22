@@ -4,6 +4,10 @@ use CRM_HRContactActionsMenu_Component_GroupItem as ActionsGroupItem;
 
 /**
  * Class CRM_HRContactActionsMenu_Component_Group
+ *
+ * This class allows adding menu items objects which
+ * could be buttons, separators or objects extending
+ * the GroupItem interface.
  */
 class CRM_HRContactActionsMenu_Component_Group {
   /**
