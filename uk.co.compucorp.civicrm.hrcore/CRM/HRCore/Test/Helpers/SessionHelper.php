@@ -1,18 +1,18 @@
 <?php
 
-trait CRM_HRCore_Test_Helpers_SessionHelpersTrait {
+class CRM_HRCore_Test_Helpers_SessionHelper {
 
-  protected function registerCurrentLoggedInContactInSession($contactID) {
+  public static function registerCurrentLoggedInContactInSession($contactID) {
     $session = CRM_Core_Session::singleton();
     $session->set('userID', $contactID);
   }
 
-  protected function unregisterCurrentLoggedInContactFromSession() {
+  public static function unregisterCurrentLoggedInContactFromSession() {
     $session = CRM_Core_Session::singleton();
     $session->set('userID', NULL);
   }
 
-  protected function setPermissions(array $permissions = []) {
+  public static function setPermissions(array $permissions = []) {
     CRM_Core_Config::singleton()->userPermissionClass->permissions = $permissions;
   }
 

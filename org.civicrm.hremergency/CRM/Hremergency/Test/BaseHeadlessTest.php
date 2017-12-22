@@ -8,6 +8,7 @@ abstract class CRM_Hremergency_Test_BaseHeadlessTest extends PHPUnit_Framework_T
 
   public function setUpHeadless() {
     return \Civi\Test::headless()
+      ->install('uk.co.compucorp.civicrm.hrcore')
       ->installMe(__DIR__)
       ->apply();
   }

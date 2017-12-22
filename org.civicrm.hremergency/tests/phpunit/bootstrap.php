@@ -4,10 +4,6 @@ ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
 eval(cv('php:boot --level=full -t', 'phpcode'));
 
-$hrCoreDir = __DIR__ . '/../../../uk.co.compucorp.civicrm.hrcore';
-require_once $hrCoreDir . '/CRM/HRCore/Test/Helpers/SessionHelpersTrait.php';
-require_once $hrCoreDir . '/CRM/HRCore/Test/Fabricator/Contact.php';
-
 /**
  * Call the "cv" command.
  *
