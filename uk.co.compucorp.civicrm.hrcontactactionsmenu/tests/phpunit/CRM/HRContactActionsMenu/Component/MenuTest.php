@@ -53,14 +53,8 @@ class CRM_HRContactActionsMenu_Component_MenuTest extends BaseHeadlessTest {
   }
 
   private function getActionGroupMock($title, $weight) {
-    $actionsGroup = $this->getMockBuilder(ActionsGroup::class)
-      ->setConstructorArgs([$title])
-      ->setMethods(['getWeight'])
-      ->getMock();
-
-    $actionsGroup->expects($this->any())
-      ->method('getWeight')
-      ->will($this->returnValue($weight));
+    $actionsGroup = new ActionsGroup($title);
+    $actionsGroup->setWeight($weight);
 
     return $actionsGroup;
   }

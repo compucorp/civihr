@@ -19,22 +19,17 @@ class CRM_HRContactActionsMenu_Component_GroupTest extends BaseHeadlessTest {
   }
 
   public function testSetAndGetWeight() {
-    $groupTitle = 'Test Title';
     $weight = 5;
-    $actionsGroup = new ActionsGroup($groupTitle);
+    $actionsGroup = new ActionsGroup('Test Title');
     $actionsGroup->setWeight($weight);
     $this->assertEquals($weight, $actionsGroup->getWeight());
   }
 
   public function testAddAndGetItems() {
-    $groupTitle = 'Test Title';
-    $actionsGroup = new ActionsGroup($groupTitle);
-
-    $items = [
-      0 => $this->getActionGroupItem(),
-      1 => $this->getActionGroupButtonItem(),
-      2 => $this->getActionGroupSeparatorItem()
-    ];
+    $actionsGroup = new ActionsGroup('Test Title');
+    $items[] = $this->getActionGroupItem();
+    $items[] = $this->getActionGroupButtonItem();
+    $items[] = $this->getActionGroupSeparatorItem();
 
     foreach ($items as $item) {
       $actionsGroup->addItem($item);
