@@ -382,6 +382,13 @@ def listCivihrExtensions() {
       folder: 'org.civicrm.hremergency',
       hasJSTests: false,
       hasPHPTests: true
+    ],
+    [
+      name: 'Contact Actions Menu',
+      shortName: 'hrcontactactionsmenu',
+      folder: 'uk.co.compucorp.civicrm.hrcontactactionsmenu',
+      hasJSTests: false,
+      hasPHPTests: true
     ]
   ]
 }
