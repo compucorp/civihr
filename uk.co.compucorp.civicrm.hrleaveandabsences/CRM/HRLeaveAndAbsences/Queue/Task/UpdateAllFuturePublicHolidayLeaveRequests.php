@@ -8,12 +8,14 @@ use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestService as PublicHol
  *
  * Basically, it uses the PublicHolidayLeaveRequest service to update all leave
  * requests for public holidays in the future
+ *
+ * @param array $contactID
  */
 class CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests {
 
-  public static function run(CRM_Queue_TaskContext $ctx) {
+  public static function run(CRM_Queue_TaskContext $ctx, array $contactID = []) {
     $service = PublicHolidayLeaveRequestServiceFactory::create();
-    $service->updateAllInTheFuture();
+    $service->updateAllInTheFuture($contactID);
   }
 
 }

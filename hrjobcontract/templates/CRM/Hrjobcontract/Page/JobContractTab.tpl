@@ -8,7 +8,7 @@
 {literal}
 <script type="text/javascript">
   document.addEventListener('hrjcReady', function () {
-    angular.bootstrap(document.getElementById('hrjob-contract'), ['hrjc']);
+    angular.bootstrap(document.getElementById('hrjob-contract'), ['job-contract']);
   });
 </script>
 {/literal}

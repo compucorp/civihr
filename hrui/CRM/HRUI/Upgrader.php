@@ -37,6 +37,7 @@ class CRM_HRUI_Upgrader extends CRM_HRUI_Upgrader_Base {
   use CRM_HRUI_Upgrader_Steps_4704;
   use CRM_HRUI_Upgrader_Steps_4705;
   use CRM_HRUI_Upgrader_Steps_4706;
+  use CRM_HRUI_Upgrader_Steps_4707;
 
   public function install() {
     $this->runAllUpgraders();

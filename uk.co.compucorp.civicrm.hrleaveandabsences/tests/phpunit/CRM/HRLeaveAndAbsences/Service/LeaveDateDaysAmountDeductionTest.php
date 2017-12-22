@@ -84,6 +84,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveDateDaysAmountDeductionTest extends Ba
     ];
 
     $params = array_merge($defaultParams, $params);
+    $params['from_date'] = $params['from_date'] . ' 00:00';
+    $params['to_date'] = $params['to_date'] . ' 23:59';
     $leaveRequest = new LeaveRequest();
     $leaveRequest->copyValues($params);
 

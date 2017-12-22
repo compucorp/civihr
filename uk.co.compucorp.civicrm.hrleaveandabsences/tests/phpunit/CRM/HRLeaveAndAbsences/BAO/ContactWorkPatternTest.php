@@ -7,6 +7,7 @@ use CRM_HRLeaveAndAbsences_BAO_WorkDay as WorkDay;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Exception_InvalidContactWorkPatternException as InvalidContactWorkPatternException;
+use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest
@@ -569,5 +570,78 @@ class CRM_HRLeaveAndAbsences_BAO_ContactWorkPatternTest extends BaseHeadlessTest
     $this->assertCount(2, $contacts);
     sort($contacts);
     $this->assertEquals($contacts, [$contactID1, $contactID2]);
+  }
+
+  public function testTaskNotEnqueuedToUpdatePublicHolidayRequestsWhenEffectiveEndDateIsLessThanCurrentDate() {
+    ContactWorkPattern::create([
+      'contact_id' => 2,
+      'pattern_id' => 1,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'effective_end_date' => CRM_Utils_Date::processDate('yesterday'),
+    ]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(0, $queue->numberOfItems());
+  }
+
+  public function testTaskIsEnqueuedToUpdatePublicHolidayRequestsWhenEffectiveEndDateGreaterThanOrEqualToTheCurrentDate() {
+    $contactID = 2;
+    //When the effective end date is today
+    ContactWorkPattern::create([
+      'contact_id' => $contactID,
+      'pattern_id' => 1,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'effective_end_date' => CRM_Utils_Date::processDate('today'),
+    ]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests::class,
+      $item->data->callback[0]
+    );
+    $this->assertEquals([$contactID], $item->data->arguments[0]);
+    $queue->deleteItem($item);
+
+    //When the effective end date is greater than today
+    ContactWorkPattern::create([
+      'contact_id' => $contactID,
+      'pattern_id' => 1,
+      'effective_date' => CRM_Utils_Date::processDate('2016-06-01'),
+      'effective_end_date' => CRM_Utils_Date::processDate('tomorrow'),
+    ]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests::class,
+      $item->data->callback[0]
+    );
+    $this->assertEquals([$contactID], $item->data->arguments[0]);
+    $queue->deleteItem($item);
+  }
+
+  public function testTaskIsEnqueuedToUpdatePublicHolidayRequestsForContactWhenEffectiveEndDateIsNull() {
+    $contactID = 2;
+    ContactWorkPattern::create([
+      'contact_id' => $contactID,
+      'pattern_id' => 1,
+      'effective_date' => CRM_Utils_Date::processDate('2016-01-01'),
+    ]);
+
+    $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
+    $this->assertEquals(1, $queue->numberOfItems());
+
+    $item = $queue->claimItem();
+    $this->assertEquals(
+      CRM_HRLeaveAndAbsences_Queue_Task_UpdateAllFuturePublicHolidayLeaveRequests::class,
+      $item->data->callback[0]
+    );
+    $this->assertEquals([$contactID], $item->data->arguments[0]);
+    $queue->deleteItem($item);
   }
 }

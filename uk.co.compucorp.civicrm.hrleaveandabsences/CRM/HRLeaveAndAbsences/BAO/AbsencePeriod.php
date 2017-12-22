@@ -581,4 +581,41 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
     }
     return null;
   }
+
+  /**
+   * Returns the absence periods between the given start and
+   * end dates ordered by the weight in ascending order. When
+   * the end date is not present, it returns only the absence
+   * periods with end dates >= to the start date.
+   *
+   * @param \DateTime $fromDate
+   * @param \DateTime|null $toDate
+   *
+   * @return CRM_HRLeaveAndAbsences_BAO_AbsencePeriod[]
+   *   An empty array is returned when there are no absence periods
+   */
+  public static function getPeriodsBetweenDates(DateTime $fromDate, DateTime $toDate = null) {
+    $tableName = self::getTableName();
+
+    $query = "SELECT * FROM {$tableName} WHERE end_date >= %1";
+    $queryParams = [
+      1 => [$fromDate->format('Y-m-d'), 'String'],
+    ];
+
+    if($toDate){
+      $query .= ' AND start_date <= %2';
+      $queryParams[2] = [$toDate->format('Y-m-d'), 'String'];
+    }
+
+    $query .= ' ORDER BY weight ASC';
+
+    $absencePeriod = CRM_Core_DAO::executeQuery($query, $queryParams, true, self::class);
+
+    $absencePeriods = [];
+    while($absencePeriod->fetch()) {
+      $absencePeriods[] = clone $absencePeriod;
+    }
+
+    return $absencePeriods;
+  }
 }
