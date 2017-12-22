@@ -23,6 +23,8 @@ pipeline {
   stages {
     stage('Pre-tasks execution') {
       steps {
+        hipchatSend color: 'YELLOW', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: '"Starting build: ${env.JOB_NAME} ${env.BUILD_NUMBER}"', notify: true, room: 'CiviHR', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
+
         // Print all Environment variables
         sh 'printenv | sort'
 
@@ -184,6 +186,12 @@ pipeline {
           sh "civibuild destroy ${params.CIVIHR_BUILDNAME} || true"
         }
       }
+    }
+    success {
+      hipchatSend color: 'GREEN', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: '"Successful build: ${env.JOB_NAME} ${env.BUILD_NUMBER}"', notify: true, room: 'CiviHR', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
+    }
+    failure {
+      hipchatSend color: 'RED', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: '"Failed build: ${env.JOB_NAME} ${env.BUILD_NUMBER}"', notify: true, room: 'CiviHR', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
     }
   }
 }
