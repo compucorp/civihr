@@ -1,11 +1,4 @@
 @mixin global {
-
-  .container,
-  .container-fluid {
-    max-width: 100%;
-    padding: 0;
-  }
-
   hr {
     margin-bottom: 20px;
     margin-top: 20px;
