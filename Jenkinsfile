@@ -23,7 +23,7 @@ pipeline {
   stages {
     stage('Pre-tasks execution') {
       steps {
-        hipchatSend color: 'YELLOW', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: '"Starting build: ${env.JOB_NAME} ${env.BUILD_NUMBER}"', notify: true, room: 'CiviHR', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
+        hipchatSend color: 'YELLOW', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: "Building ${env.CHANGE_URL}: ${env.JOB_URL}", notify: true, room: 'CiviHR', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
 
         // Print all Environment variables
         sh 'printenv | sort'
@@ -188,10 +188,10 @@ pipeline {
       }
     }
     success {
-      hipchatSend color: 'GREEN', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: '"Successful build: ${env.JOB_NAME} ${env.BUILD_NUMBER}"', notify: true, room: 'CiviHR', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
+      hipchatSend color: 'GREEN', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: "Successful build. Duration: ${BUILD_DURATION} ${env.JOB_URL}", notify: true, room: 'CiviHR', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
     }
     failure {
-      hipchatSend color: 'RED', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: '"Failed build: ${env.JOB_NAME} ${env.BUILD_NUMBER}"', notify: true, room: 'CiviHR', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
+      hipchatSend color: 'RED', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: "Failed build. Duration: ${BUILD_DURATION}. Failed Tests: ${FAILED_TESTS} ${env.JOB_URL}", notify: true, room: 'CiviHR', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
     }
   }
 }
