@@ -2,15 +2,33 @@
 
 use CRM_HRContactActionsMenu_Hook_AddContactMenuActions as AddContactMenuActionsHook;
 use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
+use CRM_HRContactActionsMenu_Component_Group as ActionsGroup;
+use Civi\Test\HookInterface as HookInterface;
 
 /**
  * Class CRM_HRContactActionsMenu_Hook_AddContactMenuActionsTest
  *
  * @group headless
  */
-class CRM_HRContactActionsMenu_Hook_AddContactMenuActionsTest extends BaseHeadlessTest {
+class CRM_HRContactActionsMenu_Hook_AddContactMenuActionsTest extends BaseHeadlessTest implements HookInterface {
 
-  public function testInvokeReturnsAnActionsMenuInstance() {
-    $this->assertInstanceOf(ActionsMenu::class, AddContactMenuActionsHook::invoke());
+  private $groupTitle;
+
+  public function setUp() {
+    CRM_Utils_Hook::singleton()->setHook('addContactMenuActions', array($this, 'hook_civicrm_addContactMenuActions'));
+  }
+
+  public function hook_civicrm_addContactMenuActions(ActionsMenu $menu) {
+    $this->groupTitle = 'Test Group';
+    $testGroup = new ActionsGroup($this->groupTitle);
+    $menu->addToMainPanel($testGroup);
+  }
+
+  public function testInvokeInvokesTheAddContactMenuActionsHook() {
+    $menu = AddContactMenuActionsHook::invoke();
+    $this->assertInstanceOf(ActionsMenu::class, $menu);
+    $groups = $menu->getMainPanelItems();
+    $this->assertCount(1, $groups);
+    $this->assertEquals($this->groupTitle, $groups[0]->getTitle());
   }
 }
