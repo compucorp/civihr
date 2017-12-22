@@ -3,13 +3,13 @@
 use CRM_HRContactActionsMenu_Component_Group as ActionsGroup;
 
 /**
- * Class CRM_HRContactActionsMenu_Component_Panel
+ * Class CRM_HRContactActionsMenu_Component_Menu
  *
  * The is class allows menu action groups to be added
  * to either of two menu panels namely the main and
  * the highlighted panel.
  */
-class CRM_HRContactActionsMenu_Component_Panel {
+class CRM_HRContactActionsMenu_Component_Menu {
   /**
    * @var array
    *   Items belonging to the the main panel
@@ -29,14 +29,14 @@ class CRM_HRContactActionsMenu_Component_Panel {
    *
    * @param ActionsGroup $group
    */
-  public function addToMain(ActionsGroup $group) {
+  public function addToMainPanel(ActionsGroup $group) {
     $this->mainPanelItems[] = $group;
   }
 
   /**
    * @param ActionsGroup $group
    */
-  public function addToHighlighted(ActionsGroup $group) {
+  public function addToHighlightedPanel(ActionsGroup $group) {
     $this->highlightedPanelItems[] = $group;
   }
 
@@ -66,7 +66,7 @@ class CRM_HRContactActionsMenu_Component_Panel {
    *
    * @return array
    */
-  public function getMainItems() {
+  public function getMainPanelItems() {
     return $this->sortItems($this->mainPanelItems);
   }
 
@@ -76,7 +76,7 @@ class CRM_HRContactActionsMenu_Component_Panel {
    *
    * @return array
    */
-  public function getHighlightedItems() {
+  public function getHighlightedPanelItems() {
     return $this->sortItems($this->highlightedPanelItems);
   }
 }

@@ -1,25 +1,25 @@
 <?php
 
 use CRM_HRContactActionsMenu_Component_Group as ActionsGroup;
-use CRM_HRContactActionsMenu_Component_Panel as ActionsPanel;
+use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
 
 /**
- * Class CRM_HRContactActionsMenu_Component_PanelTest
+ * Class CRM_HRContactActionsMenu_Component_MenuTest
  *
  * @group headless
  */
-class CRM_HRContactActionsMenu_Component_PanelTest extends BaseHeadlessTest {
+class CRM_HRContactActionsMenu_Component_MenuTest extends BaseHeadlessTest {
 
   public function testAddingAndGettingMainPanelItems() {
     $weights = [5, 10, 3];
     $actionGroups = [];
-    $panel = new ActionsPanel();
+    $menu = new ActionsMenu();
 
-    //add action groups of varying weight to the main panel
+    //add action groups of varying weight to the main panel of the menu
     foreach ($weights as $weight) {
       $title = 'Group '. $weight;
       $actionGroups[$weight] = $this->getActionGroupMock($title, $weight);
-      $panel->addToMain($actionGroups[$weight]);
+      $menu->addToMainPanel($actionGroups[$weight]);
     }
 
     //sort the action group by the weight key in ascending.
@@ -28,19 +28,19 @@ class CRM_HRContactActionsMenu_Component_PanelTest extends BaseHeadlessTest {
     //convert to zero indexed array.
     $actionGroups = array_values($actionGroups);
 
-    $this->assertEquals($actionGroups, $panel->getMainItems());
+    $this->assertEquals($actionGroups, $menu->getMainPanelItems());
   }
 
   public function testAddingAndGettingHighlightedPanelItems() {
     $weights = [5, 10, 3];
     $actionGroups = [];
-    $panel = new ActionsPanel();
+    $menu = new ActionsMenu();
 
-    //add action groups of varying weight to the highlightedpanel
+    //add action groups of varying weight to the highlighted panel of the menu
     foreach ($weights as $weight) {
       $title = 'Group '. $weight;
       $actionGroups[$weight] = $this->getActionGroupMock($title, $weight);
-      $panel->addToHighlighted($actionGroups[$weight]);
+      $menu->addToHighlightedPanel($actionGroups[$weight]);
     }
 
     //sort the action group by the weight key in ascending.
@@ -49,7 +49,7 @@ class CRM_HRContactActionsMenu_Component_PanelTest extends BaseHeadlessTest {
     //convert to zero indexed array.
     $actionGroups = array_values($actionGroups);
 
-    $this->assertEquals($actionGroups, $panel->getHighlightedItems());
+    $this->assertEquals($actionGroups, $menu->getHighlightedPanelItems());
   }
 
   private function getActionGroupMock($title, $weight) {
