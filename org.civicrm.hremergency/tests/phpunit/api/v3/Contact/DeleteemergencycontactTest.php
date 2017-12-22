@@ -1,8 +1,12 @@
 <?php
 
+use CRM_Hremergency_Test_BaseHeadlessTest as BaseHeadlessTest;
 use CRM_Hremergency_Service_EmergencyContactService as EmergencyContactService;
 
-class api_v3_Contact_DeleteEmergencyContactTest extends \PHPUnit_Framework_TestCase {
+/**
+ * @group headless
+ */
+class api_v3_Contact_DeleteEmergencyContactTest extends BaseHeadlessTest {
 
   use CRM_HRCore_Test_Helpers_SessionHelpersTrait;
 
