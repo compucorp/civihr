@@ -210,7 +210,7 @@ var xml = require("xml-parse");
   });
 
   gulp.task('requirejs:main', function (done) {
-    var buildFile = find.fileSync('build.js', getExtensionPath() + '/js')[0];
+    var buildFile = find.fileSync('build.js', getExtensionPath())[0];
 
     exec('r.js -o ' + buildFile, function (err, stdout, stderr) {
       err && err.code && console.log(stdout);
