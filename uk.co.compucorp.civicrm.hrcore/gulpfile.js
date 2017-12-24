@@ -293,17 +293,21 @@ var xml = require("xml-parse");
         fs.statSync(testFile).isFile() && this.single(testFile);
       },
       single: function (testFile) {
-        var extPathJS = path.join(getExtensionPath(), 'js/');
+        var configFilePath = findUp.sync('karma.conf.js', { cwd: testFile });
+        var jsFolderPath = path.dirname(configFilePath);
+
         var tempConfigFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
         gulp
-          .src(path.join(extPathJS, 'karma.conf.js'))
+          .src(configFilePath)
           .pipe(replace('*.spec.js', path.basename(testFile)))
           .pipe(rename(tempConfigFile))
-          .pipe(gulp.dest(extPathJS))
+          .pipe(gulp.dest(jsFolderPath))
           .on('end', function () {
-            runServer(path.join(extPathJS, tempConfigFile), function () {
-              gulp.src(path.join(extPathJS, tempConfigFile), { read: false }).pipe(clean({ force: true }));
+            runServer(path.join(jsFolderPath, tempConfigFile), function () {
+              gulp
+                .src(path.join(jsFolderPath, tempConfigFile), { read: false })
+                .pipe(clean({ force: true }));
             });
           });
       }
