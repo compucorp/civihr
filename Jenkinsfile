@@ -23,7 +23,7 @@ pipeline {
   stages {
     stage('Pre-tasks execution') {
       steps {
-        hipchatSend color: 'YELLOW', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: "Building <a href=\"${env.CHANGE_URL}\">${env.CHANGE_URL}</a>: <a href=\"${env.JOB_URL}\">${env.JOB_URL}</a>", notify: true, room: 'CiviHR', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
+        //hipchatSend color: 'YELLOW', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: "Building <a href=\"${env.CHANGE_URL}\">${env.CHANGE_URL}</a>: <a href=\"${env.JOB_URL}\">${env.JOB_URL}</a>", notify: true, room: 'CiviHR', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
         currentBuild.result = 'FAILURE'
 
         // Print all Environment variables
