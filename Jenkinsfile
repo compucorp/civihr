@@ -45,140 +45,140 @@ pipeline {
       }
     }
 
-    stage('Build site') {
-      steps {
-        script {
-          // Build site with CV Buildkit
-          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.27 --hr-ver staging --url $WEBURL --admin-pass $ADMIN_PASS"
-          sh """
-            cd $DRUPAL_MODULES_ROOT/civicrm
-            wget -O attachments.patch https://gist.githubusercontent.com/davialexandre/199b3ebb2c69f43c07dde0f51fb02c8b/raw/0f11edad8049c6edddd7f865c801ecba5fa4c052/attachments-4.7.27.patch
-            patch -p1 -i attachments.patch
-            rm attachments.patch
-          """
+  //   stage('Build site') {
+  //     steps {
+  //       script {
+  //         // Build site with CV Buildkit
+  //         sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.27 --hr-ver staging --url $WEBURL --admin-pass $ADMIN_PASS"
+  //         sh """
+  //           cd $DRUPAL_MODULES_ROOT/civicrm
+  //           wget -O attachments.patch https://gist.githubusercontent.com/davialexandre/199b3ebb2c69f43c07dde0f51fb02c8b/raw/0f11edad8049c6edddd7f865c801ecba5fa4c052/attachments-4.7.27.patch
+  //           patch -p1 -i attachments.patch
+  //           rm attachments.patch
+  //         """
 
-          // Change git remote of civihr ext to support dev version of Jenkins pipeline
-          changeCivihrGitRemote()
+  //         // Change git remote of civihr ext to support dev version of Jenkins pipeline
+  //         changeCivihrGitRemote()
 
-          // Get repos & branch name
-          def prBranch = env.CHANGE_BRANCH
-          def envBranch = env.CHANGE_TARGET
-          if (prBranch != null && prBranch.startsWith("hotfix-")) {
-            envBranch = 'master'
-          }
+  //         // Get repos & branch name
+  //         def prBranch = env.CHANGE_BRANCH
+  //         def envBranch = env.CHANGE_TARGET
+  //         if (prBranch != null && prBranch.startsWith("hotfix-")) {
+  //           envBranch = 'master'
+  //         }
 
-          if (prBranch) {
-            checkoutPrBranchInCiviHRRepos(prBranch)
-            mergeEnvBranchInAllRepos(envBranch)
-          }
+  //         if (prBranch) {
+  //           checkoutPrBranchInCiviHRRepos(prBranch)
+  //           mergeEnvBranchInAllRepos(envBranch)
+  //         }
 
-          sh """
-              cd $WEBROOT
-              drush features-revert civihr_employee_portal_features -y
-              drush features-revert civihr_default_permissions -y
-              drush updatedb -y
-              drush cvapi extension.upgrade -y
-              drush cc all
-              drush cc civicrm
-            """
-        }
-      }
-    }
+  //         sh """
+  //             cd $WEBROOT
+  //             drush features-revert civihr_employee_portal_features -y
+  //             drush features-revert civihr_default_permissions -y
+  //             drush updatedb -y
+  //             drush cvapi extension.upgrade -y
+  //             drush cc all
+  //             drush cc civicrm
+  //           """
+  //       }
+  //     }
+  //   }
 
-    /* Testing PHP */
-    stage('Test PHP') {
-      steps {
-        script {
-          for (extension in listCivihrExtensions()) {
-            if (extension.hasPHPTests) {
-              testPHPUnit(extension)
-            }
-          }
-        }
-      }
-      post {
-        always {
-          step([
-            $class: 'XUnitBuilder',
-            thresholds: [
-              [
-                $class: 'FailedThreshold',
-                failureNewThreshold: '1',
-                failureThreshold: '1',
-                unstableNewThreshold: '1',
-                unstableThreshold: '1'
-              ],
-              [
-                $class: 'SkippedThreshold',
-                failureNewThreshold: '0',
-                failureThreshold: '0',
-                unstableNewThreshold: '0',
-                unstableThreshold: '0'
-              ]
-            ],
-            tools: [
-              [
-                $class: 'JUnitType',
-                pattern: env.PHPUNIT_TESTS_REPORT_FOLDER + '/*.xml'
-              ]
-            ]
-          ])
-        }
-      }
-    }
+  //   /* Testing PHP */
+  //   stage('Test PHP') {
+  //     steps {
+  //       script {
+  //         for (extension in listCivihrExtensions()) {
+  //           if (extension.hasPHPTests) {
+  //             testPHPUnit(extension)
+  //           }
+  //         }
+  //       }
+  //     }
+  //     post {
+  //       always {
+  //         step([
+  //           $class: 'XUnitBuilder',
+  //           thresholds: [
+  //             [
+  //               $class: 'FailedThreshold',
+  //               failureNewThreshold: '1',
+  //               failureThreshold: '1',
+  //               unstableNewThreshold: '1',
+  //               unstableThreshold: '1'
+  //             ],
+  //             [
+  //               $class: 'SkippedThreshold',
+  //               failureNewThreshold: '0',
+  //               failureThreshold: '0',
+  //               unstableNewThreshold: '0',
+  //               unstableThreshold: '0'
+  //             ]
+  //           ],
+  //           tools: [
+  //             [
+  //               $class: 'JUnitType',
+  //               pattern: env.PHPUNIT_TESTS_REPORT_FOLDER + '/*.xml'
+  //             ]
+  //           ]
+  //         ])
+  //       }
+  //     }
+  //   }
 
-    /* Testing JS */
-    stage('Testing JS: Install JS packages') {
-      steps {
-        script {
-          for (extension in listCivihrExtensions()) {
-            if(extension.hasJSTests) {
-              installJSPackages(extension);
-            }
-          }
-        }
-      }
-    }
+  //   /* Testing JS */
+  //   stage('Testing JS: Install JS packages') {
+  //     steps {
+  //       script {
+  //         for (extension in listCivihrExtensions()) {
+  //           if(extension.hasJSTests) {
+  //             installJSPackages(extension);
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
 
-    stage('Testing JS: Test JS') {
-      steps {
-        script {
-          // This is necessary to avoid an additional loop
-          // in each extension folder to read the XML.
-          // After each test we move the reports to this folder
-          sh "mkdir -p $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER"
+  //   stage('Testing JS: Test JS') {
+  //     steps {
+  //       script {
+  //         // This is necessary to avoid an additional loop
+  //         // in each extension folder to read the XML.
+  //         // After each test we move the reports to this folder
+  //         sh "mkdir -p $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER"
 
-          for (extension in listCivihrExtensions()) {
-            if (extension.hasJSTests) {
-              testJS(extension)
-            }
-          }
-        }
-      }
-      post {
-        always {
-          step([
-            $class: 'XUnitBuilder',
-            thresholds: [
-              [
-                $class: 'FailedThreshold',
-                failureNewThreshold: '1',
-                failureThreshold: '1',
-                unstableNewThreshold: '1',
-                unstableThreshold: '1'
-              ]
-            ],
-            tools: [
-              [
-                $class: 'JUnitType',
-                pattern: env.KARMA_TESTS_REPORT_FOLDER + '/*.xml'
-              ]
-            ]
-          ])
-        }
-      }
-    }
-  }
+  //         for (extension in listCivihrExtensions()) {
+  //           if (extension.hasJSTests) {
+  //             testJS(extension)
+  //           }
+  //         }
+  //       }
+  //     }
+  //     post {
+  //       always {
+  //         step([
+  //           $class: 'XUnitBuilder',
+  //           thresholds: [
+  //             [
+  //               $class: 'FailedThreshold',
+  //               failureNewThreshold: '1',
+  //               failureThreshold: '1',
+  //               unstableNewThreshold: '1',
+  //               unstableThreshold: '1'
+  //             ]
+  //           ],
+  //           tools: [
+  //             [
+  //               $class: 'JUnitType',
+  //               pattern: env.KARMA_TESTS_REPORT_FOLDER + '/*.xml'
+  //             ]
+  //           ]
+  //         ])
+  //       }
+  //     }
+  //   }
+  // }
 
   post {
     always {
