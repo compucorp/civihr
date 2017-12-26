@@ -3,20 +3,20 @@
 module.exports = function (casper, scenario) {
   var config = require('../site-config');
   var loginFormSelector = 'form#user-login-form';
-  var credentials = config.credentials[scenario.credential || 'admin'];  
+  var credentials = config.credentials[scenario.credential || 'admin'];
 
   casper
     .then(function () {
-      if(casper.exists('a[href="/user/logout"]')) {
+      if (casper.exists('a[href="/user/logout"]')) {
         casper.echo('Current scenario has different login credentials from previous, logging out is necessary', 'INFO');
         casper.echo('Logging Out', 'INFO');
-        return casper.evaluate(function() {
-          jQuery('a[href="/user/logout"]')[0].click()
+        return casper.evaluate(function () {
+          jQuery('a[href="/user/logout"]')[0].click();
         });
       }
     })
     .then(function () {
-      casper.echo('Logging in with "' + (scenario.credential || 'admin') + '" credentials before starting ...', 'INFO')
+      casper.echo('Logging in with "' + (scenario.credential || 'admin') + '" credentials before starting ...', 'INFO');
     })
     .thenOpen(config.url + '/welcome-page', function () {
       casper.then(function () {
@@ -31,5 +31,5 @@ module.exports = function (casper, scenario) {
           casper.echo('Login form not found!', 'RED_BAR');
         }, 8000);
       });
-  });
+    });
 };

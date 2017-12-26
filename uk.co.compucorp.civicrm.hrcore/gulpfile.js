@@ -13,11 +13,11 @@ var Promise = require('es6-promise').Promise;
   var backstopDir = 'backstop_data/';
   var files = { config: 'site-config.json', tpl: 'backstop.tpl.json' };
   var configTpl = {
-    "url": "http://%{site-host}",
-    "credentials": {
-      "admin"  : { "name": "%{admin-name}"  , "pass": "%{admin-password}"   },
-      "manager": { "name": "%{manager-name}", "pass": "%{manager-password}" },
-      "staff"  : { "name": "%{staff-name}"  , "pass": "%{staff-password}"   }
+    'url': 'http://%{site-host}',
+    'credentials': {
+      'admin': { 'name': '%{admin-name}', 'pass': '%{admin-password}' },
+      'manager': { 'name': '%{manager-name}', 'pass': '%{manager-password}' },
+      'staff': { 'name': '%{staff-name}', 'pass': '%{staff-password}' }
     }
   };
 
@@ -51,7 +51,7 @@ var Promise = require('es6-promise').Promise;
    *
    * @return {Boolean} [description]
    */
-  function isConfigFilePresent() {
+  function isConfigFilePresent () {
     var check = true;
 
     try {
@@ -73,17 +73,17 @@ var Promise = require('es6-promise').Promise;
    * @param  {string} command
    * @return {Promise}
    */
-  function runBackstopJS(command) {
+  function runBackstopJS (command) {
     var destFile = 'backstop.temp.json';
 
     if (!isConfigFilePresent()) {
       console.log(color(
-        "No site-config.json file detected!\n" +
-        "One has been created for you under " + backstopDir + "\n" +
-        "Please insert the real value for each placholder and try again", "RED"
+        'No site-config.json file detected!\n' +
+        'One has been created for you under ' + backstopDir + '\n' +
+        'Please insert the real value for each placholder and try again', 'RED'
       ));
 
-      return Promise.reject();
+      return Promise.reject(new Error());
     }
 
     return new Promise(function (resolve) {
@@ -111,7 +111,7 @@ var Promise = require('es6-promise').Promise;
    *
    * @return {string}
    */
-  function tempFileContent() {
+  function tempFileContent () {
     var config = JSON.parse(fs.readFileSync(backstopDir + files.config));
     var content = JSON.parse(fs.readFileSync(backstopDir + files.tpl));
 
@@ -132,7 +132,7 @@ var Promise = require('es6-promise').Promise;
    *
    * @return {Array}
    */
-  function scenariosList() {
+  function scenariosList () {
     var scenariosPath = backstopDir + 'scenarios/';
 
     return _(fs.readdirSync(scenariosPath))
@@ -151,9 +151,9 @@ var Promise = require('es6-promise').Promise;
 
         scenarios.forEach(function (scenario) {
           if (previousCredential !== scenario.credential) {
-            scenario.onBeforeScript = "login";   
+            scenario.onBeforeScript = 'login';
           }
-  
+
           previousCredential = scenario.credential;
         });
 
