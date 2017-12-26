@@ -14,7 +14,11 @@ var Promise = require('es6-promise').Promise;
   var files = { config: 'site-config.json', tpl: 'backstop.tpl.json' };
   var configTpl = {
     "url": "http://%{site-host}",
-    "credentials": { "name": "%{user-name}", "pass": "%{user-password}" }
+    "credentials": {
+      "admin"  : { "name": "%{admin-name}"  , "pass": "%{admin-password}"   },
+      "manager": { "name": "%{manager-name}", "pass": "%{manager-password}" },
+      "staff"  : { "name": "%{staff-name}"  , "pass": "%{staff-password}"   }
+    }
   };
 
   gulp.task('backstopjs:reference', function (done) {
@@ -133,7 +137,7 @@ var Promise = require('es6-promise').Promise;
 
     return _(fs.readdirSync(scenariosPath))
       .filter(function (scenario) {
-        return argv.configFile ? scenario === argv.configFile : true;
+        return argv.configFile ? scenario === argv.configFile : true && scenario.endsWith('.json');
       })
       .map(function (scenarioFile) {
         return JSON.parse(fs.readFileSync(scenariosPath + scenarioFile)).scenarios;
@@ -143,7 +147,15 @@ var Promise = require('es6-promise').Promise;
         return _.assign(scenario, { delay: scenario.delay || 6000 });
       })
       .tap(function (scenarios) {
-        scenarios[0].onBeforeScript = "login";
+        var previousCredential;
+
+        scenarios.forEach(function (scenario) {
+          if (previousCredential !== scenario.credential) {
+            scenario.onBeforeScript = "login";   
+          }
+  
+          previousCredential = scenario.credential;
+        });
 
         return scenarios;
       })
