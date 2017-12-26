@@ -23,7 +23,8 @@ pipeline {
   stages {
     stage('Pre-tasks execution') {
       steps {
-        hipchatSend color: 'YELLOW', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: "Building <a href=\"${env.CHANGE_URL}\">${env.CHANGE_URL}</a>: <a href=\"${env.JOB_URL}\">${env.JOB_URL}</a>", notify: true, room: 'Jenkins notifications', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
+        sendBuildStartdNotification()
+
         catchError {
           sh 'exit 1'
 
@@ -191,12 +192,51 @@ pipeline {
       }
     }
     success {
-      hipchatSend color: 'GREEN', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: "Successful build. Duration: ${BUILD_DURATION} ${env.JOB_URL}", notify: true, room: 'Jenkins notifications', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
+      hipchatSend color: 'GREEN', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: "Successful build. Duration: ${env.BUILD_DURATION} ${env.JOB_URL}", notify: true, room: 'Jenkins notifications', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: true
     }
     failure {
-      hipchatSend color: 'RED', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: "Failed build. Duration: ${BUILD_DURATION}. Failed Tests: ${FAILED_TESTS} ${env.JOB_URL}", notify: true, room: 'Jenkins notifications', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
+      sendBuildFailureNotification()
     }
   }
+}
+
+def sendBuildStartdNotification() {
+  def message = 'Building ' + getBuildTargetLink()
+
+  sendHipchatNotification('YELLOW', message)
+}
+
+def sendBuildSuccessNotification() {
+  def message = 'Build of ' + getBuildTargetLink() + ' completed. Time: $BUILD_DURATION. Click <a heref="$BLUE_OCEAN_URL">here</a> to see the results'
+  sendHipchatNotification('GREEN', message)
+}
+
+def sendBuildFailureNotification() {
+  def message = 'Build of ' + getBuildTargetLink() + ' failed. Time $BUILD_DURATION. No. of failed tests: $FAILED_TESTS. Click <a heref="$BLUE_OCEAN_URL">here</a> to see the full report'
+  sendHipchatNotification('RED', message)
+}
+
+def sendHipchatNotification(String color, String message) {
+  hipchatSend color: color, credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: message, notify: true, room: 'Jenkins notifications', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
+}
+
+def getBuildTargetLink() {
+  if(buildIsForAPullRequest()) {
+    return "<a href=\"${env.CHANGE_URL}\">${env.CHANGE_TITLE}</a>"
+  }
+
+  return '<a href="' + getRepositoryUrlForBuildBranch() + '">' + env.BRANCH_NAME + '</a>'
+}
+
+def buildIsForAPullRequest() {
+  return env.CHANGE_URL != null
+}
+
+def getRepositoryUrlForBuildBranch() {
+  def repositoryURL = env.GIT_URL
+  repositoryURL = repositoryURL.replace('.git', '')
+
+  return repositoryURL + '/tree/' + env.BRANCH_NAME
 }
 
 /*
