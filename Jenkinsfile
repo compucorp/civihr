@@ -26,8 +26,6 @@ pipeline {
         sendBuildStartdNotification()
 
         catchError {
-          sh 'exit 1'
-
           // Print all Environment variables
           sh 'printenv | sort'
 
@@ -192,7 +190,7 @@ pipeline {
       }
     }
     success {
-      hipchatSend color: 'GREEN', credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: "Successful build. Duration: ${env.BUILD_DURATION} ${env.JOB_URL}", notify: true, room: 'Jenkins notifications', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: true
+      sendBuildSuccessNotification()
     }
     failure {
       sendBuildFailureNotification()
