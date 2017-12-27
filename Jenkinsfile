@@ -212,7 +212,7 @@ def sendBuildSuccessNotification() {
 }
 
 def sendBuildFailureNotification() {
-  def message = 'Build of ' + getBuildTargetLink() + ' failed. Time $BUILD_DURATION. No. of failed tests: $FAILED_TESTS. ' + getReportLink()
+  def message = 'Build of ' + getBuildTargetLink() + ' failed. Time $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink()
   sendHipchatNotification('RED', message)
 }
 
