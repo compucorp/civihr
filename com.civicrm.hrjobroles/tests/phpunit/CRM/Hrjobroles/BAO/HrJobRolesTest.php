@@ -25,7 +25,7 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadless
     $jobRole = $this->createJobRole($roleParams);
 
     $roleEntity = $this->findRole(['id' => $jobRole->id]);
-    $this->assertEquals($roleParams['title'], $roleEntity->title);
+    $this->assertEquals('hello', $roleEntity->title);
   }
 
   /**
