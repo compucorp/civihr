@@ -205,12 +205,12 @@ def sendBuildStartdNotification() {
 }
 
 def sendBuildSuccessNotification() {
-  def message = 'Build of ' + getBuildTargetLink() + ' completed. Time: $BUILD_DURATION. Click <a heref="$BLUE_OCEAN_URL">here</a> to see the results'
+  def message = 'Build of ' + getBuildTargetLink() + ' completed successfully. Time: $BUILD_DURATION. ' + getReportLink()
   sendHipchatNotification('GREEN', message)
 }
 
 def sendBuildFailureNotification() {
-  def message = 'Build of ' + getBuildTargetLink() + ' failed. Time $BUILD_DURATION. No. of failed tests: $FAILED_TESTS. Click <a heref="$BLUE_OCEAN_URL">here</a> to see the full report'
+  def message = 'Build of ' + getBuildTargetLink() + ' failed. Time $BUILD_DURATION. No. of failed tests: $FAILED_TESTS. ' + getReportLink()
   sendHipchatNotification('RED', message)
 }
 
@@ -235,6 +235,10 @@ def getRepositoryUrlForBuildBranch() {
   repositoryURL = repositoryURL.replace('.git', '')
 
   return repositoryURL + '/tree/' + env.BRANCH_NAME
+}
+
+def getReportLink() {
+ return 'Click <a href="$BLUE_OCEAN_URL">here</a> to see the build report'
 }
 
 /*
