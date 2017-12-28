@@ -75,6 +75,8 @@ module.exports = (function () {
           element.selectedIndex = leaveType;// for TOIL option
           element.dispatchEvent(new Event('change'));
         }, leaveType);
+
+        return casper.waitUntilVisible('tbody tr:nth-child(1) a');
       });
 
       return this;
