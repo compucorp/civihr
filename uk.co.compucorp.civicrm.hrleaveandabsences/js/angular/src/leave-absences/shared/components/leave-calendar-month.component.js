@@ -328,6 +328,21 @@ define([
     }
 
     /**
+     * Returns the list of leave status's which would be displayed
+     * on the calendar
+     *
+     * @returns {array}
+     */
+    function leaveStatusesToBeDisplayed () {
+      return [
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.approved),
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.adminApproved),
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.awaitingApproval),
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.moreInformationRequired)
+      ];
+    }
+
+    /**
      * Loads the work pattern calendar and the leave request of the month,
      * then it process the data onto each day of the month
      *
@@ -360,12 +375,7 @@ define([
       return LeaveRequest.all({
         from_date: { to: vm.month.days[vm.month.days.length - 1].date },
         to_date: { from: vm.month.days[0].date },
-        status_id: {'IN': [
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.approved),
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.adminApproved),
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.awaitingApproval),
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.moreInformationRequired)
-        ]},
+        status_id: { 'IN': leaveStatusesToBeDisplayed() },
         contact_id: { 'IN': vm.contacts.map(function (contact) {
           return contact.id;
         })},
@@ -522,8 +532,18 @@ define([
     function updateLeaveRequest (leaveRequest) {
       var oldLeaveRequest = leaveRequestFromIndexedList(leaveRequest);
 
-      deleteLeaveRequest(oldLeaveRequest);
-      addLeaveRequest(leaveRequest);
+      if (oldLeaveRequest) {
+        deleteLeaveRequest(oldLeaveRequest);
+
+        if (leaveStatusesToBeDisplayed().indexOf(leaveRequest.status_id) !== -1) {
+          addLeaveRequest(leaveRequest);
+        }
+
+        // if there are no leave requests for the contact id, removing the object for the contact
+        if (Object.keys(leaveRequests[leaveRequest.contact_id]).length === 0) {
+          delete leaveRequests[leaveRequest.contact_id];
+        }
+      }
     }
 
     /**
