@@ -201,18 +201,18 @@ pipeline {
 }
 
 def sendBuildStartdNotification() {
-  def message = 'Building ' + getBuildTargetLink()
+  def message = 'Building ' + getBuildTargetLink() + . '. ' + getReportLink()
 
   sendHipchatNotification('YELLOW', message)
 }
 
 def sendBuildSuccessNotification() {
-  def message = 'Build of ' + getBuildTargetLink() + ' completed successfully. Time: $BUILD_DURATION. ' + getReportLink()
+  def message = getBuildTargetLink() + ' built successfully. Time: $BUILD_DURATION. ' + getReportLink()
   sendHipchatNotification('GREEN', message)
 }
 
 def sendBuildFailureNotification() {
-  def message = 'Build of ' + getBuildTargetLink() + ' failed. Time $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink()
+  def message = 'Failed to build ' + getBuildTargetLink() + '. Time: $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink()
   sendHipchatNotification('RED', message)
 }
 
@@ -222,10 +222,10 @@ def sendHipchatNotification(String color, String message) {
 
 def getBuildTargetLink() {
   if(buildIsForAPullRequest()) {
-    return "<a href=\"${env.CHANGE_URL}\">${env.CHANGE_TITLE}</a>"
+    return "<a href=\"${env.CHANGE_URL}\">\"${env.CHANGE_TITLE}\"</a>"
   }
 
-  return '<a href="' + getRepositoryUrlForBuildBranch() + '">' + env.BRANCH_NAME + '</a>'
+  return '<a href="' + getRepositoryUrlForBuildBranch() + '">"' + env.BRANCH_NAME + '"</a>'
 }
 
 def buildIsForAPullRequest() {
