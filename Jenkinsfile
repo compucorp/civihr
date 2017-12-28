@@ -225,7 +225,7 @@ def sendBuildFailureNotification() {
  * Sends a notification to Hipchat
  */
 def sendHipchatNotification(String color, String message) {
-  hipchatSend color: color, message: message
+  hipchatSend color: color, message: message, notify: true
 }
 
 /*
