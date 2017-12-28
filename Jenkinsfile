@@ -4,7 +4,7 @@ pipeline {
   agent any
 
   parameters {
-    string(name: 'CIVIHR_BUILDNAME', defaultValue: "hr17-dev_$BRANCH_NAME", description: 'CiviHR site name')
+    string(name: 'CIVIHR_BUILDNAME', defaultValue: "civihr-dev_$BRANCH_NAME", description: 'CiviHR site name')
     booleanParam(name: 'DESTROY_SITE', defaultValue: true, description: 'Destroy built site after build finish')
   }
 
@@ -28,6 +28,9 @@ pipeline {
         // Print all Environment variables
         sh 'printenv | sort'
 
+        // Update buildkit
+        sh "cd /opt/buildkit && git pull"
+
         // Destroy existing site
         sh "civibuild destroy ${params.CIVIHR_BUILDNAME} || true"
 
@@ -46,7 +49,8 @@ pipeline {
       steps {
         script {
           // Build site with CV Buildkit
-          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.27 --hr-ver staging --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type drupal-clean --civi-ver 4.7.27 --url $WEBURL --admin-pass $ADMIN_PASS"
+
           sh """
             cd $DRUPAL_MODULES_ROOT/civicrm
             wget -O attachments.patch https://gist.githubusercontent.com/davialexandre/199b3ebb2c69f43c07dde0f51fb02c8b/raw/0f11edad8049c6edddd7f865c801ecba5fa4c052/attachments-4.7.27.patch
@@ -54,30 +58,20 @@ pipeline {
             rm attachments.patch
           """
 
-          // Change git remote of civihr ext to support dev version of Jenkins pipeline
-          changeCivihrGitRemote()
-
-          // Get repos & branch name
+          // Get target and PR branches name
           def prBranch = env.CHANGE_BRANCH
-          def envBranch = env.CHANGE_TARGET
+          def envBranch = env.CHANGE_TARGET ? env.CHANGE_TARGET : env.BRANCH_NAME
           if (prBranch != null && prBranch.startsWith("hotfix-")) {
             envBranch = 'master'
           }
+
+          // Clone CiviHR
+          cloneCiviHRRepositories(envBranch)
 
           if (prBranch) {
             checkoutPrBranchInCiviHRRepos(prBranch)
             mergeEnvBranchInAllRepos(envBranch)
           }
-
-          sh """
-              cd $WEBROOT
-              drush features-revert civihr_employee_portal_features -y
-              drush features-revert civihr_default_permissions -y
-              drush updatedb -y
-              drush cvapi extension.upgrade -y
-              drush cc all
-              drush cc civicrm
-            """
         }
       }
     }
@@ -264,19 +258,14 @@ def getReportLink() {
  return 'Click <a href="$BLUE_OCEAN_URL">here</a> to see the build report'
 }
 
-/*
- *  Change URL Git remote of civihr main repositry to the URL where configured by Jenkins project
- */
-def changeCivihrGitRemote() {
-  def pulledCvhrRepo = sh(returnStdout: true, script: "cd $WORKSPACE; git remote -v | grep fetch | awk '{print \$2}'").trim()
-
-  echo 'Changing Civihr git URL..'
-
-  sh """
-    cd $CIVICRM_EXT_ROOT/civihr
-    git remote set-url origin ${pulledCvhrRepo}
-    git fetch --all
-  """
+def cloneCiviHRRepositories(String envBranch) {
+  for (repo in listCivihrGitRepoPath()) {
+    sh """
+      git clone ${repo.url} ${repo.folder}
+      cd ${repo.folder}
+      git checkout $envBranch || true
+    """
+  }
 }
 
 def checkoutPrBranchInCiviHRRepos(String branch) {
@@ -285,7 +274,7 @@ def checkoutPrBranchInCiviHRRepos(String branch) {
   for (repo in listCivihrGitRepoPath()) {
     try {
         sh """
-          cd ${repo}
+          cd ${repo.folder}
           git checkout ${branch}
         """
     } catch (err) {}
@@ -298,7 +287,7 @@ def mergeEnvBranchInAllRepos(String envBranch) {
   for (repo in listCivihrGitRepoPath()) {
     try {
         sh """
-          cd ${repo}
+          cd ${repo.folder}
           git merge origin/${envBranch} --no-edit
         """
     } catch (err) {}
@@ -349,17 +338,20 @@ def testJS(java.util.LinkedHashMap extension) {
 }
 
 /*
- * Get a list of CiviHR repository
- * https://compucorp.atlassian.net/wiki/spaces/PCHR/pages/68714502/GitHub+repositories
+ * Get a list of CiviHR repositories
+ * Note that these are NOT all the repositories used by CiviHR, but only
+ * those necessary to run the Unit Tests for the CiviHR repo
  */
 def listCivihrGitRepoPath() {
   return [
-    "$CIVICRM_EXT_ROOT/civihr",
-    "$CIVICRM_EXT_ROOT/civihr_tasks",
-    "$CIVICRM_EXT_ROOT/org.civicrm.shoreditch",
-    "$CIVICRM_EXT_ROOT/org.civicrm.styleguide",
-    "$DRUPAL_MODULES_ROOT/civihr-custom",
-    "$DRUPAL_THEMES_ROOT/civihr_employee_portal_theme"
+    [
+      'url': 'https://github.com/civicrm/civihr.git',
+      'folder': "$CIVICRM_EXT_ROOT/civihr"
+    ],
+    [
+      'url': 'https://github.com/compucorp/civihr-tasks-assignments.git',
+      'folder': "$CIVICRM_EXT_ROOT/civihr_tasks"
+    ]
   ]
 }
 
