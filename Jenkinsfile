@@ -201,7 +201,7 @@ pipeline {
 }
 
 def sendBuildStartdNotification() {
-  def message = 'Building ' + getBuildTargetLink() + . '. ' + getReportLink()
+  def message = 'Building ' + getBuildTargetLink() + '. ' + getReportLink()
 
   sendHipchatNotification('YELLOW', message)
 }
