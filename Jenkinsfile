@@ -196,6 +196,49 @@ pipeline {
   }
 }
 
+def sendBuildStartdNotification() {
+  def message = 'Building ' + getBuildTargetLink() + '. ' + getReportLink()
+
+  sendHipchatNotification('YELLOW', message)
+}
+
+def sendBuildSuccessNotification() {
+  def message = getBuildTargetLink() + ' built successfully. Time: $BUILD_DURATION. ' + getReportLink()
+  sendHipchatNotification('GREEN', message)
+}
+
+def sendBuildFailureNotification() {
+  def message = 'Failed to build ' + getBuildTargetLink() + '. Time: $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink()
+  sendHipchatNotification('RED', message)
+}
+
+def sendHipchatNotification(String color, String message) {
+  hipchatSend color: color, credentialId: 'c09fbb6e-1a52-4ba7-a87e-6f7c64d4173c', message: message, notify: true, room: 'Jenkins notifications', sendAs: 'Jenkins', server: 'api.hipchat.com', v2enabled: false
+}
+
+def getBuildTargetLink() {
+  if(buildIsForAPullRequest()) {
+    return "<a href=\"${env.CHANGE_URL}\">\"${env.CHANGE_TITLE}\"</a>"
+  }
+
+  return '<a href="' + getRepositoryUrlForBuildBranch() + '">"' + env.BRANCH_NAME + '"</a>'
+}
+
+def buildIsForAPullRequest() {
+  return env.CHANGE_URL != null
+}
+
+def getRepositoryUrlForBuildBranch() {
+  def repositoryURL = env.GIT_URL
+  repositoryURL = repositoryURL.replace('.git', '')
+
+  return repositoryURL + '/tree/' + env.BRANCH_NAME
+}
+
+def getReportLink() {
+ return 'Click <a href="$BLUE_OCEAN_URL">here</a> to see the build report'
+}
+
 /*
  * Sends a notification when the build starts
  */
@@ -374,90 +417,92 @@ def listCivihrExtensions() {
       folder: 'com.civicrm.hrjobroles',
       hasJSTests: true,
       hasPHPTests: true
-    ],
-    [
-      name: 'Contacts Access Rights',
-      shortName: 'contactaccessrights',
-      folder: 'contactaccessrights',
-      hasJSTests: true,
-      hasPHPTests: true
-    ],
-    [
-      name: 'Contacts Summary',
-      shortName: 'contactsummary',
-      folder: 'contactsummary',
-      hasJSTests: true,
-      hasPHPTests: false
-    ],
-    [
-      name: 'Job Contracts',
-      shortName: 'hrjobcontract',
-      folder: 'hrjobcontract',
-      hasJSTests: true,
-      hasPHPTests: true
-    ],
-    [
-      name: 'Recruitment',
-      shortName: 'hrrecruitment',
-      folder: 'hrrecruitment',
-      hasJSTests: false,
-      hasPHPTests: true
-    ],
-    [
-      name: 'Reports',
-      shortName: 'hrreport',
-      folder: 'hrreport',
-      hasJSTests: false,
-      hasPHPTests: false
-    ],
-    [
-      name: 'HR UI',
-      shortName: 'hrui',
-      folder: 'hrui',
-      hasJSTests: false,
-      hasPHPTests: false
-    ],
-    [
-      name: 'HR Visa',
-      shortName: 'hrvisa',
-      folder: 'hrvisa',
-      hasJSTests: false,
-      hasPHPTests: true
-    ],
-    [
-      name: 'Reqangular',
-      shortName: 'reqangular',
-      folder: 'org.civicrm.reqangular',
-      hasJSTests: true,
-      hasPHPTests: false
-    ],
-    [
-      name: 'HRCore',
-      shortName: 'hrcore',
-      folder: 'uk.co.compucorp.civicrm.hrcore',
-      hasJSTests: false,
-      hasPHPTests: true
-    ],
-    [
-      name: 'Leave and Absences',
-      shortName: 'hrleaveandabsences',
-      folder: 'uk.co.compucorp.civicrm.hrleaveandabsences',
-      hasJSTests: true,
-      hasPHPTests: true
-    ],
-    [
-      name: 'Sample Data',
-      shortName: 'hrsampledata',
-      folder: 'uk.co.compucorp.civicrm.hrsampledata',
-      hasJSTests: false,
-      hasPHPTests: true
-    ],
-    [
-      name: 'Emergency Contacts ',
-      shortName: 'hremergency',
-      folder: 'org.civicrm.hremergency',
-      hasJSTests: false,
-      hasPHPTests: true
     ]
+    // [
+    //   name: 'Contacts Access Rights',
+    //   shortName: 'contactaccessrights',
+    //   folder: 'contactaccessrights',
+    //   hasJSTests: true,
+    //   hasPHPTests: true
+    // ],
+    // [
+    //   name: 'Contacts Summary',
+    //   shortName: 'contactsummary',
+    //   folder: 'contactsummary',
+    //   hasJSTests: true,
+    //   hasPHPTests: false
+    // ],
+    // [
+    //   name: 'Job Contracts',
+    //   shortName: 'hrjobcontract',
+    //   folder: 'hrjobcontract',
+    //   hasJSTests: true,
+    //   hasPHPTests: true
+    // ],
+    // [
+    //   name: 'Recruitment',
+    //   shortName: 'hrrecruitment',
+    //   folder: 'hrrecruitment',
+    //   hasJSTests: false,
+    //   hasPHPTests: true
+    // ],
+    // [
+    //   name: 'Reports',
+    //   shortName: 'hrreport',
+    //   folder: 'hrreport',
+    //   hasJSTests: false,
+    //   hasPHPTests: false
+    // ],
+    // [
+    //   name: 'HR UI',
+    //   shortName: 'hrui',
+    //   folder: 'hrui',
+    //   hasJSTests: false,
+    //   hasPHPTests: false
+    // ],
+    // [
+    //   name: 'HR Visa',
+    //   shortName: 'hrvisa',
+    //   folder: 'hrvisa',
+    //   hasJSTests: false,
+    //   hasPHPTests: true
+    // ],
+    // [
+    //   name: 'Reqangular',
+    //   shortName: 'reqangular',
+    //   folder: 'org.civicrm.reqangular',
+    //   hasJSTests: true,
+    //   hasPHPTests: false
+    // ],
+    // [
+    //   name: 'HRCore',
+    //   shortName: 'hrcore',
+    //   folder: 'uk.co.compucorp.civicrm.hrcore',
+    //   hasJSTests: false,
+    //   hasPHPTests: true
+    // ],
+    // [
+    //   name: 'Leave and Absences',
+    //   shortName: 'hrleaveandabsences',
+    //   folder: 'uk.co.compucorp.civicrm.hrleaveandabsences',
+    //   hasJSTests: true,
+    //   hasPHPTests: true
+    // ],
+    // [
+    //   name: 'Sample Data',
+    //   shortName: 'hrsampledata',
+    //   folder: 'uk.co.compucorp.civicrm.hrsampledata',
+    //   hasJSTests: false,
+    //   hasPHPTests: true
+    // ],
+    // [
+    //   name: 'Emergency Contacts ',
+    //   shortName: 'hremergency',
+    //   folder: 'org.civicrm.hremergency',
+    //   hasJSTests: false,
+    //   hasPHPTests: true
+    // ]
   ]
 }
+
+
