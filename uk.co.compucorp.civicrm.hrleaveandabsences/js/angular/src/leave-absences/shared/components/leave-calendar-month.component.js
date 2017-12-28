@@ -124,7 +124,7 @@ define([
      */
     function contactsList () {
       return !vm.showOnlyWithLeaveRequests ? vm.contacts : vm.contacts.filter(function (contact) {
-        return _.includes(Object.keys(leaveRequests), contact.id);
+        return Object.keys(leaveRequests[contact.id] || {}).length;
       });
     }
 
@@ -532,17 +532,14 @@ define([
     function updateLeaveRequest (leaveRequest) {
       var oldLeaveRequest = leaveRequestFromIndexedList(leaveRequest);
 
-      if (oldLeaveRequest) {
-        deleteLeaveRequest(oldLeaveRequest);
+      if (!oldLeaveRequest) {
+        return;
+      }
+      
+      deleteLeaveRequest(oldLeaveRequest);
 
-        if (leaveStatusesToBeDisplayed().indexOf(leaveRequest.status_id) !== -1) {
-          addLeaveRequest(leaveRequest);
-        }
-
-        // if there are no leave requests for the contact id, removing the object for the contact
-        if (Object.keys(leaveRequests[leaveRequest.contact_id]).length === 0) {
-          delete leaveRequests[leaveRequest.contact_id];
-        }
+      if (leaveStatusesToBeDisplayed().indexOf(leaveRequest.status_id) !== -1) {
+        addLeaveRequest(leaveRequest);
       }
     }
 
