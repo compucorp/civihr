@@ -25,8 +25,6 @@ pipeline {
       steps {
         sendBuildStartdNotification()
 
-        sh "exit 1"
-
         // Print all Environment variables
         sh 'printenv | sort'
 
@@ -46,41 +44,41 @@ pipeline {
 
     stage('Build site') {
       steps {
-          script {
-            // Build site with CV Buildkit
-            sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.27 --hr-ver staging --url $WEBURL --admin-pass $ADMIN_PASS"
-            sh """
-              cd $DRUPAL_MODULES_ROOT/civicrm
-              wget -O attachments.patch https://gist.githubusercontent.com/davialexandre/199b3ebb2c69f43c07dde0f51fb02c8b/raw/0f11edad8049c6edddd7f865c801ecba5fa4c052/attachments-4.7.27.patch
-              patch -p1 -i attachments.patch
-              rm attachments.patch
-            """
+        script {
+          // Build site with CV Buildkit
+          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.27 --hr-ver staging --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh """
+            cd $DRUPAL_MODULES_ROOT/civicrm
+            wget -O attachments.patch https://gist.githubusercontent.com/davialexandre/199b3ebb2c69f43c07dde0f51fb02c8b/raw/0f11edad8049c6edddd7f865c801ecba5fa4c052/attachments-4.7.27.patch
+            patch -p1 -i attachments.patch
+            rm attachments.patch
+          """
 
-            // Change git remote of civihr ext to support dev version of Jenkins pipeline
-            changeCivihrGitRemote()
+          // Change git remote of civihr ext to support dev version of Jenkins pipeline
+          changeCivihrGitRemote()
 
-            // Get repos & branch name
-            def prBranch = env.CHANGE_BRANCH
-            def envBranch = env.CHANGE_TARGET
-            if (prBranch != null && prBranch.startsWith("hotfix-")) {
-              envBranch = 'master'
-            }
-
-            if (prBranch) {
-              checkoutPrBranchInCiviHRRepos(prBranch)
-              mergeEnvBranchInAllRepos(envBranch)
-            }
-
-            sh """
-                cd $WEBROOT
-                drush features-revert civihr_employee_portal_features -y
-                drush features-revert civihr_default_permissions -y
-                drush updatedb -y
-                drush cvapi extension.upgrade -y
-                drush cc all
-                drush cc civicrm
-              """
+          // Get repos & branch name
+          def prBranch = env.CHANGE_BRANCH
+          def envBranch = env.CHANGE_TARGET
+          if (prBranch != null && prBranch.startsWith("hotfix-")) {
+            envBranch = 'master'
           }
+
+          if (prBranch) {
+            checkoutPrBranchInCiviHRRepos(prBranch)
+            mergeEnvBranchInAllRepos(envBranch)
+          }
+
+          sh """
+              cd $WEBROOT
+              drush features-revert civihr_employee_portal_features -y
+              drush features-revert civihr_default_permissions -y
+              drush updatedb -y
+              drush cvapi extension.upgrade -y
+              drush cc all
+              drush cc civicrm
+            """
+        }
       }
     }
 
