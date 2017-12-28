@@ -25,28 +25,27 @@ pipeline {
       steps {
         sendBuildStartdNotification()
 
-        catchError {
-          // Print all Environment variables
-          sh 'printenv | sort'
+        sh "exit 1"
 
-          // Destroy existing site
-          sh "civibuild destroy ${params.CIVIHR_BUILDNAME} || true"
+        // Print all Environment variables
+        sh 'printenv | sort'
 
-          // Test build tools
-          sh 'amp test'
+        // Destroy existing site
+        sh "civibuild destroy ${params.CIVIHR_BUILDNAME} || true"
 
-          // Cleanup old Karma test reports
-          sh "rm -f $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/* || true"
+        // Test build tools
+        sh 'amp test'
 
-          // Cleanup old PHPUnit test reports
-          sh "rm -f $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/* || true"
-        }
+        // Cleanup old Karma test reports
+        sh "rm -f $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/* || true"
+
+        // Cleanup old PHPUnit test reports
+        sh "rm -f $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/* || true"
       }
     }
 
     stage('Build site') {
       steps {
-        catchError {
           script {
             // Build site with CV Buildkit
             sh "civibuild create ${params.CIVIHR_BUILDNAME} --type hr17 --civi-ver 4.7.27 --hr-ver staging --url $WEBURL --admin-pass $ADMIN_PASS"
@@ -82,7 +81,6 @@ pipeline {
                 drush cc civicrm
               """
           }
-        }
       }
     }
 
@@ -351,7 +349,7 @@ def listCivihrExtensions() {
       name: 'Job Roles',
       shortName: 'hrjobroles',
       folder: 'com.civicrm.hrjobroles',
-      hasJSTests: false,
+      hasJSTests: true,
       hasPHPTests: true
     ]
     // [
