@@ -76,84 +76,87 @@ pipeline {
       }
     }
 
-    /* Testing PHP */
-    stage('Test PHP') {
-      steps {
-        script {
-          for (extension in listCivihrExtensions()) {
-            if (extension.hasPHPTests) {
-              testPHPUnit(extension)
+    stage('Run tests') {
+      parallel {
+        stage('Test PHP') {
+          steps {
+            script {
+              for (extension in listCivihrExtensions()) {
+                if (extension.hasPHPTests) {
+                  testPHPUnit(extension)
+                }
+              }
+            }
+          }
+          post {
+            always {
+              step([
+                $class: 'XUnitBuilder',
+                thresholds: [
+                  [
+                    $class: 'FailedThreshold',
+                    failureNewThreshold: '1',
+                    failureThreshold: '1',
+                    unstableNewThreshold: '1',
+                    unstableThreshold: '1'
+                  ],
+                  [
+                    $class: 'SkippedThreshold',
+                    failureNewThreshold: '0',
+                    failureThreshold: '0',
+                    unstableNewThreshold: '0',
+                    unstableThreshold: '0'
+                  ]
+                ],
+                tools: [
+                  [
+                    $class: 'JUnitType',
+                    pattern: env.PHPUNIT_TESTS_REPORT_FOLDER + '/*.xml'
+                  ]
+                ]
+              ])
             }
           }
         }
-      }
-      post {
-        always {
-          step([
-            $class: 'XUnitBuilder',
-            thresholds: [
-              [
-                $class: 'FailedThreshold',
-                failureNewThreshold: '1',
-                failureThreshold: '1',
-                unstableNewThreshold: '1',
-                unstableThreshold: '1'
-              ],
-              [
-                $class: 'SkippedThreshold',
-                failureNewThreshold: '0',
-                failureThreshold: '0',
-                unstableNewThreshold: '0',
-                unstableThreshold: '0'
-              ]
-            ],
-            tools: [
-              [
-                $class: 'JUnitType',
-                pattern: env.PHPUNIT_TESTS_REPORT_FOLDER + '/*.xml'
-              ]
-            ]
-          ])
-        }
-      }
-    }
 
-    stage('Test JS') {
-      steps {
-        script {
-          // This is necessary to avoid an additional loop
-          // in each extension folder to read the XML.
-          // After each test we move the reports to this folder
-          sh "mkdir -p $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER"
+        stage('Test JS') {
+          steps {
+            script {
+              // This is necessary to avoid an additional loop
+              // in each extension folder to read the XML.
+              // After each test we move the reports to this folder
+              sh "mkdir -p $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER"
 
-          for (extension in listCivihrExtensions()) {
-            if (extension.hasJSTests) {
-              installJSPackages(extension)
-              testJS(extension)
+              for (extension in listCivihrExtensions()) {
+                if (extension.hasJSTests) {
+                  installJSPackages(extension)
+                  testJS(extension)
+                }
+              }
             }
           }
-        }
-      }
-      post {
-        always {
-          step([
-            $class: 'XUnitBuilder',
-            thresholds: [
-              [
-                $class: 'FailedThreshold',
-                failureNewThreshold: '1',
-                failureThreshold: '1',
-                unstableNewThreshold: '1',
-                unstableThreshold: '1'
-              ]
-            ],
-            tools: [
-              [
-                $class: 'JUnitType',
-                pattern: env.KARMA_TESTS_REPORT_FOLDER + '/*.xml'
-              ]
-            ]
-          ])
+          post {
+            always {
+              step([
+                $class: 'XUnitBuilder',
+                thresholds: [
+                  [
+                    $class: 'FailedThreshold',
+                    failureNewThreshold: '1',
+                    failureThreshold: '1',
+                    unstableNewThreshold: '1',
+                    unstableThreshold: '1'
+                  ]
+                ],
+                tools: [
+                  [
+                    $class: 'JUnitType',
+                    pattern: env.KARMA_TESTS_REPORT_FOLDER + '/*.xml'
+                  ]
+                ]
+              ])
+            }
+          }
         }
       }
     }
