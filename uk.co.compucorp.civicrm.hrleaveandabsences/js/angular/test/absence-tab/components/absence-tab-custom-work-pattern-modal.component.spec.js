@@ -32,6 +32,7 @@
         WorkPatternAPI = _WorkPatternAPI_;
 
         spyOn($log, 'debug');
+        spyOn(WorkPatternAPI, 'get').and.callThrough();
         spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
           return $q.resolve(optionGroupMock.getCollection('hrjc_revision_change_reason'));
         });
@@ -41,6 +42,10 @@
 
       it('is initialized', function () {
         expect($log.debug).toHaveBeenCalled();
+      });
+
+      it('loads enabled work patterns only', function () {
+        expect(WorkPatternAPI.get).toHaveBeenCalledWith({ is_active: true });
       });
 
       describe('init()', function () {
