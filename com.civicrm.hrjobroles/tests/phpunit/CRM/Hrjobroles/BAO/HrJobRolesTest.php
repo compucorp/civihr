@@ -3,6 +3,7 @@
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_Hrjobroles_BAO_HrJobRoles as HrJobRoles;
 use CRM_Hrjobroles_Test_Fabricator_HrJobRoles as HrJobRolesFabricator;
+use CRM_Hrjobroles_Test_Helper_OptionValuesHelper as OptionValuesHelper;
 
 /**
  * Class CRM_Hrjobroles_BAO_HrJobRolesTest
@@ -10,8 +11,6 @@ use CRM_Hrjobroles_Test_Fabricator_HrJobRoles as HrJobRolesFabricator;
  * @group headless
  */
 class CRM_Hrjobroles_BAO_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
-
-  use HrJobRolesTestTrait;
 
   public function setUp() {
     CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
@@ -46,7 +45,7 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadless
 
   public function testCreateJobRoleWithOptionValueFields() {
     // create option group and values
-    $this->createSampleOptionGroupsAndValues();
+    OptionValuesHelper::createSampleOptionGroupsAndValues();
 
     // create role
     $roleParams = [

@@ -1,6 +1,8 @@
 <?php
 
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_Hrjobroles_Test_Helper_OptionValuesHelper as OptionValuesHelper;
 
 /**
  * Class CRM_Hrjobroles_Import_Parser_HrJobRolesTest
@@ -9,26 +11,25 @@ use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
  */
 class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
 
-  use HrJobRolesTestTrait;
-
   public function setUp() {
     $session = CRM_Core_Session::singleton();
     $session->set('dateTypes', 1);
 
-    $this->createSampleOptionGroupsAndValues();
+    OptionValuesHelper::createSampleOptionGroupsAndValues();
   }
 
   public function testBasicImport() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role'
     ];
     $importResponse = $this->runImport($importParams);
@@ -48,16 +49,17 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportWithValidOptionValues() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role',
       'location' => 'amman',
       'hrjc_region' => 'south amman',
@@ -76,16 +78,17 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportWithInvalidOptionValues() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role2',
       'location' => 'amman',
       'hrjc_region' => 'southhggh ammandshhghg',
@@ -97,16 +100,17 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportWithEmptyOptionValues() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role3',
       'location' => '',
       'hrjc_region' => '',
@@ -121,16 +125,17 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderByIDAndPercent() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role',
       'location' => 'amman',
       'hrjc_region' => 'south amman',
@@ -151,16 +156,17 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderByIDAndAmount() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role',
       'location' => 'amman',
       'hrjc_region' => 'south amman',
@@ -181,7 +187,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderByDisplayNameAndAmount() {
-    // create contact
     $contactParams = [
       'first_name'=>'walter',
       'last_name'=>'white',
@@ -189,12 +194,14 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     ];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role',
       'location' => 'amman',
       'hrjc_region' => 'south amman',
@@ -215,16 +222,17 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderWithInvalidID() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role',
       'location' => 'amman',
       'hrjc_region' => 'south amman',
@@ -238,19 +246,18 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
-  // I commented out these tests because I didn't had the chance to run them before the release
-  // and I run and uncomment them if the passed in other PR later
   public function testImportFunderWithInvalidDisplayName() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role',
       'location' => 'amman',
       'hrjc_region' => 'south amman',
@@ -265,16 +272,17 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderWithInvalidValueType() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role',
       'location' => 'amman',
       'hrjc_region' => 'south amman',
@@ -289,16 +297,17 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderWithInvalidPercentPay() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role',
       'location' => 'amman',
       'hrjc_region' => 'south amman',
@@ -313,16 +322,17 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderWithInvalidAmountPay() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role',
       'location' => 'amman',
       'hrjc_region' => 'south amman',
@@ -337,16 +347,17 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderWithoutValueType() {
-    // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = ContactFabricator::fabricate($contactParams)['id'];
 
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
+    );
 
     // run importer
     $importParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contract['id'],
       'title' => 'test import role',
       'location' => 'amman',
       'hrjc_region' => 'south amman',
