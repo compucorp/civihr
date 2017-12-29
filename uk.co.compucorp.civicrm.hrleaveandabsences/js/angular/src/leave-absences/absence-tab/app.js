@@ -41,7 +41,6 @@ define([
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/services/leave-popup.service',
   'leave-absences/absence-tab/components/absence-tab-container.component',
-  'leave-absences/absence-tab/components/absence-tab-report.component',
   'leave-absences/absence-tab/components/absence-tab-entitlements.component',
   'leave-absences/absence-tab/components/absence-tab-work-patterns.component',
   'leave-absences/absence-tab/components/annual-entitlement-change-log.component',
