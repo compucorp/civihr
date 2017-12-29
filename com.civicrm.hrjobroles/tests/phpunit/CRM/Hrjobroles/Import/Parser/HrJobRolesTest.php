@@ -14,8 +14,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   public function setUp() {
     $session = CRM_Core_Session::singleton();
     $session->set('dateTypes', 1);
-
-    OptionValuesHelper::createSampleOptionGroupsAndValues();
   }
 
   public function testBasicImport() {
@@ -45,6 +43,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportWithValidOptionValues() {
+    OptionValuesHelper::createSampleOptionGroupsAndValues();
+
     $contract = HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
@@ -121,10 +121,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     $importParams = [
       'job_contract_id' => $contract['id'],
       'title' => 'test import role',
-      'location' => 'amman',
-      'hrjc_region' => 'south amman',
-      'hrjc_role_department' => 'amman devs',
-      'hrjc_level_type' => 'guru',
       'funder' => $contract['contact_id'],
       'hrjc_funder_val_type' => '%',
       'hrjc_role_percent_pay_funder' => '30'
@@ -149,10 +145,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     $importParams = [
       'job_contract_id' => $contract['id'],
       'title' => 'test import role',
-      'location' => 'amman',
-      'hrjc_region' => 'south amman',
-      'hrjc_role_department' => 'amman devs',
-      'hrjc_level_type' => 'guru',
       'funder' => $contract['contact_id'],
       'hrjc_funder_val_type' => 'fixed',
       'hrjc_role_amount_pay_funder' => '30'
@@ -184,10 +176,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     $importParams = [
       'job_contract_id' => $contract['id'],
       'title' => 'test import role',
-      'location' => 'amman',
-      'hrjc_region' => 'south amman',
-      'hrjc_role_department' => 'amman devs',
-      'hrjc_level_type' => 'guru',
       'funder' => $contactParams['display_name'],
       'hrjc_funder_val_type' => 'fixed',
       'hrjc_role_amount_pay_funder' => '30'
@@ -212,10 +200,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     $importParams = [
       'job_contract_id' => $contract['id'],
       'title' => 'test import role',
-      'location' => 'amman',
-      'hrjc_region' => 'south amman',
-      'hrjc_role_department' => 'amman devs',
-      'hrjc_level_type' => 'guru',
       'funder' => 100000,
       'hrjc_funder_val_type' => 'fixed',
       'hrjc_role_amount_pay_funder' => '30'
@@ -234,10 +218,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     $importParams = [
       'job_contract_id' => $contract['id'],
       'title' => 'test import role',
-      'location' => 'amman',
-      'hrjc_region' => 'south amman',
-      'hrjc_role_department' => 'amman devs',
-      'hrjc_level_type' => 'guru',
       'funder' => 'wrong name',
       'hrjc_funder_val_type' => 'fixed',
       'hrjc_role_amount_pay_funder' => '30'
@@ -256,10 +236,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     $importParams = [
       'job_contract_id' => $contract['id'],
       'title' => 'test import role',
-      'location' => 'amman',
-      'hrjc_region' => 'south amman',
-      'hrjc_role_department' => 'amman devs',
-      'hrjc_level_type' => 'guru',
       'funder' => $contract['id'],
       'hrjc_funder_val_type' => 'wrong_type',
       'hrjc_role_amount_pay_funder' => '30'
@@ -278,10 +254,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     $importParams = [
       'job_contract_id' => $contract['id'],
       'title' => 'test import role',
-      'location' => 'amman',
-      'hrjc_region' => 'south amman',
-      'hrjc_role_department' => 'amman devs',
-      'hrjc_level_type' => 'guru',
       'funder' => $contract['id'],
       'hrjc_funder_val_type' => '%',
       'hrjc_role_percent_pay_funder' => 'should_be_number'
@@ -300,10 +272,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     $importParams = [
       'job_contract_id' => $contract['id'],
       'title' => 'test import role',
-      'location' => 'amman',
-      'hrjc_region' => 'south amman',
-      'hrjc_role_department' => 'amman devs',
-      'hrjc_level_type' => 'guru',
       'funder' => $contract['id'],
       'hrjc_funder_val_type' => 'fixed',
       'hrjc_role_percent_pay_funder' => 'should_be_number'
@@ -322,10 +290,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     $importParams = [
       'job_contract_id' => $contract['id'],
       'title' => 'test import role',
-      'location' => 'amman',
-      'hrjc_region' => 'south amman',
-      'hrjc_role_department' => 'amman devs',
-      'hrjc_level_type' => 'guru',
       'funder' => $contract['id'],
       'hrjc_role_percent_pay_funder' => '30'
     ];
