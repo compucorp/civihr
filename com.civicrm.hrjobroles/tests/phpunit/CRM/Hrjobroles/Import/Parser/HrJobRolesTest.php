@@ -19,11 +19,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testBasicImport() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -40,7 +37,6 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportWithoutMandatoryFields() {
-    // run importer
     $importParams = [
       'title' => 'test import role'
     ];
@@ -49,11 +45,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportWithValidOptionValues() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -78,11 +71,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportWithInvalidOptionValues() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -96,15 +86,12 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_level_type' => 'guru'
     ];
     $importResponse = $this->runImport($importParams);
-    $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);;
+    $this->assertEquals(CRM_Import_Parser::ERROR, $importResponse);
   }
 
   public function testImportWithEmptyOptionValues() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -125,11 +112,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderByIDAndPercent() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -141,7 +125,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_region' => 'south amman',
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'funder' => $contactID,
+      'funder' => $contract['contact_id'],
       'hrjc_funder_val_type' => '%',
       'hrjc_role_percent_pay_funder' => '30'
     ];
@@ -156,11 +140,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderByIDAndAmount() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -172,7 +153,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_region' => 'south amman',
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'funder' => $contactID,
+      'funder' => $contract['contact_id'],
       'hrjc_funder_val_type' => 'fixed',
       'hrjc_role_amount_pay_funder' => '30'
     ];
@@ -222,11 +203,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderWithInvalidID() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -247,11 +225,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderWithInvalidDisplayName() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -272,11 +247,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderWithInvalidValueType() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -288,7 +260,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_region' => 'south amman',
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'funder' => $contactID,
+      'funder' => $contract['id'],
       'hrjc_funder_val_type' => 'wrong_type',
       'hrjc_role_amount_pay_funder' => '30'
     ];
@@ -297,11 +269,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderWithInvalidPercentPay() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -313,7 +282,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_region' => 'south amman',
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'funder' => $contactID,
+      'funder' => $contract['id'],
       'hrjc_funder_val_type' => '%',
       'hrjc_role_percent_pay_funder' => 'should_be_number'
     ];
@@ -322,11 +291,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderWithInvalidAmountPay() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -338,7 +304,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_region' => 'south amman',
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'funder' => $contactID,
+      'funder' => $contract['id'],
       'hrjc_funder_val_type' => 'fixed',
       'hrjc_role_percent_pay_funder' => 'should_be_number'
     ];
@@ -347,11 +313,8 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
   }
 
   public function testImportFunderWithoutValueType() {
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = ContactFabricator::fabricate($contactParams)['id'];
-
     $contract = HRJobContractFabricator::fabricate(
-      ['contact_id' => $contactID],
+      ['contact_id' => 1],
       ['period_start_date' => date('Y-m-d', strtotime('-14 days'))]
     );
 
@@ -363,7 +326,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_region' => 'south amman',
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'funder' => $contactID,
+      'funder' => $contract['id'],
       'hrjc_role_percent_pay_funder' => '30'
     ];
     $importResponse = $this->runImport($importParams);
