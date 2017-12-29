@@ -118,20 +118,7 @@ pipeline {
       }
     }
 
-    /* Testing JS */
-    stage('Testing JS: Install JS packages') {
-      steps {
-        script {
-          for (extension in listCivihrExtensions()) {
-            if(extension.hasJSTests) {
-              installJSPackages(extension);
-            }
-          }
-        }
-      }
-    }
-
-    stage('Testing JS: Test JS') {
+    stage('Test JS') {
       steps {
         script {
           // This is necessary to avoid an additional loop
@@ -141,6 +128,7 @@ pipeline {
 
           for (extension in listCivihrExtensions()) {
             if (extension.hasJSTests) {
+              installJSPackages(extension)
               testJS(extension)
             }
           }
