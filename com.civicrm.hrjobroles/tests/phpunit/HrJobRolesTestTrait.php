@@ -6,17 +6,6 @@
 trait HrJobRolesTestTrait {
 
   /**
-   * Creates a new Job Role with specified parameters
-   *
-   * @param $params
-   *
-   * @return \CRM_Hrjobroles_BAO_HrJobRoles|NULL
-   */
-  public function createJobRole($params = []) {
-    return CRM_Hrjobroles_BAO_HrJobRoles::create($params);
-  }
-
-  /**
    * Creates sample option group and values to be used in tests
    *
    */
@@ -68,23 +57,6 @@ trait HrJobRolesTestTrait {
   }
 
   /**
-   * Creates single (Individuals) contact from the provided data.
-   *
-   * @param array $params should contain first_name and last_name
-   * @return int return the contact ID
-   * @throws \CiviCRM_API3_Exception
-   */
-  protected function createContact($params) {
-    $result = civicrm_api3('Contact', 'create', array(
-      'contact_type' => "Individual",
-      'first_name' => $params['first_name'],
-      'last_name' => $params['last_name'],
-      'display_name' => $params['first_name'] . ' ' . $params['last_name'],
-    ));
-    return $result['id'];
-  }
-
-  /**
    * Creates a new Job Contract for the given contact
    *
    * If a startDate is given, it will also create a JobDetails instance to save
@@ -98,6 +70,23 @@ trait HrJobRolesTestTrait {
    * @return \CRM_HRJob_DAO_HRJobContract|NULL
    */
   protected function createJobContract($contactID, $startDate = null, $endDate = null, $extraParams = array()) {
+//    $detailsParams = null;
+//    if($startDate) {
+//      $detailsParams = [
+//        'period_start_date' => CRM_Utils_Date::processDate($startDate),
+//        'period_end_date' => NULL,
+//      ];
+//
+//      if ($endDate) {
+//        $detailsParams['period_end_date'] = CRM_Utils_Date::processDate($endDate);
+//      }
+//    }
+//
+//    return CRM_Hrjobcontract_Test_Fabricator_HRJobContract::fabricate(
+//      ['contact_id' => $contactID],
+//      $detailsParams
+//    );
+
     $contract = CRM_Hrjobcontract_BAO_HRJobContract::create(['contact_id' => $contactID]);
     if($startDate) {
       $params = [
@@ -114,41 +103,6 @@ trait HrJobRolesTestTrait {
     }
 
     return $contract;
-  }
-
-  /**
-   * Creates a new department option value
-   *
-   * @param string $name
-   * @param string $label
-   * @return Array $newDepartment
-   * @throws \CiviCRM_API3_Exception
-   */
-  protected function createDepartment($name, $label) {
-    $newDepartment = civicrm_api3('OptionValue', 'create', array(
-      'sequential' => '1',
-      'option_group_id' => 'hrjc_department',
-      'name' => $name,
-      'label'=> $label,
-    ))['values'][0];
-
-    return $newDepartment;
-  }
-
-  /**
-   * Find and retrieve job role by any of its properties
-   *
-   * @param array $params
-   *
-   * @return \CRM_Hrjobroles_BAO_HrJobRoles|NULL
-   */
-  public function findRole($params)  {
-    $default = NUll;
-    return CRM_Hrjobroles_BAO_HrJobRoles::commonRetrieve(
-      'CRM_Hrjobroles_BAO_HrJobRoles',
-      $params,
-      $default
-    );
   }
 
 }

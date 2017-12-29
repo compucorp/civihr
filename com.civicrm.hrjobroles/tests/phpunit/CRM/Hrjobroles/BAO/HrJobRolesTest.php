@@ -1,5 +1,9 @@
 <?php
 
+use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
+use CRM_Hrjobroles_BAO_HrJobRoles as HrJobRoles;
+use CRM_Hrjobroles_Test_Fabricator_HrJobRoles as HrJobRolesFabricator;
+
 /**
  * Class CRM_Hrjobroles_BAO_HrJobRolesTest
  *
@@ -9,22 +13,23 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadless
 
   use HrJobRolesTestTrait;
 
+  public function setUp() {
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
+  }
+
+  public function tearDown() {
+    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 1;');
+  }
+
   public function testCreateJobRoleWithBasicData() {
-    // create contact
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->createContact($contactParams);
-
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
-
     // create role
     $roleParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => 1,
       'title' => 'test role'
     ];
-    $jobRole = $this->createJobRole($roleParams);
+    $jobRole = HrJobRolesFabricator::fabricate($roleParams);
 
-    $roleEntity = $this->findRole(['id' => $jobRole->id]);
+    $roleEntity = HrJobRoles::findById($jobRole->id);
     $this->assertEquals($roleParams['title'], $roleEntity->title);
   }
 
@@ -36,61 +41,63 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadless
     $roleParams = [
       'title' => 'test role'
     ];
-    $this->createJobRole($roleParams);
+    HrJobRolesFabricator::fabricate($roleParams);
   }
 
   public function testCreateJobRoleWithOptionValueFields() {
-    // create contact
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->createContact($contactParams);
-
-    // create contract
-    $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
-
     // create option group and values
     $this->createSampleOptionGroupsAndValues();
 
     // create role
     $roleParams = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => 1,
       'title' => 'test role',
       'location' => "amman",
       'region' => "south amman",
       'department' => "amman devs",
       'level_type' => "guru"
     ];
-    $jobRole = $this->createJobRole($roleParams);
+    $jobRole = HrJobRolesFabricator::fabricate($roleParams);
 
-    $roleEntity = $this->findRole(['id' => $jobRole->id]);
+    $roleEntity = HrJobRoles::findById($jobRole->id);
     $this->assertEquals($roleParams['title'], $roleEntity->title);
   }
 
   public function testGetContactRoles() {
-    // create contact
-    $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
-    $contactID = $this->createContact($contactParams);
+    $contactID = 1;
 
-    // create contracts
-    $contract1 = $this->createJobContract($contactID, date('Y-m-d', strtotime('-3 years')), date('Y-m-d', strtotime('-1 years')));
-    $contract2 = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
+    $contract1 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      [
+        'period_start_date' => date('Y-m-d', strtotime('-3 years')),
+        'period_end_date' => date('Y-m-d', strtotime('-1 years'))
+      ]
+    );
+
+    $contract2 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      [
+        'period_start_date' => date('Y-m-d', strtotime('-14 days')),
+      ]
+    );
 
     // create roles
     $roleParams1 = [
-      'job_contract_id' => $contract1->id,
+      'job_contract_id' => $contract1['id'],
       'title' => 'test role 1'
     ];
     $roleParams2 = [
-      'job_contract_id' => $contract1->id,
+      'job_contract_id' => $contract1['id'],
       'title' => 'test role 2'
     ];
     $roleParams3 = [
-      'job_contract_id' => $contract2->id,
+      'job_contract_id' => $contract2['id'],
       'title' => 'test role 3'
     ];
 
-    $this->createJobRole($roleParams1);
-    $this->createJobRole($roleParams2);
-    $this->createJobRole($roleParams3);
+    HrJobRolesFabricator::fabricate($roleParams1);
+    HrJobRolesFabricator::fabricate($roleParams2);
+    HrJobRolesFabricator::fabricate($roleParams3);
 
     $this->assertCount(3, CRM_Hrjobroles_BAO_HrJobRoles::getContactRoles($contactID));
   }
@@ -100,9 +107,6 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadless
    * the departments of the current job roles
    */
   public function testGetCurrentDepartmentsList() {
-    $contactID = $this->createContact(array("first_name" => "chrollo", "last_name" => "lucilfer"));
-    $contract =  $this->createJobContract($contactID);
-
     $departments = [
       $this->createDepartment('special_investigation', 'Special Investigation')['value'],
       $this->createDepartment('special_supervision', 'Special Supervision')['value'],
@@ -115,16 +119,18 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadless
       array('department' => $departments[2], 'start_offset' => '-1 week')
     );
 
+    $contractID = 1;
+
     foreach($jobRolesParams as $params) {
-      $this->createJobRole(array(
-        'job_contract_id' => $contract->id,
+      HrJobRolesFabricator::fabricate(array(
+        'job_contract_id' => $contractID,
         'department' => $params['department'],
         'start_date' => date('YmdHis', strtotime($params['start_offset'])),
         'end_date' => array_key_exists('end_offset', $params) ? date('YmdHis', strtotime($params['end_offset'])) : NULL
       ));
     }
 
-    $departments = CRM_Hrjobroles_BAO_HrJobRoles::getCurrentDepartmentsList($contract->id);
+    $departments = CRM_Hrjobroles_BAO_HrJobRoles::getCurrentDepartmentsList($contractID);
 
     $this->assertContains('Special Supervision', $departments);
     $this->assertContains('Special Development', $departments);
@@ -136,22 +142,39 @@ class CRM_Hrjobroles_BAO_HrJobRolesTest extends CRM_Hrjobroles_Test_BaseHeadless
    * should return a compact list to avoid duplicates
    */
   public function testGetCompactCurrentDepartmentsList() {
-    $contactID = $this->createContact(array("first_name" => "chrollo", "last_name" => "lucilfer"));
-    $contract =  $this->createJobContract($contactID);
-
     $department = $this->createDepartment('special_investigation', 'Special Investigation')['value'];
 
+    $contractID = 1;
     $params = [
-      'job_contract_id' => $contract->id,
+      'job_contract_id' => $contractID,
       'department' => $department,
       'start_date' => date('Ymd')
     ];
-    $this->createJobRole($params);
-    $this->createJobRole($params);
+    HrJobRolesFabricator::fabricate($params);
+    HrJobRolesFabricator::fabricate($params);
 
-    $departmentsList = CRM_Hrjobroles_BAO_HrJobRoles::getCurrentDepartmentsList($contract->id);
+    $departmentsList = CRM_Hrjobroles_BAO_HrJobRoles::getCurrentDepartmentsList($contractID);
 
     $this->assertContains('Special Investigation', $departmentsList);
     $this->assertCount(1, $departmentsList);
+  }
+
+  /**
+   * Creates a new department option value
+   *
+   * @param string $name
+   * @param string $label
+   * @return Array $newDepartment
+   * @throws \CiviCRM_API3_Exception
+   */
+  private function createDepartment($name, $label) {
+    $newDepartment = civicrm_api3('OptionValue', 'create', array(
+      'sequential' => '1',
+      'option_group_id' => 'hrjc_department',
+      'name' => $name,
+      'label'=> $label,
+    ))['values'][0];
+
+    return $newDepartment;
   }
 }
