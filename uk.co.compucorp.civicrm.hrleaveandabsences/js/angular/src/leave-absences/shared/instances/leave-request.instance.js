@@ -92,7 +92,7 @@ define([
       function getOptionIDByName (name) {
         return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
           .then(function (data) {
-            return data.find(function (statusObj) {
+            return _.find(data, function (statusObj) {
               return statusObj.name === name;
             });
           });
