@@ -48,12 +48,12 @@ class api_v3_ContactHRJobRoleTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
     // Even though the description, start_date and funder were set,
     // they won't be returned here, as they are not part of the allowed fields
     $expected = [
-      $jobRole['id'] => [
-        'id' => $jobRole['id'],
-        'title' => $jobRole['title'],
-        'department' => $jobRole['department'],
-        'location' => $jobRole['location'],
-        'level_type' => $jobRole['level_type'],
+      $jobRole->id => [
+        'id' => $jobRole->id,
+        'title' => $jobRole->title,
+        'department' => $jobRole->department,
+        'location' => $jobRole->location,
+        'level_type' => $jobRole->level_type,
         'contact_id' => $contact['id'],
       ]
     ];
@@ -87,8 +87,8 @@ class api_v3_ContactHRJobRoleTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
     // Since all the fields we asked are not allowed, the response will be empty,
     // except for the ID, which is always returned
     $expected = [
-      $jobRole['id'] => [
-        'id' => $jobRole['id'],
+      $jobRole->id => [
+        'id' => $jobRole->id,
       ]
     ];
     $this->assertEquals($expected, $contactJobRoles);
@@ -109,13 +109,13 @@ class api_v3_ContactHRJobRoleTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
 
     // The CiviCRM only returns non-empty fields. Since we only set the job
     // contract id, only the ID and the contact_id fields will be returned
-    $expectedJobRole1 = ['id' => $jobRole1['id'], 'contact_id' => $contact1['id']];
-    $expectedJobRole2 = ['id' => $jobRole2['id'], 'contact_id' => $contact1['id']];
-    $expectedJobRole3 = ['id' => $jobRole3['id'], 'contact_id' => $contact2['id']];
+    $expectedJobRole1 = ['id' => $jobRole1->id, 'contact_id' => $contact1['id']];
+    $expectedJobRole2 = ['id' => $jobRole2->id, 'contact_id' => $contact1['id']];
+    $expectedJobRole3 = ['id' => $jobRole3->id, 'contact_id' => $contact2['id']];
 
-    $this->assertEquals($expectedJobRole1, $contactJobRoles[$jobRole1['id']]);
-    $this->assertEquals($expectedJobRole2, $contactJobRoles[$jobRole2['id']]);
-    $this->assertEquals($expectedJobRole3, $contactJobRoles[$jobRole3['id']]);
+    $this->assertEquals($expectedJobRole1, $contactJobRoles[$jobRole1->id]);
+    $this->assertEquals($expectedJobRole2, $contactJobRoles[$jobRole2->id]);
+    $this->assertEquals($expectedJobRole3, $contactJobRoles[$jobRole3->id]);
   }
 
   private function setExpectedApiPermissionException($permission) {

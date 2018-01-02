@@ -1,5 +1,7 @@
 <?php
 
+use CRM_Hrjobroles_BAO_HrJobRoles as HrJobRoles;
+
 class CRM_Hrjobroles_Test_Fabricator_HrJobRoles {
 
   protected static $defaultParams = [
@@ -16,12 +18,7 @@ class CRM_Hrjobroles_Test_Fabricator_HrJobRoles {
    * @throws \Exception
    */
   public static function fabricate($params) {
-    $result = civicrm_api3(
-      'HrJobRoles',
-      'create',
-      array_merge(self::$defaultParams, $params)
-    );
-
-    return array_shift($result['values']);
+    $params = array_merge(self::$defaultParams, $params);
+    return HrJobRoles::create($params);
   }
 }
