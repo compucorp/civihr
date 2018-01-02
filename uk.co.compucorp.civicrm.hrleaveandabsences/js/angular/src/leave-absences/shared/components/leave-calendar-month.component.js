@@ -13,6 +13,7 @@ define([
       month: '<',
       period: '<',
       showContactName: '<',
+      showContactDetailsLink: '<',
       showOnlyWithLeaveRequests: '<',
       supportData: '<'
     },
@@ -42,6 +43,7 @@ define([
 
     vm.$onDestroy = onDestroy;
     vm.contactsList = contactsList;
+    vm.getContactUrl = getContactUrl;
 
     (function init () {
       var dateFromMonth = moment().month(vm.month.index).year(vm.month.year);
@@ -146,6 +148,15 @@ define([
     function deleteLeaveRequest (leaveRequest) {
       removeLeaveRequestFromIndexedList(leaveRequest);
       updateLeaveRequestDaysContactData(leaveRequest);
+    }
+
+    /**
+     * Get profile URL for the given contact id
+     *
+     * @param {string/int} contactId
+     */
+    function getContactUrl (contactId) {
+      return CRM.url('civicrm/contact/view', { cid: contactId });
     }
 
     /**

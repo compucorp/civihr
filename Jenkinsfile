@@ -23,6 +23,8 @@ pipeline {
   stages {
     stage('Pre-tasks execution') {
       steps {
+        sendBuildStartdNotification()
+
         // Print all Environment variables
         sh 'printenv | sort'
 
@@ -185,7 +187,81 @@ pipeline {
         }
       }
     }
+    success {
+      sendBuildSuccessNotification()
+    }
+    failure {
+      sendBuildFailureNotification()
+    }
   }
+}
+
+/*
+ * Sends a notification when the build starts
+ */
+def sendBuildStartdNotification() {
+  def message = 'Building ' + getBuildTargetLink() + '. ' + getReportLink()
+
+  sendHipchatNotification('YELLOW', message)
+}
+
+/*
+ * Sends a notification when the build is completed successfully
+ */
+def sendBuildSuccessNotification() {
+  def message = getBuildTargetLink() + ' built successfully. Time: $BUILD_DURATION. ' + getReportLink()
+  sendHipchatNotification('GREEN', message)
+}
+
+/*
+ * Sends a notification when the build fails
+ */
+def sendBuildFailureNotification() {
+  def message = 'Failed to build ' + getBuildTargetLink() + '. Time: $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink()
+  sendHipchatNotification('RED', message)
+}
+
+/*
+ * Sends a notification to Hipchat
+ */
+def sendHipchatNotification(String color, String message) {
+  hipchatSend color: color, message: message, notify: true
+}
+
+/*
+ * Returns a link to what is being built. If it's a PR, then it's a link to the pull request itself.
+ * If it's a branch, then it's a link in the format http://github.com/org/repo/tree/branch
+ */
+def getBuildTargetLink() {
+  if(buildIsForAPullRequest()) {
+    return "<a href=\"${env.CHANGE_URL}\">\"${env.CHANGE_TITLE}\"</a>"
+  }
+
+  return '<a href="' + getRepositoryUrlForBuildBranch() + '">"' + env.BRANCH_NAME + '"</a>'
+}
+
+/*
+ * Returns true if this build as triggered by a Pull Request.
+ */
+def buildIsForAPullRequest() {
+  return env.CHANGE_URL != null
+}
+
+/*
+ * Returns a URL pointing to branch currently being built
+ */
+def getRepositoryUrlForBuildBranch() {
+  def repositoryURL = env.GIT_URL
+  repositoryURL = repositoryURL.replace('.git', '')
+
+  return repositoryURL + '/tree/' + env.BRANCH_NAME
+}
+
+/*
+ * Returns the Blue Ocean build report URL for the current job
+ */
+def getReportLink() {
+ return 'Click <a href="$BLUE_OCEAN_URL">here</a> to see the build report'
 }
 
 /*

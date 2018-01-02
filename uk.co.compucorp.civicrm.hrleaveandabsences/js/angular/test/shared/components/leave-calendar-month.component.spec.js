@@ -790,6 +790,19 @@
         });
       });
 
+      describe('getContactUrl()', function () {
+        var contactID = 1;
+        var returnedURL;
+
+        beforeEach(function () {
+          returnedURL = controller.getContactUrl(contactID);
+        });
+
+        it('returns URL for the contacts profile page', function () {
+          expect(returnedURL).toBe('/index.php?q=civicrm/contact/view&cid=' + contactID);
+        });
+      });
+
       function compileComponent (sendSignal) {
         controller = $componentController('leaveCalendarMonth', null, {
           contacts: ContactData.all.values,
