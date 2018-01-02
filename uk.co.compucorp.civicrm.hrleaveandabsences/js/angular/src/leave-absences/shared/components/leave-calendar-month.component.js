@@ -546,7 +546,7 @@ define([
       if (!oldLeaveRequest) {
         return;
       }
-      
+
       deleteLeaveRequest(oldLeaveRequest);
 
       if (leaveStatusesToBeDisplayed().indexOf(leaveRequest.status_id) !== -1) {
