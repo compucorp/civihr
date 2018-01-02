@@ -757,6 +757,22 @@
             }));
           });
         });
+
+        describe('when show-only-with-leave-requests is set to true and there is no leave request for contacts', function () {
+          beforeEach(function () {
+            LeaveRequest.all.and.callFake(function () {
+              return $q.resolve({ list: [] });
+            });
+
+            compileComponent();
+
+            controller.showOnlyWithLeaveRequests = true;
+          });
+
+          it('shows "There are no staff members matching selected filters" message on UI', function () {
+            expect(controller.contactsList().length).toEqual(0);
+          });
+        });
       });
 
       describe('on destroy', function () {

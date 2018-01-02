@@ -126,7 +126,7 @@ define([
      */
     function contactsList () {
       return !vm.showOnlyWithLeaveRequests ? vm.contacts : vm.contacts.filter(function (contact) {
-        return _.includes(Object.keys(leaveRequests), contact.id);
+        return Object.keys(leaveRequests[contact.id] || {}).length;
       });
     }
 
@@ -339,6 +339,21 @@ define([
     }
 
     /**
+     * Returns the list of leave status's which would be displayed
+     * on the calendar
+     *
+     * @returns {array}
+     */
+    function leaveStatusesToBeDisplayed () {
+      return [
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.approved),
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.adminApproved),
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.awaitingApproval),
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.moreInformationRequired)
+      ];
+    }
+
+    /**
      * Loads the work pattern calendar and the leave request of the month,
      * then it process the data onto each day of the month
      *
@@ -371,12 +386,7 @@ define([
       return LeaveRequest.all({
         from_date: { to: vm.month.days[vm.month.days.length - 1].date },
         to_date: { from: vm.month.days[0].date },
-        status_id: {'IN': [
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.approved),
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.adminApproved),
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.awaitingApproval),
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.moreInformationRequired)
-        ]},
+        status_id: { 'IN': leaveStatusesToBeDisplayed() },
         contact_id: { 'IN': vm.contacts.map(function (contact) {
           return contact.id;
         })},
@@ -533,8 +543,15 @@ define([
     function updateLeaveRequest (leaveRequest) {
       var oldLeaveRequest = leaveRequestFromIndexedList(leaveRequest);
 
+      if (!oldLeaveRequest) {
+        return;
+      }
+
       deleteLeaveRequest(oldLeaveRequest);
-      addLeaveRequest(leaveRequest);
+
+      if (leaveStatusesToBeDisplayed().indexOf(leaveRequest.status_id) !== -1) {
+        addLeaveRequest(leaveRequest);
+      }
     }
 
     /**
