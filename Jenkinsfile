@@ -256,12 +256,10 @@ def checkoutPrBranchInCiviHRRepos(String branch) {
   echo 'Checking out CiviHR repos..'
 
   for (repo in listCivihrGitRepoPath()) {
-    try {
-        sh """
-          cd ${repo.folder}
-          git checkout ${branch}
-        """
-    } catch (err) {}
+    sh """
+      cd ${repo.folder}
+      git checkout ${branch} || true
+    """
   }
 }
 
@@ -269,12 +267,10 @@ def mergeEnvBranchInAllRepos(String envBranch) {
   echo 'Merging env branch'
 
   for (repo in listCivihrGitRepoPath()) {
-    try {
-        sh """
-          cd ${repo.folder}
-          git merge origin/${envBranch} --no-edit
-        """
-    } catch (err) {}
+    sh """
+      cd ${repo.folder}
+      git merge origin/${envBranch} --no-edit || true
+    """
   }
 }
 
