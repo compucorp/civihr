@@ -4,11 +4,13 @@ define(function () {
   'use strict';
 
   FormPayController.__name = 'FormPayController';
-  FormPayController.$inject = ['$filter', '$log', '$scope', 'settings'];
+  FormPayController.$inject = ['$filter', '$log', '$scope', 'settings', 'FormatCurrencyService'];
 
-  function FormPayController ($filter, $log, $scope, settings) {
+  function FormPayController ($filter, $log, $scope, settings, FormatCurrencyService) {
     $log.debug('Controller: FormPayController');
 
+    var calcBenefitsPerCycleNetAmount = 0;
+    var calcPayPerCycleGrossAmount = 0;
     var entityPay = $scope.entity.pay || {};
     var defaults = {
       pay_amount: 0,
@@ -32,6 +34,7 @@ define(function () {
     $scope.benefits_per_cycle = (0).toFixed(2);
     $scope.benefits_per_cycle_net = 0;
     $scope.deductions_per_cycle = (0).toFixed(2);
+    $scope.calcPayAnnualizedEst = 0;
 
     $scope.add = add;
     $scope.applyPayScaleGradeData = applyPayScaleGradeData;
@@ -41,6 +44,7 @@ define(function () {
     $scope.calcDeductionsPerCycle = calcDeductionsPerCycle;
     $scope.calcPayPerCycleGross = calcPayPerCycleGross;
     $scope.calcPayPerCycleNet = calcPayPerCycleNet;
+    $scope.onPayAmountChange = onPayAmountChange;
     $scope.remove = remove;
     $scope.resetData = resetData;
     $scope.setDefaults = setDefaults;
@@ -74,7 +78,10 @@ define(function () {
 
     function calcAnnualPayEst () {
       if (+entityPay.is_paid) {
-        entityPay.pay_annualized_est = (entityPay.pay_amount * workPerYear[entityPay.pay_unit] || 0).toFixed(2);
+        FormatCurrencyService.format(entityPay.pay_amount).then(function (amount) {
+          $scope.calcPayAnnualizedEst = ((+amount.parsed) * (workPerYear[entityPay.pay_unit] || 0)).toFixed(2);
+          entityPay.pay_annualized_est = amount.formatted;
+        });
       }
     }
 
@@ -86,7 +93,7 @@ define(function () {
 
         for (i; i < len; i++) {
           if (+entityPay.annual_benefits[i].type === 2) {
-            entityPay.annual_benefits[i].amount_abs = (entityPay.annual_benefits[i].amount_pct / 100 * entityPay.pay_annualized_est).toFixed(2);
+            entityPay.annual_benefits[i].amount_abs = (entityPay.annual_benefits[i].amount_pct / 100 * $scope.calcPayAnnualizedEst).toFixed(2);
           }
 
           annualBenefits += +entityPay.annual_benefits[i].amount_abs;
@@ -97,7 +104,11 @@ define(function () {
 
     function calcBenefitsPerCycleNet () {
       if (+entityPay.is_paid) {
-        $scope.benefits_per_cycle_net = $scope.benefits_per_cycle - $scope.deductions_per_cycle;
+        calcBenefitsPerCycleNetAmount = ($scope.benefits_per_cycle - $scope.deductions_per_cycle);
+
+        FormatCurrencyService.format(calcBenefitsPerCycleNetAmount).then(function (amount) {
+          entityPay.benefits_per_cycle_net = amount.formatted;
+        });
       }
     }
 
@@ -109,7 +120,7 @@ define(function () {
 
         for (i; i < len; i++) {
           if (+entityPay.annual_deductions[i].type === 2) {
-            entityPay.annual_deductions[i].amount_abs = (entityPay.annual_deductions[i].amount_pct / 100 * entityPay.pay_annualized_est).toFixed(2);
+            entityPay.annual_deductions[i].amount_abs = (entityPay.annual_deductions[i].amount_pct / 100 * $scope.calcPayAnnualizedEst).toFixed(2);
           }
 
           annualDeductions += +entityPay.annual_deductions[i].amount_abs;
@@ -120,14 +131,31 @@ define(function () {
 
     function calcPayPerCycleGross () {
       if (+entityPay.is_paid) {
-        entityPay.pay_per_cycle_gross = (entityPay.pay_annualized_est / getCycles()).toFixed(2);
+        calcPayPerCycleGrossAmount = ($scope.calcPayAnnualizedEst / getCycles()).toFixed(2);
+
+        FormatCurrencyService.format(calcPayPerCycleGrossAmount).then(function (amount) {
+          entityPay.pay_per_cycle_gross = amount.formatted;
+        });
       }
     }
 
     function calcPayPerCycleNet () {
       if (+entityPay.is_paid) {
-        entityPay.pay_per_cycle_net = (+entityPay.pay_per_cycle_gross + +$scope.benefits_per_cycle_net).toFixed(2);
+        var calcPayPerCycleNet = (+calcPayPerCycleGrossAmount + +calcBenefitsPerCycleNetAmount).toFixed(2);
+
+        FormatCurrencyService.format(calcPayPerCycleNet).then(function (amount) {
+          entityPay.pay_per_cycle_net = amount.formatted;
+        });
       }
+    }
+
+    /**
+     * Display formatted pay amount in field as per the settings
+     */
+    function formatPayAmount () {
+      FormatCurrencyService.format(entityPay.pay_amount).then(function (amount) {
+        entityPay.pay_amount = amount.formatted;
+      });
     }
 
     function getCycles () {
@@ -152,9 +180,8 @@ define(function () {
     }
 
     function initWatchers () {
-      $scope.$watch('entity.pay.pay_amount', $scope.calcAnnualPayEst);
-      $scope.$watch('entity.pay.pay_unit', $scope.calcAnnualPayEst);
-      $scope.$watch('entity.pay.pay_annualized_est', function () {
+      $scope.$watch('entity.pay.pay_unit', $scope.onPayAmountChange);
+      $scope.$watch('calcPayAnnualizedEst', function () {
         $scope.calcPayPerCycleGross();
         $scope.calcBenefitsPerCycle();
         $scope.calcDeductionsPerCycle();
@@ -165,6 +192,14 @@ define(function () {
       $scope.$watch('deductions_per_cycle', $scope.calcBenefitsPerCycleNet);
       $scope.$watch('benefits_per_cycle_net', $scope.calcPayPerCycleNet);
       $scope.$watch('entity.pay.pay_per_cycle_gross', $scope.calcPayPerCycleNet);
+    }
+
+    /**
+     * Handler for changed pay amount value in pay form field
+     */
+    function onPayAmountChange () {
+      formatPayAmount();
+      $scope.calcAnnualPayEst();
     }
 
     function remove (array, index) {
@@ -188,10 +223,20 @@ define(function () {
     }
 
     function setDefaults () {
-      entityPay.pay_cycle = defaults.pay_cycle;
       entityPay.pay_currency = defaults.pay_currency;
+      entityPay.pay_cycle = defaults.pay_cycle;
       entityPay.pay_is_auto_est = '0';
-      entityPay.pay_amount = (0).toFixed(2);
+      calcPayPerCycleGrossAmount = '0';
+      calcBenefitsPerCycleNetAmount = '0';
+      FormatCurrencyService.format('0')
+        .then(function (amount) {
+          var defaultAmount = amount.formatted;
+
+          entityPay.pay_amount = defaultAmount;
+          entityPay.pay_annualized_est = defaultAmount;
+          entityPay.pay_per_cycle_gross = defaultAmount;
+          entityPay.pay_per_cycle_net = defaultAmount;
+        });
     }
   }
 

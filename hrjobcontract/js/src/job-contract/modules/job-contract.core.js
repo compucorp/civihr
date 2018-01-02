@@ -11,6 +11,7 @@ define([
   'common/services/dom-event-trigger',
   'common/services/pub-sub',
   'common/services/angular-date/date-format',
+  'common/services/format-currency.service',
   'leave-absences/shared/models/absence-type.model',
   'job-contract/vendor/fraction',
   'job-contract/vendor/job-summary'

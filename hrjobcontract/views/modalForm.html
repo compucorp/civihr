@@ -338,7 +338,7 @@
                       ng-disabled="isDisabled">
                     </select>
                   </div>
-                  <input id="{{prefix}}pay-amount" type="text" class="form-control input-inline-sm" hrjc-number ng-model="entity.pay.pay_amount" ng-disabled="isDisabled">
+                  <input id="{{prefix}}pay-amount" type="text" class="form-control input-inline-sm" ng-model="entity.pay.pay_amount" ng-blur="onPayAmountChange()" ng-disabled="isDisabled">
                   per
                   <div class="chr_custom-select">
                     <select class="form-control no-select2"
@@ -441,7 +441,7 @@
                             ng-if="benefit.type == '2'"
                             ng-model="benefit.amount_pct"
                             ng-disabled="isDisabled"></td>
-                          <td><input type="text" class="form-control" hrjc-number ng-model="benefit.amount_abs" ng-disabled="isDisabled || benefit.type == '2'"></td>
+                          <td><input type="text" class="form-control" ng-model="benefit.amount_abs" ng-disabled="isDisabled || benefit.type == '2'"></td>
                           <td class="action"><a class="btn btn-sm btn-danger" ng-click="remove(entity.pay.annual_benefits, $index)" ng-disabled="isDisabled">
                             <span class="fa fa-remove" aria-hidden="true"></span>
                             </a>
@@ -511,7 +511,7 @@
                             ng-if="deduction.type == '2'"
                             ng-model="deduction.amount_pct"
                             ng-disabled="isDisabled"></td>
-                          <td><input type="text" class="form-control" hrjc-number ng-model="deduction.amount_abs" ng-disabled="isDisabled || deduction.type == '2'"></td>
+                          <td><input type="text" class="form-control" ng-model="deduction.amount_abs" ng-disabled="isDisabled || deduction.type == '2'"></td>
                           <td class="action"><a class="btn btn-sm btn-danger" ng-click="remove(entity.pay.annual_deductions, $index)" ng-disabled="isDisabled">
                             <span class="fa fa-remove" aria-hidden="true"></span>
                             </a>

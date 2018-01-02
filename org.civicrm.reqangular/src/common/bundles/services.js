@@ -7,6 +7,7 @@ define([
   'common/services/file-mime-types',
   'common/services/file-upload',
   'common/services/file.service',
+  'common/services/format-currency.service',
   'common/services/hr-settings',
   'common/services/notification.service',
   'common/services/pub-sub'

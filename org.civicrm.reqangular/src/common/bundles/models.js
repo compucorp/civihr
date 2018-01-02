@@ -10,11 +10,13 @@ define([
   'common/models/job-role',
   'common/models/option-group',
   'common/models/session.model',
+  'common/models/settings.model',
   'common/models/instances/instance',
   'common/models/instances/contact-instance',
   'common/models/instances/contract-instance',
   'common/models/instances/group-instance',
-  'common/models/instances/job-role-instance'
+  'common/models/instances/job-role-instance',
+  'common/models/instances/settings-instance'
 ], function () {
 
 });
