@@ -433,6 +433,3 @@ def listCivihrExtensions() {
     ]
   ]
 }
-
-
-
