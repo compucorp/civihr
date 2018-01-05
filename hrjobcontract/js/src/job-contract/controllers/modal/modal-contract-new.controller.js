@@ -81,7 +81,10 @@ define([
 
     // Init
     (function init () {
-      setEntity();
+      angular.copy(model, $scope.entity);
+      $scope.entity.contract = {
+        is_primary: 0
+      };
 
       angular.forEach($scope.uploader, function (entity) {
         angular.forEach(entity, function (field) {
@@ -312,16 +315,6 @@ define([
         $scope.entity.leave[index].leave_amount = utils.absenceTypes[absenceTypeID].default_entitlement;
         $scope.entity.leave[index].add_public_holidays = utils.absenceTypes[absenceTypeID].add_public_holiday_to_entitlement;
       });
-    }
-
-    /*
-     * Set the entity object
-     */
-    function setEntity () {
-      angular.copy(model, $scope.entity);
-      $scope.entity.contract = {
-        is_primary: 0
-      };
     }
   }
 
