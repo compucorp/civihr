@@ -69,6 +69,10 @@ define([
         Individual: 'Individual'
       };
 
+      it('sets the contract property', function () {
+        expect($scope.entity.contract).toEqual({ is_primary: 0 });
+      });
+
       it('calls getOptions() form contractHealthService', function () {
         expect(contractHealthService.getOptions).toHaveBeenCalled();
       });
