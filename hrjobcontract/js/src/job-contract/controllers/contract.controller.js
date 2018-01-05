@@ -49,8 +49,6 @@ define([
         .then(function (results) {
           updateContractView(results);
 
-          $scope.contractLoaded = true;
-
           $scope.$watch('contract.is_primary', function () {
             $scope.isCollapsed = !+$scope.contract.is_primary;
           });
@@ -61,6 +59,7 @@ define([
             $scope.revisionList = result.revisionList;
             $scope.revisionDataList = result.revisionDataList;
             $scope.$broadcast('hrjc-loader-hide');
+            $scope.contractLoaded = true;
           });
         })
         .then(updateContractFiles);

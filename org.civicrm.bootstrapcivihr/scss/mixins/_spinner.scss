@@ -1,0 +1,24 @@
+/**
+ * Spinner mixin
+ * $force-size wether to force size or not
+ * $speed Speed to rorate the spinner in seconds
+ * $size of the spinner
+ */
+@mixin spinner($force-size: 'false', $speed: 1.5s, $size: 32px) {
+  animation: spin $speed linear infinite;
+  background: url(../img/spinner.svg) no-repeat center center !important;
+  display: block;
+  height: if($force-size == 'true', $size !important, $size);
+  margin: auto;
+  width: if($force-size == 'true', $size !important, $size);
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}
