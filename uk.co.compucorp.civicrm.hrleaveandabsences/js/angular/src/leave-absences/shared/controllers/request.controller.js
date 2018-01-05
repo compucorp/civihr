@@ -491,9 +491,15 @@ define([
               $rootScope.$emit('LeaveRequestPopup::absencePeriodBalancesUpdated', vm.absenceTypes);
             });
         }),
-        $rootScope.$on('LeaveRequestPopup::handleError', function (__, errors) { handleError(errors); }),
-        $rootScope.$on('LeaveRequestPopup::childComponent::register', function () { childComponentsCount++; })
+        $rootScope.$on('LeaveRequestPopup::handleError', function (__, errors) {
+          handleError(errors);
+        }),
+        $rootScope.$on('LeaveRequestPopup::childComponent::register', function () {
+          childComponentsCount++;
+        })
       );
+
+      $scope.$on('$destroy', unsubscribeFromEvents);
     }
 
     /**
@@ -921,8 +927,6 @@ define([
         error && errors.push(error);
 
         if (++responses === childComponentsCount) {
-          unsubscribeFromEvents();
-
           errors.length > 0 ? deferred.reject(errors) : deferred.resolve();
         }
       }
@@ -932,11 +936,9 @@ define([
 
     /**
      * Unsubscribes from events
-     * @NOTE: Gets called when the component is destroyed
      */
     function unsubscribeFromEvents () {
-      // Destroy all events
-      _.forEach(listeners, function (listener) {
+      listeners.forEach(function (listener) {
         listener();
       });
     }
