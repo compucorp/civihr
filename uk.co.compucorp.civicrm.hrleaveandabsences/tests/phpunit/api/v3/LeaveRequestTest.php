@@ -3898,6 +3898,147 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
   }
 
+  public function testGetAndGetFullIncludesAllTheRequestsUpToTheLastDayMinuteIfToDateIsPresentAndHourIsEmpty() {
+    $contract1 = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [ 'period_start_date' => '2016-01-01' ]
+    );
+
+    $contract2 = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 2 ],
+      [ 'period_start_date' => '2016-01-01' ]
+    );
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract1['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'), //Hour will be automatically set to 00:00:00
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'), //Hour will be automatically set to 23:59:59
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract2['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-23 10:00:00'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-23 16:00:00'),
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'get', [
+      'to_date' => ['<=' => '2016-02-23'],
+      'sequential' => 1
+    ]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contract1['contact_id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contract2['contact_id'], $result['values'][1]['contact_id']);
+
+    $result = civicrm_api3('LeaveRequest', 'getFull', [
+      'to_date' => ['<=' => '2016-02-23'],
+      'sequential' => 1
+    ]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contract1['contact_id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contract2['contact_id'], $result['values'][1]['contact_id']);
+  }
+
+  public function testGetAndGetFullIncludesAllTheRequestsStartingFromTheFirstMinuteOfTheDayMinuteIfFromDateIsPresentAndHourIsEmpty() {
+    $contract1 = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 1 ],
+      [ 'period_start_date' => '2016-01-01' ]
+    );
+
+    $contract2 = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 2 ],
+      [ 'period_start_date' => '2016-01-01' ]
+    );
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract1['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'), //Hour will be automatically set to 00:00:00
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'), //Hour will be automatically set to 23:59:59
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract2['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20 23:59:59'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-23 16:00:00'),
+    ], true);
+
+    $result = civicrm_api3('LeaveRequest', 'get', [
+      'from_date' => ['>=' => '2016-02-20'],
+      'sequential' => 1
+    ]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contract1['contact_id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contract2['contact_id'], $result['values'][1]['contact_id']);
+
+    $result = civicrm_api3('LeaveRequest', 'getFull', [
+      'from_date' => ['>=' => '2016-02-20'],
+      'sequential' => 1
+    ]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contract1['contact_id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contract2['contact_id'], $result['values'][1]['contact_id']);
+  }
+
+  public function testGetAndGetFullIncludesAllTheRequestsBetweenTheGivenPeriodAndFromDateAndToDateHaveHours() {
+    $contract = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => 2 ],
+      [ 'period_start_date' => '2016-01-01' ]
+    );
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-17 08:00'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-03-17 09:00:00')
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-17 11:00'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-03-18 11:00:00')
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-25 17:00:00'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-03-25 18:00:00'),
+    ], true);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-25 19:00:00'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-03-25 20:00:00'),
+    ], true);
+
+    // Only the second and third Leave Requests will be included. The first
+    // request won't be included as it starts before "2016-03-17 10:00:00". The
+    // last one ends exactly at "2016-02-25 20:00:00", but since we're using
+    // the < operator instead of <=, it won't be included
+    $result = civicrm_api3('LeaveRequest', 'get', [
+      'from_date' => ['>=' => '2016-03-17 10:00:00'],
+      'to_date' => ['<' => '2016-03-25 20:00:00'],
+      'sequential' => 1
+    ]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contract['contact_id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contract['contact_id'], $result['values'][1]['contact_id']);
+
+    $result = civicrm_api3('LeaveRequest', 'getFull', [
+      'from_date' => ['>=' => '2016-03-17 10:00:00'],
+      'to_date' => ['<' => '2016-03-25 20:00:00'],
+      'sequential' => 1
+    ]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contract['contact_id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contract['contact_id'], $result['values'][1]['contact_id']);
+  }
+
   /**
    * @expectedException CiviCRM_API3_Exception
    * @expectedExceptionMessage Mandatory key(s) missing from params array: leave_request_id
