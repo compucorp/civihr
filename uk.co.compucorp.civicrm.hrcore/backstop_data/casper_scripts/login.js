@@ -10,6 +10,7 @@ module.exports = function (casper, scenario) {
       if (casper.exists('a[href="/user/logout"]')) {
         casper.echo('Current scenario has different login credentials from previous, logging out is necessary', 'INFO');
         casper.echo('Logging Out', 'INFO');
+
         return phantom.clearCookies();
       }
     })

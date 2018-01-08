@@ -56,7 +56,7 @@ module.exports = {
     clearDialogs = typeof clearDialogs !== 'undefined' ? !!clearDialogs : true;
 
     this.casper = customCasperJS(casper);
-    this.casper.options.waitTimeout = 10000;
+    this.casper.options.waitTimeout = 60000;
 
     !!this.waitForReady && this.casper.then(function () {
       this.waitForReady();

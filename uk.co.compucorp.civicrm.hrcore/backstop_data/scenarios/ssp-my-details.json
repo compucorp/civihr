@@ -8,11 +8,6 @@
       "label": "SSP - Edit My Details",
       "url": "hr-details",
       "onReadyScript": "ssp/edit-my-details"
-    },
-    {
-      "label": "SSP - Edit Emergency Contact",
-      "url": "hr-details",
-      "onReadyScript": "ssp/edit-emergency-contact"
     }
   ]
 }
