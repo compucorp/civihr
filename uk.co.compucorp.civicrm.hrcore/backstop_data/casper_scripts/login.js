@@ -3,11 +3,11 @@
 module.exports = function (casper, scenario) {
   var config = require('../site-config');
   var loginFormSelector = 'form#user-login-form';
-  var credentials = config.credentials[scenario.credential || 'admin'];
+  var credentials = config.credentials[scenario.credential];
 
   casper
     .then(function () {
-      if (casper.exists('a[href="/user/logout"]')) {
+      if (scenario.performLogout) {
         casper.echo('Current scenario has different login credentials from previous, logging out is necessary', 'INFO');
         casper.echo('Logging Out', 'INFO');
 

@@ -10,9 +10,10 @@ var Promise = require('es6-promise').Promise;
 
 // BackstopJS tasks
 (function () {
-  var backstopDir = 'backstop_data/';
-  var files = { config: 'site-config.json', tpl: 'backstop.tpl.json' };
-  var configTpl = {
+  var BACKSTOP_DIR = 'backstop_data/';
+  var DEFAULT_CREDENTIAL = 'admin';
+  var FILES = { config: 'site-config.json', tpl: 'backstop.tpl.json' };
+  var CONFIG_TPL = {
     'url': 'http://%{site-host}',
     'credentials': {
       'admin': { 'name': '%{admin-name}', 'pass': '%{admin-password}' },
@@ -55,9 +56,9 @@ var Promise = require('es6-promise').Promise;
     var check = true;
 
     try {
-      fs.readFileSync(backstopDir + files.config);
+      fs.readFileSync(BACKSTOP_DIR + FILES.config);
     } catch (err) {
-      fs.writeFileSync(backstopDir + files.config, JSON.stringify(configTpl, null, 2));
+      fs.writeFileSync(BACKSTOP_DIR + FILES.config, JSON.stringify(CONFIG_TPL, null, 2));
       check = false;
     }
 
@@ -79,7 +80,7 @@ var Promise = require('es6-promise').Promise;
     if (!isConfigFilePresent()) {
       console.log(color(
         'No site-config.json file detected!\n' +
-        'One has been created for you under ' + backstopDir + '\n' +
+        'One has been created for you under ' + BACKSTOP_DIR + '\n' +
         'Please insert the real value for each placholder and try again', 'RED'
       ));
 
@@ -87,16 +88,16 @@ var Promise = require('es6-promise').Promise;
     }
 
     return new Promise(function (resolve) {
-      gulp.src(backstopDir + files.tpl)
+      gulp.src(BACKSTOP_DIR + FILES.tpl)
       .pipe(file(destFile, tempFileContent()))
-      .pipe(gulp.dest(backstopDir))
+      .pipe(gulp.dest(BACKSTOP_DIR))
       .on('end', function () {
         var promise = backstopjs(command, {
-          configPath: backstopDir + destFile,
+          configPath: BACKSTOP_DIR + destFile,
           filter: argv.filter
         })
         .catch(_.noop).then(function () { // equivalent to .finally()
-          gulp.src(backstopDir + destFile, { read: false }).pipe(clean());
+          gulp.src(BACKSTOP_DIR + destFile, { read: false }).pipe(clean());
         });
 
         resolve(promise);
@@ -112,8 +113,8 @@ var Promise = require('es6-promise').Promise;
    * @return {string}
    */
   function tempFileContent () {
-    var config = JSON.parse(fs.readFileSync(backstopDir + files.config));
-    var content = JSON.parse(fs.readFileSync(backstopDir + files.tpl));
+    var config = JSON.parse(fs.readFileSync(BACKSTOP_DIR + FILES.config));
+    var content = JSON.parse(fs.readFileSync(BACKSTOP_DIR + FILES.tpl));
 
     content.scenarios = scenariosList().map(function (scenario) {
       scenario.url = config.url + '/' + scenario.url;
@@ -133,7 +134,7 @@ var Promise = require('es6-promise').Promise;
    * @return {Array}
    */
   function scenariosList () {
-    var scenariosPath = backstopDir + 'scenarios/';
+    var scenariosPath = BACKSTOP_DIR + 'scenarios/';
 
     return _(fs.readdirSync(scenariosPath))
       .filter(function (scenario) {
@@ -147,11 +148,17 @@ var Promise = require('es6-promise').Promise;
         return _.assign(scenario, { delay: scenario.delay || 6000 });
       })
       .tap(function (scenarios) {
-        var previousCredential = null;
+        var previousCredential;
 
-        scenarios.forEach(function (scenario) {
-          if (previousCredential !== scenario.credential || previousCredential === null) {
+        scenarios.forEach(function (scenario, index) {
+          scenario.credential = scenario.credential || DEFAULT_CREDENTIAL;
+
+          if (index === 0 || previousCredential !== scenario.credential) {
             scenario.onBeforeScript = 'login';
+
+            if (index !== 0) {
+              scenario.performLogout = true;
+            }
           }
 
           previousCredential = scenario.credential;
