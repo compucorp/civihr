@@ -25,17 +25,17 @@
   "reportConfigurations": [
     {
       "id": 1,
-      "report_name": "people",
+      "reportName": "people",
       "label": "Test",
-      "json_config": "{\"menuLimit\":\"200\",\"unusedAttrsVertical\":\"false\",\"autoSortUnusedAttrs\":\"false\",\"rendererName\":\"Table\",\"aggregatorName\":\"Count\"}"
+      "jsonConfig": "{\"menuLimit\":\"200\",\"unusedAttrsVertical\":\"false\",\"autoSortUnusedAttrs\":\"false\",\"rendererName\":\"Table\",\"aggregatorName\":\"Count\"}"
     }
   ],
   "reportConfigurationAgeGroups": [
     {
       "id": 1,
       "label": "Young",
-      "age_from": 0,
-      "age_to": 25
+      "ageFrom": 0,
+      "ageTo": 25
     }
   ]
 }
