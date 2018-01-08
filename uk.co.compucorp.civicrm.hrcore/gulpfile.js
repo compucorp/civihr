@@ -147,10 +147,10 @@ var Promise = require('es6-promise').Promise;
         return _.assign(scenario, { delay: scenario.delay || 6000 });
       })
       .tap(function (scenarios) {
-        var previousCredential;
+        var previousCredential = null;
 
         scenarios.forEach(function (scenario) {
-          if (previousCredential !== scenario.credential) {
+          if (previousCredential !== scenario.credential || previousCredential === null) {
             scenario.onBeforeScript = 'login';
           }
 
