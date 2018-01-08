@@ -69,9 +69,9 @@ class CRM_HRCore_Service_Stats_StatsJSONConvertor {
   private static function reportConfigurationToArray(ReportConfig $config) {
     return [
       'id' => $config->getId(),
-      'report_name' => $config->getName(),
+      'reportName' => $config->getName(),
       'label' => $config->getLabel(),
-      'json_config' => $config->getJsonConfig(),
+      'jsonConfig' => $config->getJsonConfig(),
     ];
   }
 
@@ -85,8 +85,8 @@ class CRM_HRCore_Service_Stats_StatsJSONConvertor {
     return [
       'id' => $ageGroup->getId(),
       'label' => $ageGroup->getLabel(),
-      'age_from' => $ageGroup->getAgeFrom(),
-      'age_to' => $ageGroup->getAgeTo(),
+      'ageFrom' => $ageGroup->getAgeFrom(),
+      'ageTo' => $ageGroup->getAgeTo(),
     ];
   }
 
