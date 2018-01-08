@@ -9,7 +9,6 @@ Prevent Popups to overflow tables.
 
   $body.on('click', '.btn-slide', function () {
     var $button = $(this);
-    var $closestEntity = $button.closest('.crm-entity')[0];
     var $popup = $button.children('ul.panel');
 
     (function init () {
@@ -34,9 +33,7 @@ Prevent Popups to overflow tables.
       var buttonOffset = $button.offset();
       var $clone = $popup.clone(true)
         .appendTo($body)
-        .addClass('civihr-popup')
-        .attr('id', $closestEntity.id)
-        .addClass($($closestEntity).attr('class'));
+        .addClass('civihr-popup');
 
       $clone.css({
         left: +buttonOffset.left - ($clone.width() - $button.outerWidth()),
