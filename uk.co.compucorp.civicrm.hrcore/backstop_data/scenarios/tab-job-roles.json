@@ -3,47 +3,56 @@
     {
       "label": "Job Roles / Basic Details",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onReadyScript": "contact-summary/job-roles/basic-details"
+      "onReadyScript": "contact-summary/job-roles/basic-details",
+      "credential": "admin"
     },
     {
       "label": "Job Roles / Funding",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onReadyScript": "contact-summary/job-roles/funding"
+      "onReadyScript": "contact-summary/job-roles/funding",
+      "credential": "admin"
     },
     {
       "label": "Job Roles / Cost Centres",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onReadyScript": "contact-summary/job-roles/cost-centres"
+      "onReadyScript": "contact-summary/job-roles/cost-centres",
+      "credential": "admin"
     },
     {
       "label": "Job Roles / Delete Dialog",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onReadyScript": "contact-summary/job-roles/delete-dialog"
+      "onReadyScript": "contact-summary/job-roles/delete-dialog",
+      "credential": "admin"
     },
     {
       "label": "Job Roles / Add New",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onReadyScript": "contact-summary/job-roles/add-new"
+      "onReadyScript": "contact-summary/job-roles/add-new",
+      "credential": "admin"
     },
     {
       "label": "Job Roles / Basic Details / Edit",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onReadyScript": "contact-summary/job-roles/basic-details-edit"
+      "onReadyScript": "contact-summary/job-roles/basic-details-edit",
+      "credential": "admin"
     },
     {
       "label": "Job Roles / Basic Details / Open ui select",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onReadyScript": "contact-summary/job-roles/open-ui-select"
+      "onReadyScript": "contact-summary/job-roles/open-ui-select",
+      "credential": "admin"
     },
     {
       "label": "Job Roles / Funding / Edit",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onReadyScript": "contact-summary/job-roles/funding-edit"
+      "onReadyScript": "contact-summary/job-roles/funding-edit",
+      "credential": "admin"
     },
     {
       "label": "Job Roles / Cost Centres / Edit",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onReadyScript": "contact-summary/job-roles/cost-centres-edit"
+      "onReadyScript": "contact-summary/job-roles/cost-centres-edit",
+      "credential": "admin"
     }
   ]
 }

@@ -3,42 +3,50 @@
     {
       "label": "Absence / Report",
       "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-report"
+      "onReadyScript": "contact-summary/absence/tab-report",
+      "credential": "admin"
     },
     {
       "label": "Absence / Report / Open Section",
       "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-report-open-section"
+      "onReadyScript": "contact-summary/absence/tab-report-open-section",
+      "credential": "admin"
     },
     {
       "label": "Absence / Report / Actions",
       "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-report-actions"
+      "onReadyScript": "contact-summary/absence/tab-report-actions",
+      "credential": "admin"
     },
     {
       "label": "Absence / Calendar / Current Month",
       "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-calendar"
+      "onReadyScript": "contact-summary/absence/tab-calendar",
+      "credential": "admin"
     },
     {
       "label": "Absence /Calendar / All Months",
       "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-calendar-all-months"
+      "onReadyScript": "contact-summary/absence/tab-calendar-all-months",
+      "credential": "admin"
     },
     {
       "label": "Absence / Entitlements",
       "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-entitlements"
+      "onReadyScript": "contact-summary/absence/tab-entitlements",
+      "credential": "admin"
     },
     {
       "label": "Absence / Work Patterns",
       "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-work-patterns"
+      "onReadyScript": "contact-summary/absence/tab-work-patterns",
+      "credential": "admin"
     },
     {
       "label": "Absence / Work Patterns / Custom Work Patterns Modal",
       "url": "civicrm/contact/view?reset=1&cid=2&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-work-patterns-modal"
+      "onReadyScript": "contact-summary/absence/tab-work-patterns-modal",
+      "credential": "admin"
     }
   ]
 }

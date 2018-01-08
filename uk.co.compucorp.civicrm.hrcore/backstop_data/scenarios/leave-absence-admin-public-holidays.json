@@ -2,11 +2,13 @@
   "scenarios": [
     {
       "label": "Public Holidays list",
-      "url": "civicrm/admin/leaveandabsences/public_holidays?action=browse"
+      "url": "civicrm/admin/leaveandabsences/public_holidays?action=browse",
+      "credential": "admin"
     },
     {
       "label": "Public Holidays form",
-      "url": "civicrm/admin/leaveandabsences/public_holidays?action=add"
+      "url": "civicrm/admin/leaveandabsences/public_holidays?action=add",
+      "credential": "admin"
     }
   ]
 }
