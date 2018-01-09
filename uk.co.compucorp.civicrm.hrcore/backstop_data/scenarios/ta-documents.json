@@ -3,37 +3,44 @@
     {
       "label": "T&A / Documents",
       "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "close-any-modal"
+      "onReadyScript": "close-any-modal",
+      "credential": "admin"
     },
     {
       "label": "T&A / Documents / Advanced Filters",
       "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/advanced-filters"
+      "onReadyScript": "documents/advanced-filters",
+      "credential": "admin"
     },
     {
       "label": "T&A / Documents / Document / Add",
       "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/add"
+      "onReadyScript": "documents/document/add",
+      "credential": "admin"
     },
     {
       "label": "T&A / Documents / Document / Show All Fields",
       "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/show-all-fields"
+      "onReadyScript": "documents/document/show-all-fields",
+      "credential": "admin"
     },
     {
       "label": "T&A / Documents / Document / Select Type",
       "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/select-type"
+      "onReadyScript": "documents/document/select-type",
+      "credential": "admin"
     },
     {
       "label": "T&A / Documents / Document / Select Assignee",
       "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/select-assignee"
+      "onReadyScript": "documents/document/select-assignee",
+      "credential": "admin"
     },
     {
       "label": "T&A / Documents / Document / Pick Due Date",
       "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/pick-due-date"
+      "onReadyScript": "documents/document/pick-due-date",
+      "credential": "admin"
     }
   ]
 }

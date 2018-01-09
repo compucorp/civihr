@@ -3,7 +3,8 @@
     {
       "label": "T&A / Calendar",
       "url": "civicrm/tasksassignments/dashboard#/calendar",
-      "onReadyScript": "close-any-modal"
+      "onReadyScript": "close-any-modal",
+      "credential": "admin"
     }
   ]
 }
