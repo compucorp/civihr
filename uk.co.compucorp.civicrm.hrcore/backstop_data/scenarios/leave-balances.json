@@ -10,7 +10,7 @@
       "label": "Admin Portal: Leave Balances",
       "url": "civicrm/leaveandabsences/dashboard#/leave-balances",
       "onReadyScript": "leave-absence-dashboard/leave-balances/leave-balances",
-      "credential": "manager"
+      "credential": "admin"
     }
   ]
 }

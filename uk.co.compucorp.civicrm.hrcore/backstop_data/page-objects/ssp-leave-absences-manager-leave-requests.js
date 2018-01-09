@@ -107,17 +107,15 @@ module.exports = (function () {
 
       return new Promise(function (resolve) {
         casper.then(function () {
-          var selector = '.button-container button:nth-child(' + (leaveType === 'leave' ? 1 : 2) + ')';
+          var selector = '.button-container leave-request-record-actions .dropdown-toggle';
 
           casper.click(selector);
         });
 
         casper.then(function () {
-          if (leaveType === 'sickness') {
-            casper.click('.button-container li:nth-child(1) a');
-          } else if (leaveType === 'toil') {
-            casper.click('.button-container li:nth-child(2) a');
-          }
+          var leaveSerialNo = leaveType === 'leave' ? 1 : leaveType === 'sickness' ? 2 : 3;
+
+          casper.click('.button-container li:nth-child(' + leaveSerialNo + ') a');
         });
 
         casper.then(function () {
