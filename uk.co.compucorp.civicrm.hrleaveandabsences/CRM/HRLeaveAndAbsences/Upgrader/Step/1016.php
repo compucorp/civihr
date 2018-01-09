@@ -1,6 +1,7 @@
 <?php
 
 trait CRM_HRLeaveAndAbsences_Upgrader_Step_1016 {
+
   /**
    * Updates the URL for the Leave Balances menu item.
    *
@@ -12,7 +13,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1016 {
     $leaveBalances->save();
     CRM_Core_BAO_Navigation::resetNavigation();
 
-    return true;
+    return TRUE;
   }
 
   /**
@@ -26,4 +27,5 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1016 {
 
     return CRM_Core_BAO_Navigation::retrieve($menuItemQueryParams, $default);
   }
+
 }
