@@ -36,6 +36,7 @@ module.exports = (function () {
           casper.click('[title="' + tab.tabTitle + '"]');
           casper.waitFor(tab.ready.bind(tab), function () {
             casper.wait(500);
+            tab.waitForTabLoad && tab.waitForTabLoad();
             resolve(tab);
           });
         });
