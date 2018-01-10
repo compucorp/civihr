@@ -27,7 +27,8 @@ module.exports = (function () {
      * @return {Promise} resolves with the job contract modal object
      */
     openContractModal: function (mode) {
-      var param, casper = this.casper;
+      var casper = this.casper;
+      var param;
 
       param = mode === 'correct' ? 'edit' : (mode === 'revision' ? 'change' : '');
 
@@ -67,6 +68,18 @@ module.exports = (function () {
         casper.clickLabel('Full History');
         casper.waitForSelector('.hrjc-context-menu-toggle');
       });
+    },
+     /**
+     * Addional logic to Wait for the tab to load
+     *
+     * @return {promise}
+     */
+    waitForTabLoad: function () {
+      var casper = this.casper;
+
+      casper.waitWhileVisible('.spinner');
+
+      return casper.wait(200);
     }
   });
 })();
