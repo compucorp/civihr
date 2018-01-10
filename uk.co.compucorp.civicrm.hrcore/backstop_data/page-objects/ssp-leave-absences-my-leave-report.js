@@ -20,7 +20,7 @@ module.exports = (function () {
 
       casper.then(function () {
         casper.click('td[ng-click="report.toggleSection(\'' + section + '\')"]');
-        casper.waitWhileVisible('.chr_spinner');
+        casper.waitWhileVisible('.spinner');
       });
 
       return this;
