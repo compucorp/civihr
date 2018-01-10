@@ -93,9 +93,11 @@ module.exports = (function () {
         casper.then(function () {
           casper.click('body > ul.dropdown-menu:nth-of-type(' + (row || 1) + ') li:first-child a');
           // as there are multiple spinners it takes more time to load up
-          resolve(this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form'));
-        }.bind(this));
-      }.bind(this));
+          casper.waitWhileVisible('.modal-content .spinner:nth-child(1)');
+
+          return casper.waitWhileVisible('leave-request-popup-details-tab .spinner');
+        });
+      });
     },
     /**
      * Apply leave on behalf of staff
