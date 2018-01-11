@@ -183,7 +183,7 @@
 
                 function hideToilExpiration() {
                   document.getElementById('accrual_expiration_duration').value = '';
-                  $('#accrual_expiration_unit').select2('val', '');
+                  $('#accrual_expiration_unit').select2('val', '').trigger("change");
                   $('.toil-expiration').hide();
                 }
 
@@ -234,7 +234,7 @@
 
                 function hideCarryForwardExpirationDuration() {
                   document.getElementById('carry_forward_expiration_duration').value = '';
-                  $('#carry_forward_expiration_unit').select2('val', '');
+                  $('#carry_forward_expiration_unit').select2('val', '').trigger("change");
                   $('.carry-forward-expiration-duration').hide();
                 }
 
