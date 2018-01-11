@@ -30,3 +30,13 @@ function user_save($user, $params) {
 
   return $user;
 }
+
+function user_load($userID) {
+  $user = new stdClass();
+  $user->roles = [1 => 'Fake Role'];
+  return $user;
+}
+
+function _user_mail_notify($operation, $user) {
+  return ['user' => $user, 'operation' => $operation];
+}

@@ -2,16 +2,19 @@
   "scenarios": [
     {
       "label": "Work Patterns list",
-      "url": "civicrm/admin/leaveandabsences/work_patterns?action=browse"
+      "url": "civicrm/admin/leaveandabsences/work_patterns?action=browse",
+      "credential": "admin"
     },
     {
       "label": "Work Pattern description form",
-      "url": "civicrm/admin/leaveandabsences/work_patterns?action=add"
+      "url": "civicrm/admin/leaveandabsences/work_patterns?action=add",
+      "credential": "admin"
     },
     {
       "label": "Work Pattern calendar form",
       "url": "civicrm/admin/leaveandabsences/work_patterns?action=add",
-      "onReadyScript": "work-patterns/show-calendar-form"
+      "onReadyScript": "work-patterns/show-calendar-form",
+      "credential": "admin"
     }
   ]
 }

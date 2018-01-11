@@ -3,12 +3,14 @@
     {
       "label": "Leave Absence Dashboard Leave Requests",
       "url": "civicrm/leaveandabsences/dashboard#/requests",
-      "onReadyScript": "leave-absence-dashboard/leave-requests/leave-requests"
+      "onReadyScript": "leave-absence-dashboard/leave-requests/leave-requests",
+      "credential": "admin"
     },
     {
       "label": "Leave Absence Dashboard Leave Requests with filters",
       "url": "civicrm/leaveandabsences/dashboard#/requests",
-      "onReadyScript": "leave-absence-dashboard/leave-requests/leave-requests-with-filters"
+      "onReadyScript": "leave-absence-dashboard/leave-requests/leave-requests-with-filters",
+      "credential": "admin"
     }
   ]
 }

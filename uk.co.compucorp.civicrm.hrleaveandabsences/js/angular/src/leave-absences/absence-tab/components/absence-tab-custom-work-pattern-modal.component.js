@@ -100,7 +100,7 @@ define([
      * @return {Promise}
      */
     function loadWorkPatterns () {
-      return WorkPatternAPI.get()
+      return WorkPatternAPI.get({ is_active: true })
         .then(function (workPatterns) {
           vm.workPatterns = workPatterns;
         });

@@ -22,6 +22,7 @@ define([
        */
       init: function (_vm_) {
         vm = _vm_;
+        vm.showContactDetailsLink = true;
         vm.showContactName = true;
         vm.showFilters = true;
         vm.filtersByAssignee = [

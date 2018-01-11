@@ -35,9 +35,6 @@ define([
       save: 'Add New Job Contract',
       title: 'Add New Job Contract'
     };
-    $scope.entity.contract = {
-      is_primary: 0
-    };
     $scope.tooltips = {
       fileSize: $sce.trustAsHtml('<p>' +
         'THE FILE IS TOO LARGE AND CANNOT BE UPLOADED. PLEASE REDUCE THE SIZE OF THE FILE AND TRY AGAIN.' +
@@ -85,6 +82,9 @@ define([
     // Init
     (function init () {
       angular.copy(model, $scope.entity);
+      $scope.entity.contract = {
+        is_primary: 0
+      };
 
       angular.forEach($scope.uploader, function (entity) {
         angular.forEach(entity, function (field) {

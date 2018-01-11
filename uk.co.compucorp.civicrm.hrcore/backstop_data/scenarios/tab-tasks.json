@@ -3,7 +3,8 @@
     {
       "label": "Tasks",
       "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
-      "onReadyScript": "contact-summary/tasks/show"
+      "onReadyScript": "contact-summary/tasks/show",
+      "credential": "admin"
     }
   ]
 }
