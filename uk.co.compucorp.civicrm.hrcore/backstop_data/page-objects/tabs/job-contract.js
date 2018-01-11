@@ -3,7 +3,6 @@ var tab = require('./tab');
 
 module.exports = (function () {
   return tab.extend({
-    readySelector: '.hrjc-summary',
     tabTitle: 'Job Contract',
 
     /**
@@ -57,6 +56,24 @@ module.exports = (function () {
     },
 
     /**
+     * Overrides the original tab's `ready` method
+     * There is no single selector that can be used as `readySelector` (which
+     * would be used by the original `ready` method) to detect when the
+     * tab is ready, so as a quick workaround we simply override the method
+     * and perform all the needed checks in it
+     *
+     * @return {Boolean} returns `true` for the `casper.waitFor()` caller
+     */
+    ready: function () {
+      var casper = this.casper;
+
+      casper.waitUntilVisible('.hrjc-summary');
+      casper.waitWhileVisible('.spinner');
+
+      return casper.wait(200);
+    },
+
+    /**
      * Shows the full history of a contract
      *
      * @return {object}
@@ -68,18 +85,6 @@ module.exports = (function () {
         casper.clickLabel('Full History');
         casper.waitForSelector('.hrjc-context-menu-toggle');
       });
-    },
-     /**
-     * Addional logic to Wait for the tab to load
-     *
-     * @return {promise}
-     */
-    waitForTabLoad: function () {
-      var casper = this.casper;
-
-      casper.waitWhileVisible('.spinner');
-
-      return casper.wait(200);
     }
   });
 })();
