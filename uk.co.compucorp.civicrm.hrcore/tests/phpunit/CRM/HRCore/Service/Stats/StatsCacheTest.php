@@ -7,6 +7,9 @@ use CRM_HRCore_Service_FileCache as FileCache;
 use CRM_HRCore_Model_CiviHRStatistics as CiviHRStatistics;
 use Prophecy\Argument;
 
+/**
+ * @group headless
+ */
 class StatsCacheTest extends BaseHeadlessTest {
 
   public function testWillFetchFreshIfNoneExist() {
