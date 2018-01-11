@@ -1,6 +1,37 @@
 <?php
 
+use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
+use CRM_HRContactActionsMenu_Helper_UserInformationMenuGroup as UserInformationMenuGroupHelper;
+use CRM_HRContactActionsMenu_Helper_Contact as ContactHelper;
+use CRM_HRCore_CMSData_UserRoleFactory as CMSUserRoleFactory;
+use CRM_HRCore_CMSData_PathsFactory as CMSUserPathFactory;
+
 require_once 'hrcontactactionsmenu.civix.php';
+
+
+/**
+ * Implementation of hook_addContactMenuActions to add the
+ * User Information menu group to the contact actions menu.
+ *
+ * @param \CRM_HRContactActionsMenu_Component_Menu $menu
+ *
+ * @throws \Exception
+ */
+function hrcontactactionsmenu_addContactMenuActions(ActionsMenu $menu) {
+  $contactID = empty($_GET['cid']) ? '' : $_GET['cid'];
+  if (!$contactID) {
+    return;
+  }
+
+  $contactUserInfo = ContactHelper::getUserInformation($contactID);
+  //When a user has no CMS account, the contact_id parameter is not present
+  //we need to add it here.
+  $contactUserInfo['contact_id'] = $contactID;
+  $cmsFramework = CRM_Core_Config::singleton()->userFramework;
+  $cmsUserPath = CMSUserPathFactory::create($cmsFramework, $contactUserInfo);
+  $cmsUserRole = CMSUserRoleFactory::create($cmsFramework, $contactUserInfo);
+  UserInformationMenuGroupHelper::addToMenu($menu, $contactUserInfo, $cmsUserPath, $cmsUserRole);
+}
 
 /**
  * Implements hook_civicrm_config().
