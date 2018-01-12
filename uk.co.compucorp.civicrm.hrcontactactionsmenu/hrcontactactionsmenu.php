@@ -1,7 +1,7 @@
 <?php
 
 use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
-use CRM_HRContactActionsMenu_Helper_UserInformationMenuGroup as UserInformationMenuGroupHelper;
+use CRM_HRContactActionsMenu_Helper_UserInformationActionGroup as UserInformationActionGroupHelper;
 use CRM_HRContactActionsMenu_Helper_Contact as ContactHelper;
 use CRM_HRCore_CMSData_UserRoleFactory as CMSUserRoleFactory;
 use CRM_HRCore_CMSData_PathsFactory as CMSUserPathFactory;
@@ -24,13 +24,11 @@ function hrcontactactionsmenu_addContactMenuActions(ActionsMenu $menu) {
   }
 
   $contactUserInfo = ContactHelper::getUserInformation($contactID);
-  //When a user has no CMS account, the contact_id parameter is not present
-  //we need to add it here.
-  $contactUserInfo['contact_id'] = $contactID;
   $cmsFramework = CRM_Core_Config::singleton()->userFramework;
   $cmsUserPath = CMSUserPathFactory::create($cmsFramework, $contactUserInfo);
   $cmsUserRole = CMSUserRoleFactory::create($cmsFramework, $contactUserInfo);
-  UserInformationMenuGroupHelper::addToMenu($menu, $contactUserInfo, $cmsUserPath, $cmsUserRole);
+  $userInformationActionGroup = new UserInformationActionGroupHelper($contactUserInfo, $cmsUserPath, $cmsUserRole);
+  $menu->addToHighlightedPanel($userInformationActionGroup->get());
 }
 
 /**
