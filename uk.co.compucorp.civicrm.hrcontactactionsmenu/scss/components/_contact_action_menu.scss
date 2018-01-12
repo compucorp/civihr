@@ -3,7 +3,7 @@
     &.active,
     &.active span i {
       background: $gray-light !important;
-      color: $blue-dark !important;
+      color: $brand-primary !important;
     }
   }
 
@@ -13,10 +13,11 @@
 
     #bootstrap-theme {
       padding-right: 0;
-    }
 
-    #bootstrap-theme .row {
-      margin: 0;
+
+      .row {
+        margin: 0;
+      }
     }
 
     &::before {
@@ -28,18 +29,18 @@
       width: 93px !important;
     }
 
-    .contact_action_menu__user_info {
+    .crm_contact_action_menu__user_info {
       padding: 5px 20px 20px !important;
       position: relative;
     }
 
-    .contact_action_menu__body {
-      background: $white !important;
+    .crm_contact_action_menu__body {
+      background: $crm-white !important;
       margin-right: 0 !important;
       padding: 5px 20px 20px 12px !important;
     }
 
-    .bottom-controls {
+    .crm_contact_action_menu__control_buttons_container {
       left: 12px;
       position: absolute;
       right: 12px;
@@ -54,16 +55,24 @@
       }
     }
 
-    .help-icon {
-      color: $blue-dark;
+    .crm_contact_action_menu__help_icon {
+      color: $brand-primary;
     }
   
-    .grey-text {
+    .crm_contact_action_menu__grey_text {
       color: $gray-dark;
+    }
+
+    .crm_contact_action_menu__bold_text {
+      font-weight: 600;
+    }
+
+    .crm_contact_action_menu__bottom_margin {
+      margin-bottom: 10px;
     }
   
     hr {
-      border-color: $light-blue !important;
+      border-color: $crm-grayblue-dark !important;
     }
   }
 }
