@@ -10,8 +10,9 @@ class CRM_HRCore_CMSData_UserMailNotifier_DrupalTest extends CRM_HRCore_Test_Bas
 
   public function testUserNotifyIsCalledForPasswordResetEmail() {
     $contactData = ['cmsId' => 1];
-    $userMailNotifier = new DrupalUserMailNotifier($contactData);
-    $result = $userMailNotifier->sendPasswordResetEmail();
+    $userMailNotifier = new DrupalUserMailNotifier();
+    $user = $userMailNotifier->getUser($contactData);
+    $result = $userMailNotifier->sendPasswordResetEmail($user);
     $expectedOperation = 'password_reset';
     $this->assertEquals($expectedOperation, $result['operation']);
     $this->assertInstanceOf(stdClass::class, $result['user']);
@@ -19,10 +20,18 @@ class CRM_HRCore_CMSData_UserMailNotifier_DrupalTest extends CRM_HRCore_Test_Bas
 
   public function testUserNotifyIsCalledForWelcomeEmail() {
     $contactData = ['cmsId' => 1];
-    $userMailNotifier = new DrupalUserMailNotifier($contactData);
-    $result = $userMailNotifier->sendWelcomeEmail();
+    $userMailNotifier = new DrupalUserMailNotifier();
+    $user = $userMailNotifier->getUser($contactData);
+    $result = $userMailNotifier->sendWelcomeEmail($user);
     $expectedOperation = 'register_admin_created';
     $this->assertEquals($expectedOperation, $result['operation']);
     $this->assertInstanceOf(stdClass::class, $result['user']);
+  }
+
+  public function testGetUserReturnsAnObject() {
+    $contactData = ['cmsId' => 1];
+    $userMailNotifier = new DrupalUserMailNotifier();
+    $user = $userMailNotifier->getUser($contactData);
+    $this->assertInstanceOf(StdClass::class, $user);
   }
 }
