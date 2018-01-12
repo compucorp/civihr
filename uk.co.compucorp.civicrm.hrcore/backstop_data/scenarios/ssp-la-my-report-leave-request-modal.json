@@ -5,18 +5,6 @@
       "url": "my-leave#/my-leave/report",
       "onReadyScript": "ssp-leave-absences/staff/my-report-pending-show-comments",
       "credential": "staff"
-    },
-    {
-      "label": "Leave and Absences: My report: Show manager's comments in leave request",
-      "url": "my-leave#/my-leave/report",
-      "onReadyScript": "ssp-leave-absences/staff/my-report-manager-show-comments",
-      "credential": "staff"
-    },
-    {
-      "label": "Leave and Absences: My report: Show toil in edit mode",
-      "url": "my-leave#/my-leave/report",
-      "onReadyScript": "ssp-leave-absences/staff/my-report-staff-toil-edit",
-      "credential": "staff"
     }
   ]
 }

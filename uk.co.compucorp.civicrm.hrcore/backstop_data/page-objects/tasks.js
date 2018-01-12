@@ -87,7 +87,9 @@ module.exports = (function () {
 
       return new Promise(function (resolve) {
         casper.then(function () {
-          casper.click(taskSelector + ' .task-title > a[ng-click*="modalTask"]')
+          casper.click(taskSelector + ' .task-title > a[ng-click*="modalTask"]');
+          casper.waitWhileVisible('.spinner');
+
           resolve(this.waitForModal('task'));
         }.bind(this));
       }.bind(this));

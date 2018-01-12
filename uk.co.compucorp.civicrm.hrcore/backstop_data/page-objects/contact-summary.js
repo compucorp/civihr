@@ -2,7 +2,6 @@ var Promise = require('es6-promise').Promise;
 var page = require('./page');
 
 module.exports = (function () {
-
   return page.extend({
 
     /**
@@ -16,7 +15,7 @@ module.exports = (function () {
       return new Promise(function (resolve) {
         casper.then(function () {
           casper.click('#manage-roles-and-teams');
-          casper.waitWhileVisible('.crm_spinner');
+          casper.waitWhileVisible('.spinner');
           resolve(this.waitForModal('contact-access-rights'));
         }.bind(this));
       }.bind(this));
