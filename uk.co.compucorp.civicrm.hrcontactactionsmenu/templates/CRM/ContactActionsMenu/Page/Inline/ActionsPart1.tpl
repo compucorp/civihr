@@ -1,7 +1,7 @@
-<div class="ac_results" id="crm-contact-actions-list">
+<div id="crm-contact-actions-list">
   <div id="bootstrap-theme">
-    <div class="row show-grid">
-      <div class="col-md-4 first-section">
+    <div class="row">
+      <div class="col-md-4 contact_action_menu__user_info">
         <h3>User Informations:</h3>
         <p>There is no user for this staff member</p>
         <button type="button" class="btn btn-primary">
@@ -11,8 +11,8 @@
           Create a user for this staff member
         </button>
       </div>
-      <div class="col-md-8 second-section">
-        <div class="row show-grid">
+      <div class="col-md-8 contact_action_menu__body">
+        <div class="row">
           <div class="col-md-4">
             <h3>Leave:</h3>
             <p>
@@ -25,7 +25,7 @@
                 <span class="btn-icon"><i class="fa fa-search"></i></span> View Entitlements
               </button>
             </p>
-            <hr class="divider">
+            <hr>
             <p>You have not selected a leave approver</p>
             <button type="button" class="btn btn-secondary-outline">Add Leave approver</button>
           </div>
@@ -44,7 +44,7 @@
             <p>
               <button type="button" class="btn btn-primary-outline">Other...</button>
             </p>
-            <hr class="divider">
+            <hr>
             <p>
               <button type="button" class="btn btn-primary-outline">
                 <span class="btn-icon"><i class="fa fa-check-square-o"></i></span> New Task
@@ -55,7 +55,7 @@
                 <span class="btn-icon"><i class="fa fa-id-card-o"></i></span> New Document
               </button>
             </p>
-            <hr class="divider">
+            <hr>
             <p>You have not selected a Line Manager</p>
             <button type="button" class="btn btn-secondary-outline">Add Line Manager</button>
           </div>
@@ -78,8 +78,8 @@
             </p>
           </div>
         </div>
-        <div class="row show-grid">
-          <hr class="divider">
+        <div class="row">
+          <hr>
           <button type="button" class="btn btn-danger pull-right">
             <span class="btn-icon"><i class="fa fa-trash"></i></span> Delete Staff Member
           </button>
