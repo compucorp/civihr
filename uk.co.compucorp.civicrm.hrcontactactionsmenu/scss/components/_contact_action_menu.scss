@@ -1,0 +1,78 @@
+.page-civicrm-contact-view {
+  #crm-contact-actions-link {
+    &.active,
+    &.active span i {
+      background: $gray-light !important;
+      color: $brand-primary !important;
+    }
+  }
+
+  #crm-contact-actions-list {
+    padding: 0;
+    width: 1066px;
+
+    #bootstrap-theme {
+      padding-right: 0;
+
+
+      .row {
+        margin: 0;
+      }
+    }
+
+    &::before {
+      background: $gray-light !important;
+      border-bottom: none !important;
+      height: 20px !important;
+      left: 0 !important;  
+      top: -15px !important;
+      width: 93px !important;
+    }
+
+    .crm_contact_action_menu__user_info {
+      padding: 5px 20px 20px !important;
+      position: relative;
+    }
+
+    .crm_contact_action_menu__body {
+      background: $crm-white !important;
+      margin-right: 0 !important;
+      padding: 5px 20px 20px 12px !important;
+    }
+
+    .crm_contact_action_menu__control_buttons_container {
+      left: 12px;
+      position: absolute;
+      right: 12px;
+      top: 445px;
+
+      .button__delete,
+      .button__disable {
+        border-radius: 2px !important;
+        padding-bottom: 10px;
+        padding-top: 10px;
+        text-transform: uppercase !important;
+      }
+    }
+
+    .crm_contact_action_menu__help_icon {
+      color: $brand-primary;
+    }
+  
+    .crm_contact_action_menu__grey_text {
+      color: $gray-dark;
+    }
+
+    .crm_contact_action_menu__bold_text {
+      font-weight: 600;
+    }
+
+    .crm_contact_action_menu__bottom_margin {
+      margin-bottom: 10px;
+    }
+  
+    hr {
+      border-color: $crm-grayblue-dark !important;
+    }
+  }
+}
