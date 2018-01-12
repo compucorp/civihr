@@ -4,7 +4,6 @@ use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
-use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_Hrjobcontract_BAO_HRJobContract as HRJobContract;
 use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
 use CRM_Hrjobcontract_BAO_HRJobDetails as HRJobDetails;
