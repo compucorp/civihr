@@ -1,0 +1,67 @@
+.page-civicrm-contact-view #crm-contact-actions-link.active,
+.page-civicrm-contact-view #crm-contact-actions-link.active span i {
+  background: #e8ebee !important;
+  color: #3f61ae !important;
+}
+
+.page-civicrm-contact-view .crm-actions-ribbon .crm-i {
+  color: #3f61ae;
+  top: 0;
+}
+
+/* Override bootstrap-theme styles to match Mockup */
+.page-civicrm-contact-view #crm-contact-actions-list #bootstrap-theme {
+  padding-right: 0;
+}
+
+.page-civicrm-contact-view #crm-contact-actions-list #bootstrap-theme .row {
+  margin: 0;
+}
+
+.page-civicrm-contact-view #crm-contact-actions-list {
+  width: 1066px;
+  padding: 0px;
+}
+
+#crm-contact-actions-list::before {
+  background: #e8ebee !important;
+  border-bottom: none !important;
+  height: 20px !important;
+  left: 0px !important;  
+  top: -15px !important;
+  width: 93px !important;
+}
+
+#crm-contact-actions-list .first-section {
+  padding: 5px 20px 20px !important;
+  position: relative;
+}
+
+#crm-contact-actions-list .second-section {
+  background: #FFFFFF !important;
+  margin-right: 0 !important;
+  padding: 5px 20px 20px 12px !important;
+}
+
+#crm-contact-actions-list .bottom-controls {
+  left: 12px;
+  position: absolute;
+  right: 12px;
+  top: 445px;
+}
+
+#crm-contact-actions-list .bottom-controls .button__disable,
+#crm-contact-actions-list .bottom-controls .button__delete {
+  border-radius: 2px !important;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  text-transform: uppercase !important;
+}
+
+#crm-contact-actions-list .grey-text {
+  color: #4D4D69;
+}
+
+#crm-contact-actions-list hr.divider {
+  color: #D3DEE2;
+}
