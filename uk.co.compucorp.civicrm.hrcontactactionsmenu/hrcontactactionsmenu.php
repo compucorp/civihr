@@ -126,8 +126,9 @@ function hrcontactactionsmenu_civicrm_alterSettingsFolders(&$metaDataFolders = N
  * Implementation of hook_civicrm_pageRun
  */
 function hrcontactactionsmenu_civicrm_pageRun(&$page) {
-  $extName = 'uk.co.compucorp.civicrm.hrcontactactionsmenu';
-  CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/contactactions.css');
-  CRM_Core_Resources::singleton()->addScriptFile($extName, 'js/contactactions.js');
-  
+  if ($page instanceof CRM_Contact_Page_View_Summary) {
+    $extName = 'uk.co.compucorp.civicrm.hrcontactactionsmenu';
+    CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/contactactions.css');
+    CRM_Core_Resources::singleton()->addScriptFile($extName, 'js/contactactions.js');
+  }
 }
