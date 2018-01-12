@@ -8,25 +8,29 @@ use CRM_HRCore_CMSData_UserMailNotifierInterface as UserMailNotifierInterface;
 class CRM_HRCore_CMSData_UserMailNotifier_Drupal implements UserMailNotifierInterface {
 
   /**
-   *{@inheritdoc}
+   * Gets the Drupal user object
+   *
+   * @param array $contactData
    *
    * @return \stdClass
    */
-  public function getUser($contactData) {
+  private function getUser($contactData) {
     return user_load($contactData['cmsId']);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function sendWelcomeEmail($user) {
-   return _user_mail_notify('register_admin_created', $user);
+  public function sendWelcomeEmail($contactData) {
+    $user = $this->getUser($contactData);
+    return _user_mail_notify('register_admin_created', $user);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function sendPasswordResetEmail($user) {
+  public function sendPasswordResetEmail($contactData) {
+    $user = $this->getUser($contactData);
     return _user_mail_notify('password_reset', $user);
   }
 }

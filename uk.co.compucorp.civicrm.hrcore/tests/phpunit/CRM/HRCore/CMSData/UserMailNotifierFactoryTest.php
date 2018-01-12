@@ -16,6 +16,7 @@ class CRM_HRCore_CMSData_CMSUserMailNotifierFactoryTest extends CRM_HRCore_Test_
     CRM_Core_Config::singleton()->userFramework = 'Drupal';
     $mailNotifier = UserMailNotifierFactory::create();
     $this->assertInstanceOf(UserMailNotifierInterface::class, $mailNotifier);
+    CRM_Core_Config::singleton()->userFramework = 'UnitTests';
   }
 
   public function testItThrowsAnExceptionWhenCMSIsNotSupported() {
@@ -27,6 +28,7 @@ class CRM_HRCore_CMSData_CMSUserMailNotifierFactoryTest extends CRM_HRCore_Test_
     $this->setExpectedException('Exception', $msg);
 
     UserMailNotifierFactory::create();
+    CRM_Core_Config::singleton()->userFramework = 'UnitTests';
   }
 }
 

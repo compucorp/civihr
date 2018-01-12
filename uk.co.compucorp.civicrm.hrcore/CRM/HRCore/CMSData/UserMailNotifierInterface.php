@@ -10,29 +10,20 @@
 interface CRM_HRCore_CMSData_UserMailNotifierInterface {
 
   /**
-   * Get the user object.
+   * Sends a welcome email to the user.
    *
    * @param array $contactData
    *
-   * @return object
-   */
-  public function getUser($contactData);
-
-  /**
-   * Sends a welcome email to the user.
-   *
-   * @param object $user
-   *
    * @return mixed
    */
-  public function sendWelcomeEmail($user);
+  public function sendWelcomeEmail($contactData);
 
   /**
    * Sends a password reset email to the user.
    *
-   * @param object $user
+   * @param array $contactData
    *
    * @return mixed
    */
-  public function sendPasswordResetEmail($user);
+  public function sendPasswordResetEmail($contactData);
 }
