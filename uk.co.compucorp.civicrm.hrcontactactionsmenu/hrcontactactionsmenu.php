@@ -121,3 +121,22 @@ function hrcontactactionsmenu_civicrm_angularModules(&$angularModules) {
 function hrcontactactionsmenu_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _hrcontactactionsmenu_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
+
+/**
+ * Implementation of hook_civicrm_pageRun
+ */
+function hrcontactactionsmenu_civicrm_pageRun(&$page) {
+  CRM_Core_Region::instance('contact-page-inline-actions')->update('default', array(
+    'disabled' => TRUE,
+  ));
+  $template_path = CRM_Core_Resources::singleton()->getPath('uk.co.compucorp.civicrm.hrcontactactionsmenu','templates/CRM/ContactActionsMenu/Page/Inline/ActionsPart2.tpl');
+  
+  if ($page instanceof CRM_Contact_Page_View_Summary) {
+    CRM_Core_Region::instance('contact-page-inline-actions')->add(array(
+      'template' => $template_path,
+    ));
+  }
+  
+  $extName = 'uk.co.compucorp.civicrm.hrcontactactionsmenu';
+  CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/contactactions.css');
+}
