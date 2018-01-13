@@ -221,7 +221,13 @@ var xml = require("xml-parse");
       path.join(extPath, '**', 'src/**/*.js')
     ], 'requirejs');
 
-    gulp.watch(watchPatterns, ['requirejs']);
+    gulp.watch(watchPatterns, ['requirejs']).on('change', function (file) {
+      try {
+        test.for(file.path);
+      } catch (ex) {
+        test.all();
+      }
+    });
   });
 }());
 
