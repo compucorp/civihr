@@ -219,7 +219,7 @@ var xml = require("xml-parse");
   });
 
   gulp.task('requirejs:watch', function () {
-    gulp.watch('../**/js/**/src/**/*.js').on('change', function (file) {
+    gulp.watch('../**/src/**/*.js').on('change', function (file) {
       var extensionName = getExtensionNameFromFile(file);
       argv.ext = extensionName;
 
@@ -247,9 +247,9 @@ var xml = require("xml-parse");
 
   gulp.task('test:watch', function () {
     gulp.watch([
-      '../**/js/**/test/**/*.spec.js',
-      '!../**/js/**/test/mocks/**/*.js',
-      '!../**/js/**/test/test-main.js'
+      '../**/test/**/*.spec.js',
+      '!../**/test/mocks/**/*.js',
+      '!../**/test/test-main.js'
     ]).on('change', function (file) {
       var extensionName = getExtensionNameFromFile(file);
       argv.ext = extensionName;
