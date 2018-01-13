@@ -308,6 +308,11 @@ var xml = require("xml-parse");
   })();
 }());
 
+// Watch
+(function () {
+  gulp.task('watch', ['sass:watch', 'requirejs:watch', 'test:watch']);
+}());
+
 /**
  * Given an original sequence of tasks and the name of the "wrapper" task
  * (requirejs, sass, etc) this functions finds if the current extension (in argv.ext)
