@@ -189,12 +189,9 @@ var xml = require("xml-parse");
   });
 
   gulp.task('sass:watch', function () {
-    gulp.watch('../**/scss/**/*.scss').on('change', function (file) {
-      var extensionName = getExtensionNameFromFile(file);
-      argv.ext = extensionName; // temp
+    var extPath = getExtensionPath();
 
-      gulp.start('sass');
-    });
+    gulp.watch(path.join(extPath, 'scss/**/*.scss'), ['sass']);
   });
 }());
 
@@ -219,12 +216,9 @@ var xml = require("xml-parse");
   });
 
   gulp.task('requirejs:watch', function () {
-    gulp.watch('../**/src/**/*.js').on('change', function (file) {
-      var extensionName = getExtensionNameFromFile(file);
-      argv.ext = extensionName;
+    var extPath = getExtensionPath();
 
-      gulp.start('requirejs');
-    });
+    gulp.watch(path.join(extPath, '**', 'src/**/*.js'), ['requirejs']);
   });
 }());
 
@@ -246,14 +240,13 @@ var xml = require("xml-parse");
   });
 
   gulp.task('test:watch', function () {
-    gulp.watch([
-      '../**/test/**/*.spec.js',
-      '!../**/test/mocks/**/*.js',
-      '!../**/test/test-main.js'
-    ]).on('change', function (file) {
-      var extensionName = getExtensionNameFromFile(file);
-      argv.ext = extensionName;
+    var extPath = getExtensionPath();
 
+    gulp.watch([
+      path.join(extPath, '**', 'test/**/*.spec.js'),
+      '!' + path.join(extPath, '**', 'test/mocks/**/*.js'),
+      '!' + path.join(extPath, '**', 'test/test-main.js')
+    ]).on('change', function (file) {
       test.single(file.path);
     });
   });
@@ -348,19 +341,6 @@ function addExtensionCustomTasksToSequence(sequence, taskName) {
   }
 
   return sequence;
-}
-
-/**
- * Given a file, it finds the info.xml in one of the parent folders and reads
- * the name of the extension from the "key" property of the <extension> tag
- */
-function getExtensionNameFromFile (file) {
-  var infoXMLPath = findUp.sync('info.xml', { cwd: file.path });
-  var parsedXML = xml.parse(fs.readFileSync(infoXMLPath, 'utf8'));
-
-  return _.find(parsedXML, function (node) {
-    return node.tagName && node.tagName === 'extension';
-  }).attributes.key;
 }
 
 /**
