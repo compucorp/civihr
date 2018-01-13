@@ -280,7 +280,7 @@ var xml = require("xml-parse");
     return {
 
       all: function () {
-        var configFile = find.fileSync('karma.conf.js', getExtensionPath() + '/js')[0];
+        var configFile = find.fileSync('karma.conf.js', getExtensionPath())[0];
 
         runServer(configFile);
       },
