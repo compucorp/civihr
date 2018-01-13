@@ -217,8 +217,11 @@ var xml = require("xml-parse");
 
   gulp.task('requirejs:watch', function () {
     var extPath = getExtensionPath();
+    var watchPatterns = addExtensionCustomWatchPatternsToDefaultList([
+      path.join(extPath, '**', 'src/**/*.js')
+    ], 'requirejs');
 
-    gulp.watch(path.join(extPath, '**', 'src/**/*.js'), ['requirejs']);
+    gulp.watch(watchPatterns, ['requirejs']);
   });
 }());
 
@@ -346,6 +349,18 @@ function addExtensionCustomTasksToSequence(sequence, taskName) {
   }
 
   return sequence;
+}
+
+/**
+ * Given a default list of watch patterns and the name of the "main" task
+ * (requirejs, sass, etc) if finds if the current extension
+ * has any custom task with custom watch patterns to add
+ */
+function addExtensionCustomWatchPatternsToDefaultList (defaultList, taskName) {
+  return _(defaultList)
+    .concat(getExtensionTasks(taskName).watchPatterns)
+    .compact()
+    .value();
 }
 
 /**
