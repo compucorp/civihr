@@ -1,3 +1,4 @@
+var exec = require('child_process').exec;
 var gulp = require('gulp');
 var path = require('path');
 var replace = require('gulp-replace');
@@ -21,7 +22,24 @@ module.exports = function () {
 
           cb();
         }
+      },
+      {
+        name: 'requirejs:mock',
+        fn: function (cb) {
+          var buildMocksPath = path.join(__dirname, '..', 'build.mocks.js');
+
+          exec('r.js -o ' + buildMocksPath, function (err, stdout, stderr) {
+            err && err.code && console.log(stdout);
+            cb();
+          });
+        }
       }
+    ],
+    watchPatterns: [
+      path.join(commonFolder, '**/*.js'),
+      path.join(commonFolder, 'templates/**/*.html'),
+      path.join(__dirname, '..', 'test/mocks/**/*.js'),
+      '!' + path.join(commonFolder, 'modules/templates.js')
     ]
   };
 };
