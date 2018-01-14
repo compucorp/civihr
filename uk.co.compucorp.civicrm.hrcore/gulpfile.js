@@ -2,7 +2,7 @@ var _ = require('lodash');
 var argv = require('yargs').argv;
 var gulp = require('gulp');
 var gulpSequence = require('gulp-sequence');
-var gutil = require("gulp-util");
+var gutil = require('gulp-util');
 var clean = require('gulp-clean');
 var color = require('gulp-color');
 var file = require('gulp-file');
@@ -12,15 +12,14 @@ var path = require('path');
 var Promise = require('es6-promise').Promise;
 var cv = require('civicrm-cv')({ mode: 'sync' });
 var findUp = require('find-up');
-var xml = require("xml-parse");
 
 // BackstopJS tasks
 (function () {
   var backstopDir = 'backstop_data/';
   var files = { config: 'site-config.json', tpl: 'backstop.tpl.json' };
   var configTpl = {
-    "url": "http://%{site-host}",
-    "credentials": { "name": "%{user-name}", "pass": "%{user-password}" }
+    'url': 'http://%{site-host}',
+    'credentials': { 'name': '%{user-name}', 'pass': '%{user-password}' }
   };
 
   gulp.task('backstopjs:reference', function (done) {
@@ -53,7 +52,7 @@ var xml = require("xml-parse");
    *
    * @return {Boolean} [description]
    */
-  function isConfigFilePresent() {
+  function isConfigFilePresent () {
     var check = true;
 
     try {
@@ -75,17 +74,17 @@ var xml = require("xml-parse");
    * @param  {string} command
    * @return {Promise}
    */
-  function runBackstopJS(command) {
+  function runBackstopJS (command) {
     var destFile = 'backstop.temp.json';
 
     if (!isConfigFilePresent()) {
       console.log(color(
-        "No site-config.json file detected!\n" +
-        "One has been created for you under " + backstopDir + "\n" +
-        "Please insert the real value for each placholder and try again", "RED"
+        'No site-config.json file detected!\n' +
+        'One has been created for you under ' + backstopDir + '\n' +
+        'Please insert the real value for each placholder and try again', 'RED'
       ));
 
-      return Promise.reject();
+      return Promise.reject(new Error());
     }
 
     return new Promise(function (resolve) {
@@ -113,7 +112,7 @@ var xml = require("xml-parse");
    *
    * @return {string}
    */
-  function tempFileContent() {
+  function tempFileContent () {
     var config = JSON.parse(fs.readFileSync(backstopDir + files.config));
     var content = JSON.parse(fs.readFileSync(backstopDir + files.tpl));
 
@@ -134,7 +133,7 @@ var xml = require("xml-parse");
    *
    * @return {Array}
    */
-  function scenariosList() {
+  function scenariosList () {
     var scenariosPath = backstopDir + 'scenarios/';
 
     return _(fs.readdirSync(scenariosPath))
@@ -149,7 +148,7 @@ var xml = require("xml-parse");
         return _.assign(scenario, { delay: scenario.delay || 6000 });
       })
       .tap(function (scenarios) {
-        scenarios[0].onBeforeScript = "login";
+        scenarios[0].onBeforeScript = 'login';
 
         return scenarios;
       })
@@ -182,7 +181,7 @@ var xml = require("xml-parse");
       }).on('error', sass.logError))
       .pipe(stripCssComments({ preserve: false }))
       .pipe(gulp.dest(path.join(extPath, '/css/')));
-  })
+  });
 
   gulp.task('sass:sync', function () {
     civicrmScssRoot.updateSync();
@@ -251,7 +250,7 @@ var xml = require("xml-parse");
     var placeholderRegExp = /(%{([^}]+)})/g;
     var requiredExtensions = [];
 
-    while (matches = placeholderRegExp.exec(buildFileContent)) {
+    while ((matches = placeholderRegExp.exec(buildFileContent)) !== null) {
       requiredExtensions.push({
         placeholder: matches[1],
         path: getExtensionPath(matches[2])
@@ -326,8 +325,8 @@ var xml = require("xml-parse");
  * has any custom tasks to add before/after or to straight replace the main task
  *
  */
-function addExtensionCustomTasksToSequence(sequence, taskName) {
-  var customTasks = getExtensionTasks(taskName)
+function addExtensionCustomTasksToSequence (sequence, taskName) {
+  var customTasks = getExtensionTasks(taskName);
 
   if (_.isFunction(customTasks.main)) {
     var mainIndex = _.findIndex(sequence, function (taskName) {
@@ -409,7 +408,7 @@ function getExtensionPath (name) {
  */
 function throwError (plugin, msg) {
   throw new gutil.PluginError(plugin, {
-    message: gutil.colors.red(msg),
+    message: gutil.colors.red(msg)
   });
 }
 
@@ -448,7 +447,7 @@ var test = (function () {
       var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
 
       var testFile = srcFile
-        .replace(/src\/[^\/]+\//, 'test/')
+        .replace(/src\/[^/]+\//, 'test/')
         .replace(srcFileNoExt + '.js', srcFileNoExt + '.spec.js');
 
       fs.statSync(testFile).isFile() && this.single(testFile);
