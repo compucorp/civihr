@@ -27,6 +27,7 @@
     "karma-ng-html2js-preprocessor": "~0.2.0",
     "karma-requirejs": "~0.2.2",
     "lodash": "~4.17.4",
+    "requirejs": "~2.3.0",
     "xml-parse": "~0.3.1",
     "yargs": "~6.6.0"
   }
