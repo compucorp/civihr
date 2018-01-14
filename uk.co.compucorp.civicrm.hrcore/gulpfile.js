@@ -190,8 +190,11 @@ var xml = require("xml-parse");
 
   gulp.task('sass:watch', function () {
     var extPath = getExtensionPath();
+    var watchPatterns = addExtensionCustomWatchPatternsToDefaultList([
+      path.join(extPath, 'scss/**/*.scss')
+    ], 'sass');
 
-    gulp.watch(path.join(extPath, 'scss/**/*.scss'), ['sass']);
+    gulp.watch(watchPatterns, ['sass']);
   });
 }());
 
@@ -245,12 +248,13 @@ var xml = require("xml-parse");
 
   gulp.task('test:watch', function () {
     var extPath = getExtensionPath();
-
-    gulp.watch([
+    var watchPatterns = addExtensionCustomWatchPatternsToDefaultList([
       path.join(extPath, '**', 'test/**/*.spec.js'),
       '!' + path.join(extPath, '**', 'test/mocks/**/*.js'),
       '!' + path.join(extPath, '**', 'test/test-main.js')
-    ]).on('change', function (file) {
+    ], 'test');
+
+    gulp.watch(watchPatterns).on('change', function (file) {
       test.single(file.path);
     });
   });
