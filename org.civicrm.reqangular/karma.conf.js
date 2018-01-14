@@ -19,8 +19,8 @@ module.exports = function (config) {
       'js/Common.js',
 
       // manual loading of requirejs as to avoid interference with the global dependencies above
-      extPath + 'node_modules/requirejs/require.js',
-      extPath + 'node_modules/karma-requirejs/lib/adapter.js',
+      civihrPath + 'uk.co.compucorp.civicrm.hrcore/node_modules/requirejs/require.js',
+      civihrPath + 'uk.co.compucorp.civicrm.hrcore/node_modules/karma-requirejs/lib/adapter.js',
 
       // load test helpers
       { pattern: extPath + 'test/helpers/**/*.helper.js', included: true },
