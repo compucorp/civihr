@@ -210,10 +210,15 @@ var xml = require("xml-parse");
   });
 
   gulp.task('requirejs:main', function (done) {
-    var buildFile = find.fileSync('build.js', getExtensionPath())[0];
+    var buildFilePath = find.fileSync('build.js', getExtensionPath())[0];
+    var tempBuildFilePath = path.join(path.dirname(buildFilePath), 'build.tmp.js');
 
-    exec('r.js -o ' + buildFile, function (err, stdout, stderr) {
+    fs.writeFileSync(tempBuildFilePath, processBuildFile(buildFilePath), 'utf8');
+
+    exec('r.js -o ' + tempBuildFilePath, function (err, stdout, stderr) {
       err && err.code && console.log(stdout);
+
+      fs.unlink(tempBuildFilePath);
       done();
     });
   });
@@ -232,6 +237,49 @@ var xml = require("xml-parse");
       }
     });
   });
+
+  /**
+   * Goes through the given build file content and, for each
+   * extension's placeholder (%{extension-name}) found, it creates an object
+   * with said placholder and the extension's local path
+   *
+   * @param {String} buildFileContent
+   * @return {Array}
+   */
+  function getDependencyExtensionsData (buildFileContent) {
+    var matches;
+    var placeholderRegExp = /(%{([^}]+)})/g;
+    var requiredExtensions = [];
+
+    while (matches = placeholderRegExp.exec(buildFileContent)) {
+      requiredExtensions.push({
+        placeholder: matches[1],
+        path: getExtensionPath(matches[2])
+      });
+    }
+
+    return requiredExtensions;
+  }
+
+  /**
+   * Takes the content of the build file on the given path, and applies any
+   * required transformations on it
+   *
+   * @param {String} buildFilePath
+   * @return {String}
+   */
+  function processBuildFile (buildFilePath) {
+    var buildFileContent = fs.readFileSync(buildFilePath, 'utf8');
+
+    getDependencyExtensionsData(buildFileContent).forEach(function (extension) {
+      buildFileContent = buildFileContent.replace(
+        new RegExp(extension.placeholder, 'g'),
+        extension.path
+      );
+    });
+
+    return buildFileContent;
+  }
 }());
 
 // Test
@@ -334,19 +382,23 @@ function getExtensionTasks (taskName) {
 }
 
 /**
- * Uses `cv` to get the path of the current extension
+ * Uses `cv` to get the path of the given extension
+ *
+ * @param {String} name If not provided, the name given via the CLI argument is used
+ * @return {String}
  */
-function getExtensionPath () {
+function getExtensionPath (name) {
   var path;
+  var ext = name || argv.ext;
 
-  if (!argv.ext) {
-    throwError('sass', 'Extension name not found in task parameters');
+  if (!ext) {
+    throwError('sass', 'Extension name not provided');
   }
 
   try {
-    path = cv('path -x ' + argv.ext)[0].value;
+    path = cv('path -x ' + ext)[0].value;
   } catch (err) {
-    throwError('sass', 'Extension "' + argv.ext + '" not found');
+    throwError('sass', 'Extension "' + ext + '" not found');
   }
 
   return path;
