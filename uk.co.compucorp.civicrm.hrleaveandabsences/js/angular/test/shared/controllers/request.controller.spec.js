@@ -313,9 +313,11 @@
 
         describe('when user edits leave request', function () {
           describe('without comments', function () {
+            var leaveRequest;
+
             beforeEach(function () {
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
-              var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+              leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
               leaveRequest.fileUploader = { queue: [] };
@@ -335,10 +337,10 @@
                 expect(controller.request.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
                 expect(controller.request.type_id).toEqual('1');
                 expect(controller.request.status_id).toEqual(waitingApprovalStatus.value);
-                expect(controller.request.from_date).toEqual('2016-11-23');
-                expect(controller.request.from_date_type).toEqual('1');
-                expect(controller.request.to_date).toEqual('2016-11-28');
-                expect(controller.request.to_date_type).toEqual('1');
+                expect(controller.request.from_date).toEqual(leaveRequest.from_date);
+                expect(controller.request.from_date_type).toEqual(leaveRequest.from_date_type);
+                expect(controller.request.to_date).toEqual(leaveRequest.to_date);
+                expect(controller.request.to_date_type).toEqual(leaveRequest.to_date_type);
               });
 
               it('does not allow user to submit', function () {

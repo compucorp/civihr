@@ -548,7 +548,7 @@
             compileComponent(true);
 
             controller.month.days.forEach(function (dayObj) {
-              if (dayObj.date === leaveRequest.from_date) {
+              if (moment(dayObj.date).isSame(leaveRequest.from_date, 'day')) {
                 day = dayObj;
               }
             });
