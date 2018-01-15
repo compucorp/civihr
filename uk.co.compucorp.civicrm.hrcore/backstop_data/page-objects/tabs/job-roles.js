@@ -59,7 +59,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.click('.btn-primary[ng-click*="add_new_role"]');
+        casper.click('.btn-primary[ng-click*="jobroles.addNewRole()"]');
       });
     },
 

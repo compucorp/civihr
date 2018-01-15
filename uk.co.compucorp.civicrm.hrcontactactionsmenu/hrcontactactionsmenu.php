@@ -32,6 +32,17 @@ function hrcontactactionsmenu_addContactMenuActions(ActionsMenu $menu) {
 }
 
 /**
+ * Implementation of hook_civicrm_pageRun
+ */
+function hrcontactactionsmenu_civicrm_pageRun(&$page) {
+  if ($page instanceof CRM_Contact_Page_View_Summary) {
+    $extName = 'uk.co.compucorp.civicrm.hrcontactactionsmenu';
+    CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/contactactions.css');
+    CRM_Core_Resources::singleton()->addScriptFile($extName, 'js/contactactions.js');
+  }
+}
+
+/**
  * Implements hook_civicrm_config().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
@@ -150,3 +161,4 @@ function hrcontactactionsmenu_civicrm_angularModules(&$angularModules) {
 function hrcontactactionsmenu_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _hrcontactactionsmenu_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
+
