@@ -34,9 +34,22 @@ function user_save($user, $params) {
 function user_load($userID) {
   $user = new stdClass();
   $user->roles = [1 => 'Fake Role'];
+  $user->uid = $userID;
   return $user;
 }
 
 function _user_mail_notify($operation, $user) {
   return ['user' => $user, 'operation' => $operation];
 }
+
+function user_cancel($params, $uid, $method) {
+  return ['params' => $params, 'uid' => $uid, 'method' => $method];
+}
+
+function &batch_get() {
+  $batch = ['progressive' => ''];
+
+  return $batch;
+}
+
+function batch_process() {}
