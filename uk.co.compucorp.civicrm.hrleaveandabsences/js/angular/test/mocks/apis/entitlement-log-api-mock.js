@@ -2,7 +2,7 @@
 
 define([
   'mocks/module',
-  'mocks/data/entitlement-log-data',
+  'mocks/data/entitlement-log.data',
   'common/angularMocks'
 ], function (mocks, mockData) {
   'use strict';

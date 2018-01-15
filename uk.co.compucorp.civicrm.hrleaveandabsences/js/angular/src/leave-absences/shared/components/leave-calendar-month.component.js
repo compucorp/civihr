@@ -241,11 +241,11 @@ define([
     function isDayType (typeName, leaveRequest, date) {
       var dayType = vm.supportData.dayTypes[typeName];
 
-      if (moment(date).isSame(leaveRequest.from_date)) {
+      if (moment(date).isSame(leaveRequest.from_date, 'day')) {
         return dayType.value === leaveRequest.from_date_type;
       }
 
-      if (moment(date).isSame(leaveRequest.to_date)) {
+      if (moment(date).isSame(leaveRequest.to_date, 'day')) {
         return dayType.value === leaveRequest.to_date_type;
       }
     }

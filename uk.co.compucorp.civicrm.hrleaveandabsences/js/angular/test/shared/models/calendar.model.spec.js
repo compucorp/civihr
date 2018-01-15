@@ -2,7 +2,7 @@
 
 define([
   'common/lodash',
-  'mocks/data/work-pattern-data',
+  'mocks/data/work-pattern.data',
   'mocks/apis/option-group-api-mock',
   'leave-absences/shared/models/calendar.model'
 ], function (_, workPatternMocked) {

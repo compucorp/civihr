@@ -2,7 +2,7 @@
 
 define([
   'common/lodash',
-  'mocks/data/option-group-mock-data',
+  'mocks/data/option-group.data',
   'common/mocks/data/contact.data'
 ], function (_, OptionGroupDataMock, ContactData) {
   var dayTypes = OptionGroupDataMock.getCollection('hrleaveandabsences_work_day_type');

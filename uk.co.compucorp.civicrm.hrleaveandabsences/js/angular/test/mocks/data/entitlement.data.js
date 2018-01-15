@@ -2,9 +2,9 @@
 
 define([
   'common/lodash',
-  'mocks/data/absence-period-data',
-  'mocks/data/absence-type-data',
-  'mocks/data/option-group-mock-data'
+  'mocks/data/absence-period.data',
+  'mocks/data/absence-type.data',
+  'mocks/data/option-group.data'
 ], function (_, absencePeriodData, absenceTypeData, optionGroupData) {
   var mockData = {
     all_data: (function () {

@@ -2,7 +2,7 @@
 
 define([
   'common/angular',
-  'mocks/data/leave-request-data',
+  'mocks/data/leave-request.data',
   'leave-absences/manager-leave/app'
 ], function (angular, leaveRequestData) {
   'use strict';

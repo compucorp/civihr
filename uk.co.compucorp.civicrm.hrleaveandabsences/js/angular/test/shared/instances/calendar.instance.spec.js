@@ -3,8 +3,8 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/work-pattern-data',
-  'mocks/data/option-group-mock-data',
+  'mocks/data/work-pattern.data',
+  'mocks/data/option-group.data',
   'leave-absences/shared/instances/calendar.instance',
   'mocks/apis/option-group-api-mock'
 ], function (_, moment, workPatternMocked, optionGroupMocked) {

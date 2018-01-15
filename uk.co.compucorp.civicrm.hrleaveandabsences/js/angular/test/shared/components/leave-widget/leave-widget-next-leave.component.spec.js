@@ -4,8 +4,8 @@ define([
   'common/lodash',
   'common/moment',
   'mocks/helpers/controller-on-changes',
-  'mocks/data/absence-type-data',
-  'mocks/data/option-group-mock-data',
+  'mocks/data/absence-type.data',
+  'mocks/data/option-group.data',
   'mocks/apis/leave-request-api-mock',
   'leave-absences/shared/components/leave-widget/leave-widget-next-leave.component'
 ], function (_, moment, controllerOnChanges, absenceTypesData, OptionGroupData) {
