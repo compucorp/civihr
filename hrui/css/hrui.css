@@ -34,8 +34,8 @@
   margin-right: 1%;
 }
 
-.crm-contact-restore, 
 .crm-contact-delete,
-.crm-contact-permanently-delete {
+.crm-contact-permanently-delete
+.crm-contact-restore {
   display: none;
 }
