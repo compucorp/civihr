@@ -57,10 +57,10 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
       $userRoleItem = new UserRoleItem($this->cmsUserRole);
       $actionsGroup->addItem($userRoleItem);
 
-      $actionsGroup->addItem(self::getSendWelcomeMailButton($contactID));
-      $actionsGroup->addItem(self::getSendPasswordResetButton($contactID));
+      $actionsGroup->addItem($this->getSendWelcomeMailButton($contactID));
+      $actionsGroup->addItem($this->getSendPasswordResetButton($contactID));
     } else {
-      $actionsGroup->addItem(self::getCreateUserButton($contactID));
+      $actionsGroup->addItem($this->getCreateUserButton($contactID));
     }
 
     return $actionsGroup;
@@ -98,7 +98,7 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
       'url' => $url
     ];
 
-    return self::getMenuButton($params);
+    return $this->getMenuButton($params);
   }
 
   /**
@@ -117,7 +117,7 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
       'url' => $url
     ];
 
-    return self::getMenuButton($params);
+    return $this->getMenuButton($params);
   }
 
   /**
@@ -136,6 +136,6 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
       'url' => $url
     ];
 
-    return self::getMenuButton($params);
+    return $this->getMenuButton($params);
   }
 }
