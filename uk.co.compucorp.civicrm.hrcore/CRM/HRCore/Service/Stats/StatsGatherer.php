@@ -54,8 +54,10 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
       $stats->setContactSubtypeCount($subtype, $count);
     }
 
-    foreach ($this->getReportConfigurations() as $configuration) {
+    $reportConfigs = $this->getReportConfigurations();
+    foreach ($reportConfigs as $configuration) {
       $stats->addReportConfiguration($configuration);
+      $stats->setEntityCount('reportConfiguration', count($reportConfigs));
     }
 
     foreach ($this->getAgeGroups() as $group) {
