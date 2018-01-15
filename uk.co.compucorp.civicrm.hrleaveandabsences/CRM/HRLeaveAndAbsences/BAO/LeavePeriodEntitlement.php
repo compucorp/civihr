@@ -566,14 +566,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   public function getLeaveRequestBalance() {
     $filterStatuses = LeaveRequest::getApprovedStatuses();
     $excludeToilRequests = true;
+    $excludePublicHolidays = $includePublicHolidaysOnly = false;
 
     return LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
       $this,
       $filterStatuses,
-      null,
-      null,
-      false,
-      false, $excludeToilRequests
+      $excludePublicHolidays,
+      $includePublicHolidaysOnly,
+      $excludeToilRequests
     );
   }
 

@@ -409,8 +409,6 @@ function civicrm_api3_leave_request_getbalancechangebyabsencetype($params) {
       $balance = CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
         $periodEntitlement,
         $statuses,
-        null,
-        null,
         $excludePublicHolidays,
         $publicHolidaysOnly
       );
