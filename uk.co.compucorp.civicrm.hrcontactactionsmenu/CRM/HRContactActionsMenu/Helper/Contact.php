@@ -24,8 +24,8 @@ class CRM_HRContactActionsMenu_Helper_Contact {
     if(empty($result['id'])) {
       $result['contact_id'] = $contactID;
     }
-    else{
-      $result['cmsId'] =$result['id'];
+    else {
+      $result['cmsId'] = $result['id'];
     }
 
     return $result;

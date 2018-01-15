@@ -36,7 +36,7 @@ function hrcontactactionsmenu_addContactMenuActions(ActionsMenu $menu) {
  */
 function hrcontactactionsmenu_civicrm_pageRun(&$page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
-    $extName = 'uk.co.compucorp.civicrm.hrcontactactionsmenu';
+    $extName = E::LONG_NAME;
     CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/contactactions.css');
     CRM_Core_Resources::singleton()->addScriptFile($extName, 'js/contactactions.js');
   }
