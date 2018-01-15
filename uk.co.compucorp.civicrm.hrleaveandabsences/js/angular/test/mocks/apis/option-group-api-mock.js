@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'mocks/module',
-  'mocks/data/option-group-mock-data',
+  'mocks/data/option-group.data',
   'common/angularMocks'
 ], function (_, mocks, mockData) {
   'use strict';

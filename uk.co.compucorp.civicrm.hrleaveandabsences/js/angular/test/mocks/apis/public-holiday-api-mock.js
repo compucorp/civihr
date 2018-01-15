@@ -1,6 +1,6 @@
 define([
   'mocks/module',
-  'mocks/data/public-holiday-data',
+  'mocks/data/public-holiday.data',
   'common/moment',
   'common/angularMocks',
 ], function (mocks, mockData, moment) {

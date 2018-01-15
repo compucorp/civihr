@@ -4,8 +4,8 @@
   define([
     'common/lodash',
     'common/moment',
-    'mocks/data/option-group-mock-data',
-    'mocks/data/leave-request-data',
+    'mocks/data/option-group.data',
+    'mocks/data/leave-request.data',
     'mocks/helpers/helper',
     'common/modules/dialog',
     'leave-absences/shared/config',
