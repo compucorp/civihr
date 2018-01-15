@@ -12,6 +12,7 @@ var path = require('path');
 var Promise = require('es6-promise').Promise;
 var cv = require('civicrm-cv')({ mode: 'sync' });
 var findUp = require('find-up');
+var xml = require('xml-parse');
 
 // BackstopJS tasks
 (function () {
@@ -201,26 +202,9 @@ var findUp = require('find-up');
 (function () {
   var exec = require('child_process').exec;
   var find = require('find');
+  var bluebird = require('bluebird');
 
-  gulp.task('requirejs', function (cb) {
-    var sequence = addExtensionCustomTasksToSequence(['requirejs:main'], 'requirejs');
-
-    gulpSequence.apply(null, sequence)(cb);
-  });
-
-  gulp.task('requirejs:main', function (done) {
-    var buildFilePath = find.fileSync('build.js', getExtensionPath())[0];
-    var tempBuildFilePath = path.join(path.dirname(buildFilePath), 'build.tmp.js');
-
-    fs.writeFileSync(tempBuildFilePath, processBuildFile(buildFilePath), 'utf8');
-
-    exec('r.js -o ' + tempBuildFilePath, function (err, stdout, stderr) {
-      err && err.code && console.log(stdout);
-
-      fs.unlink(tempBuildFilePath);
-      done();
-    });
-  });
+  gulp.task('requirejs', requireJsTask);
 
   gulp.task('requirejs:watch', function () {
     var extPath = getExtensionPath();
@@ -236,6 +220,35 @@ var findUp = require('find-up');
       }
     });
   });
+
+  /**
+   *
+   *
+   */
+  function extensionDependenciesTask () {
+    var buildFiles = find.fileSync(/js(\/[^/]+)?\/build\.js$/, path.join(__dirname, '..'));
+
+    var foo = buildFiles.filter(function (buildFile) {
+      var content = fs.readFileSync(buildFile, 'utf8');
+
+      return (new RegExp(argv.ext, 'g')).test(content);
+    });
+
+    return bluebird.mapSeries(foo.map(function (buildFile) {
+      return function () {
+        return new Promise(function (resolve, reject) {
+          argv.ext = getExtensionNameFromFile(buildFile);
+
+          gulp.start(spawnTaskForCurrentExtension('requirejs', requireJsTask))
+            .once('task_stop', function () {
+              resolve();
+            });
+        });
+      };
+    }), function (promise) {
+      return promise();
+    });
+  }
 
   /**
    * Goes through the given build file content and, for each
@@ -278,6 +291,49 @@ var findUp = require('find-up');
     });
 
     return buildFileContent;
+  }
+
+  /**
+   *
+   *
+   *
+   */
+  function requireJsMainTask (done) {
+    var buildFilePath = find.fileSync('build.js', getExtensionPath())[0];
+    var tempBuildFilePath = path.join(path.dirname(buildFilePath), 'build.tmp.js');
+
+    fs.writeFileSync(tempBuildFilePath, processBuildFile(buildFilePath), 'utf8');
+
+    exec('r.js -o ' + tempBuildFilePath, function (err, stdout, stderr) {
+      err && err.code && console.log(stdout);
+
+      fs.unlink(tempBuildFilePath);
+      done();
+    });
+  }
+
+  /**
+   *
+   *
+   */
+  function requireJsTask (cb) {
+    var sequence = addExtensionCustomTasksToSequence([
+      spawnTaskForCurrentExtension('requirejs:main', requireJsMainTask)
+    ], 'requirejs');
+    sequence.push(spawnTaskForCurrentExtension('requirejs:dependencies', extensionDependenciesTask));
+
+    gulpSequence.apply(null, sequence)(cb);
+  }
+
+  /**
+   *
+   *
+   */
+  function spawnTaskForCurrentExtension (taskName, taskFn) {
+    taskName += ' (' + argv.ext + ')';
+    gulp.task(taskName, taskFn);
+
+    return taskName;
   }
 }());
 
@@ -364,6 +420,19 @@ function addExtensionCustomWatchPatternsToDefaultList (defaultList, taskName) {
     .concat(getExtensionTasks(taskName).watchPatterns)
     .compact()
     .value();
+}
+
+/**
+ * Given a file, it finds the info.xml in one of the parent folders and reads
+ * the name of the extension from the "key" property of the <extension> tag
+ */
+function getExtensionNameFromFile (filePath) {
+  var infoXMLPath = findUp.sync('info.xml', { cwd: filePath });
+  var parsedXML = xml.parse(fs.readFileSync(infoXMLPath, 'utf8'));
+
+  return _.find(parsedXML, function (node) {
+    return node.tagName && node.tagName === 'extension';
+  }).attributes.key;
 }
 
 /**
