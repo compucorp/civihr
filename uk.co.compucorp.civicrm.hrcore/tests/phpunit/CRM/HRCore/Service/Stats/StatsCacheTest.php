@@ -37,7 +37,7 @@ class StatsCacheTest extends BaseHeadlessTest {
   public function testWillNotFetchIfCacheIsFresh() {
     $gatherer = $this->prophesize(StatsGatherer::class);
     $cache = $this->prophesize(FileCache::class);
-    $oneWeekAgo = new \DateTime('midnight today - 7 days');
+    $oneWeekAgo = new \DateTime('now - 7 days');
     $cache->getModified(StatsCache::CACHE_KEY)->willReturn($oneWeekAgo);
     $cache->get(StatsCache::CACHE_KEY)->willReturn(new CiviHRStatistics());
     $gatherer->gather()->shouldNotBeCalled();
