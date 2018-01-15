@@ -248,6 +248,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    *   When true, it won't sum the balance changes for Public Holiday Leave Requests
    * @param bool $includePublicHolidaysOnly
    *   When true, it won't sum only the balance changes for Public Holiday Leave Requests
+   * @param bool $excludeToilRequests
+   *   When true, it won't sum the balance changed for TOIL Requests
    *
    * @return float
    */
@@ -257,7 +259,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     DateTime $dateLimit = NULL,
     DateTime $dateStart = NULL,
     $excludePublicHolidays = false,
-    $includePublicHolidaysOnly = false
+    $includePublicHolidaysOnly = false,
+    $excludeToilRequests = false
   ) {
 
     $balanceChangeTable = self::getTableName();
@@ -324,6 +327,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     if($includePublicHolidaysOnly) {
       $query .= " AND leave_request.request_type = '" . LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY . "'";
+    }
+
+    if($excludeToilRequests) {
+      $query .= " AND leave_request.request_type != '" . LeaveRequest::REQUEST_TYPE_TOIL . "'";
     }
 
     $result = CRM_Core_DAO::executeQuery($query);
