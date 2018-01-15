@@ -15,7 +15,9 @@ class StatsSenderTest extends BaseHeadlessTest {
 
   public static function setUpBeforeClass() {
     if (defined('CIVIHR_STATISTICS_ENDPOINT')) {
-      self::fail('Please unset CIVIHR_STATISTICS_ENDPOINT in your settings file');
+      $msg = 'Please unset CIVIHR_STATISTICS_ENDPOINT in your settings file'
+       . ' to avoid really sending statistics when running tests';
+      self::fail($msg);
     }
 
     define('CIVIHR_STATISTICS_ENDPOINT', self::MOCK_ENDPOINT);
