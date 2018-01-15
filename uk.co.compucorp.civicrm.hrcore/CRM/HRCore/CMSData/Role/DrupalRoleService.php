@@ -26,8 +26,9 @@ class CRM_HRCore_CMSData_Role_DrupalRoleService implements RoleServiceInterface{
 
     $result = $query->execute()->fetchAllKeyed();
 
-    $returnArray = [];
     $roleNames = $this->getRoleNames();
+    unset($roleNames['authenticated user'], $roleNames['anonymous user']);
+    $returnArray = array_fill_keys($roleNames, NULL);
 
     foreach ($result as $rid => $loginTimestamp) {
       if (array_key_exists($rid, $roleNames)) {
