@@ -1,6 +1,46 @@
 <?php
 
+use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
+use CRM_HRContactActionsMenu_Helper_UserInformationActionGroup as UserInformationActionGroupHelper;
+use CRM_HRContactActionsMenu_Helper_Contact as ContactHelper;
+use CRM_HRCore_CMSData_UserRoleFactory as CMSUserRoleFactory;
+use CRM_HRCore_CMSData_PathsFactory as CMSUserPathFactory;
+
 require_once 'hrcontactactionsmenu.civix.php';
+
+
+/**
+ * Implementation of hook_addContactMenuActions to add the
+ * User Information menu group to the contact actions menu.
+ *
+ * @param \CRM_HRContactActionsMenu_Component_Menu $menu
+ *
+ * @throws \Exception
+ */
+function hrcontactactionsmenu_addContactMenuActions(ActionsMenu $menu) {
+  $contactID = empty($_GET['cid']) ? '' : $_GET['cid'];
+  if (!$contactID) {
+    return;
+  }
+
+  $contactUserInfo = ContactHelper::getUserInformation($contactID);
+  $cmsFramework = CRM_Core_Config::singleton()->userFramework;
+  $cmsUserPath = CMSUserPathFactory::create($cmsFramework, $contactUserInfo);
+  $cmsUserRole = CMSUserRoleFactory::create($cmsFramework, $contactUserInfo);
+  $userInformationActionGroup = new UserInformationActionGroupHelper($contactUserInfo, $cmsUserPath, $cmsUserRole);
+  $menu->addToHighlightedPanel($userInformationActionGroup->get());
+}
+
+/**
+ * Implementation of hook_civicrm_pageRun
+ */
+function hrcontactactionsmenu_civicrm_pageRun(&$page) {
+  if ($page instanceof CRM_Contact_Page_View_Summary) {
+    $extName = E::LONG_NAME;
+    CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/contactactions.css');
+    CRM_Core_Resources::singleton()->addScriptFile($extName, 'js/contactactions.js');
+  }
+}
 
 /**
  * Implements hook_civicrm_config().
@@ -122,13 +162,3 @@ function hrcontactactionsmenu_civicrm_alterSettingsFolders(&$metaDataFolders = N
   _hrcontactactionsmenu_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
-/**
- * Implementation of hook_civicrm_pageRun
- */
-function hrcontactactionsmenu_civicrm_pageRun(&$page) {
-  if ($page instanceof CRM_Contact_Page_View_Summary) {
-    $extName = 'uk.co.compucorp.civicrm.hrcontactactionsmenu';
-    CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/contactactions.css');
-    CRM_Core_Resources::singleton()->addScriptFile($extName, 'js/contactactions.js');
-  }
-}
