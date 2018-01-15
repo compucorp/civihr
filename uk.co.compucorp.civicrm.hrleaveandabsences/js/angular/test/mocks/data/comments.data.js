@@ -1,25 +1,26 @@
-define([], function () {
+/* eslint-env amd */
 
+define([], function () {
   var prefix = {
-    "is_error": 0,
-    "version": 3,
-    "count": 1,
-    "id": 3
+    'is_error': 0,
+    'version': 3,
+    'count': 1,
+    'id': 3
   };
 
   var commentsWithID = [{
-    "comment_id": "3",
-    "leave_request_id": "17",
-    "text": "test comment message",
-    "contact_id": "202",
-    "created_at": "2017-02-14 13:48:33"
+    'comment_id': '3',
+    'leave_request_id': '17',
+    'text': 'test comment message',
+    'contact_id': '202',
+    'created_at': '2017-02-14 13:48:33'
   }];
 
   var commentsWithNoID = [{
-    "leave_request_id": "18",
-    "text": "test comment message",
-    "contact_id": "202",
-    "created_at": "2017-02-14 13:48:33"
+    'leave_request_id': '18',
+    'text': 'test comment message',
+    'contact_id': '202',
+    'created_at': '2017-02-14 13:48:33'
   }];
 
   var deleteComment = {
@@ -45,5 +46,5 @@ define([], function () {
     deleteComment: function () {
       return deleteComment;
     }
-  }
+  };
 });
