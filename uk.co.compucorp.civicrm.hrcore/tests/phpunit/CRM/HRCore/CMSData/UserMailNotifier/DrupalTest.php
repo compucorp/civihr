@@ -10,8 +10,8 @@ class CRM_HRCore_CMSData_UserMailNotifier_DrupalTest extends CRM_HRCore_Test_Bas
 
   public function testUserNotifyIsCalledForPasswordResetEmail() {
     $contactData = ['cmsId' => 1];
-    $userMailNotifier = new DrupalUserMailNotifier($contactData);
-    $result = $userMailNotifier->sendPasswordResetEmail();
+    $userMailNotifier = new DrupalUserMailNotifier();
+    $result = $userMailNotifier->sendPasswordResetEmail($contactData);
     $expectedOperation = 'password_reset';
     $this->assertEquals($expectedOperation, $result['operation']);
     $this->assertInstanceOf(stdClass::class, $result['user']);
@@ -19,8 +19,8 @@ class CRM_HRCore_CMSData_UserMailNotifier_DrupalTest extends CRM_HRCore_Test_Bas
 
   public function testUserNotifyIsCalledForWelcomeEmail() {
     $contactData = ['cmsId' => 1];
-    $userMailNotifier = new DrupalUserMailNotifier($contactData);
-    $result = $userMailNotifier->sendWelcomeEmail();
+    $userMailNotifier = new DrupalUserMailNotifier();
+    $result = $userMailNotifier->sendWelcomeEmail($contactData);
     $expectedOperation = 'register_admin_created';
     $this->assertEquals($expectedOperation, $result['operation']);
     $this->assertInstanceOf(stdClass::class, $result['user']);

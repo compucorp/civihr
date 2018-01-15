@@ -12,16 +12,15 @@ class CRM_HRCore_CMSData_UserMailNotifierFactory {
    * Creates an object of the UserMailNotifier class based on the
    * CMS framework in use.
    *
-   * @param array $contactData
-   * @param string $cmsFramework
-   *
    * @return UserMailNotifierInterface;
    *
    * @throws \Exception
    */
-  public static function create($cmsFramework, $contactData) {
+  public static function create() {
+    $cmsFramework = CRM_Core_Config::singleton()->userFramework;
+
     if ($cmsFramework == 'Drupal') {
-      return new DrupalUserMailNotifier($contactData);
+      return new DrupalUserMailNotifier();
     }
 
     $msg = sprintf('Unrecognized CMS: "%s"', $cmsFramework);

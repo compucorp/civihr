@@ -3,7 +3,6 @@ var tab = require('./tab');
 
 module.exports = (function () {
   return tab.extend({
-    readySelector: '.hrjc-summary',
     tabTitle: 'Job Contract',
 
     /**
@@ -27,7 +26,8 @@ module.exports = (function () {
      * @return {Promise} resolves with the job contract modal object
      */
     openContractModal: function (mode) {
-      var param, casper = this.casper;
+      var casper = this.casper;
+      var param;
 
       param = mode === 'correct' ? 'edit' : (mode === 'revision' ? 'change' : '');
 
@@ -53,6 +53,24 @@ module.exports = (function () {
           resolve(this.waitForModal('job-contract'));
         }.bind(this));
       }.bind(this));
+    },
+
+    /**
+     * Overrides the original tab's `ready` method
+     * There is no single selector that can be used as `readySelector` (which
+     * would be used by the original `ready` method) to detect when the
+     * tab is ready, so as a quick workaround we simply override the method
+     * and perform all the needed checks in it
+     *
+     * @return {Boolean} returns `true` for the `casper.waitFor()` caller
+     */
+    ready: function () {
+      var casper = this.casper;
+
+      casper.waitUntilVisible('.hrjc-summary');
+      casper.waitWhileVisible('.spinner');
+
+      return casper.wait(200);
     },
 
     /**
