@@ -33,3 +33,9 @@
 #crm-main-content-wrapper #contactDetails #govID span {
   margin-right: 1%;
 }
+
+.crm-contact-restore, 
+.crm-contact-delete,
+.crm-contact-permanently-delete {
+  display: none;
+}
