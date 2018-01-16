@@ -11,25 +11,13 @@ use CRM_HRCore_Service_Stats_StatsJSONConvertor as StatsJSONConvertor;
  */
 class StatsSenderTest extends BaseHeadlessTest {
 
-  const MOCK_ENDPOINT = 'http://fake.civihr.org/civicrm/civhr-stats';
-
-  public static function setUpBeforeClass() {
-    if (defined('CIVIHR_STATISTICS_ENDPOINT')) {
-      $msg = 'Please unset CIVIHR_STATISTICS_ENDPOINT in your settings file'
-       . ' to avoid really sending statistics when running tests';
-      self::fail($msg);
-    }
-
-    define('CIVIHR_STATISTICS_ENDPOINT', self::MOCK_ENDPOINT);
-  }
-
   public function testSuccessfulResponseWillNotThrowException() {
     $stats = new CiviHRStatistics();
     $json = StatsJSONConvertor::toJson($stats);
 
     $response = [HttpClient::STATUS_OK, ''];
     $client = $this->prophesize(HttpClient::class);
-    $client->post(self::MOCK_ENDPOINT, $json)->willReturn($response);
+    $client->post(CIVIHR_STATISTICS_ENDPOINT, $json)->willReturn($response);
     
     $sender = new StatsSender($client->reveal());
 
@@ -45,7 +33,7 @@ class StatsSenderTest extends BaseHeadlessTest {
 
     $client = $this->prophesize(HttpClient::class);
     $response = [HttpClient::STATUS_DL_ERROR, '<error message>'];
-    $client->post(self::MOCK_ENDPOINT, $json)->willReturn($response);
+    $client->post(CIVIHR_STATISTICS_ENDPOINT, $json)->willReturn($response);
     
     $sender = new StatsSender($client->reveal());
 
