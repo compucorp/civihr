@@ -3,12 +3,12 @@
   <item>
     <path>civicrm/contactactionsmenu/sendpasswordresetmail</path>
     <page_callback>CRM_HRContactActionsMenu_Page_UserMailNotifier::sendPasswordResetEmail</page_callback>
-    <access_arguments>edit all contacts</access_arguments>
+    <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>
     <path>civicrm/contactactionsmenu/sendwelcomemail</path>
     <page_callback>CRM_HRContactActionsMenu_Page_UserMailNotifier::sendWelcomeEmail</page_callback>
-    <access_arguments>edit all contacts</access_arguments>
+    <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>
     <path>civicrm/contactactionsmenu/deleteuseraccount</path>
