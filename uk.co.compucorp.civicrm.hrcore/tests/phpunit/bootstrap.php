@@ -7,6 +7,13 @@ eval(cv('php:boot --level=full -t', 'phpcode'));
 
 require_once 'drupal_function_mocks.php';
 
+if (defined('CIVIHR_STATISTICS_ENDPOINT')) {
+  $msg = 'Please unset CIVIHR_STATISTICS_ENDPOINT in your settings file'
+    . ' to avoid really sending statistics when running tests';
+  throw new \Exception($msg);
+}
+const CIVIHR_STATISTICS_ENDPOINT = 'http://fake.civihr.org/civicrm/civhr-stats';
+
 /**
  * Call the "cv" command.
  *
