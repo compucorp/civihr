@@ -71,6 +71,11 @@ class CRM_HRCore_Service_Stats_StatsSender {
     $response = $this->httpClient->post($this->statsEndpoint, $json);
     list($status, $responseBody) = $response;
 
+    // Response should be empty
+    if ($responseBody) {
+      $status = HttpClient::STATUS_DL_ERROR;
+    }
+
     if (HttpClient::STATUS_OK !== $status) {
       $msg = sprintf('Failed sending CiviHR stats: %s', $responseBody);
       if ($this->logger) {
