@@ -19,9 +19,7 @@ class CRM_HRContactActionsMenu_Page_UserAccount {
     $userAccount->cancel($contactInfo);
 
     CRM_Core_Session::setStatus(ts('User account has been deleted'), 'Success', 'success');
-
-    $url = CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid=$contactID");
-    CRM_Utils_System::redirect($url);
+    self::redirectToContactSummaryPage($contactID);
   }
 
   /**
@@ -35,9 +33,7 @@ class CRM_HRContactActionsMenu_Page_UserAccount {
     $userAccount->disable($contactInfo);
 
     CRM_Core_Session::setStatus(ts('User account has been disabled'), 'Success', 'success');
-
-    $url = CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid=$contactID");
-    CRM_Utils_System::redirect($url);
+    self::redirectToContactSummaryPage($contactID);
   }
 
   /**
@@ -51,7 +47,15 @@ class CRM_HRContactActionsMenu_Page_UserAccount {
     $userAccount->enable($contactInfo);
 
     CRM_Core_Session::setStatus(ts('User account has been enabled'), 'Success', 'success');
+    self::redirectToContactSummaryPage($contactID);
+  }
 
+  /**
+   * Redirects to the Contact summary page.
+   *
+   * @param int $contactID
+   */
+  private static function redirectToContactSummaryPage($contactID) {
     $url = CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid=$contactID");
     CRM_Utils_System::redirect($url);
   }
