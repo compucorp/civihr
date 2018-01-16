@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/leave-request-data',
+  'mocks/data/leave-request.data',
   'mocks/apis/leave-request-api-mock',
   'common/mocks/services/file-uploader-mock',
   'mocks/apis/option-group-api-mock',

@@ -73,7 +73,7 @@ module.exports = (function () {
         casper.click('.webform-next');
 
         return casper.waitForSelector('input[value="Dependants"]', function () {
-          casper.click('#edit-submitted-do-you-have-any-dependants-1');
+          casper.click('#edit-submitted-do-you-have-dependants-1');
         });
       });
     },
@@ -92,7 +92,7 @@ module.exports = (function () {
           casper.click('.webform-next');
 
           return casper.waitForSelector('input[value="Profile Picture"]');
-        })
+        });
       });
     }
   });

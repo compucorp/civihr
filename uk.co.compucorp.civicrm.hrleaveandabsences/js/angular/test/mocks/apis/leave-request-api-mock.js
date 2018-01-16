@@ -4,9 +4,9 @@
 define([
   'common/lodash',
   'mocks/module',
-  'mocks/data/leave-request-data',
-  'mocks/data/comments-data',
-  'mocks/data/sickness-leave-request-data',
+  'mocks/data/leave-request.data',
+  'mocks/data/comments.data',
+  'mocks/data/sickness-leave-request.data',
   'common/angularMocks'
 ], function (_, mocks, mockData, commentsMock, sicknessMockData) {
   'use strict';

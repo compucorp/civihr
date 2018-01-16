@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/entitlement-log-data',
+  'mocks/data/entitlement-log.data',
   'leave-absences/shared/apis/entitlement-log.api'
 ], function (mockData) {
   'use strict';
