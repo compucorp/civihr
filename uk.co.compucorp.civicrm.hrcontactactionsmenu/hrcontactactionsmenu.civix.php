@@ -77,7 +77,7 @@ class CRM_HRContactActionsMenu_ExtensionUtil {
 
 }
 
-use CRM_Hrcontactactionsmenu_ExtensionUtil as E;
+use CRM_HRContactActionsMenu_ExtensionUtil as E;
 
 /**
  * (Delegated) Implements hook_civicrm_config().
