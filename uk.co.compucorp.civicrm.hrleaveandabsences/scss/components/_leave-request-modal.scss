@@ -146,15 +146,13 @@ $row-margin-bottom: 15px;
   z-index: 2;
 }
 
-/*
- * This is a temporary patch which fixes CSS in the modal
- * @TODO remove this patch when Shoreditch theme is migrated to SSP
- */
 .chr_leave-request-modal {
-  .form-group {
-    overflow: inherit !important;
-  }
 
+  /*
+   * The alert in the modal must not have a bottom margin since it it the last child
+   * @TODO remove this patch if Shoreditch introduces a rule that makes all alerts
+   * (or even all elements) to not have a bottom margin if they are last children
+   */
   .alert {
     margin-bottom: 0 !important;
   }
