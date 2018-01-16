@@ -35,7 +35,10 @@
             <button class="button__delete btn-warning">Disable User Account</button>
           </div>
           <div class="col-md-6">
-            <button class="button__disable btn-danger">Delete User Account</button>
+            <button class="button__disable btn-danger" 
+              data-delete-user-url="civicrm/contactactionsmenu/deleteuseraccount">
+              Delete User Account
+            </button>
           </div>
         </div>
       </div>
