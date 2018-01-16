@@ -51,7 +51,7 @@ class CRM_HRCore_CMSData_UserAccount_Drupal implements UserAccountInterface {
   public function disable($contactData) {
     $user = $this->getUser($contactData);
 
-    return user_save($user, ['status'=> 0]);
+    return user_save($user, ['status' => 0]);
   }
 
   /**
@@ -60,7 +60,7 @@ class CRM_HRCore_CMSData_UserAccount_Drupal implements UserAccountInterface {
   public function enable($contactData) {
     $user = $this->getUser($contactData);
 
-    return user_save($user, ['status'=> 1]);
+    return user_save($user, ['status' => 1]);
   }
 
   /**
