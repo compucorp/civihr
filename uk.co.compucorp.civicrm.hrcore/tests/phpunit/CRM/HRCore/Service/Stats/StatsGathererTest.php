@@ -18,13 +18,13 @@ use CRM_HRCore_Test_Fabricator_CaseType as CaseTypeFabricator;
 use CRM_HRCore_Test_Fabricator_ContactType as ContactTypeFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 use CRM_HRCore_Service_Stats_StatsGatherer as StatsGatherer;
+use CRM_HRCore_Test_Helpers_SessionHelper as SessionHelper;
 
 /**
  * @group headless
  */
 class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
-  use CRM_HRCore_Test_Helpers_SessionHelpersTrait;
   use CRM_HRCore_Test_Helpers_TableCleanupTrait;
   use CRM_HRCore_Test_Helpers_DomainConfigurationTrait;
 
@@ -74,7 +74,7 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     ContactFabricator::fabricate();
     ContactFabricator::fabricate();
     $contactID = ContactFabricator::fabricateWithEmail()['id'];
-    $this->registerCurrentLoggedInContactInSession($contactID);
+    SessionHelper::registerCurrentLoggedInContactInSession($contactID);
 
     // expect 1 UFMatch
     UFMatchFabricator::fabricate(['contact_id' => $contactID]);
@@ -206,7 +206,7 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $contactID = ContactFabricator::fabricate()['id'];
     TaskTypeFabricator::fabricate();
     $this->setUpLeaveRequest($contactID);
-    $this->registerCurrentLoggedInContactInSession($contactID);
+    SessionHelper::registerCurrentLoggedInContactInSession($contactID);
 
     $ufMatch = UFMatchFabricator::fabricate();
     civicrm_api3('UFMatch', 'delete', ['id' => $ufMatch['id']]);
