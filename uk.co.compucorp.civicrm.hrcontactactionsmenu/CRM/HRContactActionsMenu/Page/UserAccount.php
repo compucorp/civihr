@@ -13,13 +13,7 @@ class CRM_HRContactActionsMenu_Page_UserAccount {
    * contact.
    */
   public static function delete() {
-    $contactID = CRM_Utils_Array::value('cid', $_GET);
-    $contactInfo = ContactHelper::getUserInformation($contactID);
-    $userAccount = UserAccountFactory::create();
-    $userAccount->cancel($contactInfo);
-
-    CRM_Core_Session::setStatus(ts('User account has been deleted'), 'Success', 'success');
-    self::redirectToContactSummaryPage($contactID);
+    self::doUserAction('delete', 'User account has been deleted');
   }
 
   /**
@@ -27,13 +21,7 @@ class CRM_HRContactActionsMenu_Page_UserAccount {
    * contact.
    */
   public static function disable() {
-    $contactID = CRM_Utils_Array::value('cid', $_GET);
-    $contactInfo = ContactHelper::getUserInformation($contactID);
-    $userAccount = UserAccountFactory::create();
-    $userAccount->disable($contactInfo);
-
-    CRM_Core_Session::setStatus(ts('User account has been disabled'), 'Success', 'success');
-    self::redirectToContactSummaryPage($contactID);
+    self::doUserAction('disable', 'User account has been disabled');
   }
 
   /**
@@ -41,21 +29,25 @@ class CRM_HRContactActionsMenu_Page_UserAccount {
    * contact.
    */
   public static function enable() {
-    $contactID = CRM_Utils_Array::value('cid', $_GET);
-    $contactInfo = ContactHelper::getUserInformation($contactID);
-    $userAccount = UserAccountFactory::create();
-    $userAccount->enable($contactInfo);
-
-    CRM_Core_Session::setStatus(ts('User account has been enabled'), 'Success', 'success');
-    self::redirectToContactSummaryPage($contactID);
+    self::doUserAction('enable', 'User account has been enabled');
   }
 
   /**
-   * Redirects to the Contact summary page.
+   * Function to execute the required method of the User Account
+   * object based on the action passed in.
+   * After execution, the success message is displayed and the
+   * user redirected to contact summary page.
    *
-   * @param int $contactID
+   * @param string $action
+   * @param string $successMessage
    */
-  private static function redirectToContactSummaryPage($contactID) {
+  private static function doUserAction($action, $successMessage) {
+    $contactID = CRM_Utils_Array::value('cid', $_GET);
+    $contactInfo = ContactHelper::getUserInformation($contactID);
+    $userAccount = UserAccountFactory::create();
+    $userAccount->$action($contactInfo);
+    CRM_Core_Session::setStatus(ts($successMessage), 'Success', 'success');
+
     $url = CRM_Utils_System::url('civicrm/contact/view', "reset=1&cid=$contactID");
     CRM_Utils_System::redirect($url);
   }
