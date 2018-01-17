@@ -116,19 +116,19 @@ var Promise = require('es6-promise').Promise;
     return getRolesAndIDs().then(function (contactRolesAndIDsMap) {
       return new Promise(function (resolve) {
         gulp.src(BACKSTOP_DIR + FILES.tpl)
-        .pipe(file(destFile, tempFileContent(contactRolesAndIDsMap)))
-        .pipe(gulp.dest(BACKSTOP_DIR))
-        .on('end', function () {
-          var promise = backstopjs(command, {
-            configPath: BACKSTOP_DIR + destFile,
-            filter: argv.filter
-          })
-          .catch(_.noop).then(function () { // equivalent to .finally()
-            gulp.src(BACKSTOP_DIR + destFile, { read: false }).pipe(clean());
-          });
+          .pipe(file(destFile, tempFileContent(contactRolesAndIDsMap)))
+          .pipe(gulp.dest(BACKSTOP_DIR))
+          .on('end', function () {
+            var promise = backstopjs(command, {
+              configPath: BACKSTOP_DIR + destFile,
+              filter: argv.filter
+            })
+              .catch(_.noop).then(function () { // equivalent to .finally()
+                gulp.src(BACKSTOP_DIR + destFile, { read: false }).pipe(clean());
+              });
 
-          resolve(promise);
-        });
+            resolve(promise);
+          });
       });
     });
   }
