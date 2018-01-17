@@ -1,0 +1,16 @@
+{
+  "scenarios": [
+    {
+      "label": "Contact Summary - Action Menu",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact/open-contact-actions-menu",
+      "credential": "admin"
+    },
+    {
+      "label": "Contact Action Menu - User deletetion confirmation dialog",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "onReadyScript": "contact/delete-user-account-confirmation-dialog",
+      "credential": "admin"
+    }
+  ]
+}
