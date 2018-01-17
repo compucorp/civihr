@@ -34,13 +34,15 @@ class CRM_HRContactActionsMenu_Component_UserInformationLinkItem implements Acti
    * @return string
    */
   public function render() {
-    $link = sprintf(
-      '<a href="%s" class="%s">%s</a>',
+    $userInformationMarkup = '
+      <p><span class="crm_contact_action_menu__bold_text">User: </span> 
+        <a href="%s" class="text-primary">%s</a>
+      </p>';
+
+    return sprintf(
+      $userInformationMarkup,
       $this->cmsUserPath->getEditAccountPath(),
-      'tbd',
       $this->contactData['cmsId'] . ' ' . $this->contactData['name']
     );
-
-    return 'User: ' . $link;
   }
 }

@@ -17,14 +17,17 @@ class CRM_HRContactActionsMenu_Component_UserInformationLinkItemTest extends Bas
     $cmsUserPath = $cmsUserPath->reveal();
     $userInformationItem = new UserInformationLinkItem($cmsUserPath, $contactData);
 
-    $link = sprintf(
-      '<a href="%s" class="%s">%s</a>',
+    $userInformationMarkup = '
+      <p><span class="crm_contact_action_menu__bold_text">User: </span> 
+        <a href="%s" class="text-primary">%s</a>
+      </p>';
+
+    $expectedResult = sprintf(
+      $userInformationMarkup,
       $cmsUserPath->getEditAccountPath(),
-      'tbd',
       $contactData['cmsId'] . ' ' . $contactData['name']
     );
 
-    $expectedResult = 'User: ' . $link;
     $this->assertEquals($expectedResult, $userInformationItem->render());
   }
 }

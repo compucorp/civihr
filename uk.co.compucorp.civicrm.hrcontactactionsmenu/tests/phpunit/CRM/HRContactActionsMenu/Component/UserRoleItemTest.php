@@ -17,7 +17,16 @@ class CRM_HRContactActionsMenu_ComponentUserRoleItemTest extends BaseHeadlessTes
 
     $userRoleItem = new UserRoleItem($cmsUserRole->reveal());
     $roles = implode(', ', $userRoles);
-    $expectedResult = 'Roles: ' . $roles;
+
+    $userRolesMarkup = '
+      <p><span class="crm_contact_action_menu__bold_text">Roles: </span> 
+        <span class="crm_contact_action_menu__grey_text">%s</span>
+      </p>';
+
+    $expectedResult = sprintf(
+      $userRolesMarkup,
+      $roles
+    );
 
     $this->assertEquals($expectedResult, $userRoleItem->render());
   }
