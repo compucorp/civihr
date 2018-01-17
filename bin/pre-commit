@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# Run Civilint on staged files only to prevent committing the code in case there is
+# any violation for coding standards.
+
+# You need to copy this file to .git/hooks/ directory to make it work.
+
+git diff --cached --name-only | civilint
