@@ -29,7 +29,8 @@ define([
         if (name === 'day') {
             tpl = (function ($tpl) {
                 jQuery($tpl).find('th[ng-if="showWeeks"]').parent().css({ 'border-top': '1px solid #DDD' });
-                return jQuery($tpl).wrap('<div/>').parent().html();
+
+                return jQuery($tpl).prop('outerHTML');
             })(jQuery.parseHTML(tpl));
         }
 
