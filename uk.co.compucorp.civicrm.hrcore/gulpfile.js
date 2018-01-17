@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var argv = require('yargs').argv;
+var exec = require('child_process').exec;
 var gulp = require('gulp');
 var clean = require('gulp-clean');
 var color = require('gulp-color');
@@ -47,6 +48,31 @@ var Promise = require('es6-promise').Promise;
   });
 
   /**
+   * Gets a map of contact roles and IDs
+   *
+   * @return {Promise} resolved with {Object}
+   */
+  function getRolesAndIDs () {
+    return new Promise(function (resolve) {
+      var rolesAndIDs = {};
+
+      exec('cv api contact.get', {maxBuffer: 1024 * 1000}, function (err, result) {
+        if (err) {
+          console.log(color('Unable to fetch contact roles and IDs: ' + err, 'RED'));
+        }
+
+        _.each(JSON.parse(result).values, function (contact) {
+          if (contact.email.match(/^civihr_/)) {
+            rolesAndIDs[contact.email.replace(/^civihr_([^@]+)@.*$/, '$1')] = contact.id;
+          }
+        });
+
+        resolve(rolesAndIDs);
+      });
+    });
+  }
+
+  /**
    * Checks if the site config file is in the backstopjs folder
    * If not, it creates a template for it
    *
@@ -87,20 +113,22 @@ var Promise = require('es6-promise').Promise;
       return Promise.reject(new Error());
     }
 
-    return new Promise(function (resolve) {
-      gulp.src(BACKSTOP_DIR + FILES.tpl)
-      .pipe(file(destFile, tempFileContent()))
-      .pipe(gulp.dest(BACKSTOP_DIR))
-      .on('end', function () {
-        var promise = backstopjs(command, {
-          configPath: BACKSTOP_DIR + destFile,
-          filter: argv.filter
-        })
-        .catch(_.noop).then(function () { // equivalent to .finally()
-          gulp.src(BACKSTOP_DIR + destFile, { read: false }).pipe(clean());
-        });
+    return getRolesAndIDs().then(function (contactRolesAndIDsMap) {
+      return new Promise(function (resolve) {
+        gulp.src(BACKSTOP_DIR + FILES.tpl)
+        .pipe(file(destFile, tempFileContent(contactRolesAndIDsMap)))
+        .pipe(gulp.dest(BACKSTOP_DIR))
+        .on('end', function () {
+          var promise = backstopjs(command, {
+            configPath: BACKSTOP_DIR + destFile,
+            filter: argv.filter
+          })
+          .catch(_.noop).then(function () { // equivalent to .finally()
+            gulp.src(BACKSTOP_DIR + destFile, { read: false }).pipe(clean());
+          });
 
-        resolve(promise);
+          resolve(promise);
+        });
       });
     });
   }
@@ -110,14 +138,18 @@ var Promise = require('es6-promise').Promise;
    * The content is the mix of the config template and the list of scenarios
    * under the scenarios/ folder
    *
-   * @return {string}
+   * @param  {Object} contactRolesAndIDsMap
+   * @return {String}
    */
-  function tempFileContent () {
+  function tempFileContent (contactRolesAndIDsMap) {
     var config = JSON.parse(fs.readFileSync(BACKSTOP_DIR + FILES.config));
     var content = JSON.parse(fs.readFileSync(BACKSTOP_DIR + FILES.tpl));
 
     content.scenarios = scenariosList().map(function (scenario) {
-      scenario.url = config.url + '/' + scenario.url;
+      scenario.url = config.url + '/' +
+        scenario.url.replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, contactRole) {
+          return contactRolesAndIDsMap[contactRole];
+        });
 
       return scenario;
     });
