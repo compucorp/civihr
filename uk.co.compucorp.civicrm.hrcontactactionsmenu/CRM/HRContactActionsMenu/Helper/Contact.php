@@ -30,4 +30,20 @@ class CRM_HRContactActionsMenu_Helper_Contact {
 
     return $result;
   }
+
+  /**
+   * Checks whether a contact has been soft deleted or not.
+   *
+   * @param int $contactID
+   *
+   * @return bool
+   */
+  public static function isContactDeleted($contactID) {
+    $result = civicrm_api3('Contact', 'get', array(
+      'is_deleted' => 1,
+      'id' => $contactID
+    ));
+
+    return $result['count'] > 0;
+  }
 }
