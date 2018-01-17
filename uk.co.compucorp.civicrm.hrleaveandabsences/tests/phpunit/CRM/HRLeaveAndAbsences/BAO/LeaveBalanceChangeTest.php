@@ -10,10 +10,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest as PublicHolidayLeaveRequestFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Factory_LeaveDateAmountDeduction as LeaveDateAmountDeductionFactory;
 
 /**
@@ -658,128 +655,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(-1, $leaveRequestBalanceChange);
   }
 
-  public function testLeaveRequestBalanceForEntitlementCanSumBalanceChangesCreatedByLeaveRequestsUpToASpecificDate() {
-    $leaveRequestStatuses = LeaveRequest::getStatuses();
-    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
-      new DateTime(),
-      new DateTime('+20 days')
-    );
-
-    HRJobContractFabricator::fabricate(
-      ['contact_id' => $entitlement->contact_id],
-      ['period_start_date' => CRM_Utils_Date::processDate('today')]
-    );
-
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
-    $this->assertEquals(0, $balance);
-
-    // This will deduct 11 days
-    $this->createLeaveRequestBalanceChange(
-      $entitlement->type_id,
-      $entitlement->contact_id,
-      $leaveRequestStatuses['approved'],
-      date('Y-m-d'),
-      date('Y-m-d', strtotime('+10 days'))
-    );
-
-    // Balance including the whole leave request
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
-    $this->assertEquals(-11, $balance);
-
-    // Balance including only the first day of leave request
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
-      $entitlement,
-      [],
-      new Datetime('now')
-    );
-    $this->assertEquals(-1, $balance);
-
-    // Balance including only the two first days of leave request
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
-      $entitlement,
-      [],
-      new Datetime('+1 day')
-    );
-    $this->assertEquals(-2, $balance);
-
-    // Balance including only the five first days of leave request
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
-      $entitlement,
-      [],
-      new Datetime('+4 days')
-    );
-    $this->assertEquals(-5, $balance);
-
-    // The limit date is after the leave request end date, so the whole request
-    // will be included
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
-      $entitlement,
-      [],
-      new Datetime('+12 days')
-    );
-    $this->assertEquals(-11, $balance);
-  }
-
-  public function testLeaveRequestBalanceForEntitlementCanSumBalanceChangesCreatedByLeaveRequestsOnASpecificDateRange() {
-    $leaveRequestStatuses = LeaveRequest::getStatuses();
-    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
-      new DateTime(),
-      new DateTime('+20 days')
-    );
-
-    HRJobContractFabricator::fabricate(
-      ['contact_id' => $entitlement->contact_id],
-      ['period_start_date' => CRM_Utils_Date::processDate('today')]
-    );
-
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
-    $this->assertEquals(0, $balance);
-
-    // This will deduct 11 days
-    $this->createLeaveRequestBalanceChange(
-      $entitlement->type_id,
-      $entitlement->contact_id,
-      $leaveRequestStatuses['approved'],
-      date('Y-m-d'),
-      date('Y-m-d', strtotime('+10 days'))
-    );
-
-    // Balance including the whole leave request
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
-    $this->assertEquals(-11, $balance);
-
-    // Balance including only the third and fourth days of leave request
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
-      $entitlement,
-      [],
-      new Datetime('+3 days'),
-      new Datetime('+2 days')
-    );
-    $this->assertEquals(-2, $balance);
-
-    // The start date is before the leave request start date and the limit date
-    // is exactly the same day as the request start date, so the balance will
-    // include only 1 day
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
-      $entitlement,
-      [],
-      new Datetime('now'),
-      new Datetime('-1 day')
-    );
-    $this->assertEquals(-1, $balance);
-
-    // The start date is exactly the same as the  leave request end date
-    // and the limit date is one day after the request end date, so the balance
-    // will include only 1 day
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
-      $entitlement,
-      [],
-      new Datetime('+11 days'),
-      new Datetime('+10 days')
-    );
-    $this->assertEquals(-1, $balance);
-  }
-
   public function testLeaveRequestBalanceForEntitlementCanExcludeBalanceChangesForPublicHolidayLeaveRequests() {
     $leaveRequestStatuses = LeaveRequest::getStatuses();
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
@@ -810,7 +685,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
     // Balance excluding the days deducted from the leave request
     $excludePublicHolidays = true;
-    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement, [], null, null, $excludePublicHolidays);
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement, [], $excludePublicHolidays);
     $this->assertEquals(-11, $balance);
   }
 
@@ -851,8 +726,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
       $entitlement,
       [],
-      null,
-      null,
       false,
       $includePublicHolidaysOnly
     );
@@ -896,7 +769,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals(0, $balance);
   }
 
-  public function testLeaveRequestBalanceForEntitlementShouldIncludeTOILBalanceChanges() {
+  public function testLeaveRequestBalanceForEntitlementShouldIncludeTOILBalanceChangesByDefault() {
     $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
       new DateTime('today'),
       new DateTime('+100 days')
@@ -916,12 +789,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'from_date' => CRM_Utils_Date::processDate('today'),
       'to_date' => CRM_Utils_Date::processDate('today'),
       'toil_duration' => 360,
-      'toil_to_accrue' => 2,
+      'toil_to_accrue' => 3,
       'toil_expiry_date' => CRM_Utils_Date::processDate('+30 days'),
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
-    // This will deduct 1 day from the 2 accrued by the toil request
+    // This will deduct 1 day from the 3 accrued by the toil request
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $entitlement->contact_id,
       'type_id' => $entitlement->type_id,
@@ -930,7 +803,47 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ], true);
 
     $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
-    $this->assertEquals(1, $balance);
+    // 3 days accrued by the TOIL Request minus 1 days deducted by the Leave Request
+    $this->assertEquals(2, $balance);
+  }
+
+  public function testLeaveRequestBalanceForEntitlementCanExcludeTOILBalanceChanges() {
+    $entitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('today'),
+      new DateTime('+100 days')
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $entitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
+    );
+
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement);
+    $this->assertEquals(0, $balance);
+
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $entitlement->contact_id,
+      'type_id' => $entitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('today'),
+      'to_date' => CRM_Utils_Date::processDate('today'),
+      'toil_duration' => 360,
+      'toil_to_accrue' => 3,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+30 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    // Will deduct 1 day
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $entitlement->contact_id,
+      'type_id' => $entitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('+10 days'),
+      'to_date' => CRM_Utils_Date::processDate('+10 days')
+    ], true);
+
+    $excludeTOIL = true;
+    $balance = LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($entitlement, [] ,false, false, $excludeTOIL);
+    // Only the day deducted by the Leave Request will be included
+    $this->assertEquals(-1, $balance);
   }
 
   public function testLeaveRequestBalanceForEntitlementDoesNotAccountForSoftDeletedLeaveRequests() {
