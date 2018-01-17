@@ -9,25 +9,52 @@ use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem
  */
 class CRM_HRContactActionsMenu_Component_GroupButtonItemTest extends BaseHeadlessTest {
 
-  public function testRender() {
-    $buttonLabel = 'myButton';
-    $buttonClass = 'btn';
-    $buttonUrl = 'www.test.com';
-    $buttonIcon = 'fa-book';
+  public function testRenderWhenAddBottomMarginIsFalse() {
+    $params = ['label'=> 'myButton', 'class' => 'btn', 'url' => 'www.test.com', 'icon' => 'fa-book'];
+    $button = new ActionsGroupButtonItem($params['label']);
+    $expectedResult = $this->getButtonMarkup($button, $params);
+    $this->assertEquals($expectedResult, $button->render());
+  }
 
-    $button = new ActionsGroupButtonItem($buttonLabel);
-    $button->setClass($buttonClass)
-           ->setIcon($buttonIcon)
-           ->setUrl($buttonUrl);
-
-    $expectedResult = sprintf(
-      '<a href="%s" class="%s"><i class="%s">%s</i></a>',
-      $buttonUrl,
-      $buttonClass,
-      $buttonIcon,
-      $buttonLabel
+  public function testRenderWhenAddBottomMarginIsTrue() {
+    $params = ['label'=> 'myButton', 'class' => 'btn', 'url' => 'www.test.com', 'icon' => 'fa-book'];
+    $button = new ActionsGroupButtonItem($params['label']);
+    $addBottomMargin = TRUE;
+    $buttonMarkup = $this->getButtonMarkup($button, $params, $addBottomMargin);
+    $expectedResult =  sprintf('      
+        <div class="crm_contact_action_menu__bottom_margin">
+          %s
+        </div>',
+      $buttonMarkup
     );
 
     $this->assertEquals($expectedResult, $button->render());
+  }
+
+  private function getButtonMarkup($button, $params, $addMargin = false) {
+    $button->setClass($params['class'])
+      ->setIcon($params['icon'])
+      ->setUrl($params['url']);
+
+    if($addMargin) {
+      $button->addBottomMargin();
+    }
+
+    $buttonMarkup = '
+      <a href="%s">
+        <button class="%s">
+          <span><i class="%s"></i></span> %s
+        </button>
+      </a>';
+
+    $buttonMarkup = sprintf(
+      $buttonMarkup,
+      $params['url'],
+      $params['class'],
+      $params['icon'],
+      $params['label']
+    );
+
+    return $buttonMarkup;
   }
 }

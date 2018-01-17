@@ -18,7 +18,7 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
   /**
    * @var string
    */
-  private $icon;
+  private $icon = '';
 
   /**
    * @var string
@@ -29,6 +29,11 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
    * @var string
    */
   private $url;
+
+  /**
+   * @var bool
+   */
+  private $addBottomMargin = FALSE;
 
   /**
    * CRM_HRContactActionsMenu_Component_GroupButtonItem constructor.
@@ -79,15 +84,45 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
   }
 
   /**
+   * Indicates that this button should
+   * have a bottom margin.
+   *
+   * @return CRM_HRContactActionsMenu_Component_GroupButtonItem
+   */
+  public function addBottomMargin() {
+    $this->addBottomMargin = TRUE;
+
+    return $this;
+  }
+
+  /**
    * {@inheritDoc}
    */
   public function render() {
-    return sprintf(
-      '<a href="%s" class="%s"><i class="%s">%s</i></a>',
+    $buttonMarkup = '
+      <a href="%s">
+        <button class="%s">
+          <span><i class="%s"></i></span> %s
+        </button>
+      </a>';
+
+    $buttonMarkup = sprintf(
+      $buttonMarkup,
       $this->url,
       $this->class,
       $this->icon,
       $this->label
     );
+
+    if ($this->addBottomMargin) {
+      $buttonMarkup =  sprintf('      
+        <div class="crm_contact_action_menu__bottom_margin">
+          %s
+        </div>',
+        $buttonMarkup
+      );
+    }
+
+    return $buttonMarkup;
   }
 }
