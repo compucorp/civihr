@@ -3,7 +3,7 @@
     {
       "label": "Contact Edit Form",
       "delay": 5000,
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
       "onReadyScript": "contact/contact-edit",
       "credential": "admin"
     }
