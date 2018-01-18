@@ -91,8 +91,6 @@ module.exports = (function () {
     waitForReady: function () {
       var casper = this.casper;
 
-      casper.waitUntilVisible('.ct-container-inner');
-      casper.waitUntilVisible('.ct-documents-container');
       casper.waitUntilVisible('.ct-filter-date');
     }
   });

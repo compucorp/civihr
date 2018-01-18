@@ -48,26 +48,57 @@ var Promise = require('es6-promise').Promise;
   });
 
   /**
-   * Gets a map of contact roles and IDs
+   * Constructs URL for BackstopJS scenario based on
+   * site URL, scenario config URL and contact "roles" and IDs map
    *
-   * @return {Promise} resolved with {Object}
+   * @param  {String} siteUrl
+   * @param  {String} scenarioUrl
+   * @param  {Object} contactIdsByRoles
+   * @return {String}
+   */
+  function constructBackstopJSScenarioUrl (siteUrl, scenarioUrl, contactIdsByRoles) {
+    return siteUrl + '/' +
+      scenarioUrl.replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, contactRole) {
+        return contactIdsByRoles[contactRole];
+      });
+  }
+
+  /**
+   * Fetches civicrm contacts who's emails match "civihr_" pattern
+   * and returns a map of their "roles" connected to their IDs.
+   * Requires 'civihr_(staff|manager|admin)@...' to be presented in DB,
+   * otherwise will throw an error.
+   *
+   * @return {Promise} resolved with {Object}, ex. { 'staff': 204, ... etc }
    */
   function getRolesAndIDs () {
-    return new Promise(function (resolve) {
-      var rolesAndIDs = {};
+    return new Promise(function (resolve, reject) {
+      exec('cv api contact.get sequential=1 contact_type="Individual" return="email,contact_id"', function (err, result) {
+        var idsByRoles, missingRoles;
 
-      exec('cv api contact.get', {maxBuffer: 1024 * 1000}, function (err, result) {
         if (err) {
-          console.log(color('Unable to fetch contact roles and IDs: ' + err, 'RED'));
+          return reject(new Error('Unable to fetch contact roles and IDs: ' + err));
         }
 
-        _.each(JSON.parse(result).values, function (contact) {
-          if (contact.email.match(/^civihr_/)) {
-            rolesAndIDs[contact.email.replace(/^civihr_([^@]+)@.*$/, '$1')] = contact.id;
-          }
-        });
+        idsByRoles = _(JSON.parse(result).values)
+          .filter(function (contact) {
+            return contact.email.match(/^civihr_/);
+          })
+          .map(function (contact) {
+            return [contact.email.split('@')[0].split('_')[1], contact.contact_id];
+          })
+          .fromPairs()
+          .value();
 
-        resolve(rolesAndIDs);
+        missingRoles = _.difference(['staff', 'manager', 'admin'], _.keys(idsByRoles));
+
+        if (missingRoles.length) {
+          return reject(new Error('Required users with emails ' + missingRoles.map(function (role) {
+            return 'civihr_' + role + '@*';
+          }).join(', ') + ' were not found in the database'));
+        }
+
+        resolve(idsByRoles);
       });
     });
   }
@@ -113,24 +144,28 @@ var Promise = require('es6-promise').Promise;
       return Promise.reject(new Error());
     }
 
-    return getRolesAndIDs().then(function (contactRolesAndIDsMap) {
-      return new Promise(function (resolve) {
-        gulp.src(BACKSTOP_DIR + FILES.tpl)
-          .pipe(file(destFile, tempFileContent(contactRolesAndIDsMap)))
-          .pipe(gulp.dest(BACKSTOP_DIR))
-          .on('end', function () {
-            var promise = backstopjs(command, {
-              configPath: BACKSTOP_DIR + destFile,
-              filter: argv.filter
-            })
+    return getRolesAndIDs()
+      .then(function (contactIdsByRoles) {
+        return new Promise(function (resolve) {
+          gulp.src(BACKSTOP_DIR + FILES.tpl)
+            .pipe(file(destFile, tempFileContent(contactIdsByRoles)))
+            .pipe(gulp.dest(BACKSTOP_DIR))
+            .on('end', function () {
+              var promise = backstopjs(command, {
+                configPath: BACKSTOP_DIR + destFile,
+                filter: argv.filter
+              })
               .catch(_.noop).then(function () { // equivalent to .finally()
                 gulp.src(BACKSTOP_DIR + destFile, { read: false }).pipe(clean());
               });
 
-            resolve(promise);
-          });
+              resolve(promise);
+            });
+        });
+      })
+      .catch(function (err) {
+        console.log(color(err.message, 'RED'));
       });
-    });
   }
 
   /**
@@ -138,18 +173,15 @@ var Promise = require('es6-promise').Promise;
    * The content is the mix of the config template and the list of scenarios
    * under the scenarios/ folder
    *
-   * @param  {Object} contactRolesAndIDsMap
+   * @param  {Object} contactIdsByRoles
    * @return {String}
    */
-  function tempFileContent (contactRolesAndIDsMap) {
+  function tempFileContent (contactIdsByRoles) {
     var config = JSON.parse(fs.readFileSync(BACKSTOP_DIR + FILES.config));
     var content = JSON.parse(fs.readFileSync(BACKSTOP_DIR + FILES.tpl));
 
     content.scenarios = scenariosList().map(function (scenario) {
-      scenario.url = config.url + '/' +
-        scenario.url.replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, contactRole) {
-          return contactRolesAndIDsMap[contactRole];
-        });
+      scenario.url = constructBackstopJSScenarioUrl(config.url, scenario.url, contactIdsByRoles);
 
       return scenario;
     });
