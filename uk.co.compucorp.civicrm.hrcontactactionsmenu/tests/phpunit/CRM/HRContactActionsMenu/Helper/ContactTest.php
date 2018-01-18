@@ -50,14 +50,4 @@ class CRM_HRContactActionsMenu_Helper_ContactTest extends BaseHeadlessTest {
     $result = ContactHelper::getUserInformation($contactID);
     $this->assertEquals($userID, $result['cmsId']);
   }
-
-  public function testIsContactDeletedReturnsTrueWhenContactHasBeenSoftDeleted() {
-    $contact = ContactFabricator::fabricate(['is_deleted' => 1]);
-    $this->assertTrue(ContactHelper::isContactDeleted($contact['id']));
-  }
-
-  public function testIsContactDeletedReturnsFalseWhenContactIsNotSoftDeleted() {
-    $contact = ContactFabricator::fabricate(['is_deleted' => 0]);
-    $this->assertFalse(ContactHelper::isContactDeleted($contact['id']));
-  }
 }
