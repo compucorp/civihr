@@ -1378,8 +1378,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param array $params
    *
-   * @return mixed
-   * @throws \Exception
+   * @return array
+   *   The $params array with empty values for the non-mandatory fields
    */
   private static function resetNonMandatoryDateFieldsIfCalculationUnitChanged($params) {
     if (self::calculationUnitChanged($params)) {
@@ -1394,6 +1394,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         $params['to_date_amount']   = '';
       }
     }
+
     return $params;
   }
 
@@ -1412,13 +1413,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private static function calculationUnitChanged($params) {
     if (empty($params['id'])) {
       // New Leave Request being created, so it didn't change
-      return false;
+      return FALSE;
     }
 
     $currentAbsenceType = self::getCurrentAbsenceType($params['id']);
 
     if ($currentAbsenceType->id == $params['type_id']) {
-      return false;
+      return FALSE;
     }
 
     $newAbsenceType = AbsenceType::findById($params['type_id']);

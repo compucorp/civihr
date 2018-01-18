@@ -4384,7 +4384,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $dayTypes['all_day'],
       'to_date_type' => $dayTypes['all_day']
     ];
-
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($leaveRequestParams);
 
     // Change absence type to one in hours
@@ -4395,8 +4394,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_amount' => 7.5,
       'from_date_amount' => 0,
     ]);
-
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($leaveRequestParams);
+    $leaveRequest = LeaveRequest::create($leaveRequestParams, LeaveRequest::VALIDATIONS_OFF);
 
     // Here, fields required for absence types in days were set to null,
     // whereas the ones required for absence types in hours were not touched.
@@ -4412,8 +4410,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $leaveRequestParams = array_merge($leaveRequestParams, [
       'type_id' => $absenceTypeInDays->id,
     ]);
-
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($leaveRequestParams);
+    $leaveRequest = LeaveRequest::create($leaveRequestParams, LeaveRequest::VALIDATIONS_OFF);
 
     // Here, fields required for absence types in hours were set to null,
     // whereas the ones required for absence types in days were not touched.
