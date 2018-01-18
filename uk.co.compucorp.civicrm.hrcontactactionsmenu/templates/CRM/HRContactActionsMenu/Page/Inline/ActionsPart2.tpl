@@ -10,7 +10,7 @@
             <button class="btn btn-primary-outline">
               <span>
                 <i class="fa fa-envelope-o"></i>
-              </span> 
+              </span>
               Send Welcome Email
             </button>
           </div>
@@ -18,15 +18,15 @@
             <button class="btn btn-primary-outline">
               <span>
                 <i class="fa fa-envelope-o"></i>
-              </span> 
+              </span>
               Send Password Reset Email
             </button>
           </div>
           <h3>User Has Access To:</h3>
           <p>
-            <span class="crm_contact_action_menu__grey_text">No staff members</span> 
+            <span class="crm_contact_action_menu__grey_text">No staff members</span>
             <span class="fa fa-question-circle crm_contact_action_menu__help_icon"></span>
-          </p> 
+          </p>
           <button class="btn btn-secondary-outline">Manage Regional Access</button>
         </div>
         <div class="row crm_contact_action_menu__control_buttons_container">
