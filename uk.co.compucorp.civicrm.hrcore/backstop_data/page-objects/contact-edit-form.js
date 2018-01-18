@@ -15,7 +15,7 @@ module.exports = (function () {
       return new Promise(function (resolve) {
         casper.then(function () {
           casper.click(edit_button);
-          casper.wait(5000);
+          casper.waitUntilVisible('#contactDetails');
         }.bind(this));
       }.bind(this));
     }
