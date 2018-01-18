@@ -6,7 +6,6 @@
   },
   "devDependencies": {
     "backstopjs": "~2.3.7",
-    "bluebird": "^3.5.1",
     "civicrm-scssroot": "git://github.com/totten/civicrm-scssroot.git#v0.1.1",
     "es6-promise": "~4.0.5",
     "find": "~0.2.7",

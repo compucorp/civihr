@@ -202,7 +202,6 @@ var xml = require('xml-parse');
 (function () {
   var exec = require('child_process').exec;
   var find = require('find');
-  var bluebird = require('bluebird');
 
   gulp.task('requirejs', requireJsTask);
 
@@ -225,29 +224,23 @@ var xml = require('xml-parse');
    *
    *
    */
-  function extensionDependenciesTask () {
+  function extensionDependenciesTask (cb) {
     var buildFiles = find.fileSync(/js(\/[^/]+)?\/build\.js$/, path.join(__dirname, '..'));
 
-    var foo = buildFiles.filter(function (buildFile) {
+    var seq = buildFiles.filter(function (buildFile) {
       var content = fs.readFileSync(buildFile, 'utf8');
 
       return (new RegExp(argv.ext, 'g')).test(content);
+    })
+    .map(function (buildFile) {
+      return spawnTaskForExtension('requirejs', requireJsTask, getExtensionNameFromFile(buildFile));
     });
 
-    return bluebird.mapSeries(foo.map(function (buildFile) {
-      return function () {
-        return new Promise(function (resolve, reject) {
-          argv.ext = getExtensionNameFromFile(buildFile);
-
-          gulp.start(spawnTaskForCurrentExtension('requirejs', requireJsTask))
-            .once('task_stop', function () {
-              resolve();
-            });
-        });
-      };
-    }), function (promise) {
-      return promise();
-    });
+    if (seq.length > 0) {
+      gulpSequence.apply(null, seq)(cb);
+    } else {
+      cb();
+    }
   }
 
   /**
@@ -318,9 +311,9 @@ var xml = require('xml-parse');
    */
   function requireJsTask (cb) {
     var sequence = addExtensionCustomTasksToSequence([
-      spawnTaskForCurrentExtension('requirejs:main', requireJsMainTask)
+      spawnTaskForExtension('requirejs:main', requireJsMainTask, argv.ext)
     ], 'requirejs');
-    sequence.push(spawnTaskForCurrentExtension('requirejs:dependencies', extensionDependenciesTask));
+    sequence.push(spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask, argv.ext));
 
     gulpSequence.apply(null, sequence)(cb);
   }
@@ -329,9 +322,21 @@ var xml = require('xml-parse');
    *
    *
    */
-  function spawnTaskForCurrentExtension (taskName, taskFn) {
-    taskName += ' (' + argv.ext + ')';
-    gulp.task(taskName, taskFn);
+  function setCurrentExtension (extension) {
+    argv.ext = extension;
+  }
+
+  /**
+   *
+   *
+   */
+  function spawnTaskForExtension (taskName, taskFn, ext) {
+    taskName += ' (' + ext + ')';
+
+    gulp.task(taskName, function (cb) {
+      setCurrentExtension(ext);
+      taskFn(cb);
+    });
 
     return taskName;
   }
