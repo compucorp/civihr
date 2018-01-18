@@ -11,8 +11,11 @@ var fs = require('fs');
 var path = require('path');
 var Promise = require('es6-promise').Promise;
 var cv = require('civicrm-cv')({ mode: 'sync' });
+var find = require('find');
 var findUp = require('find-up');
 var xml = require('xml-parse');
+
+var currentExtension;
 
 // BackstopJS tasks
 (function () {
@@ -200,15 +203,14 @@ var xml = require('xml-parse');
 
 // RequireJS
 (function () {
-  var originalExt;
+  var originalExtension;
   var detectInstalled = require('detect-installed');
   var exec = require('child_process').exec;
-  var find = require('find');
 
   gulp.task('requirejs', function (cb) {
     // The original extension that the task was called with could change during
     // the execution, thus it gets saved so it can be restored later
-    originalExt = argv.ext;
+    originalExtension = getCurrentExtension();
 
     requireJsTask(cb);
   });
@@ -245,7 +247,7 @@ var xml = require('xml-parse');
     var sequence = buildFiles.filter(function (buildFile) {
       var content = fs.readFileSync(buildFile, 'utf8');
 
-      return (new RegExp(argv.ext, 'g')).test(content);
+      return (new RegExp(getCurrentExtension(), 'g')).test(content);
     })
     .map(function (buildFileWithDependency) {
       var extension = getExtensionNameFromFile(buildFileWithDependency);
@@ -256,7 +258,7 @@ var xml = require('xml-parse');
     sequence.length ? gulpSequence.apply(null, sequence)(function () {
       // Restore the original extension (used in the CLI) as the current extension
       // before marking the task as done
-      argv.ext = originalExt;
+      setCurrentExtension(originalExtension);
 
       cb();
     }) : cb();
@@ -338,9 +340,9 @@ var xml = require('xml-parse');
     }
 
     sequence = addExtensionCustomTasksToSequence([
-      spawnTaskForExtension('requirejs:main', requireJsMainTask, argv.ext)
+      spawnTaskForExtension('requirejs:main', requireJsMainTask, getCurrentExtension())
     ], 'requirejs');
-    sequence.push(spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask, argv.ext));
+    sequence.push(spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask, getCurrentExtension()));
 
     gulpSequence.apply(null, sequence)(cb);
   }
@@ -386,9 +388,12 @@ var xml = require('xml-parse');
 
 /**
  * Given an original sequence of tasks and the name of the "wrapper" task
- * (requirejs, sass, etc) this functions finds if the current extension (in argv.ext)
+ * (requirejs, sass, etc), it finds if the current extension
  * has any custom tasks to add before/after or to straight replace the main task
  *
+ * @param {Array} sequence
+ * @param {String} taskName
+ * @return {Array}
  */
 function addExtensionCustomTasksToSequence (sequence, taskName) {
   var customTasks = getExtensionTasks(taskName);
@@ -432,16 +437,38 @@ function addExtensionCustomWatchPatternsToDefaultList (defaultList, taskName) {
 }
 
 /**
- * Given a file, it finds the info.xml in one of the parent folders and reads
- * the name of the extension from the "key" property of the <extension> tag
+ * Returns the value of the "key" property of the <extension> tag and of the
+ * <file> tag of the given info.xml file
+ *
+ * @param {String} infoFile
+ * @return {Object}
+ */
+function getExtensionNameAndAliasFromInfoXML (infoFile) {
+  var parsedXML = xml.parse(fs.readFileSync(infoFile, 'utf8'));
+
+  var extensionTag = _.find(parsedXML, function (node) {
+    return node.tagName && node.tagName === 'extension';
+  });
+
+  return {
+    name: extensionTag.attributes.key,
+    alias: _.find(extensionTag.childNodes, function (node) {
+      return node.tagName && node.tagName === 'file';
+    }).innerXML
+  };
+}
+
+/**
+ * Given a file, it finds the info.xml in one of the parent folders and returns
+ * the extension name stored in it
+ *
+ * @param {String} filePath
+ * @return {String}
  */
 function getExtensionNameFromFile (filePath) {
   var infoXMLPath = findUp.sync('info.xml', { cwd: filePath });
-  var parsedXML = xml.parse(fs.readFileSync(infoXMLPath, 'utf8'));
 
-  return _.find(parsedXML, function (node) {
-    return node.tagName && node.tagName === 'extension';
-  }).attributes.key;
+  return getExtensionNameAndAliasFromInfoXML(infoXMLPath).name;
 }
 
 /**
@@ -459,26 +486,69 @@ function getExtensionTasks (taskName) {
 }
 
 /**
+ * Returns the name of the extension currently used by the tasks
+ *
+ * If the name is not cached already, it will fetch the name from the CLI argument
+ * and then cache it for the next time the function is called
+ *
+ * @return {String}
+ */
+function getCurrentExtension () {
+  if (currentExtension) {
+    return currentExtension;
+  }
+
+  currentExtension = getExtensionNameFromCLI();
+
+  return currentExtension;
+}
+
+/**
+ * Returns the extension name specified via CLI argument
+ *
+ * The name given can be either the real extension name or an alias, which matches
+ * the value of the <file> tag in the info.xml file of the extension
+ *
+ * @return {String}
+ * @throws
+ *   Will throw an exception in case the argument has not been passed or
+ *   no info.xml had been found for the given extension
+ */
+function getExtensionNameFromCLI () {
+  var infoFiles, name;
+
+  if (!argv.ext) {
+    throwError('sass', 'Extension name not provided');
+  }
+
+  infoFiles = find.fileSync('info.xml', path.join(__dirname, '..'));
+
+  for (var i = 0; i < infoFiles.length; i++) {
+    var extensionData = getExtensionNameAndAliasFromInfoXML(infoFiles[i]);
+
+    if (extensionData.name === argv.ext || _.endsWith(extensionData.alias, argv.ext)) {
+      name = extensionData.name;
+      break;
+    }
+  }
+
+  if (!name) {
+    throwError('sass', 'Extension "' + argv.ext + '" not found');
+  }
+
+  return name;
+}
+
+/**
  * Uses `cv` to get the path of the given extension
  *
  * @param {String} name If not provided, the name given via the CLI argument is used
  * @return {String}
  */
 function getExtensionPath (name) {
-  var path;
-  var ext = name || argv.ext;
+  var extension = name || getCurrentExtension();
 
-  if (!ext) {
-    throwError('sass', 'Extension name not provided');
-  }
-
-  try {
-    path = cv('path -x ' + ext)[0].value;
-  } catch (err) {
-    throwError('sass', 'Extension "' + ext + '" not found');
-  }
-
-  return path;
+  return cv('path -x ' + extension)[0].value;
 }
 
 /**
@@ -487,7 +557,7 @@ function getExtensionPath (name) {
  * @param {String} extension
  */
 function setCurrentExtension (extension) {
-  argv.ext = extension;
+  currentExtension = extension;
 }
 
 /**
