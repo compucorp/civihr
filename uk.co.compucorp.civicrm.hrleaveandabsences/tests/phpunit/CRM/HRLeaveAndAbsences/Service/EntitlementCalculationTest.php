@@ -1039,19 +1039,16 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
     $leaveAmount,
     $addPublicHolidays
   ) {
-    $result = civicrm_api3('HRJobContract', 'create', [
-      'contact_id' => $contactID,
-      'sequential' => 1
-    ]);
-    $contract = $result['values'][0];
 
-    civicrm_api3('HRJobDetails', 'create', [
-      'jobcontract_id' => $contract['id'],
-      'period_start_date' => $startDate,
-      'period_end_date' => $endDate
-    ]);
+    $contract = HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contactID ],
+      [
+        'period_start_date' => $startDate,
+        'period_end_date' => $endDate
+      ]
+    );
 
-    civicrm_api3('HRJobLeave', 'create', [
+    HRJobLeaveFabricator::fabricate([
       'jobcontract_id' => $contract['id'],
       'leave_type' => $typeID,
       'leave_amount' => $leaveAmount,
