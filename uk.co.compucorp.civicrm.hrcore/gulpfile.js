@@ -154,8 +154,7 @@ var Promise = require('es6-promise').Promise;
               var promise = backstopjs(command, {
                 configPath: BACKSTOP_DIR + destFile,
                 filter: argv.filter
-              })
-              .catch(_.noop).then(function () { // equivalent to .finally()
+              }).catch(_.noop).then(function () { // equivalent to .finally()
                 gulp.src(BACKSTOP_DIR + destFile, { read: false }).pipe(clean());
               });
 
