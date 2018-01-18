@@ -200,10 +200,17 @@ var xml = require('xml-parse');
 
 // RequireJS
 (function () {
+  var originalExt;
   var exec = require('child_process').exec;
   var find = require('find');
 
-  gulp.task('requirejs', requireJsTask);
+  gulp.task('requirejs', function (cb) {
+    // The original extension that the task was called with could change during
+    // the execution, thus it gets saved so it can be restored later
+    originalExt = argv.ext;
+
+    requireJsTask(cb);
+  });
 
   gulp.task('requirejs:watch', function () {
     var extPath = getExtensionPath();
@@ -245,7 +252,13 @@ var xml = require('xml-parse');
       return spawnTaskForExtension('requirejs', requireJsTask, extension);
     });
 
-    sequence.length ? gulpSequence.apply(null, sequence)(cb) : cb();
+    sequence.length ? gulpSequence.apply(null, sequence)(function () {
+      // Restore the original extension (used in the CLI) as the current extension
+      // before marking the task as done
+      argv.ext = originalExt;
+
+      cb();
+    }) : cb();
   }
 
   /**
