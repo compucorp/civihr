@@ -221,26 +221,31 @@ var xml = require('xml-parse');
   });
 
   /**
+   * It scans the build.js file of all the CiviHR extension, to check if in any of them
+   * the current extension is marked as a dependency.
    *
+   * If any are found, then the `requirejs` task is executed for the extension
+   * the build.js file belongs to.
    *
+   * The task is recursive, stopping when no further dependencies are found
+   *
+   * @param {Function} cb
    */
   function extensionDependenciesTask (cb) {
     var buildFiles = find.fileSync(/js(\/[^/]+)?\/build\.js$/, path.join(__dirname, '..'));
 
-    var seq = buildFiles.filter(function (buildFile) {
+    var sequence = buildFiles.filter(function (buildFile) {
       var content = fs.readFileSync(buildFile, 'utf8');
 
       return (new RegExp(argv.ext, 'g')).test(content);
     })
-    .map(function (buildFile) {
-      return spawnTaskForExtension('requirejs', requireJsTask, getExtensionNameFromFile(buildFile));
+    .map(function (buildFileWithDependency) {
+      var extension = getExtensionNameFromFile(buildFileWithDependency);
+
+      return spawnTaskForExtension('requirejs', requireJsTask, extension);
     });
 
-    if (seq.length > 0) {
-      gulpSequence.apply(null, seq)(cb);
-    } else {
-      cb();
-    }
+    sequence.length ? gulpSequence.apply(null, sequence)(cb) : cb();
   }
 
   /**
@@ -287,11 +292,12 @@ var xml = require('xml-parse');
   }
 
   /**
+   * Creates a temporary build file from the default one, which is then
+   * fed to the RequireJS optimizer
    *
-   *
-   *
+   * @param {Function} cb
    */
-  function requireJsMainTask (done) {
+  function requireJsMainTask (cb) {
     var buildFilePath = find.fileSync('build.js', getExtensionPath())[0];
     var tempBuildFilePath = path.join(path.dirname(buildFilePath), 'build.tmp.js');
 
@@ -301,13 +307,14 @@ var xml = require('xml-parse');
       err && err.code && console.log(stdout);
 
       fs.unlink(tempBuildFilePath);
-      done();
+      cb();
     });
   }
 
   /**
+   * Sets up and runs the task sequences, adding the dependencies task at the end
    *
-   *
+   * @param {Function} cb
    */
   function requireJsTask (cb) {
     var sequence = addExtensionCustomTasksToSequence([
@@ -316,29 +323,6 @@ var xml = require('xml-parse');
     sequence.push(spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask, argv.ext));
 
     gulpSequence.apply(null, sequence)(cb);
-  }
-
-  /**
-   *
-   *
-   */
-  function setCurrentExtension (extension) {
-    argv.ext = extension;
-  }
-
-  /**
-   *
-   *
-   */
-  function spawnTaskForExtension (taskName, taskFn, ext) {
-    taskName += ' (' + ext + ')';
-
-    gulp.task(taskName, function (cb) {
-      setCurrentExtension(ext);
-      taskFn(cb);
-    });
-
-    return taskName;
   }
 }());
 
@@ -475,6 +459,34 @@ function getExtensionPath (name) {
   }
 
   return path;
+}
+
+/**
+ * Sets the given extension as the current one
+ *
+ * @param {String} extension
+ */
+function setCurrentExtension (extension) {
+  argv.ext = extension;
+}
+
+/**
+ * Spawns a task for an extension on the fly, using the name and function provided
+ * The extension specified is set as the current extension before executing the task fn
+ *
+ * @param {String} taskName
+ * @param {Function} taskFn
+ * @param {String} ext
+ */
+function spawnTaskForExtension (taskName, taskFn, extension) {
+  taskName += ' (' + extension + ')';
+
+  gulp.task(taskName, function (cb) {
+    setCurrentExtension(extension);
+    taskFn(cb);
+  });
+
+  return taskName;
 }
 
 /**
