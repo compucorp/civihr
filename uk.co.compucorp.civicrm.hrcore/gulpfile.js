@@ -57,10 +57,11 @@ var Promise = require('es6-promise').Promise;
    * @return {String}
    */
   function constructBackstopJSScenarioUrl (siteUrl, scenarioUrl, contactIdsByRoles) {
-    return siteUrl + '/' +
-      scenarioUrl.replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, contactRole) {
-        return contactIdsByRoles[contactRole];
-      });
+    scenarioUrl = scenarioUrl.replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, contactRole) {
+      return contactIdsByRoles[contactRole];
+    });
+
+    return siteUrl + '/' + scenarioUrl;
   }
 
   /**
@@ -73,7 +74,7 @@ var Promise = require('es6-promise').Promise;
    */
   function getRolesAndIDs () {
     return new Promise(function (resolve, reject) {
-      exec('cv api contact.get sequential=1 contact_type="Individual" return="email,contact_id"', function (err, result) {
+      exec('cv api contact.get sequential=1 email="civihr_%" contact_type="Individual" return="email,contact_id"', function (err, result) {
         var idsByRoles, missingRoles;
 
         if (err) {
@@ -81,11 +82,10 @@ var Promise = require('es6-promise').Promise;
         }
 
         idsByRoles = _(JSON.parse(result).values)
-          .filter(function (contact) {
-            return contact.email.match(/^civihr_/);
-          })
           .map(function (contact) {
-            return [contact.email.split('@')[0].split('_')[1], contact.contact_id];
+            var role = contact.email.split('@')[0].split('_')[1];
+
+            return [role, contact.contact_id];
           })
           .fromPairs()
           .value();
