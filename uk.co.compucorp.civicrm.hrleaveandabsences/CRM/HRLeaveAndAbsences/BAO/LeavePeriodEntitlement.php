@@ -299,14 +299,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   ) {
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
-    $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
+    $publicHolidays = $calculation->getNumberOfPublicHolidaysInEntitlement();
 
     if (!empty($publicHolidays)) {
       LeaveBalanceChange::create([
         'type_id'     => $balanceChangeTypes['public_holiday'],
         'source_id'   => $periodEntitlement->id,
         'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
-        'amount'      => count($publicHolidays)
+        'amount'      => $publicHolidays
       ]);
     }
   }
