@@ -201,6 +201,7 @@ var xml = require('xml-parse');
 // RequireJS
 (function () {
   var originalExt;
+  var detectInstalled = require('detect-installed');
   var exec = require('child_process').exec;
   var find = require('find');
 
@@ -330,7 +331,13 @@ var xml = require('xml-parse');
    * @param {Function} cb
    */
   function requireJsTask (cb) {
-    var sequence = addExtensionCustomTasksToSequence([
+    var sequence;
+
+    if (!detectInstalled.sync('requirejs')) {
+      throwError('requirejs', 'The `requirejs` package is not installed globally (http://requirejs.org/docs/optimization.html#download)');
+    }
+
+    sequence = addExtensionCustomTasksToSequence([
       spawnTaskForExtension('requirejs:main', requireJsMainTask, argv.ext)
     ], 'requirejs');
     sequence.push(spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask, argv.ext));
