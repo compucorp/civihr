@@ -6,6 +6,8 @@ module.exports = (function () {
   return page.extend({
     /**
      * Clears all selected months from the calendar "Selected Months" field.
+     *
+     * @returns {Object} - returns a reference to itself.
      */
     clearAllSelectedMonths: function () {
       this.casper.evaluate(function () {
@@ -21,10 +23,30 @@ module.exports = (function () {
     /**
      * Display all months for the leave calendar by clearing the
      * "Selected Months" field.
+     *
+     * @returns {Object} - returns a reference to itself.
      */
     showAllMonths: function () {
       this.clearAllSelectedMonths();
       this.waitUntilVisible('leave-calendar-month:nth-child(12) leave-calendar-day');
+
+      return this;
+    },
+
+    /**
+     * Displays the leave information for a particular month in the leave
+     * calendar.
+     *
+     * @param {String} monthName - the month of the name as it appear in the
+     * "Selected Months" options.
+     * @returns {Object} - returns a reference to itself.
+     */
+    showMonth: function (monthName) {
+      this.casper.click('.chr_leave-calendar__day-selector input');
+      this.casper.evaluate(function (monthName) {
+        jQuery('.ui-select-choices-row:contains(' + monthName + ')').click();
+      }, monthName);
+      this.waitUntilVisible('leave-calendar-month leave-calendar-day');
 
       return this;
     },
