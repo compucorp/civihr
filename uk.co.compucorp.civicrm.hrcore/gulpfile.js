@@ -373,7 +373,7 @@ var xml = require('xml-parse');
 // Build
 (function () {
   gulp.task('build', function (cb) {
-    gulpSequence(['sass', 'requirejs'], 'test')(cb);
+    gulpSequence('sass', 'requirejs', 'test')(cb);
   });
 }());
 
