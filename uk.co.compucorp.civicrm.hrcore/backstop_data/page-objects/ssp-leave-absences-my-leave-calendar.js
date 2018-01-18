@@ -52,6 +52,24 @@ module.exports = (function () {
     },
 
     /**
+     * Displays the leave information for a particular year in the leave calendar.
+     *
+     * @param {Number} year - the year to select from the absence period options.
+     * @returns {Object} - returns a reference to itself.
+     */
+    showYear: function (year) {
+      this.casper.evaluate(function (year) {
+        var select = jQuery('.chr_manager_calendar__sub-header select');
+        var yearValue = select.find('option:contains(' + year + ')').attr('value');
+
+        select.val(yearValue).change();
+      }, year);
+      this.waitUntilVisible('leave-calendar-month leave-calendar-day');
+
+      return this;
+    },
+
+    /**
      * Wait for the page to be ready by looking at
      * the visibility of a leave calendar item element
      */
