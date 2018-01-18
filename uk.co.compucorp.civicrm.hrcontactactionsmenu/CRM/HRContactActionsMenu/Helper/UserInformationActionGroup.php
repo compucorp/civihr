@@ -31,11 +31,11 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
    *
    * @param array $contactUserInfo
    *   Contact user info gotten from the contact helper
-   * @param CMSUserPath $cmsUserPath
-   * @param CMSUserRole $cmsUserRole
+   * @param CMSUserPath|null $cmsUserPath
+   * @param CMSUserRole|null $cmsUserRole
    *
    */
-  public function __construct($contactUserInfo, $cmsUserPath, $cmsUserRole) {
+  public function __construct($contactUserInfo, $cmsUserPath = null, $cmsUserRole = null) {
     $this->contactUserInfo = $contactUserInfo;
     $this->cmsUserRole = $cmsUserRole;
     $this->cmsUserPath = $cmsUserPath;
@@ -80,7 +80,8 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
     $button = new ActionsGroupButtonItem($params['label']);
     $button->setClass($params['class'])
       ->setIcon($params['icon'])
-      ->setUrl($params['url']);
+      ->setUrl($params['url'])
+      ->addBottomMargin();
 
     return $button;
   }
