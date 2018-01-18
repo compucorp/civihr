@@ -40,12 +40,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
   protected $oldLeaveRequest;
 
   /**
-   * @var array|null
-   *   Stores the list of option values for the LeaveRequest status_id field.
-   */
-  private $leaveStatuses;
-
-  /**
    * @var boolean|null
    *   Stores whether the dates has changed for the
    *   current leave request to be updated or not.
