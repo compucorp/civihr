@@ -5,6 +5,12 @@
       "url": "my-leave#/my-leave/calendar",
       "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar_current-month-visible",
       "credential": "staff"
+    },
+    {
+      "label": "My Leave Calendar tooltip",
+      "url": "my-leave#/my-leave/calendar",
+      "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar_tooltip",
+      "credential": "staff"
     }
   ]
 }

@@ -52,6 +52,21 @@ module.exports = (function () {
     },
 
     /**
+     * Hovers on top of a leave day visible on the calendar until a tooltip
+     * pops up.
+     *
+     * @returns {Object} - returns a reference to itself.
+     */
+    showTooltip: function () {
+      this.casper.then(function () {
+        this.mouse.move('.chr_leave-calendar__item a');
+      });
+      this.waitUntilVisible('.tooltip');
+
+      return this;
+    },
+
+    /**
      * Displays the leave information for a particular year in the leave calendar.
      *
      * @param {Number} year - the year to select from the absence period options.
