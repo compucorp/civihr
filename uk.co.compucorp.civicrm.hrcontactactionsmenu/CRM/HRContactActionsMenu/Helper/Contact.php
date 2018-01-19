@@ -18,8 +18,6 @@ class CRM_HRContactActionsMenu_Helper_Contact {
         'contact_id' => $contactID,
       ]);
 
-      //When a user has no CMS account, the contact_id parameter is not present
-      //we need to add it here.
       //Also when contact has CMS account, the cmsId parameter is needed for the
       //HRCore CMSData classes
       $result['cmsId'] = $result['id'];
@@ -27,6 +25,7 @@ class CRM_HRContactActionsMenu_Helper_Contact {
       //When a user has no CMS account, the contact_id parameter is not present
       //and an exception is thrown, we need to add it here.
       $result['contact_id'] = $contactID;
+      unset($result['error_message']);
     }
 
     return $result;
