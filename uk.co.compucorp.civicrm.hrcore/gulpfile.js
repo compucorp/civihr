@@ -169,7 +169,7 @@ var currentExtension;
 
   gulp.task('sass', function (cb) {
     if (hasCurrentExtensionMainSassFile()) {
-      var sequence = addExtensionCustomTasksToSequence(['sass:main'], 'sass');
+      var sequence = addExtensionCustomTasksToSequence(['sass:sync', 'sass:main'], 'sass');
 
       gulpSequence.apply(null, sequence)(cb);
     } else {
@@ -178,7 +178,7 @@ var currentExtension;
     }
   });
 
-  gulp.task('sass:main', ['sass:sync'], function (cb) {
+  gulp.task('sass:main', function (cb) {
     var extPath = getExtensionPath();
 
     return gulp.src(path.join(extPath, '/scss/*.scss'))
