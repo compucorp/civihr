@@ -8,7 +8,7 @@ module.exports = (function () {
      * Clears the currently selected month from the calendar "Selected Months"
      * field.
      *
-     * @returns {Object} - returns a reference to itself.
+     * @returns {Object} - returns a reference to the page object.
      */
     clearCurrentlySelectedMonth: function () {
       this.casper.click('.chr_leave-calendar__day-selector .close.ui-select-match-close');
@@ -22,7 +22,7 @@ module.exports = (function () {
      *
      * @param {String} monthName - the month of the name as it appear in the
      * "Selected Months" options.
-     * @returns {Object} - returns a reference to itself.
+     * @returns {Object} - returns a reference to the page object.
      */
     showMonth: function (monthName) {
       this.casper.click('.chr_leave-calendar__day-selector input');
@@ -38,7 +38,7 @@ module.exports = (function () {
      * Hovers on top of a leave day visible on the calendar until a tooltip
      * pops up.
      *
-     * @returns {Object} - returns a reference to itself.
+     * @returns {Object} - returns a reference to the page object.
      */
     showTooltip: function () {
       this.casper.then(function () {
@@ -53,7 +53,7 @@ module.exports = (function () {
      * Displays the leave information for a particular year in the leave calendar.
      *
      * @param {Number} year - the year to select from the absence period options.
-     * @returns {Object} - returns a reference to itself.
+     * @returns {Object} - returns a reference to the page object.
      */
     showYear: function (year) {
       this.casper.evaluate(function (year) {
