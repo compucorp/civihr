@@ -405,8 +405,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertNull($periodEntitlement);
 
     $broughtForward = 1;
-    $proRata = 10;
     $numberOfPublicHolidays = 3;
+    $leave = 7;
+    $proRata = $leave + $numberOfPublicHolidays;
     $calculation = $this->getEntitlementCalculationMock(
       $period,
       ['id' => $this->contract['contact_id']],
