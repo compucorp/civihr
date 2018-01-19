@@ -20,6 +20,7 @@ module.exports = (function () {
 
       casper.then(function () {
         casper.click('.chr_leave-calendar__legend__title');
+        casper.wait(100); // The legend expansion needs a tick
       });
 
       return this;
