@@ -56,8 +56,8 @@ function hrcontactactionsmenu_civicrm_pageRun(&$page) {
     CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/contactactions.css');
     CRM_Core_Resources::singleton()->addScriptFile($extName, 'js/contactactions.js');
 
-    $template_path = CRM_Core_Resources::singleton()->getPath($extName,'templates/CRM/HRContactActionsMenu/Page/Inline/Actions.tpl');
-    $page->assign('alternativeActionsTemplate', $template_path);
+    $templatePath = CRM_Core_Resources::singleton()->getPath($extName,'templates/CRM/HRContactActionsMenu/Page/Inline/Actions.tpl');
+    $page->assign('alternativeActionsTemplate', $templatePath);
   }
 }
 
@@ -183,16 +183,15 @@ function hrcontactactionsmenu_civicrm_alterSettingsFolders(&$metaDataFolders = N
 
 /**
  * Checks whether the User account of the contact is
- * disabled. Returns null if contact has no CMS user
- * account
+ * disabled.
  *
  * @param array $contactInfo
  *
- * @return bool|null
+ * @return bool
  */
 function _hrcontactactionsmenu_get_is_user_disabled($contactInfo) {
   if(empty($contactInfo['id'])) {
-    return null;
+    return false;
   }
   $userAccount = UserAccountFactory::create();
 

@@ -12,7 +12,8 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItemTest extends BaseHeadles
   public function testRenderWhenAddBottomMarginIsFalse() {
     $params = ['label'=> 'myButton', 'class' => 'btn', 'url' => 'www.test.com', 'icon' => 'fa-book'];
     $button = new ActionsGroupButtonItem($params['label']);
-    $expectedResult = $this->getButtonMarkup($button, $params);
+    $this->setUpButton($button, $params);
+    $expectedResult = $this->getButtonMarkup($params);
     $this->assertEquals($expectedResult, $button->render());
   }
 
@@ -20,7 +21,8 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItemTest extends BaseHeadles
     $params = ['label'=> 'myButton', 'class' => 'btn', 'url' => 'www.test.com', 'icon' => 'fa-book'];
     $button = new ActionsGroupButtonItem($params['label']);
     $addBottomMargin = TRUE;
-    $buttonMarkup = $this->getButtonMarkup($button, $params, $addBottomMargin);
+    $this->setUpButton($button, $params, $addBottomMargin);
+    $buttonMarkup = $this->getButtonMarkup($params);
     $expectedResult =  sprintf('      
         <div class="crm_contact_action_menu__bottom_margin">
           %s
@@ -31,14 +33,7 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItemTest extends BaseHeadles
     $this->assertEquals($expectedResult, $button->render());
   }
 
-  private function getButtonMarkup($button, $params, $addMargin = false) {
-    $button->setClass($params['class'])
-      ->setIcon($params['icon'])
-      ->setUrl($params['url']);
-
-    if($addMargin) {
-      $button->addBottomMargin();
-    }
+  private function getButtonMarkup($params) {
 
     $buttonMarkup = '
       <a href="%s">
@@ -56,5 +51,15 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItemTest extends BaseHeadles
     );
 
     return $buttonMarkup;
+  }
+
+  private function setUpButton($button, $params, $addMargin = false) {
+    $button->setClass($params['class'])
+      ->setIcon($params['icon'])
+      ->setUrl($params['url']);
+
+    if($addMargin) {
+      $button->addBottomMargin();
+    }
   }
 }
