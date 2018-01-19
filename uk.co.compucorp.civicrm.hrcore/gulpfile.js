@@ -10,9 +10,9 @@ var fs = require('fs');
 var path = require('path');
 var Promise = require('es6-promise').Promise;
 var find = require('find');
-var findUp = require('find-up');
 
 var utils = require('./gulp/utils');
+var test = require('./gulp/test');
 
 // BackstopJS tasks
 (function () {
@@ -417,65 +417,3 @@ var utils = require('./gulp/utils');
     gulpSequence('sass', 'requirejs', 'test')(cb);
   });
 }());
-
-var test = (function () {
-  var find = require('find');
-  var karma = require('karma');
-  var replace = require('gulp-replace');
-  var rename = require('gulp-rename');
-
-  /**
-   * Runs the karma server which does a single run of the test/s
-   *
-   * @param {string} configFile - The full path to the karma config file
-   * @param {Function} cb - The callback to call when the server closes
-   */
-  function runServer (configFile, cb) {
-    var reporters = argv.reporters ? argv.reporters.split(',') : ['progress'];
-
-    new karma.Server({
-      configFile: configFile,
-      reporters: reporters,
-      singleRun: true
-    }, function () {
-      cb && cb();
-    }).start();
-  }
-
-  return {
-
-    all: function () {
-      var configFile = find.fileSync('karma.conf.js', utils.getExtensionPath())[0];
-
-      runServer(configFile);
-    },
-    for: function (srcFile) {
-      var srcFileNoExt = path.basename(srcFile, path.extname(srcFile));
-
-      var testFile = srcFile
-        .replace(/src\/[^/]+\//, 'test/')
-        .replace(srcFileNoExt + '.js', srcFileNoExt + '.spec.js');
-
-      fs.statSync(testFile).isFile() && this.single(testFile);
-    },
-    single: function (testFile) {
-      var configFilePath = findUp.sync('karma.conf.js', { cwd: testFile });
-      var jsFolderPath = path.dirname(configFilePath);
-
-      var tempConfigFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
-
-      gulp
-        .src(configFilePath)
-        .pipe(replace('*.spec.js', path.basename(testFile)))
-        .pipe(rename(tempConfigFile))
-        .pipe(gulp.dest(jsFolderPath))
-        .on('end', function () {
-          runServer(path.join(jsFolderPath, tempConfigFile), function () {
-            gulp
-              .src(path.join(jsFolderPath, tempConfigFile), { read: false })
-              .pipe(clean({ force: true }));
-          });
-        });
-    }
-  };
-})();
