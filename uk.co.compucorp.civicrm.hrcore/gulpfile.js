@@ -430,7 +430,7 @@ function addExtensionCustomTasksToSequence (sequence, taskName) {
 
   if (_.isFunction(customTasks.main)) {
     var mainIndex = _.findIndex(sequence, function (taskName) {
-      return taskName.match(/:main$/);
+      return taskName.match(/:main/);
     });
 
     gulp.task(sequence[mainIndex], customTasks.main);
