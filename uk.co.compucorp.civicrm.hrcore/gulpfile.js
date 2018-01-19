@@ -1,50 +1,34 @@
+var _ = require('lodash');
+var find = require('find');
 var gulp = require('gulp');
 var gulpSequence = require('gulp-sequence');
 
-// BackstopJS tasks
-(function () {
-  var tasks = require('./gulp/tasks/backstopjs');
+var tasks = getMainTasks();
 
-  tasks.forEach(function (task) {
-    gulp.task(task.name, task.fn);
-  });
-})();
+_.each(tasks, function (fn, name) {
+  gulp.task(name, fn);
+});
 
-// Sass
-(function () {
-  var tasks = require('./gulp/tasks/sass');
+gulp.task('watch', ['sass:watch', 'requirejs:watch', 'test:watch']);
 
-  tasks.forEach(function (task) {
-    gulp.task(task.name, task.fn);
-  });
-}());
+gulp.task('build', function (cb) {
+  gulpSequence('sass', 'requirejs', 'test')(cb);
+});
 
-// RequireJS
-(function () {
-  var tasks = require('./gulp/tasks/requirejs');
-
-  tasks.forEach(function (task) {
-    gulp.task(task.name, task.fn);
-  });
-}());
-
-// Test
-(function () {
-  var tasks = require('./gulp/tasks/test');
-
-  tasks.forEach(function (task) {
-    gulp.task(task.name, task.fn);
-  });
-}());
-
-// Watch
-(function () {
-  gulp.task('watch', ['sass:watch', 'requirejs:watch', 'test:watch']);
-}());
-
-// Build
-(function () {
-  gulp.task('build', function (cb) {
-    gulpSequence('sass', 'requirejs', 'test')(cb);
-  });
-}());
+/**
+ * Gets all the task listed in the files under the gulp/task folder
+ *
+ * @return {Object}
+ */
+function getMainTasks () {
+  return _(find.fileSync('gulp/tasks'))
+    .map(function (taskFile) {
+      return require('./' + taskFile);
+    })
+    .flatten()
+    .map(function (task) {
+      return [task.name, task.fn];
+    })
+    .fromPairs()
+    .value();
+}
