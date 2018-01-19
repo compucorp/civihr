@@ -181,6 +181,7 @@ var Promise = require('es6-promise').Promise;
 
     content.scenarios = scenariosList().map(function (scenario) {
       scenario.url = constructBackstopJSScenarioUrl(config.url, scenario.url, contactIdsByRoles);
+      scenario.misMatchThreshold = 0;
 
       return scenario;
     });
