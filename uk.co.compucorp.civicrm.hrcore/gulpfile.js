@@ -93,19 +93,19 @@ var currentExtension;
 
     return new Promise(function (resolve) {
       gulp.src(backstopDir + files.tpl)
-      .pipe(file(destFile, tempFileContent()))
-      .pipe(gulp.dest(backstopDir))
-      .on('end', function () {
-        var promise = backstopjs(command, {
-          configPath: backstopDir + destFile,
-          filter: argv.filter
-        })
-        .catch(_.noop).then(function () { // equivalent to .finally()
-          gulp.src(backstopDir + destFile, { read: false }).pipe(clean());
-        });
+        .pipe(file(destFile, tempFileContent()))
+        .pipe(gulp.dest(backstopDir))
+        .on('end', function () {
+          var promise = backstopjs(command, {
+            configPath: backstopDir + destFile,
+            filter: argv.filter
+          })
+            .catch(_.noop).then(function () { // equivalent to .finally()
+              gulp.src(backstopDir + destFile, { read: false }).pipe(clean());
+            });
 
-        resolve(promise);
-      });
+          resolve(promise);
+        });
     });
   }
 
@@ -249,11 +249,11 @@ var currentExtension;
 
       return (new RegExp(getCurrentExtension(), 'g')).test(content);
     })
-    .map(function (buildFileWithDependency) {
-      var extension = getExtensionNameFromFile(buildFileWithDependency);
+      .map(function (buildFileWithDependency) {
+        var extension = getExtensionNameFromFile(buildFileWithDependency);
 
-      return spawnTaskForExtension('requirejs', requireJsTask, extension);
-    });
+        return spawnTaskForExtension('requirejs', requireJsTask, extension);
+      });
 
     sequence.length ? gulpSequence.apply(null, sequence)(function () {
       // Restore the original extension (used in the CLI) as the current extension
