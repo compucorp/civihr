@@ -35,6 +35,12 @@ function user_load($userID) {
   $user = new stdClass();
   $user->roles = [1 => 'Fake Role'];
   $user->uid = $userID;
+  $user->status = 1;
+
+  if($userID == 0) {
+    $user->status = 0;
+  }
+
   return $user;
 }
 

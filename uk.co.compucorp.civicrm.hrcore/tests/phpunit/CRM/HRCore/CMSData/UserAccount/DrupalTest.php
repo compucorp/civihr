@@ -34,4 +34,20 @@ class CRM_HRCore_CMSData_UserAccount_DrupalTest extends CRM_HRCore_Test_BaseHead
 
     $this->assertEquals(1, $user->status);
   }
+
+  public function testIsUserDisabledReturnsFalseWhenUserStatusIsActive() {
+    $contactData = ['cmsId' => 1];
+    $userAccount = new DrupalUserAccount();
+
+    $this->assertFalse($userAccount->isUserDisabled($contactData));
+  }
+
+  public function testIsUserDisabledReturnsTrueWhenUserStatusIsNotActive() {
+    //passing 0 to the user_load mock function would create a user object
+    //with status inactive
+    $contactData = ['cmsId' => 0];
+    $userAccount = new DrupalUserAccount();
+
+    $this->assertTrue($userAccount->isUserDisabled($contactData));
+  }
 }
