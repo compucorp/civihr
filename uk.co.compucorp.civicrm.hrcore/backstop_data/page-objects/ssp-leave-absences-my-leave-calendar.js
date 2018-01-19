@@ -5,21 +5,16 @@ var page = require('./page');
 module.exports = (function () {
   return page.extend({
     /**
-     * Clears all selected months from the calendar "Selected Months" field.
+     * Clears the currently selected month from the calendar "Selected Months"
+     * field.
      *
      * @returns {Object} - returns a reference to itself.
      */
-    clearAllSelectedMonths: function () {
-      this.casper.evaluate(function () {
-        jQuery('.chr_leave-calendar__day-selector .close.ui-select-match-close')
-          .each(function () {
-            jQuery(this).click();
-          });
-      });
+    clearCurrentlySelectedMonth: function () {
+      this.casper.click('.chr_leave-calendar__day-selector .close.ui-select-match-close');
 
       return this;
     },
-
 
     /**
      * Displays the leave information for a particular month in the leave
