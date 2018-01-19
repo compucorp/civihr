@@ -20,18 +20,6 @@ module.exports = (function () {
       return this;
     },
 
-    /**
-     * Display all months for the leave calendar by clearing the
-     * "Selected Months" field.
-     *
-     * @returns {Object} - returns a reference to itself.
-     */
-    showAllMonths: function () {
-      this.clearAllSelectedMonths();
-      this.waitUntilVisible('leave-calendar-month:nth-child(12) leave-calendar-day');
-
-      return this;
-    },
 
     /**
      * Displays the leave information for a particular month in the leave
