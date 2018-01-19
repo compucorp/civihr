@@ -312,29 +312,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   }
 
   /**
-   * Deletes the LeavePeriodEntitlement with the given Absence Period ID, Absence Type ID
-   * and Contact ID
-   *
-   * @param int $absencePeriodID
-   * @param int $absenceTypeID
-   * @param int $contactID
-   */
-  private static function deleteLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contactID) {
-    $tableName = self::getTableName();
-    $query     = "
-      DELETE FROM {$tableName}
-      WHERE period_id = %1 AND type_id = %2 AND contact_id = %3
-    ";
-    $params    = [
-      1 => [$absencePeriodID, 'Positive'],
-      2 => [$absenceTypeID, 'Positive'],
-      3 => [$contactID, 'Positive'],
-    ];
-
-    CRM_Core_DAO::executeQuery($query, $params);
-  }
-
-  /**
    * Deletes the LeaveBalanceChanges for a LeavePeriodEntitlement
    *
    * @param int $absencePeriodID
