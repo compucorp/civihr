@@ -34,10 +34,10 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.waitForSelector('tr:nth-child(1)  div[uib-dropdown] a:nth-child(1)', function () {
-          casper.click('div:nth-child(2) > div > table > tbody > tr:nth-child(' + (row || 1) + ')  div[uib-dropdown] a:nth-child(1)');
-        });
-      });
+        return casper.waitForSelector('tr:nth-child(1)  div[uib-dropdown] a:nth-child(1)');
+      }).then(function () {
+        casper.click('div:nth-child(2) > div > table > tbody > tr:nth-child(' + (row || 1) + ')  div[uib-dropdown] a:nth-child(1)');
+      })
 
       return this;
     },
@@ -47,7 +47,7 @@ module.exports = (function () {
      * @param {Number} row number corresponding to leave request in the list
      * @return {Promise}
      */
-    editRequest: function (row) {
+    /*editRequest: function (row) {
       var casper = this.casper;
 
       return new Promise(function (resolve) {
@@ -60,6 +60,63 @@ module.exports = (function () {
           resolve(this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form'));
         }.bind(this));
       }.bind(this));
+    }*/
+    /**
+     * User clicks on the edit/respond action
+     * @param {Number} row number corresponding to leave request in the list
+     * @return {Promise}
+     */
+    editRequest: function (row) {
+      var casper = this.casper;
+
+      casper.then(function () {
+        casper.click('body > ul.dropdown-menu:nth-of-type(' + (row || 1) + ') li:first-child a');
+        // As there are multiple spinners it takes more time to load up
+        casper.waitWhileVisible('.modal-content .spinner:nth-child(1)');
+        casper.waitWhileVisible('leave-request-popup-details-tab .spinner');
+      });
+
+      return this;
+    },
+
+    openCommentsTab: function () {
+      var casper = this.casper;
+      var selector = '.chr_leave-request-modal__tab .uib-tab:nth-of-type(2) a';
+
+      casper.waitForSelector(selector)
+        .then(function () {
+          casper.click(selector);
+        });
+
+      return this;
+    },
+
+    /**
+     * Triggers an error alert
+     * by selecting a date that does not correspond to any Absence Period
+     *
+     * @return {Promise}
+     */
+    triggerErrorAlert: function () {
+      var casper = this.casper;
+      var modalSelector = '.chr_leave-request-modal';
+      var datepickerSelector = modalSelector + ' .uib-datepicker-popup';
+      var previousMonthButtonSelector = datepickerSelector + ' .fa-chevron-left';
+
+      casper.then(function () {
+        casper.click(modalSelector + ' [uib-datepicker-popup]');
+
+        return casper.waitForSelector(previousMonthButtonSelector);
+      }).then(function () {
+        // Go 10 years back by clicking "<" button, Absence Period won't exist for this date
+        for (var i = 0; i < 12 * 10; i++) {
+          casper.click(previousMonthButtonSelector);
+        }
+        // Trigger the error alert by finally selecting day
+        casper.click(datepickerSelector + ' .uib-day button');
+      });
+
+      return this;
     }
   });
 })();

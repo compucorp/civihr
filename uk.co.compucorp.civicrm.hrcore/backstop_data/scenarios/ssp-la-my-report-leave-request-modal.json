@@ -5,6 +5,12 @@
       "url": "my-leave#/my-leave/report",
       "onReadyScript": "ssp-leave-absences/staff/my-report-pending-show-comments",
       "credential": "staff"
+    },
+    {
+      "label": "Leave and Absences: My report: Show error alert",
+      "url": "my-leave#/my-leave/report",
+      "onReadyScript": "ssp-leave-absences/staff/my-report-pending-show-error-alert",
+      "credential": "staff"
     }
   ]
 }
