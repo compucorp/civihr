@@ -43,7 +43,7 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        var common = 'jobroles.edit_data[job_roles_data.id]';
+        var common = 'jobroles.editData[job_roles_data.id]';
 
         casper.click('[ng-model="' + common + '[\'' + name + '\']"] > a');
         casper.wait(100);
