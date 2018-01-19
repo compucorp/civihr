@@ -13,7 +13,7 @@ module.exports = (function () {
 
       casper.then(function () {
         casper.click('.fieldset-title');
-        casper.wait(2000);
+        casper.wait(2000); // wait for animation to complete
       }.bind(this));
 
       return this;

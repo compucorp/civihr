@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var argv = require('yargs').argv;
+var exec = require('child_process').exec;
 var gulp = require('gulp');
 var clean = require('gulp-clean');
 var color = require('gulp-color');
@@ -47,6 +48,62 @@ var Promise = require('es6-promise').Promise;
   });
 
   /**
+   * Constructs URL for BackstopJS scenario based on
+   * site URL, scenario config URL and contact "roles" and IDs map
+   *
+   * @param  {String} siteUrl
+   * @param  {String} scenarioUrl
+   * @param  {Object} contactIdsByRoles
+   * @return {String}
+   */
+  function constructBackstopJSScenarioUrl (siteUrl, scenarioUrl, contactIdsByRoles) {
+    scenarioUrl = scenarioUrl.replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, contactRole) {
+      return contactIdsByRoles[contactRole];
+    });
+
+    return siteUrl + '/' + scenarioUrl;
+  }
+
+  /**
+   * Fetches civicrm contacts who's emails match "civihr_" pattern
+   * and returns a map of their "roles" connected to their IDs.
+   * Requires 'civihr_(staff|manager|admin)@...' to be presented in DB,
+   * otherwise will throw an error.
+   *
+   * @return {Promise} resolved with {Object}, ex. { 'staff': 204, ... etc }
+   */
+  function getRolesAndIDs () {
+    return new Promise(function (resolve, reject) {
+      exec('cv api contact.get sequential=1 email="civihr_%" contact_type="Individual" return="email,contact_id"', function (err, result) {
+        var idsByRoles, missingRoles;
+
+        if (err) {
+          return reject(new Error('Unable to fetch contact roles and IDs: ' + err));
+        }
+
+        idsByRoles = _(JSON.parse(result).values)
+          .map(function (contact) {
+            var role = contact.email.split('@')[0].split('_')[1];
+
+            return [role, contact.contact_id];
+          })
+          .fromPairs()
+          .value();
+
+        missingRoles = _.difference(['staff', 'manager', 'admin'], _.keys(idsByRoles));
+
+        if (missingRoles.length) {
+          return reject(new Error('Required users with emails ' + missingRoles.map(function (role) {
+            return 'civihr_' + role + '@*';
+          }).join(', ') + ' were not found in the database'));
+        }
+
+        resolve(idsByRoles);
+      });
+    });
+  }
+
+  /**
    * Checks if the site config file is in the backstopjs folder
    * If not, it creates a template for it
    *
@@ -87,22 +144,27 @@ var Promise = require('es6-promise').Promise;
       return Promise.reject(new Error());
     }
 
-    return new Promise(function (resolve) {
-      gulp.src(BACKSTOP_DIR + FILES.tpl)
-      .pipe(file(destFile, tempFileContent()))
-      .pipe(gulp.dest(BACKSTOP_DIR))
-      .on('end', function () {
-        var promise = backstopjs(command, {
-          configPath: BACKSTOP_DIR + destFile,
-          filter: argv.filter
-        })
-        .catch(_.noop).then(function () { // equivalent to .finally()
-          gulp.src(BACKSTOP_DIR + destFile, { read: false }).pipe(clean());
-        });
+    return getRolesAndIDs()
+      .then(function (contactIdsByRoles) {
+        return new Promise(function (resolve) {
+          gulp.src(BACKSTOP_DIR + FILES.tpl)
+            .pipe(file(destFile, tempFileContent(contactIdsByRoles)))
+            .pipe(gulp.dest(BACKSTOP_DIR))
+            .on('end', function () {
+              var promise = backstopjs(command, {
+                configPath: BACKSTOP_DIR + destFile,
+                filter: argv.filter
+              }).catch(_.noop).then(function () { // equivalent to .finally()
+                gulp.src(BACKSTOP_DIR + destFile, { read: false }).pipe(clean());
+              });
 
-        resolve(promise);
+              resolve(promise);
+            });
+        });
+      })
+      .catch(function (err) {
+        console.log(color(err.message, 'RED'));
       });
-    });
   }
 
   /**
@@ -110,14 +172,15 @@ var Promise = require('es6-promise').Promise;
    * The content is the mix of the config template and the list of scenarios
    * under the scenarios/ folder
    *
-   * @return {string}
+   * @param  {Object} contactIdsByRoles
+   * @return {String}
    */
-  function tempFileContent () {
+  function tempFileContent (contactIdsByRoles) {
     var config = JSON.parse(fs.readFileSync(BACKSTOP_DIR + FILES.config));
     var content = JSON.parse(fs.readFileSync(BACKSTOP_DIR + FILES.tpl));
 
     content.scenarios = scenariosList().map(function (scenario) {
-      scenario.url = config.url + '/' + scenario.url;
+      scenario.url = constructBackstopJSScenarioUrl(config.url, scenario.url, contactIdsByRoles);
 
       return scenario;
     });
