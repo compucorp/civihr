@@ -381,13 +381,11 @@ var currentExtension;
 // Test
 (function () {
   gulp.task('test', function (cb) {
-    var sequence = addExtensionCustomTasksToSequence(['test:main'], 'test');
+    var sequence = addExtensionCustomTasksToSequence([
+      spawnTaskForExtension('test:main', mainTask, getCurrentExtension())
+    ], 'test');
 
     gulpSequence.apply(null, sequence)(cb);
-  });
-
-  gulp.task('test:main', function () {
-    test.all();
   });
 
   gulp.task('test:watch', function () {
@@ -402,6 +400,13 @@ var currentExtension;
       test.single(file.path);
     });
   });
+
+  /**
+   * Runs all the JS unit tests of the extension
+   */
+  function mainTask () {
+    test.all();
+  }
 }());
 
 // Watch
