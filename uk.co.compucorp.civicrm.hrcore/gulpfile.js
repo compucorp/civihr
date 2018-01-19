@@ -169,31 +169,16 @@ var currentExtension;
 
   gulp.task('sass', function (cb) {
     if (hasCurrentExtensionMainSassFile()) {
-      var sequence = addExtensionCustomTasksToSequence(['sass:sync', 'sass:main'], 'sass');
+      var sequence = addExtensionCustomTasksToSequence([
+        spawnTaskForExtension('sass:sync', syncTask, getCurrentExtension()),
+        spawnTaskForExtension('sass:main', mainTask, getCurrentExtension())
+      ], 'sass');
 
       gulpSequence.apply(null, sequence)(cb);
     } else {
       console.log(colors.yellow('No main .scss file found, skipping...'));
       cb();
     }
-  });
-
-  gulp.task('sass:main', function (cb) {
-    var extPath = getExtensionPath();
-
-    return gulp.src(path.join(extPath, '/scss/*.scss'))
-      .pipe(bulk())
-      .pipe(sass({
-        outputStyle: 'compressed',
-        includePaths: civicrmScssRoot.getPath(),
-        precision: 10
-      }).on('error', sass.logError))
-      .pipe(stripCssComments({ preserve: false }))
-      .pipe(gulp.dest(path.join(extPath, '/css/')));
-  });
-
-  gulp.task('sass:sync', function () {
-    civicrmScssRoot.updateSync();
   });
 
   gulp.task('sass:watch', function () {
@@ -212,6 +197,37 @@ var currentExtension;
    */
   function hasCurrentExtensionMainSassFile () {
     return !!find.fileSync(/\/scss\/([^/]+)?\.scss$/, getExtensionPath())[0];
+  }
+
+  /**
+   * Compiles SASS files
+   *
+   * @param {Function} cb
+   * @return {Vinyl}
+   */
+  function mainTask (cb) {
+    var extPath = getExtensionPath();
+
+    return gulp.src(path.join(extPath, '/scss/*.scss'))
+      .pipe(bulk())
+      .pipe(sass({
+        outputStyle: 'compressed',
+        includePaths: civicrmScssRoot.getPath(),
+        precision: 10
+      }).on('error', sass.logError))
+      .pipe(stripCssComments({ preserve: false }))
+      .pipe(gulp.dest(path.join(extPath, '/css/')));
+  }
+
+  /**
+   * Syncs the SASS cache
+   *
+   * @param {Function} cb
+   * @return {Vinyl}*
+   */
+  function syncTask (cb) {
+    civicrmScssRoot.updateSync();
+    cb();
   }
 }());
 
@@ -587,7 +603,8 @@ function spawnTaskForExtension (taskName, taskFn, extension) {
 
   gulp.task(taskName, function (cb) {
     setCurrentExtension(extension);
-    taskFn(cb);
+
+    return taskFn(cb);
   });
 
   return taskName;
