@@ -56,6 +56,8 @@ module.exports = (function () {
 
     /**
      * Click the "Actions" button on contact page
+     *
+     * @return {Object} this object
      */
     openContactActionMenu: function () {
       var casper = this.casper;
@@ -63,10 +65,14 @@ module.exports = (function () {
       casper.then(function () {
         casper.click('#crm-contact-actions-link');
       });
+
+      return this;
     },
 
     /**
      * Click the "Delete User Account" button in the contact action menu
+     *
+     * @return {Object} this object
      */
     deleteUserAccount: function () {
       var casper = this.casper;

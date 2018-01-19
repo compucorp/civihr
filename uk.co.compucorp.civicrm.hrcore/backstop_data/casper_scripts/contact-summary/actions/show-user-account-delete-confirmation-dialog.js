@@ -3,5 +3,5 @@
 var page = require('../../../page-objects/contact-summary');
 
 module.exports = function (casper) {
-  page.init(casper).deleteUserAccount();
+  page.init(casper).openContactActionMenu().deleteUserAccount();
 };
