@@ -286,12 +286,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    *
    * @param \CRM_HRLeaveAndAbsences_Service_EntitlementCalculation $calculation
    * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
-   *
-   * @TODO Once we get a way to related a job contract to a work pattern, we'll
-   *       need to take that in consideration to calculate the amount added/deducted
-   *       by public holidays
-   *
-   * @throws \Exception
    */
   private static function savePublicHolidaysBalanceChanges(
     EntitlementCalculation $calculation,
@@ -299,14 +293,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   ) {
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
-    $publicHolidays = $calculation->getNumberOfPublicHolidaysInEntitlement();
+    $numberOfPublicHolidays = $calculation->getNumberOfPublicHolidaysInEntitlement();
 
-    if (!empty($publicHolidays)) {
+    if (!empty($numberOfPublicHolidays)) {
       LeaveBalanceChange::create([
-        'type_id'     => $balanceChangeTypes['public_holiday'],
-        'source_id'   => $periodEntitlement->id,
+        'type_id' => $balanceChangeTypes['public_holiday'],
+        'source_id' => $periodEntitlement->id,
         'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
-        'amount'      => $publicHolidays
+        'amount' => $numberOfPublicHolidays
       ]);
     }
   }
