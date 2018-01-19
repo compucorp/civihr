@@ -69,6 +69,6 @@ class CRM_HRCore_CMSData_UserAccount_Drupal implements UserAccountInterface {
   public function isUserDisabled($contactData) {
     $user = $this->getUser($contactData);
 
-    return $user->status;
+    return !$user->status ? true : false;
   }
 }
