@@ -168,9 +168,14 @@ var currentExtension;
   var stripCssComments = require('gulp-strip-css-comments');
 
   gulp.task('sass', function (cb) {
-    var sequence = addExtensionCustomTasksToSequence(['sass:main'], 'sass');
+    if (hasCurrentExtensionMainSassFile()) {
+      var sequence = addExtensionCustomTasksToSequence(['sass:main'], 'sass');
 
-    gulpSequence.apply(null, sequence)(cb);
+      gulpSequence.apply(null, sequence)(cb);
+    } else {
+      console.log(colors.yellow('No main .scss file found, skipping...'));
+      cb();
+    }
   });
 
   gulp.task('sass:main', ['sass:sync'], function (cb) {
@@ -199,6 +204,15 @@ var currentExtension;
 
     gulp.watch(watchPatterns, ['sass']);
   });
+
+  /**
+   * Check if the current extension has a main *.scss file
+   *
+   * @return {Boolean}
+   */
+  function hasCurrentExtensionMainSassFile () {
+    return !!find.fileSync(/\/scss\/([^/]+)?\.scss$/, getExtensionPath())[0];
+  }
 }());
 
 // RequireJS
