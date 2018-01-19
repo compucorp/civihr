@@ -2,13 +2,13 @@ var _ = require('lodash');
 var argv = require('yargs').argv;
 var gulp = require('gulp');
 var gulpSequence = require('gulp-sequence');
-var gutil = require('gulp-util');
 var clean = require('gulp-clean');
-var color = require('gulp-color');
+var colors = require('ansi-colors');
 var file = require('gulp-file');
 var backstopjs = require('backstopjs');
 var fs = require('fs');
 var path = require('path');
+var PluginError = require('plugin-error');
 var Promise = require('es6-promise').Promise;
 var cv = require('civicrm-cv')({ mode: 'sync' });
 var find = require('find');
@@ -82,10 +82,10 @@ var currentExtension;
     var destFile = 'backstop.temp.json';
 
     if (!isConfigFilePresent()) {
-      console.log(color(
+      console.log(colors.red(
         'No site-config.json file detected!\n' +
         'One has been created for you under ' + backstopDir + '\n' +
-        'Please insert the real value for each placholder and try again', 'RED'
+        'Please insert the real value for each placholder and try again'
       ));
 
       return Promise.reject(new Error());
@@ -583,8 +583,8 @@ function spawnTaskForExtension (taskName, taskFn, extension) {
  * A simple wrapper for displaying errors
  */
 function throwError (plugin, msg) {
-  throw new gutil.PluginError(plugin, {
-    message: gutil.colors.red(msg)
+  throw new PluginError('Error', {
+    message: colors.red(msg)
   });
 }
 
