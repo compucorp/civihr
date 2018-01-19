@@ -52,6 +52,31 @@ module.exports = (function () {
         casper.click('#crm-contact-actions-link');
         casper.waitUntilVisible('#crm-contact-actions-list');
       });
+    },
+
+    /**
+     * Click the "Actions" button on contact page
+     */
+    openContactActionMenu: function () {
+      var casper = this.casper;
+
+      casper.then(function () {
+        casper.click('#crm-contact-actions-link');
+      });
+    },
+
+    /**
+     * Click the "Delete User Account" button in the contact action menu
+     */
+    deleteUserAccount: function () {
+      var casper = this.casper;
+
+      casper.then(function () {
+        casper.click('#crm-contact-actions-link');
+        casper.click('[data-delete-user-url]');
+      });
+
+      return this;
     }
   });
 })();
