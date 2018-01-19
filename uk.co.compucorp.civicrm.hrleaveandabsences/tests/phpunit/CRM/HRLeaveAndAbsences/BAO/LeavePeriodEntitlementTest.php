@@ -353,6 +353,44 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals(-9, $periodEntitlement->getLeaveRequestBalance());
   }
 
+  public function testTheLeaveRequestBalanceShouldNotIncludeDaysAccruedByToilRequests() {
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime(),
+      new DateTime('+8 days')
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
+    );
+
+    // 3 days Leave Request
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement->type_id,
+      $periodEntitlement->contact_id,
+      $this->leaveRequestStatuses['approved'],
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+2 days'))
+    );
+
+    $this->assertEquals(-3, $periodEntitlement->getLeaveRequestBalance());
+
+    // Accrue 3 days
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement->contact_id,
+      'type_id' => $periodEntitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+1 day'),
+      'toil_duration' => 360,
+      'toil_to_accrue' => 3,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+30 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    // The balance remains -3 rather than 0 (-3 + 3)
+    $this->assertEquals(-3, $periodEntitlement->getLeaveRequestBalance());
+  }
+
   public function testCanSaveALeavePeriodEntitlementFromAnEntitlementCalculation() {
 
     $type = AbsenceTypeFabricator::fabricate();

@@ -9,7 +9,6 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
-use CRM_Hrjobcontract_Test_Fabricator_HRJobDetails as HRJobDetailsFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobLeave as HRJobLeaveFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 
@@ -671,6 +670,51 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
 
     $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
     $this->assertEquals(12, $calculation->getAmountUsedInPreviousPeriod());
+  }
+
+  public function testAmountUsedInPreviousPeriodShouldNotIncludeDaysFromApprovedToilRequests() {
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id'));
+
+    $this->setContractDates(date('YmdHis', strtotime('2015-01-01')), null);
+
+    $type = AbsenceTypeFabricator::fabricate();
+    $previousPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => date('YmdHis', strtotime('2015-01-01')),
+      'end_date' => date('YmdHis', strtotime('2015-12-31')),
+    ]);
+
+    $previousPeriodEntitlement = $this->createEntitlement($previousPeriod, $type, 20);
+
+    $previousPeriodStartDateTimeStamp = strtotime($previousPeriod->start_date);
+    // Add a 1 day Leave Request to the previous period
+    $this->createLeaveRequestBalanceChange(
+      $previousPeriodEntitlement->type_id,
+      $previousPeriodEntitlement->contact_id,
+      $leaveRequestStatuses['Approved'],
+      date('Y-m-d', strtotime('+1 day', $previousPeriodStartDateTimeStamp))
+    );
+
+    // Accrue 3 days during the previous period
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $previousPeriodEntitlement->type_id,
+      'contact_id' => $previousPeriodEntitlement->contact_id,
+      'status_id' => $leaveRequestStatuses['Approved'],
+      'from_date' => date('Y-m-d', strtotime('+10 day', $previousPeriodStartDateTimeStamp)),
+      'to_date' => date('Y-m-d', strtotime('+10 day', $previousPeriodStartDateTimeStamp)),
+      'toil_to_accrue' => 3,
+      'toil_duration' => 300,
+      'toil_expiry_date' => null,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    $currentPeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => date('YmdHis', strtotime('2016-01-01')),
+      'end_date' => date('YmdHis', strtotime('2016-12-31')),
+    ], true);
+
+    $calculation = new EntitlementCalculation($currentPeriod, $this->contact, $type);
+    // It should only be 1, as it will not include the 3 days accrued
+    $this->assertEquals(1, $calculation->getAmountUsedInPreviousPeriod());
   }
 
   public function testPreviousPeriodBalanceShouldBeZeroIfThereIsNoPreviousPeriod() {
