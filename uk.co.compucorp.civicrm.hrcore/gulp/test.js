@@ -20,10 +20,10 @@ module.exports = {
 /**
  * Runs all the test of an extension, using the karma.conf.js file as is
  */
-function all () {
+function all (cb) {
   var configFile = find.fileSync('karma.conf.js', utils.getExtensionPath())[0];
 
-  runServer(configFile);
+  runServer(configFile, cb);
 }
 
 /**

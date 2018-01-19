@@ -7,11 +7,7 @@ var colors = require('ansi-colors');
 var file = require('gulp-file');
 var backstopjs = require('backstopjs');
 var fs = require('fs');
-var path = require('path');
 var Promise = require('es6-promise').Promise;
-
-var utils = require('./gulp/utils');
-var test = require('./gulp/test');
 
 // BackstopJS tasks
 (function () {
@@ -176,33 +172,11 @@ var test = require('./gulp/test');
 
 // Test
 (function () {
-  gulp.task('test', function (cb) {
-    var sequence = utils.addExtensionCustomTasksToSequence([
-      utils.spawnTaskForExtension('test:main', mainTask, utils.getCurrentExtension())
-    ], 'test');
+  var tasks = require('./gulp/tasks/test');
 
-    gulpSequence.apply(null, sequence)(cb);
+  tasks.forEach(function (task) {
+    gulp.task(task.name, task.fn);
   });
-
-  gulp.task('test:watch', function () {
-    var extPath = utils.getExtensionPath();
-    var watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
-      path.join(extPath, '**', 'test/**/*.spec.js'),
-      '!' + path.join(extPath, '**', 'test/mocks/**/*.js'),
-      '!' + path.join(extPath, '**', 'test/test-main.js')
-    ], 'test');
-
-    gulp.watch(watchPatterns).on('change', function (file) {
-      test.single(file.path);
-    });
-  });
-
-  /**
-   * Runs all the JS unit tests of the extension
-   */
-  function mainTask () {
-    test.all();
-  }
 }());
 
 // Watch
