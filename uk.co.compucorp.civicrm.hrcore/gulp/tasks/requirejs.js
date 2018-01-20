@@ -24,7 +24,7 @@ module.exports = [
   },
   {
     name: 'requirejs:watch',
-    fn: function () {
+    fn: function (cb) {
       var extPath = utils.getExtensionPath();
       var watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
         path.join(extPath, '**', 'src/**/*.js')
@@ -37,6 +37,7 @@ module.exports = [
           test.all();
         }
       });
+      cb();
     }
   }
 ];

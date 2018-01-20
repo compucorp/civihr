@@ -18,7 +18,7 @@ module.exports = [
   },
   {
     name: 'test:watch',
-    fn: function () {
+    fn: function (cb) {
       var extPath = utils.getExtensionPath();
       var watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
         path.join(extPath, '**', 'test/**/*.spec.js'),
@@ -29,6 +29,7 @@ module.exports = [
       gulp.watch(watchPatterns).on('change', function (file) {
         test.single(file.path);
       });
+      cb();
     }
   }
 ];

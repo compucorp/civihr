@@ -29,13 +29,14 @@ module.exports = [
   },
   {
     name: 'sass:watch',
-    fn: function () {
+    fn: function (cb) {
       var extPath = utils.getExtensionPath();
       var watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
         path.join(extPath, 'scss/**/*.scss')
       ], 'sass');
 
       gulp.watch(watchPatterns, ['sass']);
+      cb();
     }
   }
 ];
