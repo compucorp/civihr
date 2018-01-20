@@ -10,7 +10,7 @@ module.exports = [
     name: 'test',
     fn: function (cb) {
       var sequence = utils.addExtensionCustomTasksToSequence([
-        utils.spawnTaskForExtension('test:main', mainTask, utils.getCurrentExtension())
+        utils.spawnTaskForExtension('test:main', mainTask)
       ], 'test');
 
       gulpSequence.apply(null, sequence)(cb);

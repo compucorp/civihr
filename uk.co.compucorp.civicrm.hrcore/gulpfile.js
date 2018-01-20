@@ -13,17 +13,17 @@ _.each(tasks, function (fn, name) {
 
 gulp.task('watch', function (cb) {
   gulpSequence(
-    utils.spawnTaskForExtension('sass:watch', tasks['sass:watch'], utils.getCurrentExtension()),
-    utils.spawnTaskForExtension('requirejs:watch', tasks['requirejs:watch'], utils.getCurrentExtension()),
-    utils.spawnTaskForExtension('test:watch', tasks['test:watch'], utils.getCurrentExtension())
+    utils.spawnTaskForExtension('sass:watch', tasks['sass:watch']),
+    utils.spawnTaskForExtension('requirejs:watch', tasks['requirejs:watch']),
+    utils.spawnTaskForExtension('test:watch', tasks['test:watch'])
   )(cb);
 });
 
 gulp.task('build', function (cb) {
   gulpSequence(
-    utils.spawnTaskForExtension('sass', tasks['sass'], utils.getCurrentExtension()),
-    utils.spawnTaskForExtension('requirejs', tasks['requirejs'], utils.getCurrentExtension()),
-    utils.spawnTaskForExtension('test', tasks['test'], utils.getCurrentExtension())
+    utils.spawnTaskForExtension('sass', tasks['sass']),
+    utils.spawnTaskForExtension('requirejs', tasks['requirejs']),
+    utils.spawnTaskForExtension('test', tasks['test'])
   )(cb);
 });
 

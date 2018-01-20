@@ -152,9 +152,9 @@ function requireJsTask (cb) {
   }
 
   sequence = utils.addExtensionCustomTasksToSequence([
-    utils.spawnTaskForExtension('requirejs:main', requireJsMainTask, utils.getCurrentExtension())
+    utils.spawnTaskForExtension('requirejs:main', requireJsMainTask)
   ], 'requirejs');
-  sequence.push(utils.spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask, utils.getCurrentExtension()));
+  sequence.push(utils.spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask));
 
   gulpSequence.apply(null, sequence)(cb);
 }

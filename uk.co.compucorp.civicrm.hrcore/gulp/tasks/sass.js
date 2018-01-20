@@ -16,8 +16,8 @@ module.exports = [
     fn: function (cb) {
       if (hasCurrentExtensionMainSassFile()) {
         var sequence = utils.addExtensionCustomTasksToSequence([
-          utils.spawnTaskForExtension('sass:sync', syncTask, utils.getCurrentExtension()),
-          utils.spawnTaskForExtension('sass:main', mainTask, utils.getCurrentExtension())
+          utils.spawnTaskForExtension('sass:sync', syncTask),
+          utils.spawnTaskForExtension('sass:main', mainTask)
         ], 'sass');
 
         gulpSequence.apply(null, sequence)(cb);
