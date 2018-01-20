@@ -11,6 +11,7 @@ var PluginError = require('plugin-error');
 var xml = require('xml-parse');
 
 var currentExtension;
+var extensionsPathCache = {};
 
 module.exports = {
   addExtensionCustomTasksToSequence: addExtensionCustomTasksToSequence,
@@ -181,6 +182,7 @@ function getExtensionNameFromCLI () {
 
 /**
  * Uses `cv` to get the path of the given extension
+ * The path is then cached as a performance optimization
  *
  * @param {String} name If not provided, the name given via the CLI argument is used
  * @return {String}
@@ -188,7 +190,11 @@ function getExtensionNameFromCLI () {
 function getExtensionPath (name) {
   var extension = name || getCurrentExtension();
 
-  return cv('path -x ' + extension)[0].value;
+  if (!extensionsPathCache[extension]) {
+    extensionsPathCache[extension] = cv('path -x ' + extension)[0].value;
+  }
+
+  return extensionsPathCache[extension];
 }
 
 /**
