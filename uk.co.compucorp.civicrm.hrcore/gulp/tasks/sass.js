@@ -14,8 +14,10 @@ module.exports = [
   {
     name: 'sass',
     fn: function (cb) {
+      var sequence;
+
       if (hasCurrentExtensionMainSassFile()) {
-        var sequence = utils.addExtensionCustomTasksToSequence([
+        sequence = utils.addExtensionCustomTasksToSequence([
           utils.spawnTaskForExtension('sass:sync', syncTask),
           utils.spawnTaskForExtension('sass:main', mainTask)
         ], 'sass');
@@ -30,13 +32,20 @@ module.exports = [
   {
     name: 'sass:watch',
     fn: function (cb) {
-      var extPath = utils.getExtensionPath();
-      var watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
-        path.join(extPath, 'scss/**/*.scss')
-      ], 'sass');
+      var extPath, watchPatterns;
 
-      gulp.watch(watchPatterns, ['sass']);
-      cb();
+      if (hasCurrentExtensionMainSassFile()) {
+        extPath = utils.getExtensionPath();
+        watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
+          path.join(extPath, 'scss/**/*.scss')
+        ], 'sass');
+
+        gulp.watch(watchPatterns, ['sass']);
+        cb();
+      } else {
+        console.log(colors.yellow('No main .scss file found, skipping...'));
+        cb();
+      }
     }
   }
 ];
