@@ -1,3 +1,4 @@
+var colors = require('ansi-colors');
 var detectInstalled = require('detect-installed');
 var exec = require('child_process').exec;
 var find = require('find');
@@ -15,29 +16,41 @@ module.exports = [
   {
     name: 'requirejs',
     fn: function (cb) {
-      // The original extension that the task was called with could change during
-      // the execution, thus it gets saved so it can be restored later
-      originalExtension = utils.getCurrentExtension();
+      if (hasCurrentExtensionBuildFile()) {
+        // The original extension that the task was called with could change during
+        // the execution, thus it gets saved so it can be restored later
+        originalExtension = utils.getCurrentExtension();
 
-      requireJsTask(cb);
+        requireJsTask(cb);
+      } else {
+        console.log(colors.yellow('No build.js file found, skipping...'));
+        cb();
+      }
     }
   },
   {
     name: 'requirejs:watch',
     fn: function (cb) {
-      var extPath = utils.getExtensionPath();
-      var watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
-        path.join(extPath, '**', 'src/**/*.js')
-      ], 'requirejs');
+      var extPath, watchPatterns;
 
-      gulp.watch(watchPatterns, ['requirejs']).on('change', function (file) {
-        try {
-          test.for(file.path);
-        } catch (ex) {
-          test.all();
-        }
-      });
-      cb();
+      if (hasCurrentExtensionBuildFile()) {
+        extPath = utils.getExtensionPath();
+        watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
+          path.join(extPath, '**', 'src/**/*.js')
+        ], 'requirejs');
+
+        gulp.watch(watchPatterns, ['requirejs']).on('change', function (file) {
+          try {
+            test.for(file.path);
+          } catch (ex) {
+            test.all();
+          }
+        });
+        cb();
+      } else {
+        console.log(colors.yellow('No build.js file found, skipping...'));
+        cb();
+      }
     }
   }
 ];
@@ -97,6 +110,22 @@ function getDependencyExtensionsData (buildFileContent) {
   }
 
   return requiredExtensions;
+}
+
+/**
+ * Check if the current extension has a build.js file
+ *
+ * @return {Boolean}
+ */
+function hasCurrentExtensionBuildFile () {
+  var extPath = utils.getExtensionPath();
+  var karmaConfRegExp = new RegExp(extPath + '(/[^/]+)?(/[^/]+)?/build.js');
+
+  return !!find.fileSync(karmaConfRegExp, extPath)
+    // files from the node_modules/ folder might get caught up in the query
+    .filter(function (filePath) {
+      return !(filePath.indexOf('node_modules') > -1);
+    })[0];
 }
 
 /**
