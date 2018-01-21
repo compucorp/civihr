@@ -4,7 +4,6 @@ var gulp = require('gulp');
 var gulpSequence = require('gulp-sequence');
 
 var utils = require('./gulp/utils');
-
 var tasks = getMainTasks();
 
 _.each(tasks, function (fn, name) {
