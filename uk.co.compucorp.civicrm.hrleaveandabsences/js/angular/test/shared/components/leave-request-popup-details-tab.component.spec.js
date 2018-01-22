@@ -966,9 +966,14 @@ define([
 
       describe('when user edits leave request', function () {
         describe('without comments', function () {
+          var leaveRequestAttributes;
+
           beforeEach(function () {
+            var leaveRequest;
             var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
-            var leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
+
+            leaveRequestAttributes = leaveRequestData.findBy('status_id', status);
+            leaveRequest = LeaveRequestInstance.init(_.cloneDeep(leaveRequestAttributes));
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
 
             var params = compileComponent({
@@ -990,13 +995,13 @@ define([
             });
 
             it('sets all leaverequest values', function () {
-              expect(controller.request.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
-              expect(controller.request.type_id).toEqual('1');
+              expect(controller.request.contact_id).toEqual(CRM.vars.leaveAndAbsences.contactId.toString());
+              expect(controller.request.type_id).toEqual(leaveRequestAttributes.type_id);
               expect(controller.request.status_id).toEqual(waitingApprovalStatus.value);
-              expect(controller.request.from_date).toEqual('2016-11-23');
-              expect(controller.request.from_date_type).toEqual('1');
-              expect(controller.request.to_date).toEqual('2016-11-28');
-              expect(controller.request.to_date_type).toEqual('1');
+              expect(controller.request.from_date).toEqual(leaveRequestAttributes.from_date);
+              expect(controller.request.from_date_type).toEqual(leaveRequestAttributes.from_date_type);
+              expect(controller.request.to_date).toEqual(leaveRequestAttributes.to_date);
+              expect(controller.request.to_date_type).toEqual(leaveRequestAttributes.to_date_type);
             });
 
             it('retrieves original balance breakdown', function () {
