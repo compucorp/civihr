@@ -1,7 +1,6 @@
 var bulk = require('gulp-sass-bulk-import');
 var civicrmScssRoot = require('civicrm-scssroot')();
 var colors = require('ansi-colors');
-var find = require('find');
 var gulp = require('gulp');
 var gulpSequence = require('gulp-sequence');
 var path = require('path');
@@ -16,7 +15,7 @@ module.exports = [
     fn: function (cb) {
       var sequence;
 
-      if (hasCurrentExtensionMainSassFile()) {
+      if (utils.canCurrentExtensionRun('sass')) {
         sequence = utils.addExtensionCustomTasksToSequence([
           utils.spawnTaskForExtension('sass:sync', syncTask),
           utils.spawnTaskForExtension('sass:main', mainTask)
@@ -34,7 +33,7 @@ module.exports = [
     fn: function (cb) {
       var extPath, watchPatterns;
 
-      if (hasCurrentExtensionMainSassFile()) {
+      if (utils.canCurrentExtensionRun('sass')) {
         extPath = utils.getExtensionPath();
         watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
           path.join(extPath, 'scss/**/*.scss')
@@ -49,15 +48,6 @@ module.exports = [
     }
   }
 ];
-
-/**
- * Check if the current extension has a main *.scss file
- *
- * @return {Boolean}
- */
-function hasCurrentExtensionMainSassFile () {
-  return !!find.fileSync(/\/scss\/([^/]+)?\.scss$/, utils.getExtensionPath())[0];
-}
 
 /**
  * Compiles SASS files

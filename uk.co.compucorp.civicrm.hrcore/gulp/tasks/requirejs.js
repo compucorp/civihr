@@ -22,7 +22,7 @@ module.exports = [
     fn: function (cb) {
       var extPath, watchPatterns;
 
-      if (hasCurrentExtensionBuildFile()) {
+      if (utils.canCurrentExtensionRun('requirejs')) {
         extPath = utils.getExtensionPath();
         watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
           path.join(extPath, '**', 'src/**/*.js')
@@ -102,22 +102,6 @@ function getDependencyExtensionsData (buildFileContent) {
 }
 
 /**
- * Check if the current extension has a build.js file
- *
- * @return {Boolean}
- */
-function hasCurrentExtensionBuildFile () {
-  var extPath = utils.getExtensionPath();
-  var karmaConfRegExp = new RegExp(extPath + '(/[^/]+)?(/[^/]+)?/build.js');
-
-  return !!find.fileSync(karmaConfRegExp, extPath)
-    // files from the node_modules/ folder might get caught up in the query
-    .filter(function (filePath) {
-      return !(filePath.indexOf('node_modules') > -1);
-    })[0];
-}
-
-/**
  * Takes the content of the build file on the given path, and applies any
  * required transformations on it
  *
@@ -150,7 +134,7 @@ function requireJsMainTask (cb) {
     utils.throwError('requirejs', 'The `requirejs` package is not installed globally (http://requirejs.org/docs/optimization.html#download)');
   }
 
-  if (hasCurrentExtensionBuildFile()) {
+  if (utils.canCurrentExtensionRun('requirejs')) {
     // The original extension that the task was called with could change during
     // the execution, thus it gets saved so it can be restored later
     originalExtension = utils.getCurrentExtension();
@@ -184,7 +168,7 @@ function requireJsTask (cb) {
     utils.spawnTaskForExtension('requirejs:main', requireJsMainTask)
   ], 'requirejs');
 
-  if (!utils.hasMainTaskBeenReplaced(sequence) && hasCurrentExtensionBuildFile()) {
+  if (!utils.hasMainTaskBeenReplaced(sequence) && utils.canCurrentExtensionRun('requirejs')) {
     sequence.push(utils.spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask));
   }
 

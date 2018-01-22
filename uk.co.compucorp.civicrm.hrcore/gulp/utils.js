@@ -16,6 +16,7 @@ var extensionsPathCache = {};
 module.exports = {
   addExtensionCustomTasksToSequence: addExtensionCustomTasksToSequence,
   addExtensionCustomWatchPatternsToDefaultList: addExtensionCustomWatchPatternsToDefaultList,
+  canCurrentExtensionRun: canCurrentExtensionRun,
   getExtensionNameAndAliasFromInfoXML: getExtensionNameAndAliasFromInfoXML,
   getExtensionNameFromFile: getExtensionNameFromFile,
   getExtensionTasks: getExtensionTasks,
@@ -78,6 +79,27 @@ function addExtensionCustomWatchPatternsToDefaultList (defaultList, taskName) {
     .concat(getExtensionTasks(taskName).watchPatterns)
     .compact()
     .value();
+}
+
+/**
+ * Checks if the given task can be ran on the current extension
+ *
+ * @NOTE: the files whose presence is used as a criteria for whether the task
+ *   can run or not, are the files used by the *default* tasks. If the current
+ *   extension overrides them and uses some other files, then this method can't be used
+ *
+ * @param {String} task
+ * @return {Boolean}
+ */
+function canCurrentExtensionRun (task) {
+  switch (task) {
+    case 'requirejs':
+      return isFileInCurrentExtensionFolder('(/[^/]+)?(/[^/]+)?/build.js');
+    case 'sass':
+      return isFileInCurrentExtensionFolder('/scss/([^/]+)?.scss$');
+    case 'test':
+      return isFileInCurrentExtensionFolder('(/[^/]+)?(/[^/]+)?/karma.conf.js');
+  }
 }
 
 /**
@@ -211,6 +233,24 @@ function hasMainTaskBeenReplaced (sequence) {
   return !!_.find(sequence, function (task) {
     return task.indexOf(':main:override') > -1;
   });
+}
+
+/**
+ * Checks whether the file (represented by a regexp string) is in the current extension
+ * folder
+ *
+ * @param {String} fileRegExp
+ * @return {Boolean}
+ */
+function isFileInCurrentExtensionFolder (fileRegExp) {
+  var extPath = getExtensionPath();
+  var r = new RegExp(extPath + fileRegExp);
+
+  return !!find.fileSync(r, extPath)
+    // files from the node_modules/ folder might get caught up in the query
+    .filter(function (filePath) {
+      return !(filePath.indexOf('node_modules') > -1);
+    })[0];
 }
 
 /**
