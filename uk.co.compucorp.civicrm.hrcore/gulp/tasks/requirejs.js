@@ -22,24 +22,26 @@ module.exports = [
     fn: function (cb) {
       var extPath, watchPatterns;
 
-      if (utils.canCurrentExtensionRun('requirejs')) {
-        extPath = utils.getExtensionPath();
-        watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
-          path.join(extPath, '**', 'src/**/*.js')
-        ], 'requirejs');
+      // @TODO there is no outer check here (`utils.canCurrentExtensionRun()`)
+      // because the `hrui` extension doesn't use a `build.js` file, although
+      // it still needs the JS to be processed. For the time being the check is
+      // disabled until we allow extension to define their custom criteria for
+      // whether a task can be run on them or not
+      extPath = utils.getExtensionPath();
+      watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
+        path.join(extPath, '**', 'src/**/*.js')
+      ], 'requirejs');
 
-        gulp.watch(watchPatterns, ['requirejs']).on('change', function (file) {
+      gulp.watch(watchPatterns, ['requirejs']).on('change', function (file) {
+        if (utils.canCurrentExtensionRun('test')) {
           try {
             test.for(file.path);
           } catch (ex) {
             test.all();
           }
-        });
-        cb();
-      } else {
-        console.log(colors.yellow('No build.js file found, skipping...'));
-        cb();
-      }
+        }
+      });
+      cb();
     }
   }
 ];
