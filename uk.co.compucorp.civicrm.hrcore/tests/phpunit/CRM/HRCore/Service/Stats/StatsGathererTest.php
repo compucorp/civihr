@@ -10,7 +10,6 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_UFMatch as UFMatchFabricator;
 use CRM_HRRecruitment_Test_Fabricator_HRVacancy as HRVacancyFabricator;
-use CRM_Tasksassignments_Test_Fabricator_TaskType as TaskTypeFabricator;
 use CRM_Tasksassignments_Test_Fabricator_Task as TaskFabricator;
 use CRM_Tasksassignments_Test_Fabricator_Document as DocumentFabricator;
 use CRM_Tasksassignments_Test_Fabricator_Assignment as AssignmentFabricator;
@@ -84,16 +83,18 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     HRVacancyFabricator::fabricate();
 
     // expect 1 Task
-    TaskTypeFabricator::fabricate();
+    $params = ['component_id' => 'CiviTask', 'option_group_id' => 'activity_type'];
+    $taskType = OptionValueFabricator::fabricate($params);
     $params = [
       'source_contact_id' => $contactID,
       'target_contact_id' => $contactID,
+      'activity_type_id' => $taskType['value'],
     ];
     TaskFabricator::fabricate($params);
 
     // expect 1 Assignment
-    CaseTypeFabricator::fabricate();
-    AssignmentFabricator::fabricate();
+    $caseType = CaseTypeFabricator::fabricate();
+    AssignmentFabricator::fabricate(['case_type_id' => $caseType['id']]);
 
     // expect 2 Documents
     $params['activity_type_id'] = $documentType['value'];
@@ -204,7 +205,6 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
   public function testDeletedEntitiesWillNotBeIncluded() {
     $this->truncateTables(['civicrm_contact']);
     $contactID = ContactFabricator::fabricate()['id'];
-    TaskTypeFabricator::fabricate();
     $this->setUpLeaveRequest($contactID);
     SessionHelper::registerCurrentLoggedInContactInSession($contactID);
 
@@ -214,14 +214,19 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $contact = ContactFabricator::fabricate();
     civicrm_api3('Contact', 'delete', ['id' => $contact['id']]);
 
+    $params = ['component_id' => 'CiviTask', 'option_group_id' => 'activity_type'];
+    $taskType = OptionValueFabricator::fabricate($params);
     $params = [
       'source_contact_id' => $contactID,
-      'target_contact_id' => $contactID
+      'target_contact_id' => $contactID,
+      'activity_type_id' => $taskType['value'],
     ];
     $task = TaskFabricator::fabricate($params);
     civicrm_api3('Task', 'delete', ['id' => $task['id']]);
 
-    $assignment = AssignmentFabricator::fabricate();
+    $caseType = CaseTypeFabricator::fabricate();
+    $assignmentParams = ['case_type_id' => $caseType['id']];
+    $assignment = AssignmentFabricator::fabricate($assignmentParams);
     civicrm_api3('Assignment', 'delete', ['id' => $assignment->id]);
 
     $document = DocumentFabricator::fabricate($params);
