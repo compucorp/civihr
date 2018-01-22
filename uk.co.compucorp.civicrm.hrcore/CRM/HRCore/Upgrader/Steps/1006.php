@@ -8,10 +8,9 @@ trait CRM_HRCore_Upgrader_Steps_1006 {
    * @return TRUE
    */
   public function upgrade_1006() {
-    $description = 'Checks for CiviHR version updates. Important for keeping '
-      . 'the database secure. Also sends site basic info and anonymous usage '
-      . 'statistics to civihr.org to to assist in prioritising ongoing '
-      . 'development efforts.';
+    $description = 'Checks for CiviHR version updates. Also sends basic site '
+      . 'info and basic usage statistics to civihr.org to assist in '
+      . 'prioritising ongoing development efforts.';
 
     $params = [
       'run_frequency' => 'Daily',
