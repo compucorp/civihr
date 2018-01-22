@@ -34,33 +34,14 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        return casper.waitForSelector('tr:nth-child(1)  div[uib-dropdown] a:nth-child(1)');
+        return casper.waitForSelector('tr:nth-child(1) div[uib-dropdown] a:nth-child(1)');
       }).then(function () {
-        casper.click('div:nth-child(2) > div > table > tbody > tr:nth-child(' + (row || 1) + ')  div[uib-dropdown] a:nth-child(1)');
+        casper.click('div:nth-child(2) tr:nth-child(' + (row || 1) + ') div[uib-dropdown] a:nth-child(1)');
       })
 
       return this;
     },
 
-    /**
-     * User clicks on the edit/respond action
-     * @param {Number} row number corresponding to leave request in the list
-     * @return {Promise}
-     */
-    /*editRequest: function (row) {
-      var casper = this.casper;
-
-      return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click('body > ul.dropdown-menu:nth-of-type(' + (row || 1) + ') li:first-child a');
-          // As there are multiple spinners it takes more time to load up
-          casper.waitWhileVisible('.modal-content .spinner:nth-child(1)');
-          casper.waitWhileVisible('leave-request-popup-details-tab .spinner');
-
-          resolve(this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form'));
-        }.bind(this));
-      }.bind(this));
-    }*/
     /**
      * User clicks on the edit/respond action
      * @param {Number} row number corresponding to leave request in the list
@@ -80,13 +61,12 @@ module.exports = (function () {
     },
 
     openCommentsTab: function () {
-      var casper = this.casper;
       var selector = '.chr_leave-request-modal__tab .uib-tab:nth-of-type(2) a';
 
-      casper.waitForSelector(selector)
+      this.casper.waitForSelector(selector)
         .then(function () {
-          casper.click(selector);
-        });
+          this.casper.click(selector);
+        }.bind(this));
 
       return this;
     },
