@@ -22,7 +22,7 @@ class CRM_HRCore_Test_Fabricator_Contact {
     return array_shift($result['values']);
   }
 
-  public static function fabricateWithEmail($params, $email) {
+  public static function fabricateWithEmail($params = [], $email = 'johndoe@test.com') {
     $contact = self::fabricate($params);
 
     civicrm_api3('Email', 'create', [

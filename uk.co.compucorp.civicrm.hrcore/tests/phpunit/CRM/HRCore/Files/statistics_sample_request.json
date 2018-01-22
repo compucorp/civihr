@@ -1,0 +1,41 @@
+{
+  "siteUrl": "compucorp.civihrhosting.co.uk",
+  "siteName": "Compucorp",
+  "generationDate": "2012-04-23T18:25:43+0000",
+  "lastLoginByRole": {
+    "civihr_admin": "2012-04-23T18:25:43+0000",
+    "civihr_staff": "2012-04-23T18:25:43+0000",
+    "civihr_manager": "2012-04-23T18:25:43+0000",
+    "civihr_admin_local": "2012-04-23T18:25:43+0000",
+    "administrator": "2012-04-23T18:25:43+0000",
+    "custom_role": "2012-04-23T18:25:43+0000"
+  },
+  "cmsUserCount": 21,
+  "assignmentCount": 10,
+  "taskCount": 14,
+  "documentCount": 3,
+  "leaveRequestCount": 2,
+  "leaveRequestInLast100DaysCount": 2,
+  "contactPerSubTypeCount": {
+    "Individual": 35,
+    "Organization": 1
+  },
+  "vacancyCount": 1,
+  "reportConfigurationCount": 1,
+  "reportConfigurations": [
+    {
+      "id": 1,
+      "reportName": "people",
+      "label": "Test",
+      "jsonConfig": "{\"menuLimit\":\"200\",\"unusedAttrsVertical\":\"false\",\"autoSortUnusedAttrs\":\"false\",\"rendererName\":\"Table\",\"aggregatorName\":\"Count\"}"
+    }
+  ],
+  "reportConfigurationAgeGroups": [
+    {
+      "id": 1,
+      "label": "Young",
+      "ageFrom": 0,
+      "ageTo": 25
+    }
+  ]
+}
