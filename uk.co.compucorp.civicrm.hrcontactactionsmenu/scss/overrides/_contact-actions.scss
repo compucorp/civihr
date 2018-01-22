@@ -1,0 +1,6 @@
+// Overrides to remove transparent background
+.page-civicrm-contact-view {
+  #crm-contact-actions-list {
+    background: $gray-light !important;
+  }
+}

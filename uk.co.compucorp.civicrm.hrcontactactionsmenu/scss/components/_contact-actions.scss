@@ -1,0 +1,54 @@
+.crm_contact-actions {
+  background: $gray-light;
+  width: 1065px !important;
+
+  &::before {
+    background: $gray-light !important;
+    border-bottom: none !important;
+    height: 20px !important;
+    left: 0 !important;  
+    top: -15px !important;
+    width: 93px !important;
+  }
+
+  @at-root #{&}__body__user-actions {
+    min-height: 205px !important;
+  }
+
+  @at-root #{&}__footer__user-info {
+    margin-bottom: 15px;
+  }
+
+  @at-root #{&}__footer__user-actions {
+    padding-bottom: 17px;
+    padding-top: 20px;
+  }
+
+  @at-root #{&}__btn {
+    white-space: normal !important;
+  }
+
+  @at-root #{&}--bg-white {
+    background: $crm-white;
+  }
+
+  @at-root #{&}--dark-grey {
+    color: $gray-dark;
+  }
+
+  @at-root #{&}--dark-gray-blue {
+    border-color: $crm-grayblue-dark !important;
+  }
+
+  @at-root #{&}--bottom-margin {
+    margin-bottom: 10px;
+  }
+
+  @at-root #{&}--primary {
+    color: $brand-primary;
+  }
+
+  @at-root #{&}--bold {
+    font-weight: 600;
+  }
+}
