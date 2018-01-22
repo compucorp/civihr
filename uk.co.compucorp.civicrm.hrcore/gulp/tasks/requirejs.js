@@ -15,18 +15,7 @@ var originalExtension;
 module.exports = [
   {
     name: 'requirejs',
-    fn: function (cb) {
-      if (hasCurrentExtensionBuildFile()) {
-        // The original extension that the task was called with could change during
-        // the execution, thus it gets saved so it can be restored later
-        originalExtension = utils.getCurrentExtension();
-
-        requireJsTask(cb);
-      } else {
-        console.log(colors.yellow('No build.js file found, skipping...'));
-        cb();
-      }
-    }
+    fn: requireJsTask
   },
   {
     name: 'requirejs:watch',
@@ -155,35 +144,49 @@ function processBuildFile (buildFilePath) {
  * @param {Function} cb
  */
 function requireJsMainTask (cb) {
-  var buildFilePath = find.fileSync('build.js', utils.getExtensionPath())[0];
-  var tempBuildFilePath = path.join(path.dirname(buildFilePath), 'build.tmp.js');
+  var buildFilePath, tempBuildFilePath;
 
-  fs.writeFileSync(tempBuildFilePath, processBuildFile(buildFilePath), 'utf8');
+  if (!detectInstalled.sync('requirejs')) {
+    utils.throwError('requirejs', 'The `requirejs` package is not installed globally (http://requirejs.org/docs/optimization.html#download)');
+  }
 
-  exec('r.js -o ' + tempBuildFilePath, function (err, stdout, stderr) {
-    err && err.code && console.log(stdout);
+  if (hasCurrentExtensionBuildFile()) {
+    // The original extension that the task was called with could change during
+    // the execution, thus it gets saved so it can be restored later
+    originalExtension = utils.getCurrentExtension();
 
-    fs.unlink(tempBuildFilePath);
+    buildFilePath = find.fileSync('build.js', utils.getExtensionPath())[0];
+    tempBuildFilePath = path.join(path.dirname(buildFilePath), 'build.tmp.js');
+
+    fs.writeFileSync(tempBuildFilePath, processBuildFile(buildFilePath), 'utf8');
+
+    exec('r.js -o ' + tempBuildFilePath, function (err, stdout, stderr) {
+      err && err.code && console.log(stdout);
+
+      fs.unlink(tempBuildFilePath);
+      cb();
+    });
+  } else {
+    console.log(colors.yellow('No build.js file found, skipping...'));
     cb();
-  });
+  }
 }
 
 /**
- * Sets up and runs the task sequences, adding the dependencies task at the end
+ * Sets up and runs the task sequences
  *
  * @param {Function} cb
  */
 function requireJsTask (cb) {
   var sequence;
 
-  if (!detectInstalled.sync('requirejs')) {
-    utils.throwError('requirejs', 'The `requirejs` package is not installed globally (http://requirejs.org/docs/optimization.html#download)');
-  }
-
   sequence = utils.addExtensionCustomTasksToSequence([
     utils.spawnTaskForExtension('requirejs:main', requireJsMainTask)
   ], 'requirejs');
-  sequence.push(utils.spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask));
+
+  if (!utils.hasMainTaskBeenReplaced(sequence) && hasCurrentExtensionBuildFile()) {
+    sequence.push(utils.spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask));
+  }
 
   gulpSequence.apply(null, sequence)(cb);
 }
