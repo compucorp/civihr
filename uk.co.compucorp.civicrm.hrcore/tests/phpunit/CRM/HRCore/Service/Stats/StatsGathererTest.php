@@ -92,8 +92,8 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     TaskFabricator::fabricate($params);
 
     // expect 1 Assignment
-    CaseTypeFabricator::fabricate();
-    AssignmentFabricator::fabricate();
+    $caseType = CaseTypeFabricator::fabricate();
+    AssignmentFabricator::fabricate(['case_type_id' => $caseType['id']]);
 
     // expect 2 Documents
     $params['activity_type_id'] = $documentType['value'];
@@ -221,7 +221,9 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $task = TaskFabricator::fabricate($params);
     civicrm_api3('Task', 'delete', ['id' => $task['id']]);
 
-    $assignment = AssignmentFabricator::fabricate();
+    $caseType = CaseTypeFabricator::fabricate();
+    $assignmentParams = ['case_type_id' => $caseType['id']];
+    $assignment = AssignmentFabricator::fabricate($assignmentParams);
     civicrm_api3('Assignment', 'delete', ['id' => $assignment->id]);
 
     $document = DocumentFabricator::fabricate($params);
