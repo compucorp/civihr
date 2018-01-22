@@ -1,10 +1,13 @@
 <?php
 
+use CRM_HRCore_Test_Helpers_SessionHelper as SessionHelper;
+use CRM_Hremergency_Test_BaseHeadlessTest as BaseHeadlessTest;
 use CRM_Hremergency_Service_EmergencyContactService as EmergencyContactService;
 
-class api_v3_Contact_DeleteEmergencyContactTest extends \PHPUnit_Framework_TestCase {
-
-  use CRM_HRCore_Test_Helpers_SessionHelpersTrait;
+/**
+ * @group headless
+ */
+class api_v3_Contact_DeleteEmergencyContactTest extends BaseHeadlessTest {
 
   public function testDeletingNonExistentContact() {
     $id = 1;
@@ -19,7 +22,7 @@ class api_v3_Contact_DeleteEmergencyContactTest extends \PHPUnit_Framework_TestC
     $emergencyContactID = 1;
     $currentContactID = 2;
     $contactOwnerID = 3;
-    $this->registerCurrentLoggedInContactInSession($currentContactID);
+    SessionHelper::registerCurrentLoggedInContactInSession($currentContactID);
 
     // use a different owner to logged in user
     $emergencyContacts[$emergencyContactID] = ['entity_id' => $contactOwnerID];
@@ -35,7 +38,7 @@ class api_v3_Contact_DeleteEmergencyContactTest extends \PHPUnit_Framework_TestC
     $emergencyContactID = 1;
     $contactOwnerID = 2;
 
-    $this->registerCurrentLoggedInContactInSession($contactOwnerID);
+    SessionHelper::registerCurrentLoggedInContactInSession($contactOwnerID);
 
     // owner and logged in user are the same
     $emergencyContacts[$emergencyContactID] = ['entity_id' => $contactOwnerID];

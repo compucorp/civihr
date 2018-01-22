@@ -2,11 +2,13 @@
   "scenarios": [
     {
       "label": "Absence Periods list",
-      "url": "civicrm/admin/leaveandabsences/periods?action=browse"
+      "url": "civicrm/admin/leaveandabsences/periods?action=browse",
+      "credential": "admin"
     },
     {
       "label": "Absence Periods form",
-      "url": "civicrm/admin/leaveandabsences/periods?action=add"
+      "url": "civicrm/admin/leaveandabsences/periods?action=add",
+      "credential": "admin"
     }
   ]
 }

@@ -2,7 +2,7 @@
 
 define([
   'common/lodash',
-  'mocks/data/public-holiday-data',
+  'mocks/data/public-holiday.data',
   'leave-absences/shared/instances/public-holiday.instance'
 ], function (_, mockData) {
   'use strict';

@@ -13,9 +13,15 @@ $row-margin-bottom: 15px;
     border: 0;
   }
 
+  .chr_leave-request-date-picker-container {
+    .input-group {
+      width: 100%;
+    }
+  }
+
   @media screen and (max-width: $screen-xs-max) {
     .chr_leave-request-date-picker-container {
-      margin-bottom: 5px;
+      margin-bottom: 10px;
     }
   }
 }

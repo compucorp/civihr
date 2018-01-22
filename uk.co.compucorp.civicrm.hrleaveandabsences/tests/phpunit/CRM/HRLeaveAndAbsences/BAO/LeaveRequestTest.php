@@ -103,7 +103,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = new DateTime();
     $date = $fromDate->format('YmdHis');
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $date,
@@ -3305,8 +3305,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   public function testLeaveDatesAreNotDeletedAndRecreatedWhenUpdatingALeaveRequestAndLeaveDatesDidNotChange() {
     $fromDate = CRM_Utils_Date::processDate('2016-01-08');
     $toDate = CRM_Utils_Date::processDate('2016-01-10');
+
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate,
@@ -4360,5 +4361,62 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     );
 
     $this->assertEquals($expectedResultsBreakdown, $result);
+  }
+
+  public function testNonMandatoryFieldsAreResetWhenAbsenceTypeChangedToOneWithADifferentCalculationUnit() {
+    $calculationUnits = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
+    $dayTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
+
+    $absenceTypeInDays = AbsenceTypeFabricator::fabricate([
+      'calculation_unit' => $calculationUnits['days']
+    ]);
+
+    $absenceTypeInHours = AbsenceTypeFabricator::fabricate([
+      'calculation_unit' => $calculationUnits['hours']
+    ]);
+
+    $leaveRequestParams = [
+      'contact_id' => 1,
+      'type_id' => $absenceTypeInDays->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      //The types are required when absence type is in days
+      'from_date_type' => $dayTypes['all_day'],
+      'to_date_type' => $dayTypes['all_day']
+    ];
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($leaveRequestParams);
+
+    // Change absence type to one in hours
+    $leaveRequestParams = array_merge($leaveRequestParams, [
+      'id' => $leaveRequest->id,
+      'type_id' => $absenceTypeInHours->id,
+      // These two are required for Leave in Hours
+      'to_date_amount' => 7.5,
+      'from_date_amount' => 0,
+    ]);
+    $leaveRequest = LeaveRequest::create($leaveRequestParams, LeaveRequest::VALIDATIONS_OFF);
+
+    // Here, fields required for absence types in days were set to null,
+    // whereas the ones required for absence types in hours were not touched.
+    // Because of how the DB_DataObject null and empty strings,
+    // civi will set those fields to the string 'null' rather than
+    // a normal empty string
+    $this->assertEquals('null', $leaveRequest->from_date_type);
+    $this->assertEquals('null', $leaveRequest->to_date_type);
+    $this->assertEquals($leaveRequestParams['from_date_amount'], $leaveRequest->from_date_amount);
+    $this->assertEquals($leaveRequestParams['to_date_amount'], $leaveRequest->to_date_amount);
+
+    // Change absence type to one in days again
+    $leaveRequestParams = array_merge($leaveRequestParams, [
+      'type_id' => $absenceTypeInDays->id,
+    ]);
+    $leaveRequest = LeaveRequest::create($leaveRequestParams, LeaveRequest::VALIDATIONS_OFF);
+
+    // Here, fields required for absence types in hours were set to null,
+    // whereas the ones required for absence types in days were not touched.
+    $this->assertEquals('null', $leaveRequest->from_date_amount);
+    $this->assertEquals('null', $leaveRequest->to_date_amount);
+    $this->assertEquals($leaveRequestParams['from_date_type'], $leaveRequest->from_date_type);
+    $this->assertEquals($leaveRequestParams['to_date_type'], $leaveRequest->to_date_type);
   }
 }

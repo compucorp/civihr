@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'mocks/module',
-  'mocks/data/entitlement-data',
+  'mocks/data/entitlement.data',
   'mocks/data/leave-balance-report.data',
   'common/angularMocks'
 ], function (_, mocks, mockData, leaveBalanceReportMockData) {

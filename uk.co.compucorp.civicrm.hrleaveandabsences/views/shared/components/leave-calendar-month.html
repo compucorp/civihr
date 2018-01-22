@@ -25,7 +25,10 @@
               </thead>
               <tbody>
               <tr class="chr_leave-calendar__items" ng-repeat="contact in month.contactsList() | limitTo: month.pageSize: month.currentPage * month.pageSize">
-                <td class="chr_leave-calendar__name" ng-if="month.showContactName">{{contact.display_name}}</td>
+                <td class="chr_leave-calendar__name" ng-if="month.showContactName">
+                  <a ng-if="month.showContactDetailsLink" ng-href="{{month.getContactUrl(contact.id)}}">{{contact.display_name}}</a>
+                  <span ng-if="!month.showContactDetailsLink">{{contact.display_name}}</span>
+                </td>
               </tr>
               </tbody>
             </table>

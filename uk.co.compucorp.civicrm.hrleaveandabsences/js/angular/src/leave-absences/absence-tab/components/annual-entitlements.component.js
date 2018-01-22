@@ -28,14 +28,14 @@
       notification) {
       $log.debug('Component: annual-entitlements');
 
-      var vm = this;
-      var contacts = [];
       var allEntitlements = [];
+      var contacts = [];
+      var vm = this;
 
       vm.absencePeriods = [];
       vm.loading = { absencePeriods: true };
-      vm.editEntitlementsPageUrl = getEditEntitlementsPageURL(vm.contactId);
 
+      vm.getEditEntitlementsPageURL = getEditEntitlementsPageURL;
       vm.openAnnualEntitlementChangeLog = openAnnualEntitlementChangeLog;
       vm.showComment = showComment;
 
@@ -79,18 +79,25 @@
       }
 
       /**
-        * Returns the URL to the Manage Entitlement page.
-        *
-        * The given contact ID is added to the URL, as the cid parameter.
-        *
-        * @param  {Number} contactId
-        * @return {String}
-        */
-      function getEditEntitlementsPageURL (contactId) {
+       * Gets the URL to the Manage Entitlement page
+       * for the contact and absence period provided
+       *
+       * @param  {Number|String} absencePeriodId
+       * @return {String}
+       */
+      function getEditEntitlementsPageURL (absencePeriodId) {
         var path = 'civicrm/admin/leaveandabsences/periods/manage_entitlements';
         var returnPath = 'civicrm/contact/view';
-        var returnUrl = CRM.url(returnPath, { cid: contactId, selectedChild: 'absence' });
-        return CRM.url(path, { cid: contactId, returnUrl: returnUrl });
+        var returnUrl = CRM.url(returnPath, {
+          cid: vm.contactId,
+          selectedChild: 'absence'
+        });
+
+        return CRM.url(path, {
+          id: absencePeriodId,
+          cid: vm.contactId,
+          returnUrl: returnUrl
+        });
       }
 
       /**
@@ -106,7 +113,7 @@
       }
 
       /**
-       * Loads entitlements comments authors
+       * Loads authors of comments to the entitlements
        *
        * @return {Promise}
        */
@@ -134,8 +141,8 @@
       }
 
       /**
-       * Opens the Annual entitlement change log modal for the current
-       * contact and the given period.
+       * Opens the Annual entitlement change log modal
+       * for the current contact and the given period
        */
       function openAnnualEntitlementChangeLog (periodId) {
         $uibModal.open({
@@ -183,14 +190,13 @@
       /**
        * Shows a comment to the entitlement
        *
+       * @NOTE There is no support for footer in notificationService at the moment.
+       * This code should be refactored as soon as notificationService supports footer.
+       * At the moment the footer is constructed via rich HTML directly via body text
+       *
        * @param {Object} comment
        */
       function showComment (comment) {
-        /*
-         * @NOTE There is no support for footer in notificationService at the moment.
-         * This code should be refactored as soon as notificationService supports footer.
-         * At the moment the footer is constructed via rich HTML directly via body text
-         */
         var text = comment.message +
           '<br/><br/><strong>Last updated:' +
           '<br/>By: ' + comment.author_name +

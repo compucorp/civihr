@@ -4,12 +4,11 @@ define([
   'common/lodash',
   'mocks/helpers/controller-on-changes',
   'mocks/apis/entitlement-api-mock',
-  'common/mocks/services/api/contract-mock',
   'leave-absences/shared/components/leave-widget/leave-widget-absence-types-available-balance.component'
 ], function (_, controllerOnChanges) {
   describe('leaveWidgetAbsenceTypesAvailableBalance', function () {
     var $componentController, $provide, $rootScope, $scope,
-      absencePeriod, absenceTypes, ctrl, Entitlement, jobContract;
+      absencePeriod, absenceTypes, ctrl, Entitlement;
     var childComponentName = 'leave-widget-absence-types-available-balance';
     var contactId = 101;
 
@@ -26,9 +25,9 @@ define([
     }));
 
     beforeEach(inject(['$componentController', '$rootScope',
-      'AbsencePeriod', 'AbsenceType', 'api.contract.mock', 'Entitlement',
+      'AbsencePeriod', 'AbsenceType', 'Entitlement',
       function (_$componentController_, _$rootScope_, AbsencePeriod,
-      AbsenceType, Contract, _Entitlement_) {
+      AbsenceType, _Entitlement_) {
         $componentController = _$componentController_;
         $rootScope = _$rootScope_;
         Entitlement = _Entitlement_;
@@ -38,9 +37,6 @@ define([
         });
         AbsenceType.all().then(function (types) {
           absenceTypes = types;
-        });
-        Contract.all().then(function (contracts) {
-          jobContract = contracts[0];
         });
         $rootScope.$digest();
         $scope = $rootScope.$new();
@@ -72,14 +68,13 @@ define([
           controllerOnChanges.mockChange('absenceTypes', absenceTypes);
           controllerOnChanges.mockChange('absencePeriod', absencePeriod);
           controllerOnChanges.mockChange('contactId', contactId);
-          controllerOnChanges.mockChange('jobContract', jobContract);
         });
 
         it('gets all entitlements for the contact in the absence period', function () {
           expect(Entitlement.all).toHaveBeenCalledWith({
-            contact_id: contactId,
-            period_id: absencePeriod.id,
-            type_id: { IN: getJobContractAbsenceEntitlements() }
+            'contact_id': contactId,
+            'period_id': absencePeriod.id,
+            'type_id.is_active': true
           }, true);
         });
 
@@ -89,21 +84,24 @@ define([
           beforeEach(function () {
             Entitlement.all({
               contact_id: contactId,
-              period_id: absencePeriod.id,
-              type_id: { IN: getJobContractAbsenceEntitlements() }
+              period_id: absencePeriod.id
             }, true)
             .then(function (entitlements) {
-              expectedEntitlements = [];
-              _.each(absenceTypes, function (absenceType) {
-                var entitlement = _.find(entitlements, function (entitlement) {
-                  return +absenceType.id === +entitlement.type_id;
-                });
+              var indexedEntitlements = _.indexBy(entitlements, 'type_id');
 
-                if (entitlement) {
-                  expectedEntitlements.push(_.assign({
-                    balance: entitlement && entitlement.remainder.future
-                  }, absenceType));
-                }
+              expectedEntitlements = absenceTypes.map(function (absenceType) {
+                var entitlement = indexedEntitlements[absenceType.id];
+
+                return _.assign({
+                  entitlement: entitlement
+                }, absenceType);
+              })
+              .filter(function (absenceType) {
+                var hasEntitlement = absenceType.entitlement && absenceType.entitlement.value > 0;
+                var allowOveruse = absenceType.allow_overuse === '1';
+                var allowAccrual = absenceType.allow_accruals_request === '1';
+
+                return hasEntitlement || allowOveruse || allowAccrual;
               });
             });
 
@@ -111,7 +109,7 @@ define([
           });
 
           it('stores the absence types the user has entitlements for', function () {
-            expect(ctrl.absenceTypeEntitlements).toEqual(expectedEntitlements);
+            expect(ctrl.absenceTypes).toEqual(expectedEntitlements);
           });
 
           it('fires a leave widget child is ready event', function () {
@@ -121,17 +119,5 @@ define([
         });
       });
     });
-
-    /**
-     * Returns a list of IDs of the absence types the contact has entitlements
-     * for.
-     *
-     * @return {Array}
-     */
-    function getJobContractAbsenceEntitlements () {
-      return jobContract.info.leave.map(function (leave) {
-        return leave.leave_type;
-      });
-    }
   });
 });

@@ -4,8 +4,8 @@
   define([
     'common/angular',
     'common/lodash',
-    'mocks/data/option-group-mock-data',
-    'mocks/data/work-pattern-data',
+    'mocks/data/option-group.data',
+    'mocks/data/work-pattern.data',
     'mocks/apis/work-pattern-api-mock',
     'leave-absences/absence-tab/app'
   ], function (angular, _, optionGroupMock, workPatternData) {
@@ -32,6 +32,7 @@
         WorkPatternAPI = _WorkPatternAPI_;
 
         spyOn($log, 'debug');
+        spyOn(WorkPatternAPI, 'get').and.callThrough();
         spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
           return $q.resolve(optionGroupMock.getCollection('hrjc_revision_change_reason'));
         });
@@ -41,6 +42,10 @@
 
       it('is initialized', function () {
         expect($log.debug).toHaveBeenCalled();
+      });
+
+      it('loads enabled work patterns only', function () {
+        expect(WorkPatternAPI.get).toHaveBeenCalledWith({ is_active: true });
       });
 
       describe('init()', function () {

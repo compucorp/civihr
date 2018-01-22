@@ -6,12 +6,12 @@
     'common/moment',
     'mocks/helpers/helper',
     'common/mocks/data/contact.data',
-    'mocks/data/absence-period-data',
-    'mocks/data/absence-type-data',
-    'mocks/data/leave-request-data',
-    'mocks/data/option-group-mock-data',
-    'mocks/data/public-holiday-data',
-    'mocks/data/work-pattern-data',
+    'mocks/data/absence-period.data',
+    'mocks/data/absence-type.data',
+    'mocks/data/leave-request.data',
+    'mocks/data/option-group.data',
+    'mocks/data/public-holiday.data',
+    'mocks/data/work-pattern.data',
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
     'mocks/apis/work-pattern-api-mock',
@@ -548,7 +548,7 @@
             compileComponent(true);
 
             controller.month.days.forEach(function (dayObj) {
-              if (dayObj.date === leaveRequest.from_date) {
+              if (moment(dayObj.date).isSame(leaveRequest.from_date, 'day')) {
                 day = dayObj;
               }
             });
@@ -757,6 +757,22 @@
             }));
           });
         });
+
+        describe('when show-only-with-leave-requests is set to true and there is no leave request for contacts', function () {
+          beforeEach(function () {
+            LeaveRequest.all.and.callFake(function () {
+              return $q.resolve({ list: [] });
+            });
+
+            compileComponent();
+
+            controller.showOnlyWithLeaveRequests = true;
+          });
+
+          it('shows "There are no staff members matching selected filters" message on UI', function () {
+            expect(controller.contactsList().length).toEqual(0);
+          });
+        });
       });
 
       describe('on destroy', function () {
@@ -771,6 +787,19 @@
 
         it('sends an event', function () {
           expect($rootScope.$emit).toHaveBeenCalledWith('LeaveCalendar::monthDestroyed');
+        });
+      });
+
+      describe('getContactUrl()', function () {
+        var contactID = 1;
+        var returnedURL;
+
+        beforeEach(function () {
+          returnedURL = controller.getContactUrl(contactID);
+        });
+
+        it('returns URL for the contacts profile page', function () {
+          expect(returnedURL).toBe('/index.php?q=civicrm/contact/view&cid=' + contactID);
         });
       });
 

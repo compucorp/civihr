@@ -2,7 +2,7 @@
 
 define([
   'common/lodash',
-  'mocks/data/work-pattern-data',
+  'mocks/data/work-pattern.data',
   'leave-absences/shared/apis/work-pattern.api'
 ], function (_, workPatternMocked) {
   'use strict';

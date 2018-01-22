@@ -20,7 +20,7 @@ module.exports = (function () {
 
       casper.then(function () {
         casper.click('td[ng-click="report.toggleSection(\'' + section + '\')"]');
-        casper.waitWhileVisible('.chr_spinner');
+        casper.waitWhileVisible('.spinner');
       });
 
       return this;
@@ -54,6 +54,9 @@ module.exports = (function () {
         casper.then(function () {
           casper.click('body > ul.dropdown-menu:nth-of-type(' + (row || 1) + ') li:first-child a');
           // As there are multiple spinners it takes more time to load up
+          casper.waitWhileVisible('.modal-content .spinner:nth-child(1)');
+          casper.waitWhileVisible('leave-request-popup-details-tab .spinner');
+
           resolve(this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form'));
         }.bind(this));
       }.bind(this));

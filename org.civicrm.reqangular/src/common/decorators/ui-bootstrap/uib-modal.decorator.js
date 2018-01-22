@@ -1,6 +1,8 @@
 /* eslint-env amd */
 
-define(function () {
+define([
+  'common/angular'
+], function (angular) {
   'use strict';
 
   return ['$delegate', '$document', function ($delegate, $document) {
@@ -17,23 +19,39 @@ define(function () {
      */
     function open () {
       var modalInstance;
-      var lockScrollStyle = ';overflow: hidden; height: 100%; width: 100%';
       var elements = [
-        $document[0].body,
-        $document[0].getElementsByTagName('html')[0]
+        {
+          item: angular.element($document[0].body),
+          styles: [
+            { name: 'overflow', old: null, new: 'hidden' },
+            { name: 'height', old: null, new: '100%' },
+            { name: 'width', old: null, new: '100%' }
+          ]
+        },
+        {
+          item: angular.element($document[0].getElementsByTagName('html')[0]),
+          styles: [
+            { name: 'overflow', old: null, new: 'hidden' },
+            { name: 'height', old: null, new: '100%' },
+            { name: 'width', old: null, new: '100%' }
+          ]
+        }
       ];
 
       elements.forEach(function (element) {
-        element.setAttribute('style',
-          (element.getAttribute('style') || '') + lockScrollStyle);
+        element.styles.forEach(function (style) {
+          style.old = element.item.css(style.name);
+          element.item.css(style.name, style.new);
+        });
       });
 
       modalInstance = originalOpenFunction.apply(this, arguments);
 
       modalInstance.closed.then(function () {
         elements.forEach(function (element) {
-          element.setAttribute('style',
-            (element.getAttribute('style') || '').replace(lockScrollStyle, ''));
+          element.styles.forEach(function (style) {
+            element.item.css(style.name, style.old);
+          });
         });
       });
 

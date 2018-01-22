@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/entitlement-log-data',
+  'mocks/data/entitlement-log.data',
   'mocks/apis/absence-period-api-mock',
   'mocks/apis/absence-type-api-mock',
   'mocks/apis/entitlement-api-mock',

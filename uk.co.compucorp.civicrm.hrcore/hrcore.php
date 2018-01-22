@@ -4,10 +4,9 @@ require_once 'hrcore.civix.php';
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Reference as Reference;
-use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
-use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_SearchTask_ContactFormSearchTaskAdder as ContactFormSearchTaskAdder;
+use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\Config\FileLocator;
 
 /**
  * Implements hook_civicrm_config().
@@ -60,11 +59,8 @@ function hrcore_civicrm_summaryActions( &$actions, $contactID ) {
  * @param ContainerBuilder $container
  */
 function hrcore_civicrm_container($container) {
-  $container->register('drupal_role_service', DrupalRoleService::class);
-  $container->setDefinition(
-    'drupal_user_service',
-    new Definition(DrupalUserService::class, [new Reference('drupal_role_service')])
-  );
+  $loader = new XmlFileLoader($container, new FileLocator(__DIR__));
+  $loader->load('config/container/container.xml');
 }
 
 /**

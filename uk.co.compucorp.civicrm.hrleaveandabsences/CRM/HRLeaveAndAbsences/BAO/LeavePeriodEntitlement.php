@@ -286,12 +286,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    *
    * @param \CRM_HRLeaveAndAbsences_Service_EntitlementCalculation $calculation
    * @param \CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement $periodEntitlement
-   *
-   * @TODO Once we get a way to related a job contract to a work pattern, we'll
-   *       need to take that in consideration to calculate the amount added/deducted
-   *       by public holidays
-   *
-   * @throws \Exception
    */
   private static function savePublicHolidaysBalanceChanges(
     EntitlementCalculation $calculation,
@@ -299,39 +293,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
   ) {
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
-    $publicHolidays = $calculation->getPublicHolidaysInEntitlement();
+    $numberOfPublicHolidays = $calculation->getNumberOfPublicHolidaysInEntitlement();
 
-    if (!empty($publicHolidays)) {
+    if (!empty($numberOfPublicHolidays)) {
       LeaveBalanceChange::create([
-        'type_id'     => $balanceChangeTypes['public_holiday'],
-        'source_id'   => $periodEntitlement->id,
+        'type_id' => $balanceChangeTypes['public_holiday'],
+        'source_id' => $periodEntitlement->id,
         'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
-        'amount'      => count($publicHolidays)
+        'amount' => $numberOfPublicHolidays
       ]);
     }
-  }
-
-  /**
-   * Deletes the LeavePeriodEntitlement with the given Absence Period ID, Absence Type ID
-   * and Contact ID
-   *
-   * @param int $absencePeriodID
-   * @param int $absenceTypeID
-   * @param int $contactID
-   */
-  private static function deleteLeavePeriodEntitlement($absencePeriodID, $absenceTypeID, $contactID) {
-    $tableName = self::getTableName();
-    $query     = "
-      DELETE FROM {$tableName}
-      WHERE period_id = %1 AND type_id = %2 AND contact_id = %3
-    ";
-    $params    = [
-      1 => [$absencePeriodID, 'Positive'],
-      2 => [$absenceTypeID, 'Positive'],
-      3 => [$contactID, 'Positive'],
-    ];
-
-    CRM_Core_DAO::executeQuery($query, $params);
   }
 
   /**
@@ -565,8 +536,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
    */
   public function getLeaveRequestBalance() {
     $filterStatuses = LeaveRequest::getApprovedStatuses();
+    $excludeToilRequests = true;
+    $excludePublicHolidays = $includePublicHolidaysOnly = false;
 
-    return LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($this, $filterStatuses);
+    return LeaveBalanceChange::getLeaveRequestBalanceForEntitlement(
+      $this,
+      $filterStatuses,
+      $excludePublicHolidays,
+      $includePublicHolidaysOnly,
+      $excludeToilRequests
+    );
   }
 
   /**

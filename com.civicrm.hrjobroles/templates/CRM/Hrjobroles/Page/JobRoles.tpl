@@ -1,5 +1,5 @@
 <section id="bootstrap-theme" data-job-roles>
-  <div class="container" ng-view></div>
+  <div class="container-fluid" ng-view></div>
 </section>
 {literal}
 <script type="text/javascript">

@@ -353,6 +353,44 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals(-9, $periodEntitlement->getLeaveRequestBalance());
   }
 
+  public function testTheLeaveRequestBalanceShouldNotIncludeDaysAccruedByToilRequests() {
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime(),
+      new DateTime('+8 days')
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => CRM_Utils_Date::processDate('today')]
+    );
+
+    // 3 days Leave Request
+    $this->createLeaveRequestBalanceChange(
+      $periodEntitlement->type_id,
+      $periodEntitlement->contact_id,
+      $this->leaveRequestStatuses['approved'],
+      date('Y-m-d'),
+      date('Y-m-d', strtotime('+2 days'))
+    );
+
+    $this->assertEquals(-3, $periodEntitlement->getLeaveRequestBalance());
+
+    // Accrue 3 days
+    LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement->contact_id,
+      'type_id' => $periodEntitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('+1 day'),
+      'to_date' => CRM_Utils_Date::processDate('+1 day'),
+      'toil_duration' => 360,
+      'toil_to_accrue' => 3,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+30 days'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    // The balance remains -3 rather than 0 (-3 + 3)
+    $this->assertEquals(-3, $periodEntitlement->getLeaveRequestBalance());
+  }
+
   public function testCanSaveALeavePeriodEntitlementFromAnEntitlementCalculation() {
 
     $type = AbsenceTypeFabricator::fabricate();
@@ -367,15 +405,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertNull($periodEntitlement);
 
     $broughtForward = 1;
-    $proRata = 10;
-    $publicHolidays = [ '2016-01-01', '2016-03-15', '2016-09-09' ];
+    $numberOfPublicHolidays = 3;
+    $leave = 7;
+    $proRata = $leave + $numberOfPublicHolidays;
     $calculation = $this->getEntitlementCalculationMock(
       $period,
       ['id' => $this->contract['contact_id']],
       $type,
       $broughtForward,
       $proRata,
-      $publicHolidays
+      $numberOfPublicHolidays
     );
     $createdDate = new DateTime();
 
@@ -392,8 +431,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals($type->id, $periodEntitlement->type_id);
     $this->assertEquals($this->contract['contact_id'], $periodEntitlement->contact_id);
 
-    // 10 + 1 + 3 (Pro Rata + Brought Forward + No. Public Holidays)
-    $this->assertEquals(14, $periodEntitlement->getEntitlement());
+    // 10 + 1 (Pro Rata (Including the Public Holidays) + Brought Forward)
+    $this->assertEquals(11, $periodEntitlement->getEntitlement());
 
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
@@ -405,7 +444,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       return $balanceChange->type_id == $balanceChangeTypes['leave'];
     });
     $this->assertCount(1, $leaveBalanceChanges);
-    $this->assertEquals($proRata, reset($leaveBalanceChanges)->amount);
+    $this->assertEquals($proRata - $numberOfPublicHolidays, reset($leaveBalanceChanges)->amount);
 
     // Checks if only a single balance change of "Brought Forward" type was created
     // and that its amount is equal to the number of days brought forward
@@ -422,7 +461,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       return $balanceChange->type_id == $balanceChangeTypes['public_holiday'];
     });
     $this->assertCount(1, $leaveBalanceChanges);
-    $this->assertEquals(count($publicHolidays), reset($leaveBalanceChanges)->amount);
+    $this->assertEquals($numberOfPublicHolidays, reset($leaveBalanceChanges)->amount);
   }
 
   public function testSaveFromCalculationWillNotReplaceExistingLeavePeriodEntitlement() {
@@ -477,7 +516,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       $type,
       $broughtForward,
       $proRata,
-      [],
+      0,
       $overridden
     );
 
@@ -515,7 +554,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       $type,
       $broughtForward,
       $proRata,
-      [],
+      0,
       $overridden
     );
 
@@ -556,7 +595,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
       $type,
       $broughtForward,
       $proRata,
-      [],
+      0,
       $overridden
     );
 
@@ -759,7 +798,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
    * @param $type
    * @param int $broughtForward
    * @param int $proRata
-   * @param array $publicHolidays
+   * @param int $numberOfPublicHolidays
    * @param bool $overridden
    *
    * @return mixed The EntitlementCalculation mock
@@ -771,7 +810,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $type,
     $broughtForward = 0,
     $proRata = 0,
-    $publicHolidays = [],
+    $numberOfPublicHolidays = 0,
     $overridden = false
   ) {
     $calculation = $this->getMockBuilder(EntitlementCalculation::class)
@@ -780,7 +819,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
                           'getBroughtForward',
                           'getProRata',
                           'getBroughtForwardExpirationDate',
-                          'getPublicHolidaysInEntitlement',
+                          'getNumberOfPublicHolidaysInEntitlement',
                           'getProposedEntitlement'
                         ])
                         ->getMock();
@@ -802,16 +841,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
                 ->method('getProposedEntitlement')
                 ->will($this->returnValue($proposedEntitlement));
 
-    $publicHolidaysReturn = [];
-    foreach($publicHolidays as $publicHoliday) {
-      $instance = new PublicHoliday();
-      $instance->date = $publicHoliday;
-      $publicHolidaysReturn[] = $instance;
-    }
-
-    $calculation->expects($this->once())
-                ->method('getPublicHolidaysInEntitlement')
-                ->will($this->returnValue($publicHolidaysReturn));
+    $calculation->expects($this->any())
+                ->method('getNumberOfPublicHolidaysInEntitlement')
+                ->will($this->returnValue($numberOfPublicHolidays));
 
     return $calculation;
   }

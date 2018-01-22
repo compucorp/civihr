@@ -2,9 +2,9 @@
 
 define([
   'common/lodash',
-  'mocks/data/leave-request-data',
-  'mocks/data/option-group-mock-data',
-  'mocks/data/comments-data',
+  'mocks/data/leave-request.data',
+  'mocks/data/option-group.data',
+  'mocks/data/comments.data',
   'mocks/helpers/helper',
   'common/mocks/services/file-uploader-mock',
   'mocks/apis/leave-request-api-mock',

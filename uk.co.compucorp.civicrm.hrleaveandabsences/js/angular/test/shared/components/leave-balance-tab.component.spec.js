@@ -2,8 +2,8 @@
 
 define([
   'common/lodash',
-  'mocks/data/absence-period-data',
-  'mocks/data/absence-type-data',
+  'mocks/data/absence-period.data',
+  'mocks/data/absence-type.data',
   'mocks/data/leave-balance-report.data',
   'common/mocks/services/api/option-group-mock',
   'mocks/apis/absence-type-api-mock',

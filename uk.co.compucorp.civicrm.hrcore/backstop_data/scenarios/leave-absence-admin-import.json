@@ -2,22 +2,26 @@
   "scenarios": [
     {
       "label": "Leave & Absences Import - Step 1",
-      "url": "civicrm/admin/leaveandabsences/import"
+      "url": "civicrm/admin/leaveandabsences/import",
+      "credential": "admin"
     },
     {
       "label": "Leave & Absences Import - Step 2",
       "url": "civicrm/admin/leaveandabsences/import",
-      "onReadyScript": "leave-absence-dashboard/import/step-2"
+      "onReadyScript": "leave-absence-dashboard/import/step-2",
+      "credential": "admin"
     },
     {
       "label": "Leave & Absences Import - Step 3",
       "url": "civicrm/admin/leaveandabsences/import",
-      "onReadyScript": "leave-absence-dashboard/import/step-3"
+      "onReadyScript": "leave-absence-dashboard/import/step-3",
+      "credential": "admin"
     },
     {
       "label": "Leave & Absences Import - Step 4",
       "url": "civicrm/admin/leaveandabsences/import",
-      "onReadyScript": "leave-absence-dashboard/import/step-4"
+      "onReadyScript": "leave-absence-dashboard/import/step-4",
+      "credential": "admin"
     }
   ]
 }
