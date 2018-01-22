@@ -22,6 +22,7 @@ module.exports = {
   getCurrentExtension: getCurrentExtension,
   getExtensionNameFromCLI: getExtensionNameFromCLI,
   getExtensionPath: getExtensionPath,
+  hasMainTaskBeenReplaced: hasMainTaskBeenReplaced,
   setCurrentExtension: setCurrentExtension,
   spawnTaskForExtension: spawnTaskForExtension,
   throwError: throwError
@@ -37,15 +38,17 @@ module.exports = {
  * @return {Array}
  */
 function addExtensionCustomTasksToSequence (sequence, taskName) {
+  var mainIndex, overrideName;
   var customTasks = getExtensionTasks(taskName);
 
   if (_.isFunction(customTasks.main)) {
-    var mainIndex = _.findIndex(sequence, function (taskName) {
+    mainIndex = _.findIndex(sequence, function (taskName) {
       return taskName.match(/:main/);
     });
+    overrideName = sequence[mainIndex].replace(':main', ':main:override');
 
-    gulp.task(sequence[mainIndex], customTasks.main);
-    sequence.splice(mainIndex, 1, sequence[mainIndex]);
+    gulp.task(overrideName, customTasks.main);
+    sequence.splice(mainIndex, 1, overrideName);
   }
 
   if (_.isArray(customTasks.pre)) {
@@ -195,6 +198,19 @@ function getExtensionPath (name) {
   }
 
   return extensionsPathCache[extension];
+}
+
+/**
+ * Given a task sequence, it detects whether the 'xyz:main' task had been
+ * replaced by an extension custom task
+ *
+ * @param {Array} sequence
+ * @param {Boolean}
+ */
+function hasMainTaskBeenReplaced (sequence) {
+  return !!_.find(sequence, function (task) {
+    return task.indexOf(':main:override') > -1;
+  });
 }
 
 /**
