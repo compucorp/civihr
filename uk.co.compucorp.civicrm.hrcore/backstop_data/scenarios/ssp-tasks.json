@@ -1,0 +1,21 @@
+{
+  "scenarios": [
+    {
+      "label": "SSP - Tasks",
+      "url": "tasks-and-documents",
+      "credential": "admin"
+    },
+    {
+      "label": "SSP - Tasks - Show Completed tasks",
+      "url": "tasks-and-documents",
+      "onReadyScript": "ssp/tasks-show-completed-tasks",
+      "credential": "admin"
+    },
+    {
+      "label": "SSP - Tasks - Create new tasks",
+      "url": "tasks-and-documents",
+      "onReadyScript": "ssp/tasks-create-new-task",
+      "credential": "admin"
+    }
+  ]
+}
