@@ -1,22 +1,14 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
-
 use CRM_HRCore_CMSData_PathsFactory as CMSPathsFactory;
+use CRM_HRCore_Test_BaseHeadlessTest as BaseHeadlessTest;
 
 /**
  * Class CRM_HRCore_CMSData_PathsFactoryTest
  *
  * @group headless
  */
-class CRM_HRCore_CMSData_PathsFactoryTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->installMe(__DIR__)
-      ->apply();
-  }
+class CRM_HRCore_CMSData_PathsFactoryTest extends BaseHeadlessTest {
 
   public function testItReturnsAClassWithImplementingTheExpectedInterface() {
     $contactData = [];
@@ -31,6 +23,7 @@ class CRM_HRCore_CMSData_PathsFactoryTest extends \PHPUnit_Framework_TestCase im
     $this->setExpectedException('Exception', "CMS \"{$cmsName}\" not recognized");
 
     $contactData = [];
-    $pathsClass = CMSPathsFactory::create($cmsName, $contactData);
+    CMSPathsFactory::create($cmsName, $contactData);
   }
+
 }
