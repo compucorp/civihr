@@ -14,6 +14,6 @@ class CRM_HRContactActionsMenu_Component_GroupSeparatorItem implements ActionsGr
    * {@inheritDoc}
    */
   public function render() {
-    return '<hr>';
+    return '<hr class="crm_contact-actions--dark-gray-blue">';
   }
 }

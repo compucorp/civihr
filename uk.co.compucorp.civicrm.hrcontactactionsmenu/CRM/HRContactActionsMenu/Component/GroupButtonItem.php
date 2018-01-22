@@ -100,10 +100,8 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
    */
   public function render() {
     $buttonMarkup = '
-      <a href="%s">
-        <button class="%s">
-          <span><i class="%s"></i></span> %s
-        </button>
+      <a href="%s" class="%s">
+        <span><i class="%s"></i></span> %s
       </a>';
 
     $buttonMarkup = sprintf(
@@ -116,7 +114,7 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
 
     if ($this->addBottomMargin) {
       $buttonMarkup =  sprintf('      
-        <div class="crm_contact_action_menu__bottom_margin">
+        <div class="crm_contact-actions--bottom-margin">
           %s
         </div>',
         $buttonMarkup
