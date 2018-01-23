@@ -19,7 +19,7 @@ module.exports = [
 
         gulpSequence.apply(null, sequence)(cb);
       } else {
-        console.log(colors.yellow('No karma.conf.js file found, skipping...'));
+        console.log(colors.yellow('Not eligible for this task, skipping...'));
         cb();
       }
     }
@@ -42,7 +42,7 @@ module.exports = [
         });
         cb();
       } else {
-        console.log(colors.yellow('No karma.conf.js file found, skipping...'));
+        console.log(colors.yellow('Not eligible for this task, skipping...'));
         cb();
       }
     }

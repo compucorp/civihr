@@ -23,7 +23,7 @@ module.exports = [
 
         gulpSequence.apply(null, sequence)(cb);
       } else {
-        console.log(colors.yellow('No main .scss file found, skipping...'));
+        console.log(colors.yellow('Not eligible for this task, skipping...'));
         cb();
       }
     }
@@ -42,7 +42,7 @@ module.exports = [
         gulp.watch(watchPatterns, ['sass']);
         cb();
       } else {
-        console.log(colors.yellow('No main .scss file found, skipping...'));
+        console.log(colors.yellow('Not eligible for this task, skipping...'));
         cb();
       }
     }

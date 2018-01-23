@@ -17,12 +17,12 @@ module.exports = {
   addExtensionCustomTasksToSequence: addExtensionCustomTasksToSequence,
   addExtensionCustomWatchPatternsToDefaultList: addExtensionCustomWatchPatternsToDefaultList,
   canCurrentExtensionRun: canCurrentExtensionRun,
-  getExtensionNameAndAliasFromInfoXML: getExtensionNameAndAliasFromInfoXML,
-  getExtensionNameFromFile: getExtensionNameFromFile,
-  getExtensionTasks: getExtensionTasks,
   getCurrentExtension: getCurrentExtension,
+  getExtensionNameAndAliasFromInfoXML: getExtensionNameAndAliasFromInfoXML,
   getExtensionNameFromCLI: getExtensionNameFromCLI,
+  getExtensionNameFromFile: getExtensionNameFromFile,
   getExtensionPath: getExtensionPath,
+  getExtensionTasks: getExtensionTasks,
   hasMainTaskBeenReplaced: hasMainTaskBeenReplaced,
   setCurrentExtension: setCurrentExtension,
   spawnTaskForExtension: spawnTaskForExtension,
@@ -83,16 +83,20 @@ function addExtensionCustomWatchPatternsToDefaultList (defaultList, taskName) {
 
 /**
  * Checks if the given task can be ran on the current extension
+ * If the current extension provides a custom criteria, it will be used
+ * instead of the default one
  *
- * @NOTE: the files whose presence is used as a criteria for whether the task
- *   can run or not, are the files used by the *default* tasks. If the current
- *   extension overrides them and uses some other files, then this method can't be used
- *
- * @param {String} task
+ * @param {String} taskName
  * @return {Boolean}
  */
-function canCurrentExtensionRun (task) {
-  switch (task) {
+function canCurrentExtensionRun (taskName) {
+  var customCriteria = getExtensionTasks(taskName).canRunCriteria;
+
+  if (customCriteria) {
+    return customCriteria();
+  }
+
+  switch (taskName) {
     case 'requirejs':
       return isFileInCurrentExtensionFolder('(/[^/]+)?(/[^/]+)?/build.js');
     case 'sass':

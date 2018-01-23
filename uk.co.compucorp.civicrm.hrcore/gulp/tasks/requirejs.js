@@ -22,26 +22,26 @@ module.exports = [
     fn: function (cb) {
       var extPath, watchPatterns;
 
-      // @TODO there is no outer check here (`utils.canCurrentExtensionRun()`)
-      // because the `hrui` extension doesn't use a `build.js` file, although
-      // it still needs the JS to be processed. For the time being the check is
-      // disabled until we allow extension to define their custom criteria for
-      // whether a task can be run on them or not
-      extPath = utils.getExtensionPath();
-      watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
-        path.join(extPath, '**', 'src/**/*.js')
-      ], 'requirejs');
+      if (utils.canCurrentExtensionRun('requirejs')) {
+        extPath = utils.getExtensionPath();
+        watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
+          path.join(extPath, '**', 'src/**/*.js')
+        ], 'requirejs');
 
-      gulp.watch(watchPatterns, ['requirejs']).on('change', function (file) {
-        if (utils.canCurrentExtensionRun('test')) {
-          try {
-            test.for(file.path);
-          } catch (ex) {
-            test.all();
+        gulp.watch(watchPatterns, ['requirejs']).on('change', function (file) {
+          if (utils.canCurrentExtensionRun('test')) {
+            try {
+              test.for(file.path);
+            } catch (ex) {
+              test.all();
+            }
           }
-        }
-      });
-      cb();
+        });
+        cb();
+      } else {
+        console.log(colors.yellow('Not eligible for this task, skipping...'));
+        cb();
+      }
     }
   }
 ];
@@ -136,30 +136,25 @@ function requireJsMainTask (cb) {
     utils.throwError('The `requirejs` package is not installed globally (http://requirejs.org/docs/optimization.html#download)');
   }
 
-  if (utils.canCurrentExtensionRun('requirejs')) {
-    // The original extension that the task was called with could change during
-    // the execution, thus it gets saved so it can be restored later
-    originalExtension = utils.getCurrentExtension();
+  // The original extension that the task was called with could change during
+  // the execution, thus it gets saved so it can be restored later
+  originalExtension = utils.getCurrentExtension();
 
-    buildFilePath = find.fileSync('build.js', utils.getExtensionPath())[0];
-    tempBuildFilePath = path.join(path.dirname(buildFilePath), 'build.tmp.js');
+  buildFilePath = find.fileSync('build.js', utils.getExtensionPath())[0];
+  tempBuildFilePath = path.join(path.dirname(buildFilePath), 'build.tmp.js');
 
-    fs.writeFileSync(tempBuildFilePath, processBuildFile(buildFilePath), 'utf8');
+  fs.writeFileSync(tempBuildFilePath, processBuildFile(buildFilePath), 'utf8');
 
-    exec('r.js -o ' + tempBuildFilePath, function (err, stdout, stderr) {
-      fs.unlink(tempBuildFilePath);
+  exec('r.js -o ' + tempBuildFilePath, function (err, stdout, stderr) {
+    fs.unlink(tempBuildFilePath);
 
-      if (err && err.code) {
-        console.log(stdout);
-        process.exit(1);
-      }
+    if (err && err.code) {
+      console.log(stdout);
+      process.exit(1);
+    }
 
-      cb();
-    });
-  } else {
-    console.log(colors.yellow('No build.js file found, skipping...'));
     cb();
-  }
+  });
 }
 
 /**
@@ -170,13 +165,18 @@ function requireJsMainTask (cb) {
 function requireJsTask (cb) {
   var sequence;
 
-  sequence = utils.addExtensionCustomTasksToSequence([
-    utils.spawnTaskForExtension('requirejs:main', requireJsMainTask)
-  ], 'requirejs');
+  if (utils.canCurrentExtensionRun('requirejs')) {
+    sequence = utils.addExtensionCustomTasksToSequence([
+      utils.spawnTaskForExtension('requirejs:main', requireJsMainTask)
+    ], 'requirejs');
 
-  if (!utils.hasMainTaskBeenReplaced(sequence) && utils.canCurrentExtensionRun('requirejs')) {
-    sequence.push(utils.spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask));
+    if (!utils.hasMainTaskBeenReplaced(sequence)) {
+      sequence.push(utils.spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask));
+    }
+
+    gulpSequence.apply(null, sequence)(cb);
+  } else {
+    console.log(colors.yellow('Not eligible for this task, skipping...'));
+    cb();
   }
-
-  gulpSequence.apply(null, sequence)(cb);
 }
