@@ -132,7 +132,7 @@ pipeline {
                 def extension = item.value
 
                 if (extension.hasJSTests) {
-                  if(extension.hasJSDependencies) {
+                  if(extension.hasJSPackages) {
                     installJSPackages(extension)
                   }
 
@@ -357,98 +357,98 @@ def listCivihrExtensions() {
       name: 'Job Roles',
       folder: 'com.civicrm.hrjobroles',
       hasJSTests: true,
-      hasJSDependencies: false,
+      hasJSPackages: false,
       hasPHPTests: true
     ],
     contactaccessrights: [
       name: 'Contacts Access Rights',
       folder: 'contactaccessrights',
       hasJSTests: true,
-      hasJSDependencies: false,
+      hasJSPackages: false,
       hasPHPTests: true
     ],
     contactsummary: [
       name: 'Contacts Summary',
       folder: 'contactsummary',
       hasJSTests: true,
-      hasJSDependencies: false,
+      hasJSPackages: false,
       hasPHPTests: false
     ],
     hrjobcontract: [
       name: 'Job Contracts',
       folder: 'hrjobcontract',
       hasJSTests: true,
-      hasJSDependencies: false,
+      hasJSPackages: false,
       hasPHPTests: true
     ],
     hrrecruitment: [
       name: 'Recruitment',
       folder: 'hrrecruitment',
       hasJSTests: false,
-      hasJSDependencies: false,
+      hasJSPackages: false,
       hasPHPTests: true
     ],
     hrreport: [
       name: 'Reports',
       folder: 'hrreport',
       hasJSTests: false,
-      hasJSDependencies: false,
+      hasJSPackages: false,
       hasPHPTests: false
     ],
     hrui: [
       name: 'HR UI',
       folder: 'hrui',
       hasJSTests: false,
-      hasJSDependencies: false,
+      hasJSPackages: false,
       hasPHPTests: false
     ],
     hrvisa: [
       name: 'HR Visa',
       folder: 'hrvisa',
       hasJSTests: false,
-      hasJSDependencies: false,
+      hasJSPackages: false,
       hasPHPTests: true
     ],
     reqangular: [
       name: 'Reqangular',
       folder: 'org.civicrm.reqangular',
       hasJSTests: true,
-      hasJSDependencies: true,
+      hasJSPackages: true,
       hasPHPTests: false
     ],
     hrcore: [
       name: 'HRCore',
       folder: 'uk.co.compucorp.civicrm.hrcore',
       hasJSTests: false,
-      hasJSDependencies: false,
+      hasJSPackages: false,
       hasPHPTests: true
     ],
     hrleaveandabsences: [
       name: 'Leave and Absences',
       folder: 'uk.co.compucorp.civicrm.hrleaveandabsences',
       hasJSTests: true,
-      hasJSDependencies: true,
+      hasJSPackages: true,
       hasPHPTests: true
     ],
     hrsampledata: [
       name: 'Sample Data',
       folder: 'uk.co.compucorp.civicrm.hrsampledata',
       hasJSTests: false,
-      hasJSDependencies: false,
+      hasJSPackages: false,
       hasPHPTests: true
     ],
     hremergency: [
       name: 'Emergency Contacts ',
       folder: 'org.civicrm.hremergency',
       hasJSTests: false,
-      hasJSDependencies: false,
+      hasJSPackages: false,
       hasPHPTests: true
     ],
     bootstrapcivihr: [
       name: 'Bootstrap CiviHR',
       folder: 'org.civicrm.bootstrapcivihr',
       hasJSTests: false,
-      hasJSDependencies: true,
+      hasJSPackages: true,
       hasPHPTests: false
     ],
   ]
