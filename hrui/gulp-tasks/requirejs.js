@@ -1,4 +1,5 @@
 var concat = require('gulp-concat');
+var find = require('find');
 var gulp = require('gulp');
 var path = require('path');
 var sourcemaps = require('gulp-sourcemaps');
@@ -13,6 +14,9 @@ module.exports = function () {
         .pipe(concat('hrui.min.js'))
         .pipe(sourcemaps.write())
         .pipe(gulp.dest(path.join(__dirname, '..', 'js/dist')));
+    },
+    canRunCriteria: function () {
+      return find.fileSync(/js\/src\/[^/]+.js$/, path.join(__dirname, '..')).length;
     }
   };
 };
