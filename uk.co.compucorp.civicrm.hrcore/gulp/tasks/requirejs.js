@@ -133,7 +133,7 @@ function requireJsMainTask (cb) {
   var buildFilePath, tempBuildFilePath;
 
   if (!detectInstalled.sync('requirejs')) {
-    utils.throwError('requirejs', 'The `requirejs` package is not installed globally (http://requirejs.org/docs/optimization.html#download)');
+    utils.throwError('The `requirejs` package is not installed globally (http://requirejs.org/docs/optimization.html#download)');
   }
 
   if (utils.canCurrentExtensionRun('requirejs')) {

@@ -140,6 +140,9 @@ function getExtensionNameFromFile (filePath) {
 /**
  * Given a task name, it looks into the current extension's gulp-task/ folder
  * if there is any file with the name of the task
+ *
+ * @param {String} taskName
+ * @return {Array}
  */
 function getExtensionTasks (taskName) {
   var filePath = path.join(getExtensionPath(), '/gulp-tasks/', taskName + '.js');
@@ -184,7 +187,11 @@ function getExtensionNameFromCLI () {
   var infoFiles, name;
 
   if (!argv.ext) {
-    throwError('sass', 'Extension name not provided');
+    throwError(
+      'Extension name not provided, please provide one, i.e.:\n' +
+      '\t`gulp some-task --ext org.civicrm.myextension` (with full name)\n' +
+      '\t`gulp some-task --ext myextension` (with alias)'
+    );
   }
 
   infoFiles = find.fileSync('info.xml', path.join(__dirname, '../', '../'));
@@ -285,8 +292,11 @@ function spawnTaskForExtension (taskName, taskFn, extension) {
 
 /**
  * A simple wrapper for displaying errors
+ *
+ * @param {String} msg
+ * @throws {Error}
  */
-function throwError (plugin, msg) {
+function throwError (msg) {
   throw new PluginError('Error', {
     message: colors.red(msg)
   });
