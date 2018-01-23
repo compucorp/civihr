@@ -23,21 +23,32 @@ var CONFIG_TPL = {
   }
 };
 
-gulp.task('backstopjs:reference', function (cb) {
-  return runBackstopJS('reference');
-});
-
-gulp.task('backstopjs:test', function (cb) {
-  return runBackstopJS('test');
-});
-
-gulp.task('backstopjs:report', function (cb) {
-  return runBackstopJS('openReport');
-});
-
-gulp.task('backstopjs:approve', function (cb) {
-  return runBackstopJS('approve');
-});
+module.exports = [
+  {
+    name: 'backstopjs:reference',
+    fn: function () {
+      return runBackstopJS('reference');
+    }
+  },
+  {
+    name: 'backstopjs:test',
+    fn: function () {
+      return runBackstopJS('test');
+    }
+  },
+  {
+    name: 'backstopjs:report',
+    fn: function () {
+      return runBackstopJS('openReport');
+    }
+  },
+  {
+    name: 'backstopjs:approve',
+    fn: function () {
+      return runBackstopJS('approve');
+    }
+  }
+];
 
 /**
  * Constructs URL for BackstopJS scenario based on
