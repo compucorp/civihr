@@ -5,7 +5,7 @@
   <ng-include ng-show="detailsTab.isLeaveType('toil')"
     src="$root.sharedPathTpl + 'components/leave-request-popup/details-tab/toil.html'"></ng-include>
 
-  <crm-loading show="!detailsTab.loading.showBalanceChange">
+  <crm-loading show="!detailsTab.loading.balanceChange">
     <div ng-show="detailsTab.uiOptions.showBalance">
       <hr/>
       <div
