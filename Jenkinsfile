@@ -345,6 +345,7 @@ def listCivihrExtensions() {
       shortName: 'hrjobroles',
       folder: 'com.civicrm.hrjobroles',
       hasJSTests: true,
+      hasJSDependencies: false,
       hasPHPTests: true
     ],
     [
@@ -352,6 +353,7 @@ def listCivihrExtensions() {
       shortName: 'contactaccessrights',
       folder: 'contactaccessrights',
       hasJSTests: true,
+      hasJSDependencies: false,
       hasPHPTests: true
     ],
     [
@@ -359,6 +361,7 @@ def listCivihrExtensions() {
       shortName: 'contactsummary',
       folder: 'contactsummary',
       hasJSTests: true,
+      hasJSDependencies: false,
       hasPHPTests: false
     ],
     [
@@ -366,6 +369,7 @@ def listCivihrExtensions() {
       shortName: 'hrjobcontract',
       folder: 'hrjobcontract',
       hasJSTests: true,
+      hasJSDependencies: false,
       hasPHPTests: true
     ],
     [
@@ -373,6 +377,7 @@ def listCivihrExtensions() {
       shortName: 'hrrecruitment',
       folder: 'hrrecruitment',
       hasJSTests: false,
+      hasJSDependencies: false,
       hasPHPTests: true
     ],
     [
@@ -380,6 +385,7 @@ def listCivihrExtensions() {
       shortName: 'hrreport',
       folder: 'hrreport',
       hasJSTests: false,
+      hasJSDependencies: false,
       hasPHPTests: false
     ],
     [
@@ -387,6 +393,7 @@ def listCivihrExtensions() {
       shortName: 'hrui',
       folder: 'hrui',
       hasJSTests: false,
+      hasJSDependencies: false,
       hasPHPTests: false
     ],
     [
@@ -394,6 +401,7 @@ def listCivihrExtensions() {
       shortName: 'hrvisa',
       folder: 'hrvisa',
       hasJSTests: false,
+      hasJSDependencies: false,
       hasPHPTests: true
     ],
     [
@@ -401,6 +409,7 @@ def listCivihrExtensions() {
       shortName: 'reqangular',
       folder: 'org.civicrm.reqangular',
       hasJSTests: true,
+      hasJSDependencies: true,
       hasPHPTests: false
     ],
     [
@@ -408,6 +417,7 @@ def listCivihrExtensions() {
       shortName: 'hrcore',
       folder: 'uk.co.compucorp.civicrm.hrcore',
       hasJSTests: false,
+      hasJSDependencies: false,
       hasPHPTests: true
     ],
     [
@@ -415,6 +425,7 @@ def listCivihrExtensions() {
       shortName: 'hrleaveandabsences',
       folder: 'uk.co.compucorp.civicrm.hrleaveandabsences',
       hasJSTests: true,
+      hasJSDependencies: true,
       hasPHPTests: true
     ],
     [
@@ -422,6 +433,7 @@ def listCivihrExtensions() {
       shortName: 'hrsampledata',
       folder: 'uk.co.compucorp.civicrm.hrsampledata',
       hasJSTests: false,
+      hasJSDependencies: false,
       hasPHPTests: true
     ],
     [
@@ -429,6 +441,7 @@ def listCivihrExtensions() {
       shortName: 'hremergency',
       folder: 'org.civicrm.hremergency',
       hasJSTests: false,
+      hasJSDependencies: false,
       hasPHPTests: true
     ],
     [
@@ -436,6 +449,7 @@ def listCivihrExtensions() {
       shortName: 'bootstrapcivihr',
       folder: 'org.civicrm.bootstrapcivihr',
       hasJSTests: false,
+      hasJSDependencies: true,
       hasPHPTests: false
     ],
   ]
