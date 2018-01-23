@@ -296,8 +296,7 @@ def testPHPUnit(java.util.LinkedHashMap extension) {
 
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    phpunit4 --testsuite="Unit Tests" --log-junit $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/result-phpunit_${extension
-    .folder}.xml
+    phpunit4 --testsuite="Unit Tests" --log-junit $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/result-phpunit_${extension.folder}.xml
   """
 }
 
@@ -450,6 +449,6 @@ def listCivihrExtensions() {
       hasJSTests: false,
       hasJSPackages: true,
       hasPHPTests: false
-    ],
+    ]
   ]
 }
