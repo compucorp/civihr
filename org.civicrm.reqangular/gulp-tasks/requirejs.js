@@ -17,7 +17,7 @@ module.exports = function () {
               moduleSystem: 'RequireJS'
             }))
             .pipe(replace("['angular']", "['common/angular']"))
-            .pipe(replace('module("templates")', 'module("common.templates", [])'))
+            .pipe(replace('module(\'templates\')', 'module(\'common.templates\', [])'))
             .pipe(gulp.dest(path.join(commonFolder, 'modules')));
 
           cb();
