@@ -11,9 +11,11 @@ module.exports = (function () {
 
       casper.then(function () {
         casper.click('.pane-views-tasks-block a.show-complete-tasks');
-        casper.waitUntilVisible('.modal-civihr-custom__footer');
+        casper.waitWhileVisible('.loading-spinner');
+        casper.waitUntilVisible('.view-Tasks');
       });
     },
+
     /**
      * Opens Create New Task modal
      */
@@ -21,8 +23,8 @@ module.exports = (function () {
       var casper = this.casper;
 
       casper.then(function () {
-        casper.clickLabel('Create new task', 'a');
-        casper.waitUntilVisible('.modal-civihr-custom__footer');
+        casper.click('.create-new-task');
+        casper.waitUntilVisible('#civihr-employee-portal-civi-tasks-form');
       });
     }
   });
