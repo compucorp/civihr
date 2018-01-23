@@ -716,6 +716,7 @@ define([
      */
     function setBalanceChange (balanceChange) {
       vm.balance.change = balanceChange;
+      vm.request.balance_change = balanceChange.amount;
 
       calculateClosingBalance();
       rePaginate();

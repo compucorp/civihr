@@ -455,6 +455,7 @@ define([
 
               it('updates change amount', function () {
                 expect(controller.balance.change.amount).toEqual(-2);
+                expect(controller.request.balance_change).toEqual(controller.balance.change.amount);
               });
 
               it('updates closing balance', function () {
