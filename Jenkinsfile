@@ -81,7 +81,7 @@ pipeline {
         stage('Test PHP') {
           steps {
             script {
-              for (item in listCivihrExtensions()) {
+              for (item in mapToList(listCivihrExtensions())) {
                 def extension = item.value
 
                 if (extension.hasPHPTests) {
@@ -128,7 +128,7 @@ pipeline {
               // After each test we move the reports to this folder
               sh "mkdir -p $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER"
 
-              for (item in listCivihrExtensions()) {
+              for (item in mapToList(listCivihrExtensions())) {
                 def extension = item.value
 
                 if (extension.hasJSTests) {
@@ -136,7 +136,7 @@ pipeline {
                     installJSPackages(extension)
                   }
 
-                  testJS(extension)
+                  testJS(hrcore.folder, extension)
                 }
               }
             }
@@ -313,9 +313,10 @@ def installJSPackages(java.util.LinkedHashMap extension) {
 
 /*
  * Execute JS Testing
+ * params: hrcoreFolder
  * params: extension
  */
-def testJS(java.util.LinkedHashMap extension) {
+def testJS(hrcoreFolder, java.util.LinkedHashMap extension) {
   echo "JS Testing ${extension.name}"
 
   // We cannot change, using CLI arguments, the place where
@@ -323,8 +324,10 @@ def testJS(java.util.LinkedHashMap extension) {
   // here copies the XML from the extension folder to the
   // workspace, where Jenkins will read it
   sh """
+    cd $CIVICRM_EXT_ROOT/civihr/${hrcoreFolder}
+    gulp test --ext ${extension.folder} --reporters junit,progress || true
+
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    gulp test --reporters junit,progress || true
     mv test-reports/*.xml $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/ || true
   """
 }
@@ -451,4 +454,21 @@ def listCivihrExtensions() {
       hasPHPTests: false
     ]
   ]
+}
+
+/*
+ * Converts a Hashmap to a List
+ * This is mainly for supporting looping through the list of
+ * extensions returned by listCivihrExtensions()
+ * See this for more details:
+ *  https://stackoverflow.com/questions/40159258/impossibility-to-iterate-over-a-map-using-groovy-within-jenkins-pipeline#40166064
+ */
+@NonCPS def mapToList(map) {
+  def list = []
+
+  for (def entry in map) {
+    list.add(new java.util.AbstractMap.SimpleImmutableEntry(entry.key, entry.value))
+  }
+
+  list
 }
