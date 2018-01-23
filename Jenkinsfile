@@ -430,6 +430,13 @@ def listCivihrExtensions() {
       folder: 'org.civicrm.hremergency',
       hasJSTests: false,
       hasPHPTests: true
-    ]
+    ],
+    [
+      name: 'Bootstrap CiviHR',
+      shortName: 'bootstrapcivihr',
+      folder: 'org.civicrm.bootstrapcivihr',
+      hasJSTests: false,
+      hasPHPTests: false
+    ],
   ]
 }
