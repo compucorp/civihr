@@ -150,6 +150,7 @@ function requireJsMainTask (cb) {
       fs.unlink(tempBuildFilePath);
 
       if (err && err.code) {
+        console.log(stdout);
         process.exit(1);
       }
 
