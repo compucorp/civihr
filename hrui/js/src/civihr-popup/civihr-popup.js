@@ -1,8 +1,13 @@
 /* globals CRM */
 
-/*
-Prevent Popups to overflow tables.
-*/
+/**
+ * Helps to display popup menus inside #bootstrap-theme elements, since .panel's
+ * and other Bootstrap elements clash with CiviCRM styles producing undesired
+ * results.
+ *
+ * It also helps with event bindings, in case the original popup button was
+ * removed and recreated, by forwarding the events to the original source.
+ */
 (function ($) {
   'use strict';
   var $body = $('body');
