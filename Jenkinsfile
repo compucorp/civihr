@@ -117,6 +117,12 @@ pipeline {
         stage('Test JS') {
           steps {
             script {
+              // HRCore share its dependencies with most of the
+              // CiviHR extensions, so we need to install its
+              // packages first
+              def hrcore = listCivihrExtensions().hrcore;
+              installJSPackages(hrcore);
+
               // This is necessary to avoid an additional loop
               // in each extension folder to read the XML.
               // After each test we move the reports to this folder
@@ -126,7 +132,10 @@ pipeline {
                 def extension = item.value
 
                 if (extension.hasJSTests) {
-                  installJSPackages(extension)
+                  if(extension.hasJSDependencies) {
+                    installJSPackages(extension)
+                  }
+
                   testJS(extension)
                 }
               }
