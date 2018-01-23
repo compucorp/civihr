@@ -81,7 +81,9 @@ pipeline {
         stage('Test PHP') {
           steps {
             script {
-              for (extension in listCivihrExtensions()) {
+              for (item in listCivihrExtensions()) {
+                def extension = item.value
+
                 if (extension.hasPHPTests) {
                   testPHPUnit(extension)
                 }
@@ -120,7 +122,9 @@ pipeline {
               // After each test we move the reports to this folder
               sh "mkdir -p $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER"
 
-              for (extension in listCivihrExtensions()) {
+              for (item in listCivihrExtensions()) {
+                def extension = item.value
+
                 if (extension.hasJSTests) {
                   installJSPackages(extension)
                   testJS(extension)
@@ -284,7 +288,7 @@ def testPHPUnit(java.util.LinkedHashMap extension) {
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
     phpunit4 --testsuite="Unit Tests" --log-junit $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/result-phpunit_${extension
-    .shortName}.xml
+    .folder}.xml
   """
 }
 
@@ -340,113 +344,99 @@ def listCivihrGitRepoPath() {
  */
 def listCivihrExtensions() {
   return [
-    [
+    hrjobroles: [
       name: 'Job Roles',
-      shortName: 'hrjobroles',
       folder: 'com.civicrm.hrjobroles',
       hasJSTests: true,
       hasJSDependencies: false,
       hasPHPTests: true
     ],
-    [
+    contactaccessrights: [
       name: 'Contacts Access Rights',
-      shortName: 'contactaccessrights',
       folder: 'contactaccessrights',
       hasJSTests: true,
       hasJSDependencies: false,
       hasPHPTests: true
     ],
-    [
+    contactsummary: [
       name: 'Contacts Summary',
-      shortName: 'contactsummary',
       folder: 'contactsummary',
       hasJSTests: true,
       hasJSDependencies: false,
       hasPHPTests: false
     ],
-    [
+    hrjobcontract: [
       name: 'Job Contracts',
-      shortName: 'hrjobcontract',
       folder: 'hrjobcontract',
       hasJSTests: true,
       hasJSDependencies: false,
       hasPHPTests: true
     ],
-    [
+    hrrecruitment: [
       name: 'Recruitment',
-      shortName: 'hrrecruitment',
       folder: 'hrrecruitment',
       hasJSTests: false,
       hasJSDependencies: false,
       hasPHPTests: true
     ],
-    [
+    hrreport: [
       name: 'Reports',
-      shortName: 'hrreport',
       folder: 'hrreport',
       hasJSTests: false,
       hasJSDependencies: false,
       hasPHPTests: false
     ],
-    [
+    hrui: [
       name: 'HR UI',
-      shortName: 'hrui',
       folder: 'hrui',
       hasJSTests: false,
       hasJSDependencies: false,
       hasPHPTests: false
     ],
-    [
+    hrvisa: [
       name: 'HR Visa',
-      shortName: 'hrvisa',
       folder: 'hrvisa',
       hasJSTests: false,
       hasJSDependencies: false,
       hasPHPTests: true
     ],
-    [
+    reqangular: [
       name: 'Reqangular',
-      shortName: 'reqangular',
       folder: 'org.civicrm.reqangular',
       hasJSTests: true,
       hasJSDependencies: true,
       hasPHPTests: false
     ],
-    [
+    hrcore: [
       name: 'HRCore',
-      shortName: 'hrcore',
       folder: 'uk.co.compucorp.civicrm.hrcore',
       hasJSTests: false,
       hasJSDependencies: false,
       hasPHPTests: true
     ],
-    [
+    hrleaveandabsences: [
       name: 'Leave and Absences',
-      shortName: 'hrleaveandabsences',
       folder: 'uk.co.compucorp.civicrm.hrleaveandabsences',
       hasJSTests: true,
       hasJSDependencies: true,
       hasPHPTests: true
     ],
-    [
+    hrsampledata: [
       name: 'Sample Data',
-      shortName: 'hrsampledata',
       folder: 'uk.co.compucorp.civicrm.hrsampledata',
       hasJSTests: false,
       hasJSDependencies: false,
       hasPHPTests: true
     ],
-    [
+    hremergency: [
       name: 'Emergency Contacts ',
-      shortName: 'hremergency',
       folder: 'org.civicrm.hremergency',
       hasJSTests: false,
       hasJSDependencies: false,
       hasPHPTests: true
     ],
-    [
+    bootstrapcivihr: [
       name: 'Bootstrap CiviHR',
-      shortName: 'bootstrapcivihr',
       folder: 'org.civicrm.bootstrapcivihr',
       hasJSTests: false,
       hasJSDependencies: true,
