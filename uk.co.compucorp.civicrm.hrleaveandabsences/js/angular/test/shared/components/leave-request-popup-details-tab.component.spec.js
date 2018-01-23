@@ -353,7 +353,8 @@ define([
               $rootScope.$digest();
             });
 
-            it('calculates balance change', function () {
+            it('does not calculate balance change', function () {
+              // It doesn't calculate balance change since the "To" date will be flushed
               expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
             });
 
