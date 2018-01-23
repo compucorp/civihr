@@ -7,7 +7,7 @@ Prevent Popups to overflow tables.
   'use strict';
   var $body = $('body');
 
-  $body.on('click', '.btn-slide', function () {
+  $body.on('click', '#bootstrap-theme .btn-slide', function () {
     var $popupClone;
     var $button = $(this);
     var $popup = $button.children('ul.panel');
