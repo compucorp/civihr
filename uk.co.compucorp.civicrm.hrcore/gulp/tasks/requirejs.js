@@ -147,9 +147,12 @@ function requireJsMainTask (cb) {
     fs.writeFileSync(tempBuildFilePath, processBuildFile(buildFilePath), 'utf8');
 
     exec('r.js -o ' + tempBuildFilePath, function (err, stdout, stderr) {
-      err && err.code && console.log(stdout);
-
       fs.unlink(tempBuildFilePath);
+
+      if (err && err.code) {
+        process.exit(1);
+      }
+
       cb();
     });
   } else {

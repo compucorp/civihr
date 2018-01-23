@@ -64,7 +64,10 @@ function mainTask (cb) {
       outputStyle: 'compressed',
       includePaths: civicrmScssRoot.getPath(),
       precision: 10
-    }).on('error', sass.logError))
+    }).on('error', function (err) {
+      sass.logError.call(this, err);
+      process.exit(1);
+    }))
     .pipe(stripCssComments({ preserve: false }))
     .pipe(gulp.dest(path.join(extPath, '/css/')));
 }
