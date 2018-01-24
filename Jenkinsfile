@@ -72,6 +72,10 @@ pipeline {
             checkoutPrBranchInCiviHRRepos(prBranch)
             mergeEnvBranchInAllRepos(envBranch)
           }
+
+          // The JS tests use the cv tool to find the path  of an extension.
+          // For it to work, the extensions have to be installed on the site
+          installCiviHRExtensions()
         }
       }
     }
@@ -471,4 +475,15 @@ def listCivihrExtensions() {
   }
 
   list
+}
+
+/*
+ * Installs the CiviHR extensions in the build site
+ */
+def installCiviHRExtensions() {
+  sh """
+    cd $CIVICRM_EXT_ROOT/civihr
+    drush cvapi extension.refresh
+    ./bin/drush-install.sh
+  """
 }
