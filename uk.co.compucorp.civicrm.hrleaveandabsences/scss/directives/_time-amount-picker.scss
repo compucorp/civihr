@@ -3,7 +3,6 @@
   .crm_custom-select {
     display: inline-block; // Selectors need to appear in a single line
     margin-right: 2px; // A gap between a dropdown and a label
-    width: 75px; // This width is comfortable with 2 digits inside
 
     &:nth-child(2) {
       margin-left: 10px; // A gap between dropdowns

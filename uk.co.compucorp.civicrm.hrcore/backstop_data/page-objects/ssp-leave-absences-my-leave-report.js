@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var Promise = require('es6-promise').Promise;
 var page = require('./page');
 
@@ -19,7 +20,6 @@ module.exports = (function () {
           // As there are multiple spinners it takes more time to load up
           casper.waitWhileVisible('.modal-content .spinner:nth-child(1)');
           casper.waitWhileVisible('leave-request-popup-details-tab .spinner');
-
           resolve(this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form'));
         }.bind(this));
       }.bind(this));
@@ -98,14 +98,9 @@ module.exports = (function () {
         casper.evaluate(function(absenceTypeLabel) {
           absenceTypeSelect = document.querySelector('[name=absenceTypeSelect]');
 
-          // PhantomJS does not have a native forEach support for querySelectorAll
-          [].forEach.call(absenceTypeSelect.querySelectorAll('option'), function (option, index) {
-            if (option.text.search(absenceTypeLabel)) {
-              absenceTypeOptionIndex = index + 1;
-            }
-          });
-
-          absenceTypeSelect.selectedIndex = absenceTypeOptionIndex; // Select the needed option
+          absenceTypeSelect.selectedIndex = _.findIndex(absenceTypeSelect.querySelectorAll('option'), function (option) {
+            return option.text.search(absenceTypeLabel) !== -1;
+          }); // Select the needed option
           absenceTypeSelect.dispatchEvent(new Event('change')); // Trigger onChange event
         }, absenceTypeLabel);
       });
