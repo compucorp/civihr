@@ -3,7 +3,7 @@
 define('REQUEST_TIME', time());
 
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
-use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
+use CRM_HRCore_CMSData_Role_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Helpers_SessionHelper as SessionHelper;
 
