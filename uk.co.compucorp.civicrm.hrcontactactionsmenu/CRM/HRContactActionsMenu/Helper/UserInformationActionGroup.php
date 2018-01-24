@@ -97,8 +97,8 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
     $url = CRM_Utils_System::url('civicrm/contactactionsmenu/sendwelcomemail', "cid=$contactID");
     $params = [
       'label' => 'Send Welcome Email',
-      'class' => 'btn btn-primary-outline',
-      'icon' => 'fa fa-envelope-o',
+      'class' => 'btn-primary-outline',
+      'icon' => 'fa-envelope-o',
       'url' => $url
     ];
 
@@ -116,8 +116,8 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
     $url = CRM_Utils_System::url('civicrm/contactactionsmenu/sendpasswordresetmail', "cid=$contactID");
     $params = [
       'label' => 'Send Password Reset Email',
-      'class' => 'btn btn-primary-outline',
-      'icon' => 'fa fa-envelope-o',
+      'class' => 'btn-primary-outline',
+      'icon' => 'fa-envelope-o',
       'url' => $url
     ];
 
@@ -135,8 +135,8 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
     $url = CRM_Utils_System::url('civicrm/user/create-account', "cid=$contactID");
     $params = [
       'label' => 'Create a user for this staff member',
-      'class' => 'btn btn-primary',
-      'icon' => 'fa fa-plus',
+      'class' => 'btn-primary',
+      'icon' => 'fa-plus',
       'url' => $url
     ];
 
