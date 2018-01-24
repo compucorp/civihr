@@ -353,7 +353,8 @@ define([
               $rootScope.$digest();
             });
 
-            it('calculates balance change', function () {
+            it('does not calculate balance change', function () {
+              // It doesn't calculate balance change since the "To" date will be flushed
               expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
             });
 
@@ -454,6 +455,7 @@ define([
 
               it('updates change amount', function () {
                 expect(controller.balance.change.amount).toEqual(-2);
+                expect(controller.request.balance_change).toEqual(controller.balance.change.amount);
               });
 
               it('updates closing balance', function () {
