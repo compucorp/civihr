@@ -299,8 +299,8 @@ function spawnTaskForExtension (taskName, taskFn, extension) {
 
 /**
  * A simple wrapper for displaying errors
- * It converts the tab character to the aument of spaces required to correctly
- * horizontally align a multi-line block of text
+ * It converts the tab character to the amount of spaces required to correctly
+ * align a multi-line block of text horizontally
  *
  * @param {String} msg
  * @throws {Error}
