@@ -210,7 +210,7 @@ function getExtensionNameFromCLI () {
   }
 
   if (!name) {
-    throwError('sass', 'Extension "' + argv.ext + '" not found');
+    throwError('Extension "' + argv.ext + '" not found');
   }
 
   return name;
