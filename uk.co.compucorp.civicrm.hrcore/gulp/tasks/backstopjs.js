@@ -90,22 +90,21 @@ function getRolesAndIDs () {
 }
 
 /**
- * Checks if the site config file is in the backstopjs folder
- * If not, it creates a template for it
+ * Creates the site config file is in the backstopjs folder, if it doesn't exists yet
  *
- * @return {Boolean}
+ * @return {Boolean} Whether the file had to be created or not
  */
-function isConfigFilePresent () {
-  var check = true;
+function touchConfigFile () {
+  var created = false;
 
   try {
     fs.readFileSync(BACKSTOP_DIR_PATH + FILES.config);
   } catch (err) {
     fs.writeFileSync(BACKSTOP_DIR_PATH + FILES.config, JSON.stringify(CONFIG_TPL, null, 2));
-    check = false;
+    created = true;
   }
 
-  return check;
+  return created;
 }
 
 /**
@@ -120,7 +119,7 @@ function isConfigFilePresent () {
 function runBackstopJS (command) {
   var destFile = 'backstop.temp.json';
 
-  if (!isConfigFilePresent()) {
+  if (touchConfigFile()) {
     utils.throwError(
       'No site-config.json file detected!\n' +
       '\tOne has been created for you under ' + BACKSTOP_DIR + '\n' +
