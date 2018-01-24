@@ -1,13 +1,14 @@
 /* eslint-env amd */
 
 define([
+  'common/lodash',
   'common/modules/services'
-], function (module) {
+], function (_, module) {
   'use strict';
 
-  module.factory('$beforeHashQueryParams', ['$log', '$window',
+  module.factory('beforeHashQueryParams', ['$log', '$window',
     function ($log, $window) {
-      $log.debug('Service: $beforeHashQueryParams');
+      $log.debug('Service: beforeHashQueryParams');
 
       return {
         parse: parse
@@ -19,29 +20,58 @@ define([
        * @param {String} url
        */
       function parse (url) {
-        var obj = {};
         var urlToParse = url || $window.location.href;
-        var hashPos = urlToParse.indexOf('#/');
-        var cleanUrl = urlToParse.substring(0, hashPos !== -1 ? hashPos : urlToParse.length);
-        var query = urlToParse.indexOf('?');
-        var tokens = cleanUrl.substr(query + 1).split('&');
-        var tokensLength = tokens.length;
+        var cleanUrl = getUrlBeforeHash(urlToParse);
 
-        if (query === -1 || cleanUrl.indexOf('=') === -1) {
-          return obj;
+        if (cleanUrl.indexOf('?') === -1) {
+          return {};
         }
 
-        for (var i = 0; i < tokensLength; i++) {
-          var splittedToken = tokens[i].split('=');
+        return prepareQueryParamsObject(getQueryParams(cleanUrl));
+      }
 
-          if (splittedToken[0]) {
-            obj[decodeURI(splittedToken[0])] = splittedToken.hasOwnProperty(1)
-              ? decodeURI(splittedToken[1])
-              : null;
+      /**
+       * Prepare Query params object
+       *
+       * @param {Array} queryStrings
+       * @return {Object}
+       */
+      function prepareQueryParamsObject (queryStrings) {
+        if (!queryStrings.length) {
+          return {};
+        }
+
+        return _.transform(queryStrings, function (result, qString) {
+          var splitQueryString = qString.split('=');
+
+          if (splitQueryString[0]) {
+            result[splitQueryString[0]] = splitQueryString[1] ? decodeURI(splitQueryString[1]) : null || null;
           }
-        }
+        }, {});
+      }
 
-        return obj;
+      /**
+       * Gets the url before hash
+       *
+       * @param {String} urlString
+       * @return {String}
+       */
+      function getUrlBeforeHash (urlString) {
+        var hashPos = urlString.indexOf('#');
+
+        return urlString.substring(0, hashPos !== -1 ? hashPos : urlString.length);
+      }
+
+      /**
+       * Returns list of query params form the url
+       *
+       * @param {String} urlBeforeHash
+       * @return {Array}
+       */
+      function getQueryParams (urlBeforeHash) {
+        var query = urlBeforeHash.indexOf('?');
+
+        return urlBeforeHash.substr(query + 1).split('&');
       }
     }
   ]);
