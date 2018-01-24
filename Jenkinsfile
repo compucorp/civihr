@@ -121,7 +121,7 @@ pipeline {
         stage('Test JS') {
           steps {
             script {
-              // HRCore share its dependencies with most of the
+              // HRCore shares its dependencies with most of
               // CiviHR extensions, so we need to install its
               // packages first
               def hrcore = listCivihrExtensions().hrcore;
