@@ -1,4 +1,3 @@
-var colors = require('ansi-colors');
 var gulp = require('gulp');
 var gulpSequence = require('gulp-sequence');
 var path = require('path');
@@ -19,7 +18,7 @@ module.exports = [
 
         gulpSequence.apply(null, sequence)(cb);
       } else {
-        console.log(colors.yellow('Not eligible for this task, skipping...'));
+        console.log('Not eligible for this task, skipping...');
         cb();
       }
     }
@@ -42,7 +41,7 @@ module.exports = [
         });
         cb();
       } else {
-        console.log(colors.yellow('Not eligible for this task, skipping...'));
+        console.log('Not eligible for this task, skipping...');
         cb();
       }
     }

@@ -1,4 +1,3 @@
-var colors = require('ansi-colors');
 var detectInstalled = require('detect-installed');
 var exec = require('child_process').exec;
 var find = require('find');
@@ -39,7 +38,7 @@ module.exports = [
         });
         cb();
       } else {
-        console.log(colors.yellow('Not eligible for this task, skipping...'));
+        console.log('Not eligible for this task, skipping...');
         cb();
       }
     }
@@ -176,7 +175,7 @@ function requireJsTask (cb) {
 
     gulpSequence.apply(null, sequence)(cb);
   } else {
-    console.log(colors.yellow('Not eligible for this task, skipping...'));
+    console.log('Not eligible for this task, skipping...');
     cb();
   }
 }
