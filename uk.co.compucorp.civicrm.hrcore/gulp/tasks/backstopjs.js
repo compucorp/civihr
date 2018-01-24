@@ -2,13 +2,14 @@ var _ = require('lodash');
 var argv = require('yargs').argv;
 var backstopjs = require('backstopjs');
 var clean = require('gulp-clean');
-var colors = require('ansi-colors');
 var exec = require('child_process').exec;
 var file = require('gulp-file');
 var fs = require('fs');
 var gulp = require('gulp');
 var path = require('path');
 var Promise = require('es6-promise').Promise;
+
+var utils = require('../utils');
 
 var BACKSTOP_DIR = 'backstop_data/';
 var BACKSTOP_DIR_PATH = path.join(__dirname, '..', '..', BACKSTOP_DIR);
@@ -120,13 +121,11 @@ function runBackstopJS (command) {
   var destFile = 'backstop.temp.json';
 
   if (!isConfigFilePresent()) {
-    console.log(colors.red(
+    utils.throwError(
       'No site-config.json file detected!\n' +
-      'One has been created for you under ' + BACKSTOP_DIR + '\n' +
-      'Please insert the real value for each placeholder and try again'
-    ));
-
-    return Promise.reject(new Error());
+      '\tOne has been created for you under ' + BACKSTOP_DIR + '\n' +
+      '\tPlease insert the real value for each placeholder and try again'
+    );
   }
 
   return getRolesAndIDs()
@@ -148,7 +147,7 @@ function runBackstopJS (command) {
       });
     })
     .catch(function (err) {
-      console.log(colors.red(err.message));
+      utils.throwError(err.message);
     });
 }
 
