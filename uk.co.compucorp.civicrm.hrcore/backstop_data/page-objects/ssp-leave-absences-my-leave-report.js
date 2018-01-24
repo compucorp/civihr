@@ -6,6 +6,7 @@ module.exports = (function () {
 
     /**
      * User clicks on the edit/respond action
+     *
      * @param {Number} row number corresponding to leave request in the list
      * @return {Promise}
      */
@@ -25,7 +26,32 @@ module.exports = (function () {
     },
 
     /**
+     * Opens the Leave Request Modal for a new request of the given type
+     *
+     * @param  {String} requestType leave|sickness|toil
+     * @return {Promise}
+     */
+    newRequest: function (requestType) {
+      var casper = this.casper;
+      var requestTypes = ['leave', 'sickness', 'toil']; // must be in the same quantity and order as in UI
+      var requestTypeButtonIndex = requestTypes.indexOf(requestType) + 1;
+      var actionDropdownSelector = 'leave-request-record-actions';
+      var actionButtonSelector = actionDropdownSelector + ' .dropdown-menu a:nth-child(' + requestTypeButtonIndex + ')';
+
+      casper.then(function () {
+        casper.click(actionDropdownSelector + ' [uib-dropdown] > button')
+        casper.waitForSelector(actionButtonSelector, function () {
+          casper.click(actionButtonSelector);
+          casper.waitUntilVisible('.chr_leave-request-modal__tab .form-group');
+        });
+      });
+
+      return this;
+    },
+
+    /**
      * Opens the dropdown for staff actions like edit/respond, cancel.
+     *
      * @param {Number} row number corresponding to leave request in the list
      * @return {Object} this object
      */
@@ -43,6 +69,7 @@ module.exports = (function () {
 
     /**
      * Opens the given section of my report pageName
+     *
      * @param {String} section
      * @return {Object} this object
      */
@@ -58,7 +85,37 @@ module.exports = (function () {
     },
 
     /**
+     * Selects the request Absence Type by the given label
+     *
+     * @param  {String} absenceTypeLabel ex. "Holiday in Hours"
+     * @return {Promise}
+     */
+    selectRequestAbsenceType: function (absenceTypeLabel) {
+      var absenceTypeSelect, absenceTypeOptionIndex;
+      var casper = this.casper;
+
+      casper.then(function () {
+        casper.evaluate(function(absenceTypeLabel) {
+          absenceTypeSelect = document.querySelector('[name=absenceTypeSelect]');
+
+          // PhantomJS does not have a native forEach support for querySelectorAll
+          [].forEach.call(absenceTypeSelect.querySelectorAll('option'), function (option, index) {
+            if (option.text.search(absenceTypeLabel)) {
+              absenceTypeOptionIndex = index + 1;
+            }
+          });
+
+          absenceTypeSelect.selectedIndex = absenceTypeOptionIndex; // Select the needed option
+          absenceTypeSelect.dispatchEvent(new Event('change')); // Trigger onChange event
+        }, absenceTypeLabel);
+      });
+
+      return this;
+    },
+
+    /**
      * Wait for the page to be ready
+     *
      * @return {Object} this object
      */
     waitForReady: function () {

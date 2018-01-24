@@ -1,9 +1,15 @@
 {
   "scenarios": [
     {
-      "label": "Leave and Absences: My report: Show comments in leave request",
+      "label": "Leave and Absences: My report: Leave Request Modal: Edit: Show comments",
       "url": "my-leave#/my-leave/report",
       "onReadyScript": "ssp-leave-absences/staff/my-report-pending-show-comments",
+      "credential": "staff"
+    },
+    {
+      "label": "Leave and Absences: My report: Leave Request Modal: Create: Show absence in hours",
+      "url": "my-leave#/my-leave/report",
+      "onReadyScript": "ssp-leave-absences/staff/my-report-show-absence-in-hours",
       "credential": "staff"
     }
   ]
