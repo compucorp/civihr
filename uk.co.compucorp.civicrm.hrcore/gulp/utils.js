@@ -299,12 +299,14 @@ function spawnTaskForExtension (taskName, taskFn, extension) {
 
 /**
  * A simple wrapper for displaying errors
+ * It converts the tab character to the aument of spaces required to correctly
+ * horizontally align a multi-line block of text
  *
  * @param {String} msg
  * @throws {Error}
  */
 function throwError (msg) {
   throw new PluginError('Error', {
-    message: colors.red(msg)
+    message: colors.red(msg.replace(/\t/g, '    '))
   });
 }
