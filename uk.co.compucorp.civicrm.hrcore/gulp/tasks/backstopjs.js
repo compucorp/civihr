@@ -23,32 +23,14 @@ var CONFIG_TPL = {
   }
 };
 
-module.exports = [
-  {
-    name: 'backstopjs:reference',
+module.exports = ['reference', 'test', 'openReport', 'approve'].map(function (action) {
+  return {
+    name: 'backstopjs:' + action,
     fn: function () {
-      return runBackstopJS('reference');
+      return runBackstopJS(action);
     }
-  },
-  {
-    name: 'backstopjs:test',
-    fn: function () {
-      return runBackstopJS('test');
-    }
-  },
-  {
-    name: 'backstopjs:report',
-    fn: function () {
-      return runBackstopJS('openReport');
-    }
-  },
-  {
-    name: 'backstopjs:approve',
-    fn: function () {
-      return runBackstopJS('approve');
-    }
-  }
-];
+  };
+});
 
 /**
  * Constructs URL for BackstopJS scenario based on
@@ -110,7 +92,7 @@ function getRolesAndIDs () {
  * Checks if the site config file is in the backstopjs folder
  * If not, it creates a template for it
  *
- * @return {Boolean} [description]
+ * @return {Boolean}
  */
 function isConfigFilePresent () {
   var check = true;
@@ -128,10 +110,10 @@ function isConfigFilePresent () {
 /**
  * Runs backstopJS with the given command.
  *
- * It fills the template file with the list of scenarios, create a temp
- * file passed to backstopJS, then when the command is completed it removes the temp file
+ * It fills the template file with the list of scenarios, creates a temp
+ * file passed to backstopJS, then removes the temp file once the command is completed
  *
- * @param  {string} command
+ * @param  {String} command
  * @return {Promise}
  */
 function runBackstopJS (command) {

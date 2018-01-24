@@ -34,8 +34,8 @@ module.exports = {
  * (requirejs, sass, etc), it finds if the current extension
  * has any custom tasks to add before/after or to straight replace the main task
  *
- * @param {Array} sequence
- * @param {String} taskName
+ * @param  {Array} sequence
+ * @param  {String} taskName
  * @return {Array}
  */
 function addExtensionCustomTasksToSequence (sequence, taskName) {
@@ -73,6 +73,10 @@ function addExtensionCustomTasksToSequence (sequence, taskName) {
  * Given a default list of watch patterns and the name of the "main" task
  * (requirejs, sass, etc) if finds if the current extension
  * has any custom task with custom watch patterns to add
+ *
+ * @param  {Array} defaultList
+ * @param  {String} taskName
+ * @return {Array}
  */
 function addExtensionCustomWatchPatternsToDefaultList (defaultList, taskName) {
   return _(defaultList)
@@ -86,7 +90,7 @@ function addExtensionCustomWatchPatternsToDefaultList (defaultList, taskName) {
  * If the current extension provides a custom criteria, it will be used
  * instead of the default one
  *
- * @param {String} taskName
+ * @param  {String} taskName
  * @return {Boolean}
  */
 function canCurrentExtensionRun (taskName) {
@@ -110,7 +114,7 @@ function canCurrentExtensionRun (taskName) {
  * Returns the value of the "key" property of the <extension> tag and of the
  * <file> tag of the given info.xml file
  *
- * @param {String} infoFile
+ * @param  {String} infoFile
  * @return {Object}
  */
 function getExtensionNameAndAliasFromInfoXML (infoFile) {
@@ -132,7 +136,7 @@ function getExtensionNameAndAliasFromInfoXML (infoFile) {
  * Given a file, it finds the info.xml in one of the parent folders and returns
  * the extension name stored in it
  *
- * @param {String} filePath
+ * @param  {String} filePath
  * @return {String}
  */
 function getExtensionNameFromFile (filePath) {
@@ -145,7 +149,7 @@ function getExtensionNameFromFile (filePath) {
  * Given a task name, it looks into the current extension's gulp-task/ folder
  * if there is any file with the name of the task
  *
- * @param {String} taskName
+ * @param  {String} taskName
  * @return {Array}
  */
 function getExtensionTasks (taskName) {
@@ -220,7 +224,7 @@ function getExtensionNameFromCLI () {
  * Uses `cv` to get the path of the given extension
  * The path is then cached as a performance optimization
  *
- * @param {String} name If not provided, the name given via the CLI argument is used
+ * @param  {String} name If not provided, the name given via the CLI argument is used
  * @return {String}
  */
 function getExtensionPath (name) {
@@ -248,9 +252,8 @@ function hasMainTaskBeenReplaced (sequence) {
 
 /**
  * Checks whether the file (represented by a regexp string) is in the current extension
- * folder
  *
- * @param {String} fileRegExp
+ * @param  {String} fileRegExp
  * @return {Boolean}
  */
 function isFileInCurrentExtensionFolder (fileRegExp) {
@@ -258,7 +261,7 @@ function isFileInCurrentExtensionFolder (fileRegExp) {
   var r = new RegExp(extPath + fileRegExp);
 
   return !!find.fileSync(r, extPath)
-    // files from the node_modules/ folder might get caught up in the query
+    // prevents files in node_modules/ to get caught up in the query
     .filter(function (filePath) {
       return !(filePath.indexOf('node_modules') > -1);
     })[0];
@@ -279,7 +282,7 @@ function setCurrentExtension (extension) {
  *
  * @param {String} taskName
  * @param {Function} taskFn
- * @param {String} ext If undefined, the current extension is used
+ * @param {String} extension If undefined, the current extension is used
  */
 function spawnTaskForExtension (taskName, taskFn, extension) {
   extension = extension || getCurrentExtension();

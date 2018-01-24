@@ -52,7 +52,7 @@ module.exports = [
 /**
  * Compiles SASS files
  *
- * @param {Function} cb
+ * @param  {Function} cb
  * @return {Vinyl}
  */
 function mainTask (cb) {
@@ -69,14 +69,13 @@ function mainTask (cb) {
       process.exit(1);
     }))
     .pipe(stripCssComments({ preserve: false }))
-    .pipe(gulp.dest(path.join(extPath, '/css/')));
+    .pipe(gulp.dest(path.join(extPath, 'css')));
 }
 
 /**
  * Syncs the SASS cache
  *
  * @param {Function} cb
- * @return {Vinyl}*
  */
 function syncTask (cb) {
   civicrmScssRoot.updateSync();

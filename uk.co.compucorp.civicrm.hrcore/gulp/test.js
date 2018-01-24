@@ -42,7 +42,7 @@ function forFile (srcFile) {
 }
 
 /**
- * Runs the karma server which does a single run of the test/s
+ * Runs the karma server which does a single run of the test(s)
  *
  * @param {string} configFile - The full path to the karma config file
  * @param {Function} cb - The callback to call when the server closes

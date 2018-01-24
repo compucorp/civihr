@@ -85,7 +85,7 @@ function extensionDependenciesTask (cb) {
  * extension's placeholder (%{extension-name}) found, it creates an object
  * with said placholder and the extension's local path
  *
- * @param {String} buildFileContent
+ * @param  {String} buildFileContent
  * @return {Array}
  */
 function getDependencyExtensionsData (buildFileContent) {
@@ -104,10 +104,10 @@ function getDependencyExtensionsData (buildFileContent) {
 }
 
 /**
- * Takes the content of the build file on the given path, and applies any
- * required transformations on it
+ * Takes the content of the build file on the given path,
+ * and applies any required transformations on it
  *
- * @param {String} buildFilePath
+ * @param  {String} buildFilePath
  * @return {String}
  */
 function processBuildFile (buildFilePath) {
@@ -124,8 +124,8 @@ function processBuildFile (buildFilePath) {
 }
 
 /**
- * Creates a temporary build file from the default one, which is then
- * fed to the RequireJS optimizer
+ * Creates a temporary build file from the default one,
+ * which is then fed to the RequireJS optimizer
  *
  * @param {Function} cb
  */

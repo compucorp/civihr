@@ -1,4 +1,5 @@
 var gulp = require('gulp');
+var path = require('path');
 var postcss = require('gulp-postcss');
 var postcssPrefix = require('postcss-prefix-selector');
 var transformSelectors = require('gulp-transform-selectors');
@@ -6,15 +7,15 @@ var transformSelectors = require('gulp-transform-selectors');
 var bootstrapNamespace = '#bootstrap-theme';
 var outsideNamespaceRegExp = /^\.___outside-namespace/;
 
-module.exports = function (SubTask) {
+module.exports = function () {
   return {
     post: [
       {
         name: 'sass:namespace',
         fn: function () {
-          var cssDir = __dirname + '/../' + 'css/';
+          var cssDir = path.join(__dirname, '..', 'css/');
 
-          return gulp.src(cssDir +  '*.css')
+          return gulp.src(path.join(cssDir, '*.css'))
             .pipe(postcss([postcssPrefix({
               prefix: bootstrapNamespace + ' ',
               exclude: [
@@ -31,10 +32,10 @@ module.exports = function (SubTask) {
 };
 
 /**
- * Apply the namespace on html and body elements
+ * Apply the namespace on <html> and <body> elements
  *
- * @param  {string} selector the current selector to be transformed
- * @return string
+ * @param  {String} selector the current selector to be transformed
+ * @return {String}
  */
 function namespaceRootElements (selector) {
   var regex = /^(body|html)/;
@@ -48,6 +49,13 @@ function namespaceRootElements (selector) {
   return selector;
 }
 
+/**
+ * Deletes the special class that was used as marker for styles that should
+ * not be nested inside the bootstrap namespace from the given selector
+ *
+ * @param  {String} selector
+ * @return {String}
+ */
 function removeOutsideNamespaceMarker (selector) {
-  return outsideNamespaceRegExp.test(selector) ? selector.replace(outsideNamespaceRegExp, '') : selector;
+  return selector.replace(outsideNamespaceRegExp, '');
 }
