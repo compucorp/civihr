@@ -148,6 +148,22 @@ function civicrm_api3_leave_request_get($params) {
 }
 
 /**
+ * LeaveRequest.getcount API
+ *
+ * The generic getcount function is broken for leave requests because the query
+ * uses GROUP BY
+ *
+ * @param $params
+ *
+ * @return int
+ *
+ * @throws CiviCRM_API3_Exception
+ */
+function civicrm_api3_leave_request_getcount($params) {
+  return civicrm_api3_leave_request_get($params)['count'];
+}
+
+/**
  * LeaveRequest.getFull API specification
  *
  * @param array $spec

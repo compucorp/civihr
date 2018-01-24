@@ -122,25 +122,6 @@ class CRM_HRLeaveAndAbsences_Service_ContractEntitlementCalculation {
   }
 
   /**
-   * Returns a list of PublicHolidays instances representing the Public Holidays
-   * added to the entitlement.
-   *
-   * @return \CRM_HRLeaveAndAbsences_BAO_PublicHoliday[]
-   */
-  public function getPublicHolidaysInEntitlement() {
-    $jobLeave = $this->getJobLeave();
-
-    if(!empty($jobLeave['add_public_holidays'])) {
-      return PublicHoliday::getAllForPeriod(
-        $this->contract['period_start_date'],
-        $this->contract['period_end_date']
-      );
-    }
-
-    return [];
-  }
-
-  /**
    * Returns the start date of this calculation's contract
    *
    * @return string

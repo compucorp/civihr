@@ -59,3 +59,13 @@ function &batch_get() {
 }
 
 function batch_process() {}
+
+function _get_uf_match_contact() {}
+
+function user_access() {
+  return TRUE;
+}
+
+function drupal_get_path() {
+  return 'foo/bar';
+}

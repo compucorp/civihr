@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
+
 /**
  * Collection of upgrade steps.
  */
@@ -11,6 +13,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   use CRM_HRCore_Upgrader_Steps_1003;
   use CRM_HRCore_Upgrader_Steps_1004;
   use CRM_HRCore_Upgrader_Steps_1005;
+  use CRM_HRCore_Upgrader_Steps_1006;
 
   /**
    * @var array
@@ -159,7 +162,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    * Create all the default relationship types
    */
   private function createDefaultRelationshipTypes() {
-    foreach($this->defaultRelationshipsTypes() as $relationshipType) {
+    foreach ($this->defaultRelationshipsTypes() as $relationshipType) {
       civicrm_api3('RelationshipType', 'create', [
         'name_a_b' => $relationshipType['name_a_b'],
         'label_a_b' => $relationshipType['name_b_a'],
@@ -177,7 +180,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    * Removes default relationship types
    */
   private function removeDefaultRelationshipTypes() {
-    foreach($this->defaultRelationshipsTypes() as $relationshipType) {
+    foreach ($this->defaultRelationshipsTypes() as $relationshipType) {
       // chained API call to delete the relationship type
       civicrm_api3('RelationshipType', 'get', [
         'name_b_a' => $relationshipType['name_b_a'],
@@ -193,7 +196,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    *   0: disable , 1: enable
    */
   public function toggleRelationshipTypes($setActive) {
-    foreach($this->defaultRelationshipsTypes() as $relationshipType) {
+    foreach ($this->defaultRelationshipsTypes() as $relationshipType) {
       // chained API call to activate/disable the relationship type
       civicrm_api3('RelationshipType', 'get', [
         'name_b_a' => $relationshipType['name_b_a'],
@@ -219,7 +222,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     ];
 
     // (Recruiting Manager) should be included only if hrrecruitment extension is disabled.
-    if (!$this->isExtensionEnabled('org.civicrm.hrrecruitment')) {
+    if (!ExtensionHelper::isExtensionEnabled('org.civicrm.hrrecruitment')) {
       $list[] = [
         'name_a_b' => 'Recruiting Manager is',
         'name_b_a' => 'Recruiting Manager',
@@ -230,21 +233,4 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     return $list;
   }
 
-  /**
-   * Checks if an extension is installed or enabled
-   *
-   * @param string $key
-   *   Extension unique key
-   *
-   * @return boolean
-   */
-  private function isExtensionEnabled($key)  {
-    $isEnabled = CRM_Core_DAO::getFieldValue(
-      'CRM_Core_DAO_Extension',
-      $key,
-      'is_active',
-      'full_name'
-    );
-    return  !empty($isEnabled) ? true : false;
-  }
 }

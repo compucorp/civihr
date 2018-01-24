@@ -159,6 +159,31 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   }
 
   /**
+   * Deletes unused custom groups. The XML files to create these groups were
+   * removed from this extension, but for some sites that already had them,
+   * the custom groups still exist.
+   *
+   * @return TRUE
+   */
+  public function upgrade_1431() {
+    $groupsToRemove = ['Exiting_Data', 'Joining_Data'];
+
+    foreach ($groupsToRemove as $groupName) {
+      $customGroup = civicrm_api3('CustomGroup', 'get', ['name' => $groupName]);
+
+      if ($customGroup['count'] != 1) {
+        continue;
+      }
+
+      $customGroup = array_shift($customGroup['values']);
+
+      civicrm_api3('CustomGroup', 'delete', ['id' => $customGroup['id']]);
+    }
+
+    return TRUE;
+  }
+
+  /**
    * Replaces (Case) keyword and (Open Case) keyword with (Assignment) keyword
    * and (Created New Assignment) keyword respectively and vise versa for
    * civicrm default activity types labels when installing/uninstalling the extension.

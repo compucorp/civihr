@@ -109,7 +109,7 @@ trait CRM_HRCore_Upgrader_Steps_1005 {
    *
    * @return TRUE
    */
-  function upgrade_1005() {
+  public function upgrade_1005() {
     $allExistingJobs = $this->up1005_getExistingJobs();
 
     foreach ($allExistingJobs as $existingJob) {
@@ -117,9 +117,10 @@ trait CRM_HRCore_Upgrader_Steps_1005 {
       $inWhitelist = isset($this->jobStates[$name]);
 
       if ($inWhitelist) {
-         $desiredFrequency = $this->jobStates[$name]['run_frequency'];
-         $shouldBeActive = $this->jobStates[$name]['is_active'];
-      } else {
+        $desiredFrequency = $this->jobStates[$name]['run_frequency'];
+        $shouldBeActive = $this->jobStates[$name]['is_active'];
+      }
+      else {
         $desiredFrequency = $existingJob['run_frequency']; // no change
         $shouldBeActive = FALSE;
       }
