@@ -4,7 +4,7 @@ use CRM_HRContactActionsMenu_Component_Group as ActionsGroup;
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem;
 use CRM_HRContactActionsMenu_Component_UserInformationLinkItem as UserInformationLinkItem;
 use CRM_HRContactActionsMenu_Component_UserRoleItem as UserRoleItem;
-use CRM_HRCore_CMSData_PathsInterface as CMSUserPath;
+use CRM_HRCore_CMSData_Paths_PathsInterface as CMSUserPath;
 use CRM_HRCore_CMSData_UserRoleInterface as CMSUserRole;
 
 /**
@@ -17,7 +17,7 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
    */
   private $contactUserInfo;
   /**
-   * @var \CRM_HRCore_CMSData_PathsInterface
+   * @var \CRM_HRCore_CMSData_Paths_PathsInterface
    */
   private $cmsUserPath;
   /**
