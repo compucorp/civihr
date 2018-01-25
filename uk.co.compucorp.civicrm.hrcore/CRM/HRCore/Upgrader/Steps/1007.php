@@ -3,8 +3,7 @@
 trait CRM_HRCore_Upgrader_Steps_1007 {
 
   /**
-   * Make the Line Manager/Line Manager is Relationship
-   * to be reserved.
+   * Make the 'Line Manager/Line Manager is' Relationship to be reserved.
    *
    * @return bool
    */

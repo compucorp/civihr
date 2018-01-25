@@ -3,8 +3,8 @@
 trait CRM_HRLeaveAndAbsences_Upgrader_Step_1018 {
 
   /**
-   * Make the is Leave Approver of/has Leave Approved by Relationship
-   * to be reserved.
+   * Make the 'is Leave Approver of/has Leave Approved by'
+   * Relationship to be reserved.
    *
    * @return bool
    */
@@ -15,7 +15,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1018 {
       'name_b_a' => 'is Leave Approver of',
       'api.RelationshipType.create' => ['id' => '$value.id', 'is_reserved' => 1],
     ]);
-    
+
     return TRUE;
   }
 }
