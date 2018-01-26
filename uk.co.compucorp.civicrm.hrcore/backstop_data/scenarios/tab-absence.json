@@ -2,43 +2,43 @@
   "scenarios": [
     {
       "label": "Absence / Report",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
+      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=leave",
       "onReadyScript": "contact-summary/absence/tab-report",
       "credential": "admin"
     },
     {
       "label": "Absence / Report / Open Section",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
+      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=leave",
       "onReadyScript": "contact-summary/absence/tab-report-open-section",
       "credential": "admin"
     },
     {
       "label": "Absence / Report / Actions",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
+      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=leave",
       "onReadyScript": "contact-summary/absence/tab-report-actions",
       "credential": "admin"
     },
     {
       "label": "Absence / Calendar / Current Month",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
+      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=leave",
       "onReadyScript": "contact-summary/absence/tab-calendar",
       "credential": "admin"
     },
     {
       "label": "Absence / Entitlements",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
+      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=leave",
       "onReadyScript": "contact-summary/absence/tab-entitlements",
       "credential": "admin"
     },
     {
       "label": "Absence / Work Patterns",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
+      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=leave",
       "onReadyScript": "contact-summary/absence/tab-work-patterns",
       "credential": "admin"
     },
     {
       "label": "Absence / Work Patterns / Custom Work Patterns Modal",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
+      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=leave",
       "onReadyScript": "contact-summary/absence/tab-work-patterns-modal",
       "credential": "admin"
     }
