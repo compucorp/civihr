@@ -99,7 +99,8 @@ define([
           amount: 0,
           maxAmount: 0,
           disabled: true,
-          loading: false
+          loading: false,
+          amountExpanded: false
         },
         to: {
           time: '',
@@ -108,7 +109,8 @@ define([
           amount: 0,
           maxAmount: 0,
           disabled: true,
-          loading: false
+          loading: false,
+          amountExpanded: false
         }
       }
     };
