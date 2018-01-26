@@ -229,12 +229,7 @@ function hrcore_civicrm_navigationMenu(&$params) {
   _hrcore_createHelpMenu($params);
   _hrcore_createDeveloperMenu($params);
   _hrcore_setDynamicMenuIcons($params);
-
-  _hrcore_civix_insert_navigation_menu($params, '', [
-    'name' => ts('ssp'),
-    'label' => ts('Self Service Portal'),
-    'url' => 'dashboard',
-  ]);
+  _hrcore_createSelfServicePortalMenu($params);
 }
 
 /**
@@ -448,4 +443,18 @@ function _hrcore_setDynamicMenuIcons(&$menu) {
       $menu[$key]['attributes']['icon'] = $menuToIcons[$menuName];
     }
   }
+}
+
+/**
+ * Creates the Self Service Portal menu item and add it to the main navigation
+ *
+ * @param array $menu
+ *   List of available menu items
+ */
+function _hrcore_createSelfServicePortalMenu(&$menu) {
+  _hrcore_civix_insert_navigation_menu($menu, '', [
+    'name' => ts('ssp'),
+    'label' => ts('Self Service Portal'),
+    'url' => 'dashboard',
+  ]);
 }
