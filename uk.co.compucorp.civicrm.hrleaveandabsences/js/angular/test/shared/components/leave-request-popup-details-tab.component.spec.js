@@ -524,7 +524,6 @@ define([
                 expect(controller.uiOptions.times[type].time).toBeDefined();
                 expect(controller.uiOptions.times[type].amount).toBeDefined();
                 expect(controller.uiOptions.times[type].maxAmount).toBeDefined();
-                expect(controller.uiOptions.times[type].disabled).toBeDefined();
                 expect(controller.uiOptions.times[type].amountExpanded).toBe(false);
               });
             });
@@ -559,10 +558,6 @@ define([
 
               it('pre-sets default timepicker option same as *minimum*', function () {
                 expect(timeFromObject.time).toBe(timeFromObject.min);
-              });
-
-              it('allows user to select "from" time', function () {
-                expect(timeFromObject.disabled).toBeFalsy();
               });
 
               it('sets the maximum deduction amount', function () {
@@ -602,10 +597,6 @@ define([
                   expect(timeToObject.time).toBe(timeToObject.max);
                 });
 
-                it('allows user to select "from" time', function () {
-                  expect(timeToObject.disabled).toBeFalsy();
-                });
-
                 it('sets the maximum deduction amount', function () {
                   expect(timeToObject.maxAmount).toBe(workDayMock.number_of_hours);
                 });
@@ -630,7 +621,6 @@ define([
                   });
 
                   it('flushes and disables time and deduction fields', function () {
-                    expect(timeToObject.disabled).toBeTruthy();
                     expect(timeToObject.time).toBe('');
                     expect(timeToObject.amount).toBe('0');
                   });
@@ -658,7 +648,6 @@ define([
                     expect(timesTo.max).toBe('00:00');
                     expect(timesTo.amount).toBe('0');
                     expect(timesTo.maxAmount).toBe('0');
-                    expect(timesTo.disabled).toBe(false);
                     expect(timesTo.loading).toBe(false);
                   });
                 });
