@@ -1731,7 +1731,8 @@ define([
             });
 
             it('loads the time and deduction ranges', function () {
-              expect(controller.request.getWorkDayForDate).toHaveBeenCalled();
+              expect(controller.request.getWorkDayForDate).toHaveBeenCalledWith(
+                date2016InServerFormat);
             });
           });
 

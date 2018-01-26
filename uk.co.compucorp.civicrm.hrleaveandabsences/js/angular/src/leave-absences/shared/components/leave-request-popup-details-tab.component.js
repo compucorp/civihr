@@ -201,7 +201,6 @@ define([
      * @return {Promise}
      */
     function dateChangeHandler (dateType) {
-      console.log(vm.uiOptions.fromDate);
       var absencePeriodChanged;
 
       return $q.resolve()
