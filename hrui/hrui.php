@@ -27,6 +27,8 @@
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrui.civix.php';
 
+use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
+
 /**
  * Implements hook_civicrm_coreResourceList().
  */
@@ -52,7 +54,7 @@ function hrui_civicrm_pageRun($page) {
     //set government field value for individual page
     $contactType = CRM_Contact_BAO_Contact::getContactType(CRM_Utils_Request::retrieve('cid', 'Integer'));
 
-    $isEnabled = _hrui_is_extension_enabled('org.civicrm.hrident');
+    $isEnabled = ExtensionHelper::isExtensionEnabled('org.civicrm.hrident');
 
     if ($isEnabled && $contactType == 'Individual') {
       $hideGId = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify', 'name' => 'is_government', 'return' => 'id'));
@@ -178,7 +180,7 @@ function _hrui_phone_is_empty($phoneIndex, $form) {
  * Implementation of hook_civicrm_postProcess
  */
 function hrui_civicrm_postProcess( $formName, &$form ) {
-  $isEnabled = _hrui_is_extension_enabled('org.civicrm.hrident');
+  $isEnabled = ExtensionHelper::isExtensionEnabled('org.civicrm.hrident');
 
   if ($formName == 'CRM_Contact_Form_Contact'
     && $isEnabled
@@ -485,21 +487,6 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 /**
- * Check if the extension with the given key is enabled
- *
- * @param string $extensionKey
- * @return boolean
- */
-function _hrui_check_extension($extensionKey)  {
-  return (boolean) CRM_Core_DAO::getFieldValue(
-    'CRM_Core_DAO_Extension',
-    $extensionKey,
-    'is_active',
-    'full_name'
-  );
-}
-
-/**
  * 1) we alter the weights for these tabs here
  * since these tabs are not created by hook_civicrm_tab
  * and the only way to alter their weights is here
@@ -563,7 +550,7 @@ function _hrui_alter_tabs(&$tabs, $tabsToRemove) {
 function hrui_civicrm_tabset($tabsetName, &$tabs, $contactID) {
   $tabsToRemove = array();
 
-  if (_hrui_check_extension('uk.co.compucorp.civicrm.tasksassignments')) {
+  if (ExtensionHelper::isExtensionEnabled('uk.co.compucorp.civicrm.tasksassignments')) {
     $tabsToRemove[] = 'case';
   }
 
@@ -880,15 +867,4 @@ function _hrui_customImportMenuItems(&$params) {
 function _hrui_menuSetActive($isActive) {
   CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active = {$isActive} WHERE name = 'import_custom_fields'");
   CRM_Core_BAO_Navigation::resetNavigation();
-}
-
-function _hrui_is_extension_enabled($key) {
-  $isEnabled = CRM_Core_DAO::getFieldValue(
-    'CRM_Core_DAO_Extension',
-    $key,
-    'is_active',
-    'full_name'
-  );
-
-  return !empty($isEnabled) ? true : false;
 }
