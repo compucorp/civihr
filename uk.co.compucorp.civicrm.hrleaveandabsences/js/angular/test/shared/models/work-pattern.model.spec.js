@@ -51,9 +51,9 @@ define([
         });
       });
 
-      it('sends "default: true" parameters to the API', function () {
+      it('sends "is_default: true" parameter to the API', function () {
         expect(WorkPatternAPI.get.calls.mostRecent().args[0]).toEqual({
-          default: true
+          is_default: true
         });
       });
 

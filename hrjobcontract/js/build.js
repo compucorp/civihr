@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 ({
   baseUrl: 'src',
   out: 'dist/job-contract.min.js',

@@ -4,9 +4,9 @@ define([
   'common/angular',
   'common/lodash',
   'common/moment',
-  'mocks/data/option-group-mock-data',
-  'mocks/data/absence-type-data',
-  'mocks/data/leave-request-data',
+  'mocks/data/option-group.data',
+  'mocks/data/absence-type.data',
+  'mocks/data/leave-request.data',
   'common/services/notification.service',
   'common/services/pub-sub',
   'leave-absences/shared/config',
@@ -450,6 +450,48 @@ define([
       });
     });
 
+    describe('when the leave request is a public holiday', function () {
+      beforeEach(function () {
+        leaveRequest.request_type = 'public_holiday';
+      });
+
+      describe('when the user is an admin', function () {
+        beforeEach(function () {
+          role = 'admin';
+
+          compileComponent();
+        });
+
+        it('includes the "Delete" action', function () {
+          expect(_.includes(flattenActions(controller.allowedActions), 'delete')).toBe(true);
+        });
+      });
+
+      describe('when the user is a manager', function () {
+        beforeEach(function () {
+          role = 'manager';
+
+          compileComponent();
+        });
+
+        it('does not include the "Delete" action', function () {
+          expect(_.includes(flattenActions(controller.allowedActions), 'delete')).toBe(false);
+        });
+      });
+
+      describe('when the user is a staff', function () {
+        beforeEach(function () {
+          role = 'staff';
+
+          compileComponent();
+        });
+
+        it('does not include the "Delete" action', function () {
+          expect(_.includes(flattenActions(controller.allowedActions), 'delete')).toBe(false);
+        });
+      });
+    });
+
     describe('when the user wants to change status of leave request', function () {
       // Any action, role or request could be specified here
       var action = 'approve';
@@ -485,7 +527,10 @@ define([
 
           it('emits an event', function () {
             expect(pubSub.publish)
-              .toHaveBeenCalledWith('LeaveRequest::edit', leaveRequest);
+              .toHaveBeenCalledWith('LeaveRequest::statusUpdate', {
+                status: action,
+                leaveRequest: leaveRequest
+              });
           });
         });
 

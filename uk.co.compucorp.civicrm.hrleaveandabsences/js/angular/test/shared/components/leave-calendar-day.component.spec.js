@@ -3,9 +3,9 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/absence-type-data',
-  'mocks/data/leave-request-data',
-  'mocks/data/option-group-mock-data',
+  'mocks/data/absence-type.data',
+  'mocks/data/leave-request.data',
+  'mocks/data/option-group.data',
   'leave-absences/shared/components/leave-calendar-day.component',
   'leave-absences/manager-leave/app'
 ], function (_, moment, absenceTypeData, leaveRequestData, optionGroupData) {

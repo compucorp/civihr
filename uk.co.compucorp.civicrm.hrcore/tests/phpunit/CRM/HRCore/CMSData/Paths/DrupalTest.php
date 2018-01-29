@@ -1,27 +1,19 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
-
 use CRM_HRCore_CMSData_Paths_Drupal as DrupalPaths;
+use CRM_HRCore_Test_BaseHeadlessTest as BaseHeadlessTest;
 
 /**
  * Class CRM_HRCore_CMSData_Paths_DrupalTest
  *
  * @group headless
  */
-class CRM_HRCore_CMSData_Paths_DrupalTest extends \PHPUnit_Framework_TestCase implements HeadlessInterface, TransactionalInterface {
+class CRM_HRCore_CMSData_Paths_DrupalTest extends BaseHeadlessTest {
 
   /**
-   * @var CRM_HRCore_CMSData_PathsInterface
+   * @var CRM_HRCore_CMSData_Paths_PathsInterface
    */
   protected $drupalPaths;
-
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->installMe(__DIR__)
-      ->apply();
-  }
 
   public function setUp() {
     $contactData = [ 'cmsId' => '4' ];
@@ -39,13 +31,5 @@ class CRM_HRCore_CMSData_Paths_DrupalTest extends \PHPUnit_Framework_TestCase im
   public function testItReturnsTheDrupalLogoutLink() {
     $this->assertEquals($this->drupalPaths->getLogoutPath(), '/user/logout');
   }
-}
 
-/**
- * Mock of the original drupal function
- *
- * @return string
- */
-function drupal_get_path() {
-  return 'foo/bar';
 }

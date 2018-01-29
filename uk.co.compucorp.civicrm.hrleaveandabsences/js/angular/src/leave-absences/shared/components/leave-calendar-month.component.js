@@ -13,6 +13,7 @@ define([
       month: '<',
       period: '<',
       showContactName: '<',
+      showContactDetailsLink: '<',
       showOnlyWithLeaveRequests: '<',
       supportData: '<'
     },
@@ -42,6 +43,7 @@ define([
 
     vm.$onDestroy = onDestroy;
     vm.contactsList = contactsList;
+    vm.getContactUrl = getContactUrl;
 
     (function init () {
       var dateFromMonth = moment().month(vm.month.index).year(vm.month.year);
@@ -124,7 +126,7 @@ define([
      */
     function contactsList () {
       return !vm.showOnlyWithLeaveRequests ? vm.contacts : vm.contacts.filter(function (contact) {
-        return _.includes(Object.keys(leaveRequests), contact.id);
+        return Object.keys(leaveRequests[contact.id] || {}).length;
       });
     }
 
@@ -146,6 +148,15 @@ define([
     function deleteLeaveRequest (leaveRequest) {
       removeLeaveRequestFromIndexedList(leaveRequest);
       updateLeaveRequestDaysContactData(leaveRequest);
+    }
+
+    /**
+     * Get profile URL for the given contact id
+     *
+     * @param {string/int} contactId
+     */
+    function getContactUrl (contactId) {
+      return CRM.url('civicrm/contact/view', { cid: contactId });
     }
 
     /**
@@ -207,7 +218,14 @@ define([
       eventListeners.push(pubSub.subscribe('LeaveRequest::new', addLeaveRequest));
       eventListeners.push(pubSub.subscribe('LeaveRequest::edit', updateLeaveRequest));
       eventListeners.push(pubSub.subscribe('LeaveRequest::updatedByManager', updateLeaveRequest));
-      eventListeners.push(pubSub.subscribe('LeaveRequest::deleted', deleteLeaveRequest));
+      eventListeners.push(pubSub.subscribe('LeaveRequest::delete', deleteLeaveRequest));
+      eventListeners.push(pubSub.subscribe('LeaveRequest::statusUpdate', function (statusUpdate) {
+        if (statusUpdate.status === 'delete') {
+          deleteLeaveRequest(statusUpdate.leaveRequest);
+        } else {
+          updateLeaveRequest(statusUpdate.leaveRequest);
+        }
+      }));
     }
 
     /**
@@ -223,11 +241,11 @@ define([
     function isDayType (typeName, leaveRequest, date) {
       var dayType = vm.supportData.dayTypes[typeName];
 
-      if (moment(date).isSame(leaveRequest.from_date)) {
+      if (moment(date).isSame(leaveRequest.from_date, 'day')) {
         return dayType.value === leaveRequest.from_date_type;
       }
 
-      if (moment(date).isSame(leaveRequest.to_date)) {
+      if (moment(date).isSame(leaveRequest.to_date, 'day')) {
         return dayType.value === leaveRequest.to_date_type;
       }
     }
@@ -321,6 +339,21 @@ define([
     }
 
     /**
+     * Returns the list of leave status's which would be displayed
+     * on the calendar
+     *
+     * @returns {array}
+     */
+    function leaveStatusesToBeDisplayed () {
+      return [
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.approved),
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.adminApproved),
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.awaitingApproval),
+        leaveRequestStatusValueFromName(sharedSettings.statusNames.moreInformationRequired)
+      ];
+    }
+
+    /**
      * Loads the work pattern calendar and the leave request of the month,
      * then it process the data onto each day of the month
      *
@@ -353,12 +386,7 @@ define([
       return LeaveRequest.all({
         from_date: { to: vm.month.days[vm.month.days.length - 1].date },
         to_date: { from: vm.month.days[0].date },
-        status_id: {'IN': [
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.approved),
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.adminApproved),
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.awaitingApproval),
-          leaveRequestStatusValueFromName(sharedSettings.statusNames.moreInformationRequired)
-        ]},
+        status_id: { 'IN': leaveStatusesToBeDisplayed() },
         contact_id: { 'IN': vm.contacts.map(function (contact) {
           return contact.id;
         })},
@@ -515,8 +543,15 @@ define([
     function updateLeaveRequest (leaveRequest) {
       var oldLeaveRequest = leaveRequestFromIndexedList(leaveRequest);
 
+      if (!oldLeaveRequest) {
+        return;
+      }
+
       deleteLeaveRequest(oldLeaveRequest);
-      addLeaveRequest(leaveRequest);
+
+      if (leaveStatusesToBeDisplayed().indexOf(leaveRequest.status_id) !== -1) {
+        addLeaveRequest(leaveRequest);
+      }
     }
 
     /**

@@ -4,7 +4,6 @@ class CRM_HRCore_Test_Fabricator_OptionValue {
 
   private static $defaultParams = [
     'name' => 'test option',
-    'sequential' => 1
   ];
 
   public static function fabricate($params = []) {

@@ -1,3 +1,4 @@
+
 (function (CRM) {
   CRM.jobContractTabApp = {
     path: '/base/tools/extensions/civihr/hrjobcontract/'

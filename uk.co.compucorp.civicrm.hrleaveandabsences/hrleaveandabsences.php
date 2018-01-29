@@ -436,6 +436,16 @@ function hrleaveandabsences_civicrm_validateForm($formName, &$fields, &$files, &
   }
 }
 
+/**
+ * Implementation of the hook_civicrm_apiWrappers hook
+ *
+ * @param array $wrappers
+ * @param array $apiRequest
+ */
+function hrleaveandabsences_civicrm_apiWrappers(&$wrappers, $apiRequest) {
+  $wrappers[] = new CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestDates();
+}
+
 //----------------------------------------------------------------------------//
 //                               Helper Functions                             //
 //----------------------------------------------------------------------------//

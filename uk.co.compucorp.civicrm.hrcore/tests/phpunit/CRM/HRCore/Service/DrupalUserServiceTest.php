@@ -3,16 +3,14 @@
 define('REQUEST_TIME', time());
 
 use CRM_HRCore_Service_DrupalUserService as DrupalUserService;
-use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
+use CRM_HRCore_CMSData_Role_DrupalRoleService as DrupalRoleService;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
-use CRM_HRCore_Test_Helpers_SessionHelpersTrait as SessionHelpersTrait;
+use CRM_HRCore_Test_Helpers_SessionHelper as SessionHelper;
 
 /**
  * @group headless
  */
 class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
-
-  use SessionHelpersTrait;
 
   /**
    * @var string
@@ -26,7 +24,7 @@ class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   public function setUp() {
     $this->testContact = ContactFabricator::fabricate();
-    $this->registerCurrentLoggedInContactInSession($this->testContact['id']);
+    SessionHelper::registerCurrentLoggedInContactInSession($this->testContact['id']);
   }
 
   public function tearDown() {

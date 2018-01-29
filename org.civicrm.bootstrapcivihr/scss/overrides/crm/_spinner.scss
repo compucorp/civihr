@@ -1,0 +1,12 @@
+/**
+ * Overriding the default civicrm core spinner
+ * defined in file sites/all/modules/civicrm/css/civicrm.css
+ */
+.crm-container {
+  .dataTables_processing,
+  .blockUI.blockOverlay {
+    @include spinner('true'); // true for forcing to use the spinner size
+    margin: 8% 50% !important;
+    opacity: 1 !important;
+  }
+}

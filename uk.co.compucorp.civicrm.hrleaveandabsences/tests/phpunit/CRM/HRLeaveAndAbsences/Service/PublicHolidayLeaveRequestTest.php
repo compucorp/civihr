@@ -51,11 +51,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
 
     $creationLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestCreation::class)
                               ->disableOriginalConstructor()
-                              ->setMethods(['createForAllInTheFuture'])
+                              ->setMethods(['createAllInTheFuture'])
                               ->getMock();
 
     $creationLogicMock->expects($this->once())
-                      ->method('createForAllInTheFuture');
+                      ->method('createAllInTheFuture');
 
     $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
     $service->updateAllInTheFuture();
@@ -81,6 +81,27 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
     $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
     $absencePeriod = AbsencePeriodFabricator::fabricate();
     $service->updateAllForAbsencePeriod($absencePeriod->id);
+  }
+
+  public function testUpdateAllPublicHolidayLeaveRequests() {
+    $deletionLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestDeletion::class)
+      ->disableOriginalConstructor()
+      ->setMethods(['deleteAllInTheFuture'])
+      ->getMock();
+
+    $deletionLogicMock->expects($this->once())
+      ->method('deleteAllInTheFuture');
+
+    $creationLogicMock = $this->getMockBuilder(PublicHolidayLeaveRequestCreation::class)
+      ->disableOriginalConstructor()
+      ->setMethods(['createAll'])
+      ->getMock();
+
+    $creationLogicMock->expects($this->once())
+      ->method('createAll');
+
+    $service = new PublicHolidayLeaveRequestService($creationLogicMock, $deletionLogicMock);
+    $service->updateAll();
   }
 
   public function testUpdateAllLeaveRequestsInTheFutureForWorkPatternContacts() {
@@ -144,15 +165,15 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
    */
   public function testItUpdateAllWhenTheContractDetailsAreCreated() {
     $period = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('last monday'),
-      'end_date'   => CRM_Utils_Date::processDate('+8 months'),
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2017-08-31'),
     ]);
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
     //All the days selected for the public holidays are working days for the 40hr work week
-    $datePublicHoliday1 = new DateTime('last monday');
-    $datePublicHoliday2 = new DateTime('tuesday +3 months');
-    $datePublicHoliday3 = new DateTime('friday +7 months');
+    $datePublicHoliday1 = new DateTime('2017-06-12');
+    $datePublicHoliday2 = new DateTime('2017-07-25');
+    $datePublicHoliday3 = new DateTime('2017-08-18');
 
     PublicHolidayFabricator::fabricateWithoutValidation(['date' => $datePublicHoliday1->format('YmdHis')]);
     PublicHolidayFabricator::fabricateWithoutValidation(['date' => $datePublicHoliday2->format('YmdHis')]);
@@ -180,7 +201,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
       'contact_id' => $contact['id']
     ],
     [
-      'period_start_date' =>  CRM_Utils_Date::processDate('today'),
+      'period_start_date' =>  CRM_Utils_Date::processDate('2017-07-01'),
     ]);
 
     // Nothing should be created for the first public holiday as its date is
@@ -202,14 +223,14 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
    */
   public function testItUpdateAllInTheFutureWhenTheContractDetailsAreUpdated() {
     $period = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('next monday'),
-      'end_date'   => CRM_Utils_Date::processDate('+2 months'),
+      'start_date' => CRM_Utils_Date::processDate('2025-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2025-03-31'),
     ]);
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
     //All the days selected for the public holidays are working days for the 40hr work week
-    $datePublicHoliday1 = new DateTime('next monday');
-    $datePublicHoliday2 = new DateTime('tuesday +1 month');
+    $datePublicHoliday1 = new DateTime('2025-01-20');
+    $datePublicHoliday2 = new DateTime('2025-02-27');
 
     PublicHolidayFabricator::fabricateWithoutValidation(['date' => $datePublicHoliday1->format('YmdHis')]);
     PublicHolidayFabricator::fabricateWithoutValidation(['date' => $datePublicHoliday2->format('YmdHis')]);
@@ -230,21 +251,21 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
 
     $contract = HRJobContractFabricator::fabricate(
       [ 'contact_id' => $contact['id'] ],
-      [ 'period_start_date' => CRM_Utils_Date::processDate('today') ]
+      [ 'period_start_date' => CRM_Utils_Date::processDate('2025-01-10') ]
     );
 
     $this->assertNotNull(LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $datePublicHoliday1));
     $this->assertNotNull(LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $datePublicHoliday2));
 
     // Add a new Public holiday
-    $datePublicHoliday3 = new DateTime('friday +1 month');
+    $datePublicHoliday3 = new DateTime('2025-03-18');
     PublicHolidayFabricator::fabricateWithoutValidation(['date' => $datePublicHoliday3->format('YmdHis')]);
 
     // Update the contract with an end date which will still overlap the
     // new public holiday
     civicrm_api3('HRJobDetails', 'create', [
       'jobcontract_id' => $contract['id'],
-      'period_end_date' => CRM_Utils_Date::processDate('friday +1 month')
+      'period_end_date' => CRM_Utils_Date::processDate('2025-03-28')
     ]);
 
     $this->assertNotNull(LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $datePublicHoliday1));

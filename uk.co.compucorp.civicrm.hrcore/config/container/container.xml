@@ -1,0 +1,52 @@
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+  <parameters>
+    <parameter key="connection_timeout">10</parameter>
+  </parameters>
+
+  <services>
+    <service id="hrcore.cms_notifier"
+             class="CRM_HRCore_CMSData_UserMailNotifierInterface"
+             factory-class="CRM_HRCore_CMSData_UserMailNotifierFactory"
+             factory-method="create">
+    </service>
+    <service id="drupal_role_service" class="CRM_HRCore_CMSData_Role_DrupalRoleService"/>
+    <service id="drupal_user_service" class="CRM_HRCore_Service_DrupalUserService">
+      <argument id="drupal_role_service" type="service"/>
+    </service>
+    <service id="civihr_stats_gatherer" class="CRM_HRCore_Service_Stats_StatsGatherer">
+      <argument id="cms_site_info" type="service"/>
+      <argument id="cms_role_service" type="service"/>
+    </service>
+    <service
+            id="cms_site_info"
+            factory-class="CRM_HRCore_CMSData_SiteInformationFactory"
+            factory-method="create"
+            class="CRM_HRCore_CMSData_SiteInformation_SiteInformationInterface"
+    />
+    <service
+            id="cms_role_service"
+            factory-class="CRM_HRCore_CMSData_CMSRoleServiceFactory"
+            factory-method="create"
+            class="CRM_HRCore_CMSData_Role_RoleServiceInterface"
+    />
+    <service id="core.cache" class="CRM_Core_BAO_Cache"/>
+    <service id="core.http_client" class="CRM_Utils_HttpClient">
+      <argument>%connection_timeout%</argument>
+    </service>
+    <service id="civihr_stats_sender" class="CRM_HRCore_Service_Stats_StatsSender">
+      <argument type="service" id="core.http_client"/>
+      <argument type="service" id="psr_log"/>
+    </service>
+    <service id="civihr.file_cache" class="CRM_HRCore_Service_FileCache"/>
+    <service id="civihr_stats_cache" class="CRM_HRCore_Service_Stats_StatsCache">
+      <argument id="civihr_stats_gatherer" type="service"/>
+      <argument id="civihr.file_cache" type="service"/>
+    </service>
+  </services>
+
+</container>
+
+

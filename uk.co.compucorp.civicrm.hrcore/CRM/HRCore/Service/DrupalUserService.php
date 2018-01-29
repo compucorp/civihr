@@ -1,8 +1,9 @@
 <?php
 
-use CRM_HRCore_Service_DrupalRoleService as DrupalRoleService;
+use CRM_HRCore_CMSData_Role_DrupalRoleService as DrupalRoleService;
 
 class CRM_HRCore_Service_DrupalUserService {
+
   /**
    * @var DrupalRoleService
    */

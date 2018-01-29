@@ -49,6 +49,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     unset($params['is_deleted']);
 
     $datesChanged = self::datesChanged($params);
+
+    $params = self::resetNonMandatoryDateFieldsIfCalculationUnitChanged($params);
+
     $instance = new self();
     $instance->copyValues($params);
 
@@ -102,8 +105,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     if($validationMode != self::IMPORT_VALIDATION) {
       self::validateEntitlementAndWorkingDayAndBalanceChange($params, $absenceType, $absencePeriod);
     }
-
-
   }
 
   /**
@@ -1009,11 +1010,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
         if(!$isCalculationUnitInHours) {
           if($amount == -0.5) {
-            if ($date == $fromDate) {
+            if ($date->format('Y-m-d') == $fromDate->format('Y-m-d')) {
               $dayType = $fromDateType;
             }
 
-            if($date == $toDate) {
+            if($date->format('Y-m-d') == $toDate->format('Y-m-d')) {
               $dayType = $toDateType;
             }
           }
@@ -1363,5 +1364,80 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     return self::calculateBalanceChangeFromCreateParams($params);
+  }
+
+  /**
+   * There are some fields that are only required according to the calculation
+   * unit of the Leave Request's Absence Type. This method makes sure that the
+   * non-required fields according to the calculation unit will be reset.
+   *
+   * When the calculation unit is hours, the from_date_type and to_date_type
+   * fields are not required, while the from_date_amount and to_date_amount are.
+   * When the calculation unit is in days, the from_date_amount and to_date_amount
+   * are required and the from_date_type and to_date_type are not.
+   *
+   * @param array $params
+   *
+   * @return array
+   *   The $params array with empty values for the non-mandatory fields
+   */
+  private static function resetNonMandatoryDateFieldsIfCalculationUnitChanged($params) {
+    if (self::calculationUnitChanged($params)) {
+      $absenceType = AbsenceType::findById($params['type_id']);
+
+      if ($absenceType->isCalculationUnitInHours()) {
+        $params['from_date_type'] = '';
+        $params['to_date_type']   = '';
+      }
+      else {
+        $params['from_date_amount'] = '';
+        $params['to_date_amount']   = '';
+      }
+    }
+
+    return $params;
+  }
+
+  /**
+   * Returns whether the Calculation Unit used for this Leave Request is being
+   * changed or not.
+   *
+   * The calculation unit is defined by the Absence Type. If the user changes
+   * the Leave Request's Absence Type to another type with a different
+   * calculation unit, this method will return true.
+   *
+   * @param array $params
+   *
+   * @return bool
+   */
+  private static function calculationUnitChanged($params) {
+    if (empty($params['id'])) {
+      // New Leave Request being created, so it didn't change
+      return FALSE;
+    }
+
+    $currentAbsenceType = self::getCurrentAbsenceType($params['id']);
+
+    if ($currentAbsenceType->id == $params['type_id']) {
+      return FALSE;
+    }
+
+    $newAbsenceType = AbsenceType::findById($params['type_id']);
+
+    return $newAbsenceType->calculation_unit != $currentAbsenceType->calculation_unit;
+  }
+
+  /**
+   * Returns the current Absence Type for the Leave Request with the given ID.
+   *
+   * @param int $leaveRequestID
+   *
+   * @return AbsenceType
+   * @throws \Exception
+   */
+  private static function getCurrentAbsenceType($leaveRequestID) {
+    $currentLeaveRequest = LeaveRequest::findById($leaveRequestID);
+
+    return AbsenceType::findById($currentLeaveRequest->type_id);
   }
 }

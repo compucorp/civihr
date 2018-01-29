@@ -16,8 +16,8 @@ module.exports = tab.extend({
     this.casper.waitUntilVisible('contract-entitlements');
     this.casper.waitUntilVisible('annual-entitlements');
     // Waits for spinners to hide which indicates the load of the data
-    this.casper.waitWhileVisible('contract-entitlements .chr_spinner');
-    this.casper.waitWhileVisible('annual-entitlements .chr_spinner');
+    this.casper.waitWhileVisible('contract-entitlements .spinner');
+    this.casper.waitWhileVisible('annual-entitlements .spinner');
 
     return true;
   }

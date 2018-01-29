@@ -22,7 +22,6 @@ define([
         if (!detectDevice.isMobile()) {
           link.apply(this, arguments);
         } else {
-          element.parent('.input-group').css('display', 'block');
           element.prop('type', 'date');
           attrs.ngReadonly = false;
 

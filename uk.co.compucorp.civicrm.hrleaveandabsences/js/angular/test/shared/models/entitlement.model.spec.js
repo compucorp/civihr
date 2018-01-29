@@ -1,26 +1,29 @@
 /* eslint-env amd, jasmine */
 
 define([
+  'common/lodash',
   'leave-absences/shared/models/entitlement.model',
   'mocks/apis/entitlement-api-mock',
   'mocks/apis/entitlement-log-api-mock'
-], function () {
+], function (_) {
   'use strict';
 
   describe('Entitlement', function () {
-    var $provide, $rootScope, Entitlement, EntitlementAPI, EntitlementLogAPI;
+    var $provide, $rootScope, Entitlement, EntitlementAPI,
+      EntitlementLogAPI;
 
     beforeEach(module('leave-absences.models', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (EntitlementAPIMock, EntitlementLogAPIMock) {
+    beforeEach(inject(function (EntitlementAPIMock,
+    EntitlementLogAPIMock) {
       $provide.value('EntitlementAPI', EntitlementAPIMock);
       $provide.value('EntitlementLogAPI', EntitlementLogAPIMock);
     }));
 
-    beforeEach(inject(function (_$rootScope_, _Entitlement_, _EntitlementAPI_,
-    _EntitlementLogAPI_) {
+    beforeEach(inject(function (_$rootScope_, _Entitlement_,
+    _EntitlementAPI_, _EntitlementLogAPI_) {
       Entitlement = _Entitlement_;
       EntitlementAPI = _EntitlementAPI_;
       EntitlementLogAPI = _EntitlementLogAPI_;

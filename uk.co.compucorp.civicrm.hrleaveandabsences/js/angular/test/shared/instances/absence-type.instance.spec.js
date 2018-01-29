@@ -2,7 +2,7 @@
 
 define([
   'common/lodash',
-  'mocks/data/absence-type-data',
+  'mocks/data/absence-type.data',
   'leave-absences/shared/instances/absence-type.instance'
 ], function (_, mockData) {
   'use strict';

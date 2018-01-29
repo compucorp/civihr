@@ -8,6 +8,11 @@ ini_set('memory_limit', '2G');
 ini_set('safe_mode', 0);
 eval(cv('php:boot --level=full -t', 'phpcode'));
 
+// While running the tests, the autoloader is not able to find this class, so we
+// need to manually require it in here in order to be able to
+// test API wrappers
+require_once 'api/Wrapper.php';
+
 require_once 'BaseHeadlessTest.php';
 require_once 'helpers/OptionGroupHelpersTrait.php';
 require_once 'helpers/ContractHelpersTrait.php';

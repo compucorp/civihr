@@ -2,7 +2,7 @@
 
 define([
   'common/lodash',
-  'mocks/data/absence-type-data',
+  'mocks/data/absence-type.data',
   'leave-absences/shared/components/leave-calendar-legend.component'
 ], function (_, AbsenceTypeData) {
   'use strict';

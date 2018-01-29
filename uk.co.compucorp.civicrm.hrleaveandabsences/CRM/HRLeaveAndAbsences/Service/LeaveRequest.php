@@ -6,36 +6,38 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix as LeaveRequestStatusMatrixService;
+use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestDeletion as PublicHolidayLeaveRequestDeletionFactory;
+use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Factory_LeaveBalanceChangeCalculation as LeaveBalanceChangeCalculationFactory;
+use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion as PublicHolidayLeaveRequestDeletionService;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
 
   /**
-   * @var \LeaveBalanceChangeService
+   * @var LeaveBalanceChangeService
    */
   protected $leaveBalanceChangeService;
 
   /**
-   * @var \CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix
+   * @var LeaveRequestStatusMatrixService
    */
   private $leaveRequestStatusMatrixService;
 
   /**
-   * @var \CRM_HRLeaveAndAbsences_Service_LeaveRequestRights
+   * @var LeaveRequestRightsService
    */
   private $leaveRequestRightsService;
 
   /**
-   * @var \CRM_HRLeaveAndAbsences_BAO_LeaveRequest
+   * @var PublicHolidayLeaveRequestDeletionService
+   */
+  private $publicHolidayLeaveRequestDeletionService;
+
+  /**
+   * @var LeaveRequest
    *   The leave request object before it gets updated.
    */
   protected $oldLeaveRequest;
-
-  /**
-   * @var array|null
-   *   Stores the list of option values for the LeaveRequest status_id field.
-   */
-  private $leaveStatuses;
 
   /**
    * @var boolean|null
@@ -59,6 +61,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     $this->leaveBalanceChangeService = $leaveBalanceChangeService;
     $this->leaveRequestStatusMatrixService = $leaveRequestStatusMatrixService;
     $this->leaveRequestRightsService = $leaveRequestRightsService;
+    $this->publicHolidayLeaveRequestDeletionService = PublicHolidayLeaveRequestDeletionFactory::create();
   }
 
   /**
@@ -129,7 +132,14 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
       throw new RuntimeException('You are not allowed to delete a leave request for this employee');
     }
 
-    LeaveRequest::softDelete($leaveRequestID);
+    if($leaveRequest->request_type == LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY) {
+      $publicHoliday = new PublicHoliday();
+      $publicHoliday->date = $leaveRequest->from_date;
+      $this->publicHolidayLeaveRequestDeletionService->deleteForContact($leaveRequest->contact_id, $publicHoliday);
+    }
+    else {
+      LeaveRequest::softDelete($leaveRequestID);
+    }
   }
 
   /**
