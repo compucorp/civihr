@@ -9,7 +9,12 @@ define([
   'mocks/data/leave-request.data',
   'mocks/data/option-group.data',
   'mocks/helpers/helper',
+  'common/mocks/services/hr-settings-mock',
+  'mocks/apis/absence-type-api-mock',
+  'mocks/apis/leave-request-api-mock',
   'mocks/apis/option-group-api-mock',
+  'mocks/apis/public-holiday-api-mock',
+  'mocks/apis/work-pattern-api-mock',
   'leave-absences/manager-leave/app'
 ], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper) {
   'use strict';
