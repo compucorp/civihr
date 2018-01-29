@@ -1,0 +1,50 @@
+<ng-include src="$root.sharedPathTpl + 'components/leave-request-popup/details-tab/by-unit-and-days-mode/partials/days-unit-from-date-and-type.html'"></ng-include>
+<div>
+  <div class="row">
+    <div class="col-xs-12 form-horizontal">
+      <div class="form-group">
+        <label class="col-sm-4 control-label required-mark">
+          To Date
+        </label>
+        <div class="col-sm-4 chr_leave-request-date-picker-container">
+          <div class="input-group">
+            <input
+              type="text"
+              class="form-control"
+              uib-datepicker-popup
+              datepicker-options="detailsTab.uiOptions.date.to.options"
+              show-button-bar="false"
+              ng-model="detailsTab.uiOptions.toDate"
+              is-open="detailsTab.uiOptions.date.to.show"
+              ng-readonly="true"
+              ng-disabled="__isNotEditable"
+              ng-change="detailsTab.dateChangeHandler('to')"/>
+          </div>
+        </div>
+        <div class="col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
+          <crm-loading
+            show="!detailsTab.loading.toDayTypes"
+            class="chr_leave-request-modal__small_spinner"
+            ng-switch="!detailsTab.isNotWorkingDay(detailsTab.requestToDayTypes[0].name)">
+            <div class="crm_custom-select crm_custom-select--full"
+              ng-switch-when="true">
+              <select
+                class="no-select2"
+                name="toDayTypeSelect"
+                ng-disabled="__isNotEditable"
+                ng-options="dayType.value as dayType.label for dayType in detailsTab.requestToDayTypes"
+                ng-model="detailsTab.request.to_date_type"
+                ng-change="detailsTab.dateTypeChangeHandler()">
+                <option value="">Select</option>
+              </select>
+              <span class="crm_custom-select__arrow"></span>
+            </div>
+            <div ng-switch-when="false" class="control-label">
+              {{detailsTab.requestToDayTypes[0].label}}
+            </div>
+          </crm-loading>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
