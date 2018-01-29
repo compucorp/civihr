@@ -1593,13 +1593,19 @@ define([
       });
 
       describe('when TOIL Request does not expire', function () {
+        var toilRequest;
+
         beforeEach(function () {
+          toilRequest = TOILRequestInstance.init(
+            leaveRequestData.findBy('request_type', 'toil'));
+
+          delete toilRequest.toil_expiry_date;
+
           AbsenceType.canExpire.and.returnValue($q.resolve(false));
           compileComponent({
             leaveType: 'toil',
-            request: controller.request
+            request: toilRequest
           });
-
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
         });
@@ -1615,12 +1621,26 @@ define([
             $rootScope.$digest();
           });
 
-          it('should not calculate the expiry date field', function () {
+          it('doesn\'t calculate the expiry date field', function () {
             expect(AbsenceType.calculateToilExpiryDate).not.toHaveBeenCalled();
           });
 
-          it('should set expiry date to false', function () {
-            expect(controller.request.toil_expiry_date).toBe(false);
+          it('doesn\'t update the expiry date', function () {
+            expect(controller.request.toil_expiry_date).toBeFalsy();
+          });
+        });
+
+        describe('when the request had a previous expiry date', function () {
+          beforeEach(function () {
+            controller.request.toil_expiry_date = date2017To;
+            compileComponent({
+              leaveType: 'toil',
+              request: controller.request
+            });
+          });
+
+          it('doesn\'t remove the expiry date', function () {
+            expect(controller.request.toil_expiry_date).not.toBeFalsy();
           });
         });
       });

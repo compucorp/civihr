@@ -47,8 +47,6 @@ define([
       // skips calculation of expiration date if request never expires
       // according to admin setting
       if (!detailsController.requestCanExpire) {
-        detailsController.request.toil_expiry_date = false;
-
         return $q.resolve(false);
       }
 
