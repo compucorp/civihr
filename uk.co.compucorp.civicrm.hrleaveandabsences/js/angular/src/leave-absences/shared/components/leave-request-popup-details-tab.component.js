@@ -593,7 +593,7 @@ define([
       timeObject.loading = true;
       timeObject.disabled = true;
 
-      return vm.request.getWorkDayForDate(date)
+      return vm.request.getWorkDayForDate(convertDateToServerFormat(date))
         .then(function (response) {
           timeObject.min = response.time_from || '00:00';
           timeObject.max = response.time_to || '00:00';

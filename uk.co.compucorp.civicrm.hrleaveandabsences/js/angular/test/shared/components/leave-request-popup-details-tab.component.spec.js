@@ -21,10 +21,11 @@ define([
 
     var date2013 = '02/02/2013';
     var date2016 = '01/12/2016';
-    var date2016To = '02/12/2016';
+    var date2016InServerFormat = '2016-01-12'; // Must match the date of `date2016`
+    var date2016To = '02/12/2016'; // Must be greater than `date2016`
     var date2017 = '01/02/2017';
-    var date2017To = '02/02/2017';
-    var dateServer2017 = '2017-02-02';
+    var date2017To = '02/02/2017'; // Must be greater than `date2017`
+    var date2017ToInServerFormat = '2017-02-02'; // Must match the date of `date2017To`
 
     beforeEach(module('common.mocks', 'leave-absences.templates',
     'leave-absences.mocks', 'manager-leave', function (_$provide_) {
@@ -1030,7 +1031,7 @@ define([
               var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
               var leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
 
-              leaveRequest.from_date = leaveRequest.to_date = dateServer2017;
+              leaveRequest.from_date = leaveRequest.to_date = date2017ToInServerFormat;
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
 
               compileComponent({
@@ -1730,7 +1731,8 @@ define([
             });
 
             it('loads the time and deduction ranges', function () {
-              expect(controller.request.getWorkDayForDate).toHaveBeenCalled();
+              expect(controller.request.getWorkDayForDate).toHaveBeenCalledWith(
+                date2016InServerFormat);
             });
           });
 
