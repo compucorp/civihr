@@ -15,7 +15,7 @@
       "label": "SSP - Tasks - Create new tasks",
       "url": "tasks-and-documents",
       "onReadyScript": "ssp/tasks-create-new-task",
-      "credential": "admin"
+      "credential": "super-admin"
     }
   ]
 }
