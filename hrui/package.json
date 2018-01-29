@@ -9,9 +9,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "gulp": "^3.9.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-sourcemaps": "~2.6.1",
-    "gulp-uglify": "^2.0.0"
+    "find": "^0.2.8",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-sourcemaps": "^1.12.1",
+    "gulp-uglify": "^3.0.0",
+    "path": "^0.12.7"
   }
 }
