@@ -70,12 +70,13 @@ function hrcore_civicrm_container($container) {
  * @param object $form
  */
 function hrcore_civicrm_buildForm($formName, &$form) {
-  if($formName == 'CRM_Activity_Form_ActivityFilter') {
-    _hrcore_modifyExcludeAndIncludeActivityTypeFields($form);
-  }
+  $listeners = [
+    new CRM_HRCore_Hook_BuildForm_ActivityFilterSelectFieldsModifier(),
+    new CRM_HRCore_Hook_BuildForm_ActivityLinksFilter(),
+  ];
 
-  if($formName == 'CRM_Activity_Form_ActivityLinks') {
-    _hrcore_filterActivityTypeLinks($form);
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($formName, $form);
   }
 }
 
@@ -277,64 +278,4 @@ function _hrcore_add_js_session_vars() {
   CRM_Core_Resources::singleton()->addVars('session', [
     'contact_id' => CRM_Core_Session::getLoggedInContactID()
   ]);
-}
-
-/**
- * Overrides the include and exclude select activity Form fields on the
- * activities tab of the contact summary page to display only activities of
- * type Email, Inbound Email, Reminder Sent, Print PDf Letter.
- *
- * @param object $form
- */
-function _hrcore_modifyExcludeAndIncludeActivityTypeFields($form) {
-  $allowedActivityTypes = _hrcore_getAllowedActivityTypesForActivitiesTab();
-
-  $activityTypes = civicrm_api3('OptionValue', 'get', [
-    'option_group_id' => 'activity_type',
-    'name' => ['IN' => $allowedActivityTypes],
-  ]);
-
-  $formActivityTypes = [];
-  foreach ($activityTypes['values'] as $activityType) {
-    $formActivityTypes[$activityType['value']] = $activityType['label'];
-  }
-
-  $form->add('select', 'activity_type_filter_id', ts('Include'), $formActivityTypes);
-  $form->add('select',
-    'activity_type_exclude_filter_id',
-    ts('Exclude'),
-    ['' => ts('- select activity type -')] + $formActivityTypes
-  );
-}
-
-/**
- * Filters the activity type links on the activities tab on the
- * contact summary page so that only links related to the Email,
- * Inbound Email, Reminder Sent and Print PDf Letter activity types
- * are returned.
- *
- * @param object $form
- */
-function _hrcore_filterActivityTypeLinks($form) {
-  $allowedActivities = _hrcore_getAllowedActivityTypesForActivitiesTab();
-  $activityTypes = [];
-  $activityTypeLinks = $form->get_template_vars('activityTypes');
-
-  foreach($activityTypeLinks as $id => $activityTypeLink) {
-    if(in_array($activityTypeLink['name'], $allowedActivities))  {
-      $activityTypes[$id] = $activityTypeLink;
-    }
-  }
-
-  $form->assign('activityTypes', $activityTypes);
-}
-
-/**
- * Returns the allowed activity types for the activities tab on the
- * contact summary page.
- *
- * @return array
- */
-function _hrcore_getAllowedActivityTypesForActivitiesTab() {
-  return ['Email',  'Inbound Email', 'Reminder Sent', 'Print PDF Letter'];
 }
