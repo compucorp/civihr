@@ -112,15 +112,6 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
       $this->label
     );
 
-    if ($this->addBottomMargin) {
-      $buttonMarkup =  sprintf('      
-        <div class="crm_contact-actions--bottom-margin">
-          %s
-        </div>',
-        $buttonMarkup
-      );
-    }
-
     return $buttonMarkup;
   }
 }

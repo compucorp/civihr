@@ -80,8 +80,7 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
     $button = new ActionsGroupButtonItem($params['label']);
     $button->setClass($params['class'])
       ->setIcon($params['icon'])
-      ->setUrl($params['url'])
-      ->addBottomMargin();
+      ->setUrl($params['url']);
 
     return $button;
   }

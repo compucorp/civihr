@@ -31,9 +31,12 @@ class CRM_HRContactActionsMenu_Component_UserRoleItem implements ActionsGroupIte
     $roles = implode(', ', $this->cmsUserRole->getRoles());
 
     $userRolesMarkup = '
-      <p><span class="crm_contact-actions--bold">Roles: </span> 
-        <span class="crm_contact-actions--dark-grey">%s</span>
-      </p>';
+      <div class="crm_contact-actions__user-info">
+        <dl class="dl-horizontal dl-horizontal-inline">
+          <dt>Roles:</dt>
+          <dd>%s</dd>
+        </dl>
+      </div>';
 
     return sprintf(
       $userRolesMarkup,

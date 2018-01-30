@@ -35,9 +35,12 @@ class CRM_HRContactActionsMenu_Component_UserInformationLinkItem implements Acti
    */
   public function render() {
     $userInformationMarkup = '
-      <p><span class="crm_contact-actions--bold">User: </span> 
-        <a href="%s" class="text-primary">%s</a>
-      </p>';
+      <div class="crm_contact-actions__user-info">
+        <dl class="dl-horizontal dl-horizontal-inline">
+          <dt>User:</dt>
+          <dd><a href="%s" class="text-primary">%s</a></dd>
+        </dl>
+      </div>';
 
     return sprintf(
       $userInformationMarkup,
