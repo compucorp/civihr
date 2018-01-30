@@ -17,7 +17,7 @@ trait CRM_HRCore_Upgrader_Steps_1008 {
   public function upgrade_1008() {
     $toSetFilterToZero = ['Inbound Email', 'Reminder Sent'];
     $printPdfActivity = ['Print PDF Letter'];
-    $allActivityTypes = $this->getActivityTypes(array_merge($toSetFilterToZero, $printPdfActivity));
+    $allActivityTypes = $this->up1008_getActivityTypes(array_merge($toSetFilterToZero, $printPdfActivity));
 
     foreach($toSetFilterToZero as $activityType) {
       if(isset($allActivityTypes[$activityType])) {
@@ -41,7 +41,7 @@ trait CRM_HRCore_Upgrader_Steps_1008 {
    * @param array $activityType
    */
   private function up1008_setFilterColumnToZero($activityType) {
-    if($activityType['filter'] == 0){
+    if($activityType['filter'] == 0) {
       return;
     }
 
@@ -76,7 +76,7 @@ trait CRM_HRCore_Upgrader_Steps_1008 {
    *
    * @return array
    */
-  private function getActivityTypes($activityTypeNames) {
+  private function up1008_getActivityTypes($activityTypeNames) {
     $result = civicrm_api3('OptionValue', 'get',[
       'option_group_id' => 'activity_type',
       'name' => ['IN' => $activityTypeNames],
