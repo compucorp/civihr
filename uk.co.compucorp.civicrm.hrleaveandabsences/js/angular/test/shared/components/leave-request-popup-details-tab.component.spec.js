@@ -21,11 +21,11 @@ define([
 
     var date2013 = '02/02/2013';
     var date2016 = '01/12/2016';
-    var date2016InServerFormat = '2016-01-12'; // Must match the date of `date2016`
+    var date2016InServerFormat = moment(getUTCDate(date2016)).format('YYYY-MM-D'); // Must match the date of `date2016`
     var date2016To = '02/12/2016'; // Must be greater than `date2016`
     var date2017 = '01/02/2017';
     var date2017To = '02/02/2017'; // Must be greater than `date2017`
-    var date2017ToInServerFormat = '2017-02-02'; // Must match the date of `date2017To`
+    var date2017ToInServerFormat = moment(date2017To, 'D/MM/YYYY').format('YYYY-MM-D'); // Must match the date of `date2017To`
 
     beforeEach(module('common.mocks', 'leave-absences.templates',
     'leave-absences.mocks', 'manager-leave', function (_$provide_) {
