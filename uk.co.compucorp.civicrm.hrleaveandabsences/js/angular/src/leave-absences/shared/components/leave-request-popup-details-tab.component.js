@@ -110,7 +110,8 @@ define([
           min: '00:00',
           time: ''
         }
-      }
+      },
+      time_interval: 15 // 15 minutes intervals in time and deduction inputs
     };
 
     vm.convertDateFormatFromServer = convertDateFormatFromServer;

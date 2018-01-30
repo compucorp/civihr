@@ -107,6 +107,10 @@ define([
           expect(controller.isLeaveType('leave')).toBeTruthy();
         });
 
+        it('has time interval set to 15 minutes', function () {
+          expect(controller.uiOptions.time_interval).toBe(15);
+        });
+
         describe('initChildController()', function () {
           it('has days of work pattern loaded', function () {
             expect(controller.calendar).toBeDefined();
