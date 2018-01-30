@@ -11,44 +11,27 @@
     width: 93px !important;
   }
 
-  @at-root #{&}__body__user-actions {
+  @at-root #{&}__secondary-panel {
+    background: $crm-white;
     min-height: 205px !important;
   }
 
-  @at-root #{&}__footer__user-info {
-    margin-bottom: 15px;
-  }
-
-  @at-root #{&}__footer__user-actions {
-    padding-bottom: 17px;
+  @at-root #{&}__secondary-panel__footer {
+    background: $crm-white;
+    padding-bottom: 7px;
     padding-top: 20px;
   }
 
-  @at-root #{&}__btn {
-    white-space: normal !important;
-  }
-
-  @at-root #{&}--bg-white {
-    background: $crm-white;
-  }
-
-  @at-root #{&}--dark-grey {
-    color: $gray-dark;
-  }
-
-  @at-root #{&}--dark-gray-blue {
-    border-color: $crm-grayblue-dark !important;
-  }
-
-  @at-root #{&}--bottom-margin {
+  @at-root #{&}__user-info {
     margin-bottom: 10px;
   }
 
-  @at-root #{&}--primary {
+  span.fa-question-circle {
     color: $brand-primary;
   }
 
-  @at-root #{&}--bold {
-    font-weight: 600;
+  a.btn {
+    margin-bottom: 10px !important;
+    white-space: normal !important;
   }
 }
