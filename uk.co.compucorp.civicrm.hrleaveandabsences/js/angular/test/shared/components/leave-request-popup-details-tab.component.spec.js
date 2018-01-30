@@ -572,6 +572,25 @@ define([
                 expect(request.from_date.length).toBe('YYYY-MM-DD hh:mm'.length);
               });
 
+              describe('and it is a single day request', function () {
+                var timeToObject;
+
+                beforeEach(function () {
+                  timeToObject = controller.uiOptions.times.to;
+                  controller.uiOptions.multipleDays = false;
+
+                  setTestDates(date2016);
+                });
+
+                it('allows to select end time ("to" time)', function () {
+                  expect(timeToObject.loading).toBeFalsy();
+                  expect(timeToObject.min).toBe(workDayMock.time_from);
+                  expect(timeToObject.max).toBe(workDayMock.time_to);
+                  expect(timeToObject.time).toBe(timeFromObject.max);
+                  expect(timeToObject.disabled).toBeFalsy();
+                });
+              });
+
               describe('after to date is selected', function () {
                 var timeToObject;
 
@@ -611,6 +630,29 @@ define([
 
                 it('shows the balance', function () {
                   expect(controller.uiOptions.showBalance).toBeTruthy();
+                });
+
+                describe('and it is a single day request', function () {
+                  beforeEach(function () {
+                    controller.uiOptions.multipleDays = false;
+
+                    setTestDates(date2016);
+                  });
+
+                  describe('when start time (time "from") and end time (time "to") are set', function () {
+                    var timeTo = '14:35';
+
+                    beforeEach(function () {
+                      controller.uiOptions.times.from.time = '10:45';
+                      controller.uiOptions.times.to.time = timeTo;
+
+                      $rootScope.$digest();
+                    });
+
+                    it('sets end time to request "to" date', function () {
+                      expect(controller.request.to_date.split(' ')[1]).toBe(timeTo);
+                    });
+                  });
                 });
 
                 describe('if work day info cannot be retrieved', function () {

@@ -283,6 +283,34 @@ define([
     }
 
     /**
+     * Disables a time input of the specified type
+     * and shows that it is currently loading
+     *
+     * @param {String} type from|to
+     */
+    function disableAndShowLoadingTimeInput (type) {
+      var timeObject = vm.uiOptions.times[type];
+
+      timeObject.loading = true;
+      timeObject.disabled = true;
+    }
+
+    /**
+     * Enables a time input of the specified type
+     * and sets provided data such as minumum and maximum time values and time
+     *
+     * @param {String} type from|to
+     */
+    function enableAndSetDataToTimeInput (type, data) {
+      var timeObject = vm.uiOptions.times[type];
+
+      timeObject.min = data.time_from || '00:00';
+      timeObject.max = data.time_to || '00:00';
+      timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
+      timeObject.disabled = false;
+    }
+
+    /**
      * Extracts time from server formatted date
      *
      * @param  {String} date in "YYYY-MM-DD hh:mm:ss" format
@@ -584,24 +612,28 @@ define([
     function loadTimeRangesFromWorkPattern (type) {
       var date = vm.uiOptions[type + 'Date'];
       var timeObject = vm.uiOptions.times[type];
+      var isSingleDayRequest = !vm.uiOptions.multipleDays;
 
       if (!date) {
         return $q.resolve();
       }
 
-      timeObject.loading = true;
+      disableAndShowLoadingTimeInput(type);
+      isSingleDayRequest && disableAndShowLoadingTimeInput('to');
 
       return vm.request.getWorkDayForDate(convertDateToServerFormat(date))
         .then(function (response) {
-          timeObject.min = response.time_from || '00:00';
-          timeObject.max = response.time_to || '00:00';
           timeObject.maxAmount = response.number_of_hours.toString() || '0';
-          timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
           timeObject.amount = timeObject.maxAmount;
+
+          enableAndSetDataToTimeInput(type, response);
+          isSingleDayRequest && enableAndSetDataToTimeInput('to', response);
         })
         .catch(handleError)
         .finally(function () {
           timeObject.loading = false;
+
+          isSingleDayRequest && (vm.uiOptions.times['to'].loading = false);
         });
     }
 
@@ -810,14 +842,14 @@ define([
       request.from_date = options.fromDate ? convertDateToServerFormat(options.fromDate) : null;
       request.to_date = options.toDate ? convertDateToServerFormat(options.toDate) : null;
 
-      if (isCalculationUnit('hours') && !isLeaveType('toil')) {
-        request.from_date = request.from_date && times.from.time ? request.from_date + ' ' + times.from.time : null;
-        request.to_date = request.to_date && times.to.time ? request.to_date + ' ' + times.to.time : null;
-      }
-
       if (!options.multipleDays && options.fromDate) {
         request.to_date = request.from_date;
         request.to_date_type = request.from_date_type;
+      }
+
+      if (isCalculationUnit('hours') && !isLeaveType('toil')) {
+        request.from_date = request.from_date && times.from.time ? request.from_date + ' ' + times.from.time : null;
+        request.to_date = request.to_date && times.to.time ? request.to_date + ' ' + times.to.time : null;
       }
     }
 

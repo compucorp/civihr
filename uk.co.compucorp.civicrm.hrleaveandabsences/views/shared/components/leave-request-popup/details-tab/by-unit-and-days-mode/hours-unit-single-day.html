@@ -55,6 +55,39 @@
     </div>
   </div>
 </div>
+<div class="row" ng-hide="detailsTab.isLeaveType('toil')">
+  <div class="col-xs-12 form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-4 control-label required-mark">
+        End time
+      </label>
+      <div class="col-sm-4 chr_leave-request-date-picker-container">
+        <crm-loading show="!detailsTab.uiOptions.times.to.loading"
+          class="chr_leave-request-modal__small_spinner"
+          ng-switch="!detailsTab.isNotWorkingDay(detailsTab.requestFromDayTypes[0].name)">
+          <div
+            class="crm_custom-select crm_custom-select--full"
+            ng-switch-when="true">
+            <select
+              class="no-select2"
+              ng-model="detailsTab.uiOptions.times.to.time"
+              ng-disabled="detailsTab.uiOptions.times.to.disabled || __isNotEditable"
+              timepicker-select
+              timepicker-select-time-from="detailsTab.uiOptions.times.to.min"
+              timepicker-select-time-to="detailsTab.uiOptions.times.to.max"
+              timepicker-select-interval="15"
+              timepicker-select-placeholder="Select time"
+            ></select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+          <div ng-switch-when="false" class="control-label">
+            {{detailsTab.requestFromDayTypes[0].label}}
+          </div>
+        </crm-loading>
+      </div>
+    </div>
+  </div>
+</div>
 <ng-include src="$root.sharedPathTpl +
   'components/leave-request-popup/details-tab/by-unit-and-days-mode' +
   '/partials/hours-unit-from-deduction.html'"></ng-include>
