@@ -21,19 +21,19 @@ define([
 ], function (_, absencePeriodMock, absenceTypeMock, reportMockData) {
   describe('LeaveBalanceReport.component', function () {
     var $componentController, $provide, $q, $rootScope, $scope, AbsencePeriod,
-      AbsenceType, ctrl, leaveBalanceReport, notificationService, pubSub,
+      AbsenceType, Contact, ctrl, leaveBalanceReport, notificationService, pubSub,
       Session, sharedSettings;
     var loggedInContactId = 101;
     var filters = { any_filter: 'any value' };
     var userRole = 'admin';
 
-    beforeEach(module('common.services', 'leave-absences.mocks',
-    'leave-absences.models', 'leave-absences.components', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(module('common.services', 'leave-absences.mocks', 'leave-absences.models', 'leave-absences.components',
+      function (_$provide_) {
+        $provide = _$provide_;
+      }
+    ));
 
-    beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_,
-    _EntitlementAPIMock_) {
+    beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_, _EntitlementAPIMock_) {
       $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
       $provide.value('EntitlementAPI', _EntitlementAPIMock_);
@@ -58,28 +58,29 @@ define([
       $provide.value('api.optionGroup', _OptionGroupAPIMock_);
     }]));
 
-    beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_, _Contact_, _LeaveBalanceReport_, _pubSub_, _Session_,
-    _notificationService_) {
-      $componentController = _$componentController_;
-      $q = _$q_;
-      $rootScope = _$rootScope_;
-      AbsencePeriod = _AbsencePeriod_;
-      AbsenceType = _AbsenceType_;
-      Contact = _Contact_;
-      leaveBalanceReport = _LeaveBalanceReport_;
-      notificationService = _notificationService_;
-      pubSub = _pubSub_;
-      Session = _Session_;
+    beforeEach(inject(
+      function (_$componentController_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_,
+        _Contact_, _LeaveBalanceReport_, _pubSub_, _Session_, _notificationService_) {
+        $componentController = _$componentController_;
+        $q = _$q_;
+        $rootScope = _$rootScope_;
+        AbsencePeriod = _AbsencePeriod_;
+        AbsenceType = _AbsenceType_;
+        Contact = _Contact_;
+        leaveBalanceReport = _LeaveBalanceReport_;
+        notificationService = _notificationService_;
+        pubSub = _pubSub_;
+        Session = _Session_;
 
-      spyOn(AbsencePeriod, 'all').and.callThrough();
-      spyOn(AbsenceType, 'all').and.callThrough();
-      spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
-      spyOn(Contact, 'all').and.callThrough();
-      spyOn(leaveBalanceReport, 'all').and.callThrough();
-      spyOn(notificationService, 'error');
-      spyOn(Session, 'get').and.returnValue($q.resolve({ contactId: loggedInContactId }));
-    }));
+        spyOn(AbsencePeriod, 'all').and.callThrough();
+        spyOn(AbsenceType, 'all').and.callThrough();
+        spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
+        spyOn(Contact, 'all').and.callThrough();
+        spyOn(leaveBalanceReport, 'all').and.callThrough();
+        spyOn(notificationService, 'error');
+        spyOn(Session, 'get').and.returnValue($q.resolve({ contactId: loggedInContactId }));
+      }
+    ));
 
     describe('on init', function () {
       beforeEach(function () {
