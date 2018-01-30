@@ -5,9 +5,15 @@ define([
   'mocks/data/absence-period.data',
   'mocks/data/absence-type.data',
   'mocks/data/leave-balance-report.data',
+  'common/models/contact',
+  'common/models/session.model',
+  'common/mocks/services/api/contact-mock',
   'common/mocks/services/api/option-group-mock',
+  'mocks/apis/absence-period-api-mock',
   'mocks/apis/absence-type-api-mock',
   'mocks/apis/entitlement-api-mock',
+  'leave-absences/shared/models/absence-period.model',
+  'leave-absences/shared/models/absence-type.model',
   'leave-absences/shared/models/entitlement.model',
   'leave-absences/shared/components/leave-balance-tab.component',
   'leave-absences/shared/config',
@@ -45,20 +51,22 @@ define([
       });
     }));
 
-    beforeEach(inject(['shared-settings', 'api.optionGroup.mock', function (_sharedSettings_, _OptionGroupAPIMock_) {
+    beforeEach(inject(['shared-settings', 'api.contact.mock', 'api.optionGroup.mock', function (_sharedSettings_, _ContactAPIMock_, _OptionGroupAPIMock_) {
       sharedSettings = _sharedSettings_;
 
+      $provide.value('api.contact', _ContactAPIMock_);
       $provide.value('api.optionGroup', _OptionGroupAPIMock_);
     }]));
 
     beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_, _LeaveBalanceReport_, _pubSub_, _Session_,
+    _AbsencePeriod_, _AbsenceType_, _Contact_, _LeaveBalanceReport_, _pubSub_, _Session_,
     _notificationService_) {
       $componentController = _$componentController_;
       $q = _$q_;
       $rootScope = _$rootScope_;
       AbsencePeriod = _AbsencePeriod_;
       AbsenceType = _AbsenceType_;
+      Contact = _Contact_;
       leaveBalanceReport = _LeaveBalanceReport_;
       notificationService = _notificationService_;
       pubSub = _pubSub_;
@@ -67,6 +75,7 @@ define([
       spyOn(AbsencePeriod, 'all').and.callThrough();
       spyOn(AbsenceType, 'all').and.callThrough();
       spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
+      spyOn(Contact, 'all').and.callThrough();
       spyOn(leaveBalanceReport, 'all').and.callThrough();
       spyOn(notificationService, 'error');
       spyOn(Session, 'get').and.returnValue($q.resolve({ contactId: loggedInContactId }));
@@ -83,6 +92,10 @@ define([
 
       it('sets absence types equal to an empty array', function () {
         expect(ctrl.absenceTypes).toEqual([]);
+      });
+
+      it('sets lookup contacts equal to an empty array', function () {
+        expect(ctrl.lookupContacts).toEqual([]);
       });
 
       it('sets loading component to true', function () {
@@ -172,6 +185,23 @@ define([
         it('loads the absence periods sorted by title', function () {
           expect(AbsencePeriod.all).toHaveBeenCalledWith({
             options: { sort: 'title ASC' }
+          });
+        });
+
+        it('stores the absence periods', function () {
+          expect(ctrl.absencePeriods.length).toEqual(absencePeriodMock.all().values.length);
+        });
+      });
+
+      describe('contacts', function () {
+        beforeEach(function () {
+          setupController();
+          $rootScope.$digest();
+        });
+
+        it('loads the contacts sorted by sort name', function () {
+          expect(Contact.all).toHaveBeenCalledWith({
+            options: { sort: 'sort_name ASC' }
           });
         });
 
