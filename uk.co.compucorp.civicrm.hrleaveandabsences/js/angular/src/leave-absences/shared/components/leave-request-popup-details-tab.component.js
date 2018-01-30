@@ -134,36 +134,36 @@ define([
       initListeners();
 
       vm.initChildController()
-      .then(function () {
-        return $q.all([
-          loadCalendar(),
-          loadDayTypes()
-        ]);
-      })
-      .then(!vm.isMode('create') && initDates)
-      .then(function () {
-        if (!vm.isMode('create') && isCalculationUnit('hours')) {
-          return initTimes();
-        }
-      })
-      .then(!vm.isMode('create') && setDatepickerBoundariesForToDate)
-      .then(initOriginalOpeningBalance)
-      .then(setOpeningBalance)
-      .then(function () {
-        return $q.all([
-          setDaysSelectionMode(),
-          initBalanceChange()
-        ]);
-      })
-      .then(function () {
-        if (!vm.isMode('view') && !isLeaveType('toil')) {
-          initTimeAndDateInputsWatchers();
-        }
-      })
-      .catch(handleError)
-      .finally(function () {
-        vm.loading.tab = false;
-      });
+        .then(function () {
+          return $q.all([
+            loadCalendar(),
+            loadDayTypes()
+          ]);
+        })
+        .then(!vm.isMode('create') && initDates)
+        .then(function () {
+          if (!vm.isMode('create') && isCalculationUnit('hours')) {
+            return initTimes();
+          }
+        })
+        .then(!vm.isMode('create') && setDatepickerBoundariesForToDate)
+        .then(initOriginalOpeningBalance)
+        .then(setOpeningBalance)
+        .then(function () {
+          return $q.all([
+            setDaysSelectionMode(),
+            initBalanceChange()
+          ]);
+        })
+        .then(function () {
+          if (!vm.isMode('view') && !isLeaveType('toil')) {
+            initTimeAndDateInputsWatchers();
+          }
+        })
+        .catch(handleError)
+        .finally(function () {
+          vm.loading.tab = false;
+        });
     }());
 
     /**
@@ -393,8 +393,7 @@ define([
         vm.calendar.isWeekend(date)
       ]).then(function (results) {
         return results[0] ? 'non_working_day' : (results[1] ? 'weekend' : null);
-      })
-      .then(function (nameFilter) {
+      }).then(function (nameFilter) {
         return !nameFilter ? [] : listOfDayTypes.filter(function (day) {
           return day.name === nameFilter;
         });
@@ -520,8 +519,7 @@ define([
               times[type].time = extractTimeFromServerDate(request[type + '_date']);
               times[type].amount = Math.min(request[type + '_date_amount'], times[type].maxAmount).toString();
             });
-        }))
-        .then(setRequestHoursDeductions);
+        })).then(setRequestHoursDeductions);
       }
     }
 
