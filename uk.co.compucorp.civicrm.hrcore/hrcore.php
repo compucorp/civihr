@@ -64,6 +64,23 @@ function hrcore_civicrm_container($container) {
 }
 
 /**
+ * Implements hook_civicrm_buildForm
+ *
+ * @param string $formName
+ * @param object $form
+ */
+function hrcore_civicrm_buildForm($formName, &$form) {
+  $listeners = [
+    new CRM_HRCore_Hook_BuildForm_ActivityFilterSelectFieldsModifier(),
+    new CRM_HRCore_Hook_BuildForm_ActivityLinksFilter(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($formName, $form);
+  }
+}
+
+/**
  * Implements hook_civicrm_xmlMenu().
  *
  * @param array $files
