@@ -27,10 +27,11 @@ define([
     var date2017To = '02/02/2017'; // Must be greater than `date2017`
     var date2017ToInServerFormat = moment(date2017To, 'D/MM/YYYY').format('YYYY-MM-D'); // Must match the date of `date2017To`
 
-    beforeEach(module('common.mocks', 'leave-absences.templates',
-    'leave-absences.mocks', 'manager-leave', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(
+      module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
+        $provide = _$provide_;
+      })
+    );
 
     beforeEach(inject(function (_AbsenceTypeAPIMock_, _WorkPatternAPIMock_, _PublicHolidayAPIMock_, _LeaveRequestAPIMock_, _OptionGroupAPIMock_) {
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
@@ -1830,14 +1831,14 @@ define([
       _.defaults(params, defaultParams);
 
       params.isMode = jasmine.createSpy('isMode')
-      .and.callFake(function (mode) {
-        return mode === params.mode;
-      });
+        .and.callFake(function (mode) {
+          return mode === params.mode;
+        });
 
       params.isRole = jasmine.createSpy('isRole')
-      .and.callFake(function (role) {
-        return role === params.role;
-      });
+        .and.callFake(function (role) {
+          return role === params.role;
+        });
 
       params.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
       params.isLeaveStatus = jasmine.createSpy('isLeaveStatus')
