@@ -66,6 +66,8 @@ define([
     /**
      * Uses the AbsenceType model to populate a list of abesence types
      * sorted by title in an ascending order.
+     *
+     * @return {Promise}
      */
     function loadAbsenceTypes () {
       return AbsenceType.all({ options: { sort: 'title ASC' } })
@@ -78,9 +80,11 @@ define([
     /**
      * Uses the Contact model to populate a list of all contacts
      * sorted by sort_name in an ascending order.
+     *
+     * @return {Promise}
      */
     function loadAllContacts () {
-      return Contact.all({ options: { sort: 'sort_name ASC' } })
+      return Contact.all(null, null, 'sort_name ASC')
         .then(function (contacts) {
           vm.lookupContacts = contacts.list;
         });

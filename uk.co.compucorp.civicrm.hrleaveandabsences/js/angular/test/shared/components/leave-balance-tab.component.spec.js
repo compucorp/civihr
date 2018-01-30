@@ -2,6 +2,7 @@
 
 define([
   'common/lodash',
+  'common/mocks/data/contact.data',
   'mocks/data/absence-period.data',
   'mocks/data/absence-type.data',
   'mocks/data/leave-balance-report.data',
@@ -18,7 +19,7 @@ define([
   'leave-absences/shared/components/leave-balance-tab.component',
   'leave-absences/shared/config',
   'common/services/pub-sub'
-], function (_, absencePeriodMock, absenceTypeMock, reportMockData) {
+], function (_, contactMockData, absencePeriodMock, absenceTypeMock, reportMockData) {
   describe('LeaveBalanceReport.component', function () {
     var $componentController, $provide, $q, $rootScope, $scope, AbsencePeriod,
       AbsenceType, Contact, ctrl, leaveBalanceReport, notificationService, pubSub,
@@ -201,13 +202,11 @@ define([
         });
 
         it('loads the contacts sorted by sort name', function () {
-          expect(Contact.all).toHaveBeenCalledWith({
-            options: { sort: 'sort_name ASC' }
-          });
+          expect(Contact.all).toHaveBeenCalledWith(null, null, 'sort_name ASC');
         });
 
         it('stores the absence periods', function () {
-          expect(ctrl.absencePeriods.length).toEqual(absencePeriodMock.all().values.length);
+          expect(ctrl.lookupContacts.length).toEqual(contactMockData.all.values.length);
         });
       });
 
