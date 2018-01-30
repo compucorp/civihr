@@ -22,18 +22,8 @@
         <crm-loading show="!report.loading.content">
           <div class="chr_leave-report__table">
             <table class="table table-condensed-mixed">
-              <thead>
-                <tr>
-                  <th class="chr_leave-report__table__heading--label"></th>
-                  <th class="chr_leave-report__table__heading--dates">Dates</th>
-                  <th class="chr_leave-report__table__heading--status">Status</th>
-                  <th
-                    class="chr_leave-report__table__heading--type"
-                    ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                    {{absenceType.title}}
-                  </th>
-                  <th class="chr_leave-report__table__heading--action"></th>
-                </tr>
+              <thead ng-include="$root.sharedPathTpl +
+                'components/partials/staff-leave-report-section-header.html'">
               </thead>
               <tbody>
                 <tr>
@@ -69,18 +59,8 @@
                           </tbody>
                         </table>
                         <table class="table table-condensed" ng-switch-when="true">
-                          <thead>
-                            <tr>
-                              <th class="chr_leave-report__table__heading--label"></th>
-                              <th class="chr_leave-report__table__heading--dates">Dates</th>
-                              <th class="chr_leave-report__table__heading--status">Status</th>
-                              <th
-                                class="chr_leave-report__table__heading--type"
-                                ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                                {{absenceType.title}}
-                              </th>
-                              <th class="chr_leave-report__table__heading--action"></th>
-                            </tr>
+                          <thead ng-include="$root.sharedPathTpl +
+                            'components/partials/staff-leave-report-section-header.html'">
                           </thead>
                           <tbody>
                             <tr ng-repeat="entry in report.sections.entitlements.data track by $index">
@@ -137,18 +117,8 @@
                           </tbody>
                         </table>
                         <table class="table table-condensed" ng-switch-when="true">
-                          <thead>
-                            <tr>
-                              <th class="chr_leave-report__table__heading--label"></th>
-                              <th class="chr_leave-report__table__heading--dates">Dates</th>
-                              <th class="chr_leave-report__table__heading--status">Status</th>
-                              <th
-                                class="chr_leave-report__table__heading--type"
-                                ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                                {{absenceType.title}}
-                              </th>
-                              <th class="chr_leave-report__table__heading--action"></th>
-                            </tr>
+                          <thead ng-include="$root.sharedPathTpl +
+                            'components/partials/staff-leave-report-section-header.html'">
                           </thead>
                           <tbody>
                             <tr ng-repeat="request in report.sections.holidays.data track by $index">
@@ -207,48 +177,12 @@
                           </tbody>
                         </table>
                         <table class="table table-condensed" ng-switch-when="true">
-                          <thead>
-                            <tr>
-                              <th class="chr_leave-report__table__heading--label"></th>
-                              <th class="chr_leave-report__table__heading--dates">Dates</th>
-                              <th class="chr_leave-report__table__heading--status">Status</th>
-                              <th
-                                class="chr_leave-report__table__heading--type"
-                                ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                                {{absenceType.title}}
-                              </th>
-                              <th class="chr_leave-report__table__heading--action"></th>
-                            </tr>
+                          <thead ng-include="$root.sharedPathTpl +
+                            'components/partials/staff-leave-report-section-header.html'">
                           </thead>
-                          <tbody>
-                            <tr ng-repeat="request in report.sections.approved.data track by $index">
-                              <td class="chr_leave-report__label">
-                                {{report.absenceTypes[request.type_id].title}}
-                                <span ng-if="request.toil_expiry_date">
-                                  (expires {{request.toil_expiry_date | formatDate}})
-                                </span>
-                              </td>
-                              <td ng-init="unit = report.absenceTypes[request.type_id].calculation_unit_name">
-                                {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
-                                <span ng-if="request.dates.length > 1">
-                                  -
-                                  {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
-                                </span>
-                              </td>
-                              <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
-                              <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
-                                title="({{ absenceType.calculation_unit_label | lowercase }})">
-                                {{ +request.type_id === +absenceType.id ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
-                              </td>
-                              <td>
-                                <leave-request-actions
-                                  leave-request="request"
-                                  role="$root.section === 'my-leave' ? 'staff' : report.role"
-                                  absence-types="report.absenceTypes"
-                                  leave-request-statuses="report.leaveRequestStatuses">
-                                </leave-request-actions>
-                              </td>
-                            </tr>
+                          <tbody
+                            ng-init="requests = report.sections.approved.data"
+                            ng-include="$root.sharedPathTpl + 'components/partials/staff-leave-report-requests-rows.html'">
                           </tbody>
                         </table>
                       </div>
@@ -288,18 +222,8 @@
                           </tbody>
                         </table>
                         <table class="table table-condensed" ng-switch-when="true">
-                          <thead>
-                            <tr>
-                              <th class="chr_leave-report__table__heading--label"></th>
-                              <th class="chr_leave-report__table__heading--dates">Dates</th>
-                              <th class="chr_leave-report__table__heading--status">Status</th>
-                              <th
-                                class="chr_leave-report__table__heading--type"
-                                ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                                {{absenceType.title}}
-                              </th>
-                              <th class="chr_leave-report__table__heading--action"></th>
-                            </tr>
+                          <thead ng-include="$root.sharedPathTpl +
+                            'components/partials/staff-leave-report-section-header.html'">
                           </thead>
                           <tbody>
                             <tr ng-repeat="entry in report.sections.expired.data track by $index">
@@ -377,48 +301,12 @@
                         </tbody>
                       </table>
                       <table class="table table-condensed" ng-switch-when="true">
-                        <thead>
-                          <tr>
-                            <th class="chr_leave-report__table__heading--label"></th>
-                            <th class="chr_leave-report__table__heading--dates">Dates</th>
-                            <th class="chr_leave-report__table__heading--status">Status</th>
-                            <th
-                              class="chr_leave-report__table__heading--type"
-                              ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{absenceType.title}}
-                            </th>
-                            <th class="chr_leave-report__table__heading--action"></th>
-                          </tr>
+                        <thead ng-include="$root.sharedPathTpl +
+                          'components/partials/staff-leave-report-section-header.html'">
                         </thead>
-                        <tbody>
-                          <tr ng-repeat="request in report.sections.pending.data track by $index">
-                            <td class="chr_leave-report__label">
-                              {{report.absenceTypes[request.type_id].title}}
-                              <span ng-if="request.toil_expiry_date">
-                                (expires {{request.toil_expiry_date | formatDate}})
-                              </span>
-                            </td>
-                            <td ng-init="unit = report.absenceTypes[request.type_id].calculation_unit_name">
-                              {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
-                              <span ng-if="request.dates.length > 1">
-                                -
-                                {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
-                              </span>
-                            </td>
-                            <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
-                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
-                              title="({{ absenceType.calculation_unit_label | lowercase }})">
-                              {{ +request.type_id === +absenceType.id ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
-                            </td>
-                            <td>
-                              <leave-request-actions
-                                leave-request="request"
-                                role="$root.section === 'my-leave' ? 'staff' : report.role"
-                                absence-types="report.absenceTypes"
-                                leave-request-statuses="report.leaveRequestStatuses">
-                              </leave-request-actions>
-                            </td>
-                          </tr>
+                        <tbody
+                          ng-init="requests = report.sections.pending.data"
+                          ng-include="$root.sharedPathTpl + 'components/partials/staff-leave-report-requests-rows.html'">
                         </tbody>
                       </table>
                     </div>
@@ -475,48 +363,12 @@
                         </tbody>
                       </table>
                       <table class="table table-condensed" ng-switch-when="true">
-                        <thead>
-                          <tr>
-                            <th class="chr_leave-report__table__heading--label"></th>
-                            <th class="chr_leave-report__table__heading--dates">Dates</th>
-                            <th class="chr_leave-report__table__heading--status">Status</th>
-                            <th
-                              class="chr_leave-report__table__heading--type"
-                              ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
-                              {{absenceType.title}}
-                            </th>
-                            <th class="chr_leave-report__table__heading--action"></th>
-                          </tr>
+                        <thead ng-include="$root.sharedPathTpl +
+                          'components/partials/staff-leave-report-section-header.html'">
                         </thead>
-                        <tbody>
-                          <tr ng-repeat="request in report.sections.other.data track by $index">
-                            <td class="chr_leave-report__label">
-                              {{report.absenceTypes[request.type_id].title}}
-                              <span ng-if="request.toil_expiry_date">
-                                (expires {{request.toil_expiry_date | formatDate}})
-                              </span>
-                            </td>
-                            <td ng-init="unit = report.absenceTypes[request.type_id].calculation_unit_name">
-                              {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
-                              <span ng-if="request.dates.length > 1">
-                                -
-                                {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
-                              </span>
-                            </td>
-                            <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
-                            <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
-                              title="({{ absenceType.calculation_unit_label | lowercase }})">
-                              {{ +request.type_id === +absenceType.id ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
-                            </td>
-                            <td>
-                              <leave-request-actions
-                                leave-request="request"
-                                role="$root.section === 'my-leave' ? 'staff' : report.role"
-                                absence-types="report.absenceTypes"
-                                leave-request-statuses="report.leaveRequestStatuses">
-                              </leave-request-actions>
-                            </td>
-                          </tr>
+                        <tbody
+                          ng-init="requests = report.sections.other.data"
+                          ng-include="$root.sharedPathTpl + 'components/partials/staff-leave-report-requests-rows.html'">
                         </tbody>
                       </table>
                     </div>
