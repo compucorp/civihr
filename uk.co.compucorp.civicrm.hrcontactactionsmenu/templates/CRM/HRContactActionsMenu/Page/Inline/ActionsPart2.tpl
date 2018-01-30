@@ -5,120 +5,104 @@
   <div id="crm-contact-actions-list" class="crm_contact-actions">
     <div id="bootstrap-theme">
       <div class="crm_contact-actions__body">
-        <div class="col-md-4 crm_contact-actions__body__user-info crm_contact-actions__user-info--margin">
+        <div class="col-md-4 crm_contact-actions__primary-panel">
           <div class="col-md-12">
             <h3>User Informations:</h3>
-            <p><span class="crm_contact-actions--bold">User:</span> <a href="#" class="text-primary"> 100 Lauren Ipsum </a></p>
-            <p><span class="crm_contact-actions--bold">Roles:</span> <span class="crm_contact-actions--dark-grey"> civihr_staff, civihr_manager </span></p>
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">
+            <div class="crm_contact-actions__user-info">
+              <dl class="dl-horizontal dl-horizontal-inline">
+                <dt>User:</dt>
+                <dd><a href="#" class="text-primary"> 100 Lauren Ipsum </a></dd>
+                <dt>Roles:</dt>
+                <dd><span class="crm_contact-actions--dark-grey"> civihr_staff, civihr_manager </span></dd>
+              </dl>
+            </div>
+            <div>
+              <a href="#" class="btn btn-primary-outline">
                 <i class="fa fa-envelope-o"></i>Send Welcome Email
-              </button>
+              </a>
             </div>
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">
-                <i class="fa fa-envelope-o"></i>Send Password Reset Email
-              </button>
-            </div>
+            <a href="#" class="btn btn-primary-outline">
+              <i class="fa fa-envelope-o"></i>Send Password Reset Email
+            </a>
             <h3>User Has Access To:</h3>
             <p>
-              <span class="crm_contact-actions--dark-grey">No staff members</span>
-              <span class="fa fa-question-circle crm_contact-actions--primary"></span>
+              <span>No staff members</span>
+              <span class="fa fa-question-circle"></span>
             </p>
-            <button class="btn btn-secondary crm_contact-actions__btn">Manage Regional Access</button>
+            <a href="#" class="btn btn-secondary">Manage Regional Access</a>
           </div>
         </div>
-        <div class="col-md-8 crm_contact-actions__body__user-actions crm_contact-actions--bg-white">
+        <div class="col-md-8 crm_contact-actions__secondary-panel">
           <div class="col-md-4">
             <h3>Leave:</h3>
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">
-                <i class="fa fa-plus"></i> Record New
-              </button>
-            </div>
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">
-                <i class="fa fa-search"></i> View Entitlements
-              </button>
-            </div>
-            <hr class="crm_contact-actions--dark-gray-blue">
-            <p><span class="crm_contact_action--bold">Leave Approver(s):</span> </p>
+            <a href="#" class="btn btn-primary-outline">
+              <i class="fa fa-plus"></i> Record New
+            </a>
+            <a href="#" class="btn btn-primary-outline">
+              <i class="fa fa-search"></i> View Entitlements
+            </a>
+            <hr>
+            <h4>Leave Approver(s):</h4>
             <p><a href="#" class="text-primary">John Snow</a></p>
             <p><a href="#" class="text-primary">Allan Wite</a></p>
-            <button class="btn btn-secondary crm_contact-actions__btn">Manage Leave Approver</button>
+            <a href="#" class="btn btn-secondary">Manage Leave Approver</a>
           </div>
           <div class="col-md-4">
             <h3>Workflows:</h3>
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">
-                <i class="fa fa-user-plus"></i> Joining
-              </button>
-            </div>
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">
-                <i class="fa fa-user-times"></i> Exiting
-              </button>
-            </div>
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">Other...</button>
-            </div>
-            <hr class="crm_contact-actions--dark-gray-blue">
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">
-                <i class="fa fa-check-square-o"></i> New Task
-              </button>
-            </div>
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">
-                <i class="fa fa-id-card-o"></i> New Document
-              </button>
-            </div>
-            <hr class="crm_contact-actions--dark-gray-blue">
-            <p><span class="crm_contact_action--bold">Line Manager(s):</span> </p>
+            <a href="#" class="btn btn-primary-outline">
+              <i class="fa fa-user-plus"></i> Joining
+            </a>
+            <a href="#" class="btn btn-primary-outline">
+              <i class="fa fa-user-times"></i> Exiting
+            </a>
+            <a href="#" class="btn btn-primary-outline">Other.......</a>
+            <hr>
+            <a href="#" class="btn btn-primary-outline">
+              <i class="fa fa-check-square-o"></i> New Task
+            </a>
+            <a href="#" class="btn btn-primary-outline">
+              <i class="fa fa-id-card-o"></i> New Document
+            </a>
+            <hr>
+            <h4>Line Manager(s):</h4>
             <p><a href="#" class="text-primary">John Snow</a></p>
             <p><a href="#" class="text-primary">Allan Wite</a></p>
-            <button class="btn btn-secondary crm_contact-actions__btn">Manage Line Manager</button>
+            <a href="#" class="btn btn-secondary">Manage Line Manager</a>
           </div>
           <div class="col-md-4">
             <h3>Communicate </h3>
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">
-                <i class="fa fa-envelope-o"></i> Send Email
-              </button>
-            </div>
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">
-                <i class="fa fa-users"></i> Record Meeting
-              </button>
-            </div>
-            <div class="crm_contact-actions--bottom-margin">
-              <button class="btn btn-primary-outline crm_contact-actions__btn">
-                <i class="fa fa-file-pdf-o"></i> Create PDF Letter
-              </button>
-            </div>
+            <a href="#" class="btn btn-primary-outline">
+              <i class="fa fa-envelope-o"></i> Send Email
+            </a>
+            <a href="#" class="btn btn-primary-outline">
+              <i class="fa fa-users"></i> Record Meeting
+            </a>
+            <a href="#" class="btn btn-primary-outline">
+              <i class="fa fa-file-pdf-o"></i> Create PDF Letter
+            </a>
           </div>
         </div>
       <div>
       <div class="crm_contact-actions__footer">
-        <div class="col-md-4 crm_contact-actions__footer__user-info">
+        <div class="col-md-4 crm_contact-actions__primary-panel__footer">
           <div class="col-md-12">
-            <hr class="crm_contact-actions--dark-gray-blue">
+            <hr>
           </div>
           <div class="col-md-6">
-            <button class="btn btn-warning crm_contact-actions__btn">Disable User Account</button>
+            <a href="#" class="btn btn-warning">Disable User Account</a>
           </div>
           <div class="col-md-6">
-            <button class="btn btn-danger crm_contact-actions__btn">Delete User Account</button>
+            <a href="#" class="btn btn-danger">Delete User Account</a>
           </div>
         </div>
-        <div class="col-md-8 crm_contact-actions__footer__user-actions crm_contact-actions--bg-white">
+        <div class="col-md-8 crm_contact-actions__secondary-panel__footer">
           <div class="col-md-12">
-            <hr class="crm_contact-actions--dark-gray-blue">
+            <hr>
           </div>
           <div class="col-md-12">
-            <button class="btn btn-danger pull-right">
+            <a href="#" class="btn btn-danger pull-right">
               <span><i class="fa fa-trash"></i></span> Delete Staff Member
-            </button>
+            </a>
           <div>
         </div>
       </div>
