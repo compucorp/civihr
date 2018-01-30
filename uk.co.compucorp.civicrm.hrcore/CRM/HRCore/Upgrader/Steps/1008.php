@@ -63,7 +63,7 @@ trait CRM_HRCore_Upgrader_Steps_1008 {
     }
 
     civicrm_api3('OptionValue', 'create', [
-      'id' => $activityType['label'],
+      'id' => $activityType['id'],
       'label' => $newLabel,
     ]);
   }
