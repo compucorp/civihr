@@ -55,40 +55,6 @@
     </div>
   </div>
 </div>
-<crm-loading show="!detailsTab.uiOptions.times.from.loading"
-  ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours' && !detailsTab.isLeaveType('toil') && detailsTab.request.from_date && detailsTab.uiOptions.times.from.maxAmount > 0 && !__isNotEditable"
-  class="chr_leave-request-modal__small_spinner">
-  <div class="row form-group"
-    ng-switch="detailsTab.uiOptions.times.from.amountExpanded">
-    <div ng-switch-when="false"
-      class="chr_leave-request-modal__small-text chr_leave-request-modal__custom-deduction-toggling-row">
-      <div class="col-sm-8 col-sm-offset-4 col-xs-12">
-        <strong>{{detailsTab.uiOptions.times.from.amount | timeUnitApplier : detailsTab.selectedAbsenceType.calculation_unit_name}}</strong>
-        for {{detailsTab.uiOptions.fromDate | formatDate}} or
-        <a class="pointer"
-          ng-click="detailsTab.uiOptions.times.from.amountExpanded = true">
-          set custom deduction</a>
-      </div>
-    </div>
-    <div ng-switch-when="true">
-      <div class="col-sm-6 chr_leave-request-modal__small-text chr_leave-request-modal__custom-deduction-label">
-        <span>Customise deduction for </span>
-        <strong>{{detailsTab.uiOptions.fromDate | formatDate}}</strong>
-        <br class="hidden-xs"/>
-        <span class="text-muted">(eg. exclude lunch time)</span>
-      </div>
-      <div class="col-sm-6">
-        <a class="btn btn-sm btn-link text-muted pull-right"
-          ng-click="detailsTab.uiOptions.times.from.amountExpanded = false">
-          <i class="fa fa-times"></i>
-        </a>
-        <time-amount-picker
-          time-amount-picker-value="detailsTab.uiOptions.times.from.amount"
-          time-amount-picker-min-amount="0"
-          time-amount-picker-max-amount="detailsTab.uiOptions.times.from.maxAmount"
-          time-amount-picker-interval="15"
-        ></time-amount-picker>
-      </div>
-    </div>
-  </div>
-</crm-loading>
+<ng-include src="$root.sharedPathTpl +
+  'components/leave-request-popup/details-tab/by-unit-and-days-mode' +
+  '/partials/hours-unit-from-deduction.html'"></ng-include>
