@@ -304,9 +304,24 @@ define([
      */
     function enableAndSetDataToTimeInput (type, data) {
       var timeObject = vm.uiOptions.times[type];
+      var timeMin = _.clone(data.time_from);
+      var timeMax = _.clone(data.time_to);
 
-      timeObject.min = data.time_from || '00:00';
-      timeObject.max = data.time_to || '00:00';
+      if (!vm.uiOptions.multipleDays) {
+        if (type === 'from' && timeMax) {
+          timeMax = getMomentDateWithGivenTime(timeMax)
+            .subtract(vm.uiOptions.time_interval, 'minutes')
+            .format('HH:mm');
+        }
+        if (type === 'to' && timeMin) {
+          timeMin = getMomentDateWithGivenTime(timeMin)
+            .add(vm.uiOptions.time_interval, 'minutes')
+            .format('HH:mm');
+        }
+      }
+
+      timeObject.min = timeMin || '00:00';
+      timeObject.max = timeMax || '00:00';
       timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
       timeObject.disabled = false;
     }
@@ -408,6 +423,20 @@ define([
      */
     function getLeaveType () {
       return vm.request ? vm.request.request_type : (vm.leaveType || null);
+    }
+
+    /**
+     * Returns a date with a given time
+     *
+     * @param  {String} time in HH:mm or hh:mm formats
+     * @return {Moment}
+     */
+    function getMomentDateWithGivenTime (time) {
+      return moment()
+        .set({
+          'hours': time.split(':')[0],
+          'minutes': time.split(':')[1]
+        });
     }
 
     /**
@@ -539,6 +568,10 @@ define([
         $scope.$watch('detailsTab.uiOptions.times.' + type + '.time', function (time, oldTime) {
           if (!isCalculationUnit('days') && time !== oldTime) {
             setRequestDateTimesAndDateTypes();
+
+            if (!vm.uiOptions.multipleDays && type === 'from' && time) {
+              updateEndTimeInputMinTime(time);
+            }
           }
         });
       });
@@ -931,6 +964,23 @@ define([
       setOpeningBalance();
 
       return performBalanceChangeCalculation();
+    }
+
+    /**
+     * Updates minimum allowed time for end time input basing on start time
+     * and flushes end time in case it is out of boundaries
+     *
+     * @param {String} time - start time in HH:mm format
+     */
+    function updateEndTimeInputMinTime (time) {
+      var timeToMin = getMomentDateWithGivenTime(time)
+        .add(vm.uiOptions.time_interval, 'minutes');
+
+      vm.uiOptions.times.to.min = timeToMin.format('HH:mm');
+
+      if (timeToMin.isAfter(getMomentDateWithGivenTime(vm.uiOptions.times.to.time))) {
+        vm.uiOptions.times.to.time = '';
+      }
     }
   }
 });

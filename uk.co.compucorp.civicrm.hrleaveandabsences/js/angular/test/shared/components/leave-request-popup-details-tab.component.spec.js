@@ -556,7 +556,12 @@ define([
               });
 
               it('sets maximum timepicker option', function () {
-                expect(timeFromObject.max).toBe(workDayMock.time_to);
+                expect(timeFromObject.max).toBe(
+                  // 15 minutes earlier than the working pattern end time
+                  getMomentDateWithGivenTime(workDayMock.time_to)
+                    .subtract(15, 'minutes')
+                    .format('HH:mm')
+                );
               });
 
               it('pre-sets default timepicker option same as *minimum*', function () {
@@ -587,17 +592,23 @@ define([
 
                 it('allows to select end time ("to" time)', function () {
                   expect(timeToObject.loading).toBeFalsy();
-                  expect(timeToObject.min).toBe(workDayMock.time_from);
+                  expect(timeToObject.min).toBe(
+                    // 15 minutes later than the working pattern start time
+                    getMomentDateWithGivenTime(workDayMock.time_from)
+                      .add(15, 'minutes')
+                      .format('HH:mm')
+                  );
                   expect(timeToObject.max).toBe(workDayMock.time_to);
-                  expect(timeToObject.time).toBe(timeFromObject.max);
+                  expect(timeToObject.time).toBe(timeToObject.max);
                   expect(timeToObject.disabled).toBeFalsy();
                 });
               });
 
-              describe('after to date is selected', function () {
+              describe('after mode change to multiple days and to date is selected', function () {
                 var timeToObject;
 
                 beforeEach(function () {
+                  controller.uiOptions.multipleDays = true;
                   timeToObject = controller.uiOptions.times.to;
 
                   setTestDates(date2016, date2017);
@@ -617,6 +628,10 @@ define([
 
                 it('pre-sets default timepicker option same as *maximum*', function () {
                   expect(timeToObject.time).toBe(timeToObject.max);
+                });
+
+                it('allows user to select "to" time', function () {
+                  expect(timeToObject.disabled).toBeFalsy();
                 });
 
                 it('sets the maximum deduction amount', function () {
@@ -1729,6 +1744,30 @@ define([
             expect(moment(controller.request.to_date).format('HH:mm')).toBe(toTime);
           });
         });
+
+        describe('when it is a single day request and date is set', function () {
+          beforeEach(function () {
+            controller.uiOptions.multipleDays = false;
+
+            setTestDates(date2017);
+          });
+
+          describe('when start time is set and it is greater than or equal to end time', function () {
+            beforeEach(function () {
+              controller.uiOptions.times.to.time = '19:00';
+
+              $rootScope.$digest();
+
+              controller.uiOptions.times.from.time = '19:00';
+
+              $rootScope.$digest();
+            });
+
+            it('flushes the end time', function () {
+              expect(controller.uiOptions.times.to.time).toBe('');
+            });
+          });
+        });
       });
 
       describe('when the calculation unit is "days"', function () {
@@ -1905,6 +1944,20 @@ define([
       $rootScope.$digest();
 
       return params;
+    }
+
+    /**
+     * Returns a date with a given time
+     *
+     * @param  {String} time in HH:mm or hh:mm formats
+     * @return {Moment}
+     */
+    function getMomentDateWithGivenTime (time) {
+      return moment()
+        .set({
+          'hours': time.split(':')[0],
+          'minutes': time.split(':')[1]
+        });
     }
 
     /**
