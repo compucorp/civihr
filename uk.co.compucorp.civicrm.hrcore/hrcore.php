@@ -37,6 +37,24 @@ function hrcore_civicrm_searchTasks($objectName, &$tasks) {
   }
 }
 
+/**
+ * Implements hook_civicrm_tabset().
+ *
+ * @param string $tabsetName
+ * @param array $tabs
+ * @param array $context
+ */
+function hrcore_civicrm_tabset($tabsetName, &$tabs, $context) {
+  $listeners = [
+    new CRM_HRCore_Hook_Tabset_ActivityTabModifier(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($tabsetName, $tabs, $context);
+  }
+}
+
+
 function hrcore_civicrm_summaryActions( &$actions, $contactID ) {
   $otherActions = CRM_Utils_Array::value('otherActions', $actions, []);
   $userAdd = CRM_Utils_Array::value('user-add', $otherActions, []);
