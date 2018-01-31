@@ -11,6 +11,18 @@
       "url": "my-leave#/my-leave/report",
       "onReadyScript": "ssp-leave-absences/staff/my-report-show-absence-in-hours",
       "credential": "staff"
+    },
+    {
+      "label": "Leave and Absences: My report: Leave Request Modal: Create: Show deductions fields",
+      "url": "my-leave#/my-leave/report",
+      "onReadyScript": "ssp-leave-absences/staff/my-report-leave-request-modal-show-deduction-fields",
+      "credential": "staff"
+    },
+    {
+      "label": "Leave and Absences: My report: Leave Request Modal: Create: Show deductions fields expanded",
+      "url": "my-leave#/my-leave/report",
+      "onReadyScript": "ssp-leave-absences/staff/my-report-leave-request-modal-show-deduction-fields-expanded",
+      "credential": "staff"
     }
   ]
 }

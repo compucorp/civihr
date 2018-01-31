@@ -93,22 +93,22 @@ define([
       },
       times: {
         from: {
-          time: '',
-          min: '00:00',
-          max: '00:00',
           amount: 0,
-          maxAmount: 0,
+          amountExpanded: false,
           loading: false,
-          amountExpanded: false
+          max: '00:00',
+          maxAmount: 0,
+          min: '00:00',
+          time: ''
         },
         to: {
-          time: '',
-          min: '00:00',
-          max: '00:00',
           amount: 0,
-          maxAmount: 0,
+          amountExpanded: false,
           loading: false,
-          amountExpanded: false
+          max: '00:00',
+          maxAmount: 0,
+          min: '00:00',
+          time: ''
         }
       }
     };
