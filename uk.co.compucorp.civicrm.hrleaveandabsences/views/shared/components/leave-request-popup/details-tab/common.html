@@ -102,10 +102,10 @@
       class="chr_leave-request-modal__small-text chr_leave-request-modal__custom-deduction-toggling-row">
       <div class="col-sm-8 col-sm-offset-4 col-xs-12">
         <strong>{{detailsTab.uiOptions.times.from.amount | timeUnitApplier : detailsTab.selectedAbsenceType.calculation_unit_name}}</strong>
-        for {{detailsTab.uiOptions.fromDate | formatDate}}
+        for {{detailsTab.uiOptions.fromDate | formatDate}} or
         <a class="pointer"
           ng-click="detailsTab.uiOptions.times.from.amountExpanded = true">
-          or set custom deduction</a>
+          set custom deduction</a>
       </div>
     </div>
     <div ng-switch-when="true">
@@ -113,7 +113,7 @@
         <span>Customise deduction for </span>
         <strong>{{detailsTab.uiOptions.fromDate | formatDate}}</strong>
         <br class="hidden-xs"/>
-        <span class="text-muted">(ex. exclude lunch time)</span>
+        <span class="text-muted">(eg. exclude lunch time)</span>
       </div>
       <div class="col-sm-6">
         <a class="btn btn-sm btn-link text-muted pull-right"
@@ -211,10 +211,10 @@
         class="chr_leave-request-modal__small-text chr_leave-request-modal__custom-deduction-toggling-row">
         <div class="col-sm-8 col-sm-offset-4 col-xs-12">
           <strong>{{detailsTab.uiOptions.times.to.amount | timeUnitApplier : detailsTab.selectedAbsenceType.calculation_unit_name}}</strong>
-          for {{detailsTab.uiOptions.toDate | formatDate}}
+          for {{detailsTab.uiOptions.toDate | formatDate}} or
           <a class="pointer"
             ng-click="detailsTab.uiOptions.times.to.amountExpanded = true">
-            or set custom deduction</a>
+            set custom deduction</a>
         </div>
       </div>
       <div ng-switch-when="true">
@@ -222,7 +222,7 @@
           <span>Customise deduction for </span>
           <strong>{{detailsTab.uiOptions.toDate | formatDate}}</strong>
           <br class="hidden-xs"/>
-          <span class="text-muted">(ex. subtract break time)</span>
+          <span class="text-muted">(eg. subtract break time)</span>
         </div>
         <div class="col-sm-6">
           <a class="btn btn-sm btn-link text-muted pull-right"
