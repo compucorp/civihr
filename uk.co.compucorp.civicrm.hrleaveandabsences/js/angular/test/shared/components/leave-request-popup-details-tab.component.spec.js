@@ -1621,11 +1621,11 @@ define([
             $rootScope.$digest();
           });
 
-          it('doesn\'t calculate the expiry date field', function () {
+          it('does not calculate the expiry date field', function () {
             expect(AbsenceType.calculateToilExpiryDate).not.toHaveBeenCalled();
           });
 
-          it('doesn\'t update the expiry date', function () {
+          it('doesn not update the expiry date', function () {
             expect(controller.request.toil_expiry_date).toBeFalsy();
           });
         });
@@ -1633,13 +1633,14 @@ define([
         describe('when the request had a previous expiry date', function () {
           beforeEach(function () {
             controller.request.toil_expiry_date = date2017To;
+
             compileComponent({
               leaveType: 'toil',
               request: controller.request
             });
           });
 
-          it('doesn\'t remove the expiry date', function () {
+          it('doesn not remove the expiry date', function () {
             expect(controller.request.toil_expiry_date).not.toBeFalsy();
           });
         });
