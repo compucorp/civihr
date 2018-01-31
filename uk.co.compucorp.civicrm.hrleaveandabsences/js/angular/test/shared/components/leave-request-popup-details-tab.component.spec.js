@@ -614,6 +614,10 @@ define([
                   setTestDates(date2016, date2017);
                 });
 
+                it('reverts maximum time range for "from" time', function () {
+                  expect(timeFromObject.max).toBe(workDayMock.time_to);
+                });
+
                 it('turns loading indicator off', function () {
                   expect(timeToObject.loading).toBeFalsy();
                 });
@@ -763,6 +767,49 @@ define([
 
             it('does not recalculate the balance', function () {
               expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
+            });
+
+            describe('and is a single day request', function () {
+              var workDayMock;
+
+              beforeEach(function () {
+                var status = optionGroupMock.specificValue(
+                  'hrleaveandabsences_leave_request_status', 'value', '3');
+
+                workDayMock = leaveRequestData.workDayForDate().values;
+                leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
+                selectedAbsenceType.calculation_unit_name = 'hours';
+                leaveRequest.contact_id = '' + CRM.vars.leaveAndAbsences.contactId;
+                leaveRequest.type_id = selectedAbsenceType.id;
+                leaveRequest.from_date = date2016InServerFormat + ' ' +
+                  getMomentDateWithGivenTime(workDayMock.time_from)
+                    .add(30, 'minutes')
+                    .format('HH:mm');
+                leaveRequest.to_date = date2016InServerFormat + ' ' + workDayMock.time_to;
+
+                compileComponent({
+                  mode: 'edit',
+                  request: leaveRequest
+                });
+                $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+                $rootScope.$digest();
+              });
+
+              it('sets maximum "from" time boundary', function () {
+                expect(controller.uiOptions.times.from.max).toBe(
+                  getMomentDateWithGivenTime(workDayMock.time_to)
+                    .subtract(15, 'minutes')
+                    .format('HH:mm')
+                );
+              });
+
+              it('sets minimum "to" time boundary', function () {
+                expect(controller.uiOptions.times.to.min).toBe(
+                  getMomentDateWithGivenTime(workDayMock.time_from)
+                    .add(45, 'minutes')
+                    .format('HH:mm')
+                );
+              });
             });
 
             describe('when received the balance change recalculation event', function () {
@@ -1754,6 +1801,7 @@ define([
 
           describe('when start time is set and it is greater than or equal to end time', function () {
             beforeEach(function () {
+              controller.uiOptions.times.to.max = '20:00';
               controller.uiOptions.times.to.time = '19:00';
 
               $rootScope.$digest();

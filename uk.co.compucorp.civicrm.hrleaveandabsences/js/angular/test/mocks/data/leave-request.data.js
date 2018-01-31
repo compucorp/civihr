@@ -496,11 +496,11 @@ define([
         version: 3,
         count: 3,
         values: {
-          time_from: timeFrom.format('hh:mm'),
+          time_from: timeFrom.format('HH:mm'),
           time_to: timeFrom
-            .add(Math.ceil(Math.random() * 9), 'hours')
+            .add(4 + Math.ceil(Math.random() * 5), 'hours')
             .add(Math.ceil(Math.random() * 39), 'minutes')
-            .format('hh:mm'),
+            .format('HH:mm'),
           number_of_hours: '' + (Math.ceil(Math.random() * 24 / 0.25) * 0.25)
         }
       };
