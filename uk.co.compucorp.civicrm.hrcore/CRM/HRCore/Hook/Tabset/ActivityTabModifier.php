@@ -15,8 +15,8 @@ class  CRM_HRCore_Hook_Tabset_ActivityTabModifier {
       return;
     }
 
-    foreach($tabs as $key => $tab) {
-      if($tab['id'] == 'activity') {
+    foreach ($tabs as $key => $tab) {
+      if ($tab['id'] === 'activity') {
         $tabs[$key]['title'] = 'Communications';
       }
     }
@@ -30,7 +30,7 @@ class  CRM_HRCore_Hook_Tabset_ActivityTabModifier {
    * @return bool
    */
   private function shouldHandle($tabsetName) {
-    if ($tabsetName == 'civicrm/contact/view') {
+    if ($tabsetName === 'civicrm/contact/view') {
       return TRUE;
     }
 
