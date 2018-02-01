@@ -5,35 +5,31 @@
   <div id="crm-contact-actions-list" class="crm_contact-actions">
     <div id="bootstrap-theme">
       <div class="crm_contact-actions__body">
-        <div class="col-md-4 crm_contact-actions__primary-panel">
-          <div class="col-md-12">
-            <h3>User Informations:</h3>
-            <div class="crm_contact-actions__user-info">
-              <dl class="dl-horizontal dl-horizontal-inline">
-                <dt>User:</dt>
-                <dd><a href="#" class="text-primary"> 100 Lauren Ipsum </a></dd>
-                <dt>Roles:</dt>
-                <dd><span class="crm_contact-actions--dark-grey"> civihr_staff, civihr_manager </span></dd>
-              </dl>
-            </div>
-            <div>
-              <a href="#" class="btn btn-primary-outline">
-                <i class="fa fa-envelope-o"></i>Send Welcome Email
-              </a>
-            </div>
-            <a href="#" class="btn btn-primary-outline">
-              <i class="fa fa-envelope-o"></i>Send Password Reset Email
-            </a>
-            <h3>User Has Access To:</h3>
-            <p>
-              <span>No staff members</span>
-              <span class="fa fa-question-circle"></span>
-            </p>
-            <a href="#" class="btn btn-secondary">Manage Regional Access</a>
+        <div class="crm_contact-actions__primary-panel">
+          <h3>User Informations:</h3>
+          <div class="crm_contact-actions__user-info">
+            <dl class="dl-horizontal dl-horizontal-inline">
+              <dt>User:</dt>
+              <dd><a href="#" class="text-primary"> 100 Lauren Ipsum </a></dd>
+              <dt>Roles:</dt>
+              <dd><span class="crm_contact-actions--dark-grey"> civihr_staff, civihr_manager </span></dd>
+            </dl>
           </div>
+          <a href="#" class="btn btn-primary-outline">
+            <i class="fa fa-envelope-o"></i>Send Welcome Email
+          </a>
+          <a href="#" class="btn btn-primary-outline">
+            <i class="fa fa-envelope-o"></i>Send Password Reset Email
+          </a>
+          <h3>User Has Access To:</h3>
+          <p>
+            <span>No staff members</span>
+            <span class="fa fa-question-circle"></span>
+          </p>
+          <a href="#" class="btn btn-secondary">Manage Regional Access</a>
         </div>
-        <div class="col-md-8 crm_contact-actions__secondary-panel">
-          <div class="col-md-4">
+        <div class="crm_contact-actions__secondary-panel">
+          <div class="crm_contact-actions__secondary-panel__column">
             <h3>Leave:</h3>
             <a href="#" class="btn btn-primary-outline">
               <i class="fa fa-plus"></i> Record New
@@ -47,7 +43,7 @@
             <p><a href="#" class="text-primary">Allan Wite</a></p>
             <a href="#" class="btn btn-secondary">Manage Leave Approver</a>
           </div>
-          <div class="col-md-4">
+          <div class="crm_contact-actions__secondary-panel__column">
             <h3>Workflows:</h3>
             <a href="#" class="btn btn-primary-outline">
               <i class="fa fa-user-plus"></i> Joining
@@ -69,7 +65,7 @@
             <p><a href="#" class="text-primary">Allan Wite</a></p>
             <a href="#" class="btn btn-secondary">Manage Line Manager</a>
           </div>
-          <div class="col-md-4">
+          <div class="crm_contact-actions__secondary-panel__column">
             <h3>Communicate </h3>
             <a href="#" class="btn btn-primary-outline">
               <i class="fa fa-envelope-o"></i> Send Email
@@ -82,28 +78,32 @@
             </a>
           </div>
         </div>
-      <div>
+      </div>
       <div class="crm_contact-actions__footer">
-        <div class="col-md-4 crm_contact-actions__primary-panel__footer">
-          <div class="col-md-12">
-            <hr>
-          </div>
-          <div class="col-md-6">
-            <a href="#" class="btn btn-warning">Disable User Account</a>
-          </div>
-          <div class="col-md-6">
-            <a href="#" class="btn btn-danger">Delete User Account</a>
+        <div class="crm_contact-actions__primary-panel__footer pull-left">
+          <div class="row">
+            <div class="col-md-12">
+              <hr>
+            </div>
+            <div class="col-md-6">
+              <a href="#" class="btn btn-warning">Disable User Account</a>
+            </div>
+            <div class="col-md-6">
+              <a href="#" class="btn btn-danger">Delete User Account</a>
+            </div>
           </div>
         </div>
-        <div class="col-md-8 crm_contact-actions__secondary-panel__footer">
-          <div class="col-md-12">
-            <hr>
+        <div class="crm_contact-actions__secondary-panel__footer">
+          <div class="crm_contact-actions__secondary-panel__footer__column">
+            <div class="col-md-12">
+              <hr>
+            </div>
+            <div class="col-md-12">
+              <a href="#" class="btn btn-danger pull-right">
+                <span><i class="fa fa-trash"></i></span> Delete Staff Member
+              </a>
+            <div>
           </div>
-          <div class="col-md-12">
-            <a href="#" class="btn btn-danger pull-right">
-              <span><i class="fa fa-trash"></i></span> Delete Staff Member
-            </a>
-          <div>
         </div>
       </div>
     </div>
