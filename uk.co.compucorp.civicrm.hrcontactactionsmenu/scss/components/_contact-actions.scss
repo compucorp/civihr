@@ -1,25 +1,53 @@
 .crm_contact-actions {
   background: $gray-light;
-  width: 1065px !important;
-
+  
   &::before {
     background: $gray-light !important;
     border-bottom: none !important;
     height: 20px !important;
-    left: 0 !important;  
+    left: 0 !important;
     top: -15px !important;
     width: 93px !important;
   }
 
+  @at-root #{&}__body {
+    display: flex;
+  }
+  
+  @at-root #{&}__primary-panel {
+    padding: 15px;
+    width: 345px;
+  } 
+
   @at-root #{&}__secondary-panel {
     background: $crm-white;
-    min-height: 205px !important;
+    display: flex;
+    padding: 15px;
+    min-width: 250px;
+
+    @at-root #{&}__column {
+      width: 220px;
+      margin-right: 15px;
+    }
+
+    @at-root #{&}__column:last-child {
+      margin-right: 0;
+    }
+  }
+
+  @at-root #{&}__primary-panel__footer {
+    padding: 0 15px;
+    width: 345px;
   }
 
   @at-root #{&}__secondary-panel__footer {
     background: $crm-white;
-    padding-bottom: 7px;
-    padding-top: 20px;
+    display: flex;
+    padding: 20px 15px 5px;
+
+    @at-root #{&}__column {
+      flex-grow: 1;
+    }
   }
 
   @at-root #{&}__user-info {
