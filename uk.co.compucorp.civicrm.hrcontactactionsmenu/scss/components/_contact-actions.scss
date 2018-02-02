@@ -10,9 +10,9 @@
     width: 93px !important;
   }
 
-  &__group {
-    .btn:not(:last-child) {
-      margin-bottom: 10px !important;
+  &__action {
+    &:not(:last-child) {
+      margin-bottom: 10px;
     }
   }
 
