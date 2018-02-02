@@ -11,6 +11,7 @@ define([
   function RequestModalDetailsToilController ($log, $q, $rootScope, OptionGroup, AbsenceType, detailsController) {
     $log.debug('RequestModalDetailsToilController');
 
+    detailsController.canDisplayToilExpirationField = false;
     detailsController.canExpireAccordingTo = {
       previousExpirationDateValue: null,
       adminSettings: null
@@ -156,6 +157,19 @@ define([
       }
     }
 
+    function initCanDisplayToilExpirationField () {
+      var isToilRequest = detailsController.isLeaveType('toil');
+      var userCanManageRequest = detailsController.canManage;
+      var isNewRequestAndRequestsCanExpire = detailsController.isMode('create') && detailsController.canExpireAccordingTo.adminSettings;
+      var isOldRequestAndHasExpiryDateDefined = detailsController.canExpireAccordingTo.previousExpirationDateValue;
+
+      detailsController.canDisplayToilExpirationField = isToilRequest && (
+        userCanManageRequest ||
+        isNewRequestAndRequestsCanExpire ||
+        isOldRequestAndHasExpiryDateDefined
+      );
+    }
+
     /**
      * Initialises the canExpireAccordingTo's properties using the following rules:
      * - previousExpirationDateValue: set to true if the request is in edit mode
@@ -184,6 +198,7 @@ define([
       detailsController.request.to_date_type = detailsController.request.from_date_type = '1';
 
       return initCanExpireAccordingTo()
+        .then(initCanDisplayToilExpirationField)
         .then(initExpiryDate)
         .then(loadToilAmounts);
     }
