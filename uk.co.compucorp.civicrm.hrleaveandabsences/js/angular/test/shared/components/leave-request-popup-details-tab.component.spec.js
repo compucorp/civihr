@@ -1592,7 +1592,7 @@ define([
         });
       });
 
-      describe('when TOIL Request does not expire', function () {
+      describe('when TOIL Requests do not expire', function () {
         var toilRequest;
 
         beforeEach(function () {
@@ -1610,8 +1610,8 @@ define([
           $rootScope.$digest();
         });
 
-        it('should set requestCanExpire to false', function () {
-          expect(controller.requestCanExpire).toBe(false);
+        it('sets can expire according to admin settings equal to false', function () {
+          expect(controller.canExpireAccordingTo.adminSettings).toBe(false);
         });
 
         describe('when request date changes', function () {
@@ -1635,6 +1635,7 @@ define([
             controller.request.toil_expiry_date = date2017To;
 
             compileComponent({
+              mode: 'edit',
               leaveType: 'toil',
               request: controller.request
             });
@@ -1643,6 +1644,47 @@ define([
           it('doesn not remove the expiry date', function () {
             expect(controller.request.toil_expiry_date).not.toBeFalsy();
           });
+
+          it('sets can expire according to previous expiry date value equal to true', function () {
+            expect(controller.canExpireAccordingTo.previousExpirationDateValue).toBe(true);
+          });
+        });
+      });
+    });
+
+    describe('when TOIL requests expire', function () {
+      var toilRequest;
+
+      beforeEach(function () {
+        toilRequest = TOILRequestInstance.init(
+          leaveRequestData.findBy('request_type', 'toil'));
+
+        AbsenceType.canExpire.and.returnValue($q.resolve(true));
+        compileComponent({
+          mode: 'edit',
+          leaveType: 'toil',
+          request: toilRequest
+        });
+        $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+        $rootScope.$digest();
+      });
+
+      it('sets can expire according to admin settings equal to true', function () {
+        expect(controller.canExpireAccordingTo.adminSettings).toBe(true);
+      });
+
+      describe('when the request did not have a previous expiry date', function () {
+        beforeEach(function () {
+          delete toilRequest.toil_expiry_date;
+
+          compileComponent({
+            leaveType: 'toil',
+            request: controller.request
+          });
+        });
+
+        it('sets can expire according to previous expiry date value equal to false', function () {
+          expect(controller.canExpireAccordingTo.previousExpirationDateValue).toBe(false);
         });
       });
     });

@@ -11,7 +11,10 @@ define([
   function RequestModalDetailsToilController ($log, $q, $rootScope, OptionGroup, AbsenceType, detailsController) {
     $log.debug('RequestModalDetailsToilController');
 
-    detailsController.requestCanExpire = true;
+    detailsController.canExpireAccordingTo = {
+      previousExpirationDateValue: null,
+      adminSettings: null
+    };
 
     detailsController.calculateBalanceChange = calculateBalanceChange;
     detailsController.canCalculateChange = canCalculateChange;
@@ -46,7 +49,7 @@ define([
     function calculateToilExpiryDate () {
       // skips calculation of expiration date if request never expires
       // according to admin setting
-      if (!detailsController.requestCanExpire) {
+      if (!detailsController.canExpireAccordingTo.adminSettings) {
         return $q.resolve(false);
       }
 
@@ -154,6 +157,25 @@ define([
     }
 
     /**
+     * Initialises the canExpireAccordingTo's properties using the following rules:
+     * - previousExpirationDateValue: set to true if the request is in edit mode
+     * and the expiration date was previously set.
+     * - adminSettings: set to true if TOIL requests are set to never expire in
+     * the admin settings.
+     *
+     * @return {Promise}
+     */
+    function initCanExpireAccordingTo () {
+      detailsController.canExpireAccordingTo.previousExpirationDateValue = detailsController.isMode('edit') &&
+        !!detailsController.request.toil_expiry_date;
+
+      return AbsenceType.canExpire(detailsController.request.type_id)
+        .then(function (canExpire) {
+          detailsController.canExpireAccordingTo.adminSettings = canExpire;
+        });
+    }
+
+    /**
      * Initialize the controller
      *
      * @return {Promise}
@@ -161,7 +183,7 @@ define([
     function initChildController () {
       detailsController.request.to_date_type = detailsController.request.from_date_type = '1';
 
-      return initRequestCanExpire()
+      return initCanExpireAccordingTo()
         .then(initExpiryDate)
         .then(loadToilAmounts);
     }
@@ -193,18 +215,6 @@ define([
             detailsController.performBalanceChangeCalculation();
           }
         });
-    }
-
-    /**
-     * Initialize requestCanExpire according to admin setting
-     * and request type.
-     * @return {Promise}
-     */
-    function initRequestCanExpire () {
-      return AbsenceType.canExpire(detailsController.request.type_id)
-      .then(function (canExpire) {
-        detailsController.requestCanExpire = canExpire;
-      });
     }
 
     /**
