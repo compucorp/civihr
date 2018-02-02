@@ -11,11 +11,12 @@ define([
   function RequestModalDetailsToilController ($log, $q, $rootScope, OptionGroup, AbsenceType, detailsController) {
     $log.debug('RequestModalDetailsToilController');
 
-    detailsController.canDisplayToilExpirationField = false;
-    detailsController.canExpireAccordingTo = {
+    var canExpireAccordingTo = {
       previousExpirationDateValue: null,
       adminSettings: null
     };
+
+    detailsController.canDisplayToilExpirationField = false;
 
     detailsController.calculateBalanceChange = calculateBalanceChange;
     detailsController.canCalculateChange = canCalculateChange;
@@ -50,7 +51,7 @@ define([
     function calculateToilExpiryDate () {
       // skips calculation of expiration date if request never expires
       // according to admin setting
-      if (!detailsController.canExpireAccordingTo.adminSettings) {
+      if (!canExpireAccordingTo.adminSettings) {
         return $q.resolve(false);
       }
 
@@ -160,8 +161,9 @@ define([
     function initCanDisplayToilExpirationField () {
       var isToilRequest = detailsController.isLeaveType('toil');
       var userCanManageRequest = detailsController.canManage;
-      var isNewRequestAndRequestsCanExpire = detailsController.isMode('create') && detailsController.canExpireAccordingTo.adminSettings;
-      var isOldRequestAndHasExpiryDateDefined = detailsController.canExpireAccordingTo.previousExpirationDateValue;
+      var isNewRequestAndRequestsCanExpire = detailsController.isMode('create') &&
+        canExpireAccordingTo.adminSettings;
+      var isOldRequestAndHasExpiryDateDefined = canExpireAccordingTo.previousExpirationDateValue;
 
       detailsController.canDisplayToilExpirationField = isToilRequest && (
         userCanManageRequest ||
@@ -180,12 +182,12 @@ define([
      * @return {Promise}
      */
     function initCanExpireAccordingTo () {
-      detailsController.canExpireAccordingTo.previousExpirationDateValue = detailsController.isMode('edit') &&
+      canExpireAccordingTo.previousExpirationDateValue = detailsController.isMode('edit') &&
         !!detailsController.request.toil_expiry_date;
 
       return AbsenceType.canExpire(detailsController.request.type_id)
         .then(function (canExpire) {
-          detailsController.canExpireAccordingTo.adminSettings = canExpire;
+          canExpireAccordingTo.adminSettings = canExpire;
         });
     }
 
