@@ -93,22 +93,22 @@ define([
       },
       times: {
         from: {
-          time: '',
-          min: '00:00',
-          max: '00:00',
           amount: 0,
+          amountExpanded: false,
+          loading: false,
+          max: '00:00',
           maxAmount: 0,
-          disabled: true,
-          loading: false
+          min: '00:00',
+          time: ''
         },
         to: {
-          time: '',
-          min: '00:00',
-          max: '00:00',
           amount: 0,
+          amountExpanded: false,
+          loading: false,
+          max: '00:00',
           maxAmount: 0,
-          disabled: true,
-          loading: false
+          min: '00:00',
+          time: ''
         }
       }
     };
@@ -213,7 +213,6 @@ define([
 
           vm.uiOptions.times[dateType].loading = true;
           vm.loading[dateType + 'DayTypes'] = true;
-          vm.uiOptions.times[dateType].disabled = true;
         })
         .then(vm.onDateChangeExtended)
         .then(function () {
@@ -591,7 +590,6 @@ define([
       }
 
       timeObject.loading = true;
-      timeObject.disabled = true;
 
       return vm.request.getWorkDayForDate(convertDateToServerFormat(date))
         .then(function (response) {
@@ -600,7 +598,6 @@ define([
           timeObject.maxAmount = response.number_of_hours.toString() || '0';
           timeObject.time = (type === 'to' ? timeObject.max : timeObject.min);
           timeObject.amount = timeObject.maxAmount;
-          timeObject.disabled = false;
         })
         .catch(handleError)
         .finally(function () {
@@ -702,7 +699,6 @@ define([
       time.amount = '0';
       time.maxAmount = '0';
       time.loading = false;
-      time.disabled = false;
 
       setRequestDateTimesAndDateTypes();
       setRequestHoursDeductions();
