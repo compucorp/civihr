@@ -102,7 +102,7 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
     $buttonMarkup = '
       <div class="crm_contact-actions__action">
         <a href="%s" class="btn %s">
-          <span><i class="fa %s"></i></span> %s
+          <i class="fa %s"></i> %s
         </a>
       </div>';
 
