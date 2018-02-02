@@ -159,11 +159,11 @@ define([
     }
 
     function initCanDisplayToilExpirationField () {
-      var isToilRequest = detailsController.isLeaveType('toil');
-      var userCanManageRequest = detailsController.canManage;
       var isNewRequestAndRequestsCanExpire = detailsController.isMode('create') &&
         canExpireAccordingTo.adminSettings;
       var isOldRequestAndHasExpiryDateDefined = canExpireAccordingTo.previousExpirationDateValue;
+      var isToilRequest = detailsController.isLeaveType('toil');
+      var userCanManageRequest = detailsController.canManage;
 
       detailsController.canDisplayToilExpirationField = isToilRequest && (
         userCanManageRequest ||
