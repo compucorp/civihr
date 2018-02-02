@@ -1,14 +1,20 @@
-<div class="time-amount-picker crm_custom-select">
-  <select class="no-select2" ng-model="picker.selectedHours"
-    ng-disabled="picker.disabled"
-    ng-change="picker.buildMinutesOptions(); picker.calculateSelectedValue();">
-    <option value="{{ hour }}" ng-repeat="hour in picker.hoursOptions">{{ hour }}</option>
-  <select>
+<div class="time-amount-picker">
+  <div class="crm_custom-select">
+    <select class="no-select2" ng-model="picker.selectedHours"
+      ng-disabled="picker.disabled"
+      ng-change="picker.buildMinutesOptions(); picker.calculateSelectedValue();">
+      <option value="{{ hour }}" ng-repeat="hour in picker.hoursOptions">{{ hour }}</option>
+    <select>
+    <span class="crm_custom-select__arrow"></span>
+  </div>
   h
-  <select class="no-select2" ng-model="picker.selectedMinutes"
-    ng-disabled="picker.disabled"
-    ng-change="picker.calculateSelectedValue();">
-    <option value="{{ minute }}" ng-repeat="minute in picker.minutesOptions">{{ minute }}</option>
-  <select>
+  <div class="crm_custom-select">
+    <select class="no-select2" ng-model="picker.selectedMinutes"
+      ng-disabled="picker.disabled"
+      ng-change="picker.calculateSelectedValue();">
+      <option value="{{ minute }}" ng-repeat="minute in picker.minutesOptions">{{ minute }}</option>
+    <select>
+    <span class="crm_custom-select__arrow"></span>
+  </div>
   m
 </div>
