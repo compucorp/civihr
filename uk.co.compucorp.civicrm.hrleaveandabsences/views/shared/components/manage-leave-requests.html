@@ -192,7 +192,7 @@
                       </span>
                       <span ng-if="request.dates.length === 1 && unit === 'hours' && request_type !== 'toil'">
                         -
-                        {{request.to_date.split(' ')[1] | limitTo : 5}}
+                        {{request.to_date.slice(11, 16)}}
                       </span>
                     </td>
                     <td>{{vm.getLeaveStatusByValue(request.status_id)}}</td>

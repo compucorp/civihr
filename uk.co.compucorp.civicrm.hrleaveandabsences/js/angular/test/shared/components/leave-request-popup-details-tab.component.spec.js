@@ -95,8 +95,6 @@ define([
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
-
-          controller.request.type_id = selectedAbsenceType.id;
         });
 
         it('is initialized', function () {
@@ -514,8 +512,6 @@ define([
 
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
-
-              controller.request.type_id = selectedAbsenceType.id;
             });
 
             afterEach(function () {
@@ -661,7 +657,7 @@ define([
                     setTestDates(date2016);
                   });
 
-                  describe('when start time (time "from") and end time (time "to") are set', function () {
+                  describe('when "time from" and "time to" are set', function () {
                     var timeTo = '14:35';
 
                     beforeEach(function () {
@@ -671,7 +667,7 @@ define([
                       $rootScope.$digest();
                     });
 
-                    it('sets end time to request "to" date', function () {
+                    it('updates the "time to" value in the request "to date"', function () {
                       expect(controller.request.to_date.split(' ')[1]).toBe(timeTo);
                     });
                   });
@@ -741,8 +737,6 @@ define([
 
               leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
               selectedAbsenceType.calculation_unit_name = 'hours';
-              leaveRequest.contact_id = '' + CRM.vars.leaveAndAbsences.contactId;
-              leaveRequest.type_id = selectedAbsenceType.id;
               leaveRequest.from_date_amount = fromDeduction;
               leaveRequest.to_date_amount = toDeduction;
 
@@ -779,8 +773,6 @@ define([
                 workDayMock = leaveRequestData.workDayForDate().values;
                 leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
                 selectedAbsenceType.calculation_unit_name = 'hours';
-                leaveRequest.contact_id = '' + CRM.vars.leaveAndAbsences.contactId;
-                leaveRequest.type_id = selectedAbsenceType.id;
                 leaveRequest.from_date = date2016InServerFormat + ' ' +
                   getMomentDateWithGivenTime(workDayMock.time_from)
                     .add(30, 'minutes')
@@ -1139,8 +1131,6 @@ define([
 
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
-
-              controller.request.type_id = selectedAbsenceType.id;
             });
 
             it('selects single day', function () {
@@ -1200,8 +1190,6 @@ define([
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
-
-          controller.request.type_id = selectedAbsenceType.id;
         });
 
         it('is initialized', function () {

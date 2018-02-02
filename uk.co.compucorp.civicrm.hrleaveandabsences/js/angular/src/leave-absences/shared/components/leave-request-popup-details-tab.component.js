@@ -556,19 +556,17 @@ define([
       var times = vm.uiOptions.times;
       var request = vm.request;
 
-      if (!vm.isMode('create') && isCalculationUnit('hours')) {
-        return $q.all(['from', 'to'].map(function (type) {
-          return loadTimeRangesFromWorkPattern(type)
-            .then(function () {
-              times[type].time = extractTimeFromServerDate(request[type + '_date']);
-              times[type].amount = Math.min(request[type + '_date_amount'], times[type].maxAmount).toString();
-            });
-        })).then(function () {
-          if (!vm.uiOptions.multipleDays) {
-            updateEndTimeInputMinTime(vm.uiOptions.times.from.time);
-          }
-        }).then(setRequestHoursDeductions);
-      }
+      return $q.all(['from', 'to'].map(function (type) {
+        return loadTimeRangesFromWorkPattern(type)
+          .then(function () {
+            times[type].time = extractTimeFromServerDate(request[type + '_date']);
+            times[type].amount = Math.min(request[type + '_date_amount'], times[type].maxAmount).toString();
+          });
+      })).then(function () {
+        if (!vm.uiOptions.multipleDays) {
+          updateEndTimeInputMinTime(vm.uiOptions.times.from.time);
+        }
+      }).then(setRequestHoursDeductions);
     }
 
     /**
@@ -654,7 +652,8 @@ define([
     }
 
     /**
-     * Loads and sets time ranges from work pattern for "from" or "to" timepickers
+     * Loads time ranges from work pattern,
+     * sets time ranges for timepickers and maximum value for deduction.
      *
      * @param  {String} type (days|hours)
      * @return {Promise}
