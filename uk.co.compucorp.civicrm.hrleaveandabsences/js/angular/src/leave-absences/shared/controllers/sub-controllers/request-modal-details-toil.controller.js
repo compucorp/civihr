@@ -49,9 +49,13 @@ define([
      * @return {Promise}
      */
     function calculateToilExpiryDate () {
+      var isOpenRequestWithoutExpiryDateDefined = detailsController.isMode('edit') &&
+        !canExpireAccordingTo.previousExpirationDateValue;
+
       // skips calculation of expiration date if request never expires
-      // according to admin setting
-      if (!canExpireAccordingTo.adminSettings) {
+      // according to admin setting or if the request did not have an expiry date
+      // defined:
+      if (!canExpireAccordingTo.adminSettings || isOpenRequestWithoutExpiryDateDefined) {
         return $q.resolve(false);
       }
 

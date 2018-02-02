@@ -1642,6 +1642,35 @@ define([
           });
         });
       });
+
+      describe('when TOIL Requests expire and the request did not have a previous expiration date set', function () {
+        var toilRequest;
+
+        beforeEach(function () {
+          toilRequest = TOILRequestInstance.init(
+            leaveRequestData.findBy('request_type', 'toil'));
+
+          delete toilRequest.toil_expiry_date;
+
+          AbsenceType.canExpire.and.returnValue($q.resolve(true));
+          compileComponent({
+            mode: 'edit',
+            leaveType: 'toil',
+            request: toilRequest
+          });
+        });
+
+        describe('when request date changes', function () {
+          beforeEach(function () {
+            controller.request.to_date = new Date();
+            $rootScope.$digest();
+          });
+
+          it('does not update the toil expiry date', function () {
+            expect(controller.request.toil_expiry_date).toBeUndefined();
+          });
+        });
+      });
     });
 
     describe('displaying the expiry date field', function () {
