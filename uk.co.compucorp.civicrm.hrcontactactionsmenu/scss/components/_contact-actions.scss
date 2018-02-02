@@ -48,11 +48,27 @@
 .crm_contact-actions__panel--primary {
   flex-shrink: 0;
   width: 345px;
+
+  .crm_contact-actions__panel__body {
+    flex-direction: column;
+  }
+
+  .crm_contact-actions__group {
+    width: 100%;
+
+    &:not(:last-child) {
+      margin-bottom: 15px;
+    }
+  }
 }
 
 .crm_contact-actions__panel--secondary {
   background: $crm-white;
   min-width: 225px;
+
+  .crm_contact-actions__panel__body {
+    flex-direction: row;
+  }
 
   .crm_contact-actions__group {
     width: 220px;
