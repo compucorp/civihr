@@ -6,6 +6,7 @@ use CRM_HRContactActionsMenu_Component_UserInformationLinkItem as UserInformatio
 use CRM_HRContactActionsMenu_Component_UserRoleItem as UserRoleItem;
 use CRM_HRCore_CMSData_Paths_PathsInterface as CMSUserPath;
 use CRM_HRCore_CMSData_UserRoleInterface as CMSUserRole;
+use CRM_HRContactActionsMenu_Component_NoUserTextItem as NoUserTextItem;
 
 /**
  * Class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup
@@ -30,11 +31,11 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
    *
    * @param array $contactUserInfo
    *   Contact user info gotten from the contact helper
-   * @param CMSUserPath $cmsUserPath
-   * @param CMSUserRole $cmsUserRole
+   * @param CMSUserPath|null $cmsUserPath
+   * @param CMSUserRole|null $cmsUserRole
    *
    */
-  public function __construct($contactUserInfo, $cmsUserPath, $cmsUserRole) {
+  public function __construct($contactUserInfo, $cmsUserPath = null, $cmsUserRole = null) {
     $this->contactUserInfo = $contactUserInfo;
     $this->cmsUserRole = $cmsUserRole;
     $this->cmsUserPath = $cmsUserPath;
@@ -60,6 +61,8 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
       $actionsGroup->addItem($this->getSendWelcomeMailButton($contactID));
       $actionsGroup->addItem($this->getSendPasswordResetButton($contactID));
     } else {
+      $noUserTextItem = new NoUserTextItem();
+      $actionsGroup->addItem($noUserTextItem);
       $actionsGroup->addItem($this->getCreateUserButton($contactID));
     }
 
@@ -92,9 +95,9 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
   private function getSendWelcomeMailButton($contactID) {
     $url = CRM_Utils_System::url('civicrm/contactactionsmenu/sendwelcomemail', "cid=$contactID");
     $params = [
-      'label' => 'SEND WELCOME EMAIL',
-      'class' => 'tbd',
-      'icon' => 'tbd',
+      'label' => 'Send Welcome Email',
+      'class' => 'btn-primary-outline',
+      'icon' => 'fa-envelope-o',
       'url' => $url
     ];
 
@@ -111,9 +114,9 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
   private function getSendPasswordResetButton($contactID) {
     $url = CRM_Utils_System::url('civicrm/contactactionsmenu/sendpasswordresetmail', "cid=$contactID");
     $params = [
-      'label' => 'SEND PASSWORD RESET EMAIL',
-      'class' => 'tbd',
-      'icon' => 'tbd',
+      'label' => 'Send Password Reset Email',
+      'class' => 'btn-primary-outline',
+      'icon' => 'fa-envelope-o',
       'url' => $url
     ];
 
@@ -130,9 +133,9 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
   private function getCreateUserButton($contactID) {
     $url = CRM_Utils_System::url('civicrm/user/create-account', "cid=$contactID");
     $params = [
-      'label' => 'CREATE A USER FOR THIS STAFF MEMBER',
-      'class' => 'tbd',
-      'icon' => 'tbd',
+      'label' => 'Create a user for this staff member',
+      'class' => 'btn-primary',
+      'icon' => 'fa-plus',
       'url' => $url
     ];
 

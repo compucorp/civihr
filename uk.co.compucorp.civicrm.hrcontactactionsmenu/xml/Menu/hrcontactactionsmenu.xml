@@ -3,26 +3,26 @@
   <item>
     <path>civicrm/contactactionsmenu/sendpasswordresetmail</path>
     <page_callback>CRM_HRContactActionsMenu_Page_UserMailNotifier::sendPasswordResetEmail</page_callback>
-    <access_arguments>access CiviCRM</access_arguments>
+    <access_arguments>administer users</access_arguments>
   </item>
   <item>
     <path>civicrm/contactactionsmenu/sendwelcomemail</path>
     <page_callback>CRM_HRContactActionsMenu_Page_UserMailNotifier::sendWelcomeEmail</page_callback>
-    <access_arguments>access CiviCRM</access_arguments>
+    <access_arguments>administer users</access_arguments>
   </item>
   <item>
     <path>civicrm/contactactionsmenu/deleteuseraccount</path>
     <page_callback>CRM_HRContactActionsMenu_Page_UserAccount::delete</page_callback>
-    <access_arguments>access CiviCRM</access_arguments>
+    <access_arguments>administer users</access_arguments>
   </item>
   <item>
     <path>civicrm/contactactionsmenu/disableuseraccount</path>
     <page_callback>CRM_HRContactActionsMenu_Page_UserAccount::disable</page_callback>
-    <access_arguments>access CiviCRM</access_arguments>
+    <access_arguments>administer users</access_arguments>
   </item>
   <item>
     <path>civicrm/contactactionsmenu/enableuseraccount</path>
     <page_callback>CRM_HRContactActionsMenu_Page_UserAccount::enable</page_callback>
-    <access_arguments>access CiviCRM</access_arguments>
+    <access_arguments>administer users</access_arguments>
   </item>
 </menu>
