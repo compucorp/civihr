@@ -31,11 +31,6 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
   private $url;
 
   /**
-   * @var bool
-   */
-  private $addBottomMargin = FALSE;
-
-  /**
    * CRM_HRContactActionsMenu_Component_GroupButtonItem constructor.
    *
    * @param string $label
@@ -79,18 +74,6 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
    */
   public function setUrl($url) {
     $this->url = $url;
-
-    return $this;
-  }
-
-  /**
-   * Indicates that this button should
-   * have a bottom margin.
-   *
-   * @return CRM_HRContactActionsMenu_Component_GroupButtonItem
-   */
-  public function addBottomMargin() {
-    $this->addBottomMargin = TRUE;
 
     return $this;
   }
