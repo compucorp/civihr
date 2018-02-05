@@ -8,10 +8,12 @@ var fs = require('fs');
 var gulp = require('gulp');
 var path = require('path');
 var PluginError = require('plugin-error');
+var url = require('url');
 var xml = require('xml-parse');
 
 var currentExtension;
 var extensionsPathCache = {};
+var extensionsUrlPathCache = {};
 
 module.exports = {
   addExtensionCustomTasksToSequence: addExtensionCustomTasksToSequence,
@@ -22,6 +24,7 @@ module.exports = {
   getExtensionNameFromCLI: getExtensionNameFromCLI,
   getExtensionNameFromFile: getExtensionNameFromFile,
   getExtensionPath: getExtensionPath,
+  getExtensionUrlPath: getExtensionUrlPath,
   getExtensionTasks: getExtensionTasks,
   hasMainTaskBeenReplaced: hasMainTaskBeenReplaced,
   setCurrentExtension: setCurrentExtension,
@@ -235,6 +238,25 @@ function getExtensionPath (name) {
   }
 
   return extensionsPathCache[extension];
+}
+
+/**
+ * Returns the URL path for the given extension. The URL path is cached for
+ * optimization reasons.
+ *
+ * @param {String} extensionName the name of the extension to query for the URL path
+ * @return {String}
+ */
+function getExtensionUrlPath (extensionName) {
+  var extensionUrl, parsedUrl;
+
+  if (!extensionsUrlPathCache[extensionName]) {
+    extensionUrl = cv('url -x ' + extensionName);
+    parsedUrl = url.parse(extensionUrl);
+    extensionsUrlPathCache[extensionName] = parsedUrl.path;
+  }
+
+  return extensionsUrlPathCache[extensionName];
 }
 
 /**
