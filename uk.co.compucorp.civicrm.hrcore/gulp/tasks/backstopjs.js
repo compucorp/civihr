@@ -199,9 +199,10 @@ function scenariosList () {
 
       scenarios.forEach(function (scenario, index) {
         scenario.credential = scenario.credential || DEFAULT_CREDENTIAL;
+        scenario.onBeforeScript = 'initialise';
 
         if (index === 0 || previousCredential !== scenario.credential) {
-          scenario.onBeforeScript = 'login';
+          scenario.performLogin = true;
 
           if (index !== 0) {
             scenario.performLogout = true;

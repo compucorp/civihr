@@ -5,7 +5,11 @@ module.exports = function (casper, scenario) {
   var loginFormSelector = 'form#user-login-form';
   var credentials = config.credentials[scenario.credential];
 
-  casper
+  casper.echo('--------------------------------------------', 'COMMENT');
+  casper.echo('RUNNING SCENARIO: ' + scenario.label, 'PARAMETER');
+
+  if (scenario.performLogin) {
+    casper
     .then(function () {
       if (scenario.performLogout) {
         casper.echo('Current scenario has different login credentials from previous, logging out is necessary', 'INFO');
@@ -31,4 +35,5 @@ module.exports = function (casper, scenario) {
         }, 8000);
       });
     });
+  }
 };
