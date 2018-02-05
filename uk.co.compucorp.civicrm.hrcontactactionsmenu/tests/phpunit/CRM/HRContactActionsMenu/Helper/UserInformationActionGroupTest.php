@@ -5,7 +5,7 @@ use CRM_HRContactActionsMenu_Component_GroupButtonItem as GroupButtonItem;
 use CRM_HRContactActionsMenu_Component_UserInformationLinkItem as UserInformationLinkItem;
 use CRM_HRContactActionsMenu_Component_UserRoleItem as UserRoleItem;
 use CRM_HRCore_CMSData_UserRoleInterface as CMSUserRole;
-use CRM_HRCore_CMSData_PathsInterface as CMSUserPath;
+use CRM_HRCore_CMSData_Paths_PathsInterface as CMSUserPath;
 use CRM_HRContactActionsMenu_Component_NoUserTextItem as NoUserTextItem;
 
 /**
