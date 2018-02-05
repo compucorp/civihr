@@ -1,7 +1,6 @@
 <?php
 
 use CRM_HRContactActionsMenu_Helper_Contact as ContactHelper;
-use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 
 /**
  * Class CRM_HRContactActionsMenu_Helper_ContactTest
