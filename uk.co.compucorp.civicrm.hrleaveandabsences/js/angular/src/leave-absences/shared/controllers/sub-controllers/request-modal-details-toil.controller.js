@@ -11,9 +11,9 @@ define([
   function RequestModalDetailsToilController ($log, $q, $rootScope, OptionGroup, AbsenceType, detailsController) {
     $log.debug('RequestModalDetailsToilController');
 
-    var canExpireAccordingTo = {
-      previousExpirationDateValue: null,
-      adminSettings: null
+    var expirationConditions = {
+      hasPreviousExpirationDate: null,
+      hasExpirationFromAdminSettings: null
     };
 
     detailsController.canDisplayToilExpirationField = false;
@@ -50,12 +50,13 @@ define([
      */
     function calculateToilExpiryDate () {
       var isOpenRequestWithoutExpiryDateDefined = detailsController.isMode('edit') &&
-        !canExpireAccordingTo.previousExpirationDateValue;
+        !expirationConditions.hasPreviousExpirationDate;
 
       // skips calculation of expiration date if request never expires
       // according to admin setting or if the request did not have an expiry date
       // defined:
-      if (!canExpireAccordingTo.adminSettings || isOpenRequestWithoutExpiryDateDefined) {
+      if (!expirationConditions.hasExpirationFromAdminSettings ||
+        isOpenRequestWithoutExpiryDateDefined) {
         return $q.resolve(false);
       }
 
@@ -162,10 +163,14 @@ define([
       }
     }
 
+    /**
+     * Initializes the *canDisplayToilExpirationField* property which can be used
+     * to display or hide the expiration date field for TOIL requests.
+     */
     function initCanDisplayToilExpirationField () {
       var isNewRequestAndRequestsCanExpire = detailsController.isMode('create') &&
-        canExpireAccordingTo.adminSettings;
-      var isOldRequestAndHasExpiryDateDefined = canExpireAccordingTo.previousExpirationDateValue;
+        expirationConditions.hasExpirationFromAdminSettings;
+      var isOldRequestAndHasExpiryDateDefined = expirationConditions.hasPreviousExpirationDate;
       var isToilRequest = detailsController.isLeaveType('toil');
       var userCanManageRequest = detailsController.canManage;
 
@@ -177,21 +182,22 @@ define([
     }
 
     /**
-     * Initialises the canExpireAccordingTo's properties using the following rules:
-     * - previousExpirationDateValue: set to true if the request is in edit mode
+     * Initialises the expiration conditions for the current toil request
+     * using the following rules:
+     * - hasPreviousExpirationDate: set to true if the request is in edit mode
      * and the expiration date was previously set.
-     * - adminSettings: set to true if TOIL requests are set to never expire in
-     * the admin settings.
+     * - hasExpirationFromAdminSettings: set to true if TOIL requests are set to
+     * never expire in the admin settings.
      *
      * @return {Promise}
      */
-    function initCanExpireAccordingTo () {
-      canExpireAccordingTo.previousExpirationDateValue = detailsController.isMode('edit') &&
+    function determineExpirationConditions () {
+      expirationConditions.hasPreviousExpirationDate = detailsController.isMode('edit') &&
         !!detailsController.request.toil_expiry_date;
 
       return AbsenceType.canExpire(detailsController.request.type_id)
         .then(function (canExpire) {
-          canExpireAccordingTo.adminSettings = canExpire;
+          expirationConditions.hasExpirationFromAdminSettings = canExpire;
         });
     }
 
@@ -203,7 +209,7 @@ define([
     function initChildController () {
       detailsController.request.to_date_type = detailsController.request.from_date_type = '1';
 
-      return initCanExpireAccordingTo()
+      return determineExpirationConditions()
         .then(initCanDisplayToilExpirationField)
         .then(initExpiryDate)
         .then(loadToilAmounts);
