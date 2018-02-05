@@ -2,7 +2,7 @@
 
 define([
   'mocks/module',
-  'mocks/data/absence-period-data',
+  'mocks/data/absence-period.data',
   'common/moment',
   'common/angularMocks'
 ], function (mocks, mockData, moment) {

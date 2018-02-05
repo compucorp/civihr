@@ -2,7 +2,7 @@
   "scenarios": [
     {
       "label": "Tasks",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid=2",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
       "onReadyScript": "contact-summary/tasks/show",
       "credential": "admin"
     }

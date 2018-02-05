@@ -6,12 +6,12 @@
     'common/moment',
     'mocks/helpers/helper',
     'common/mocks/data/contact.data',
-    'mocks/data/absence-period-data',
-    'mocks/data/absence-type-data',
-    'mocks/data/leave-request-data',
-    'mocks/data/option-group-mock-data',
-    'mocks/data/public-holiday-data',
-    'mocks/data/work-pattern-data',
+    'mocks/data/absence-period.data',
+    'mocks/data/absence-type.data',
+    'mocks/data/leave-request.data',
+    'mocks/data/option-group.data',
+    'mocks/data/public-holiday.data',
+    'mocks/data/work-pattern.data',
     'mocks/apis/leave-request-api-mock',
     'mocks/apis/option-group-api-mock',
     'mocks/apis/work-pattern-api-mock',
@@ -548,7 +548,7 @@
             compileComponent(true);
 
             controller.month.days.forEach(function (dayObj) {
-              if (dayObj.date === leaveRequest.from_date) {
+              if (moment(dayObj.date).isSame(leaveRequest.from_date, 'day')) {
                 day = dayObj;
               }
             });

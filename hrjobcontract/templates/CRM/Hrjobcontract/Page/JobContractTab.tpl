@@ -2,7 +2,7 @@
 {assign var="prefix" value="hrjc-" }
 
 <div id="{$module}" hrjc-loader hrjc-loader-show="true">
-  <div class="container" ng-view>
+  <div class="container-fluid" ng-view>
   </div>
 </div>
 {literal}

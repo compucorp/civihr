@@ -4,7 +4,7 @@ define([
   'common/lodash',
   'common/moment',
   'common/angular',
-  'mocks/data/absence-type-data',
+  'mocks/data/absence-type.data',
   'common/angularMocks',
   'leave-absences/shared/config',
   'leave-absences/absence-tab/app',

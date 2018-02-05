@@ -37,6 +37,24 @@ function hrcore_civicrm_searchTasks($objectName, &$tasks) {
   }
 }
 
+/**
+ * Implements hook_civicrm_tabset().
+ *
+ * @param string $tabsetName
+ * @param array $tabs
+ * @param array $context
+ */
+function hrcore_civicrm_tabset($tabsetName, &$tabs, $context) {
+  $listeners = [
+    new CRM_HRCore_Hook_Tabset_ActivityTabModifier(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($tabsetName, $tabs, $context);
+  }
+}
+
+
 function hrcore_civicrm_summaryActions( &$actions, $contactID ) {
   $otherActions = CRM_Utils_Array::value('otherActions', $actions, []);
   $userAdd = CRM_Utils_Array::value('user-add', $otherActions, []);
@@ -61,6 +79,23 @@ function hrcore_civicrm_summaryActions( &$actions, $contactID ) {
 function hrcore_civicrm_container($container) {
   $loader = new XmlFileLoader($container, new FileLocator(__DIR__));
   $loader->load('config/container/container.xml');
+}
+
+/**
+ * Implements hook_civicrm_buildForm
+ *
+ * @param string $formName
+ * @param object $form
+ */
+function hrcore_civicrm_buildForm($formName, &$form) {
+  $listeners = [
+    new CRM_HRCore_Hook_BuildForm_ActivityFilterSelectFieldsModifier(),
+    new CRM_HRCore_Hook_BuildForm_ActivityLinksFilter(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($formName, $form);
+  }
 }
 
 /**

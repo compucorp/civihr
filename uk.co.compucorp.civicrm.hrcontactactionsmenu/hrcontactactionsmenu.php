@@ -1,13 +1,13 @@
 <?php
 
+require_once 'hrcontactactionsmenu.civix.php';
+
+use CRM_HRContactActionsMenu_ExtensionUtil as E;
 use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
 use CRM_HRContactActionsMenu_Helper_UserInformationActionGroup as UserInformationActionGroupHelper;
 use CRM_HRContactActionsMenu_Helper_Contact as ContactHelper;
 use CRM_HRCore_CMSData_UserRoleFactory as CMSUserRoleFactory;
 use CRM_HRCore_CMSData_PathsFactory as CMSUserPathFactory;
-
-require_once 'hrcontactactionsmenu.civix.php';
-
 
 /**
  * Implementation of hook_addContactMenuActions to add the

@@ -1,7 +1,7 @@
 <?php
 
 use CRM_HRContactActionsMenu_Component_UserInformationLinkItem as UserInformationLinkItem;
-use CRM_HRCore_CMSData_PathsInterface as CMSUserPath;
+use CRM_HRCore_CMSData_Paths_PathsInterface as CMSUserPath;
 
 /**
  * Class CRM_HRContactActionsMenu_Component_UserInformationLinkItemTest
