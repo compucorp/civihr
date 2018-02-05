@@ -6,7 +6,6 @@
   name: 'job-contract',
   skipModuleInsertion: true,
   generateSourceMaps: true,
-  useSourceUrl: true,
   paths: {
     'common': 'empty:',
     'job-contract/vendor/fraction': 'job-contract/vendor/fraction',
