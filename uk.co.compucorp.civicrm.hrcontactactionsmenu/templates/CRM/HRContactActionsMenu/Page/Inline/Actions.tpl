@@ -14,6 +14,14 @@
               {/foreach}
             </div>
           {/foreach}
+          <div class="crm_contact-actions__group">
+          <h3>User Has Access To:</h3>
+          <p>
+            <span>No staff members</span>
+            <span class="fa fa-question-circle"></span>
+          </p>
+          <a href="#" class="btn btn-secondary">Manage Regional Access</a>
+          </div>
         </div>
         <div class="crm_contact-actions__panel__footer">
           <div class="row">
@@ -51,6 +59,78 @@
               {/foreach}
             </div>
           {/foreach}
+          <div class="crm_contact-actions__group">
+            <h3>Leave:</h3>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-primary-outline">
+                <i class="fa fa-plus"></i> Record New
+              </a>
+            </div>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-primary-outline">
+                <i class="fa fa-search"></i> View Entitlements
+              </a>
+            </div>
+            <hr>
+            <h4>Leave Approver(s):</h4>
+            <p><a href="#" class="text-primary">John Snow</a></p>
+            <p><a href="#" class="text-primary">Allan Wite</a></p>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-secondary">Manage Leave Approver</a>
+            </div>
+          </div>
+          <div class="crm_contact-actions__group">
+            <h3>Workflows:</h3>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-primary-outline">
+                <i class="fa fa-user-plus"></i> Joining
+              </a>
+            </div>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-primary-outline">
+                <i class="fa fa-user-times"></i> Exiting
+              </a>
+            </div>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-primary-outline">Other.......</a>
+            </div>
+            <hr>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-primary-outline">
+                <i class="fa fa-check-square-o"></i> New Task
+              </a>
+            </div>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-primary-outline">
+                <i class="fa fa-id-card-o"></i> New Document
+              </a>
+            </div>
+            <hr>
+            <h4>Line Manager(s):</h4>
+            <p><a href="#" class="text-primary">John Snow</a></p>
+            <p><a href="#" class="text-primary">Allan Wite</a></p>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-secondary">Manage Line Manager</a>
+            </div>
+          </div>
+          <div class="crm_contact-actions__group">
+            <h3>Communicate </h3>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-primary-outline">
+                <i class="fa fa-envelope-o"></i> Send Email
+              </a>
+            </div>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-primary-outline">
+                <i class="fa fa-users"></i> Record Meeting
+              </a>
+            </div>
+            <div class="crm_contact-actions__action">
+              <a href="#" class="btn btn-primary-outline">
+                <i class="fa fa-file-pdf-o"></i> Create PDF Letter
+              </a>
+            </div>
+          </div>
         </div>
         <div class="crm_contact-actions__panel__footer">
           {if call_user_func(array('CRM_Core_Permission','check'), 'delete contacts')}
