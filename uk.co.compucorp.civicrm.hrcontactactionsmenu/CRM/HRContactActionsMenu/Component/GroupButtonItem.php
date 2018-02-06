@@ -18,7 +18,7 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
   /**
    * @var string
    */
-  private $icon;
+  private $icon = '';
 
   /**
    * @var string
@@ -82,12 +82,21 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
    * {@inheritDoc}
    */
   public function render() {
-    return sprintf(
-      '<a href="%s" class="%s"><i class="%s">%s</i></a>',
+    $buttonMarkup = '
+      <div class="crm_contact-actions__action">
+        <a href="%s" class="btn %s">
+          <i class="fa %s"></i> %s
+        </a>
+      </div>';
+
+    $buttonMarkup = sprintf(
+      $buttonMarkup,
       $this->url,
       $this->class,
       $this->icon,
       $this->label
     );
+
+    return $buttonMarkup;
   }
 }

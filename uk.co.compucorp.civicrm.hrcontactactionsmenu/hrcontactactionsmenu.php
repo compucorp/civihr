@@ -8,6 +8,8 @@ use CRM_HRContactActionsMenu_Helper_UserInformationActionGroup as UserInformatio
 use CRM_HRContactActionsMenu_Helper_Contact as ContactHelper;
 use CRM_HRCore_CMSData_UserRoleFactory as CMSUserRoleFactory;
 use CRM_HRCore_CMSData_PathsFactory as CMSUserPathFactory;
+use CRM_HRContactActionsMenu_Hook_AddContactMenuActions as AddContactMenuActionsHook;
+use CRM_HRCore_CMSData_UserAccountFactory as UserAccountFactory;
 
 /**
  * Implementation of hook_addContactMenuActions to add the
@@ -22,11 +24,16 @@ function hrcontactactionsmenu_addContactMenuActions(ActionsMenu $menu) {
   if (!$contactID) {
     return;
   }
+  $cmsUserPath = '';
+  $cmsUserRole = '';
 
   $contactUserInfo = ContactHelper::getUserInformation($contactID);
-  $cmsFramework = CRM_Core_Config::singleton()->userFramework;
-  $cmsUserPath = CMSUserPathFactory::create($cmsFramework, $contactUserInfo);
-  $cmsUserRole = CMSUserRoleFactory::create($cmsFramework, $contactUserInfo);
+  if(!empty($contactUserInfo['cmsId'])) {
+    $cmsFramework = CRM_Core_Config::singleton()->userFramework;
+    $cmsUserPath = CMSUserPathFactory::create($cmsFramework, $contactUserInfo);
+    $cmsUserRole = CMSUserRoleFactory::create($cmsFramework, $contactUserInfo);
+  }
+
   $userInformationActionGroup = new UserInformationActionGroupHelper($contactUserInfo, $cmsUserPath, $cmsUserRole);
   $menu->addToHighlightedPanel($userInformationActionGroup->get());
 }
@@ -36,9 +43,21 @@ function hrcontactactionsmenu_addContactMenuActions(ActionsMenu $menu) {
  */
 function hrcontactactionsmenu_civicrm_pageRun(&$page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
+    $contactID = $_GET['cid'];
     $extName = E::LONG_NAME;
+    $menu = AddContactMenuActionsHook::invoke();
+    $contactInfo = ContactHelper::getUserInformation($contactID);
+    $userAccountDisabled = _hrcontactactionsmenu_get_is_user_disabled($contactInfo);
+
+    $page->assign('menu', $menu);
+    $page->assign('userAccountDisabled', $userAccountDisabled);
+    $page->assign('contactInfo', $contactInfo);
+
     CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/contactactions.css');
     CRM_Core_Resources::singleton()->addScriptFile($extName, 'js/contactactions.js');
+
+    $templatePath = CRM_Core_Resources::singleton()->getPath($extName,'templates/CRM/HRContactActionsMenu/Page/Inline/Actions.tpl');
+    $page->assign('alternativeActionsTemplate', $templatePath);
   }
 }
 
@@ -162,3 +181,19 @@ function hrcontactactionsmenu_civicrm_alterSettingsFolders(&$metaDataFolders = N
   _hrcontactactionsmenu_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
+/**
+ * Checks whether the User account of the contact is
+ * disabled.
+ *
+ * @param array $contactInfo
+ *
+ * @return bool
+ */
+function _hrcontactactionsmenu_get_is_user_disabled($contactInfo) {
+  if(empty($contactInfo['id'])) {
+    return false;
+  }
+  $userAccount = UserAccountFactory::create();
+
+  return $userAccount->isUserDisabled($contactInfo);
+}

@@ -13,21 +13,19 @@ class CRM_HRContactActionsMenu_Helper_Contact {
    * @return array
    */
   public static function getUserInformation($contactID) {
-    $result = civicrm_api3('User', 'getsingle', [
-      'contact_id' => $contactID,
-    ]);
+    $output = [];
+    $output['contact_id'] = $contactID;
 
-    //When a user has no CMS account, the contact_id parameter is not present
-    //we need to add it here.
-    //Also when contact has CMS account, the cmsId parameter is needed for the
-    //HRCore CMSData classes
-    if(empty($result['id'])) {
-      $result['contact_id'] = $contactID;
-    }
-    else {
-      $result['cmsId'] = $result['id'];
-    }
+    try {
+      $result = civicrm_api3('User', 'getsingle', [
+        'contact_id' => $contactID,
+      ]);
 
-    return $result;
+      //When a contact has CMS account, the cmsId parameter is needed for the
+      //HRCore CMSData classes
+      $output['cmsId'] = $result['id'];
+    } catch(Exception $e) {}
+
+    return $output;
   }
 }
