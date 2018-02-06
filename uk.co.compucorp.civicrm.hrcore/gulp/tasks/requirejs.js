@@ -165,9 +165,8 @@ function requireJsMainTask (cb) {
  */
 function requireJsSourceMapPath (cb) {
   var distFolder;
-  var extensionName = utils.getCurrentExtension();
-  var extensionPath = utils.getExtensionPath(extensionName);
-  var extensionUrl = utils.getExtensionUrlPath(extensionName);
+  var extensionPath = utils.getExtensionPath();
+  var extensionUrl = utils.getExtensionUrlPath();
 
   // finds /dist folders that are outside /node_modules:
   distFolder = find.dirSync(/^((?!node_modules).)*\/dist$/, extensionPath).pop();
@@ -175,6 +174,7 @@ function requireJsSourceMapPath (cb) {
   gulp.src(path.join(distFolder, '*.min.js'))
     .pipe(replace(/sourceMappingURL=(.+)/, 'sourceMappingURL=' + extensionUrl + '/$1'))
     .pipe(gulp.dest(distFolder));
+
   cb();
 }
 
@@ -192,10 +192,12 @@ function requireJsTask (cb) {
     ], 'requirejs');
 
     if (!utils.hasMainTaskBeenReplaced(sequence)) {
-      sequence.push(utils.spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask));
+      sequence.push(
+        utils.spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask),
+        utils.spawnTaskForExtension('requirejs:sourceMapPath', requireJsSourceMapPath)
+      );
     }
 
-    sequence.push(utils.spawnTaskForExtension('requirejs:sourceMapPath', requireJsSourceMapPath));
     gulpSequence.apply(null, sequence)(cb);
   } else {
     console.log('Not eligible for this task, skipping...');

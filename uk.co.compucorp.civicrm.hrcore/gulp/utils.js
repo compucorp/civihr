@@ -244,15 +244,19 @@ function getExtensionPath (name) {
  * Returns the URL path for the given extension. The URL path is cached for
  * optimization reasons.
  *
- * @param {String} extensionName the name of the extension to query for the URL path
+ * @param {String} extensionName the name of the extension to query for the URL path.
+ * if no name is provided, the current extension is used.
  * @return {String}
  */
 function getExtensionUrlPath (extensionName) {
   var extensionUrl, parsedUrl;
 
+  extensionName = extensionName || getCurrentExtension();
+
   if (!extensionsUrlPathCache[extensionName]) {
     extensionUrl = cv('url -x ' + extensionName);
     parsedUrl = url.parse(extensionUrl);
+
     extensionsUrlPathCache[extensionName] = parsedUrl.path;
   }
 
