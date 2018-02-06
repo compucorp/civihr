@@ -51,14 +51,6 @@
       </div>
       <div class="crm_contact-actions__panel crm_contact-actions__panel--secondary">
         <div class="crm_contact-actions__panel__body">
-          {foreach from=$menu->getMainPanelItems() item='group'}
-            <div class="crm_contact-actions__group">
-              <h3>{$group->getTitle()}</h3>
-              {foreach from=$group->getItems() item='item'}
-                {$item->render()}
-              {/foreach}
-            </div>
-          {/foreach}
           <div class="crm_contact-actions__group">
             <h3>Leave:</h3>
             <div class="crm_contact-actions__action">
@@ -79,40 +71,14 @@
               <a href="#" class="btn btn-secondary">Manage Leave Approver</a>
             </div>
           </div>
-          <div class="crm_contact-actions__group">
-            <h3>Workflows:</h3>
-            <div class="crm_contact-actions__action">
-              <a href="#" class="btn btn-primary-outline">
-                <i class="fa fa-user-plus"></i> Joining
-              </a>
+          {foreach from=$menu->getMainPanelItems() item='group'}
+            <div class="crm_contact-actions__group">
+              <h3>{$group->getTitle()}</h3>
+              {foreach from=$group->getItems() item='item'}
+                {$item->render()}
+              {/foreach}
             </div>
-            <div class="crm_contact-actions__action">
-              <a href="#" class="btn btn-primary-outline">
-                <i class="fa fa-user-times"></i> Exiting
-              </a>
-            </div>
-            <div class="crm_contact-actions__action">
-              <a href="#" class="btn btn-primary-outline">Other.......</a>
-            </div>
-            <hr>
-            <div class="crm_contact-actions__action">
-              <a href="#" class="btn btn-primary-outline">
-                <i class="fa fa-check-square-o"></i> New Task
-              </a>
-            </div>
-            <div class="crm_contact-actions__action">
-              <a href="#" class="btn btn-primary-outline">
-                <i class="fa fa-id-card-o"></i> New Document
-              </a>
-            </div>
-            <hr>
-            <h4>Line Manager(s):</h4>
-            <p><a href="#" class="text-primary">John Snow</a></p>
-            <p><a href="#" class="text-primary">Allan Wite</a></p>
-            <div class="crm_contact-actions__action">
-              <a href="#" class="btn btn-secondary">Manage Line Manager</a>
-            </div>
-          </div>
+          {/foreach}
           <div class="crm_contact-actions__group">
             <h3>Communicate </h3>
             <div class="crm_contact-actions__action">
