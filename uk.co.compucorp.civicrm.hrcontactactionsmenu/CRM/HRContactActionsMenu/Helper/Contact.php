@@ -24,6 +24,7 @@ class CRM_HRContactActionsMenu_Helper_Contact {
       //When a contact has CMS account, the cmsId parameter is needed for the
       //HRCore CMSData classes
       $output['cmsId'] = $result['id'];
+      $output['name'] = $result['name'];
     } catch(Exception $e) {}
 
     return $output;
