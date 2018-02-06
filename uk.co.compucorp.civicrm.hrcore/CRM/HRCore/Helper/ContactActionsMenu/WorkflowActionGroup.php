@@ -75,15 +75,11 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    */
   private function getJoiningButton() {
     $caseTypeId = $this->getCaseTypeID('Joining');
-    $url = CRM_Utils_System::url(
-      'civicrm/tasksassignments/dashboard#/tasks',
-      "reset=1&cid=$this->contactID&openModal=assignment&caseTypeId=$caseTypeId"
-    );
     $params = [
       'label' => 'Joining',
       'class' => 'btn btn-primary-outline',
       'icon' => 'fa fa-user-plus',
-      'url' => $url
+      'url' => $this->getButtonUrl(['openModal' => 'assignment', 'caseTypeId' => $caseTypeId], 'tasks'),
     ];
     return $this->getMenuButton($params);
   }
@@ -95,15 +91,11 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    */
   private function getExitingButton() {
     $caseTypeId = $this->getCaseTypeID('Exiting');
-    $url = CRM_Utils_System::url(
-      'civicrm/tasksassignments/dashboard#/tasks',
-      "reset=1&cid=$this->contactID&openModal=assignment&caseTypeId=$caseTypeId"
-    );
     $params = [
       'label' => 'Exiting',
       'class' => 'btn btn-primary-outline',
       'icon' => 'fa fa-user-times',
-      'url' => $url
+      'url' => $this->getButtonUrl(['openModal' => 'assignment', 'caseTypeId' => $caseTypeId], 'tasks')
     ];
 
     return $this->getMenuButton($params);
@@ -115,15 +107,11 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    * @return ActionsGroupButtonItem
    */
   private function getOtherButton() {
-    $url = CRM_Utils_System::url(
-      'civicrm/tasksassignments/dashboard#/tasks',
-      "reset=1&cid=$this->contactID&openModal=assignment"
-    );
     $params = [
       'label' => 'Other...',
       'class' => 'btn btn-primary-outline',
       'icon' => '',
-      'url' => $url
+      'url' => $this->getButtonUrl(['openModal' => 'assignment'], 'tasks')
     ];
 
     return $this->getMenuButton($params);
@@ -135,15 +123,11 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    * @return ActionsGroupButtonItem
    */
   private function getNewTaskButton() {
-    $url = CRM_Utils_System::url(
-      'civicrm/tasksassignments/dashboard#/tasks',
-      "reset=1&cid=$this->contactID&openModal=task"
-    );
     $params = [
       'label' => 'New Task',
       'class' => 'btn btn-primary-outline',
       'icon' => 'fa fa-check-square-o',
-      'url' => $url
+      'url' => $this->getButtonUrl(['openModal' => 'task'], 'tasks')
     ];
 
     return $this->getMenuButton($params);
@@ -155,15 +139,11 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    * @return ActionsGroupButtonItem
    */
   private function getNewDocumentButton() {
-    $url = CRM_Utils_System::url(
-      'civicrm/tasksassignments/dashboard#/documents',
-      "reset=1&cid=$this->contactID&openModal=document"
-    );
     $params = [
       'label' => 'New Document',
       'class' => 'btn btn-primary-outline',
       'icon' => 'fa fa-id-card-o',
-      'url' => $url
+      'url' => $this->getButtonUrl(['openModal' => 'document'], 'documents')
     ];
 
     return $this->getMenuButton($params);
@@ -176,7 +156,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    */
   public function getAddLineManagerButton() {
     $relTypeID = $this->getLineManagerRelationshipTypeSelectId();
-    $attribute = ['onclick' => "CRM.loadForm('/civicrm/contact/view/rel?cid=$this->contactID&action=add&relTypeId=$relTypeID')"];
+    $attribute = ['onclick' => "CRM.loadForm('/civicrm/contact/view/rel?cid={$this->contactID}&action=add&relTypeId={$relTypeID}')"];
     $params = [
       'label' => 'Add A Line Manager',
       'class' => 'btn btn-secondary-outline',
@@ -195,7 +175,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
   public function getManageLineManagerButton() {
     $url = CRM_Utils_System::url(
       'civicrm/contact/view',
-      "reset=1&cid=$this->contactID&selectedChild=rel"
+      "reset=1&cid={$this->contactID}&selectedChild=rel"
     );
     $params = [
       'label' => 'Manage Line Manager',
@@ -280,5 +260,25 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
     ]);
 
     return !empty($result['id']) ? $result['id'] . '_a_b' : '';
+  }
+
+  /**
+   * Returns the URL for the T&A related buttons.
+   *
+   * @param array $queryParameters
+   * @param string $defaultTab
+   *
+   * @return string
+   */
+  private function getButtonUrl($queryParameters, $defaultTab) {
+    $defaultParameters = ['reset' => 1, 'cid' => $this->contactID];
+    $queryParameters = array_merge($defaultParameters, $queryParameters);
+
+    $url = CRM_Utils_System::url(
+      "civicrm/tasksassignments/dashboard#/{$defaultTab}",
+      http_build_query($queryParameters)
+    );
+
+    return $url;
   }
 }
