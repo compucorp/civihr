@@ -27,6 +27,10 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1018 {
     $result = CRM_Core_DAO::executeQuery($query)->fetchAll();
     $absenceTypesInHour = array_column($result, 'id');
 
+    if (empty($absenceTypesInHour)) {
+      return true;
+    }
+
     $leaveRequest = new LeaveRequest();
     $leaveRequest->whereAdd('from_date IS NOT NULL');
     $leaveRequest->whereAdd('from_date = to_date');
