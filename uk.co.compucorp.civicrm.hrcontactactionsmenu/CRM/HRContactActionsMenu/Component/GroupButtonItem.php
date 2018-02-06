@@ -31,6 +31,11 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
   private $url;
 
   /**
+   * @var string
+   */
+  private $onClick;
+
+  /**
    * CRM_HRContactActionsMenu_Component_GroupButtonItem constructor.
    *
    * @param string $label
@@ -79,12 +84,23 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
   }
 
   /**
+   * Sets the onclick property for the button to the
+   * passes in expression or function
+   *
+   * @param string $expression
+   */
+  public function setOnClick($expression) {
+    $this->onClick = $expression;
+  }
+
+  /**
    * {@inheritDoc}
    */
   public function render() {
+    $onClick = empty($this->onClick) ? '' : 'onclick = "' . $this->onClick . '"';
     $buttonMarkup = '
       <div class="crm_contact-actions__action">
-        <a href="%s" class="btn %s">
+        <a href="%s" class="btn %s" ' . $onClick . '>
           <i class="fa %s"></i> %s
         </a>
       </div>';
