@@ -11,18 +11,6 @@
       "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
       "onReadyScript": "contact-summary/show-actions",
       "credential": "admin"
-    },
-    {
-      "label": "Contact Summary - Action Menu",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/actions/open-contact-actions-menu",
-      "credential": "admin"
-    },
-    {
-      "label": "Contact Action Menu - User deletetion confirmation dialog",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/actions/show-user-account-delete-confirmation-dialog",
-      "credential": "admin"
     }
   ]
 }
