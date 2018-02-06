@@ -44,12 +44,12 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    */
   public function get() {
     $actionsGroup = new ActionsGroup('Workflows:');
-    $actionsGroup->addItem($this->getWorkflowJoiningButton());
-    $actionsGroup->addItem($this->getWorkflowExitingButton());
-    $actionsGroup->addItem($this->getWorkflowOtherButton());
+    $actionsGroup->addItem($this->getJoiningButton());
+    $actionsGroup->addItem($this->getExitingButton());
+    $actionsGroup->addItem($this->getOtherButton());
     $actionsGroup->addItem(new GroupSeparatorItem());
-    $actionsGroup->addItem($this->getWorkflowNewTaskButton());
-    $actionsGroup->addItem($this->getWorkflowNewDocumentButton());
+    $actionsGroup->addItem($this->getNewTaskButton());
+    $actionsGroup->addItem($this->getNewDocumentButton());
     $actionsGroup->addItem(new GroupSeparatorItem());
 
     $lineManagers = $this->getLineManagers();
@@ -73,7 +73,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    *
    * @return ActionsGroupButtonItem
    */
-  private function getWorkflowJoiningButton() {
+  private function getJoiningButton() {
     $caseTypeId = $this->getCaseTypeID('Joining');
     $url = CRM_Utils_System::url(
       'civicrm/tasksassignments/dashboard#/tasks',
@@ -93,7 +93,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    *
    * @return ActionsGroupButtonItem
    */
-  private function getWorkflowExitingButton() {
+  private function getExitingButton() {
     $caseTypeId = $this->getCaseTypeID('Exiting');
     $url = CRM_Utils_System::url(
       'civicrm/tasksassignments/dashboard#/tasks',
@@ -114,7 +114,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    *
    * @return ActionsGroupButtonItem
    */
-  private function getWorkflowOtherButton() {
+  private function getOtherButton() {
     $url = CRM_Utils_System::url(
       'civicrm/tasksassignments/dashboard#/tasks',
       "reset=1&cid=$this->contactID&openModal=assignment"
@@ -134,7 +134,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    *
    * @return ActionsGroupButtonItem
    */
-  private function getWorkflowNewTaskButton() {
+  private function getNewTaskButton() {
     $url = CRM_Utils_System::url(
       'civicrm/tasksassignments/dashboard#/tasks',
       "reset=1&cid=$this->contactID&openModal=task"
@@ -154,7 +154,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    *
    * @return ActionsGroupButtonItem
    */
-  private function getWorkflowNewDocumentButton() {
+  private function getNewDocumentButton() {
     $url = CRM_Utils_System::url(
       'civicrm/tasksassignments/dashboard#/documents',
       "reset=1&cid=$this->contactID&openModal=document"
