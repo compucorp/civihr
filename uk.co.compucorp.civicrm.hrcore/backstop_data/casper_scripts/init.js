@@ -6,7 +6,7 @@ module.exports = function (casper, scenario) {
   var credentials = config.credentials[scenario.credential];
 
   casper.echo('--------------------------------------------', 'COMMENT');
-  casper.echo('Running Scenario ' + scenario.count + ' : ' + scenario.label, 'PARAMETER');
+  casper.echo('Running Scenario "' + scenario.label + '" ' + scenario.count, 'PARAMETER');
 
   if (!scenario.performLogin) {
     return;
