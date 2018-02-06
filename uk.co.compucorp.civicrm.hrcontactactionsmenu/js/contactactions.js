@@ -14,8 +14,8 @@
 
       CRM
         .confirm({
-          'title': 'Confirmation dialog',
-          'message': 'Are you sure you want to continue?'
+          'title': 'Confirm',
+          'message': 'Are you sure you want to delete the user account?'
         })
         .on('crmConfirm:yes', function () {
           window.location = url;
