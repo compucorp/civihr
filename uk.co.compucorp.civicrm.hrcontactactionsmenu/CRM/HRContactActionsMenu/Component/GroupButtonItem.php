@@ -31,6 +31,11 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
   private $url;
 
   /**
+   * @var array
+   */
+  private $attributes = [];
+
+  /**
    * CRM_HRContactActionsMenu_Component_GroupButtonItem constructor.
    *
    * @param string $label
@@ -79,12 +84,29 @@ class CRM_HRContactActionsMenu_Component_GroupButtonItem implements ActionsGroup
   }
 
   /**
+   * Stores attribute and value in the attributes array.
+   *
+   * @param string $attribute
+   * @param string $value
+   */
+  public function setAttribute($attribute, $value) {
+    $this->attributes[$attribute] = $value;
+  }
+
+  /**
    * {@inheritDoc}
    */
   public function render() {
+    $buttonAttributes = '';
+    if ($this->attributes) {
+      foreach($this->attributes as $attribute => $value) {
+        $buttonAttributes .= $attribute . '= "' . $value . '" ';
+      }
+    }
+
     $buttonMarkup = '
       <div class="crm_contact-actions__action">
-        <a href="%s" class="btn %s">
+        <a href="%s" class="btn %s" ' . $buttonAttributes . '>
           <i class="fa %s"></i> %s
         </a>
       </div>';

@@ -7,6 +7,10 @@ use Symfony\Component\DependencyInjection\Definition;
 use CRM_HRCore_SearchTask_ContactFormSearchTaskAdder as ContactFormSearchTaskAdder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\Config\FileLocator;
+use CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup as WorkflowActionGroupHelper;
+use CRM_HRCore_Service_Manager as ManagerService;
+use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
+use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
 
 /**
  * Implements hook_civicrm_config().
@@ -69,6 +73,28 @@ function hrcore_civicrm_summaryActions( &$actions, $contactID ) {
   $link = '/civicrm/user/create-account?cid=%d';
   $userAdd['href'] = sprintf($link, $contactID);
   $actions['otherActions']['user-add'] = $userAdd;
+}
+
+/**
+ * Implementation of hook_addContactMenuActions to add the
+ * Workflow menu group to the contact actions menu.
+ *
+ * @param ActionsMenu $menu
+ */
+function hrcore_addContactMenuActions(ActionsMenu $menu) {
+  //We need to make sure that the T&A extension is enabled
+  if (ExtensionHelper::isExtensionEnabled('uk.co.compucorp.civicrm.tasksassignments')) {
+    $contactID = empty($_GET['cid']) ? '' : $_GET['cid'];
+    if (!$contactID) {
+      return;
+    }
+
+    $managerService = new ManagerService();
+    $workflowActionGroup = new WorkflowActionGroupHelper($managerService, $contactID);
+    $workflowActionGroup = $workflowActionGroup->get();
+    $workflowActionGroup->setWeight(2);
+    $menu->addToMainPanel($workflowActionGroup);
+  }
 }
 
 /**
@@ -297,3 +323,4 @@ function _hrcore_add_js_session_vars() {
     'contact_id' => CRM_Core_Session::getLoggedInContactID()
   ]);
 }
+
