@@ -138,7 +138,7 @@ function runBackstopJS (command) {
             var promise = backstopjs(command, {
               configPath: BACKSTOP_DIR_PATH + destFile,
               filter: argv.filter
-            }).catch(_.noop).then(function () { // equivalent to .finally()
+            }).catch(function () { // equivalent to .finally()
               gulp.src(BACKSTOP_DIR_PATH + destFile, { read: false }).pipe(clean());
             });
 
@@ -199,7 +199,8 @@ function scenariosList () {
 
       scenarios.forEach(function (scenario, index) {
         scenario.credential = scenario.credential || DEFAULT_CREDENTIAL;
-        scenario.onBeforeScript = 'initialise';
+        scenario.count = '(' + (index + 1) + ' of ' + scenarios.length + ')';
+        scenario.onBeforeScript = 'init';
 
         if (index === 0 || previousCredential !== scenario.credential) {
           scenario.performLogin = true;
