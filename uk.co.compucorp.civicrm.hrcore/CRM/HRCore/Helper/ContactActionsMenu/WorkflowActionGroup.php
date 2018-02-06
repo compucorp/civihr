@@ -176,8 +176,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    */
   public function getAddLineManagerButton() {
     $relTypeID = $this->getLineManagerRelationshipTypeSelectId();
-    $onClick = "CRM.loadForm('/civicrm/contact/view/rel?cid=$this->contactID&action=add&relTypeId=$relTypeID')";
-
+    $attribute = ['onclick' => "CRM.loadForm('/civicrm/contact/view/rel?cid=$this->contactID&action=add&relTypeId=$relTypeID')"];
     $params = [
       'label' => 'Add A Line Manager',
       'class' => 'btn btn-secondary-outline',
@@ -185,7 +184,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
       'url' => '#'
     ];
 
-    return $this->getMenuButton($params, $onClick);
+    return $this->getMenuButton($params, $attribute);
   }
 
   /**
@@ -212,18 +211,20 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    * Returns an instance of an ActionsGroupButtonItem
    *
    * @param array $params
-   * @param string $onClick
+   * @param array $attributes
    *
    * @return ActionsGroupButtonItem
    */
-  private function getMenuButton($params, $onClick = '') {
+  private function getMenuButton($params, $attributes = []) {
     $button = new ActionsGroupButtonItem($params['label']);
     $button->setClass($params['class'])
       ->setIcon($params['icon'])
       ->setUrl($params['url']);
 
-    if ($onClick) {
-      $button->setOnClick($onClick);
+    if ($attributes) {
+      foreach($attributes as $attribute => $value) {
+        $button->setAttribute($attribute, $value);
+      }
     }
 
     return $button;
