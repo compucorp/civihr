@@ -20,32 +20,33 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1018 {
   public function upgrade_1018 () {
     $calculationUnits = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
 
-    $leaveRequestTable = LeaveRequest::getTableName();
     $absenceTypeTable = AbsenceType::getTableName();
 
-    $query = "SELECT leaveRequest.id
-      FROM {$leaveRequestTable} leaveRequest
-      INNER JOIN {$absenceTypeTable} absenceType ON leaveRequest.type_id = absenceType.id
-      WHERE absenceType.calculation_unit = {$calculationUnits['hours']}
-      AND leaveRequest.from_date IS NOT NULL
-      AND leaveRequest.from_date = leaveRequest.to_date
-      AND leaveRequest.is_deleted = 0";
+    $query = "SELECT id FROM {$absenceTypeTable} WHERE calculation_unit = {$calculationUnits['hours']}";
 
-    $leaveRequestRecord = CRM_Core_DAO::executeQuery($query);
+    $result = CRM_Core_DAO::executeQuery($query)->fetchAll();
+    $absenceTypesInHour = array_column($result, 'id');
+
+    $leaveRequest = new LeaveRequest();
+    $leaveRequest->whereAdd('from_date IS NOT NULL');
+    $leaveRequest->whereAdd('from_date = to_date');
+    $leaveRequest->whereAdd('is_deleted = 0');
+    $leaveRequest->whereAdd('type_id IN (' . implode(',', $absenceTypesInHour) . ')');
+    $leaveRequest->find();
+
     $contactWorkPatternService = new ContactWorkPatternService();
 
-    while ($leaveRequestRecord->fetch()) {
-      $leaveRequest = LeaveRequest::findById($leaveRequestRecord->id);
+    while ($leaveRequest->fetch()) {
       $workDay = $contactWorkPatternService->getContactWorkDayForDate(
         $leaveRequest->contact_id, new DateTime($leaveRequest->from_date));
 
       if (!empty($workDay['time_to'])) {
         $leaveRequest->to_date =
-          substr($leaveRequest->from_date, 0, 10) . ' ' . $workDay['time_to'] . ':00';
+          date("Y-m-d {$workDay['time_to']}:00", strtotime($leaveRequest->from_date));
 
-        $leaveRequest->save();
+        $leaveRequest->update();
       }
-    };
+    }
 
     return true;
   }
