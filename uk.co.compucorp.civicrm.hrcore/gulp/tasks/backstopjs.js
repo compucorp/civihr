@@ -6,6 +6,7 @@ var exec = require('child_process').exec;
 var file = require('gulp-file');
 var fs = require('fs');
 var gulp = require('gulp');
+var notify = require('gulp-notify');
 var path = require('path');
 var Promise = require('es6-promise').Promise;
 
@@ -138,8 +139,11 @@ function runBackstopJS (command) {
             var promise = backstopjs(command, {
               configPath: BACKSTOP_DIR_PATH + destFile,
               filter: argv.filter
-            }).catch(function () { // equivalent to .finally()
-              gulp.src(BACKSTOP_DIR_PATH + destFile, { read: false }).pipe(clean());
+            }).catch(_.noop).then(function () { // equivalent to .finally()
+              gulp
+                .src(BACKSTOP_DIR_PATH + destFile, { read: false })
+                .pipe(clean())
+                .pipe(notify({ message: 'Backstop has finished', sound: true }));
             });
 
             resolve(promise);
