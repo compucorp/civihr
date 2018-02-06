@@ -1,14 +1,13 @@
-(function (CRM) {
-  var $ = CRM.$;
-
-  (function init () {
-    initListeners();
-  }());
+(function ($) {
+  $(document).ready(function () {
+    showConfirmDialogWhenDeletingUserAccount();
+    markMenuButtonAsActiveWhenPressed();
+  });
 
   /**
    * Displays confirmation dialog before deleting user account
    */
-  function confirmUserAccountDeletion () {
+  function showConfirmDialogWhenDeletingUserAccount () {
     $('[data-delete-user-url]').on('click', function () {
       var url = $(this).attr('data-delete-user-url');
 
@@ -24,29 +23,20 @@
   }
 
   /**
-   * Initializes click listeners for
-   * - Delete User Account Button
-   * - Actions Button
-   */
-  function initListeners () {
-    confirmUserAccountDeletion();
-    toggleActionMenuButtonClass();
-  }
-
-  /**
    * Toggles the "active" class in "Actions" button
    *
    * @param {Object} event
    */
-  function toggleActionMenuButtonClass (event) {
+  function markMenuButtonAsActiveWhenPressed (event) {
     $(document).on('click', function (event) {
-      var selector = $('#crm-contact-actions-link');
+      var $button = $('#crm-contact-actions-link');
+      var $target = $(event.target);
 
-      if ($(event.target).is('#crm-contact-actions-link, #crm-contact-actions-link *')) {
-        selector.addClass('active');
+      if ($target.is($button) || !!$button.has($target).length) {
+        $button.addClass('active');
       } else {
-        selector.removeClass('active');
+        $button.removeClass('active');
       }
     });
   }
-}(CRM));
+}(CRM.$));
