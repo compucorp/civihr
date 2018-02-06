@@ -25,7 +25,7 @@
         </div>
         <div class="crm_contact-actions__panel__footer">
           <div class="row">
-            {if !empty($contactInfo.id)}
+            {if !empty($contactInfo.cmsId)}
               <div class="col-md-6">
                 {if $userAccountDisabled}
                   <a class="btn btn-warning"
