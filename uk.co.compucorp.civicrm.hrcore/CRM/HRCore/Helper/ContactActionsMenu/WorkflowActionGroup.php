@@ -79,7 +79,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
       'label' => 'Joining',
       'class' => 'btn btn-primary-outline',
       'icon' => 'fa fa-user-plus',
-      'url' => $this->getButtonUrl(['openModal' => 'assignment', 'caseTypeId' => $caseTypeId], 'tasks'),
+      'url' => $this->getTasksTabUrl(['openModal' => 'assignment', 'caseTypeId' => $caseTypeId]),
     ];
     return $this->getMenuButton($params);
   }
@@ -95,7 +95,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
       'label' => 'Exiting',
       'class' => 'btn btn-primary-outline',
       'icon' => 'fa fa-user-times',
-      'url' => $this->getButtonUrl(['openModal' => 'assignment', 'caseTypeId' => $caseTypeId], 'tasks')
+      'url' => $this->getTasksTabUrl(['openModal' => 'assignment', 'caseTypeId' => $caseTypeId])
     ];
 
     return $this->getMenuButton($params);
@@ -111,7 +111,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
       'label' => 'Other...',
       'class' => 'btn btn-primary-outline',
       'icon' => '',
-      'url' => $this->getButtonUrl(['openModal' => 'assignment'], 'tasks')
+      'url' => $this->getTasksTabUrl(['openModal' => 'assignment'])
     ];
 
     return $this->getMenuButton($params);
@@ -127,7 +127,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
       'label' => 'New Task',
       'class' => 'btn btn-primary-outline',
       'icon' => 'fa fa-check-square-o',
-      'url' => $this->getButtonUrl(['openModal' => 'task'], 'tasks')
+      'url' => $this->getTasksTabUrl(['openModal' => 'task'])
     ];
 
     return $this->getMenuButton($params);
@@ -143,7 +143,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
       'label' => 'New Document',
       'class' => 'btn btn-primary-outline',
       'icon' => 'fa fa-id-card-o',
-      'url' => $this->getButtonUrl(['openModal' => 'document'], 'documents')
+      'url' => $this->getDocumentsTabUrl(['openModal' => 'document'])
     ];
 
     return $this->getMenuButton($params);
@@ -195,16 +195,14 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    *
    * @return ActionsGroupButtonItem
    */
-  private function getMenuButton($params, $attributes = []) {
+  private function getMenuButton($params, array $attributes = []) {
     $button = new ActionsGroupButtonItem($params['label']);
     $button->setClass($params['class'])
       ->setIcon($params['icon'])
       ->setUrl($params['url']);
 
-    if ($attributes) {
-      foreach($attributes as $attribute => $value) {
-        $button->setAttribute($attribute, $value);
-      }
+    foreach($attributes as $attribute => $value) {
+      $button->setAttribute($attribute, $value);
     }
 
     return $button;
@@ -272,7 +270,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    *
    * @return string
    */
-  private function getButtonUrl($queryParameters, $defaultTab) {
+  private function getTasksAndAssignmentsUrl($queryParameters, $defaultTab) {
     $defaultParameters = ['reset' => 1, 'cid' => $this->contactID];
     $queryParameters = array_merge($defaultParameters, $queryParameters);
 
@@ -282,5 +280,27 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
     );
 
     return $url;
+  }
+
+  /**
+   * Gets the Url for a Document Tab based on the query parameters
+   *
+   * @param array $queryParameters
+   *
+   * @return string
+   */
+  private function getDocumentsTabUrl($queryParameters) {
+    return $this->getTasksAndAssignmentsUrl($queryParameters, 'documents');
+  }
+
+  /**
+   * Gets the Url for a Task Tab based on the query parameters
+   *
+   * @param array $queryParameters
+   *
+   * @return string
+   */
+  private function getTasksTabUrl($queryParameters) {
+    return $this->getTasksAndAssignmentsUrl($queryParameters, 'tasks');
   }
 }
