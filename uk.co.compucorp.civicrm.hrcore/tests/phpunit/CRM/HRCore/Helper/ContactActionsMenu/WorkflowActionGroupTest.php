@@ -39,7 +39,6 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroupTest extends BaseH
     $contactID = 2;
     $managerService = $this->prophesize(ManagerService::class);
     $managerService->getLineManagersFor($contactID)->willReturn([5 => 'Test Manager']);
-    $managerService->reveal();
     $workflowActionGroupHelper = new WorkflowActionGroupHelper($managerService->reveal(), $contactID);
     $workflowActionGroup = $workflowActionGroupHelper->get();
 

@@ -10,6 +10,7 @@ use Symfony\Component\Config\FileLocator;
 use CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup as WorkflowActionGroupHelper;
 use CRM_HRCore_Service_Manager as ManagerService;
 use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
+use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
 
 /**
  * Implements hook_civicrm_config().
@@ -80,9 +81,9 @@ function hrcore_civicrm_summaryActions( &$actions, $contactID ) {
  *
  * @param ActionsMenu $menu
  */
-function tasksassignments_addContactMenuActions(ActionsMenu $menu) {
+function hrcore_addContactMenuActions(ActionsMenu $menu) {
   //We need to make sure that the T&A extension is enabled
-  if(_hrcore_isExtensionEnabled('uk.co.compucorp.civicrm.tasksassignments')) {
+  if (ExtensionHelper::isExtensionEnabled('uk.co.compucorp.civicrm.tasksassignments')) {
     $contactID = empty($_GET['cid']) ? '' : $_GET['cid'];
     if (!$contactID) {
       return;
@@ -323,21 +324,3 @@ function _hrcore_add_js_session_vars() {
   ]);
 }
 
-/**
- * Checks if an extension is installed or enabled
- *
- * @param string $key
- *   Extension unique key
- *
- * @return boolean
- */
-function _hrcore_isExtensionEnabled($key)  {
-  $isEnabled = CRM_Core_DAO::getFieldValue(
-    'CRM_Core_DAO_Extension',
-    $key,
-    'is_active',
-    'full_name'
-  );
-
-  return  !empty($isEnabled) ? true : false;
-}

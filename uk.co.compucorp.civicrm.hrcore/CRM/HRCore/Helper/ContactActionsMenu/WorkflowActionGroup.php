@@ -235,7 +235,9 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
    * @return string
    */
   private function getCaseTypeID($caseTypeName) {
-    return isset($this->getworkflowCaseTypes()[$caseTypeName]) ? $this->getworkflowCaseTypes()[$caseTypeName] : '';
+    $caseTypes = $this->getWorkflowCaseTypes();
+
+    return isset($caseTypes[$caseTypeName]) ? $caseTypes[$caseTypeName] : '';
   }
 
   /**
