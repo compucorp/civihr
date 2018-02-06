@@ -41,7 +41,7 @@
               </div>
               <div class="col-md-6">
                 <a class="btn btn-danger"
-                  href="/civicrm/contactactionsmenu/deleteuseraccount?cid={$contactInfo.contact_id}">
+                  data-delete-user-url="/civicrm/contactactionsmenu/deleteuseraccount?cid={$contactInfo.contact_id}">
                   Delete User Account
                 </a>
               </div>
