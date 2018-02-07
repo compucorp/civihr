@@ -131,7 +131,7 @@ class CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroup {
   /**
    * Gets the Record Leave button.
    *
-   * @return \CRM_HRContactActionsMenu_Component_GroupButtonItem
+   * @return ActionsGroupButtonItem
    */
   private function getRecordLeaveButton() {
     return $this->getLeaveButton('Record Leave', 'fa-briefcase', 'leave');

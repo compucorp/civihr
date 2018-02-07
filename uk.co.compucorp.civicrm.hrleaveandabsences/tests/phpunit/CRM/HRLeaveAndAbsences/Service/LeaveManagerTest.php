@@ -184,4 +184,28 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManagerTest extends BaseHeadlessTest {
     $leaveApprovers = $this->leaveManagerService->getLeaveApproversForContact($contactID);
     $this->assertEquals([], $leaveApprovers);
   }
+
+  public function testGetLeaveApproversForContactReturnsEmptyWhenLeaveApproverRelationshipIsInactive() {
+    $contact = ContactFabricator::fabricate();
+    $manager1 = ContactFabricator::fabricate(['display_name' => 'Manager 1']);
+
+    // Set manager1 to be leave approver for the contact but set relationship to be inactive
+    $this->setContactAsLeaveApproverOf($manager1, $contact, null, null, false);
+
+    $leaveApprovers = $this->leaveManagerService->getLeaveApproversForContact($contact['id']);
+
+    $this->assertEquals([], $leaveApprovers);
+  }
+
+  public function testGetLeaveApproversForContactReturnsEmptyWhenLeaveApproverRelationshipHasExpired() {
+    $contact = ContactFabricator::fabricate();
+    $manager1 = ContactFabricator::fabricate(['display_name' => 'Manager 1']);
+
+    // Set manager1 to be leave approver for the contact but set relationship to be expired
+    $this->setContactAsLeaveApproverOf($manager1, $contact, '2016-01-01', '2016-12-31');
+
+    $leaveApprovers = $this->leaveManagerService->getLeaveApproversForContact($contact['id']);
+
+    $this->assertEquals([], $leaveApprovers);
+  }
 }
