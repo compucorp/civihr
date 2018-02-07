@@ -27,6 +27,8 @@
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'hrui.civix.php';
 
+use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
+
 /**
  * Implements hook_civicrm_coreResourceList().
  */
@@ -52,7 +54,7 @@ function hrui_civicrm_pageRun($page) {
     //set government field value for individual page
     $contactType = CRM_Contact_BAO_Contact::getContactType(CRM_Utils_Request::retrieve('cid', 'Integer'));
 
-    $isEnabled = _hrui_is_extension_enabled('org.civicrm.hrident');
+    $isEnabled = ExtensionHelper::isExtensionEnabled('org.civicrm.hrident');
 
     if ($isEnabled && $contactType == 'Individual') {
       $hideGId = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify', 'name' => 'is_government', 'return' => 'id'));
@@ -178,7 +180,7 @@ function _hrui_phone_is_empty($phoneIndex, $form) {
  * Implementation of hook_civicrm_postProcess
  */
 function hrui_civicrm_postProcess( $formName, &$form ) {
-  $isEnabled = _hrui_is_extension_enabled('org.civicrm.hrident');
+  $isEnabled = ExtensionHelper::isExtensionEnabled('org.civicrm.hrident');
 
   if ($formName == 'CRM_Contact_Form_Contact'
     && $isEnabled
@@ -485,21 +487,6 @@ function hrui_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 }
 
 /**
- * Check if the extension with the given key is enabled
- *
- * @param string $extensionKey
- * @return boolean
- */
-function _hrui_check_extension($extensionKey)  {
-  return (boolean) CRM_Core_DAO::getFieldValue(
-    'CRM_Core_DAO_Extension',
-    $extensionKey,
-    'is_active',
-    'full_name'
-  );
-}
-
-/**
  * 1) we alter the weights for these tabs here
  * since these tabs are not created by hook_civicrm_tab
  * and the only way to alter their weights is here
@@ -563,7 +550,7 @@ function _hrui_alter_tabs(&$tabs, $tabsToRemove) {
 function hrui_civicrm_tabset($tabsetName, &$tabs, $contactID) {
   $tabsToRemove = array();
 
-  if (_hrui_check_extension('uk.co.compucorp.civicrm.tasksassignments')) {
+  if (ExtensionHelper::isExtensionEnabled('uk.co.compucorp.civicrm.tasksassignments')) {
     $tabsToRemove[] = 'case';
   }
 
@@ -581,17 +568,6 @@ function hrui_civicrm_managed(&$entities) {
 }
 
 /**
- * Implements hook_civicrm_alterMenu().
- *
- * @param Array $items List of http routes
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_alterMenu
- */
-function hrui_civicrm_alterMenu(&$items) {
-  $items['civicrm/api']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
-  $items['civicrm/styleguide']['access_arguments'] =[['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
-}
-
-/**
  * Implements hook_civicrm_navigationMenu().
  *
  * @param Array $params List of menu items
@@ -599,10 +575,6 @@ function hrui_civicrm_alterMenu(&$items) {
  */
 function hrui_civicrm_navigationMenu(&$params) {
   _hrui_customImportMenuItems($params);
-  _hrui_coreMenuChanges($params);
-  _hrui_createHelpMenu($params);
-  _hrui_createDeveloperMenu($params);
-  _hui_setDynamicMenuIcons($params);
 }
 
 /**
@@ -889,185 +861,10 @@ function _hrui_customImportMenuItems(&$params) {
 }
 
 /**
- * Changes to some core menu items
- *
- */
-function _hrui_coreMenuChanges(&$params) {
-  // remove search items
-  $searchNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Search...', 'id', 'name');
-  $toRemove = [
-    'Full-text search',
-    'Search builder',
-    'Custom searches',
-    'Find Cases',
-    'Find Activities',
-  ];
-  foreach($toRemove as $item) {
-    if (
-      in_array($item, ['Find Cases', 'Find Activities'])
-      && !(_hrui_check_extension('uk.co.compucorp.civicrm.tasksassignments'))
-    ) {
-      continue;
-    }
-    $itemId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $item , 'id', 'name');
-    unset($params[$searchNavId]['child'][$itemId]);
-  }
-
-  // remove contact items
-  $searchNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
-  $toRemove = [
-    'New Tag',
-    'Manage Tags (Categories)',
-    'New Activity',
-    'Import Activities',
-    'Contact Reports',
-  ];
-  foreach($toRemove as $item) {
-    if (
-      in_array($item, ['New Activity', 'Import Activities'])
-      && !(_hrui_check_extension('uk.co.compucorp.civicrm.tasksassignments'))
-    ) {
-      continue;
-    }
-    $itemId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $item , 'id', 'name');
-    unset($params[$searchNavId]['child'][$itemId]);
-  }
-
-  // remove main Reports menu
-  $reportsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
-  unset($params[$reportsNavId]);
-
-  // Remove Admin items
-  $adminNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
-
-  $civiReportNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviReport', 'id', 'name');
-
-  $civiCaseNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviCase', 'id', 'name');
-  $redactionRulesNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Redaction Rules', 'id', 'name');
-  $supportNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Support', 'id', 'name');
-
-  unset($params[$supportNavId]);
-  unset($params[$adminNavId]['child'][$civiReportNavId]);
-  unset($params[$adminNavId]['child'][$civiCaseNavId]['child'][$redactionRulesNavId]);
-}
-
-/**
  * Enable/Disable Menu items created by hrui extension
  *
  */
 function _hrui_menuSetActive($isActive) {
   CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active = {$isActive} WHERE name = 'import_custom_fields'");
   CRM_Core_BAO_Navigation::resetNavigation();
-}
-
-/**
- * Creates Help Menu in navigation bar
- *
- * @param Array $menu List of available menu items
- */
-function _hrui_createHelpMenu(&$menu) {
-  _hrui_civix_insert_navigation_menu($menu, '', [
-    'name' => ts('Help'),
-    'permission' => 'access CiviCRM',
-  ]);
-
-  _hrui_civix_insert_navigation_menu($menu, 'Help', [
-    'name' => ts('User Guide'),
-    'url' => 'http://civihr-documentation.readthedocs.io/en/latest/',
-    'target' => '_blank',
-    'permission' => 'access CiviCRM'
-  ]);
-
-  _hrui_civix_insert_navigation_menu($menu, 'Help', [
-    'name' => ts('CiviHR website'),
-    'url' => 'https://www.civihr.org/',
-    'target' => '_blank',
-    'permission' => 'access CiviCRM'
-  ]);
-
-  _hrui_civix_insert_navigation_menu($menu, 'Help', [
-    'name' => ts('Get support'),
-    'url' => 'https://www.civihr.org/support',
-    'target' => '_blank',
-    'permission' => 'access CiviCRM'
-  ]);
-}
-
-/**
- * Creates Developer Menu in navigation bar
- *
- * @param Array $menu List of available menu items
- */
-function _hrui_createDeveloperMenu(&$menu) {
-  _hrui_civix_insert_navigation_menu($menu, '', [
-    'name' => ts('Developer'),
-    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
-    'operator' => 'AND'
-  ]);
-
-  _hrui_civix_insert_navigation_menu($menu, 'Developer', [
-    'name' => ts('API Explorer'),
-    'url' => 'civicrm/api',
-    'target' => '_blank',
-    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
-    'operator' => 'AND'
-  ]);
-
-  _hrui_civix_insert_navigation_menu($menu, 'Developer', [
-    'name' => ts('Developer Docs'),
-    'target' => '_blank',
-    'url' => 'https://civihr.atlassian.net/wiki/spaces/CIV/pages',
-    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
-    'operator' => 'AND'
-  ]);
-
-  _hrui_civix_insert_navigation_menu($menu, 'Developer', [
-    'name' => ts('Style Guide'),
-    'target' => '_blank',
-    'url' => 'https://www.civihr.org/support',
-    'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
-    'operator' => 'AND'
-  ]);
-
-  // Adds sub menu under Style Guide menu
-  foreach (Civi::service('style_guides')->getAll() as $styleGuide) {
-    _hrui_civix_insert_navigation_menu($menu, 'Developer/Style Guide', [
-      'label' => $styleGuide['label'],
-      'name' => $styleGuide['name'],
-      'url' => 'civicrm/styleguide/' . $styleGuide['name'],
-      'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
-      'operator' => 'AND'
-    ]);
-  }
-}
-
-/**
- * Adds icons to dynamically defined menu items
- *
- * @param array $menu
- *   List of available menu items
- */
-function _hui_setDynamicMenuIcons(&$menu) {
-  $menuToIcons = [
-    'Help' => 'crm-i fa-question-circle',
-    'Developer'=> 'crm-i fa-code',
-  ];
-
-  foreach ($menu as $key => $item) {
-    $menuName = $item['attributes']['name'];
-    if (array_key_exists($menuName, $menuToIcons)) {
-      $menu[$key]['attributes']['icon'] = $menuToIcons[$menuName];
-    }
-  }
-}
-
-function _hrui_is_extension_enabled($key) {
-  $isEnabled = CRM_Core_DAO::getFieldValue(
-    'CRM_Core_DAO_Extension',
-    $key,
-    'is_active',
-    'full_name'
-  );
-
-  return !empty($isEnabled) ? true : false;
 }
