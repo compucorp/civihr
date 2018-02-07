@@ -20,7 +20,7 @@ class CRM_HRLeaveAndAbsences_Component_ContactActionsMenu_LeaveApproversListItem
    * @param array $leaveApprovers
    */
   public function __construct(array $leaveApprovers) {
-    $this->leaveApprovers= $leaveApprovers;
+    $this->leaveApprovers = $leaveApprovers;
   }
 
   /**
