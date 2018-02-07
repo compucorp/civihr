@@ -57,7 +57,8 @@ function civicrm_api3_leave_request_create($params) {
 
 function civicrm_api3_leave_request_get_from_email_for_notifications($leaveRequest) {
   $leaveRequestTemplateFactory = new CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate();
-  $message = new CRM_HRLeaveAndAbsences_Mail_Message($leaveRequest, $leaveRequestTemplateFactory);
+  $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
+  $message = new CRM_HRLeaveAndAbsences_Mail_Message($leaveRequest, $leaveRequestTemplateFactory, $leaveManagerService);
 
   return $message->getFromEmail();
 }

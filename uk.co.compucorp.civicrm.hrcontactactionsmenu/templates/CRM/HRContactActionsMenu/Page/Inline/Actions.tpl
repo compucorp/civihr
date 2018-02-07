@@ -51,26 +51,6 @@
       </div>
       <div class="crm_contact-actions__panel crm_contact-actions__panel--secondary">
         <div class="crm_contact-actions__panel__body">
-          <div class="crm_contact-actions__group">
-            <h3>Leave:</h3>
-            <div class="crm_contact-actions__action">
-              <a href="#" class="btn btn-primary-outline">
-                <i class="fa fa-plus"></i> Record New
-              </a>
-            </div>
-            <div class="crm_contact-actions__action">
-              <a href="#" class="btn btn-primary-outline">
-                <i class="fa fa-search"></i> View Entitlements
-              </a>
-            </div>
-            <hr>
-            <h4>Leave Approver(s):</h4>
-            <p><a href="#" class="text-primary">John Snow</a></p>
-            <p><a href="#" class="text-primary">Allan Wite</a></p>
-            <div class="crm_contact-actions__action">
-              <a href="#" class="btn btn-secondary">Manage Leave Approver</a>
-            </div>
-          </div>
           {foreach from=$menu->getMainPanelItems() item='group'}
             <div class="crm_contact-actions__group">
               <h3>{$group->getTitle()}</h3>
