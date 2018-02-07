@@ -10,34 +10,26 @@ class CRM_HRLeaveAndAbsences_Component_ContactActionsMenu_LeaveApproversListItem
   implements ActionsGroupItemInterface {
 
   /**
-   * @var LeaveManagerService
+   * @var array
    */
-  private $leaveManagerService;
-
-  /**
-   * @var int
-   */
-  private $contactID;
+  private $leaveApprovers;
 
   /**
    * LeaveApproversListItem constructor.
    *
-   * @param LeaveManagerService $leaveManagerService
-   * @param int $contactID
+   * @param array $leaveApprovers
    */
-  public function __construct(LeaveManagerService $leaveManagerService, $contactID) {
-    $this->leaveManagerService = $leaveManagerService;
-    $this->contactID = $contactID;
+  public function __construct(array $leaveApprovers) {
+    $this->leaveApprovers= $leaveApprovers;
   }
 
   /**
    * {@inheritdoc}
    */
   public function render() {
-    $leaveApprovers = $this->leaveManagerService->getLeaveApproversForContact($this->contactID);
     $markup = '<h4>Leave Approver(s): </h4>';
 
-    foreach($leaveApprovers as $leaveApprover) {
+    foreach($this->leaveApprovers as $leaveApprover) {
       $markup .= '<p><a href="#" class="text-primary"> ' . $leaveApprover . ' </a></p>';
     }
 

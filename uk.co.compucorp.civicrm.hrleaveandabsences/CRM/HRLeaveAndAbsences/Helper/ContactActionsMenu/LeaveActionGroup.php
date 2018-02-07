@@ -52,7 +52,7 @@ class CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroup {
     $leaveApprovers = $this->getLeaveApprovers();
 
     if ($leaveApprovers) {
-      $leaveApproversListItem = new LeaveApproversListItem($this->leaveManagerService, $this->contactID);
+      $leaveApproversListItem = new LeaveApproversListItem($leaveApprovers);
       $actionsGroup->addItem($leaveApproversListItem);
       $actionsGroup->addItem($this->getManageLeaveApproverButton());
     }
