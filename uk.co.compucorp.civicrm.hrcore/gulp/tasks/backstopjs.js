@@ -6,7 +6,7 @@ var exec = require('child_process').exec;
 var file = require('gulp-file');
 var fs = require('fs');
 var gulp = require('gulp');
-var notifier = require('node-notifier');
+var notify = require('gulp-notify');
 var path = require('path');
 var Promise = require('es6-promise').Promise;
 
@@ -132,6 +132,8 @@ function runBackstopJS (command) {
   return getRolesAndIDs()
     .then(function (contactIdsByRoles) {
       return new Promise(function (resolve) {
+        var isBackstopJSSuccessful;
+
         gulp.src(BACKSTOP_DIR_PATH + FILES.tpl)
           .pipe(file(destFile, tempFileContent(contactIdsByRoles)))
           .pipe(gulp.dest(BACKSTOP_DIR_PATH))
@@ -140,13 +142,16 @@ function runBackstopJS (command) {
               configPath: BACKSTOP_DIR_PATH + destFile,
               filter: argv.filter
             }).then(function () {
-              notifier.notify({ message: 'Successful', title: 'BackstopJS', sound: 'Beep' });
-            }).catch(function () {
-              notifier.notify({ message: 'Failed', title: 'BackstopJS', sound: 'Beep' });
-            }).then(function () { // equivalent to .finally()
+              isBackstopJSSuccessful = true;
+            }).catch(_.noop).then(function () { // equivalent to .finally()
               gulp
                 .src(BACKSTOP_DIR_PATH + destFile, { read: false })
-                .pipe(clean());
+                .pipe(clean())
+                .pipe(notify({
+                  message: isBackstopJSSuccessful ? 'Successful' : 'Error',
+                  title: 'BackstopJS',
+                  sound: 'Beep'
+                }));
             });
 
             resolve(promise);
