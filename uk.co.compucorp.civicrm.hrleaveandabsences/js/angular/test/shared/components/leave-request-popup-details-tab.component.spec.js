@@ -616,9 +616,7 @@ define([
 
                     it('sets the maximum deduction amount according to the chosen timeframe', function () {
                       expect(controller.uiOptions.times.from.maxAmount).toBe(
-                        (getMomentDateWithGivenTime(controller.uiOptions.times.to.time).diff(
-                          getMomentDateWithGivenTime(controller.uiOptions.times.from.time), 'minutes'
-                        ) / 60).toString()
+                        getTimeDifferenceInHours(controller.uiOptions.times.from.time, controller.uiOptions.times.to.time)
                       );
                     });
                   });
@@ -683,17 +681,13 @@ define([
 
                   it('sets the maximum "from" deduction amount according to maximum and chosen "from" times', function () {
                     expect(controller.uiOptions.times.from.maxAmount).toBe(
-                      (getMomentDateWithGivenTime(controller.uiOptions.times.from.max).diff(
-                        getMomentDateWithGivenTime(controller.uiOptions.times.from.time), 'minutes'
-                      ) / 60).toString()
+                      getTimeDifferenceInHours(controller.uiOptions.times.from.time, controller.uiOptions.times.from.max)
                     );
                   });
 
                   it('sets the maximum "to" deduction amount according to minimum and chosen "to" times', function () {
                     expect(controller.uiOptions.times.to.maxAmount).toBe(
-                      (getMomentDateWithGivenTime(controller.uiOptions.times.to.time).diff(
-                        getMomentDateWithGivenTime(controller.uiOptions.times.to.min), 'minutes'
-                      ) / 60).toString()
+                      getTimeDifferenceInHours(controller.uiOptions.times.to.min, controller.uiOptions.times.to.time)
                     );
                   });
 
@@ -2037,36 +2031,6 @@ define([
     }
 
     /**
-     * sets from and/or to dates
-     * @param {String} from date set if passed
-     * @param {String} to date set if passed
-     */
-    function setTestDates (from, to) {
-      if (from) {
-        controller.uiOptions.fromDate = getUTCDate(from);
-        controller.dateChangeHandler('from');
-        $rootScope.$digest();
-      }
-
-      if (to) {
-        controller.uiOptions.toDate = getUTCDate(to);
-        controller.dateChangeHandler('to');
-        $rootScope.$digest();
-      }
-    }
-
-    /**
-     * Returns a UTC Date object from a string.
-     *
-     * @param {String} date - the date to convert to UTC Date object.
-     * @return {Date}
-     */
-    function getUTCDate (date) {
-      var now = new Date(date);
-      return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
-    }
-
-    /**
      * Returns the id for a specific status by filtering using the status name.
      *
      * @param {String} statusName - The name of the status to filter by.
@@ -2083,11 +2047,54 @@ define([
     }
 
     /**
+     * Calculates time difference in hours
+     *
+     * @param  {String} timeFrom in HH:mm format
+     * @param  {String} timeTo in HH:mm format
+     * @return {String} amount of hours, eg. '7.5'
+     */
+    function getTimeDifferenceInHours (timeFrom, timeTo) {
+      return (getMomentDateWithGivenTime(timeTo)
+        .diff(getMomentDateWithGivenTime(timeFrom), 'minutes') / 60)
+        .toString();
+    }
+
+    /**
+     * Returns a UTC Date object from a string.
+     *
+     * @param {String} date - the date to convert to UTC Date object.
+     * @return {Date}
+     */
+    function getUTCDate (date) {
+      var now = new Date(date);
+      return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+    }
+
+    /**
      * Sets reason on request
      **/
     function setReason () {
       var reason = optionGroupMock.specificObject('hrleaveandabsences_sickness_reason', 'name', 'appointment');
       controller.request.sickness_reason = reason.value;
+    }
+
+    /**
+     * sets from and/or to dates
+     * @param {String} from date set if passed
+     * @param {String} to date set if passed
+     */
+    function setTestDates (from, to) {
+      if (from) {
+        controller.uiOptions.fromDate = getUTCDate(from);
+        controller.dateChangeHandler('from');
+        $rootScope.$digest();
+      }
+
+      if (to) {
+        controller.uiOptions.toDate = getUTCDate(to);
+        controller.dateChangeHandler('to');
+        $rootScope.$digest();
+      }
     }
   });
 });
