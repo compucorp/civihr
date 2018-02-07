@@ -564,10 +564,6 @@ define([
                 expect(timeFromObject.time).toBe(timeFromObject.min);
               });
 
-              it('sets the maximum deduction amount', function () {
-                expect(timeFromObject.maxAmount).toBe(workDayMock.number_of_hours);
-              });
-
               it('sets the default deduction amount same as maximum', function () {
                 expect(timeFromObject.amount).toBe(timeFromObject.maxAmount);
               });
@@ -597,6 +593,35 @@ define([
                   expect(timeToObject.max).toBe(workDayMock.time_to);
                   expect(timeToObject.time).toBe(timeToObject.max);
                   expect(timeToObject.disabled).toBeFalsy();
+                });
+
+                describe('after to date is selected', function () {
+                  beforeEach(function () {
+                    setTestDates(undefined, date2016To);
+                  });
+
+                  describe('after both start and end times are selected', function () {
+                    beforeEach(function () {
+                      controller.uiOptions.times.from.time =
+                        getMomentDateWithGivenTime(workDayMock.time_from)
+                          .add(controller.uiOptions.time_interval * 2, 'minutes')
+                          .format('HH:mm');
+                      controller.uiOptions.times.to.time =
+                        getMomentDateWithGivenTime(workDayMock.time_to)
+                          .subtract(controller.uiOptions.time_interval * 2, 'minutes')
+                          .format('HH:mm');
+
+                      $rootScope.$digest();
+                    });
+
+                    it('sets the maximum deduction amount according to the chosen timeframe', function () {
+                      expect(controller.uiOptions.times.from.maxAmount).toBe(
+                        (getMomentDateWithGivenTime(controller.uiOptions.times.to.time).diff(
+                          getMomentDateWithGivenTime(controller.uiOptions.times.from.time), 'minutes'
+                        ) / 60).toString()
+                      );
+                    });
+                  });
                 });
               });
 
@@ -634,20 +659,48 @@ define([
                   expect(timeToObject.disabled).toBeFalsy();
                 });
 
-                it('sets the maximum deduction amount', function () {
-                  expect(timeToObject.maxAmount).toBe(workDayMock.number_of_hours);
-                });
-
-                it('sets the default deduction amount same as maximum', function () {
-                  expect(timeToObject.amount).toBe(timeToObject.maxAmount);
-                });
-
                 it('sets the "from" date to request in a date+time format', function () {
                   expect(request.to_date.length).toBe('YYYY-MM-DD hh:mm'.length);
                 });
 
                 it('shows the balance', function () {
                   expect(controller.uiOptions.showBalance).toBeTruthy();
+                });
+
+                describe('after both start and end times are selected', function () {
+                  beforeEach(function () {
+                    controller.uiOptions.times.from.time =
+                      getMomentDateWithGivenTime(workDayMock.time_from)
+                        .add(15, 'minutes')
+                        .format('HH:mm');
+                    controller.uiOptions.times.to.time =
+                      getMomentDateWithGivenTime(workDayMock.time_to)
+                        .subtract(30, 'minutes')
+                        .format('HH:mm');
+
+                    $rootScope.$digest();
+                  });
+
+                  it('sets the maximum "from" deduction amount according to maximum and chosen "from" times', function () {
+                    expect(controller.uiOptions.times.from.maxAmount).toBe(
+                      (getMomentDateWithGivenTime(controller.uiOptions.times.from.max).diff(
+                        getMomentDateWithGivenTime(controller.uiOptions.times.from.time), 'minutes'
+                      ) / 60).toString()
+                    );
+                  });
+
+                  it('sets the maximum "to" deduction amount according to minimum and chosen "to" times', function () {
+                    expect(controller.uiOptions.times.to.maxAmount).toBe(
+                      (getMomentDateWithGivenTime(controller.uiOptions.times.to.time).diff(
+                        getMomentDateWithGivenTime(controller.uiOptions.times.to.min), 'minutes'
+                      ) / 60).toString()
+                    );
+                  });
+
+                  it('sets the default deductions amounts same as maximum', function () {
+                    expect(controller.uiOptions.times.from.amount).toBe(controller.uiOptions.times.from.maxAmount);
+                    expect(controller.uiOptions.times.to.amount).toBe(controller.uiOptions.times.to.maxAmount);
+                  });
                 });
 
                 describe('and it is a single day request', function () {
@@ -658,10 +711,11 @@ define([
                   });
 
                   describe('when "time from" and "time to" are set', function () {
-                    var timeTo = '14:35';
+                    var timeTo;
 
                     beforeEach(function () {
-                      controller.uiOptions.times.from.time = '10:45';
+                      timeTo = controller.uiOptions.times.to.max;
+                      controller.uiOptions.times.from.time = controller.uiOptions.times.from.min;
                       controller.uiOptions.times.to.time = timeTo;
 
                       $rootScope.$digest();
@@ -778,6 +832,7 @@ define([
                     .add(30, 'minutes')
                     .format('HH:mm');
                 leaveRequest.to_date = date2016InServerFormat + ' ' + workDayMock.time_to;
+                leaveRequest.from_date_amount = '1';
 
                 compileComponent({
                   mode: 'edit',
@@ -802,6 +857,12 @@ define([
                     .format('HH:mm')
                 );
               });
+
+              it('sets time and deduction', function () {
+                expect(controller.uiOptions.times.from.time).toBe(moment(leaveRequest.from_date).format('HH:mm'));
+                expect(controller.uiOptions.times.to.time).toBe(moment(leaveRequest.to_date).format('HH:mm'));
+                expect(controller.uiOptions.times.from.amount).toBe(leaveRequest.from_date_amount);
+              });
             });
 
             describe('when received the balance change recalculation event', function () {
@@ -812,28 +873,6 @@ define([
 
               it('recalculates the balance change', function () {
                 expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
-              });
-            });
-
-            describe('when deduction is greater than allowed', function () {
-              var maxDeduction;
-
-              beforeEach(function () {
-                maxDeduction = (Math.min(controller.request.from_date_amount, controller.request.to_date_amount) - 0.001).toString();
-
-                spyOn(controller.request, 'getWorkDayForDate').and
-                  .returnValue($q.resolve({ number_of_hours: maxDeduction }));
-                compileComponent({
-                  mode: 'edit',
-                  request: leaveRequest
-                });
-                $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
-                $rootScope.$digest();
-              });
-
-              it('resets both "from" and "to" to their maximum allowed values', function () {
-                expect(controller.request.from_date_amount).toBe(maxDeduction);
-                expect(controller.request.to_date_amount).toBe(maxDeduction);
               });
             });
           });
@@ -1717,6 +1756,7 @@ define([
       describe('when the calculation unit is "hours"', function () {
         beforeEach(function () {
           selectedAbsenceType.calculation_unit_name = 'hours';
+          controller.uiOptions.multipleDays = true;
 
           spyOn(controller, 'dateChangeHandler').and.callThrough();
         });
