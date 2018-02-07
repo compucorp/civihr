@@ -246,7 +246,10 @@ define([
         })
         .then(function () {
           if (isCalculationUnit('hours')) {
-            return loadTimeRangesFromWorkPattern(dateType);
+            return loadTimeRangesFromWorkPattern(dateType)
+              .then(function () {
+                setDeductionMaximumBoundary(dateType, true);
+              });
           }
         })
         .then(function () {
@@ -291,6 +294,9 @@ define([
             (!vm.uiOptions.multipleDays) && disableAndShowLoadingTimeInput('to');
 
             return loadTimeRangesFromWorkPattern('from')
+              .then(function () {
+                setDeductionMaximumBoundary('from', true);
+              })
               .then(setRequestDateTimesAndDateTypes);
           }
         })
@@ -565,20 +571,19 @@ define([
 
     /**
      * Initialises and sets the "from" and "to" times
+     *
+     * @return {Promise}
      */
     function initTimes () {
-      var dateTypes = ['from'];
+      var dateTypes = vm.uiOptions.multipleDays ? ['from', 'to'] : ['from'];
       var times = vm.uiOptions.times;
-      var request = vm.request;
-
-      (vm.uiOptions.multipleDays) && dateTypes.push('to');
 
       return $q.all(dateTypes.map(loadTimeRangesFromWorkPattern))
         .then(function () {
           ['from', 'to'].forEach(function (dateType) {
-            times[dateType].time = extractTimeFromServerDate(request[dateType + '_date']);
+            times[dateType].time = extractTimeFromServerDate(vm.request[dateType + '_date']);
             times[dateType].amount =
-              Math.min(request[dateType + '_date_amount'], times[dateType].maxAmount).toString();
+              Math.min(vm.request[dateType + '_date_amount'], times[dateType].maxAmount).toString();
 
             setDeductionMaximumBoundary(dateType);
           });
@@ -610,9 +615,7 @@ define([
             }
 
             (!vm.uiOptions.multipleDays && dateType === 'from') && updateEndTimeInputMinTime(time);
-            setDeductionMaximumBoundary(dateType);
-
-            vm.uiOptions.times[dateType].amount = vm.uiOptions.times[dateType].maxAmount;
+            setDeductionMaximumBoundary(dateType, true);
           }
         });
       });
@@ -698,9 +701,6 @@ define([
 
           enableAndSetDataToTimeInput(dateType, workDay);
           (isSingleDayRequest && dateType === 'from') && enableAndSetDataToTimeInput('to', workDay);
-          setDeductionMaximumBoundary(dateType);
-
-          timeObject.amount = timeObject.maxAmount;
         })
         .catch(function (err) {
           workDays[dateType] = {};
@@ -889,8 +889,9 @@ define([
      * Sets deduction maximum and default amounts for a given day type
      *
      * @param {String} timeType from|to
+     * @param {Boolean} setDefaultValue if TRUE, then set the current value to maximum
      */
-    function setDeductionMaximumBoundary (timeType) {
+    function setDeductionMaximumBoundary (timeType, setDefaultValue) {
       var uiOptions = vm.uiOptions;
       var dateType = uiOptions.multipleDays ? timeType : 'from';
       var timeObject = uiOptions.times[dateType];
@@ -899,6 +900,7 @@ define([
       var deduction = workDays[dateType].number_of_hours ? getTimeDifferenceInHours(timeFrom, timeTo) : '0';
 
       timeObject.maxAmount = deduction;
+      (setDefaultValue) && (timeObject.amount = timeObject.maxAmount);
     }
 
     /**
@@ -929,20 +931,19 @@ define([
      */
     function setRequestDateTimesAndDateTypes () {
       var options = vm.uiOptions;
-      var request = vm.request;
       var times = options.times;
 
-      request.from_date = options.fromDate ? convertDateToServerFormat(options.fromDate) : null;
-      request.to_date = options.toDate ? convertDateToServerFormat(options.toDate) : null;
+      vm.request.from_date = options.fromDate ? convertDateToServerFormat(options.fromDate) : null;
+      vm.request.to_date = options.toDate ? convertDateToServerFormat(options.toDate) : null;
 
       if (!options.multipleDays && options.fromDate) {
-        request.to_date = request.from_date;
-        request.to_date_type = request.from_date_type;
+        vm.request.to_date = vm.request.from_date;
+        vm.request.to_date_type = vm.request.from_date_type;
       }
 
       if (isCalculationUnit('hours') && !isLeaveType('toil')) {
-        request.from_date = request.from_date && times.from.time ? request.from_date + ' ' + times.from.time : null;
-        request.to_date = request.to_date && times.to.time ? request.to_date + ' ' + times.to.time : null;
+        vm.request.from_date = vm.request.from_date && times.from.time ? vm.request.from_date + ' ' + times.from.time : null;
+        vm.request.to_date = vm.request.to_date && times.to.time ? vm.request.to_date + ' ' + times.to.time : null;
       }
     }
 
@@ -995,7 +996,10 @@ define([
         .then(absenceTypeUnitChanged && setDaysSelectionMode)
         .then(function () {
           if (absenceTypeUnitChanged && isCalculationUnit('hours')) {
-            return loadTimeRangesFromWorkPattern('from');
+            return loadTimeRangesFromWorkPattern('from')
+              .then(function () {
+                setDeductionMaximumBoundary('from', true);
+              });
           }
         })
         .then(absenceTypeUnitChanged && setRequestDateTimesAndDateTypes)

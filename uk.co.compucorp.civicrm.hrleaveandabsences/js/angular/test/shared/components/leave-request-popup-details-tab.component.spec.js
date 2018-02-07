@@ -1867,6 +1867,9 @@ define([
         describe('when the calculation unit is "hours"', function () {
           beforeEach(function () {
             selectedAbsenceType.calculation_unit_name = 'hours';
+            controller.uiOptions.multipleDays = true;
+
+            $rootScope.$digest();
           });
 
           describe('when "from" date is changed', function () {
