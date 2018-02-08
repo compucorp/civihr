@@ -5,6 +5,7 @@ require_once 'hrcontactactionsmenu.civix.php';
 use CRM_HRContactActionsMenu_ExtensionUtil as E;
 use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
 use CRM_HRContactActionsMenu_Helper_UserInformationActionGroup as UserInformationActionGroupHelper;
+use CRM_HRContactActionsMenu_Helper_CommunicationActionGroup as CommunicationActionGroupHelper;
 use CRM_HRContactActionsMenu_Helper_Contact as ContactHelper;
 use CRM_HRCore_CMSData_UserRoleFactory as CMSUserRoleFactory;
 use CRM_HRCore_CMSData_PathsFactory as CMSUserPathFactory;
@@ -13,7 +14,8 @@ use CRM_HRCore_CMSData_UserAccountFactory as UserAccountFactory;
 
 /**
  * Implementation of hook_addContactMenuActions to add the
- * User Information menu group to the contact actions menu.
+ * User Information menu group and the Communicate menu group
+ * to the contact actions menu.
  *
  * @param \CRM_HRContactActionsMenu_Component_Menu $menu
  *
@@ -36,6 +38,11 @@ function hrcontactactionsmenu_addContactMenuActions(ActionsMenu $menu) {
 
   $userInformationActionGroup = new UserInformationActionGroupHelper($contactUserInfo, $cmsUserPath, $cmsUserRole);
   $menu->addToHighlightedPanel($userInformationActionGroup->get());
+
+  $communicationActionGroup = new CommunicationActionGroupHelper($contactID);
+  $communicationActionGroup = $communicationActionGroup->get();
+  $communicationActionGroup->setWeight(3);
+  $menu->addToMainPanel($communicationActionGroup);
 }
 
 /**
