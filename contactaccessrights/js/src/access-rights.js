@@ -1,5 +1,5 @@
 /* eslint-env amd */
-/* global CustomEvent */
+/* global Event */
 
 (function () {
   'use strict';
@@ -15,10 +15,6 @@
   require([
     'access-rights/modules/access-rights.module'
   ], function (angular) {
-    document.dispatchEvent(typeof window.CustomEvent === 'function' ? new CustomEvent('accessRightsReady') : (function () {
-      var e = document.createEvent('Event');
-      e.initEvent('accessRightsReady', true, true);
-      return e;
-    })());
+    document.dispatchEvent(new Event('accessRightsReady'));
   });
 })(require);
