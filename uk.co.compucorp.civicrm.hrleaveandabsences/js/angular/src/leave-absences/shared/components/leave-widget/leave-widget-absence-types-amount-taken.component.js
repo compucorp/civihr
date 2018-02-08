@@ -60,8 +60,9 @@ define([
      * @return {Boolean}
      */
     function areBindingsReady () {
-      return vm.absenceTypes && vm.contactId && vm.absencePeriod &&
-        vm.leaveRequestStatuses && vm.leaveRequestStatuses.length;
+      return vm.absenceTypes && vm.absenceTypes.length && vm.contactId &&
+        vm.absencePeriod && vm.leaveRequestStatuses &&
+        vm.leaveRequestStatuses.length;
     }
 
     /**
