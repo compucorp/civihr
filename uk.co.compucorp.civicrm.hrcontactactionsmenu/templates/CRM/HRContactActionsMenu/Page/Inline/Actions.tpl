@@ -64,24 +64,6 @@
                 {/foreach}
               </div>
             {/foreach}
-            <div class="crm_contact-actions__group">
-              <h3>Communicate </h3>
-              <div class="crm_contact-actions__action">
-                <a href="#" class="btn btn-primary-outline">
-                  <i class="fa fa-envelope-o"></i> Send Email
-                </a>
-              </div>
-              <div class="crm_contact-actions__action">
-                <a href="#" class="btn btn-primary-outline">
-                  <i class="fa fa-users"></i> Record Meeting
-                </a>
-              </div>
-              <div class="crm_contact-actions__action">
-                <a href="#" class="btn btn-primary-outline">
-                  <i class="fa fa-file-pdf-o"></i> Create PDF Letter
-                </a>
-              </div>
-            </div>
           </div>
           <div class="crm_contact-actions__panel__footer">
             {if call_user_func(array('CRM_Core_Permission','check'), 'delete contacts')}
