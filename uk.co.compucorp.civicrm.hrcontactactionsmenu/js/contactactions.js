@@ -1,8 +1,19 @@
 (function ($) {
   $(document).ready(function () {
+    bootstrapContactAccessRightsAppOnReadyEvent();
     markMenuButtonAsActiveWhenPressed();
     showConfirmationDialogWhenDeletingUserAccount();
   });
+
+  /**
+   * Listens to the "ready" event once the resources for the
+   * contact access rights app have been loaded, and then bootstraps it
+   */
+  function bootstrapContactAccessRightsAppOnReadyEvent () {
+    document.addEventListener('accessRightsReady', function () {
+      angular.bootstrap('[data-contact-access-rights]', ['access-rights']);
+    });
+  }
 
   /**
    * Toggles the "active" class in "Actions" button
