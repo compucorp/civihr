@@ -654,8 +654,7 @@ define([
      * @return {Promise}
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all(
-        _.merge({ options: { sort: 'weight ASC' } }, getAbsenceTypeParams()))
+      return AbsenceType.all(getAbsenceTypeParams())
         .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
           absenceTypesAndIds = {

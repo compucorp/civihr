@@ -159,12 +159,6 @@
               expect(controller.balance.change.amount).toEqual(0);
             });
 
-            it('gets absence types sorted by weight', function () {
-              expect(AbsenceTypeAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                options: { sort: 'weight ASC' }
-              }));
-            });
-
             it('gets absence types with false sick param', function () {
               expect(AbsenceTypeAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
                 is_sick: false

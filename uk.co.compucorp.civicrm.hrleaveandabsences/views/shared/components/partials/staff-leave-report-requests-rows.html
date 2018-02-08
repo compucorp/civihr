@@ -1,6 +1,6 @@
 <tr
   ng-repeat="request in requests track by $index"
-  ng-init="absenceType = (report.absenceTypes | filter : { 'id' : request.type_id })[0]">
+  ng-init="absenceType = report.absenceTypesIndexed[request.type_id]">
   <td class="chr_leave-report__label">
     {{absenceType.title}}
     <span ng-if="request.toil_expiry_date">

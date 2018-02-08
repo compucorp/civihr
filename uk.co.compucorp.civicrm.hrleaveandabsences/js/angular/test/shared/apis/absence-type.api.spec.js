@@ -46,7 +46,8 @@ define([
       });
 
       it('sends GET request with correct parameters', function () {
-        expect(AbsenceTypeAPI.sendGET).toHaveBeenCalledWith('AbsenceType', 'get', {is_active: true});
+        expect(AbsenceTypeAPI.sendGET).toHaveBeenCalledWith('AbsenceType', 'get',
+          { is_active: true, options: { sort: 'weight ASC' } });
       });
 
       it('with expected length', function () {

@@ -35,6 +35,7 @@ define([
     vm.absencePeriods = [];
     vm.absenceTypes = [];
     vm.absenceTypesFiltered = [];
+    vm.absenceTypesIndexed = {};
     vm.dateFormat = HRSettings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
     vm.selectedPeriod = null;
@@ -116,26 +117,6 @@ define([
     }
 
     /**
-     * Fetches leave requests for the contact, for the available absence types,
-     * for the selected period and optionally by extra parameters
-     *
-     * @param  {Object} params extra parameters for the leave requests search
-     * @return {Promise} resolves with a response from API containing leave requests
-     */
-    function fetchLeaveRequests (params) {
-      return LeaveRequest.all(_.assign({
-        contact_id: vm.contactId,
-        from_date: { from: vm.selectedPeriod.start_date },
-        to_date: { to: vm.selectedPeriod.end_date },
-        type_id: {
-          IN: vm.absenceTypes.map(function (absenceType) {
-            return absenceType.id;
-          })
-        }
-      }, params), null, 'from_date ASC', null, false);
-    }
-
-    /**
      * Forwards the status update event to a specific status handler. If none
      * exists for the given status, a refresh is triggered.
      *
@@ -193,10 +174,11 @@ define([
      * @return {Promise}
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({ options: { sort: 'weight ASC' } })
+      return AbsenceType.all()
         .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
           vm.absenceTypes = absenceTypes;
+          vm.absenceTypesIndexed = _.indexBy(absenceTypes, 'id');
         });
     }
 
@@ -206,7 +188,7 @@ define([
      * @return {Promise}
      */
     function loadApprovedRequests () {
-      return loadLeaveRequests('approved', {
+      return loadLeaveRequestsForSection('approved', {
         status_id: valueOfRequestStatus(sharedSettings.statusNames.approved)
       });
     }
@@ -302,7 +284,7 @@ define([
           period_id: vm.selectedPeriod.id,
           expired: true
         }),
-        fetchLeaveRequests({
+        loadLeaveRequests({
           request_type: 'toil',
           expired: true
         })
@@ -320,14 +302,34 @@ define([
     }
 
     /**
+     * Fetches leave requests for the contact, for the available absence types,
+     * for the selected period and optionally by extra parameters
+     *
+     * @param  {Object} params extra parameters for the leave requests search
+     * @return {Promise} resolves with a response from API containing leave requests
+     */
+    function loadLeaveRequests (params) {
+      return LeaveRequest.all(_.assign({
+        contact_id: vm.contactId,
+        from_date: { from: vm.selectedPeriod.start_date },
+        to_date: { to: vm.selectedPeriod.end_date },
+        type_id: {
+          IN: vm.absenceTypes.map(function (absenceType) {
+            return absenceType.id;
+          })
+        }
+      }, params), null, 'from_date ASC', null, false);
+    }
+
+    /**
      * Loads leave requests and populates them to the given section
      *
      * @param  {String} section
      * @param  {Object} params extra parameters for the leave requests search
      * @return {Promise}
      */
-    function loadLeaveRequests (section, params) {
-      return fetchLeaveRequests(params)
+    function loadLeaveRequestsForSection (section, params) {
+      return loadLeaveRequests(params)
         .then(function (leaveRequests) {
           vm.sections[section].data = leaveRequests.list;
         });
@@ -352,7 +354,7 @@ define([
      * @return {Promise}
      */
     function loadOtherRequests () {
-      return loadLeaveRequests('other', {
+      return loadLeaveRequestsForSection('other', {
         status_id: { in: [
           valueOfRequestStatus(sharedSettings.statusNames.rejected),
           valueOfRequestStatus(sharedSettings.statusNames.cancelled)
@@ -366,7 +368,7 @@ define([
      * @return {Promise}
      */
     function loadPendingRequests () {
-      return loadLeaveRequests('pending', {
+      return loadLeaveRequestsForSection('pending', {
         status_id: { in: [
           valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
           valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
@@ -380,7 +382,7 @@ define([
      * @return {Promise}
      */
     function loadPublicHolidaysRequests () {
-      return loadLeaveRequests('holidays', {
+      return loadLeaveRequestsForSection('holidays', {
         public_holiday: true
       });
     }

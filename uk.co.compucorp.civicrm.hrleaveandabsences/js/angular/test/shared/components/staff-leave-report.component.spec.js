@@ -129,9 +129,14 @@
             });
 
             it('has fetched the absence types', function () {
-              expect(AbsenceType.all).toHaveBeenCalledWith({ options: { sort: 'weight ASC' } });
+              expect(AbsenceType.all).toHaveBeenCalledWith();
               expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
               expect(controller.absenceTypes.length).not.toBe(0);
+            });
+
+            it('has indexed absence types', function () {
+              expect(controller.absenceTypesIndexed[controller.absenceTypes[0].id])
+                .toEqual(controller.absenceTypes[0]);
             });
 
             describe('absence periods', function () {
