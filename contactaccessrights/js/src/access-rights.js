@@ -1,4 +1,5 @@
 /* eslint-env amd */
+/* global Event */
 
 (function () {
   'use strict';
@@ -12,9 +13,8 @@
   });
 
   require([
-    'access-rights/modules/access-rights.module',
-    'dom-initialization'
-  ], function (angular, domInitialization) {
-    angular.bootstrap(domInitialization.addAppToDOM(), ['access-rights']);
+    'access-rights/modules/access-rights.module'
+  ], function (angular) {
+    document.dispatchEvent(new Event('accessRightsReady'));
   });
 })(require);
