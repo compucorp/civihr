@@ -15,12 +15,16 @@
             </div>
           {/foreach}
           <div class="crm_contact-actions__group">
-          <h3>User Has Access To:</h3>
-          <p>
-            <span>No staff members</span>
-            <span class="fa fa-question-circle"></span>
-          </p>
-          <a href="#" class="btn btn-secondary">Manage Regional Access</a>
+            <h3>User Has Access To:</h3>
+            <p>
+              <span>No staff members</span>
+              <span class="fa fa-question-circle"></span>
+            </p>
+            <a href data-contact-access-rights class="btn btn-secondary"
+              ng-controller="AccessRightsController as accessRights"
+              ng-click="accessRights.openModal()">
+              Manage Regional Access
+            </a>
           </div>
         </div>
         <div class="crm_contact-actions__panel__footer">
