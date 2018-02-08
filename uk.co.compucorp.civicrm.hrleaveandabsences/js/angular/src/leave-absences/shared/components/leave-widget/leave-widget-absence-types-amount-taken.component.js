@@ -23,7 +23,7 @@ define([
     }]
   });
 
-  absenceTypesTakenController.$include = ['$scope', 'LeaveRequest',
+  absenceTypesTakenController.$inject = ['$scope', 'LeaveRequest',
     'OptionGroup'];
 
   function absenceTypesTakenController ($scope, LeaveRequest, OptionGroup) {
