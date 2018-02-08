@@ -34,8 +34,8 @@ define([
     var vm = this;
 
     vm.absencePeriods = [];
-    vm.absenceTypes = {};
-    vm.absenceTypesFiltered = {};
+    vm.absenceTypes = [];
+    vm.absenceTypesFiltered = [];
     vm.dateFormat = HRSettings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
     vm.selectedPeriod = null;
@@ -117,6 +117,17 @@ define([
     }
 
     /**
+     * Returns IDs of Absence Types from their collection
+     *
+     * @return {Array} ['1', '2', ...]
+     */
+    function getAbsenceTypesIDs () {
+      return vm.absenceTypes.map(function (absenceType) {
+        return absenceType.id;
+      });
+    }
+
+    /**
      * Forwards the status update event to a specific status handler. If none
      * exists for the given status, a refresh is triggered.
      *
@@ -174,10 +185,10 @@ define([
      * @return {Promise}
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all()
+      return AbsenceType.all({ options: { sort: 'weight ASC' } })
         .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
-          vm.absenceTypes = _.indexBy(absenceTypes, 'id');
+          vm.absenceTypes = absenceTypes;
         });
     }
 
@@ -192,7 +203,7 @@ define([
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         status_id: valueOfRequestStatus(sharedSettings.statusNames.approved),
-        type_id: { IN: _.keys(vm.absenceTypes) }
+        type_id: { IN: getAbsenceTypesIDs() }
       }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.approved.data = leaveRequests.list;
@@ -217,7 +228,7 @@ define([
         ])
       ])
       .then(function (results) {
-        _.forEach(vm.absenceTypes, function (absenceType) {
+        vm.absenceTypes.forEach(function (absenceType) {
           absenceType.balanceChanges = {
             holidays: results[0][absenceType.id],
             approved: results[1][absenceType.id],
@@ -244,7 +255,7 @@ define([
         vm.entitlements = entitlements;
       })
       .then(function () {
-        vm.absenceTypesFiltered = _.filter(vm.absenceTypes, function (absenceType) {
+        vm.absenceTypesFiltered = vm.absenceTypes.filter(function (absenceType) {
           var entitlement = _.find(vm.entitlements, function (entitlement) {
             return entitlement.type_id === absenceType.id;
           });
@@ -296,7 +307,7 @@ define([
           to_date: {to: vm.selectedPeriod.end_date},
           request_type: 'toil',
           expired: true,
-          type_id: { IN: _.keys(vm.absenceTypes) }
+          type_id: { IN: getAbsenceTypesIDs() }
         }, null, requestSort, null, false)
       ])
         .then(function (results) {
@@ -338,7 +349,7 @@ define([
           valueOfRequestStatus(sharedSettings.statusNames.rejected),
           valueOfRequestStatus(sharedSettings.statusNames.cancelled)
         ] },
-        type_id: { IN: _.keys(vm.absenceTypes) }
+        type_id: { IN: getAbsenceTypesIDs() }
       }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.other.data = leaveRequests.list;
@@ -359,7 +370,7 @@ define([
           valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
           valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
         ] },
-        type_id: { IN: _.keys(vm.absenceTypes) }
+        type_id: { IN: getAbsenceTypesIDs() }
       }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.pending.data = leaveRequests.list;
@@ -377,7 +388,7 @@ define([
         from_date: { from: vm.selectedPeriod.start_date },
         to_date: { to: vm.selectedPeriod.end_date },
         public_holiday: true,
-        type_id: { IN: _.keys(vm.absenceTypes) }
+        type_id: { IN: getAbsenceTypesIDs() }
       }, null, requestSort, null, false)
       .then(function (leaveRequests) {
         vm.sections.holidays.data = leaveRequests.list;
@@ -506,7 +517,7 @@ define([
      * @param {string} section
      */
     function updateSectionNumbersWithLeaveRequestBalanceChange (leaveRequest, section) {
-      var absenceType = vm.absenceTypes[leaveRequest.type_id];
+      var absenceType = _.find(vm.absenceTypes, { id: leaveRequest.type_id });
       var remainderType = (section === 'pending') ? 'future' : 'current';
 
       absenceType.balanceChanges[section] -= leaveRequest.balance_change;
