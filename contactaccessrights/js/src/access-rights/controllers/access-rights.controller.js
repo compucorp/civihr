@@ -1,6 +1,8 @@
 /* eslint-env amd */
 
-define(function () {
+define([
+  'common/angular'
+], function (angular) {
   'use strict';
 
   AccessRightsController.__name = 'AccessRightsController';
@@ -16,7 +18,7 @@ define(function () {
      */
     function openModal () {
       $modal.open({
-        appendTo: $rootElement.children().eq(0),
+        appendTo: angular.element('[data-contact-actions-modals-container]'),
         controller: 'AccessRightsModalController',
         controllerAs: 'modalCtrl',
         bindToController: true,
