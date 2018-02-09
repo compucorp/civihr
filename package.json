@@ -1,4 +1,13 @@
 {
+  "scripts": {
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "semistandard --fix",
+      "git add"
+    ]
+  },
   "semistandard": {
     "globals": [
       "CRM",
