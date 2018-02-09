@@ -85,10 +85,9 @@ define([
         loadAbsenceTypes(),
         loadLoggedInContactId(),
         loadUserRole()
-      ])
-        .catch(function (error) {
-          notification.error('Error', error);
-        });
+      ]).catch(function (error) {
+        notification.error('Error', error);
+      });
     }
 
     /**

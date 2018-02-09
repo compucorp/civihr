@@ -119,10 +119,9 @@ define([
 
       waitUntilMonthsAre('injected').then(function () {
         sendShowMonthsSignal(forceDataReload);
-      })
-        .then(function () {
-          vm.loading.calendar = false;
-        });
+      }).then(function () {
+        vm.loading.calendar = false;
+      });
     }
 
     /**
@@ -205,13 +204,12 @@ define([
         'hrjc_location',
         'hrjc_level_type',
         'hrjc_department'
-      ])
-        .then(function (data) {
-          vm.filters.optionValues.regions = data.hrjc_region;
-          vm.filters.optionValues.locations = data.hrjc_location;
-          vm.filters.optionValues.levelTypes = data.hrjc_level_type;
-          vm.filters.optionValues.departments = data.hrjc_department;
-        });
+      ]).then(function (data) {
+        vm.filters.optionValues.regions = data.hrjc_region;
+        vm.filters.optionValues.locations = data.hrjc_location;
+        vm.filters.optionValues.levelTypes = data.hrjc_level_type;
+        vm.filters.optionValues.departments = data.hrjc_department;
+      });
     }
 
     /**
@@ -233,15 +231,14 @@ define([
         loadAbsenceTypes(),
         loadPublicHolidays(),
         loadBasicOptionValues()
-      ])
-        .then(function (results) {
-          vm.supportData.absenceTypes = results[0];
-          vm.supportData.publicHolidays = results[1];
-          vm.supportData.calculationUnits = results[2].hrleaveandabsences_absence_type_calculation_unit;
-          vm.supportData.dayTypes = results[2].hrleaveandabsences_leave_request_day_type;
-          vm.supportData.leaveRequestStatuses = results[2].hrleaveandabsences_leave_request_status;
-          vm.supportData.toilAmounts = _.indexBy(results[2].hrleaveandabsences_toil_amounts, 'value');
-        });
+      ]).then(function (results) {
+        vm.supportData.absenceTypes = results[0];
+        vm.supportData.publicHolidays = results[1];
+        vm.supportData.calculationUnits = results[2].hrleaveandabsences_absence_type_calculation_unit;
+        vm.supportData.dayTypes = results[2].hrleaveandabsences_leave_request_day_type;
+        vm.supportData.leaveRequestStatuses = results[2].hrleaveandabsences_leave_request_status;
+        vm.supportData.toilAmounts = _.indexBy(results[2].hrleaveandabsences_toil_amounts, 'value');
+      });
     }
 
     /**
@@ -338,10 +335,9 @@ define([
         return $q.all([
           checkPermissions(sharedSettings.permissions.admin.administer),
           checkPermissions(sharedSettings.permissions.ssp.manage)
-        ])
-          .then(function (results) {
-            userRole = results[0] ? 'admin' : (results[1] ? 'manager' : 'staff');
-          });
+        ]).then(function (results) {
+          userRole = results[0] ? 'admin' : (results[1] ? 'manager' : 'staff');
+        });
       }
     }
 
