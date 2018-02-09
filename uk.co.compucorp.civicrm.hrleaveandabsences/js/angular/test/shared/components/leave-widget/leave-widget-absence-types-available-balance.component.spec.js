@@ -18,7 +18,7 @@ define([
       }));
 
     beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_,
-    _EntitlementAPIMock_) {
+      _EntitlementAPIMock_) {
       $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
       $provide.value('EntitlementAPI', _EntitlementAPIMock_);
@@ -27,7 +27,7 @@ define([
     beforeEach(inject(['$componentController', '$rootScope',
       'AbsencePeriod', 'AbsenceType', 'Entitlement',
       function (_$componentController_, _$rootScope_, AbsencePeriod,
-      AbsenceType, _Entitlement_) {
+        AbsenceType, _Entitlement_) {
         $componentController = _$componentController_;
         $rootScope = _$rootScope_;
         Entitlement = _Entitlement_;
@@ -86,24 +86,23 @@ define([
               contact_id: contactId,
               period_id: absencePeriod.id
             }, true)
-            .then(function (entitlements) {
-              var indexedEntitlements = _.indexBy(entitlements, 'type_id');
+              .then(function (entitlements) {
+                var indexedEntitlements = _.indexBy(entitlements, 'type_id');
 
-              expectedEntitlements = absenceTypes.map(function (absenceType) {
-                var entitlement = indexedEntitlements[absenceType.id];
+                expectedEntitlements = absenceTypes.map(function (absenceType) {
+                  var entitlement = indexedEntitlements[absenceType.id];
 
-                return _.assign({
-                  entitlement: entitlement
-                }, absenceType);
-              })
-              .filter(function (absenceType) {
-                var hasEntitlement = absenceType.entitlement && absenceType.entitlement.value > 0;
-                var allowOveruse = absenceType.allow_overuse === '1';
-                var allowAccrual = absenceType.allow_accruals_request === '1';
+                  return _.assign({
+                    entitlement: entitlement
+                  }, absenceType);
+                }).filter(function (absenceType) {
+                  var hasEntitlement = absenceType.entitlement && absenceType.entitlement.value > 0;
+                  var allowOveruse = absenceType.allow_overuse === '1';
+                  var allowAccrual = absenceType.allow_accruals_request === '1';
 
-                return hasEntitlement || allowOveruse || allowAccrual;
+                  return hasEntitlement || allowOveruse || allowAccrual;
+                });
               });
-            });
 
             $rootScope.$digest();
           });
