@@ -42,8 +42,11 @@ define([
      * When the absence types are ready for use it triggers a child is ready event.
      */
     function $onChanges () {
-      if (areBindingsReady()) {
-        loadEntitlements()
+      if (!areBindingsReady()) {
+        return;
+      }
+
+      loadEntitlements()
         .then(function (entitlements) {
           return _.indexBy(entitlements, 'type_id');
         })
@@ -55,7 +58,6 @@ define([
         .then(function () {
           $scope.$emit('LeaveWidget::childIsReady', childComponentName);
         });
-      }
     }
 
     /**
