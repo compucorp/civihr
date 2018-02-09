@@ -165,7 +165,6 @@ function requireJsMainTask (cb) {
  */
 function requireJsSourceMapPath (cb) {
   var distFolder;
-  var relativeDistFolderPath;
   var extensionPath = utils.getExtensionPath();
   var extensionUrl = utils.getExtensionUrlPath();
 
@@ -174,7 +173,9 @@ function requireJsSourceMapPath (cb) {
 
   gulp.src(path.join(distFolder, '*.min.js'))
     .pipe(replace(/sourceMappingURL=(.+)/, function (regExpMatch, fileName) {
-      relativeDistFolderPath = this.file.base.replace(extensionPath, '');
+      // stores the relative path from the min file to the extension. Ex:
+      // /js/angular/dist/file.min.js
+      var relativeDistFolderPath = this.file.base.replace(extensionPath, '');
 
       return 'sourceMappingURL=' + path.join(extensionUrl, relativeDistFolderPath, fileName);
     }))
