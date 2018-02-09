@@ -586,11 +586,11 @@ define([
         { name: 'hrjobcontract_health_life_insurance_plan_type', key: 'plan_type_life_insurance' }
       ].map(function (planTypeData) {
         contractHealthService.getOptions(planTypeData.name, true)
-        .then(function (planTypes) {
-          $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
-            acc[type.key] = type.value;
-          }, {});
-        });
+          .then(function (planTypes) {
+            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
+              acc[type.key] = type.value;
+            }, {});
+          });
       }));
     }
   }
