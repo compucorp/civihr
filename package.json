@@ -1,4 +1,14 @@
 {
+  "name": "CiviHR",
+  "description": "HR software for non-profit",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/civicrm/civihr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/civicrm/civihr/issues"
+  },
   "scripts": {
     "precommit": "lint-staged"
   },
