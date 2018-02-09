@@ -165,6 +165,7 @@ function requireJsMainTask (cb) {
  */
 function requireJsSourceMapPath (cb) {
   var distFolder;
+  var relativeDistFolderPath;
   var extensionPath = utils.getExtensionPath();
   var extensionUrl = utils.getExtensionUrlPath();
 
@@ -172,7 +173,11 @@ function requireJsSourceMapPath (cb) {
   distFolder = find.dirSync(/^((?!node_modules).)*\/dist$/, extensionPath).pop();
 
   gulp.src(path.join(distFolder, '*.min.js'))
-    .pipe(replace(/sourceMappingURL=(.+)/, 'sourceMappingURL=' + extensionUrl + '/$1'))
+    .pipe(replace(/sourceMappingURL=(.+)/, function (regExpMatch, fileName) {
+      relativeDistFolderPath = this.file.base.replace(extensionPath, '');
+
+      return 'sourceMappingURL=' + path.join(extensionUrl, relativeDistFolderPath, fileName);
+    }))
     .pipe(gulp.dest(distFolder));
 
   cb();
