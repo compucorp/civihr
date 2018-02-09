@@ -509,7 +509,7 @@ define([
      * @param {string} section
      */
     function updateSectionNumbersWithLeaveRequestBalanceChange (leaveRequest, section) {
-      var absenceType = _.find(vm.absenceTypes, { id: leaveRequest.type_id });
+      var absenceType = vm.absenceTypesIndexed[leaveRequest.type_id];
       var remainderType = (section === 'pending') ? 'future' : 'current';
 
       absenceType.balanceChanges[section] -= leaveRequest.balance_change;

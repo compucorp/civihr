@@ -22,7 +22,7 @@ define([
       all: function (params) {
         $log.debug('AbsenceTypeAPI.all');
 
-        return this.sendGET('AbsenceType', 'get', _.defaults(params || {},
+        return this.sendGET('AbsenceType', 'get', _.defaultsDeep(params || {},
           { is_active: true, options: { sort: 'weight ASC' } }))
           .then(function (data) {
             return data.values;

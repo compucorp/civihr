@@ -699,7 +699,7 @@
             controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
             testData = {
               leaveRequest: leaveRequest1,
-              oldBalanceChange: _.find(controller.absenceTypes, { id: leaveRequest1.type_id }).balanceChanges.pending,
+              oldBalanceChange: controller.absenceTypesIndexed[leaveRequest1.type_id].balanceChanges.pending,
               oldList: controller.sections.pending.data
             };
 
@@ -711,7 +711,7 @@
               pubSub.publish('LeaveRequest::delete', leaveRequest1);
               $rootScope.$digest();
 
-              testData.newBalanceChange = _.find(controller.absenceTypes, { id: leaveRequest1.type_id }).balanceChanges.pending;
+              testData.newBalanceChange = controller.absenceTypesIndexed[leaveRequest1.type_id].balanceChanges.pending;
             });
 
             itHandlesTheDeleteStatusUpdate();
@@ -725,7 +725,7 @@
               });
               $rootScope.$digest();
 
-              testData.newBalanceChange = _.find(controller.absenceTypes, { id: leaveRequest1.type_id }).balanceChanges.pending;
+              testData.newBalanceChange = controller.absenceTypesIndexed[leaveRequest1.type_id].balanceChanges.pending;
             });
 
             itHandlesTheDeleteStatusUpdate();
@@ -757,13 +757,13 @@
           beforeEach(function () {
             controller.sections.approved.data = [leaveRequest1, leaveRequest2, leaveRequest3];
             controller.sections.approved.dataIndex = _.indexBy(controller.sections.approved.data, 'id');
-            oldRemainder = _.find(controller.absenceTypes, { id: leaveRequest1.type_id }).remainder.current;
+            oldRemainder = controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.current;
 
             leaveRequest1.delete();
             pubSub.publish('LeaveRequest::delete', leaveRequest1);
             $rootScope.$digest();
 
-            newRemainder = _.find(controller.absenceTypes, { id: leaveRequest1.type_id }).remainder.current;
+            newRemainder = controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.current;
           });
 
           it('updates the current remainder of the entitlement of the absence type the leave request was for', function () {
@@ -778,13 +778,13 @@
           beforeEach(function () {
             controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
             controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
-            oldRemainder = _.find(controller.absenceTypes, { id: leaveRequest1.type_id }).remainder.future;
+            oldRemainder = controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.future;
 
             leaveRequest1.delete();
             pubSub.publish('LeaveRequest::delete', leaveRequest1);
             $rootScope.$digest();
 
-            newRemainder = _.find(controller.absenceTypes, { id: leaveRequest1.type_id }).remainder.future;
+            newRemainder = controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.future;
           });
 
           it('updates the future remainder of the entitlement of the absence type the leave request was for', function () {
