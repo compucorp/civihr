@@ -1,0 +1,90 @@
+<div class="row">
+  <div class="col-xs-12 form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-4 control-label required-mark">
+        Date
+      </label>
+      <div class="col-sm-4 chr_leave-request-date-picker-container">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            uib-datepicker-popup
+            show-button-bar="false"
+            datepicker-options="detailsTab.uiOptions.date.from.options"
+            ng-model="detailsTab.uiOptions.fromDate"
+            is-open="detailsTab.uiOptions.date.from.show"
+            ng-readonly="true"
+            ng-disabled="__isNotEditable"
+            ng-change="detailsTab.dateChangeHandler('from')"/>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div ng-if="detailsTab.isNotWorkingDay(detailsTab.requestFromDayTypes[0].name)" class="control-label">
+          {{detailsTab.requestFromDayTypes[0].label}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" ng-hide="detailsTab.isLeaveType('toil')">
+  <div class="col-xs-12 form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-4 control-label required-mark">
+        Start time
+      </label>
+      <div class="col-sm-4 chr_leave-request-date-picker-container">
+        <crm-loading show="!detailsTab.uiOptions.times.from.loading"
+          class="chr_leave-request-modal__small_spinner">
+          <div
+            class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-model="detailsTab.uiOptions.times.from.time"
+              ng-disabled="detailsTab.isNotWorkingDay(detailsTab.requestFromDayTypes[0].name) || detailsTab.uiOptions.times.from.disabled || __isNotEditable"
+              timepicker-select
+              timepicker-select-time-from="detailsTab.uiOptions.times.from.min"
+              timepicker-select-time-to="detailsTab.uiOptions.times.from.max"
+              timepicker-select-interval="detailsTab.uiOptions.time_interval"
+              timepicker-select-placeholder="Select time"
+            ></select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+        </crm-loading>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row" ng-hide="detailsTab.isLeaveType('toil')">
+  <div class="col-xs-12 form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-4 control-label required-mark">
+        End time
+      </label>
+      <div class="col-sm-4 chr_leave-request-date-picker-container">
+        <crm-loading show="!detailsTab.uiOptions.times.to.loading"
+          class="chr_leave-request-modal__small_spinner">
+          <div
+            class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-model="detailsTab.uiOptions.times.to.time"
+              ng-disabled="detailsTab.isNotWorkingDay(detailsTab.requestFromDayTypes[0].name) || detailsTab.uiOptions.times.to.disabled || __isNotEditable"
+              timepicker-select
+              timepicker-select-time-from="detailsTab.uiOptions.times.to.min"
+              timepicker-select-time-to="detailsTab.uiOptions.times.to.max"
+              timepicker-select-interval="detailsTab.uiOptions.time_interval"
+              timepicker-select-placeholder="Select time"
+            ></select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
+        </crm-loading>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-include
+  ng-if="!detailsTab.isNotWorkingDay(detailsTab.requestFromDayTypes[0].name)"
+  src="$root.sharedPathTpl +
+  'components/leave-request-popup/details-tab/by-unit-and-days-mode' +
+  '/partials/hours-unit-from-deduction.html'"></ng-include>

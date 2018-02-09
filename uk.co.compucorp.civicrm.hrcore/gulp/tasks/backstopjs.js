@@ -18,6 +18,7 @@ var FILES = { config: 'site-config.json', tpl: 'backstop.tpl.json' };
 var CONFIG_TPL = {
   'url': 'http://%{site-host}',
   'credentials': {
+    'super-admin': { 'name': '%{admin-name}', 'pass': '%{admin-password}' },
     'admin': { 'name': '%{admin-name}', 'pass': '%{admin-password}' },
     'manager': { 'name': '%{manager-name}', 'pass': '%{manager-password}' },
     'staff': { 'name': '%{staff-name}', 'pass': '%{staff-password}' }
