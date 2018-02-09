@@ -7,7 +7,8 @@ define([
   'mocks/data/absence-type.data',
   'mocks/data/option-group.data',
   'mocks/apis/leave-request-api-mock',
-  'leave-absences/shared/components/leave-widget/leave-widget-next-leave.component'
+  'mocks/apis/option-group-api-mock',
+  'leave-absences/shared/components/leave-widget/leave-widget.component'
 ], function (_, moment, controllerOnChanges, absenceTypesData, OptionGroupData) {
   describe('leaveWidgetNextLeave', function () {
     var $componentController, $provide, $q, $rootScope, $scope, absenceTypes,

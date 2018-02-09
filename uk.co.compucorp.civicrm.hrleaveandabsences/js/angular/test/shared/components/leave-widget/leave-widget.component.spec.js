@@ -5,6 +5,7 @@ define([
   'leave-absences/shared/components/leave-widget/leave-widget.component',
   'mocks/apis/absence-period-api-mock',
   'mocks/apis/absence-type-api-mock',
+  'mocks/apis/option-group-api-mock',
   'common/mocks/services/api/contract-mock',
   'common/services/pub-sub'
 ], function (_) {
