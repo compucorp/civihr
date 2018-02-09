@@ -433,17 +433,12 @@
 
           it('loads the absence types', function () {
             expect(controller.supportData.absenceTypes.length).not.toBe(0);
+            expect(AbsenceType.all).toHaveBeenCalledWith();
           });
 
           it('loads the absence types calculation units', function () {
             expect(absenceTypeRecord.calculation_unit_name).toEqual(jasmine.any(String));
             expect(absenceTypeRecord.calculation_unit_label).toEqual(jasmine.any(String));
-          });
-
-          it('excludes the inactive absence types', function () {
-            expect(AbsenceType.all).toHaveBeenCalledWith({
-              is_active: true
-            });
           });
         });
 

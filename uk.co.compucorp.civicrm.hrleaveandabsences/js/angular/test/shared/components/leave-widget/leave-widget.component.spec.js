@@ -184,7 +184,7 @@ define([
         });
 
         it('loads all absence types', function () {
-          expect(AbsenceType.all).toHaveBeenCalledWith({ is_active: true });
+          expect(AbsenceType.all).toHaveBeenCalledWith();
         });
 
         it('loads the absence type calculation units', function () {

@@ -236,7 +236,7 @@ define([
      * @return {Promise} resolved with absence types
      */
     function getAbsenceTypes () {
-      return AbsenceType.all({ options: { sort: 'weight ASC' } })
+      return AbsenceType.all()
         .then(AbsenceType.loadCalculationUnits);
     }
   }

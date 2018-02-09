@@ -147,10 +147,8 @@ define([
           $rootScope.$digest();
         });
 
-        it('loads the absence types sorted by title', function () {
-          expect(AbsenceType.all).toHaveBeenCalledWith({
-            options: { sort: 'title ASC' }
-          });
+        it('loads the absence types', function () {
+          expect(AbsenceType.all).toHaveBeenCalledWith();
         });
 
         it('populates calculation units to loaded absence types', function () {
