@@ -177,7 +177,7 @@ define([
                   $window.location.assign(this.getManageEntitlementsPageURL(contactID));
                 }.bind(this));
             }
-          }.bind(this))
+          }.bind(this));
       }
     };
 

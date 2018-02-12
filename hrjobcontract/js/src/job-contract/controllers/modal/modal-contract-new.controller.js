@@ -214,19 +214,18 @@ define([
           $modalInstance.close(contract);
 
           pubSub.publish('Contract::created', settings.contactId);
-        },
-          function (reason) {
-            CRM.alert(reason, 'Error', 'error');
-            contractService.delete(contractId).then(function (result) {
-              $scope.$broadcast('hrjc-loader-hide');
-              if (result.is_error) {
-                CRM.alert((result.error_message || 'Unknown error'), 'Error', 'error');
-              }
-            }, function (error) {
-              $scope.$broadcast('hrjc-loader-hide');
-              CRM.alert((error || 'Unknown error'), 'Error', 'error');
-            });
+        }, function (reason) {
+          CRM.alert(reason, 'Error', 'error');
+          contractService.delete(contractId).then(function (result) {
+            $scope.$broadcast('hrjc-loader-hide');
+            if (result.is_error) {
+              CRM.alert((result.error_message || 'Unknown error'), 'Error', 'error');
+            }
+          }, function (error) {
+            $scope.$broadcast('hrjc-loader-hide');
+            CRM.alert((error || 'Unknown error'), 'Error', 'error');
           });
+        });
       }, function (reason) {
         $scope.$broadcast('hrjc-loader-hide');
         $modalInstance.dismiss();
@@ -244,11 +243,11 @@ define([
         { name: 'hrjobcontract_health_life_insurance_plan_type', key: 'plan_type_life_insurance' }
       ].map(function (planTypeData) {
         contractHealthService.getOptions(planTypeData.name, true)
-        .then(function (planTypes) {
-          $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
-            acc[type.key] = type.value;
-          }, {});
-        });
+          .then(function (planTypes) {
+            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
+              acc[type.key] = type.value;
+            }, {});
+          });
       }));
     }
 
