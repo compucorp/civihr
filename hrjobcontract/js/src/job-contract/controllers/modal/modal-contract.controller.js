@@ -69,35 +69,6 @@ define([
       });
     }());
 
-    /**
-     * Initializes the form entity fields by having a copy of the form entity
-     * and converting date strings into date objects.
-     */
-    function initFormEntity () {
-      angular.copy(entity, $scope.entity);
-      $scope.entity.details.period_start_date = convertToDateObject($scope.entity.details.period_start_date);
-      $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
-    }
-
-    /**
-     * Initializes files and uploader fields. For the files it creates a trash
-     * container in case the file is deleted and for uploaders it adds validators
-     * to run after file uploading.
-     */
-    function initFilesAndUploaders () {
-      angular.copy(files, $scope.files);
-      angular.forEach($scope.files, function (entityFiles, entityName) {
-        $scope.filesTrash[entityName] = [];
-      });
-      angular.forEach($scope.uploader, function (entity) {
-        angular.forEach(entity, function (field) {
-          field.onAfterAddingAll = function () {
-            $scope.filesValidate();
-          };
-        });
-      });
-    }
-
     function cancel () {
       if (action === 'view' ||
         (angular.equals(entity, $scope.entity) && angular.equals(files, $scope.files) &&
@@ -145,141 +116,6 @@ define([
       });
     }
 
-    function fileMoveToTrash (index, entityName) {
-      var entityFiles = $scope.files[entityName];
-      var entityFilesTrash = $scope.filesTrash[entityName];
-
-      entityFilesTrash.push(entityFiles[index]);
-      entityFiles.splice(index, 1);
-    }
-
-    function filesValidate () {
-      var entityName, fieldName, i, len, uploaderEntity, uploaderEntityField, uploaderEntityFieldQueue;
-      var fileMaxSize = $scope.fileMaxSize;
-      var uploader = $scope.uploader;
-      var isValid = true;
-
-      for (entityName in uploader) {
-        uploaderEntity = uploader[entityName];
-
-        for (fieldName in uploaderEntity) {
-          i = 0;
-          len = uploaderEntityFieldQueue.length;
-          uploaderEntityField = uploaderEntity[fieldName];
-          uploaderEntityFieldQueue = uploaderEntityField.queue;
-
-          for (; i < len && isValid; i++) {
-            isValid = uploaderEntityFieldQueue[i].file.size < fileMaxSize;
-          }
-        }
-      }
-
-      $scope.contractForm.$setValidity('maxFileSize', isValid);
-    }
-
-    function save () {
-      if (!$scope.allowSave) {
-        return;
-      }
-
-      $scope.$broadcast('hrjc-loader-show');
-      contractDetailsService.validateDates({
-        contact_id: settings.contactId,
-        period_start_date: $scope.entity.details.period_start_date,
-        period_end_date: $scope.entity.details.period_end_date,
-        jobcontract_id: entity.contract.id
-      }).then(function (result) {
-        if (result.success) {
-          confirmUpdateEntitlements()
-            .then(function () {
-              processContractUpdate();
-            });
-        } else {
-          CRM.alert(result.message, 'Error', 'error');
-          $scope.$broadcast('hrjc-loader-hide');
-        }
-      }, function (reason) {});
-      $scope.$broadcast('hrjc-loader-hide');
-    }
-
-    function processContractUpdate () {
-      if (angular.equals(entity, $scope.entity) &&
-        angular.equals(files, $scope.files) &&
-        !$scope.uploader.details.contract_file.queue.length &&
-        !$scope.uploader.pension.evidence_file.queue.length) {
-        $scope.$broadcast('hrjc-loader-hide');
-        $modalInstance.dismiss('cancel');
-        return;
-      }
-
-      switch (action) {
-        case 'edit':
-          if ($scope.entity.contract.is_primary === entity.contract.is_primary) {
-            confirmEdit().then(function (confirmed) {
-              switch (confirmed) {
-                case 'edit':
-                  contractEdit();
-                  break;
-                case 'change':
-                  changeReason().then(function (results) {
-                    contractChange(results.reasonId, results.date);
-                  });
-                  break;
-              }
-            });
-          } else {
-            contractEdit();
-          }
-          break;
-        case 'change':
-          changeReason().then(function (results) {
-            contractChange(results.reasonId, results.date);
-          });
-          break;
-        default:
-          $scope.$broadcast('hrjc-loader-hide');
-          $modalInstance.dismiss('cancel');
-      }
-    }
-
-    /**
-     * Shows a confirmation dialog warning the user that, if they proceed, the staff
-     * leave entitlement will be updated.
-     *
-     * @returns {*}
-     */
-    function confirmUpdateEntitlements () {
-      var modalUpdateEntitlements = $modal.open({
-        appendTo: $rootElement.find('div').eq(0),
-        size: 'sm',
-        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
-        controller: 'ModalDialogController',
-        resolve: {
-          content: {
-            title: 'Update leave entitlements?',
-            msg: 'The system will now update the staff member leave entitlement.',
-            copyConfirm: 'Proceed'
-          }
-        }
-      });
-
-      return modalUpdateEntitlements.result;
-    }
-
-    /**
-     * # TO DO: This should probably happen inside the service that returns the data #
-     *
-     * Converts a date string into a Date object (if string is not empty)
-     *
-     * @param {string} dateString
-     * @param {Date/null}
-     */
-    function convertToDateObject (dateString) {
-      var dateObj = $filter('formatDate')(dateString, Date);
-
-      return dateObj !== 'Unspecified' ? dateObj : dateString;
-    }
-
     function changeReason () {
       var modalChangeReason = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
@@ -316,6 +152,46 @@ define([
       });
 
       return modalConfirmEdit.result;
+    }
+
+    /**
+     * Shows a confirmation dialog warning the user that, if they proceed, the staff
+     * leave entitlement will be updated.
+     *
+     * @returns {*}
+     */
+    function confirmUpdateEntitlements () {
+      var modalUpdateEntitlements = $modal.open({
+        appendTo: $rootElement.find('div').eq(0),
+        size: 'sm',
+        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
+        controller: 'ModalDialogController',
+        resolve: {
+          content: {
+            title: 'Update leave entitlements?',
+            msg: 'The system will now update the staff member leave entitlement.',
+            copyConfirm: 'Proceed'
+          }
+        }
+      });
+
+      return modalUpdateEntitlements.result;
+    }
+
+    function contractChange (reasonId, date) {
+      $scope.$broadcast('hrjc-loader-show');
+
+      contractRevisionService.validateEffectiveDate({
+        contact_id: settings.contactId,
+        effective_date: date
+      }).then(function (result) {
+        if (result.success) {
+          saveContractChange(reasonId, date);
+        } else {
+          CRM.alert(result.message, 'Error', 'error');
+          $scope.$broadcast('hrjc-loader-hide');
+        }
+      }, function (reason) {});
     }
 
     function contractEdit () {
@@ -411,20 +287,161 @@ define([
       });
     }
 
-    function contractChange (reasonId, date) {
-      $scope.$broadcast('hrjc-loader-show');
+    /**
+     * # TO DO: This should probably happen inside the service that returns the data #
+     *
+     * Converts a date string into a Date object (if string is not empty)
+     *
+     * @param {string} dateString
+     * @param {Date/null}
+     */
+    function convertToDateObject (dateString) {
+      var dateObj = $filter('formatDate')(dateString, Date);
 
-      contractRevisionService.validateEffectiveDate({
+      return dateObj !== 'Unspecified' ? dateObj : dateString;
+    }
+
+    /*
+     * Fetch updated Health and Life Insurance Plan Types
+     */
+    function fetchInsurancePlanTypes () {
+      return $q.all([
+        { name: 'hrjobcontract_health_health_plan_type', key: 'plan_type' },
+        { name: 'hrjobcontract_health_life_insurance_plan_type', key: 'plan_type_life_insurance' }
+      ].map(function (planTypeData) {
+        contractHealthService.getOptions(planTypeData.name, true)
+          .then(function (planTypes) {
+            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
+              acc[type.key] = type.value;
+            }, {});
+          });
+      }));
+    }
+
+    function fileMoveToTrash (index, entityName) {
+      var entityFiles = $scope.files[entityName];
+      var entityFilesTrash = $scope.filesTrash[entityName];
+
+      entityFilesTrash.push(entityFiles[index]);
+      entityFiles.splice(index, 1);
+    }
+
+    function filesValidate () {
+      var entityName, fieldName, i, len, uploaderEntity, uploaderEntityField, uploaderEntityFieldQueue;
+      var fileMaxSize = $scope.fileMaxSize;
+      var uploader = $scope.uploader;
+      var isValid = true;
+
+      for (entityName in uploader) {
+        uploaderEntity = uploader[entityName];
+
+        for (fieldName in uploaderEntity) {
+          i = 0;
+          len = uploaderEntityFieldQueue.length;
+          uploaderEntityField = uploaderEntity[fieldName];
+          uploaderEntityFieldQueue = uploaderEntityField.queue;
+
+          for (; i < len && isValid; i++) {
+            isValid = uploaderEntityFieldQueue[i].file.size < fileMaxSize;
+          }
+        }
+      }
+
+      $scope.contractForm.$setValidity('maxFileSize', isValid);
+    }
+
+    /**
+     * Initializes files and uploader fields. For the files it creates a trash
+     * container in case the file is deleted and for uploaders it adds validators
+     * to run after file uploading.
+     */
+    function initFilesAndUploaders () {
+      angular.copy(files, $scope.files);
+      angular.forEach($scope.files, function (entityFiles, entityName) {
+        $scope.filesTrash[entityName] = [];
+      });
+      angular.forEach($scope.uploader, function (entity) {
+        angular.forEach(entity, function (field) {
+          field.onAfterAddingAll = function () {
+            $scope.filesValidate();
+          };
+        });
+      });
+    }
+
+    /**
+     * Initializes the form entity fields by having a copy of the form entity
+     * and converting date strings into date objects.
+     */
+    function initFormEntity () {
+      angular.copy(entity, $scope.entity);
+      $scope.entity.details.period_start_date = convertToDateObject($scope.entity.details.period_start_date);
+      $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
+    }
+
+    function processContractUpdate () {
+      if (angular.equals(entity, $scope.entity) &&
+        angular.equals(files, $scope.files) &&
+        !$scope.uploader.details.contract_file.queue.length &&
+        !$scope.uploader.pension.evidence_file.queue.length) {
+        $scope.$broadcast('hrjc-loader-hide');
+        $modalInstance.dismiss('cancel');
+        return;
+      }
+
+      switch (action) {
+        case 'edit':
+          if ($scope.entity.contract.is_primary === entity.contract.is_primary) {
+            confirmEdit().then(function (confirmed) {
+              switch (confirmed) {
+                case 'edit':
+                  contractEdit();
+                  break;
+                case 'change':
+                  changeReason().then(function (results) {
+                    contractChange(results.reasonId, results.date);
+                  });
+                  break;
+              }
+            });
+          } else {
+            contractEdit();
+          }
+          break;
+        case 'change':
+          changeReason().then(function (results) {
+            contractChange(results.reasonId, results.date);
+          });
+          break;
+        default:
+          $scope.$broadcast('hrjc-loader-hide');
+          $modalInstance.dismiss('cancel');
+      }
+    }
+
+    function save () {
+      if (!$scope.allowSave) {
+        return;
+      }
+
+      $scope.$broadcast('hrjc-loader-show');
+      contractDetailsService.validateDates({
         contact_id: settings.contactId,
-        effective_date: date
+        period_start_date: $scope.entity.details.period_start_date,
+        period_end_date: $scope.entity.details.period_end_date,
+        jobcontract_id: entity.contract.id
       }).then(function (result) {
         if (result.success) {
-          saveContractChange(reasonId, date);
+          confirmUpdateEntitlements()
+            .then(function () {
+              processContractUpdate();
+            });
         } else {
           CRM.alert(result.message, 'Error', 'error');
           $scope.$broadcast('hrjc-loader-hide');
         }
       }, function (reason) {});
+      $scope.$broadcast('hrjc-loader-hide');
     }
 
     function saveContractChange (reasonId, date) {
@@ -597,23 +614,6 @@ define([
         $scope.$broadcast('hrjc-loader-hide');
         $modalInstance.close();
       }
-    }
-
-    /*
-     * Fetch updated Health and Life Insurance Plan Types
-     */
-    function fetchInsurancePlanTypes () {
-      return $q.all([
-        { name: 'hrjobcontract_health_health_plan_type', key: 'plan_type' },
-        { name: 'hrjobcontract_health_life_insurance_plan_type', key: 'plan_type_life_insurance' }
-      ].map(function (planTypeData) {
-        contractHealthService.getOptions(planTypeData.name, true)
-          .then(function (planTypes) {
-            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
-              acc[type.key] = type.value;
-            }, {});
-          });
-      }));
     }
   }
 
