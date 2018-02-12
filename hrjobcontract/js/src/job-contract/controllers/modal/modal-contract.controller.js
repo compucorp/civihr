@@ -49,27 +49,18 @@ define([
     };
     $scope.utils = utils;
 
-    angular.copy(entity, $scope.entity);
-    angular.copy(files, $scope.files);
-    $scope.entity.details.period_start_date = convertToDateObject($scope.entity.details.period_start_date);
-    $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
+    $scope.cancel = cancel;
+    $scope.fileMoveToTrash = fileMoveToTrash;
+    $scope.filesValidate = filesValidate;
+    $scope.save = save;
 
     // Init
     (function init () {
-      angular.forEach($scope.files, function (entityFiles, entityName) {
-        $scope.filesTrash[entityName] = [];
-      });
+      initFormEntity();
+      initFilesAndUploaders();
 
       $modalInstance.opened.then(function () {
         $rootScope.$broadcast('hrjc-loader-hide');
-      });
-
-      angular.forEach($scope.uploader, function (entity) {
-        angular.forEach(entity, function (field) {
-          field.onAfterAddingAll = function () {
-            $scope.filesValidate();
-          };
-        });
       });
 
       $rootScope.$broadcast('hrjc-loader-show');
@@ -78,7 +69,36 @@ define([
       });
     }());
 
-    $scope.cancel = function () {
+    /**
+     * Initializes the form entity fields by having a copy of the form entity
+     * and converting date strings into date objects.
+     */
+    function initFormEntity () {
+      angular.copy(entity, $scope.entity);
+      $scope.entity.details.period_start_date = convertToDateObject($scope.entity.details.period_start_date);
+      $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
+    }
+
+    /**
+     * Initializes files and uploader fields. For the files it creates a trash
+     * container in case the file is deleted and for uploaders it adds validators
+     * to run after file uploading.
+     */
+    function initFilesAndUploaders () {
+      angular.copy(files, $scope.files);
+      angular.forEach($scope.files, function (entityFiles, entityName) {
+        $scope.filesTrash[entityName] = [];
+      });
+      angular.forEach($scope.uploader, function (entity) {
+        angular.forEach(entity, function (field) {
+          field.onAfterAddingAll = function () {
+            $scope.filesValidate();
+          };
+        });
+      });
+    }
+
+    function cancel () {
       if (action === 'view' ||
         (angular.equals(entity, $scope.entity) && angular.equals(files, $scope.files) &&
           !$scope.uploader.details.contract_file.queue.length && !$scope.uploader.pension.evidence_file.queue.length)) {
@@ -123,17 +143,17 @@ define([
           $modalInstance.dismiss('cancel');
         }
       });
-    };
+    }
 
-    $scope.fileMoveToTrash = function (index, entityName) {
+    function fileMoveToTrash (index, entityName) {
       var entityFiles = $scope.files[entityName];
       var entityFilesTrash = $scope.filesTrash[entityName];
 
       entityFilesTrash.push(entityFiles[index]);
       entityFiles.splice(index, 1);
-    };
+    }
 
-    $scope.filesValidate = function () {
+    function filesValidate () {
       var entityName, fieldName, i, len, uploaderEntity, uploaderEntityField, uploaderEntityFieldQueue;
       var fileMaxSize = $scope.fileMaxSize;
       var uploader = $scope.uploader;
@@ -155,29 +175,31 @@ define([
       }
 
       $scope.contractForm.$setValidity('maxFileSize', isValid);
-    };
+    }
 
-    if ($scope.allowSave) {
-      $scope.save = function () {
-        $scope.$broadcast('hrjc-loader-show');
-        contractDetailsService.validateDates({
-          contact_id: settings.contactId,
-          period_start_date: $scope.entity.details.period_start_date,
-          period_end_date: $scope.entity.details.period_end_date,
-          jobcontract_id: entity.contract.id
-        }).then(function (result) {
-          if (result.success) {
-            confirmUpdateEntitlements()
-              .then(function () {
-                processContractUpdate();
-              });
-          } else {
-            CRM.alert(result.message, 'Error', 'error');
-            $scope.$broadcast('hrjc-loader-hide');
-          }
-        }, function (reason) {});
-        $scope.$broadcast('hrjc-loader-hide');
-      };
+    function save () {
+      if (!$scope.allowSave) {
+        return;
+      }
+
+      $scope.$broadcast('hrjc-loader-show');
+      contractDetailsService.validateDates({
+        contact_id: settings.contactId,
+        period_start_date: $scope.entity.details.period_start_date,
+        period_end_date: $scope.entity.details.period_end_date,
+        jobcontract_id: entity.contract.id
+      }).then(function (result) {
+        if (result.success) {
+          confirmUpdateEntitlements()
+            .then(function () {
+              processContractUpdate();
+            });
+        } else {
+          CRM.alert(result.message, 'Error', 'error');
+          $scope.$broadcast('hrjc-loader-hide');
+        }
+      }, function (reason) {});
+      $scope.$broadcast('hrjc-loader-hide');
     }
 
     function processContractUpdate () {
