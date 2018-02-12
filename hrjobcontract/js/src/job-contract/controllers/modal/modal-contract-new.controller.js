@@ -107,30 +107,6 @@ define([
       $modalInstance.dismiss('cancel');
     }
 
-    /**
-     * Shows a confirmation dialog warning the user that, if they proceed, the staff
-     * leave entitlement will be updated.
-     *
-     * @returns {*}
-     */
-    function confirmUpdateEntitlements () {
-      var modalUpdateEntitlements = $modal.open({
-        appendTo: $rootElement.find('div').eq(0),
-        size: 'sm',
-        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
-        controller: 'ModalDialogController',
-        resolve: {
-          content: {
-            title: 'Update leave entitlements?',
-            msg: 'The system will now update the staff member leave entitlement.',
-            copyConfirm: 'Proceed'
-          }
-        }
-      });
-
-      return modalUpdateEntitlements.result;
-    }
-
     function filesValidate () {
       var entityName, fieldName, i, len, uploaderEntity, uploaderEntityField, uploaderEntityFieldQueue;
       var fileMaxSize = $scope.fileMaxSize;
@@ -285,13 +261,7 @@ define([
         period_end_date: $scope.entity.details.period_end_date
       }).then(function (result) {
         if (result.success) {
-          confirmUpdateEntitlements()
-            .then(function () {
-              saveContract();
-            },
-              function () {
-                $scope.$broadcast('hrjc-loader-hide');
-              });
+          saveContract();
         } else {
           CRM.alert(result.message, 'Error', 'error');
           $scope.$broadcast('hrjc-loader-hide');

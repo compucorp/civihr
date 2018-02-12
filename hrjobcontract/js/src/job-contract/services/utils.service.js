@@ -6,9 +6,9 @@ define([
   'use strict';
 
   utilsService.__name = 'utilsService';
-  utilsService.$inject = ['apiService', 'settings', '$q', '$log', '$timeout'];
+  utilsService.$inject = ['apiService', 'settings', '$q', '$log', '$rootElement', '$timeout', '$uibModal', '$window', 'AbsencePeriod'];
 
-  function utilsService (API, settings, $q, $log, $timeout) {
+  function utilsService (API, settings, $q, $log, $rootElement, $timeout, $modal, $window, AbsencePeriod) {
     return {
 
       /**
@@ -159,8 +159,63 @@ define([
         var returnPath = 'civicrm/contact/view';
         var returnUrl = CRM.url(returnPath, { cid: contactId, selectedChild: 'hrjobcontract' });
         return CRM.url(path, { cid: contactId, returnUrl: returnUrl });
+      },
+
+      /**
+       * Check if absence periods exist,
+       * if yes: confirms if updating entitlements is intended
+       * if yes: redirects to the manage entitlements page
+       *
+       * @param {int} contactID
+       */
+      updateEntitlements: function (contactID) {
+        checkIfAbsencePeriodsExists()
+          .then(function (exists) {
+            if (exists) {
+              confirmUpdateEntitlements()
+                .then(function () {
+                  $window.location.assign(this.getManageEntitlementsPageURL(contactID));
+                }.bind(this));
+            }
+          }.bind(this))
       }
     };
+
+    /**
+     * Shows a confirmation dialog warning the user that, if they proceed, the staff
+     * leave entitlement will be updated.
+     *
+     * @returns {Promise}
+     */
+    function confirmUpdateEntitlements () {
+      var modalUpdateEntitlements = $modal.open({
+        appendTo: $rootElement.find('div').eq(0),
+        size: 'sm',
+        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
+        controller: 'ModalDialogController',
+        resolve: {
+          content: {
+            title: 'Update leave entitlements?',
+            msg: 'The system will now update the staff member leave entitlement.',
+            copyConfirm: 'Proceed'
+          }
+        }
+      });
+
+      return modalUpdateEntitlements.result;
+    }
+
+    /**
+     * Checks if any absence periods exist, and returns true if it does
+     *
+     * @returns {Promise}
+     */
+    function checkIfAbsencePeriodsExists () {
+      return AbsencePeriod.all()
+        .then(function (periods) {
+          return !!periods.length;
+        });
+    }
   }
 
   return utilsService;

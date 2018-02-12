@@ -293,7 +293,7 @@ define([
         }
 
         CRM.refreshParent('#hrjobroles');
-        $window.location.assign(utilsService.getManageEntitlementsPageURL($scope.contract.contact_id));
+        utilsService.updateEntitlements($scope.contract.contact_id);
       });
     }
 

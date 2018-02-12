@@ -188,7 +188,7 @@ define([
           $scope.toggleIsPrimary(contract.id);
         }
 
-        $window.location.assign(utilsService.getManageEntitlementsPageURL(contract.contact_id));
+        utilsService.updateEntitlements(contract.contact_id)
       });
     }
 
