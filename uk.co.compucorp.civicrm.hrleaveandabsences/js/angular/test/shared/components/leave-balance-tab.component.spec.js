@@ -21,29 +21,31 @@ define([
     var filters = { any_filter: 'any value' };
     var userRole = 'admin';
 
-    beforeEach(module('common.services', 'leave-absences.mocks',
-    'leave-absences.models', 'leave-absences.components', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(module('common.services', 'leave-absences.mocks', 'leave-absences.models', 'leave-absences.components',
+      function (_$provide_) {
+        $provide = _$provide_;
+      }
+    ));
 
-    beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_,
-    _EntitlementAPIMock_) {
-      $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
-      $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
-      $provide.value('EntitlementAPI', _EntitlementAPIMock_);
-      $provide.value('checkPermissions', function (permission) {
-        var returnValue = false;
+    beforeEach(inject(
+      function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_, _EntitlementAPIMock_) {
+        $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
+        $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
+        $provide.value('EntitlementAPI', _EntitlementAPIMock_);
+        $provide.value('checkPermissions', function (permission) {
+          var returnValue = false;
 
-        if (userRole === 'admin') {
-          returnValue = permission === sharedSettings.permissions.admin.administer;
-        }
-        if (userRole === 'manager') {
-          returnValue = permission === sharedSettings.permissions.ssp.manage;
-        }
+          if (userRole === 'admin') {
+            returnValue = permission === sharedSettings.permissions.admin.administer;
+          }
+          if (userRole === 'manager') {
+            returnValue = permission === sharedSettings.permissions.ssp.manage;
+          }
 
-        return $q.resolve(returnValue);
-      });
-    }));
+          return $q.resolve(returnValue);
+        });
+      }
+    ));
 
     beforeEach(inject(['shared-settings', 'api.optionGroup.mock', function (_sharedSettings_, _OptionGroupAPIMock_) {
       sharedSettings = _sharedSettings_;
@@ -51,26 +53,27 @@ define([
       $provide.value('api.optionGroup', _OptionGroupAPIMock_);
     }]));
 
-    beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_, _LeaveBalanceReport_, _pubSub_, _Session_,
-    _notificationService_) {
-      $componentController = _$componentController_;
-      $q = _$q_;
-      $rootScope = _$rootScope_;
-      AbsencePeriod = _AbsencePeriod_;
-      AbsenceType = _AbsenceType_;
-      leaveBalanceReport = _LeaveBalanceReport_;
-      notificationService = _notificationService_;
-      pubSub = _pubSub_;
-      Session = _Session_;
+    beforeEach(inject(
+      function (_$componentController_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_,
+        _LeaveBalanceReport_, _pubSub_, _Session_, _notificationService_) {
+        $componentController = _$componentController_;
+        $q = _$q_;
+        $rootScope = _$rootScope_;
+        AbsencePeriod = _AbsencePeriod_;
+        AbsenceType = _AbsenceType_;
+        leaveBalanceReport = _LeaveBalanceReport_;
+        notificationService = _notificationService_;
+        pubSub = _pubSub_;
+        Session = _Session_;
 
-      spyOn(AbsencePeriod, 'all').and.callThrough();
-      spyOn(AbsenceType, 'all').and.callThrough();
-      spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
-      spyOn(leaveBalanceReport, 'all').and.callThrough();
-      spyOn(notificationService, 'error');
-      spyOn(Session, 'get').and.returnValue($q.resolve({ contactId: loggedInContactId }));
-    }));
+        spyOn(AbsencePeriod, 'all').and.callThrough();
+        spyOn(AbsenceType, 'all').and.callThrough();
+        spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
+        spyOn(leaveBalanceReport, 'all').and.callThrough();
+        spyOn(notificationService, 'error');
+        spyOn(Session, 'get').and.returnValue($q.resolve({ contactId: loggedInContactId }));
+      }
+    ));
 
     describe('on init', function () {
       beforeEach(function () {

@@ -16,8 +16,7 @@ define([
     var loggedInContactId = 101;
     var userRole = 'admin';
 
-    beforeEach(module('leave-absences.components', 'leave-absences.mocks',
-    'leave-absences.models', 'leave-absences.settings', function (_$provide_) {
+    beforeEach(module('leave-absences.components', 'leave-absences.mocks', 'leave-absences.models', 'leave-absences.settings', function (_$provide_) {
       $provide = _$provide_;
     }));
 
@@ -26,13 +25,13 @@ define([
       $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
     }));
 
-    beforeEach(inject(function (_$componentController_, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_) {
-      $componentController = _$componentController_;
-      $rootScope = _$rootScope_;
-      AbsencePeriod = _AbsencePeriod_;
-      AbsenceType = _AbsenceType_;
-    }));
+    beforeEach(
+      inject(function (_$componentController_, _$rootScope_, _AbsencePeriod_, _AbsenceType_) {
+        $componentController = _$componentController_;
+        $rootScope = _$rootScope_;
+        AbsencePeriod = _AbsencePeriod_;
+        AbsenceType = _AbsenceType_;
+      }));
 
     beforeEach(function () {
       setupController();

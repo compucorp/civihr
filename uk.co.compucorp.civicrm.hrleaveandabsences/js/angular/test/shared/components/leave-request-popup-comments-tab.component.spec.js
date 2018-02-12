@@ -17,8 +17,7 @@ define([
     var contactId = '101';
     var commentId = '12';
 
-    beforeEach(module('common.mocks', 'leave-absences.templates',
-    'leave-absences.mocks', 'manager-leave', function (_$provide_) {
+    beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
       $provide = _$provide_;
     }));
 

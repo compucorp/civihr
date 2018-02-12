@@ -62,9 +62,7 @@
         HRSettings = HRSettingsMock;
       }]));
 
-      beforeEach(inject(function ($componentController, _AbsencePeriod_,
-      _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_,
-      _OptionGroup_, _pubSub_) {
+      beforeEach(inject(function ($componentController, _AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _pubSub_) {
         AbsencePeriod = _AbsencePeriod_;
         AbsenceType = _AbsenceType_;
         Entitlement = _Entitlement_;

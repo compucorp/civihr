@@ -17,8 +17,7 @@ define([
       contactData, controller, dayTypes, LeavePopup, leaveRequest;
 
     beforeEach(module('manager-leave'));
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_,
-    _LeavePopup_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _LeavePopup_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;

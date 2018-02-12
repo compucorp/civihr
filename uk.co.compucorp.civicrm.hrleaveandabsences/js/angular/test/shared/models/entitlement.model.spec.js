@@ -16,14 +16,12 @@ define([
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (EntitlementAPIMock,
-    EntitlementLogAPIMock) {
+    beforeEach(inject(function (EntitlementAPIMock, EntitlementLogAPIMock) {
       $provide.value('EntitlementAPI', EntitlementAPIMock);
       $provide.value('EntitlementLogAPI', EntitlementLogAPIMock);
     }));
 
-    beforeEach(inject(function (_$rootScope_, _Entitlement_,
-    _EntitlementAPI_, _EntitlementLogAPI_) {
+    beforeEach(inject(function (_$rootScope_, _Entitlement_, _EntitlementAPI_, _EntitlementLogAPI_) {
       Entitlement = _Entitlement_;
       EntitlementAPI = _EntitlementAPI_;
       EntitlementLogAPI = _EntitlementLogAPI_;
@@ -121,13 +119,10 @@ define([
       var periodId = 301;
 
       beforeEach(function () {
-        Entitlement.logs({
-          contact_id: contactId,
-          period_id: periodId
-        })
-        .then(function (_entitlementLogs_) {
-          entitlementLogs = _entitlementLogs_;
-        });
+        Entitlement.logs({ contact_id: contactId, period_id: periodId })
+          .then(function (_entitlementLogs_) {
+            entitlementLogs = _entitlementLogs_;
+          });
         $rootScope.$apply();
 
         spyCallArgs = EntitlementLogAPI.all.calls.argsFor(0)[0];

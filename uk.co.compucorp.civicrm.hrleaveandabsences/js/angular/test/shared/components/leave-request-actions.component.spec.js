@@ -27,9 +27,8 @@ define([
       sharedSettings = _sharedSettings_;
     }]));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$q_,
-    _$rootScope_, _dialog_, _LeaveRequestInstance_, _LeavePopup_,
-    _notificationService_, _pubSub_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
+      _dialog_, _LeaveRequestInstance_, _LeavePopup_, _notificationService_, _pubSub_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;

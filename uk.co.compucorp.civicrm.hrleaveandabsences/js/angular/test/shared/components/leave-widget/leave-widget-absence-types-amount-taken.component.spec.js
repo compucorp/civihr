@@ -19,15 +19,13 @@ define([
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock,
-    LeaveRequestAPIMock, OptionGroupAPIMock) {
+    beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, LeaveRequestAPIMock, OptionGroupAPIMock) {
       $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
       $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
       $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
     }));
 
-    beforeEach(inject(function (_$componentController_, _$rootScope_,
-    AbsencePeriod, AbsenceType, _LeaveRequest_) {
+    beforeEach(inject(function (_$componentController_, _$rootScope_, AbsencePeriod, AbsenceType, _LeaveRequest_) {
       $componentController = _$componentController_;
       $rootScope = _$rootScope_;
       $scope = $rootScope.$new();
@@ -110,11 +108,11 @@ define([
               status_id: { IN: [1, 2, 3] },
               type_id: { IN: [1, 2, 3] }
             }, null, null, null, false)
-            .then(function (response) {
-              leaveRequests = response.list;
+              .then(function (response) {
+                leaveRequests = response.list;
 
-              mapAbsenceTypeBalances();
-            });
+                mapAbsenceTypeBalances();
+              });
             $rootScope.$digest();
 
             /**
@@ -122,12 +120,13 @@ define([
              */
             function mapAbsenceTypeBalances () {
               expectedAbsenceTypes = absenceTypes.map(function (absenceType) {
-                var balance = leaveRequests.filter(function (request) {
-                  return +request.type_id === +absenceType.id;
-                })
-                .reduce(function (balance, request) {
-                  return balance + request.balance_change;
-                }, 0);
+                var balance = leaveRequests
+                  .filter(function (request) {
+                    return +request.type_id === +absenceType.id;
+                  })
+                  .reduce(function (balance, request) {
+                    return balance + request.balance_change;
+                  }, 0);
 
                 return _.assign({ balance: Math.abs(balance) }, absenceType);
               });

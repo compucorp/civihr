@@ -30,16 +30,15 @@ define([
       $provide.value('EntitlementAPI', EntitlementAPIMock);
     }));
 
-    beforeEach(inject(['api.contract.mock', 'api.contact.mock',
-      'api.optionGroup.mock', function (_ContractAPIMock_, _ContactAPIMock_,
-      _OptionGroupAPIMock_) {
+    beforeEach(inject([
+      'api.contract.mock', 'api.contact.mock', 'api.optionGroup.mock',
+      function (_ContractAPIMock_, _ContactAPIMock_, _OptionGroupAPIMock_) {
         $provide.value('api.contract', _ContractAPIMock_);
         $provide.value('api.contact', _ContactAPIMock_);
         $provide.value('api.optionGroup', _OptionGroupAPIMock_);
       }]));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_,
-    _AbsenceType_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _AbsenceType_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
