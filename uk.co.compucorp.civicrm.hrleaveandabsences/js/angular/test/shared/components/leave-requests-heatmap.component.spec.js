@@ -3,8 +3,8 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/helpers/controller-on-changes',
-  'mocks/data/leave-request.data',
+  'leave-absences/mocks/helpers/controller-on-changes',
+  'leave-absences/mocks/data/leave-request.data',
   'leave-absences/shared/components/leave-requests-heatmap.component'
 ], function (_, moment, controllerOnChanges, leaveRequestData) {
   describe('leaveRequestsHeatmap', function () {

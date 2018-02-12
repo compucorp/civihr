@@ -2,7 +2,7 @@
 
 define([
   'common/angular',
-  'mocks/data/leave-request.data',
+  'leave-absences/mocks/data/leave-request.data',
   'common/mocks/models/instances/session-mock',
   'leave-absences/manager-leave/app'
 ], function (angular, leaveRequestData) {

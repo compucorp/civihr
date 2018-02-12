@@ -1,8 +1,8 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/module',
-  'mocks/data/absence-period.data',
+  'leave-absences/mocks/module',
+  'leave-absences/mocks/data/absence-period.data',
   'common/moment',
   'common/angularMocks'
 ], function (mocks, mockData, moment) {

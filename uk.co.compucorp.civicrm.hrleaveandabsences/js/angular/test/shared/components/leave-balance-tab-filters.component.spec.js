@@ -3,8 +3,8 @@
 define([
   'common/angular',
   'common/moment',
-  'mocks/data/absence-period.data',
-  'mocks/data/absence-type.data',
+  'leave-absences/mocks/data/absence-period.data',
+  'leave-absences/mocks/data/absence-type.data',
   'leave-absences/shared/components/leave-balance-tab-filters.component',
   'leave-absences/shared/modules/shared-settings'
 ], function (angular, moment) {

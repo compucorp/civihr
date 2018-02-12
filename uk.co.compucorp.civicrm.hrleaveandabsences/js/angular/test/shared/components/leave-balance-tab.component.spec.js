@@ -2,12 +2,12 @@
 
 define([
   'common/lodash',
-  'mocks/data/absence-period.data',
-  'mocks/data/absence-type.data',
-  'mocks/data/leave-balance-report.data',
+  'leave-absences/mocks/data/absence-period.data',
+  'leave-absences/mocks/data/absence-type.data',
+  'leave-absences/mocks/data/leave-balance-report.data',
   'common/mocks/services/api/option-group-mock',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/apis/entitlement-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/entitlement-api-mock',
   'leave-absences/shared/models/entitlement.model',
   'leave-absences/shared/components/leave-balance-tab.component',
   'leave-absences/shared/config',

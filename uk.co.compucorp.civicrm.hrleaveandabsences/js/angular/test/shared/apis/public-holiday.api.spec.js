@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/public-holiday.data',
+  'leave-absences/mocks/data/public-holiday.data',
   'common/moment',
   'leave-absences/shared/apis/public-holiday.api',
   'leave-absences/shared/modules/shared-settings'

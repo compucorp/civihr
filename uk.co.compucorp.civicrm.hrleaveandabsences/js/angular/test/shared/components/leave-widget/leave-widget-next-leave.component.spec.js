@@ -3,10 +3,10 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/helpers/controller-on-changes',
-  'mocks/data/absence-type.data',
-  'mocks/data/option-group.data',
-  'mocks/apis/leave-request-api-mock',
+  'leave-absences/mocks/helpers/controller-on-changes',
+  'leave-absences/mocks/data/absence-type.data',
+  'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/apis/leave-request-api-mock',
   'leave-absences/shared/components/leave-widget/leave-widget-next-leave.component'
 ], function (_, moment, controllerOnChanges, absenceTypesData, OptionGroupData) {
   describe('leaveWidgetNextLeave', function () {

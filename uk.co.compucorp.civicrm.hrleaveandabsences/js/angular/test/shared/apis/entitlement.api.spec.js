@@ -1,8 +1,8 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/entitlement.data',
-  'mocks/data/leave-balance-report.data',
+  'leave-absences/mocks/data/entitlement.data',
+  'leave-absences/mocks/data/leave-balance-report.data',
   'leave-absences/shared/apis/entitlement.api'
 ], function (mockData, leaveBalanceReportMockData) {
   'use strict';

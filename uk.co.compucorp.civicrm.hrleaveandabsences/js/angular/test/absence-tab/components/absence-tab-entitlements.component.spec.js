@@ -9,9 +9,9 @@ define([
   'leave-absences/absence-tab/app',
   'common/mocks/services/api/contact-mock',
   'common/mocks/services/api/contract-mock',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/apis/absence-period-api-mock',
-  'mocks/apis/entitlement-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/entitlement-api-mock',
   'leave-absences/shared/modules/shared-settings'
 ], function (_, moment, angular) {
   'use strict';

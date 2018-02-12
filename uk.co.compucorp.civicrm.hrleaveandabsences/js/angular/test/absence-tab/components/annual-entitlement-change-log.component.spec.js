@@ -3,12 +3,12 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/entitlement-log.data',
-  'mocks/apis/absence-period-api-mock',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/apis/entitlement-api-mock',
-  'mocks/apis/entitlement-log-api-mock',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/data/entitlement-log.data',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/entitlement-api-mock',
+  'leave-absences/mocks/apis/entitlement-log-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/absence-tab/components/annual-entitlement-change-log.component'
 ], function (_, moment, entitlementLogData) {
   describe('Annual entitlement change log', function () {

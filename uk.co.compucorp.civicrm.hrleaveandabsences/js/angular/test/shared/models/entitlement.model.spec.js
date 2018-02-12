@@ -3,8 +3,8 @@
 define([
   'common/lodash',
   'leave-absences/shared/models/entitlement.model',
-  'mocks/apis/entitlement-api-mock',
-  'mocks/apis/entitlement-log-api-mock'
+  'leave-absences/mocks/apis/entitlement-api-mock',
+  'leave-absences/mocks/apis/entitlement-log-api-mock'
 ], function (_) {
   'use strict';
 
