@@ -80,8 +80,6 @@ define([
     });
 
     describe('updateEntitlements()', function () {
-      var contactID = 101;
-
       describe('when absence periods are available', function () {
         beforeEach(function () {
           spyOn(AbsencePeriod, 'all').and.returnValue($q.resolve(absencePeriodData.all().values));
@@ -89,14 +87,11 @@ define([
 
         describe('and user confirms to update entitlements', function () {
           beforeEach(function () {
-            var mockModalInstance = { result: $q.resolve() };
-            spyOn(mockModalInstance.result, 'then').and.callThrough();
-            spyOn($uibModal, 'open').and.returnValue(mockModalInstance);
+            mockModalInstanceAndReturn($q.resolve());
 
             utilsService.updateEntitlements();
-
             $rootScope.$digest();
-          })
+          });
 
           it('redirects to entitlement updation page for the current user', function () {
             expect($window.location.assign).toHaveBeenCalled();
@@ -105,12 +100,9 @@ define([
 
         describe('and user does not confirm to update entitlements', function () {
           beforeEach(function () {
-            var mockModalInstance = { result: $q.reject() };
-            spyOn(mockModalInstance.result, 'then').and.callThrough();
-            spyOn($uibModal, 'open').and.returnValue(mockModalInstance);
+            mockModalInstanceAndReturn($q.reject());
 
             utilsService.updateEntitlements();
-
             $rootScope.$digest();
           });
 
@@ -118,17 +110,25 @@ define([
             expect($window.location.assign).not.toHaveBeenCalled();
           });
         });
+
+        function mockModalInstanceAndReturn (modalReturnValue) {
+          var mockModalInstance = { result: modalReturnValue };
+          spyOn(mockModalInstance.result, 'then').and.callThrough();
+          spyOn($uibModal, 'open').and.returnValue(mockModalInstance);
+        }
       });
 
       describe('when absence periods are not available', function () {
         beforeEach(function () {
           spyOn(AbsencePeriod, 'all').and.returnValue($q.resolve([]));
+          utilsService.updateEntitlements();
+          $rootScope.$digest();
         });
 
         it('does not show confirmation window to update entitlements', function () {
           expect($window.location.assign).not.toHaveBeenCalled();
         });
       });
-    })
+    });
   });
 });
