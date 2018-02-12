@@ -7,7 +7,8 @@ define([
   'mocks/data/absence-type.data',
   'mocks/data/option-group.data',
   'mocks/apis/leave-request-api-mock',
-  'leave-absences/shared/components/leave-widget/leave-widget-next-leave.component'
+  'mocks/apis/option-group-api-mock',
+  'leave-absences/shared/components/leave-widget/leave-widget.component'
 ], function (_, moment, controllerOnChanges, absenceTypesData, OptionGroupData) {
   describe('leaveWidgetNextLeave', function () {
     var $componentController, $provide, $q, $rootScope, $scope, absenceTypes,
@@ -28,7 +29,7 @@ define([
     beforeEach(inject(['$componentController', '$q', '$rootScope',
       'LeaveRequest', 'OptionGroup', 'shared-settings',
       function (_$componentController_, _$q_, _$rootScope_, _LeaveRequest_,
-      _OptionGroup_, _sharedSettings_) {
+        _OptionGroup_, _sharedSettings_) {
         $componentController = _$componentController_;
         $q = _$q_;
         $rootScope = _$rootScope_;
@@ -116,16 +117,16 @@ define([
             status_id: { IN: leaveRequestStatusIds },
             options: { limit: 1, sort: 'from_date DESC' }
           }, null, null, null, false)
-          .then(function (response) {
-            expectedNextLeave = response.list[0];
-            absenceType = getAbsenceTypeForLeave(expectedNextLeave);
-            expectedNextLeave['type_id.title'] = absenceType.title;
-            expectedNextLeave['type_id.calculation_unit_name'] = absenceType.calculation_unit_name;
-            expectedNextLeave.balance_change = Math.abs(expectedNextLeave.balance_change);
-            expectedNextLeave.from_date = moment(expectedNextLeave.from_date);
-            expectedNextLeave.to_date = moment(expectedNextLeave.to_date);
-            expectedRequestStatus = getExpectedRequestStatus(expectedNextLeave);
-          });
+            .then(function (response) {
+              expectedNextLeave = response.list[0];
+              absenceType = getAbsenceTypeForLeave(expectedNextLeave);
+              expectedNextLeave['type_id.title'] = absenceType.title;
+              expectedNextLeave['type_id.calculation_unit_name'] = absenceType.calculation_unit_name;
+              expectedNextLeave.balance_change = Math.abs(expectedNextLeave.balance_change);
+              expectedNextLeave.from_date = moment(expectedNextLeave.from_date);
+              expectedNextLeave.to_date = moment(expectedNextLeave.to_date);
+              expectedRequestStatus = getExpectedRequestStatus(expectedNextLeave);
+            });
           $rootScope.$digest();
         });
 
@@ -170,8 +171,7 @@ define([
          * @return {Object}
          */
         function getExpectedRequestStatus (leaveRequest) {
-          return _.find(OptionGroupData.getCollection(
-            'hrleaveandabsences_leave_request_status'),
+          return _.find(OptionGroupData.getCollection('hrleaveandabsences_leave_request_status'),
             function (status) {
               return +status.value === +leaveRequest.status_id;
             });
