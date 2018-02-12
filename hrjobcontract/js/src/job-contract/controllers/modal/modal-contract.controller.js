@@ -489,15 +489,11 @@ define([
     }
 
     function saveContractChange (reasonId, date) {
-      var entityName, entityFilesTrashLen, field, fieldName, file, ii,
-        isChanged, item, modalInstance, revisionId;
+      var modalInstance, revisionId;
       var entityChangedList = [];
       var entityNew = angular.copy($scope.entity);
       var filesTrash = $scope.filesTrash;
       var uploader = $scope.uploader;
-      var entityChangedListLen = 0;
-      var fieldQueueLen = 0;
-      var i = 0;
       var promiseContractChange = {};
       var promiseFilesChangeDelete = [];
       var promiseFilesChangeUpload = [];
@@ -510,47 +506,43 @@ define([
         pension: contractPensionService
       };
 
-      for (entityName in entityServices) {
-        isChanged = !angular.equals(entity[entityName], entityNew[entityName]);
+      for (var entityName in entityServices) {
+        var hasChanged = !angular.equals(entity[entityName], entityNew[entityName]);
 
-        if (!isChanged) {
-          isChanged = !!filesTrash[entityName] && !!filesTrash[entityName].length;
+        if (!hasChanged) {
+          hasChanged = !!filesTrash[entityName] && !!filesTrash[entityName].length;
 
-          if (!isChanged && uploader[entityName]) {
-            for (fieldName in uploader[entityName]) {
-              field = uploader[entityName][fieldName];
+          if (!hasChanged && uploader[entityName]) {
+            for (var fieldName in uploader[entityName]) {
+              var field = uploader[entityName][fieldName];
               if (field.queue.length) {
-                isChanged = true;
+                hasChanged = true;
                 break;
               }
             }
           }
         }
 
-        if (isChanged) {
-          entityChangedList[i] = {};
-          entityChangedList[i].name = entityName;
-          entityChangedList[i].data = entityNew[entityName];
-          entityChangedList[i].service = entityServices[entityName];
-          i++;
-          entityChangedListLen = i;
+        if (hasChanged) {
+          entityChangedList.push({
+            name: entityName,
+            data: entityNew[entityName],
+            service: entityServices[entityName]
+          });
         }
       }
 
-      if (entityChangedListLen) {
+      if (entityChangedList.length) {
         utilsService.prepareEntityIds(entityChangedList[0].data, entity.contract.id);
 
         entityChangedList[0].service.save(entityChangedList[0].data).then(function (results) {
-          i = 1;
           revisionId = !angular.isArray(results) ? results.jobcontract_revision_id : results[0].jobcontract_revision_id;
           promiseContractChange[entityChangedList[0].name] = results;
 
-          for (i; i < entityChangedListLen; i++) {
-            entityName = entityChangedList[i].name;
-
-            utilsService.prepareEntityIds(entityChangedList[i].data, entity.contract.id, revisionId);
-            promiseContractChange[entityName] = entityChangedList[i].service.save(entityChangedList[i].data);
-          }
+          entityChangedList.slice(1).forEach(function (entity) {
+            utilsService.prepareEntityIds(entity.data, entity.contract.id, revisionId);
+            promiseContractChange[entity.name] = entity.service.save(entity.data);
+          });
 
           return $q.all(angular.extend(promiseContractChange, {
             revisionCreated: contractService.saveRevision({
@@ -566,12 +558,10 @@ define([
             results[entityName] = results[entityName] || entityNew[entityName];
 
             if (filesTrash[entityName] && filesTrash[entityName].length) {
-              i = 0;
-              entityFilesTrashLen = filesTrash[entityName].length;
-              for (i; i < entityFilesTrashLen; i++) {
-                file = filesTrash[entityName][i];
-                promiseFilesChangeDelete.push(contractFilesService.delete(file.fileID, revisionId, file.entityTable));
-              }
+              filesTrash[entityName].forEach(function (file) {
+                promiseFilesChangeDelete.push(contractFilesService.delete(
+                  file.fileID, revisionId, file.entityTable));
+              });
             }
           }
 
@@ -579,7 +569,6 @@ define([
           results.details.period_start_date = entityNew.details.period_start_date;
           results.details.period_end_date = entityNew.details.period_end_date;
           results.revisionCreated.effective_date = date || '';
-          //
 
           // TODO (incorrect JSON format in the API response)
           results.pay.annual_benefits = entityNew.pay.annual_benefits;
@@ -602,31 +591,25 @@ define([
 
           return results;
         }).then(function (results) {
-          i = 0;
-          for (i; i < entityChangedListLen; i++) {
-            entityName = entityChangedList[i].name;
+          entityChangedList.forEach(function (entity) {
+            if (!uploader[entity.name]) {
+              return;
+            }
 
-            if (uploader[entityName]) {
-              for (fieldName in uploader[entityName]) {
-                field = uploader[entityName][fieldName];
-                fieldQueueLen = field.queue.length;
-                ii = 0;
+            for (var fieldName in uploader[entity.name]) {
+              field = uploader[entity.name][fieldName];
 
-                for (ii; ii < fieldQueueLen; ii++) {
-                  item = field.queue[ii];
-                  if (item.file.size > $scope.fileMaxSize) {
-                    item.remove();
-                    ii--;
-                    fieldQueueLen--;
-                  }
+              field.queue.forEach(function (item) {
+                if (item.file.size > $scope.fileMaxSize) {
+                  item.remove();
                 }
+              });
 
-                if (fieldQueueLen) {
-                  promiseFilesChangeUpload.push(contractFilesService.upload(field, revisionId));
-                }
+              if (field.queue.length) {
+                promiseFilesChangeUpload.push(contractFilesService.upload(field, revisionId));
               }
             }
-          }
+          });
 
           if (promiseFilesChangeUpload.length) {
             modalInstance = $modal.open({
