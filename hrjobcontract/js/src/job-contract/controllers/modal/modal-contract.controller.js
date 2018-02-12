@@ -69,6 +69,10 @@ define([
       });
     }());
 
+    /**
+     * Hides the job contract modal, but before doing so asks for confirmation
+     * before changes are lost.
+     */
     function cancel () {
       if (action === 'view' ||
         (angular.equals(entity, $scope.entity) && angular.equals(files, $scope.files) &&
@@ -116,6 +120,12 @@ define([
       });
     }
 
+    /**
+     * Displays the contract revision modal where the user specifies the reason
+     * for the changes made.
+     *
+     * @return {Promise} resolves when the modal closes.
+     */
     function changeReason () {
       var modalChangeReason = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
@@ -137,6 +147,12 @@ define([
       return modalChangeReason.result;
     }
 
+    /**
+     * Displays a confirmation modal to see if the user wants to record a new
+     * revision for the changes made.
+     *
+     * @return {Promise} resolves when the modal closes.
+     */
     function confirmEdit () {
       var modalConfirmEdit = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
@@ -158,7 +174,7 @@ define([
      * Shows a confirmation dialog warning the user that, if they proceed, the staff
      * leave entitlement will be updated.
      *
-     * @returns {*}
+     * @returns {Promise} resolves when the modal closes.
      */
     function confirmUpdateEntitlements () {
       var modalUpdateEntitlements = $modal.open({
@@ -178,6 +194,9 @@ define([
       return modalUpdateEntitlements.result;
     }
 
+    /**
+     * Confirms that the contract change is valid and saves it.
+     */
     function contractChange (reasonId, date) {
       $scope.$broadcast('hrjc-loader-show');
 
@@ -194,6 +213,11 @@ define([
       }, function (reason) {});
     }
 
+    /**
+     * Saves all the tabs in the contract's form.
+     *
+     * @return {Promise} resolves when all the tabs are saved.
+     */
     function contractEdit () {
       $scope.$broadcast('hrjc-loader-show');
       $scope.entity.details.period_end_date = $scope.entity.details.period_end_date || '';
@@ -288,9 +312,9 @@ define([
     }
 
     /**
-     * # TO DO: This should probably happen inside the service that returns the data #
-     *
      * Converts a date string into a Date object (if string is not empty)
+     *
+     * @todo This should probably happen inside the service that returns the data #
      *
      * @param {string} dateString
      * @param {Date/null}
@@ -301,8 +325,10 @@ define([
       return dateObj !== 'Unspecified' ? dateObj : dateString;
     }
 
-    /*
+    /**
      * Fetch updated Health and Life Insurance Plan Types
+     *
+     * @return {Promise}
      */
     function fetchInsurancePlanTypes () {
       return $q.all([
@@ -318,6 +344,12 @@ define([
       }));
     }
 
+    /**
+     * Moves the file to a trash list that will later be used to delete the files.
+     *
+     * @param {Number} index the index of the file in the section list.
+     * @param {String} entityName the section name where the file is stored.
+     */
     function fileMoveToTrash (index, entityName) {
       var entityFiles = $scope.files[entityName];
       var entityFilesTrash = $scope.filesTrash[entityName];
@@ -326,6 +358,9 @@ define([
       entityFiles.splice(index, 1);
     }
 
+    /**
+     * Validates that all files are within the max file size limit.
+     */
     function filesValidate () {
       var entityName, fieldName, i, len, uploaderEntity, uploaderEntityField, uploaderEntityFieldQueue;
       var fileMaxSize = $scope.fileMaxSize;
@@ -379,6 +414,9 @@ define([
       $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
     }
 
+    /**
+     * Handles all the confirmations that need to be displayed when updating the contract.
+     */
     function processContractUpdate () {
       if (angular.equals(entity, $scope.entity) &&
         angular.equals(files, $scope.files) &&
@@ -419,6 +457,12 @@ define([
       }
     }
 
+    /**
+     * Runs the contract saving sequence which includes:
+     * - Validating the contract dates.
+     * - Confirming if entitlements should be updated.
+     * - Updating the contract.
+     */
     function save () {
       if (!$scope.allowSave) {
         return;
