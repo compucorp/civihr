@@ -41,6 +41,7 @@ define([
       spyOn(AbsenceType, 'all').and.callThrough();
       spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
       spyOn(contractService, 'fullDetails').and.callThrough();
+      spyOn(utilsService, 'updateEntitlements');
       makeController();
     }));
 
@@ -161,18 +162,14 @@ define([
       });
 
       describe('after updating the contract', function () {
-        var url;
-
         beforeEach(function () {
-          url = utilsService.getManageEntitlementsPageURL($scope.contract.contact_id);
-
           createModalSpy();
           $scope.modalContract('edit');
           $rootScope.$digest();
         });
 
-        it('changes the window location to the Manage Entitlements for the contact', function () {
-          expect($window.location.assign).toHaveBeenCalledWith(url);
+        it('calls utility service to display entitlement update page', function () {
+          expect(utilsService.updateEntitlements).toHaveBeenCalledWith($scope.contract.contact_id);
         });
       });
     });
