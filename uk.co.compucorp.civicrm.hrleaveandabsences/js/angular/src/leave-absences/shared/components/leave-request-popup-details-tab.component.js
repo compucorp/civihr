@@ -582,10 +582,11 @@ define([
         .then(function () {
           ['from', 'to'].forEach(function (dateType) {
             times[dateType].time = extractTimeFromServerDate(vm.request[dateType + '_date']);
-            times[dateType].amount =
-              Math.min(vm.request[dateType + '_date_amount'], times[dateType].maxAmount).toString();
 
             setDeductionMaximumBoundary(dateType);
+
+            times[dateType].amount =
+              Math.min(vm.request[dateType + '_date_amount'], times[dateType].maxAmount).toString();
           });
 
           if (!vm.uiOptions.multipleDays) {

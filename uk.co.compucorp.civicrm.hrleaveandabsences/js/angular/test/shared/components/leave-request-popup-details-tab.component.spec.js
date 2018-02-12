@@ -777,7 +777,7 @@ define([
           describe('when user edits the request', function () {
             var leaveRequest;
             var fromDeduction = '1.5';
-            var toDeduction = '4.75';
+            var toDeduction = '1.25';
 
             beforeEach(function () {
               var status = optionGroupMock.specificValue(
@@ -803,8 +803,8 @@ define([
             it('sets time and deduction', function () {
               expect(controller.uiOptions.times.from.time).toBe(moment(leaveRequest.from_date).format('HH:mm'));
               expect(controller.uiOptions.times.to.time).toBe(moment(leaveRequest.to_date).format('HH:mm'));
-              expect(controller.uiOptions.times.from.amount).toBe(leaveRequest.from_date_amount);
-              expect(controller.uiOptions.times.to.amount).toBe(leaveRequest.to_date_amount);
+              expect(controller.uiOptions.times.from.amount).toBe(fromDeduction);
+              expect(controller.uiOptions.times.to.amount).toBe(toDeduction);
             });
 
             it('does not recalculate the balance', function () {
@@ -813,6 +813,7 @@ define([
 
             describe('and is a single day request', function () {
               var workDayMock;
+              var fromDeduction = '1';
 
               beforeEach(function () {
                 var status = optionGroupMock.specificValue(
@@ -826,7 +827,7 @@ define([
                     .add(30, 'minutes')
                     .format('HH:mm');
                 leaveRequest.to_date = date2016InServerFormat + ' ' + workDayMock.time_to;
-                leaveRequest.from_date_amount = '1';
+                leaveRequest.from_date_amount = fromDeduction;
 
                 compileComponent({
                   mode: 'edit',
@@ -855,7 +856,7 @@ define([
               it('sets time and deduction', function () {
                 expect(controller.uiOptions.times.from.time).toBe(moment(leaveRequest.from_date).format('HH:mm'));
                 expect(controller.uiOptions.times.to.time).toBe(moment(leaveRequest.to_date).format('HH:mm'));
-                expect(controller.uiOptions.times.from.amount).toBe(leaveRequest.from_date_amount);
+                expect(controller.uiOptions.times.from.amount).toBe(fromDeduction);
               });
             });
 
