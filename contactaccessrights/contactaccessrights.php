@@ -1,5 +1,11 @@
 <?php
 
+use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
+use CRM_Contactaccessrights_Helper_ContactActionsMenu_Contact as ContactHelper;
+use CRM_HRCore_CMSData_UserPermissionFactory as CMSUserPermissionsFactory;
+use CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup as ContactAccessActionGroupHelper;
+use CRM_Contactaccessrights_Service_ContactRights as ContactRightsService;
+
 require_once 'contactaccessrights.civix.php';
 
 /**
@@ -189,4 +195,47 @@ function contactaccessrights_civicrm_pageRun($page) {
     CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/access-rights.css');
     CRM_Core_Resources::singleton()->addScriptFile($extName, 'js/dist/access-rights.min.js', 1010);
   }
+}
+
+/**
+ * Implementation of hook_addContactMenuActions to add the
+ * Contact Access menu group to the contact actions menu.
+ *
+ * @param ActionsMenu $menu
+ *
+ * @throws \Exception
+ */
+function contactaccessrights_addContactMenuActions(ActionsMenu $menu) {
+  $contactID = empty($_GET['cid']) ? '' : $_GET['cid'];
+  if (!$contactID) {
+    return;
+  }
+
+  $contactUserInfo = ContactHelper::getUserInformation($contactID);
+
+  if (empty($contactUserInfo['cmsId'])) {
+    return;
+  }
+
+  $userPermissions = CMSUserPermissionsFactory::create();
+
+  if (!$userPermissions->check($contactUserInfo, ['access CiviCRM'])) {
+    return;
+  }
+
+  $contactRightsService = new ContactRightsService();
+  $aclGroups = ContactHelper::getACLGroups($contactID);
+
+
+  $contactAccessActionGroup = new ContactAccessActionGroupHelper(
+    $contactUserInfo,
+    $contactRightsService,
+    $userPermissions,
+    $aclGroups
+  );
+
+  $contactAccessActionGroup = $contactAccessActionGroup->get();
+  $contactAccessActionGroup->setWeight(2);
+
+  $menu->addToHighlightedPanel($contactAccessActionGroup);
 }
