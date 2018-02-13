@@ -8,11 +8,11 @@ use CRM_Contactaccessrights_Helper_ContactActionsMenu_Contact as ContactHelper;
  * @group headless
  */
 class CRM_Contactaccessrights_Helper_ContactTest extends BaseHeadlessTest {
+
   public function setUp() {
     $this->apiKernel = \Civi::service('civi_api_kernel');
     $this->adhocProvider = new \Civi\API\Provider\AdhocProvider(3, 'GroupContact');
     $this->apiKernel->registerApiProvider($this->adhocProvider);
-    CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
   }
 
   public function testGetACLGroupsWhenContactBelongsToAnACLGroup() {
