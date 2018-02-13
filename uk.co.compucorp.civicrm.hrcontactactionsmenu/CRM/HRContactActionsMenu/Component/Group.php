@@ -26,11 +26,6 @@ class CRM_HRContactActionsMenu_Component_Group {
   private $items = [];
 
   /**
-   * @var array
-   */
-  private $permissions = [];
-
-  /**
    * CRM_HRContactActionsMenu_Component_Group constructor.
    *
    * @param string $groupTitle
@@ -82,24 +77,5 @@ class CRM_HRContactActionsMenu_Component_Group {
    */
   public function getItems() {
     return $this->items;
-  }
-
-  /**
-   * Sets the permissions required to view this action group on
-   * the Contact actions menu.
-   *
-   * @param array $permissions
-   */
-  public function setPermissions(array $permissions = []) {
-    $this->permissions = $permissions;
-  }
-
-  /**
-   * Gets the permissions required to view this action group.
-   *
-   * @return array
-   */
-  public function getPermissions() {
-    return $this->permissions;
   }
 }

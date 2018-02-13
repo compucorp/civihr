@@ -8,11 +8,6 @@
         <div class="crm_contact-actions__panel crm_contact-actions__panel--primary">
           <div class="crm_contact-actions__panel__body">
             {foreach from=$menu->getHighlightedPanelItems() item='group'}
-              {if $group->getPermissions()}
-                {if !call_user_func(array('CRM_Core_Permission','check'), $group->getPermissions())}
-                  {continue}
-                {/if}
-              {/if}
               <div class="crm_contact-actions__group">
                 <h3>{$group->getTitle()}</h3>
                 {foreach from=$group->getItems() item='item'}
@@ -50,11 +45,6 @@
         <div class="crm_contact-actions__panel crm_contact-actions__panel--secondary">
           <div class="crm_contact-actions__panel__body">
             {foreach from=$menu->getMainPanelItems() item='group'}
-              {if $group->getPermissions()}
-                {if !call_user_func(array('CRM_Core_Permission','check'), $group->getPermissions())}
-                  {continue}
-                {/if}
-              {/if}
               <div class="crm_contact-actions__group">
                 <h3>{$group->getTitle()}</h3>
                 {foreach from=$group->getItems() item='item'}

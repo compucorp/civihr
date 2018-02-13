@@ -25,13 +25,6 @@ class CRM_HRContactActionsMenu_Component_GroupTest extends BaseHeadlessTest {
     $this->assertEquals($weight, $actionsGroup->getWeight());
   }
 
-  public function testSetAndGetPermissions() {
-    $permissions = ['administer CiviCRM', 'access CiviCRM'];
-    $actionsGroup = new ActionsGroup('Test Title');
-    $actionsGroup->setPermissions($permissions);
-    $this->assertEquals($permissions, $actionsGroup->getPermissions());
-  }
-
   public function testAddAndGetItems() {
     $actionsGroup = new ActionsGroup('Test Title');
     $items[] = $this->getActionGroupItem();
