@@ -13,19 +13,24 @@ define([
       AbsenceType, Contract, ctrl, OptionGroup, pubSub;
     var contactId = 208;
 
-    beforeEach(module('common.mocks', 'leave-absences.components.leave-widget', 'leave-absences.mocks', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(module('common.mocks', 'leave-absences.components.leave-widget',
+      'leave-absences.mocks', function (_$provide_) {
+        $provide = _$provide_;
+      }
+    ));
 
-    beforeEach(inject(['AbsencePeriodAPIMock', 'AbsenceTypeAPIMock', 'api.contract.mock', 'OptionGroupAPIMock', function (AbsencePeriodAPIMock,
-      AbsenceTypeAPIMock, ContractMock, OptionGroupAPIMock) {
-      $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
-      $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
-      $provide.value('Contract', ContractMock);
-      $provide.value('OptionGroup', OptionGroupAPIMock);
-    }]));
+    beforeEach(inject(['AbsencePeriodAPIMock', 'AbsenceTypeAPIMock',
+      'api.contract.mock', 'OptionGroupAPIMock', function (AbsencePeriodAPIMock,
+        AbsenceTypeAPIMock, ContractMock, OptionGroupAPIMock) {
+        $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
+        $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
+        $provide.value('Contract', ContractMock);
+        $provide.value('OptionGroup', OptionGroupAPIMock);
+      }]
+    ));
 
-    beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_, _Contract_, _OptionGroup_, _pubSub_) {
+    beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
+      _AbsencePeriod_, _AbsenceType_, _Contract_, _OptionGroup_, _pubSub_) {
       $componentController = _$componentController_;
       $q = _$q_;
       $rootScope = _$rootScope_;

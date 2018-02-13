@@ -46,7 +46,8 @@
         spyOn($log, 'debug');
       }));
 
-      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, LeaveRequestAPIMock) {
+      beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock,
+        EntitlementAPIMock, LeaveRequestAPIMock) {
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('EntitlementAPI', EntitlementAPIMock);
@@ -54,15 +55,18 @@
         $provide.value('checkPermissions', function () { return $q.resolve(isUserAdmin); });
       }));
 
-      beforeEach(inject(['shared-settings', 'HR_settingsMock', 'api.optionGroup.mock', function (_sharedSettings_, HRSettingsMock, _OptionGroupAPIMock_) {
-        sharedSettings = _sharedSettings_;
+      beforeEach(inject(['shared-settings', 'HR_settingsMock', 'api.optionGroup.mock',
+        function (_sharedSettings_, HRSettingsMock, _OptionGroupAPIMock_) {
+          sharedSettings = _sharedSettings_;
 
-        $provide.value('HR_settings', HRSettingsMock);
-        $provide.value('api.optionGroup', _OptionGroupAPIMock_);
-        HRSettings = HRSettingsMock;
-      }]));
+          $provide.value('HR_settings', HRSettingsMock);
+          $provide.value('api.optionGroup', _OptionGroupAPIMock_);
+          HRSettings = HRSettingsMock;
+        }]
+      ));
 
-      beforeEach(inject(function ($componentController, _AbsencePeriod_, _AbsenceType_, _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _pubSub_) {
+      beforeEach(inject(function ($componentController, _AbsencePeriod_, _AbsenceType_,
+        _Entitlement_, _LeaveRequest_, _LeaveRequestInstance_, _OptionGroup_, _pubSub_) {
         AbsencePeriod = _AbsencePeriod_;
         AbsenceType = _AbsenceType_;
         Entitlement = _Entitlement_;

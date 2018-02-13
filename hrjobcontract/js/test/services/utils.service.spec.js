@@ -86,15 +86,19 @@ define([
         });
 
         describe('and user confirms to update entitlements', function () {
+          var contactID = '101';
+
           beforeEach(function () {
             mockModalInstanceAndReturn($q.resolve());
 
-            utilsService.updateEntitlements();
+            utilsService.updateEntitlements(contactID);
             $rootScope.$digest();
           });
 
           it('redirects to entitlement updation page for the current user', function () {
-            expect($window.location.assign).toHaveBeenCalled();
+            var urlForManageEntitlements = utilsService.getManageEntitlementsPageURL(contactID);
+
+            expect($window.location.assign).toHaveBeenCalledWith(urlForManageEntitlements);
           });
         });
 

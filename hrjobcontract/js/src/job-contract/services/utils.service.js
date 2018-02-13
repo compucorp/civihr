@@ -162,21 +162,22 @@ define([
       },
 
       /**
-       * Check if absence periods exist,
-       * if yes: confirms if updating entitlements is intended
-       * if yes: redirects to the manage entitlements page
+       * Redirects the user to the entitlements update screen if
+       * absence periods exist and the user confirms a dialog prompt
        *
        * @param {int} contactID
        */
       updateEntitlements: function (contactID) {
         checkIfAbsencePeriodsExists()
           .then(function (exists) {
-            if (exists) {
-              confirmUpdateEntitlements()
-                .then(function () {
-                  $window.location.assign(this.getManageEntitlementsPageURL(contactID));
-                }.bind(this));
+            if (!exists) {
+              return;
             }
+
+            confirmUpdateEntitlements()
+              .then(function () {
+                $window.location.assign(this.getManageEntitlementsPageURL(contactID));
+              }.bind(this));
           }.bind(this));
       }
     };

@@ -23,7 +23,8 @@ define([
       $provide.value('$window', $window);
     }));
 
-    beforeEach(inject(function (_$controller_, _$rootScope_, _$uibModal_, _$q_, _$httpBackend_, _$window_, _AbsenceType_, _contractService_, _utilsService_) {
+    beforeEach(inject(function (_$controller_, _$rootScope_, _$uibModal_, _$q_, _$httpBackend_,
+      _$window_, _AbsenceType_, _contractService_, _utilsService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $q = _$q_;

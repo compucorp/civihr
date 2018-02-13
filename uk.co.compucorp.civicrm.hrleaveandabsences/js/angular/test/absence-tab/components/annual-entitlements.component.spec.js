@@ -39,7 +39,8 @@ define([
       }]));
 
     beforeEach(
-      inject(function (_$componentController_, _$log_, _$rootScope_, _$uibModal_, _notificationService_) {
+      inject(function (_$componentController_, _$log_, _$rootScope_, _$uibModal_,
+        _notificationService_) {
         $componentController = _$componentController_;
         $log = _$log_;
         $rootScope = _$rootScope_;

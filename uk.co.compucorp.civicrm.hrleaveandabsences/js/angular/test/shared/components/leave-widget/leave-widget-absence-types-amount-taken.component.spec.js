@@ -19,13 +19,15 @@ define([
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, LeaveRequestAPIMock, OptionGroupAPIMock) {
+    beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock,
+      LeaveRequestAPIMock, OptionGroupAPIMock) {
       $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
       $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
       $provide.value('LeaveRequestAPI', LeaveRequestAPIMock);
     }));
 
-    beforeEach(inject(function (_$componentController_, _$rootScope_, AbsencePeriod, AbsenceType, _LeaveRequest_) {
+    beforeEach(inject(function (_$componentController_, _$rootScope_,
+      AbsencePeriod, AbsenceType, _LeaveRequest_) {
       $componentController = _$componentController_;
       $rootScope = _$rootScope_;
       $scope = $rootScope.$new();

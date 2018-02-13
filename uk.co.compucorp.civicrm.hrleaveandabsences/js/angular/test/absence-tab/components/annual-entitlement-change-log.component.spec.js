@@ -22,7 +22,8 @@ define([
     }));
 
     beforeEach(inject(
-      function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, EntitlementLogAPIMock, OptionGroupAPIMock) {
+      function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, EntitlementLogAPIMock,
+        OptionGroupAPIMock) {
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('EntitlementAPI', EntitlementAPIMock);
