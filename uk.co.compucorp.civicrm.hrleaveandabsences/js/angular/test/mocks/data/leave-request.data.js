@@ -3,8 +3,8 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/option-group.data',
-  'mocks/data/absence-type.data'
+  'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/data/absence-type.data'
 ], function (_, moment, optionGroupMock, absenceTypeData) {
   var mockData = {
     allData: {

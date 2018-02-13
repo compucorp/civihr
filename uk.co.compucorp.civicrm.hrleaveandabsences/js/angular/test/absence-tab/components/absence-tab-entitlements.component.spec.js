@@ -9,9 +9,9 @@ define([
   'leave-absences/absence-tab/app',
   'common/mocks/services/api/contact-mock',
   'common/mocks/services/api/contract-mock',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/apis/absence-period-api-mock',
-  'mocks/apis/entitlement-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/entitlement-api-mock',
   'leave-absences/shared/modules/shared-settings'
 ], function (_, moment, angular) {
   'use strict';
@@ -30,16 +30,15 @@ define([
       $provide.value('EntitlementAPI', EntitlementAPIMock);
     }));
 
-    beforeEach(inject(['api.contract.mock', 'api.contact.mock',
-      'api.optionGroup.mock', function (_ContractAPIMock_, _ContactAPIMock_,
-      _OptionGroupAPIMock_) {
+    beforeEach(inject([
+      'api.contract.mock', 'api.contact.mock', 'api.optionGroup.mock',
+      function (_ContractAPIMock_, _ContactAPIMock_, _OptionGroupAPIMock_) {
         $provide.value('api.contract', _ContractAPIMock_);
         $provide.value('api.contact', _ContactAPIMock_);
         $provide.value('api.optionGroup', _OptionGroupAPIMock_);
       }]));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_,
-    _AbsenceType_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _AbsenceType_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;

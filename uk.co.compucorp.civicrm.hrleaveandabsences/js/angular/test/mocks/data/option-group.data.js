@@ -2,7 +2,7 @@
 
 define([
   'common/lodash',
-  'mocks/module'
+  'leave-absences/mocks/module'
 ], function (_, mocks) {
   'use strict';
 

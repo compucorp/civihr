@@ -2,7 +2,7 @@
 
 define([
   'common/angular',
-  'mocks/data/leave-request.data',
+  'leave-absences/mocks/data/leave-request.data',
   'common/mocks/models/instances/session-mock',
   'leave-absences/manager-leave/app'
 ], function (angular, leaveRequestData) {
@@ -17,10 +17,11 @@ define([
     var contactId = '101';
     var commentId = '12';
 
-    beforeEach(module('common.mocks', 'leave-absences.templates',
-    'leave-absences.mocks', 'manager-leave', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks',
+      'manager-leave', function (_$provide_) {
+        $provide = _$provide_;
+      }
+    ));
 
     beforeEach(inject(function (_SessionMock_) {
       SessionMock = _SessionMock_;
@@ -28,9 +29,8 @@ define([
       $provide.value('Session', SessionMock);
     }));
 
-    beforeEach(inject(function (
-      _$componentController_, _$q_, _$log_, _$rootScope_, _LeaveRequestInstance_,
-      _OptionGroup_, _OptionGroupAPIMock_) {
+    beforeEach(inject(function (_$componentController_, _$q_, _$log_, _$rootScope_,
+      _LeaveRequestInstance_, _OptionGroup_, _OptionGroupAPIMock_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;

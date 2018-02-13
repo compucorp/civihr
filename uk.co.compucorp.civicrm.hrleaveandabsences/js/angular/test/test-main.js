@@ -15,7 +15,7 @@ require.config({
   paths: {
     'leave-absences': srcPath,
     'leave-absences/shared/ui-router': srcPath + '/shared/vendor/angular-ui-router.min',
-    'mocks': mocksPath
+    'leave-absences/mocks': mocksPath
   },
   callback: function () {
     window.__karma__.start();

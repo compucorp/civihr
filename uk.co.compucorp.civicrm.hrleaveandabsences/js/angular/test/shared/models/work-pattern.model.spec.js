@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'leave-absences/shared/models/work-pattern.model',
-  'mocks/apis/work-pattern-api-mock'
+  'leave-absences/mocks/apis/work-pattern-api-mock'
 ], function (_) {
   'use strict';
 

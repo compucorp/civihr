@@ -2,7 +2,7 @@
 
 define([
   'common/mocks/data/contact.data',
-  'mocks/data/absence-type.data'
+  'leave-absences/mocks/data/absence-type.data'
 ], function (contactsMock, absenceTypeMock) {
   var records = createMockRecords();
 

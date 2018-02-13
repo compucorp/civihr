@@ -4,9 +4,9 @@ define([
   'common/angular',
   'common/lodash',
   'common/moment',
-  'mocks/data/option-group.data',
-  'mocks/data/absence-type.data',
-  'mocks/data/leave-request.data',
+  'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/data/absence-type.data',
+  'leave-absences/mocks/data/leave-request.data',
   'common/services/notification.service',
   'common/services/pub-sub',
   'leave-absences/shared/config',
@@ -27,9 +27,8 @@ define([
       sharedSettings = _sharedSettings_;
     }]));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$q_,
-    _$rootScope_, _dialog_, _LeaveRequestInstance_, _LeavePopup_,
-    _notificationService_, _pubSub_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
+      _dialog_, _LeaveRequestInstance_, _LeavePopup_, _notificationService_, _pubSub_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;

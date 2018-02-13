@@ -3,8 +3,8 @@
 define([
   'common/lodash',
   'leave-absences/shared/components/leave-widget/leave-widget.component',
-  'mocks/apis/absence-period-api-mock',
-  'mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
   'common/mocks/services/api/contract-mock',
   'common/services/pub-sub'
 ], function (_) {
@@ -14,21 +14,23 @@ define([
     var contactId = 208;
 
     beforeEach(module('common.mocks', 'leave-absences.components.leave-widget',
-    'leave-absences.mocks', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+      'leave-absences.mocks', function (_$provide_) {
+        $provide = _$provide_;
+      }
+    ));
 
     beforeEach(inject(['AbsencePeriodAPIMock', 'AbsenceTypeAPIMock',
       'api.contract.mock', 'OptionGroupAPIMock', function (AbsencePeriodAPIMock,
-      AbsenceTypeAPIMock, ContractMock, OptionGroupAPIMock) {
+        AbsenceTypeAPIMock, ContractMock, OptionGroupAPIMock) {
         $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('Contract', ContractMock);
         $provide.value('OptionGroup', OptionGroupAPIMock);
-      }]));
+      }]
+    ));
 
     beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_, _Contract_, _OptionGroup_, _pubSub_) {
+      _AbsencePeriod_, _AbsenceType_, _Contract_, _OptionGroup_, _pubSub_) {
       $componentController = _$componentController_;
       $q = _$q_;
       $rootScope = _$rootScope_;
@@ -160,15 +162,12 @@ define([
           var expectedJobContract;
 
           beforeEach(function () {
-            Contract.all({
-              contact_id: contactId,
-              deleted: false
-            })
-            .then(function (contracts) {
-              expectedJobContract = _.find(contracts, function (contract) {
-                return +contract.is_current === 1;
+            Contract.all({ contact_id: contactId, deleted: false })
+              .then(function (contracts) {
+                expectedJobContract = _.find(contracts, function (contract) {
+                  return +contract.is_current === 1;
+                });
               });
-            });
             $rootScope.$digest();
           });
 
@@ -197,13 +196,13 @@ define([
 
           beforeEach(function () {
             AbsenceType.all()
-            .then(AbsenceType.loadCalculationUnits)
-            .then(function (types) {
-              expectedTypes = types;
-              expectedSicknessTypes = types.filter(function (type) {
-                return +type.is_sick;
+              .then(AbsenceType.loadCalculationUnits)
+              .then(function (types) {
+                expectedTypes = types;
+                expectedSicknessTypes = types.filter(function (type) {
+                  return +type.is_sick;
+                });
               });
-            });
             $rootScope.$digest();
           });
 
