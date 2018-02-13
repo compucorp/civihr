@@ -45,9 +45,9 @@ define([
     (function init () {
       initWatchers();
       loadDependencies()
-      .then(function () {
-        vm.loading.component = false;
-      });
+        .then(function () {
+          vm.loading.component = false;
+        });
     })();
 
     /**
@@ -57,9 +57,9 @@ define([
      */
     function loadAbsencePeriods () {
       return AbsencePeriod.all({ options: { sort: 'title ASC' } })
-      .then(function (response) {
-        vm.absencePeriods = response;
-      });
+        .then(function (response) {
+          vm.absencePeriods = response;
+        });
     }
 
     /**
@@ -67,11 +67,11 @@ define([
      * sorted by title in an ascending order.
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({ options: { sort: 'title ASC' } })
-      .then(AbsenceType.loadCalculationUnits)
-      .then(function (absenceTypes) {
-        vm.absenceTypes = absenceTypes;
-      });
+      return AbsenceType.all()
+        .then(AbsenceType.loadCalculationUnits)
+        .then(function (absenceTypes) {
+          vm.absenceTypes = absenceTypes;
+        });
     }
 
     /**
@@ -85,8 +85,7 @@ define([
         loadAbsenceTypes(),
         loadLoggedInContactId(),
         loadUserRole()
-      ])
-      .catch(function (error) {
+      ]).catch(function (error) {
         notification.error('Error', error);
       });
     }
@@ -111,16 +110,16 @@ define([
       vm.loading.report = true;
 
       return LeaveBalanceReport.all(filters, vm.pagination, undefined, undefined, false)
-      .then(function (response) {
-        vm.report = indexLeaveBalanceAbsenceTypes(response.list);
-        vm.reportCount = response.total;
-      })
-      .catch(function (error) {
-        notification.error('Error', error.error_message);
-      })
-      .finally(function () {
-        vm.loading.report = false;
-      });
+        .then(function (response) {
+          vm.report = indexLeaveBalanceAbsenceTypes(response.list);
+          vm.reportCount = response.total;
+        })
+        .catch(function (error) {
+          notification.error('Error', error.error_message);
+        })
+        .finally(function () {
+          vm.loading.report = false;
+        });
     }
 
     /**

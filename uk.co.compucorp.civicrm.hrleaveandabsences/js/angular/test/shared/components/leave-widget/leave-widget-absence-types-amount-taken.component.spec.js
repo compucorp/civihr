@@ -5,8 +5,11 @@ define([
   'common/moment',
   'leave-absences/mocks/helpers/controller-on-changes',
   'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
   'leave-absences/mocks/apis/leave-request-api-mock',
-  'leave-absences/shared/components/leave-widget/leave-widget-absence-types-amount-taken.component'
+  'leave-absences/mocks/apis/option-group-api-mock',
+  'leave-absences/shared/components/leave-widget/leave-widget.component'
 ], function (_, moment, controllerOnChanges, OptionGroupData) {
   describe('leaveWidgetAbsenceTypesAmountTaken', function () {
     var $componentController, $provide, $rootScope, $scope, ctrl,

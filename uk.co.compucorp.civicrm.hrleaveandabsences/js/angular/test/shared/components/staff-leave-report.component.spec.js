@@ -26,6 +26,9 @@
       var contactId = CRM.vars.leaveAndAbsences.contactId;
       var isUserAdmin = false;
       var requestSortParam = 'from_date ASC';
+      var absenceTypesIDs = absenceTypeData.all().values.map(function (absenceType) {
+        return absenceType.id
+      });
 
       var $componentController, $q, $log, $provide, $rootScope, controller;
       var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
@@ -128,9 +131,14 @@
             });
 
             it('has fetched the absence types', function () {
-              expect(AbsenceType.all).toHaveBeenCalled();
+              expect(AbsenceType.all).toHaveBeenCalledWith();
               expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
               expect(controller.absenceTypes.length).not.toBe(0);
+            });
+
+            it('has indexed absence types', function () {
+              expect(controller.absenceTypesIndexed[controller.absenceTypes[0].id])
+                .toEqual(controller.absenceTypes[0]);
             });
 
             describe('absence periods', function () {
@@ -359,7 +367,7 @@
               from_date: { from: newPeriod.start_date },
               to_date: { to: newPeriod.end_date },
               status_id: valueOfRequestStatus('approved'),
-              type_id: { IN: _.keys(controller.absenceTypes) }
+              type_id: { IN: absenceTypesIDs }
             }), null, requestSortParam, null, false);
             expect(Entitlement.breakdown).toHaveBeenCalledWith(jasmine.objectContaining({
               period_id: newPeriod.id
@@ -459,7 +467,7 @@
           it('fetches all leave requests linked to a public holiday', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               public_holiday: true,
-              type_id: { IN: _.keys(controller.absenceTypes) }
+              type_id: { IN: absenceTypesIDs }
             }), null, requestSortParam, null, false);
           });
 
@@ -476,7 +484,7 @@
           it('fetches all approved leave requests', function () {
             expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
               status_id: valueOfRequestStatus('approved'),
-              type_id: { IN: _.keys(controller.absenceTypes) }
+              type_id: { IN: absenceTypesIDs }
             }), null, requestSortParam, null, false);
           });
 
@@ -496,7 +504,7 @@
                 valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
                 valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
               ] },
-              type_id: { IN: _.keys(controller.absenceTypes) }
+              type_id: { IN: absenceTypesIDs }
             }));
           });
 
@@ -516,7 +524,7 @@
                 valueOfRequestStatus(sharedSettings.statusNames.rejected),
                 valueOfRequestStatus(sharedSettings.statusNames.cancelled)
               ] },
-              type_id: { IN: _.keys(controller.absenceTypes) }
+              type_id: { IN: absenceTypesIDs }
             }), null, requestSortParam, null, false);
           });
 
@@ -599,7 +607,7 @@
                 from_date: {from: controller.selectedPeriod.start_date},
                 to_date: {to: controller.selectedPeriod.end_date},
                 request_type: 'toil',
-                type_id: { IN: _.keys(controller.absenceTypes) },
+                type_id: { IN: absenceTypesIDs },
                 expired: true
               }, null, requestSortParam, null, false);
             });
@@ -693,7 +701,7 @@
             controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
             testData = {
               leaveRequest: leaveRequest1,
-              oldBalanceChange: controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending,
+              oldBalanceChange: controller.absenceTypesIndexed[leaveRequest1.type_id].balanceChanges.pending,
               oldList: controller.sections.pending.data
             };
 
@@ -705,7 +713,7 @@
               pubSub.publish('LeaveRequest::delete', leaveRequest1);
               $rootScope.$digest();
 
-              testData.newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+              testData.newBalanceChange = controller.absenceTypesIndexed[leaveRequest1.type_id].balanceChanges.pending;
             });
 
             itHandlesTheDeleteStatusUpdate();
@@ -719,7 +727,7 @@
               });
               $rootScope.$digest();
 
-              testData.newBalanceChange = controller.absenceTypes[leaveRequest1.type_id].balanceChanges.pending;
+              testData.newBalanceChange = controller.absenceTypesIndexed[leaveRequest1.type_id].balanceChanges.pending;
             });
 
             itHandlesTheDeleteStatusUpdate();
@@ -751,13 +759,13 @@
           beforeEach(function () {
             controller.sections.approved.data = [leaveRequest1, leaveRequest2, leaveRequest3];
             controller.sections.approved.dataIndex = _.indexBy(controller.sections.approved.data, 'id');
-            oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
+            oldRemainder = controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.current;
 
             leaveRequest1.delete();
             pubSub.publish('LeaveRequest::delete', leaveRequest1);
             $rootScope.$digest();
 
-            newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.current;
+            newRemainder = controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.current;
           });
 
           it('updates the current remainder of the entitlement of the absence type the leave request was for', function () {
@@ -772,13 +780,13 @@
           beforeEach(function () {
             controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
             controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
-            oldRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
+            oldRemainder = controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.future;
 
             leaveRequest1.delete();
             pubSub.publish('LeaveRequest::delete', leaveRequest1);
             $rootScope.$digest();
 
-            newRemainder = controller.absenceTypes[leaveRequest1.type_id].remainder.future;
+            newRemainder = controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.future;
           });
 
           it('updates the future remainder of the entitlement of the absence type the leave request was for', function () {

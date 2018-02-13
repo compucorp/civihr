@@ -160,9 +160,9 @@
             });
 
             it('gets absence types with false sick param', function () {
-              expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({
+              expect(AbsenceTypeAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
                 is_sick: false
-              });
+              }));
             });
 
             it('allows to change absence type', function () {
@@ -298,9 +298,9 @@
                 expect(pubSub.publish).toHaveBeenCalledWith('LeaveRequest::new', controller.request);
               });
 
-              it('does not send kek in hours parameters to the server', function () {
+              it('does not send leave in hours parameters to the server', function () {
                 expect(controller.request['from_date_amount']).not.toBeDefined();
-                expect(controller.request['from_date_amount']).not.toBeDefined();
+                expect(controller.request['to_date_amount']).not.toBeDefined();
               });
             });
 

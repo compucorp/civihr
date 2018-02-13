@@ -23,7 +23,7 @@ define([
     'shared-settings'];
 
   function nextLeaveController ($q, $scope, LeaveRequest, OptionGroup,
-  sharedSettings) {
+    sharedSettings) {
     var childComponentName = 'leave-widget-next-leave';
     var vm = this;
 
@@ -54,16 +54,14 @@ define([
       $q.all([
         loadDayTypes(),
         loadNextLeaveRequest()
-      ])
-      .then(function () {
+      ]).then(function () {
         if (vm.nextLeaveRequest) {
           convertStringsToMomentDates();
           mapAbsenceTypeToNextLeaveRequest();
           makeBalanceChangeAbsolute();
           storeStatusForNextRequest();
         }
-      })
-      .finally(function () {
+      }).finally(function () {
         $scope.$emit('LeaveWidget::childIsReady', childComponentName);
       });
     }
@@ -139,9 +137,9 @@ define([
         type_id: { IN: getAbsenceTypeIds() },
         options: { limit: 1 }
       }, null, 'from_date ASC', null, false) // No cache
-      .then(function (response) {
-        vm.nextLeaveRequest = response.list[0] || null;
-      });
+        .then(function (response) {
+          vm.nextLeaveRequest = response.list[0] || null;
+        });
     }
 
     /**

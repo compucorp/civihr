@@ -3,8 +3,10 @@
 define([
   'common/lodash',
   'leave-absences/mocks/helpers/controller-on-changes',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
   'leave-absences/mocks/apis/entitlement-api-mock',
-  'leave-absences/shared/components/leave-widget/leave-widget-absence-types-available-balance.component'
+  'leave-absences/shared/components/leave-widget/leave-widget.component'
 ], function (_, controllerOnChanges) {
   describe('leaveWidgetAbsenceTypesAvailableBalance', function () {
     var $componentController, $provide, $rootScope, $scope,

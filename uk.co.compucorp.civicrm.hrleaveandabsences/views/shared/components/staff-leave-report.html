@@ -74,7 +74,7 @@
                               <td></td>
                               <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
                                 title="({{ absenceType.calculation_unit_label | lowercase }})">
-                                {{ +entry.type_id === +absenceType.id ? ((entry.amount | number : 0) | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
+                                {{ +entry.type_id === +absenceType.id ? (entry.amount | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
                               </td>
                               <td></td>
                             </tr>
@@ -237,7 +237,7 @@
                               <td></td>
                               <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
                                 title="({{ absenceType.calculation_unit_label | lowercase }})">
-                                {{ +entry.type_id === +absenceType.id ? ((entry.amount | number:0) | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
+                                {{ +entry.type_id === +absenceType.id ? (entry.amount | timeUnitApplier : absenceType.calculation_unit_name) : '' }}
                               </td>
                               <td></td>
                             </tr>

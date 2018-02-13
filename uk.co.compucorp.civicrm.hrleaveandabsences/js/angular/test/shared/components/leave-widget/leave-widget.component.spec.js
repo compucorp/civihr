@@ -5,6 +5,7 @@ define([
   'leave-absences/shared/components/leave-widget/leave-widget.component',
   'leave-absences/mocks/apis/absence-period-api-mock',
   'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'common/mocks/services/api/contract-mock',
   'common/services/pub-sub'
 ], function (_) {
@@ -183,7 +184,7 @@ define([
         });
 
         it('loads all absence types', function () {
-          expect(AbsenceType.all).toHaveBeenCalledWith({ is_active: true });
+          expect(AbsenceType.all).toHaveBeenCalledWith();
         });
 
         it('loads the absence type calculation units', function () {
