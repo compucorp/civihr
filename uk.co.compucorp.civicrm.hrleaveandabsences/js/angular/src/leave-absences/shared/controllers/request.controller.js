@@ -749,21 +749,21 @@ define([
      * @return {Array} of filtered absence types for given entitlements
      */
     function mapAbsenceTypesWithBalance (absenceTypes, entitlements) {
-      var absenceType;
+      var entitlement;
 
-      return entitlements.map(function (entitlementItem) {
-        absenceType = _.find(absenceTypes, function (absenceTypeItem) {
-          return absenceTypeItem.id === entitlementItem.type_id;
-        });
+      return _.compact(absenceTypes.map(function (absenceType) {
+        entitlement = _.find(entitlements, { type_id: absenceType.id });
 
-        return {
-          id: entitlementItem.type_id,
-          title: absenceType.title + ' ( ' + entitlementItem.remainder.current + ' ) ',
-          remainder: entitlementItem.remainder.current,
-          allow_overuse: absenceType.allow_overuse,
-          calculation_unit_name: absenceType.calculation_unit_name
-        };
-      });
+        return entitlement
+          ? {
+              id: entitlement.type_id,
+              title: absenceType.title + ' ( ' + entitlement.remainder.current + ' ) ',
+              remainder: entitlement.remainder.current,
+              allow_overuse: absenceType.allow_overuse,
+              calculation_unit_name: absenceType.calculation_unit_name
+            }
+          : undefined;
+      }));
     }
 
     /**
