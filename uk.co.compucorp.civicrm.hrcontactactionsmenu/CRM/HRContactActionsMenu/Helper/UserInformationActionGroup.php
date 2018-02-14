@@ -6,7 +6,7 @@ use CRM_HRContactActionsMenu_Component_UserInformationLinkItem as UserInformatio
 use CRM_HRContactActionsMenu_Component_UserRoleItem as UserRoleItem;
 use CRM_HRCore_CMSData_Paths_PathsInterface as CMSUserPath;
 use CRM_HRCore_CMSData_UserRoleInterface as CMSUserRole;
-use CRM_HRContactActionsMenu_Component_NoUserTextItem as NoUserTextItem;
+use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 
 /**
  * Class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup
@@ -61,7 +61,7 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
       $actionsGroup->addItem($this->getSendWelcomeMailButton($contactID));
       $actionsGroup->addItem($this->getSendPasswordResetButton($contactID));
     } else {
-      $noUserTextItem = new NoUserTextItem();
+      $noUserTextItem = new ParagraphItem('There is no user for this staff member');
       $actionsGroup->addItem($noUserTextItem);
       $actionsGroup->addItem($this->getCreateUserButton($contactID));
     }

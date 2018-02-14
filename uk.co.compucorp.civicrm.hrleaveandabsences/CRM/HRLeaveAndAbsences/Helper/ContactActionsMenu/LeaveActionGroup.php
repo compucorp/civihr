@@ -4,7 +4,7 @@ use CRM_HRContactActionsMenu_Component_Group as ActionsGroup;
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem;
 use CRM_HRContactActionsMenu_Component_GroupSeparatorItem as GroupSeparatorItem;
 use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
-use CRM_HRLeaveAndAbsences_Component_ContactActionsMenu_NoSelectedLeaveApproverItem as NoSelectedLeaveApproverItem;
+use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 use CRM_HRLeaveAndAbsences_Component_ContactActionsMenu_LeaveApproversListItem as LeaveApproversListItem;
 
 /**
@@ -57,7 +57,7 @@ class CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroup {
       $actionsGroup->addItem($this->getManageLeaveApproverButton());
     }
     else {
-      $noLeaveApprovertItem = new NoSelectedLeaveApproverItem();
+      $noLeaveApprovertItem = new ParagraphItem('You have not selected a Leave Approver');
       $actionsGroup->addItem($noLeaveApprovertItem);
       $actionsGroup->addItem($this->getAddLeaveApproverButton());
     }

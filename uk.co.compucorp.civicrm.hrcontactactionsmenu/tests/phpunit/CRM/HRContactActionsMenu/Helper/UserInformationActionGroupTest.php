@@ -6,7 +6,7 @@ use CRM_HRContactActionsMenu_Component_UserInformationLinkItem as UserInformatio
 use CRM_HRContactActionsMenu_Component_UserRoleItem as UserRoleItem;
 use CRM_HRCore_CMSData_UserRoleInterface as CMSUserRole;
 use CRM_HRCore_CMSData_Paths_PathsInterface as CMSUserPath;
-use CRM_HRContactActionsMenu_Component_NoUserTextItem as NoUserTextItem;
+use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 
 /**
  * Class CRM_HRContactActionsMenu_Helper_UserInformationActionGroupTest
@@ -31,7 +31,7 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroupTest extends Bas
     // the no user text item and the button to create cms user for contact
     $userActionGroupItems = $userActionGroup->getItems();
     $this->assertCount(2, $userActionGroupItems);
-    $this->assertInstanceOf(NoUserTextItem::class, $userActionGroupItems[0]);
+    $this->assertInstanceOf(ParagraphItem::class, $userActionGroupItems[0]);
     $this->assertInstanceOf(GroupButtonItem::class, $userActionGroupItems[1]);
 
     //check that the group title is correct
