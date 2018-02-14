@@ -219,10 +219,6 @@ function contactaccessrights_addContactMenuActions(ActionsMenu $menu) {
 
   $userPermissions = CMSUserPermissionsFactory::create();
 
-  if (!$userPermissions->check($contactUserInfo, ['access CiviCRM'])) {
-    return;
-  }
-
   $contactRightsService = new ContactRightsService();
   $aclGroups = ContactHelper::getACLGroups($contactID);
 
@@ -237,5 +233,7 @@ function contactaccessrights_addContactMenuActions(ActionsMenu $menu) {
   $contactAccessActionGroup = $contactAccessActionGroup->get();
   $contactAccessActionGroup->setWeight(2);
 
-  $menu->addToHighlightedPanel($contactAccessActionGroup);
+  if($contactAccessActionGroup->getItems()) {
+    $menu->addToHighlightedPanel($contactAccessActionGroup);
+  }
 }

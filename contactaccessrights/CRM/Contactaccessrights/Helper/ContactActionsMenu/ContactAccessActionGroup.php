@@ -61,7 +61,13 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
    */
   public function get() {
     $actionsGroup = new ActionsGroup($this->getGroupTitle());
-    $isAdmin = $this->isAdmin();
+    $hasAccessCivicrm = $this->hasPermission(['access CiviCRM']);
+
+    if (!$hasAccessCivicrm) {
+      return $actionsGroup;
+    }
+
+    $isAdmin = $this->hasPermission(['view all contacts', 'edit all contacts']);
 
     if ($isAdmin) {
       $allStaffItem =  new ParagraphItem('All Staff');
@@ -122,12 +128,12 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
   }
 
   /**
-   * Returns whether contact is an admin or not.
+   * Returns whether contact has the permissions or not.
    *
    * @return bool
    */
-  private function isAdmin() {
-    return $this->CMSUserPermission->check($this->contactUserInfo, ['view all contacts', 'edit all contacts']);
+  private function hasPermission($permissions) {
+    return $this->CMSUserPermission->check($this->contactUserInfo, $permissions);
   }
 
   /**
