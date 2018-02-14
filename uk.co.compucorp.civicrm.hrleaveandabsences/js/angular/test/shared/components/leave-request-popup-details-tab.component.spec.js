@@ -835,7 +835,7 @@ define([
             });
           });
         });
-      })
+      });
 
       describe('when absence period is changed', function () {
         var previousDateType = '<previous-value>';
