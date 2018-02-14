@@ -101,17 +101,6 @@ class CRM_Contactaccessrights_BAO_RightsTest extends BaseHeadlessTest {
     $this->assertEquals($expectedArray, $rights);
   }
 
-  private function createOptionValue($optionGroupName, $value) {
-    $params = [
-      'option_group_id' => $optionGroupName,
-      'name' => $value,
-      'label' => $value,
-      'value' => $value
-    ];
-
-    return OptionValueFabricator::fabricate($params);
-  }
-
   public function testGetContactRightsByRegionsReturnsEmptyWhenContactHasNoRightsToAnyRegion() {
     $contact = ['id' => 5];
 
@@ -132,5 +121,16 @@ class CRM_Contactaccessrights_BAO_RightsTest extends BaseHeadlessTest {
       'entity_id' => $entity['id'],
       'entity_type' => $entityType
     ]);
+  }
+
+  private function createOptionValue($optionGroupName, $value) {
+    $params = [
+      'option_group_id' => $optionGroupName,
+      'name' => $value,
+      'label' => $value,
+      'value' => $value
+    ];
+
+    return OptionValueFabricator::fabricate($params);
   }
 }
