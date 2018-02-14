@@ -53,7 +53,7 @@ function runServer (configFile, cb) {
   new karma.Server({
     configFile: configFile,
     reporters: reporters,
-    singleRun: true
+    singleRun: false
   }, function () {
     cb && cb();
   }).start();
