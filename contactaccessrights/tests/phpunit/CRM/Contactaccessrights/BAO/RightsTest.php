@@ -1,25 +1,24 @@
 <?php
 
-use CRM_Contactaccessrights_Service_ContactRights as ContactRightsService;
+use CRM_Contactaccessrights_BAO_Rights as ContactRights;
 use CRM_Contactaccessrights_Test_Fabricator_Rights as RightsFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
-
 /**
- * Class CRM_Contactaccessrights_Service_ContactRightsTest
+ * Class CRM_Contactaccessrights_BAO_RightsTest
  *
  * @group headless
  */
-class CRM_Contactaccessrights_Service_ContactRightsTest extends BaseHeadlessTest {
+class CRM_Contactaccessrights_BAO_RightsTest extends BaseHeadlessTest {
 
   private $regionEntityType = 'hrjc_region';
 
   private $locationEntityType = 'hrjc_location';
 
-  private $contactRightsService;
+  private $contactRights;
 
   public function setUp() {
     CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
-    $this->contactRightsService = new ContactRightsService();
+    $this->contactRights = new ContactRights();
   }
 
   public function testGetContactRightsByLocations() {
@@ -35,7 +34,7 @@ class CRM_Contactaccessrights_Service_ContactRightsTest extends BaseHeadlessTest
     $locationRights1 = $this->setContactRights($contact, $location1, $this->locationEntityType);
     $locationRights2 = $this->setContactRights($contact, $location2, $this->locationEntityType);
 
-    $rights = $this->contactRightsService->getContactRightsByLocations($contact['id']);
+    $rights = $this->contactRights->getContactRightsByLocations($contact['id']);
 
     //contact has rights to two locations only.
     $this->assertCount(2, $rights);
@@ -75,7 +74,7 @@ class CRM_Contactaccessrights_Service_ContactRightsTest extends BaseHeadlessTest
     $regionRights2 = $this->setContactRights($contact, $region2, $this->regionEntityType);
     $locationRights1 = $this->setContactRights($contact, $location1, $this->locationEntityType);
 
-    $rights = $this->contactRightsService->getContactRightsByRegions($contact['id']);
+    $rights = $this->contactRights->getContactRightsByRegions($contact['id']);
 
     //contact has rights to two regions only.
     $this->assertCount(2, $rights);
@@ -116,14 +115,14 @@ class CRM_Contactaccessrights_Service_ContactRightsTest extends BaseHeadlessTest
   public function testGetContactRightsByRegionsReturnsEmptyWhenContactHasNoRightsToAnyRegion() {
     $contact = ['id' => 5];
 
-    $rights = $this->contactRightsService->getContactRightsByRegions($contact['id']);
+    $rights = $this->contactRights->getContactRightsByRegions($contact['id']);
     $this->assertEquals([], $rights);
   }
 
   public function testGetContactRightsByLocationsReturnsEmptyWhenContactHasNoRightsToAnyLocation() {
     $contact = ['id' => 5];
 
-    $rights = $this->contactRightsService->getContactRightsByLocations($contact['id']);
+    $rights = $this->contactRights->getContactRightsByLocations($contact['id']);
     $this->assertEquals([], $rights);
   }
 

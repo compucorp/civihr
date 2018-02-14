@@ -27,8 +27,8 @@ function _civicrm_api3_rights_GetRegions_spec(&$spec) {
  */
 function civicrm_api3_rights_GetRegions($params) {
   try {
-    $contactRightsService = new CRM_Contactaccessrights_Service_ContactRights();
-    $regionRights = $contactRightsService->getContactRightsByRegions($params['contact_id']);
+    $contactRights = new CRM_Contactaccessrights_BAO_Rights();
+    $regionRights = $contactRights->getContactRightsByRegions($params['contact_id']);
 
     return civicrm_api3_create_success($regionRights, $params, 'Rights', 'GetRegions');
   } catch (CRM_Extension_Exception $e) {
