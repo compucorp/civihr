@@ -3,8 +3,9 @@
 define([
   'common/angular',
   'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/manager-leave/app',
   'common/mocks/models/instances/session-mock',
-  'leave-absences/manager-leave/app'
+  'leave-absences/mocks/apis/option-group-api-mock'
 ], function (angular, leaveRequestData) {
   'use strict';
 

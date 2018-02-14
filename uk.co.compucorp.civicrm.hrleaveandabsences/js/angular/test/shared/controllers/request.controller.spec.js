@@ -6,20 +6,14 @@
     'common/moment',
     'leave-absences/mocks/data/option-group.data',
     'leave-absences/mocks/data/leave-request.data',
-    'leave-absences/mocks/helpers/helper',
-    'common/modules/dialog',
-    'leave-absences/shared/config',
+    'leave-absences/manager-leave/app',
     'common/mocks/services/hr-settings-mock',
-    'common/mocks/services/file-uploader-mock',
     'leave-absences/mocks/apis/absence-period-api-mock',
     'leave-absences/mocks/apis/absence-type-api-mock',
     'leave-absences/mocks/apis/entitlement-api-mock',
-    'leave-absences/mocks/apis/work-pattern-api-mock',
     'leave-absences/mocks/apis/leave-request-api-mock',
     'leave-absences/mocks/apis/option-group-api-mock',
-    'common/mocks/services/api/contact-mock',
-    'common/services/pub-sub',
-    'leave-absences/shared/modules/shared-settings'
+    'leave-absences/mocks/apis/work-pattern-api-mock'
   ], function (_, moment, optionGroupMock, mockData) {
     'use strict';
 
