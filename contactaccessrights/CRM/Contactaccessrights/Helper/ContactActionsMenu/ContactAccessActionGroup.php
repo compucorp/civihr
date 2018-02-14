@@ -75,17 +75,15 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
     }
 
     if (!$isAdmin) {
-      $regions = $this->contactRightsService->getContactRightsByRegions($this->contactUserInfo['contact_id']);
-      $locations = $this->contactRightsService->getContactRightsByLocations($this->contactUserInfo['contact_id']);
+      $regions = $this->getContactRegions();
+      $locations = $this->getContactLocations();
       $aclGroups = $this->contactACLGroups;
 
       if ($regions) {
-        $regions = array_column($regions, 'label');
         $actionsGroup->addItem(new UserRegionsListItem($regions, 'Regions'));
       }
 
       if ($locations) {
-        $locations = array_column($locations, 'label');
         $actionsGroup->addItem(new UserLocationsListItem($locations, 'Locations'));
       }
 
@@ -166,5 +164,27 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
     $groupTitleToolTip = new GroupTitleToolTipItem();
 
     return 'User Has Access To: ' . $groupTitleToolTip->render();
+  }
+
+  /**
+   * Returns the regions the contact has rights to.
+   *
+   * @return array
+   */
+  private function getContactRegions() {
+    $regions = $this->contactRightsService->getContactRightsByRegions($this->contactUserInfo['contact_id']);
+
+    return array_column($regions, 'label');
+  }
+
+  /**
+   * Returns the Locations that contact has rights to.
+   *
+   * @return array
+   */
+  private function getContactLocations() {
+    $locations = $this->contactRightsService->getContactRightsByLocations($this->contactUserInfo['contact_id']);
+
+    return array_column($locations, 'label');
   }
 }
