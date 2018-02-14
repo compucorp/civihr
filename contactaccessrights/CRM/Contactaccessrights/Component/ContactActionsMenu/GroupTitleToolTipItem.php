@@ -13,7 +13,7 @@ class CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipItem
    * @return string
    */
   public function getToolTipText() {
-    $toolTipText = 'You can specify a users access to staff members by
+    $toolTipText = 'You can specify a user\&#39;s access to staff members by
       region or location by managing their regional access below.
       The user will then have access to contacts whose active
       roles place them in this region or location.

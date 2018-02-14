@@ -2,6 +2,7 @@
 
 use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
 use CRM_Contactaccessrights_Helper_ContactActionsMenu_Contact as ContactHelper;
+use CRM_HRContactActionsMenu_Helper_Contact as ContactActionsContactHelper;
 use CRM_HRCore_CMSData_UserPermissionFactory as CMSUserPermissionsFactory;
 use CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup as ContactAccessActionGroupHelper;
 use CRM_Contactaccessrights_BAO_Rights as ContactRights;
@@ -211,7 +212,7 @@ function contactaccessrights_addContactMenuActions(ActionsMenu $menu) {
     return;
   }
 
-  $contactUserInfo = ContactHelper::getUserInformation($contactID);
+  $contactUserInfo = ContactActionsContactHelper::getUserInformation($contactID);
 
   if (empty($contactUserInfo['cmsId'])) {
     return;
