@@ -5,7 +5,7 @@ use CRM_HRCore_CMSData_UserPermissionInterface as UserPermissionInterface;
 /**
  * Class CRM_HRCore_CMSData_UserPermission_Drupal
  */
-class CRM_HRCore_CMSData_UserPermission_Drupal implements UserPermissionInterface{
+class CRM_HRCore_CMSData_UserPermission_Drupal implements UserPermissionInterface {
 
   /**
    * Gets the Drupal user object

@@ -19,7 +19,8 @@ class CRM_HRCore_CMSData_UserPermission_DrupalTest extends CRM_HRCore_Test_BaseH
 
   public function testCheckPermissionsReturnsFalseWhenUserDoesNotHaveThePermission() {
     //setting a user ID of 0 will allow us to test the scenario for when a user
-    //has no permission.
+    //has no permission as this will return false when passed to the user_access
+    //drupal mock function.
 
     $contactData = ['cmsId' => 0];
     $userPermission = new DrupalUserPermissions();
