@@ -837,83 +837,166 @@ define([
     });
 
     describe('when user EDITS leave request', function () {
-      var leaveRequestAttributes;
-
-      beforeEach(function () {
-        var leaveRequest;
-        var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
-
-        leaveRequestAttributes = leaveRequestData.findBy('status_id', status);
-        leaveRequest = LeaveRequestInstance.init(_.cloneDeep(leaveRequestAttributes));
-        leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-
-        var params = compileComponent({
-          mode: 'edit',
-          request: leaveRequest
-        });
-
-        $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
-        $rootScope.$digest();
-
-        controller.request.type_id = params.selectedAbsenceType.id;
-      });
-
-      describe('on initialization', function () {
-        var waitingApprovalStatus;
+      describe('as STAFF', function () {
+        var leaveRequestAttributes;
 
         beforeEach(function () {
-          waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
-        });
-
-        it('sets all leaverequest values', function () {
-          expect(controller.request.contact_id).toEqual(CRM.vars.leaveAndAbsences.contactId.toString());
-          expect(controller.request.type_id).toEqual(leaveRequestAttributes.type_id);
-          expect(controller.request.status_id).toEqual(waitingApprovalStatus.value);
-          expect(controller.request.from_date).toEqual(leaveRequestAttributes.from_date);
-          expect(controller.request.from_date_type).toEqual(leaveRequestAttributes.from_date_type);
-          expect(controller.request.to_date).toEqual(leaveRequestAttributes.to_date);
-          expect(controller.request.to_date_type).toEqual(leaveRequestAttributes.to_date_type);
-        });
-
-        it('retrieves original balance breakdown', function () {
-          expect(LeaveRequestAPI.getBalanceChangeBreakdown).toHaveBeenCalled();
-          expect(controller.loading.balanceChange).toBe(false);
-        });
-
-        it('does not recalculate the balance', function () {
-          expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
-        });
-
-        it('shows balance', function () {
-          expect(controller.uiOptions.showBalance).toBeTruthy();
-        });
-
-        it('loads day types', function () {
-          expect(controller.requestFromDayTypes).toBeDefined();
-          expect(controller.requestToDayTypes).toBeDefined();
-        });
-      });
-
-      describe('user selects same from and to date', function () {
-        beforeEach(function () {
+          var leaveRequest;
           var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
-          var leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
 
-          leaveRequest.from_date = leaveRequest.to_date = date2017ToInServerFormat;
+          leaveRequestAttributes = leaveRequestData.findBy('status_id', status);
+          leaveRequest = LeaveRequestInstance.init(_.cloneDeep(leaveRequestAttributes));
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
 
-          compileComponent({
+          var params = compileComponent({
             mode: 'edit',
-            request: leaveRequest,
-            selectedAbsenceType: selectedAbsenceType
+            request: leaveRequest
           });
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
+
+          controller.request.type_id = params.selectedAbsenceType.id;
         });
 
-        it('selects single day', function () {
-          expect(controller.uiOptions.multipleDays).toBeFalsy();
+        describe('on initialization', function () {
+          var waitingApprovalStatus;
+
+          beforeEach(function () {
+            waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
+          });
+
+          it('sets all leaverequest values', function () {
+            expect(controller.request.contact_id).toEqual(CRM.vars.leaveAndAbsences.contactId.toString());
+            expect(controller.request.type_id).toEqual(leaveRequestAttributes.type_id);
+            expect(controller.request.status_id).toEqual(waitingApprovalStatus.value);
+            expect(controller.request.from_date).toEqual(leaveRequestAttributes.from_date);
+            expect(controller.request.from_date_type).toEqual(leaveRequestAttributes.from_date_type);
+            expect(controller.request.to_date).toEqual(leaveRequestAttributes.to_date);
+            expect(controller.request.to_date_type).toEqual(leaveRequestAttributes.to_date_type);
+          });
+
+          it('retrieves original balance breakdown', function () {
+            expect(LeaveRequestAPI.getBalanceChangeBreakdown).toHaveBeenCalled();
+            expect(controller.loading.balanceChange).toBe(false);
+          });
+
+          it('does not recalculate the balance', function () {
+            expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
+          });
+
+          it('shows balance', function () {
+            expect(controller.uiOptions.showBalance).toBeTruthy();
+          });
+
+          it('loads day types', function () {
+            expect(controller.requestFromDayTypes).toBeDefined();
+            expect(controller.requestToDayTypes).toBeDefined();
+          });
+        });
+
+        describe('user selects same from and to date', function () {
+          beforeEach(function () {
+            var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+            var leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
+
+            leaveRequest.from_date = leaveRequest.to_date = date2017ToInServerFormat;
+            leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+
+            compileComponent({
+              mode: 'edit',
+              request: leaveRequest,
+              selectedAbsenceType: selectedAbsenceType
+            });
+
+            $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+            $rootScope.$digest();
+          });
+
+          it('selects single day', function () {
+            expect(controller.uiOptions.multipleDays).toBeFalsy();
+          });
+        });
+      });
+
+      describe('as MANAGER', function () {
+        var request, expectedOpeningBalance, absenceTypes;
+
+        beforeEach(function () {
+          absenceTypes = absenceTypeData.all().values;
+          request = leaveRequestData.all().values[0];
+          request.status_id = getStatusValueFromName(sharedSettings.statusNames.approved);
+
+          compileComponent({
+            mode: 'edit',
+            request: LeaveRequestInstance.init(request),
+            role: 'manager',
+            selectedAbsenceType: absenceTypes[0]
+          });
+
+          expectedOpeningBalance = absenceTypes[0].remainder - request.balance_change;
+        });
+
+        it('has original opening balance', function () {
+          expect(controller.balance.opening).toBe(expectedOpeningBalance);
+        });
+
+        describe('when changing leave type', function () {
+          beforeEach(function () {
+            controller.request.type_id = absenceTypes[1].id;
+            expectedOpeningBalance = absenceTypes[1].remainder;
+
+            $rootScope.$broadcast('LeaveRequestPopup::absenceTypeChanged');
+            $rootScope.$digest();
+          });
+
+          it('uses the opening balance for that leave type', function () {
+            expect(controller.balance.opening).toBe(absenceTypes[1].remainder);
+          });
+
+          describe('when reverting back to the original leave type', function () {
+            it('has original opening balance', function () {
+              expect(controller.balance.opening).toBe(expectedOpeningBalance);
+            });
+          });
+        });
+
+        describe('when status is admin approved', function () {
+          beforeEach(function () {
+            request = leaveRequestData.all().values[0];
+            request.status_id = getStatusValueFromName(sharedSettings.statusNames.adminApproved);
+            expectedOpeningBalance = absenceTypes[0].remainder - request.balance_change;
+
+            compileComponent({
+              mode: 'edit',
+              request: LeaveRequestInstance.init(request),
+              role: 'manager',
+              selectedAbsenceType: absenceTypes[0]
+            });
+          });
+
+          it('has original opening balance', function () {
+            expect(controller.balance.opening).toBe(expectedOpeningBalance);
+          });
+        });
+
+        describe('when status is "Awaiting Approval"', function () {
+          beforeEach(function () {
+            request = leaveRequestData.all().values[0];
+            request.status_id = getStatusValueFromName(sharedSettings.statusNames.awaitingApproval);
+            expectedOpeningBalance = absenceTypes[0].remainder;
+
+            compileComponent({
+              mode: 'edit',
+              request: LeaveRequestInstance.init(request),
+              role: 'manager',
+              selectedAbsenceType: absenceTypes[0]
+            });
+          });
+
+          it('has absence type remainder as opening balance', function () {
+            expect(controller.balance.opening).toBe(expectedOpeningBalance);
+          });
         });
       });
     });
@@ -950,87 +1033,6 @@ define([
 
       it('sets contact id', function () {
         expect(controller.request.contact_id).toEqual(leaveRequest.contact_id);
-      });
-    });
-
-    describe('when editing an open request', function () {
-      var request, expectedOpeningBalance, absenceTypes;
-
-      beforeEach(function () {
-        absenceTypes = absenceTypeData.all().values;
-        request = leaveRequestData.all().values[0];
-        request.status_id = getStatusValueFromName(sharedSettings.statusNames.approved);
-
-        compileComponent({
-          mode: 'edit',
-          request: LeaveRequestInstance.init(request),
-          role: 'manager',
-          selectedAbsenceType: absenceTypes[0]
-        });
-
-        expectedOpeningBalance = absenceTypes[0].remainder - request.balance_change;
-      });
-
-      it('has original opening balance', function () {
-        expect(controller.balance.opening).toBe(expectedOpeningBalance);
-      });
-
-      describe('when changing leave type', function () {
-        beforeEach(function () {
-          controller.request.type_id = absenceTypes[1].id;
-          expectedOpeningBalance = absenceTypes[1].remainder;
-
-          $rootScope.$broadcast('LeaveRequestPopup::absenceTypeChanged');
-          $rootScope.$digest();
-        });
-
-        it('uses the opening balance for that leave type', function () {
-          expect(controller.balance.opening).toBe(absenceTypes[1].remainder);
-        });
-
-        describe('when reverting back to the original leave type', function () {
-          it('has original opening balance', function () {
-            expect(controller.balance.opening).toBe(expectedOpeningBalance);
-          });
-        });
-      });
-
-      describe('when status is admin approved', function () {
-        beforeEach(function () {
-          request = leaveRequestData.all().values[0];
-          request.status_id = getStatusValueFromName(sharedSettings.statusNames.adminApproved);
-          expectedOpeningBalance = absenceTypes[0].remainder - request.balance_change;
-
-          compileComponent({
-            mode: 'edit',
-            request: LeaveRequestInstance.init(request),
-            role: 'manager',
-            selectedAbsenceType: absenceTypes[0]
-          });
-        });
-
-        it('has original opening balance', function () {
-          expect(controller.balance.opening).toBe(expectedOpeningBalance);
-        });
-      });
-
-      describe('when status is "Awaiting Approval"', function () {
-        beforeEach(function () {
-          request = leaveRequestData.all().values[0];
-          request.status_id = getStatusValueFromName(sharedSettings.statusNames.awaitingApproval);
-          expectedOpeningBalance = absenceTypes[0].remainder;
-
-          compileComponent({
-            mode: 'edit',
-            request: LeaveRequestInstance.init(request),
-            role: 'manager',
-            selectedAbsenceType: absenceTypes[0]
-          });
-        });
-
-        it('has absence type remainder as opening balance', function () {
-          expect(controller.balance.opening).toBe(expectedOpeningBalance);
-        });
       });
     });
 
