@@ -62,7 +62,12 @@
             </leave-request-popup-details-tab>
           </uib-tab>
           <uib-tab heading="Comments">
-            <leave-request-popup-comments-tab request="$ctrl.request" mode="$ctrl.mode" can-manage="$ctrl.canManage"></leave-request-popup-comments-tab>
+            <leave-request-popup-comments-tab
+              request="$ctrl.request"
+              mode="$ctrl.mode"
+              can-manage="$ctrl.canManage"
+              have-comments-been-updated="$ctrl.haveCommentsBeenUpdated"
+            ></leave-request-popup-comments-tab>
           </uib-tab>
           <uib-tab heading="Files">
             <leave-request-popup-files-tab request="$ctrl.request" file-uploader="$ctrl.fileUploader" mode="$ctrl.mode" can-manage="$ctrl.canManage"></leave-request-popup-files-tab>

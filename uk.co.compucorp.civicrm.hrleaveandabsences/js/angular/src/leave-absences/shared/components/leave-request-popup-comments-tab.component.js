@@ -10,6 +10,7 @@ define([
   components.component('leaveRequestPopupCommentsTab', {
     bindings: {
       canManage: '<',
+      haveCommentsBeenUpdated: '=',
       mode: '<',
       request: '<'
     },

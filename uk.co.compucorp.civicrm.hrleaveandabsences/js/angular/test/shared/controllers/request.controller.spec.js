@@ -163,6 +163,10 @@
               expect(controller.canChangeAbsenceType()).toBeTruthy();
             });
 
+            it('sets have comments been updated equal to false', function () {
+              expect(controller.haveCommentsBeenUpdated).toBe(false);
+            });
+
             describe('leave request instance', function () {
               it('has new instance created', function () {
                 expect(controller.request).toEqual(jasmine.any(Object));
@@ -338,7 +342,10 @@
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
             leaveRequest.fileUploader = { queue: [] };
 
-            initTestController({ leaveRequest: leaveRequest });
+            initTestController({
+              mode: 'edit',
+              leaveRequest: leaveRequest
+            });
           });
 
           it('does not allow to submit the leave request without changes', function () {
@@ -350,6 +357,19 @@
               controller.request.comments.push(jasmine.any(Object));
               controller.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
               controller.checkSubmitConditions.and.returnValue(true);
+            });
+
+            it('allows to submit the leave request', function () {
+              expect(controller.canSubmit()).toBe(true);
+            });
+          });
+
+          describe('when a comment is waiting to be submitted', function () {
+            beforeEach(function () {
+              controller.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
+              controller.checkSubmitConditions.and.returnValue(true);
+
+              controller.haveCommentsBeenUpdated = true;
             });
 
             it('allows to submit the leave request', function () {

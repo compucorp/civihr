@@ -48,7 +48,7 @@ define([
     vm.contactName = null; // contact name of the owner of leave request
     vm.errors = [];
     vm.fileUploader = null;
-    vm.staffMemberSelectionComplete = false;
+    vm.haveCommentsBeenUpdated = false;
     vm.loading = { absenceTypes: true, entitlements: true };
     vm.managedContacts = [];
     vm.mode = ''; // can be edit, create, view
@@ -57,6 +57,7 @@ define([
     vm.postContactSelection = false; // flag to track if user is selected for enabling UI
     vm.requestStatuses = {};
     vm.selectedAbsenceType = {};
+    vm.staffMemberSelectionComplete = false;
     vm.submitting = false;
     vm.balance = {
       closing: 0,
@@ -194,9 +195,9 @@ define([
     function canSubmit () {
       var canSubmit = vm.checkSubmitConditions ? vm.checkSubmitConditions() : false;
 
-      // check if user has changed any attribute
+      // check if user has changed any attribute or added a comment
       if (vm.isMode('edit')) {
-        canSubmit = canSubmit && hasRequestChanged();
+        canSubmit = canSubmit && (vm.haveCommentsBeenUpdated || hasRequestChanged());
       }
 
       // check if manager has changed status
