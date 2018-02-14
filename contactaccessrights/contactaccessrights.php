@@ -1,7 +1,7 @@
 <?php
 
 use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
-use CRM_Contactaccessrights_Helper_ContactActionsMenu_Contact as ContactHelper;
+use CRM_Contactaccessrights_Service_ACL as ACLService;
 use CRM_HRContactActionsMenu_Helper_Contact as ContactActionsContactHelper;
 use CRM_HRCore_CMSData_UserPermissionFactory as CMSUserPermissionsFactory;
 use CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup as ContactAccessActionGroupHelper;
@@ -221,13 +221,12 @@ function contactaccessrights_addContactMenuActions(ActionsMenu $menu) {
   $userPermissions = CMSUserPermissionsFactory::create();
 
   $contactRights = new ContactRights();
-  $aclGroups = ContactHelper::getACLGroups($contactID);
 
   $contactAccessActionGroup = new ContactAccessActionGroupHelper(
     $contactUserInfo,
     $contactRights,
     $userPermissions,
-    $aclGroups
+    new ACLService()
   );
 
   $contactAccessActionGroup = $contactAccessActionGroup->get();

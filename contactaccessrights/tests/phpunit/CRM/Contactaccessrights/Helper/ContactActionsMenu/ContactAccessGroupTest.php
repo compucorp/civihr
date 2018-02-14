@@ -7,6 +7,7 @@ use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem
 use CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipItem as GroupTitleToolTipItem;
 use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_GenericListItem as GenericListItem;
+use CRM_Contactaccessrights_Service_ACL as ACLService;
 
 /**
  * Class CRM_Contactaccessrights_Helper_ContactAccessGroupTest
@@ -17,7 +18,7 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
 
   public function testMenuItemsAreCorrectlyAddedWhenContactIsAnAdmin() {
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
-    $aclGroups = [];
+    $aclService = $this->prophesize(ACLService::class);
     $userPermission = $this->prophesize(CMSUserPermission::class);
     $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(TRUE);
@@ -27,7 +28,7 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
       $contactUserInfo,
       $contactRightsService->reveal(),
       $userPermission->reveal(),
-      $aclGroups
+      $aclService->reveal()
     );
 
     $contactAccessActionGroup = $contactAccessActionGroup->get();
@@ -45,6 +46,8 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $aclGroups = ['Group 1'];
     $location = ['label' => 'Location1'];
     $region = ['label' => 'Region1'];
+    $aclService = $this->prophesize(ACLService::class);
+    $aclService->getACLGroupsForContact($contactUserInfo['contact_id'])->willReturn($aclGroups);
     $userPermission = $this->prophesize(CMSUserPermission::class);
     $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
@@ -56,7 +59,7 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
       $contactUserInfo,
       $contactRightsService->reveal(),
       $userPermission->reveal(),
-      $aclGroups
+      $aclService->reveal()
     );
 
     $contactAccessActionGroup = $contactAccessActionGroup->get();
@@ -81,6 +84,8 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
   public function testMenuItemsAreCorrectlyAddedWhenContactIsNotAnAdminAndDoesNotHaveAccessRights() {
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = [];
+    $aclService = $this->prophesize(ACLService::class);
+    $aclService->getACLGroupsForContact($contactUserInfo['contact_id'])->willReturn($aclGroups);
     $userPermission = $this->prophesize(CMSUserPermission::class);
     $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
@@ -92,7 +97,7 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
       $contactUserInfo,
       $contactRightsService->reveal(),
       $userPermission->reveal(),
-      $aclGroups
+      $aclService->reveal()
     );
 
     $contactAccessActionGroup = $contactAccessActionGroup->get();
@@ -109,6 +114,8 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = ['Group 1'];
     $location = ['label' => 'Location1'];
+    $aclService = $this->prophesize(ACLService::class);
+    $aclService->getACLGroupsForContact($contactUserInfo['contact_id'])->willReturn($aclGroups);
     $userPermission = $this->prophesize(CMSUserPermission::class);
     $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
@@ -120,7 +127,7 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
       $contactUserInfo,
       $contactRightsService->reveal(),
       $userPermission->reveal(),
-      $aclGroups
+      $aclService->reveal()
     );
 
     $contactAccessActionGroup = $contactAccessActionGroup->get();
@@ -143,6 +150,8 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = ['Group 1'];
     $region = ['label' => 'Region1'];
+    $aclService = $this->prophesize(ACLService::class);
+    $aclService->getACLGroupsForContact($contactUserInfo['contact_id'])->willReturn($aclGroups);
     $userPermission = $this->prophesize(CMSUserPermission::class);
     $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
@@ -154,7 +163,7 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
       $contactUserInfo,
       $contactRightsService->reveal(),
       $userPermission->reveal(),
-      $aclGroups
+      $aclService->reveal()
     );
 
     $contactAccessActionGroup = $contactAccessActionGroup->get();
@@ -179,6 +188,8 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $aclGroups = [];
     $location = ['label' => 'Location1'];
     $region = ['label' => 'Region1'];
+    $aclService = $this->prophesize(ACLService::class);
+    $aclService->getACLGroupsForContact($contactUserInfo['contact_id'])->willReturn($aclGroups);
     $userPermission = $this->prophesize(CMSUserPermission::class);
     $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
@@ -190,7 +201,7 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
       $contactUserInfo,
       $contactRightsService->reveal(),
       $userPermission->reveal(),
-      $aclGroups
+      $aclService->reveal()
     );
 
     $contactAccessActionGroup = $contactAccessActionGroup->get();

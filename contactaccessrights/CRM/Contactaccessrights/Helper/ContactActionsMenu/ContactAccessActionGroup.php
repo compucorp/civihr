@@ -3,6 +3,7 @@
 use CRM_HRContactActionsMenu_Component_Group as ActionsGroup;
 use CRM_Contactaccessrights_BAO_Rights as ContactRights;
 use CRM_HRCore_CMSData_UserPermissionInterface as CMSUserPermission;
+use CRM_Contactaccessrights_Service_ACL as ACLService;
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipItem as GroupTitleToolTipItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_NoStaffTooltipItem as NoStaffToolTipItem;
@@ -22,9 +23,9 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
   private $contactRights;
 
   /**
-   * @var array
+   * @var ACLService
    */
-  private $contactACLGroups;
+  private $aclService;
 
   /**
    * @var CMSUserPermission
@@ -37,18 +38,18 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
    * @param array $contactUserInfo
    * @param ContactRights $contactRights
    * @param CMSUserPermission $cmsUserPermission
-   * @param array $contactACLGroups
+   * @param ACLService $aclService
    */
   public function __construct(
     $contactUserInfo,
     ContactRights $contactRights,
     CMSUserPermission $cmsUserPermission,
-    $contactACLGroups
+    ACLService $aclService
   ) {
     $this->contactUserInfo = $contactUserInfo;
     $this->contactRights = $contactRights;
     $this->cmsUserPermission = $cmsUserPermission;
-    $this->contactACLGroups = $contactACLGroups;
+    $this->aclService = $aclService;
   }
 
   /**
@@ -75,7 +76,7 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
     if (!$isAdmin) {
       $regions = $this->getContactRegions();
       $locations = $this->getContactLocations();
-      $aclGroups = $this->contactACLGroups;
+      $aclGroups = $this->getACLGroups();
 
       if ($regions) {
         $actionsGroup->addItem(new GenericListItem($regions, 'Regions'));
@@ -184,5 +185,14 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
     $locations = $this->contactRights->getContactRightsByLocations($this->contactUserInfo['contact_id']);
 
     return array_column($locations, 'label');
+  }
+
+  /**
+   * Gets the ACL groups for the contact.
+   *
+   * @return array
+   */
+  private function getACLGroups() {
+    return $this->aclService->getACLGroupsForContact($this->contactUserInfo['contact_id']);
   }
 }
