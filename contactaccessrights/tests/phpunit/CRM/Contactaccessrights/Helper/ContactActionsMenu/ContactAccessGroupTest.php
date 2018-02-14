@@ -1,7 +1,7 @@
 <?php
 
 use CRM_HRCore_CMSData_UserPermissionInterface as CMSUserPermission;
-use CRM_Contactaccessrights_Service_ContactRights as ContactRightsService;
+use CRM_Contactaccessrights_BAO_Rights as ContactRights;
 use CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup as ContactAccessActionGroup;
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipItem as GroupTitleToolTipItem;
@@ -21,8 +21,9 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = [];
     $userPermission = $this->prophesize(CMSUserPermission::class);
+    $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(TRUE);
-    $contactRightsService = $this->prophesize(ContactRightsService::class);
+    $contactRightsService = $this->prophesize(ContactRights::class);
 
     $contactAccessActionGroup = new ContactAccessActionGroup(
       $contactUserInfo,
@@ -45,8 +46,9 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = ['Group 1'];
     $userPermission = $this->prophesize(CMSUserPermission::class);
+    $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
-    $contactRightsService = $this->prophesize(ContactRightsService::class);
+    $contactRightsService = $this->prophesize(ContactRights::class);
     $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([['label' => 'Region1']]);
     $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([['label' => 'Location1']]);
 
@@ -74,8 +76,9 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = [];
     $userPermission = $this->prophesize(CMSUserPermission::class);
+    $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
-    $contactRightsService = $this->prophesize(ContactRightsService::class);
+    $contactRightsService = $this->prophesize(ContactRights::class);
     $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([]);
     $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([]);
 
@@ -100,9 +103,10 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = ['Group 1'];
     $userPermission = $this->prophesize(CMSUserPermission::class);
+    $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
-    $contactRightsService = $this->prophesize(ContactRightsService::class);
-    $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn();
+    $contactRightsService = $this->prophesize(ContactRights::class);
+    $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([]);
     $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([['label' => 'Location1']]);
 
     $contactAccessActionGroup = new ContactAccessActionGroup(
@@ -128,8 +132,9 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = ['Group 1'];
     $userPermission = $this->prophesize(CMSUserPermission::class);
+    $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
-    $contactRightsService = $this->prophesize(ContactRightsService::class);
+    $contactRightsService = $this->prophesize(ContactRights::class);
     $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([['label' => 'Region1']]);
     $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([]);
 
@@ -156,8 +161,9 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = [];
     $userPermission = $this->prophesize(CMSUserPermission::class);
+    $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
-    $contactRightsService = $this->prophesize(ContactRightsService::class);
+    $contactRightsService = $this->prophesize(ContactRights::class);
     $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([['label' => 'Region1']]);
     $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([['label' => 'Location1']]);
 

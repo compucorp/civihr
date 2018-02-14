@@ -1,7 +1,7 @@
 <?php
 
 use CRM_HRContactActionsMenu_Component_Group as ActionsGroup;
-use CRM_Contactaccessrights_Service_ContactRights as ContactRightsService;
+use CRM_Contactaccessrights_BAO_Rights as ContactRights;
 use CRM_HRCore_CMSData_UserPermissionInterface as CMSUserPermission;
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipItem as GroupTitleToolTipItem;
@@ -19,9 +19,9 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
   private $contactUserInfo;
 
   /**
-   * @var ContactRightsService
+   * @var ContactRights
    */
-  private $contactRightsService;
+  private $contactRights;
 
   /**
    * @var array
@@ -37,18 +37,18 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
    * CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup constructor.
    *
    * @param array $contactUserInfo
-   * @param ContactRightsService $contactRightsService
+   * @param ContactRights $contactRights
    * @param CMSUserPermission $cmsUserPermission
    * @param array $contactACLGroups
    */
   public function __construct(
     $contactUserInfo,
-    ContactRightsService $contactRightsService,
+    ContactRights $contactRights,
     CMSUserPermission $cmsUserPermission,
     $contactACLGroups
   ) {
     $this->contactUserInfo = $contactUserInfo;
-    $this->contactRightsService = $contactRightsService;
+    $this->contactRights = $contactRights;
     $this->cmsUserPermission = $cmsUserPermission;
     $this->contactACLGroups = $contactACLGroups;
   }
@@ -172,7 +172,7 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
    * @return array
    */
   private function getContactRegions() {
-    $regions = $this->contactRightsService->getContactRightsByRegions($this->contactUserInfo['contact_id']);
+    $regions = $this->contactRights->getContactRightsByRegions($this->contactUserInfo['contact_id']);
 
     return array_column($regions, 'label');
   }
@@ -183,7 +183,7 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
    * @return array
    */
   private function getContactLocations() {
-    $locations = $this->contactRightsService->getContactRightsByLocations($this->contactUserInfo['contact_id']);
+    $locations = $this->contactRights->getContactRightsByLocations($this->contactUserInfo['contact_id']);
 
     return array_column($locations, 'label');
   }

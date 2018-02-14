@@ -4,7 +4,7 @@ use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
 use CRM_Contactaccessrights_Helper_ContactActionsMenu_Contact as ContactHelper;
 use CRM_HRCore_CMSData_UserPermissionFactory as CMSUserPermissionsFactory;
 use CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup as ContactAccessActionGroupHelper;
-use CRM_Contactaccessrights_Service_ContactRights as ContactRightsService;
+use CRM_Contactaccessrights_BAO_Rights as ContactRights;
 
 require_once 'contactaccessrights.civix.php';
 
@@ -219,12 +219,12 @@ function contactaccessrights_addContactMenuActions(ActionsMenu $menu) {
 
   $userPermissions = CMSUserPermissionsFactory::create();
 
-  $contactRightsService = new ContactRightsService();
+  $contactRights = new ContactRights();
   $aclGroups = ContactHelper::getACLGroups($contactID);
 
   $contactAccessActionGroup = new ContactAccessActionGroupHelper(
     $contactUserInfo,
-    $contactRightsService,
+    $contactRights,
     $userPermissions,
     $aclGroups
   );
