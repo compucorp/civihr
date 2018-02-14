@@ -32,6 +32,14 @@ define([
       contacts: {}
     };
 
+    vm.addComment = addComment;
+    vm.formatDateTime = formatDateTime;
+    vm.getActiveComments = getActiveComments;
+    vm.getCommentorName = getCommentorName;
+    vm.isMode = isMode;
+    vm.orderComment = orderComment;
+    vm.removeCommentVisibility = removeCommentVisibility;
+
     (function init () {
       initWatchers();
       loadCommentsAndContactNames();
@@ -41,34 +49,35 @@ define([
     /**
      * Add a comment into comments array, also clears the comments textbox
      */
-    vm.addComment = function () {
+    function addComment () {
       vm.request.comments.push({
         contact_id: loggedInContactId,
         leave_request_id: vm.request.id,
         text: vm.comment.text
       });
       vm.comment.text = '';
-    };
+    }
 
     /**
      * Format a date-time into user format and returns
      *
      * @return {String}
      */
-    vm.formatDateTime = function (dateTime) {
-      return moment.utc(dateTime, sharedSettings.serverDateTimeFormat).local().format(HRSettings.DATE_FORMAT.toUpperCase() + ' HH:mm');
-    };
+    function formatDateTime (dateTime) {
+      return moment.utc(dateTime, sharedSettings.serverDateTimeFormat).local()
+        .format(HRSettings.DATE_FORMAT.toUpperCase() + ' HH:mm');
+    }
 
     /**
      * Returns the comments which are not marked for deletion
      *
      * @return {Array}
      */
-    vm.getActiveComments = function () {
+    function getActiveComments () {
       return vm.request.comments.filter(function (comment) {
         return !comment.toBeDeleted;
       });
-    };
+    }
 
     /**
      * Returns the comment author name
@@ -76,43 +85,13 @@ define([
      *
      * @return {String}
      */
-    vm.getCommentorName = function (contactId) {
+    function getCommentorName (contactId) {
       if (contactId === loggedInContactId) {
         return 'Me';
       } else if (vm.comment.contacts[contactId]) {
         return vm.comment.contacts[contactId].display_name;
       }
-    };
-
-    /**
-     * Checks if popup is opened in given mode
-     *
-     * @param {String} modeParam to open leave request like edit or view or create
-     * @return {Boolean}
-     */
-    vm.isMode = function (modeParam) {
-      return vm.mode === modeParam;
-    };
-
-    /**
-     * Orders comment, used as a angular filter
-     * @param {Object} comment
-     *
-     * @return {Date}
-     */
-    vm.orderComment = function (comment) {
-      return moment(comment.created_at, sharedSettings.serverDateTimeFormat);
-    };
-
-    /**
-     * Decides visiblity of remove comment button
-     * @param {Object} comment - comment object
-     *
-     * @return {Boolean}
-     */
-    vm.removeCommentVisibility = function (comment) {
-      return !comment.comment_id || vm.canManage;
-    };
+    }
 
     /**
      * Initializes the component's watchers:
@@ -125,6 +104,36 @@ define([
           vm.addComment();
         }
       });
+    }
+
+    /**
+     * Checks if popup is opened in given mode
+     *
+     * @param {String} modeParam to open leave request like edit or view or create
+     * @return {Boolean}
+     */
+    function isMode (modeParam) {
+      return vm.mode === modeParam;
+    }
+
+    /**
+     * Orders comment, used as a angular filter
+     * @param {Object} comment
+     *
+     * @return {Date}
+     */
+    function orderComment (comment) {
+      return moment(comment.created_at, sharedSettings.serverDateTimeFormat);
+    }
+
+    /**
+     * Decides visiblity of remove comment button
+     * @param {Object} comment - comment object
+     *
+     * @return {Boolean}
+     */
+    function removeCommentVisibility (comment) {
+      return !comment.comment_id || vm.canManage;
     }
 
     /**
