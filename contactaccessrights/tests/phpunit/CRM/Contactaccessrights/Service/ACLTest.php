@@ -1,18 +1,21 @@
 <?php
 
-use CRM_Contactaccessrights_Helper_ContactActionsMenu_Contact as ContactHelper;
+use CRM_Contactaccessrights_Service_ACL as ACLService;
 
 /**
- * Class CRM_Contactaccessrights_Helper_ContactTest
+ * Class CRM_Contactaccessrights_Service_ACLTest
  *
  * @group headless
  */
-class CRM_Contactaccessrights_Helper_ContactTest extends BaseHeadlessTest {
+class CRM_Contactaccessrights_Service_ACLTest extends BaseHeadlessTest {
+
+  private $aclService;
 
   public function setUp() {
     $this->apiKernel = \Civi::service('civi_api_kernel');
     $this->adhocProvider = new \Civi\API\Provider\AdhocProvider(3, 'GroupContact');
     $this->apiKernel->registerApiProvider($this->adhocProvider);
+    $this->aclService = new ACLService();
   }
 
   public function testGetACLGroupsWhenContactBelongsToAnACLGroup() {
@@ -25,7 +28,7 @@ class CRM_Contactaccessrights_Helper_ContactTest extends BaseHeadlessTest {
     });
 
 
-    $result = ContactHelper::getACLGroups($contactID);
+    $result = $this->aclService->getACLGroupsForContact($contactID);
     $this->assertEquals([$group['id'] => $group['title']], $result);
   }
 
@@ -39,9 +42,10 @@ class CRM_Contactaccessrights_Helper_ContactTest extends BaseHeadlessTest {
     });
 
 
-    $result = ContactHelper::getACLGroups($contactID);
+    $result = $this->aclService->getACLGroupsForContact($contactID);
     $this->assertEquals([], $result);
   }
+
   private function createACLGroup() {
     return $this->createGroup();
   }

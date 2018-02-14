@@ -1,9 +1,6 @@
 <?php
 
-/**
- * Class CRM_Contactaccessrights_Helper_Contact
- */
-class CRM_Contactaccessrights_Helper_ContactActionsMenu_Contact {
+class CRM_Contactaccessrights_Service_ACL {
 
   /**
    * Gets the ACL Groups that the contact belongs to.
@@ -12,7 +9,7 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_Contact {
    *
    * @return array
    */
-  public static function getACLGroups($contactID) {
+  public function getACLGroupsForContact($contactID) {
     $result = civicrm_api3('GroupContact', 'get', [
       'sequential' => 1,
       'contact_id' => $contactID,
@@ -21,14 +18,14 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_Contact {
 
     $aclGroups = [];
 
-    if ($result['count'] < 0) {
+    if ($result['count'] == 0) {
       return $aclGroups;
     }
 
-    $accessControlValue = self::getAccessControlOptionValue();
+    $accessControlOptionValue = $this->getAccessControlOptionValue();
     foreach($result['values'] as $group) {
       $group = $group['api.Group.get']['values'][0];
-      if (in_array($accessControlValue, $group['group_type'])) {
+      if (in_array($accessControlOptionValue, $group['group_type'])) {
         $aclGroups[$group['id']] = $group['title'];
       }
     }
@@ -42,7 +39,7 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_Contact {
    *
    * @return string
    */
-  private static function getAccessControlOptionValue() {
+  private function getAccessControlOptionValue() {
     $result = civicrm_api3('OptionValue', 'get', [
       'sequential' => 1,
       'option_group_id' => 'group_type',
