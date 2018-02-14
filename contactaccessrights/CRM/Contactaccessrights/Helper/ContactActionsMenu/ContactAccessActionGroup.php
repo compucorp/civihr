@@ -6,10 +6,10 @@ use CRM_HRCore_CMSData_UserPermissionInterface as CMSUserPermission;
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipItem as GroupTitleToolTipItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_NoStaffTooltipItem as NoStaffToolTipItem;
-use CRM_Contactaccessrights_Component_ContactActionsMenu_GenericTextItem as GenericTextItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_UserRegionsListItem as UserRegionsListItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_UserLocationsListItem as UserLocationsListItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_UserACLGroupsListItem as UserACLGroupsListItem;
+use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 
 class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup {
 
@@ -64,7 +64,7 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
     $isAdmin = $this->isAdmin();
 
     if ($isAdmin) {
-      $allStaffItem =  new GenericTextItem('All Staff');
+      $allStaffItem =  new ParagraphItem('All Staff');
       $actionsGroup->addItem($allStaffItem);
     }
 
@@ -89,7 +89,7 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
 
       if (empty($regions) && empty($locations) && empty($aclGroups)) {
         $toolTip = new NoStaffToolTipItem();
-        $noStaffItem =  new GenericTextItem('No Staff ' . $toolTip->render());
+        $noStaffItem =  new ParagraphItem('No Staff ' . $toolTip->render());
         $actionsGroup->addItem($noStaffItem);
       }
     }

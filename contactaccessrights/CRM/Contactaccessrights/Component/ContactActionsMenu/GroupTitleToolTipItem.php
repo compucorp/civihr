@@ -1,6 +1,6 @@
 <?php
 
-use CRM_Contactaccessrights_Component_ContactActionsMenu_GenericTooltipItem as GenericTooltipItem;
+use CRM_HRContactActionsMenu_Component_GenericTooltipItem as GenericTooltipItem;
 
 /**
  * Class CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipTextItem

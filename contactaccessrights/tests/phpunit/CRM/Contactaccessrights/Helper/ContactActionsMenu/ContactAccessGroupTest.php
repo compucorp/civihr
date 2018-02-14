@@ -5,7 +5,7 @@ use CRM_Contactaccessrights_Service_ContactRights as ContactRightsService;
 use CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup as ContactAccessActionGroup;
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipItem as GroupTitleToolTipItem;
-use CRM_Contactaccessrights_Component_ContactActionsMenu_GenericTextItem as GenericTextItem;
+use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_UserRegionsListItem as UserRegionsListItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_UserLocationsListItem as UserLocationsListItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_UserACLGroupsListItem as UserACLGroupsListItem;
@@ -35,7 +35,7 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $menuItems = $contactAccessActionGroup->getItems();
     //Two Items are expected: The All staff Item and the Manage Regional Access Button
     $this->assertCount(2, $menuItems);
-    $this->assertInstanceOf(GenericTextItem::class, $menuItems[0]);
+    $this->assertInstanceOf(ParagraphItem::class, $menuItems[0]);
     $this->assertInstanceOf(ActionsGroupButtonItem::class, $menuItems[1]);
 
     $this->assertEquals($contactAccessActionGroup->getTitle(), $this->getGroupTitle());
@@ -90,7 +90,7 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     $menuItems = $contactAccessActionGroup->getItems();
     //Two Items are expected: No Staff Text Item and the Manage Regional Access Button
     $this->assertCount(2, $menuItems);
-    $this->assertInstanceOf(GenericTextItem::class, $menuItems[0]);
+    $this->assertInstanceOf(ParagraphItem::class, $menuItems[0]);
     $this->assertInstanceOf(ActionsGroupButtonItem::class, $menuItems[1]);
 
     $this->assertEquals($contactAccessActionGroup->getTitle(), $this->getGroupTitle());
