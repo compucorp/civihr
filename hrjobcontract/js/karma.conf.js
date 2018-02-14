@@ -34,6 +34,7 @@ module.exports = function (config) {
 
       // External extensions files
       { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/angular/src/**/*.js', included: false },
+      { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/angular/test/mocks/**/*.js', included: false },
 
       // the application modules
       { pattern: extPath + 'js/src/job-contract/**/*.js', included: false },

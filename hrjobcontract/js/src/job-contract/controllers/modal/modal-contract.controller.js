@@ -167,10 +167,7 @@ define([
           jobcontract_id: entity.contract.id
         }).then(function (result) {
           if (result.success) {
-            confirmUpdateEntitlements()
-              .then(function () {
-                processContractUpdate();
-              });
+            processContractUpdate();
           } else {
             CRM.alert(result.message, 'Error', 'error');
             $scope.$broadcast('hrjc-loader-hide');
@@ -218,30 +215,6 @@ define([
           $scope.$broadcast('hrjc-loader-hide');
           $modalInstance.dismiss('cancel');
       }
-    }
-
-    /**
-     * Shows a confirmation dialog warning the user that, if they proceed, the staff
-     * leave entitlement will be updated.
-     *
-     * @returns {*}
-     */
-    function confirmUpdateEntitlements () {
-      var modalUpdateEntitlements = $modal.open({
-        appendTo: $rootElement.find('div').eq(0),
-        size: 'sm',
-        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
-        controller: 'ModalDialogController',
-        resolve: {
-          content: {
-            title: 'Update leave entitlements?',
-            msg: 'The system will now update the staff member leave entitlement.',
-            copyConfirm: 'Proceed'
-          }
-        }
-      });
-
-      return modalUpdateEntitlements.result;
     }
 
     /**
@@ -586,11 +559,11 @@ define([
         { name: 'hrjobcontract_health_life_insurance_plan_type', key: 'plan_type_life_insurance' }
       ].map(function (planTypeData) {
         contractHealthService.getOptions(planTypeData.name, true)
-        .then(function (planTypes) {
-          $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
-            acc[type.key] = type.value;
-          }, {});
-        });
+          .then(function (planTypes) {
+            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
+              acc[type.key] = type.value;
+            }, {});
+          });
       }));
     }
   }

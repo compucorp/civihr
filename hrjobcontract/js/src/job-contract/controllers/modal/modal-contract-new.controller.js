@@ -107,30 +107,6 @@ define([
       $modalInstance.dismiss('cancel');
     }
 
-    /**
-     * Shows a confirmation dialog warning the user that, if they proceed, the staff
-     * leave entitlement will be updated.
-     *
-     * @returns {*}
-     */
-    function confirmUpdateEntitlements () {
-      var modalUpdateEntitlements = $modal.open({
-        appendTo: $rootElement.find('div').eq(0),
-        size: 'sm',
-        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
-        controller: 'ModalDialogController',
-        resolve: {
-          content: {
-            title: 'Update leave entitlements?',
-            msg: 'The system will now update the staff member leave entitlement.',
-            copyConfirm: 'Proceed'
-          }
-        }
-      });
-
-      return modalUpdateEntitlements.result;
-    }
-
     function filesValidate () {
       var entityName, fieldName, i, len, uploaderEntity, uploaderEntityField, uploaderEntityFieldQueue;
       var fileMaxSize = $scope.fileMaxSize;
@@ -238,19 +214,18 @@ define([
           $modalInstance.close(contract);
 
           pubSub.publish('Contract::created', settings.contactId);
-        },
-          function (reason) {
-            CRM.alert(reason, 'Error', 'error');
-            contractService.delete(contractId).then(function (result) {
-              $scope.$broadcast('hrjc-loader-hide');
-              if (result.is_error) {
-                CRM.alert((result.error_message || 'Unknown error'), 'Error', 'error');
-              }
-            }, function (error) {
-              $scope.$broadcast('hrjc-loader-hide');
-              CRM.alert((error || 'Unknown error'), 'Error', 'error');
-            });
+        }, function (reason) {
+          CRM.alert(reason, 'Error', 'error');
+          contractService.delete(contractId).then(function (result) {
+            $scope.$broadcast('hrjc-loader-hide');
+            if (result.is_error) {
+              CRM.alert((result.error_message || 'Unknown error'), 'Error', 'error');
+            }
+          }, function (error) {
+            $scope.$broadcast('hrjc-loader-hide');
+            CRM.alert((error || 'Unknown error'), 'Error', 'error');
           });
+        });
       }, function (reason) {
         $scope.$broadcast('hrjc-loader-hide');
         $modalInstance.dismiss();
@@ -268,11 +243,11 @@ define([
         { name: 'hrjobcontract_health_life_insurance_plan_type', key: 'plan_type_life_insurance' }
       ].map(function (planTypeData) {
         contractHealthService.getOptions(planTypeData.name, true)
-        .then(function (planTypes) {
-          $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
-            acc[type.key] = type.value;
-          }, {});
-        });
+          .then(function (planTypes) {
+            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
+              acc[type.key] = type.value;
+            }, {});
+          });
       }));
     }
 
@@ -285,13 +260,7 @@ define([
         period_end_date: $scope.entity.details.period_end_date
       }).then(function (result) {
         if (result.success) {
-          confirmUpdateEntitlements()
-            .then(function () {
-              saveContract();
-            },
-              function () {
-                $scope.$broadcast('hrjc-loader-hide');
-              });
+          saveContract();
         } else {
           CRM.alert(result.message, 'Error', 'error');
           $scope.$broadcast('hrjc-loader-hide');

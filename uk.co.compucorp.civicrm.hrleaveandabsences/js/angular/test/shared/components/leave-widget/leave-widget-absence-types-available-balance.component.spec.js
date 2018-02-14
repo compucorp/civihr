@@ -2,10 +2,10 @@
 
 define([
   'common/lodash',
-  'mocks/helpers/controller-on-changes',
-  'mocks/apis/absence-period-api-mock',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/apis/entitlement-api-mock',
+  'leave-absences/mocks/helpers/controller-on-changes',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/entitlement-api-mock',
   'leave-absences/shared/components/leave-widget/leave-widget.component'
 ], function (_, controllerOnChanges) {
   describe('leaveWidgetAbsenceTypesAvailableBalance', function () {
@@ -19,17 +19,14 @@ define([
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_,
-      _EntitlementAPIMock_) {
+    beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_, _EntitlementAPIMock_) {
       $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
       $provide.value('EntitlementAPI', _EntitlementAPIMock_);
     }));
 
-    beforeEach(inject(['$componentController', '$rootScope',
-      'AbsencePeriod', 'AbsenceType', 'Entitlement',
-      function (_$componentController_, _$rootScope_, AbsencePeriod,
-        AbsenceType, _Entitlement_) {
+    beforeEach(inject(['$componentController', '$rootScope', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
+      function (_$componentController_, _$rootScope_, AbsencePeriod, AbsenceType, _Entitlement_) {
         $componentController = _$componentController_;
         $rootScope = _$rootScope_;
         Entitlement = _Entitlement_;
@@ -84,26 +81,25 @@ define([
           var expectedEntitlements;
 
           beforeEach(function () {
-            Entitlement.all({
-              contact_id: contactId,
-              period_id: absencePeriod.id
-            }, true)
+            Entitlement.all({ contact_id: contactId, period_id: absencePeriod.id }, true)
               .then(function (entitlements) {
                 var indexedEntitlements = _.indexBy(entitlements, 'type_id');
 
-                expectedEntitlements = absenceTypes.map(function (absenceType) {
-                  var entitlement = indexedEntitlements[absenceType.id];
+                expectedEntitlements = absenceTypes
+                  .map(function (absenceType) {
+                    var entitlement = indexedEntitlements[absenceType.id];
 
-                  return _.assign({
-                    entitlement: entitlement
-                  }, absenceType);
-                }).filter(function (absenceType) {
-                  var hasEntitlement = absenceType.entitlement && absenceType.entitlement.value > 0;
-                  var allowOveruse = absenceType.allow_overuse === '1';
-                  var allowAccrual = absenceType.allow_accruals_request === '1';
+                    return _.assign({
+                      entitlement: entitlement
+                    }, absenceType);
+                  })
+                  .filter(function (absenceType) {
+                    var hasEntitlement = absenceType.entitlement && absenceType.entitlement.value > 0;
+                    var allowOveruse = absenceType.allow_overuse === '1';
+                    var allowAccrual = absenceType.allow_accruals_request === '1';
 
-                  return hasEntitlement || allowOveruse || allowAccrual;
-                });
+                    return hasEntitlement || allowOveruse || allowAccrual;
+                  });
               });
 
             $rootScope.$digest();

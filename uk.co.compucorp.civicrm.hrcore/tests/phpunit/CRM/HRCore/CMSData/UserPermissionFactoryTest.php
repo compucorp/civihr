@@ -1,14 +1,14 @@
 <?php
 
-use CRM_HRCore_CMSData_UserAccountFactory as UserAccountFactory;
-use CRM_HRCore_CMSData_UserAccountInterface as UserAccountInterface;
+use CRM_HRCore_CMSData_UserPermissionFactory as UserPermissionFactory;
+use CRM_HRCore_CMSData_UserPermissionInterface as UserPermissionInterface;
 
 /**
- * Class CRM_HRCore_CMSData_UserAccountFactoryTest
+ * Class CRM_HRCore_CMSData_UserPermissionFactoryTest
  *
  * @group headless
  */
-class CRM_HRCore_CMSData_UserAccountFactoryTest extends CRM_HRCore_Test_BaseHeadlessTest {
+class CRM_HRCore_CMSData_UserPermissionFactoryTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   private $previousUserFramework;
 
@@ -24,8 +24,8 @@ class CRM_HRCore_CMSData_UserAccountFactoryTest extends CRM_HRCore_Test_BaseHead
     //We need to manually set this value because civicrm sets it to some other value
     //when running in testing environment.
     CRM_Core_Config::singleton()->userFramework = 'Drupal';
-    $userAccount= UserAccountFactory::create();
-    $this->assertInstanceOf(UserAccountInterface::class, $userAccount);
+    $userPermission = UserPermissionFactory::create();
+    $this->assertInstanceOf(UserPermissionInterface::class, $userPermission);
   }
 
   public function testItThrowsAnExceptionWhenCMSIsNotSupported() {
@@ -36,6 +36,7 @@ class CRM_HRCore_CMSData_UserAccountFactoryTest extends CRM_HRCore_Test_BaseHead
     $msg = sprintf('Unrecognized CMS: "%s"', $cmsFramework);
     $this->setExpectedException('Exception', $msg);
 
-    UserAccountFactory::create();
+    UserPermissionFactory::create();
   }
+
 }

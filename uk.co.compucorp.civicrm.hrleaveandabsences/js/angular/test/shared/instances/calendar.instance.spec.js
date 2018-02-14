@@ -3,10 +3,10 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/work-pattern.data',
-  'mocks/data/option-group.data',
+  'leave-absences/mocks/data/work-pattern.data',
+  'leave-absences/mocks/data/option-group.data',
   'leave-absences/shared/instances/calendar.instance',
-  'mocks/apis/option-group-api-mock'
+  'leave-absences/mocks/apis/option-group-api-mock'
 ], function (_, moment, workPatternMocked, optionGroupMocked) {
   'use strict';
 

@@ -1,8 +1,8 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/module',
-  'mocks/data/entitlement-log.data',
+  'leave-absences/mocks/module',
+  'leave-absences/mocks/data/entitlement-log.data',
   'common/angularMocks'
 ], function (mocks, mockData) {
   'use strict';

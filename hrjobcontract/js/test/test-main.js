@@ -18,6 +18,7 @@ require.config({
     'job-contract/vendor/fraction': srcPath + '/vendor/fraction',
     'job-contract/vendor/job-summary': srcPath + '/vendor/jobsummary',
     'leave-absences': CRM.jobContractTabApp.path + '../uk.co.compucorp.civicrm.hrleaveandabsences/js/angular/src/leave-absences',
+    'leave-absences/mocks': CRM.jobContractTabApp.path + '../uk.co.compucorp.civicrm.hrleaveandabsences/js/angular/test/mocks',
     'mocks': mocksPath
   },
   shim: {
