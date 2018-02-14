@@ -1,7 +1,0 @@
-<?php
-
-use CRM_Contactaccessrights_Component_ContactActionsMenu_GenericListItem as GenericListItem;
-
-class CRM_Contactaccessrights_Component_ContactActionsMenu_UserRegionsListItem extends GenericListItem {
-
-}

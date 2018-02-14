@@ -2,7 +2,7 @@
 
 use CRM_HRContactActionsMenu_Component_GroupItem as ActionsGroupItemInterface;
 
-abstract class CRM_Contactaccessrights_Component_ContactActionsMenu_GenericListItem implements ActionsGroupItemInterface {
+class CRM_Contactaccessrights_Component_ContactActionsMenu_GenericListItem implements ActionsGroupItemInterface {
 
   /**
    * @var array

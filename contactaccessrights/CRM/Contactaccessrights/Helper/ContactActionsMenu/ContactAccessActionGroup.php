@@ -6,9 +6,7 @@ use CRM_HRCore_CMSData_UserPermissionInterface as CMSUserPermission;
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipItem as GroupTitleToolTipItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_NoStaffTooltipItem as NoStaffToolTipItem;
-use CRM_Contactaccessrights_Component_ContactActionsMenu_UserRegionsListItem as UserRegionsListItem;
-use CRM_Contactaccessrights_Component_ContactActionsMenu_UserLocationsListItem as UserLocationsListItem;
-use CRM_Contactaccessrights_Component_ContactActionsMenu_UserACLGroupsListItem as UserACLGroupsListItem;
+use CRM_Contactaccessrights_Component_ContactActionsMenu_GenericListItem as GenericListItem;
 use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 
 class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup {
@@ -80,15 +78,15 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
       $aclGroups = $this->contactACLGroups;
 
       if ($regions) {
-        $actionsGroup->addItem(new UserRegionsListItem($regions, 'Regions'));
+        $actionsGroup->addItem(new GenericListItem($regions, 'Regions'));
       }
 
       if ($locations) {
-        $actionsGroup->addItem(new UserLocationsListItem($locations, 'Locations'));
+        $actionsGroup->addItem(new GenericListItem($locations, 'Locations'));
       }
 
       if ($aclGroups) {
-        $actionsGroup->addItem(new UserACLGroupsListItem($aclGroups, 'ACL Groups'));
+        $actionsGroup->addItem(new GenericListItem($aclGroups, 'ACL Groups'));
       }
 
       if (empty($regions) && empty($locations) && empty($aclGroups)) {

@@ -6,9 +6,7 @@ use CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup a
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem;
 use CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipItem as GroupTitleToolTipItem;
 use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
-use CRM_Contactaccessrights_Component_ContactActionsMenu_UserRegionsListItem as UserRegionsListItem;
-use CRM_Contactaccessrights_Component_ContactActionsMenu_UserLocationsListItem as UserLocationsListItem;
-use CRM_Contactaccessrights_Component_ContactActionsMenu_UserACLGroupsListItem as UserACLGroupsListItem;
+use CRM_Contactaccessrights_Component_ContactActionsMenu_GenericListItem as GenericListItem;
 
 /**
  * Class CRM_Contactaccessrights_Helper_ContactAccessGroupTest
@@ -45,12 +43,14 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
   public function testMenuItemsAreCorrectlyAddedWhenContactIsNotAnAdminAndHasAccessRights() {
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = ['Group 1'];
+    $location = ['label' => 'Location1'];
+    $region = ['label' => 'Region1'];
     $userPermission = $this->prophesize(CMSUserPermission::class);
     $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
     $contactRightsService = $this->prophesize(ContactRights::class);
-    $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([['label' => 'Region1']]);
-    $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([['label' => 'Location1']]);
+    $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([$region]);
+    $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([$location]);
 
     $contactAccessActionGroup = new ContactAccessActionGroup(
       $contactUserInfo,
@@ -64,9 +64,15 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     //Four Items are expected: Region List, Locations List, ACL Group
     //List item and the Manage Regional Access Button
     $this->assertCount(4, $menuItems);
-    $this->assertInstanceOf(UserRegionsListItem::class, $menuItems[0]);
-    $this->assertInstanceOf(UserLocationsListItem::class, $menuItems[1]);
-    $this->assertInstanceOf(UserACLGroupsListItem::class, $menuItems[2]);
+    $this->assertInstanceOf(GenericListItem::class, $menuItems[0]);
+    $this->assertContains($region['label'], $menuItems[0]->render());
+
+    $this->assertInstanceOf(GenericListItem::class, $menuItems[1]);
+    $this->assertContains($location['label'], $menuItems[1]->render());
+
+    $this->assertInstanceOf(GenericListItem::class, $menuItems[2]);
+    $this->assertContains($aclGroups[0], $menuItems[2]->render());
+
     $this->assertInstanceOf(ActionsGroupButtonItem::class, $menuItems[3]);
 
     $this->assertEquals($contactAccessActionGroup->getTitle(), $this->getGroupTitle());
@@ -102,12 +108,13 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
   public function testMenuItemsAreAddedCorrectlyWhenContactHasOtherAccessButNotRegionsAccess() {
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = ['Group 1'];
+    $location = ['label' => 'Location1'];
     $userPermission = $this->prophesize(CMSUserPermission::class);
     $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
     $contactRightsService = $this->prophesize(ContactRights::class);
     $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([]);
-    $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([['label' => 'Location1']]);
+    $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([$location]);
 
     $contactAccessActionGroup = new ContactAccessActionGroup(
       $contactUserInfo,
@@ -121,8 +128,12 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     //Three Items are expected: Locations List, ACL Group
     //List item and the Manage Regional Access Button
     $this->assertCount(3, $menuItems);
-    $this->assertInstanceOf(UserLocationsListItem::class, $menuItems[0]);
-    $this->assertInstanceOf(UserACLGroupsListItem::class, $menuItems[1]);
+    $this->assertInstanceOf(GenericListItem::class, $menuItems[0]);
+    $this->assertContains($location['label'], $menuItems[0]->render());
+
+    $this->assertInstanceOf(GenericListItem::class, $menuItems[1]);
+    $this->assertContains($aclGroups[0], $menuItems[1]->render());
+
     $this->assertInstanceOf(ActionsGroupButtonItem::class, $menuItems[2]);
 
     $this->assertEquals($contactAccessActionGroup->getTitle(), $this->getGroupTitle());
@@ -131,11 +142,12 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
   public function testMenuItemsAreAddedCorrectlyWhenContactHasOtherAccessButNotLocationsAccess() {
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = ['Group 1'];
+    $region = ['label' => 'Region1'];
     $userPermission = $this->prophesize(CMSUserPermission::class);
     $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
     $contactRightsService = $this->prophesize(ContactRights::class);
-    $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([['label' => 'Region1']]);
+    $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([$region]);
     $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([]);
 
     $contactAccessActionGroup = new ContactAccessActionGroup(
@@ -150,8 +162,13 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     //Three Items are expected: Regions List, ACL Group
     //List item and the Manage Regional Access Button
     $this->assertCount(3, $menuItems);
-    $this->assertInstanceOf(UserRegionsListItem::class, $menuItems[0]);
-    $this->assertInstanceOf(UserACLGroupsListItem::class, $menuItems[1]);
+
+    $this->assertInstanceOf(GenericListItem::class, $menuItems[0]);
+    $this->assertContains($region['label'], $menuItems[0]->render());
+
+    $this->assertInstanceOf(GenericListItem::class, $menuItems[1]);
+    $this->assertContains($aclGroups[0], $menuItems[1]->render());
+
     $this->assertInstanceOf(ActionsGroupButtonItem::class, $menuItems[2]);
 
     $this->assertEquals($contactAccessActionGroup->getTitle(), $this->getGroupTitle());
@@ -160,12 +177,14 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
   public function testMenuItemsAreAddedCorrectlyWhenContactHasOtherAccessButNotACLGroupsAccess() {
     $contactUserInfo = ['cmsId' => 4, 'contact_id' => 5];
     $aclGroups = [];
+    $location = ['label' => 'Location1'];
+    $region = ['label' => 'Region1'];
     $userPermission = $this->prophesize(CMSUserPermission::class);
     $userPermission->check($contactUserInfo, ['access CiviCRM'])->willReturn(TRUE);
     $userPermission->check($contactUserInfo, ['view all contacts', 'edit all contacts'])->willReturn(FALSE);
     $contactRightsService = $this->prophesize(ContactRights::class);
-    $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([['label' => 'Region1']]);
-    $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([['label' => 'Location1']]);
+    $contactRightsService->getContactRightsByRegions($contactUserInfo['contact_id'])->willReturn([$region]);
+    $contactRightsService->getContactRightsByLocations($contactUserInfo['contact_id'])->willReturn([$location]);
 
     $contactAccessActionGroup = new ContactAccessActionGroup(
       $contactUserInfo,
@@ -179,8 +198,13 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
     //Three Items are expected: Regions List, Locations
     //List item and the Manage Regional Access Button
     $this->assertCount(3, $menuItems);
-    $this->assertInstanceOf(UserRegionsListItem::class, $menuItems[0]);
-    $this->assertInstanceOf(UserLocationsListItem::class, $menuItems[1]);
+
+    $this->assertInstanceOf(GenericListItem::class, $menuItems[0]);
+    $this->assertContains($region['label'], $menuItems[0]->render());
+
+    $this->assertInstanceOf(GenericListItem::class, $menuItems[1]);
+    $this->assertContains($location['label'], $menuItems[1]->render());
+
     $this->assertInstanceOf(ActionsGroupButtonItem::class, $menuItems[2]);
 
     $this->assertEquals($contactAccessActionGroup->getTitle(), $this->getGroupTitle());
