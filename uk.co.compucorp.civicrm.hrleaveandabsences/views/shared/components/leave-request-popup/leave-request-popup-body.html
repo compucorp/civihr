@@ -36,7 +36,7 @@
             ng-change="$ctrl.updateAbsenceType()"></select>
           <select
             class="no-select2"
-            ng-show="$ctrl.absenceTypes.length === 0"
+            ng-if="$ctrl.absenceTypes.length === 0"
             disabled="disabled">
             <option>You don't have any leave entitlement</option>
           </select>
