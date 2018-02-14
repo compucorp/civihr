@@ -24,12 +24,24 @@
       "inject"
     ]
   },
+  "stylelint": {
+    "extends": "stylelint-config-sass-guidelines",
+    "plugins": [
+      "stylelint-order",
+      "stylelint-scss"
+    ],
+    "rules": {
+      "selector-class-pattern": null,
+      "max-nesting-depth": 3
+    }
+  },
   "devDependencies": {
     "husky": "^0.14.3",
     "lint-staged": "^6.1.0",
     "semistandard": "^12.0.0",
     "stylelint": "^8.4.0",
-    "stylelint-config-standard": "^18.0.0",
+    "stylelint-config-sass-guidelines": "^4.1.0",
+    "stylelint-order": "^0.8.0",
     "stylelint-scss": "^2.3.0"
   }
 }
