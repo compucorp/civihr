@@ -100,25 +100,25 @@ define([
         loadAbsencePeriods(),
         loadStatuses()
       ])
-      .then(initRequest)
-      .then(setModalMode)
-      .then(setInitialAbsencePeriod)
-      .then(function () {
-        return vm.canManage && !vm.isMode('edit') && loadManagees();
-      })
-      .then(function () {
-        if (vm.selectedContactId) {
-          vm.request.contact_id = vm.selectedContactId;
-        }
-        // The additional check here prevents error being displayed on startup when no contact is selected
-        if (vm.request.contact_id) {
-          return vm.initAfterContactSelection();
-        }
-      })
-      .catch(handleError)
-      .finally(function () {
-        vm.loading.absenceTypes = false;
-      });
+        .then(initRequest)
+        .then(setModalMode)
+        .then(setInitialAbsencePeriod)
+        .then(function () {
+          return vm.canManage && !vm.isMode('edit') && loadManagees();
+        })
+        .then(function () {
+          if (vm.selectedContactId) {
+            vm.request.contact_id = vm.selectedContactId;
+          }
+          // The additional check here prevents error being displayed on startup when no contact is selected
+          if (vm.request.contact_id) {
+            return vm.initAfterContactSelection();
+          }
+        })
+        .catch(handleError)
+        .finally(function () {
+          vm.loading.absenceTypes = false;
+        });
     }());
 
     /**
@@ -400,9 +400,9 @@ define([
     function hasRequestChanged () {
       // using angular.equals to automatically ignore the $$hashkey property
       return !angular.equals(
-          initialLeaveRequestAttributes,
-          vm.request.attributes()
-        ) || (vm.fileUploader && vm.fileUploader.queue.length !== 0) ||
+        initialLeaveRequestAttributes,
+        vm.request.attributes()
+      ) || (vm.fileUploader && vm.fileUploader.queue.length !== 0) ||
         (vm.canManage && vm.newStatusOnSave);
     }
 
@@ -754,15 +754,15 @@ define([
       return _.compact(absenceTypes.map(function (absenceType) {
         entitlement = _.find(entitlements, { type_id: absenceType.id });
 
-        return entitlement
-          ? {
-              id: entitlement.type_id,
-              title: absenceType.title + ' ( ' + entitlement.remainder.current + ' ) ',
-              remainder: entitlement.remainder.current,
-              allow_overuse: absenceType.allow_overuse,
-              calculation_unit_name: absenceType.calculation_unit_name
-            }
-          : undefined;
+        if (entitlement) {
+          return {
+            id: entitlement.type_id,
+            title: absenceType.title + ' ( ' + entitlement.remainder.current + ' ) ',
+            remainder: entitlement.remainder.current,
+            allow_overuse: absenceType.allow_overuse,
+            calculation_unit_name: absenceType.calculation_unit_name
+          };
+        }
       }));
     }
 

@@ -154,8 +154,7 @@ define([
 
       return Session.get().then(function (value) {
         loggedInContactId = value.contactId;
-      })
-      .then(function () {
+      }).then(function () {
         vm.loading.component = false;
       });
     }
