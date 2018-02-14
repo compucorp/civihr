@@ -22,12 +22,12 @@ define([
     var userRole = 'admin';
 
     beforeEach(module('common.services', 'leave-absences.mocks',
-    'leave-absences.models', 'leave-absences.components', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+      'leave-absences.models', 'leave-absences.components', function (_$provide_) {
+        $provide = _$provide_;
+      }));
 
     beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_,
-    _EntitlementAPIMock_) {
+      _EntitlementAPIMock_) {
       $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
       $provide.value('EntitlementAPI', _EntitlementAPIMock_);
@@ -52,8 +52,8 @@ define([
     }]));
 
     beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_, _LeaveBalanceReport_, _pubSub_, _Session_,
-    _notificationService_) {
+      _AbsencePeriod_, _AbsenceType_, _LeaveBalanceReport_, _pubSub_, _Session_,
+      _notificationService_) {
       $componentController = _$componentController_;
       $q = _$q_;
       $rootScope = _$rootScope_;
@@ -147,10 +147,8 @@ define([
           $rootScope.$digest();
         });
 
-        it('loads the absence types sorted by title', function () {
-          expect(AbsenceType.all).toHaveBeenCalledWith({
-            options: { sort: 'title ASC' }
-          });
+        it('loads the absence types', function () {
+          expect(AbsenceType.all).toHaveBeenCalledWith();
         });
 
         it('populates calculation units to loaded absence types', function () {
