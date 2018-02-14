@@ -23,7 +23,7 @@ class CRM_Contactaccessrights_Service_ContactRightsTest extends BaseHeadlessTest
   }
 
   public function testGetContactRightsByLocations() {
-    $contact =['id' => 5];
+    $contact = ['id' => 5];
 
     // Create Regions and Locations
     $region1 = $this->createOptionValue($this->regionEntityType, 'Region 1');
@@ -63,7 +63,7 @@ class CRM_Contactaccessrights_Service_ContactRightsTest extends BaseHeadlessTest
   }
 
   public function testGetContactRightsByRegions() {
-    $contact =['id' => 5];
+    $contact = ['id' => 5];
 
     // Create Regions and Locations
     $region1 = $this->createOptionValue($this->regionEntityType, 'Region 1');
@@ -114,14 +114,14 @@ class CRM_Contactaccessrights_Service_ContactRightsTest extends BaseHeadlessTest
   }
 
   public function testGetContactRightsByRegionsReturnsEmptyWhenContactHasNoRightsToAnyRegion() {
-    $contact =['id' => 5];
+    $contact = ['id' => 5];
 
     $rights = $this->contactRightsService->getContactRightsByRegions($contact['id']);
     $this->assertEquals([], $rights);
   }
 
   public function testGetContactRightsByLocationsReturnsEmptyWhenContactHasNoRightsToAnyLocation() {
-    $contact =['id' => 5];
+    $contact = ['id' => 5];
 
     $rights = $this->contactRightsService->getContactRightsByLocations($contact['id']);
     $this->assertEquals([], $rights);

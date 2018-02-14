@@ -68,7 +68,7 @@ class CRM_Contactaccessrights_Service_ContactRights {
 
     $entityType = $rightType->getEntityType();
     $queryParams = [
-      1 =>[$entityType, 'String'],
+      1 => [$entityType, 'String'],
       2 => [$contactID, 'Integer']
     ];
 

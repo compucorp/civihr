@@ -31,25 +31,25 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
   /**
    * @var CMSUserPermission
    */
-  private $CMSUserPermission;
+  private $cmsUserPermission;
 
   /**
    * CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup constructor.
    *
    * @param array $contactUserInfo
    * @param ContactRightsService $contactRightsService
-   * @param CMSUserPermission $CMSUserPermission
+   * @param CMSUserPermission $cmsUserPermission
    * @param array $contactACLGroups
    */
   public function __construct(
     $contactUserInfo,
     ContactRightsService $contactRightsService,
-    CMSUserPermission $CMSUserPermission,
+    CMSUserPermission $cmsUserPermission,
     $contactACLGroups
   ) {
     $this->contactUserInfo = $contactUserInfo;
     $this->contactRightsService = $contactRightsService;
-    $this->CMSUserPermission = $CMSUserPermission;
+    $this->cmsUserPermission = $cmsUserPermission;
     $this->contactACLGroups = $contactACLGroups;
   }
 
@@ -131,7 +131,7 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
    * @return bool
    */
   private function hasPermission($permissions) {
-    return $this->CMSUserPermission->check($this->contactUserInfo, $permissions);
+    return $this->cmsUserPermission->check($this->contactUserInfo, $permissions);
   }
 
   /**

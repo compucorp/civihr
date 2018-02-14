@@ -222,7 +222,6 @@ function contactaccessrights_addContactMenuActions(ActionsMenu $menu) {
   $contactRightsService = new ContactRightsService();
   $aclGroups = ContactHelper::getACLGroups($contactID);
 
-
   $contactAccessActionGroup = new ContactAccessActionGroupHelper(
     $contactUserInfo,
     $contactRightsService,
