@@ -894,6 +894,9 @@ define([
         .then(checkIfBalanceChangeHasChanged)
         .then(decideIfBalanceChangeNeedsAForceRecalculation)
         .then(function () {
+          $scope.$broadcast('LeaveRequest::beforeSaving');
+        })
+        .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
         })
         .catch(function (errors) {

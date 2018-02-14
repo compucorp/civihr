@@ -239,7 +239,7 @@
               expect(controller.submitting).toBeTruthy();
             });
 
-            it('submit does not create request again', function () {
+            it('does not create request again', function () {
               spyOn(controller.request, 'create').and.callThrough();
               controller.submit();
               expect(controller.request.create).not.toHaveBeenCalled();
@@ -273,7 +273,15 @@
             });
 
             describe('basic tests', function () {
+              var hasCalledRequestCreateMethod;
+
               beforeEach(function () {
+                spyOn($scope, '$broadcast').and.callThrough();
+
+                $scope.$on('LeaveRequest::beforeSaving', function () {
+                  hasCalledRequestCreateMethod = LeaveRequestAPI.create.calls.count() > 0;
+                });
+
                 controller.submit();
                 $scope.$digest();
               });
@@ -281,6 +289,14 @@
               it('is successful', function () {
                 expect(controller.errors.length).toBe(0);
                 expect(controller.request.id).toBeDefined();
+              });
+
+              it('broadcasts a "before saving" event', function () {
+                expect($scope.$broadcast).toHaveBeenCalledWith('LeaveRequest::beforeSaving');
+              });
+
+              it('broadcasts the "before saving" event before the request has been created', function () {
+                expect(hasCalledRequestCreateMethod).toBe(false);
               });
 
               it('calls corresponding API end points', function () {

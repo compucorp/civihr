@@ -17,10 +17,10 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup-comments-tab.html';
     }],
     controllerAs: 'commentsCtrl',
-    controller: ['$log', '$rootScope', 'HR_settings', 'shared-settings', 'Contact', 'Session', controller]
+    controller: ['$log', '$rootScope', '$scope', 'HR_settings', 'shared-settings', 'Contact', 'Session', controller]
   });
 
-  function controller ($log, $rootScope, HRSettings, sharedSettings, Contact, Session) {
+  function controller ($log, $rootScope, $scope, HRSettings, sharedSettings, Contact, Session) {
     $log.debug('Component: leave-request-popup-comments-tab');
 
     var loggedInContactId = null;
@@ -33,6 +33,7 @@ define([
     };
 
     (function init () {
+      initWatchers();
       loadCommentsAndContactNames();
       loadLoggedInContactId();
     }());
@@ -112,6 +113,19 @@ define([
     vm.removeCommentVisibility = function (comment) {
       return !comment.comment_id || vm.canManage;
     };
+
+    /**
+     * Initializes the component's watchers:
+     * - LeaveRequest::beforeSaving before saving the request, it makes sure to
+     * add comments that were waiting to be submitted.
+     */
+    function initWatchers () {
+      $scope.$on('LeaveRequest::beforeSaving', function () {
+        if (vm.comment.text.length) {
+          vm.addComment();
+        }
+      });
+    }
 
     /**
      * Loads unique contact names for all the comments

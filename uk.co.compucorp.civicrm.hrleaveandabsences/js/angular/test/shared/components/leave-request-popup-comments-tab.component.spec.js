@@ -123,6 +123,34 @@ define([
       });
     });
 
+    describe('when the request is about to be saved', function () {
+      beforeEach(function () {
+        spyOn(controller, 'addComment');
+      });
+
+      describe('when there are comments waiting to be added', function () {
+        beforeEach(function () {
+          controller.comment.text = 'Request comment';
+          $rootScope.$broadcast('LeaveRequest::beforeSaving');
+        });
+
+        it('stores the comment before the request is saved', function () {
+          expect(controller.addComment).toHaveBeenCalled();
+        });
+      });
+
+      describe('when there are not comments to add', function () {
+        beforeEach(function () {
+          controller.comment.text = '';
+          $rootScope.$broadcast('LeaveRequest::beforeSaving');
+        });
+
+        it('does not store the comment', function () {
+          expect(controller.addComment).not.toHaveBeenCalled();
+        });
+      });
+    });
+
     describe('getCommentorName()', function () {
       var returnValue;
 
