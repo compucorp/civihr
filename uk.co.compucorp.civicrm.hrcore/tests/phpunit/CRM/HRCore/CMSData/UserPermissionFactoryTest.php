@@ -8,7 +8,7 @@ use CRM_HRCore_CMSData_UserPermissionInterface as UserPermissionInterface;
  *
  * @group headless
  */
-class UserPermissionFactoryTest extends CRM_HRCore_Test_BaseHeadlessTest {
+class CRM_HRCore_CMSData_UserPermissionFactoryTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   private $previousUserFramework;
 
