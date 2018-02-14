@@ -4,12 +4,12 @@ define([
   'common/lodash',
   'common/moment',
   'common/angular',
-  'mocks/data/absence-type.data',
+  'leave-absences/mocks/data/absence-type.data',
   'common/angularMocks',
   'leave-absences/shared/config',
   'leave-absences/absence-tab/app',
   'common/mocks/services/api/contract-mock',
-  'mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
   'common/mocks/services/hr-settings-mock'
 ], function (_, moment, angular, absenceTypeMocked) {
   'use strict';

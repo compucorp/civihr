@@ -4,14 +4,14 @@ define([
   'common/lodash',
   'common/moment',
   'common/angular',
-  'mocks/data/absence-period.data',
-  'mocks/data/absence-type.data',
-  'mocks/data/entitlement.data',
+  'leave-absences/mocks/data/absence-period.data',
+  'leave-absences/mocks/data/absence-type.data',
+  'leave-absences/mocks/data/entitlement.data',
   'leave-absences/shared/config',
   'leave-absences/absence-tab/app',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/apis/absence-period-api-mock',
-  'mocks/apis/entitlement-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/entitlement-api-mock',
   'common/mocks/services/api/contact-mock',
   'common/mocks/services/hr-settings-mock'
 ], function (_, moment, angular, absencePeriodMocked, absenceTypeMocked, absenceEntitlementMocked) {
@@ -38,17 +38,18 @@ define([
         ContactAPIMock = _ContactAPIMock_;
       }]));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_,
-    _$uibModal_, _notificationService_) {
-      $componentController = _$componentController_;
-      $log = _$log_;
-      $rootScope = _$rootScope_;
-      $uibModal = _$uibModal_;
-      notification = _notificationService_;
-      window.alert = function () {}; // prevent alert from being logged in console
+    beforeEach(
+      inject(function (_$componentController_, _$log_, _$rootScope_, _$uibModal_,
+        _notificationService_) {
+        $componentController = _$componentController_;
+        $log = _$log_;
+        $rootScope = _$rootScope_;
+        $uibModal = _$uibModal_;
+        notification = _notificationService_;
+        window.alert = function () {}; // prevent alert from being logged in console
 
-      spyOn($log, 'debug');
-    }));
+        spyOn($log, 'debug');
+      }));
 
     describe('basic tests', function () {
       var sampleAbsencePeriod;

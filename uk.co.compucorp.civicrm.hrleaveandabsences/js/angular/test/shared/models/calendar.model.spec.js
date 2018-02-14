@@ -2,8 +2,8 @@
 
 define([
   'common/lodash',
-  'mocks/data/work-pattern.data',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/data/work-pattern.data',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/shared/models/calendar.model'
 ], function (_, workPatternMocked) {
   'use strict';
