@@ -48,4 +48,16 @@
     <page_callback>CRM_HRCore_Page_Reports</page_callback>
     <access_arguments>access hrreports</access_arguments>
   </item>
+  <item>
+    <path>civicrm/reports/people</path>
+    <title>Reports</title>
+    <page_callback>CRM_HRCore_Page_Reports</page_callback>
+    <access_arguments>access hrreports</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/reports/leave_and_absence</path>
+    <title>Reports</title>
+    <page_callback>CRM_HRCore_Page_Reports</page_callback>
+    <access_arguments>access hrreports</access_arguments>
+  </item>
 </menu>
