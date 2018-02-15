@@ -61,7 +61,7 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
       $actionsGroup->addItem($this->getSendWelcomeMailButton($contactID));
       $actionsGroup->addItem($this->getSendPasswordResetButton($contactID));
     } else {
-      $noUserTextItem = new ParagraphItem('There is no user for this staff member');
+      $noUserTextItem = new ParagraphItem('There is no user account for this staff member');
       $actionsGroup->addItem($noUserTextItem);
       $actionsGroup->addItem($this->getCreateUserButton($contactID));
     }
@@ -133,7 +133,7 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
   private function getCreateUserButton($contactID) {
     $url = CRM_Utils_System::url('civicrm/user/create-account', "cid=$contactID");
     $params = [
-      'label' => 'Create a user for this staff member',
+      'label' => 'Add User account',
       'class' => 'btn-primary',
       'icon' => 'fa-plus',
       'url' => $url
