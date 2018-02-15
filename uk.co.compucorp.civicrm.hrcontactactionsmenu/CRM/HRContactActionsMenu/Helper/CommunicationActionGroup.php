@@ -34,7 +34,7 @@ class CRM_HRContactActionsMenu_Helper_CommunicationActionGroup {
    * @return ActionsGroup
    */
   public function get() {
-    $actionsGroup = new ActionsGroup('Communicate:');
+    $actionsGroup = new ActionsGroup('Communications:');
     $actionsGroup->addItem($this->getSendEmailButton());
     $actionsGroup->addItem($this->getRecordMeetingButton());
     $actionsGroup->addItem($this->getCreatePdfLetterButton());
