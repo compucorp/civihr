@@ -3,7 +3,7 @@
 use CRM_HRCore_Test_BaseHeadlessTest as BaseHeadlessTest;
 use CRM_HRCore_Service_Manager as ManagerService;
 use CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup as WorkflowActionGroupHelper;
-use CRM_HRCore_Component_ContactActionsMenu_NoSelectedLineManagerTextItem as NoSelectedLineManagerTextItem;
+use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 use CRM_HRCore_Component_ContactActionsMenu_LineManagersListItem as LineManagersListItem;
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as GroupButtonItem;
 use CRM_HRContactActionsMenu_Component_GroupSeparatorItem as GroupSeparatorItem;
@@ -28,7 +28,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroupTest extends BaseH
     $workflowActionGroupItems = $workflowActionGroup->getItems();
     $this->assertCount(9, $workflowActionGroupItems);
     $this->assertDefaultWorkflowItems($workflowActionGroupItems);
-    $this->assertInstanceOf(NoSelectedLineManagerTextItem::class, $workflowActionGroupItems[7]);
+    $this->assertInstanceOf(ParagraphItem::class, $workflowActionGroupItems[7]);
     $this->assertInstanceOf(GroupButtonItem::class, $workflowActionGroupItems[8]);
 
     //check that the group title is correct

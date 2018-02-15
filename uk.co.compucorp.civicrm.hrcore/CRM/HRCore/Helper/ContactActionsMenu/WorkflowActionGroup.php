@@ -4,7 +4,7 @@ use CRM_HRContactActionsMenu_Component_Group as ActionsGroup;
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as ActionsGroupButtonItem;
 use CRM_HRContactActionsMenu_Component_GroupSeparatorItem as GroupSeparatorItem;
 use CRM_HRCore_Service_Manager as ManagerService;
-use CRM_HRCore_Component_ContactActionsMenu_NoSelectedLineManagerTextItem as NoSelectedLineManagerTextItem;
+use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 use CRM_HRCore_Component_ContactActionsMenu_LineManagersListItem as LineManagersListItem;
 
 /**
@@ -60,7 +60,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
       $actionsGroup->addItem($this->getManageLineManagerButton());
     }
     else {
-      $noLineManagerTextItem = new NoSelectedLineManagerTextItem();
+      $noLineManagerTextItem = new ParagraphItem('You have not selected a Line Manager');
       $actionsGroup->addItem($noLineManagerTextItem);
       $actionsGroup->addItem($this->getAddLineManagerButton());
     }

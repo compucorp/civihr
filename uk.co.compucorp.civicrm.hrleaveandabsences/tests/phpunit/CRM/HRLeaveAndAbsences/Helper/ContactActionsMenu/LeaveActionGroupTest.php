@@ -3,7 +3,7 @@
 use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 use CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroup as LeaveActionGroupHelper;
 use CRM_HRLeaveAndAbsences_Component_ContactActionsMenu_LeaveApproversListItem as LeaveApproversListItem;
-use CRM_HRLeaveAndAbsences_Component_ContactActionsMenu_NoSelectedLeaveApproverItem as NoSelectedLeaveApproverItem;
+use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 use CRM_HRContactActionsMenu_Component_GroupButtonItem as GroupButtonItem;
 use CRM_HRContactActionsMenu_Component_GroupSeparatorItem as GroupSeparatorItem;
 
@@ -26,7 +26,7 @@ class CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroupTest exte
     $leaveActionGroupItems = $leaveActionGroup->getItems();
     $this->assertCount(7, $leaveActionGroupItems);
     $this->assertDefaultLeaveGroupItems($leaveActionGroupItems);
-    $this->assertInstanceOf(NoSelectedLeaveApproverItem::class, $leaveActionGroupItems[5]);
+    $this->assertInstanceOf(ParagraphItem::class, $leaveActionGroupItems[5]);
     $this->assertInstanceOf(GroupButtonItem::class, $leaveActionGroupItems[6]);
 
     //check that the group title is correct
