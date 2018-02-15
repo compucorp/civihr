@@ -57,7 +57,7 @@
             {if call_user_func(array('CRM_Core_Permission','check'), 'delete contacts')}
               <a class="btn btn-danger pull-right"
                 href="/civicrm/contact/view/delete?reset=1&delete=1&cid={$contactInfo.contact_id}">
-                <span><i class="fa fa-trash"></i></span> Delete Staff Member
+                <span><i class="fa fa-trash"></i></span> {if !empty($contactInfo.cmsId)} Delete User And Staff Member {else} Delete Staff Member {/if}
               </a>
             {/if}
           </div>
