@@ -40,6 +40,7 @@ define([
     var loggedInContactId = '';
     var NO_ENTITLEMENT_ERROR = 'No entitlement';
     var role = '';
+    var tabs = [];
     var vm = _.assign(this, directiveOptions); // put all directive options directly in the vm
 
     vm.absencePeriods = [];
@@ -195,9 +196,13 @@ define([
     function canSubmit () {
       var canSubmit = vm.checkSubmitConditions ? vm.checkSubmitConditions() : false;
 
+      canSubmit = canSubmit || tabs.some(function (tab) {
+        return tab.canSubmit && tab.canSubmit();
+      });
+
       // check if user has changed any attribute or added a comment
       if (vm.isMode('edit')) {
-        canSubmit = canSubmit && (vm.haveCommentsBeenUpdated || hasRequestChanged());
+        canSubmit = canSubmit || hasRequestChanged();
       }
 
       // check if manager has changed status
@@ -501,6 +506,9 @@ define([
       );
 
       $scope.$on('$destroy', unsubscribeFromEvents);
+      $scope.$on('LeaveRequestPopup::addTab', function (event, tab) {
+        tabs.push(tab);
+      });
     }
 
     /**

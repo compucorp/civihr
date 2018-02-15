@@ -364,17 +364,38 @@
             });
           });
 
-          describe('when a comment is waiting to be submitted', function () {
-            beforeEach(function () {
-              controller.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
-              controller.checkSubmitConditions.and.returnValue(true);
+          describe('tabs', function () {
+            describe('when a tab can be submitted', function () {
+              beforeEach(function () {
+                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnTrue });
+              });
 
-              controller.haveCommentsBeenUpdated = true;
+              it('allows to submit the leave request', function () {
+                expect(controller.canSubmit()).toBe(true);
+              });
             });
 
-            it('allows to submit the leave request', function () {
-              expect(controller.canSubmit()).toBe(true);
+            describe('when no tabs can be submitted', function () {
+              beforeEach(function () {
+                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+              });
+
+              it('does not allow to submit the leave request', function () {
+                expect(controller.canSubmit()).toBe(false);
+              });
             });
+
+            function returnTrue () {
+              return true;
+            }
+
+            function returnFalse () {
+              return false;
+            }
           });
         });
 
