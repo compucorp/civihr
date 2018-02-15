@@ -3,6 +3,8 @@
 use CRM_Contactaccessrights_BAO_Rights as ContactRights;
 use CRM_Contactaccessrights_Test_Fabricator_Rights as RightsFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
+use CRM_Contactaccessrights_Utils_RightType_Location as LocationRightType;
+use CRM_Contactaccessrights_Utils_RightType_Region as RegionRightType;
 /**
  * Class CRM_Contactaccessrights_BAO_RightsTest
  *
@@ -10,9 +12,9 @@ use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
  */
 class CRM_Contactaccessrights_BAO_RightsTest extends BaseHeadlessTest {
 
-  private $regionEntityType = 'hrjc_region';
+  private $regionEntityType = RegionRightType::TYPE;
 
-  private $locationEntityType = 'hrjc_location';
+  private $locationEntityType = LocationRightType::TYPE;
 
   private $contactRights;
 

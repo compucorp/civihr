@@ -60,9 +60,8 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
    */
   public function get() {
     $actionsGroup = new ActionsGroup($this->getGroupTitle());
-    $hasAccessCivicrm = $this->hasPermission(['access CiviCRM']);
 
-    if (!$hasAccessCivicrm) {
+    if (!$this->hasPermission(['access CiviCRM'])) {
       return $actionsGroup;
     }
 
