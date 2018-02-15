@@ -133,6 +133,8 @@ define([
 
       vm.canManage = vm.isRole('manager') || vm.isRole('admin');
       vm.loading.tab = true;
+
+      $scope.$emit('LeaveRequestPopup::addTab', vm);
       initListeners();
 
       vm.initChildController()

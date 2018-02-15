@@ -19,10 +19,12 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup-files-tab.html';
     }],
     controllerAs: 'filesTab',
-    controller: ['$log', '$rootScope', '$q', 'HR_settings', 'shared-settings', 'OptionGroup', 'FileUpload', 'fileMimeTypes', controller]
+    controller: ['$log', '$q', '$rootScope', '$scope', 'HR_settings',
+      'shared-settings', 'OptionGroup', 'FileUpload', 'fileMimeTypes', controller]
   });
 
-  function controller ($log, $rootScope, $q, HRSettings, sharedSettings, OptionGroup, FileUpload, fileMimeTypes) {
+  function controller ($log, $q, $rootScope, $scope, HRSettings, sharedSettings,
+    OptionGroup, FileUpload, fileMimeTypes) {
     $log.debug('Component: leave-request-popup-files-tab');
 
     var fileExtensions = [];
@@ -94,6 +96,7 @@ define([
 
     (function init () {
       $rootScope.$broadcast('LeaveRequestPopup::childComponent::register');
+      $scope.$emit('LeaveRequestPopup::addTab', vm);
       initListeners();
 
       $q.all([

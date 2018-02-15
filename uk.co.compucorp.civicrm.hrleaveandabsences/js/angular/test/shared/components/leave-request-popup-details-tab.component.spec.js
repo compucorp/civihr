@@ -20,7 +20,7 @@ define([
   'use strict';
 
   describe('leaveRequestPopupDetailsTab', function () {
-    var $componentController, $provide, $q, $log, $rootScope, controller, sharedSettings, LeaveRequestAPI,
+    var $componentController, $provide, $q, $log, $rootScope, $scope, controller, sharedSettings, LeaveRequestAPI,
       AbsenceType, leaveRequest, AbsenceTypeAPI, AbsencePeriodInstance, LeaveRequestInstance, SicknessRequestInstance,
       TOILRequestInstance, OptionGroup, OptionGroupAPIMock, balance, selectedAbsenceType, WorkPatternAPI, EntitlementAPI;
 
@@ -104,6 +104,10 @@ define([
 
         it('is initialized', function () {
           expect($log.debug).toHaveBeenCalled();
+        });
+
+        it('emits an "add tab" event', function () {
+          expect($scope.$emit).toHaveBeenCalledWith('LeaveRequestPopup::addTab', controller);
         });
 
         it('has leave type as "leave"', function () {
@@ -2011,12 +2015,14 @@ define([
      */
     function compileComponent (params) {
       params = params || {};
+      $scope = $rootScope.$new();
 
       addDefaultComponentParams(params);
+      spyOn($scope, '$emit').and.callThrough();
 
       controller = $componentController(
         'leaveRequestPopupDetailsTab',
-        null,
+        { $scope: $scope },
         params
       );
 

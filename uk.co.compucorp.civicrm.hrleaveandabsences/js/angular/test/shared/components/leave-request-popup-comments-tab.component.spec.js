@@ -10,7 +10,7 @@ define([
   'use strict';
 
   describe('leaveRequestPopupCommentsTab', function () {
-    var $componentController, $provide, $log, $rootScope, controller,
+    var $componentController, $provide, $log, $rootScope, $scope, controller,
       leaveRequest, LeaveRequestInstance, OptionGroup, OptionGroupAPIMock,
       SessionMock;
     var managerId = '102';
@@ -39,7 +39,6 @@ define([
       OptionGroup = _OptionGroup_;
 
       spyOn($log, 'debug');
-
       spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
         return OptionGroupAPIMock.valuesOf(name);
       });
@@ -52,6 +51,10 @@ define([
     });
 
     describe('on init', function () {
+      it('triggers an "add tab" event', function () {
+        expect($scope.$emit).toHaveBeenCalledWith('LeaveRequestPopup::addTab', controller);
+      });
+
       describe('comments', function () {
         it('text is empty', function () {
           expect(controller.comment.text).toBe('');
@@ -244,11 +247,18 @@ define([
     });
 
     function compileComponent (canManage, request) {
-      controller = $componentController('leaveRequestPopupCommentsTab', null, {
-        canManage: canManage,
-        mode: 'edit',
-        request: request
-      });
+      $scope = $rootScope.$new();
+      spyOn($scope, '$emit').and.callThrough();
+
+      controller = $componentController('leaveRequestPopupCommentsTab',
+        { $scope: $scope },
+        {
+          $scope: $scope,
+          canManage: canManage,
+          mode: 'edit',
+          request: request
+        }
+      );
       $rootScope.$digest();
     }
   });

@@ -42,6 +42,7 @@ define([
     vm.removeCommentVisibility = removeCommentVisibility;
 
     (function init () {
+      $scope.$emit('LeaveRequestPopup::addTab', vm);
       initWatchers();
       loadCommentsAndContactNames();
       loadLoggedInContactId();
