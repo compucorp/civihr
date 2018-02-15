@@ -1217,6 +1217,48 @@ define([
           expect(controller.request.contact_id).toEqual(leaveRequest.contact_id);
         });
       });
+
+      describe('can submit', function () {
+        describe('when the leave request has all the details parameters defined', function () {
+          beforeEach(function () {
+            var leaveRequest = LeaveRequestInstance.init({
+              from_date: date2016InServerFormat,
+              to_date: date2016InServerFormat,
+              from_date_type: 1,
+              to_date_type: 1,
+              from_date_amount: 1,
+              to_date_amount: 1
+            });
+
+            compileComponent({
+              mode: 'edit',
+              request: leaveRequest
+            });
+          });
+
+          it('allows the request to be submitted', function () {
+            expect(controller.canSubmit()).toBe(true);
+          });
+        });
+
+        describe('when the leave request does not have all details parameters defined', function () {
+          beforeEach(function () {
+            var leaveRequest = LeaveRequestInstance.init({
+              from_date: date2016InServerFormat,
+              to_date: date2016InServerFormat
+            });
+
+            compileComponent({
+              mode: 'edit',
+              request: leaveRequest
+            });
+          });
+
+          it('does not allow the request to be submitted', function () {
+            expect(controller.canSubmit()).toBe(false);
+          });
+        });
+      });
     });
 
     describe('when request type is Sick', function () {
@@ -1533,6 +1575,39 @@ define([
 
           it('shows balance', function () {
             expect(controller.uiOptions.showBalance).toBeTruthy();
+          });
+        });
+      });
+
+      describe('can submit', function () {
+        var toilRequest;
+
+        beforeEach(function () {
+          toilRequest = TOILRequestInstance.init();
+
+          compileComponent({
+            leaveType: 'toil',
+            request: toilRequest,
+            role: 'manager'
+          });
+        });
+
+        describe('when toil request params are defined', function () {
+          beforeEach(function () {
+            toilRequest.from_date = date2016;
+            toilRequest.to_date = date2016To;
+            toilRequest.toil_duration = 10;
+            toilRequest.toil_to_accrue = 1;
+          });
+
+          it('allows the request to be submitted', function () {
+            expect(controller.canSubmit()).toBe(true);
+          });
+        });
+
+        describe('when toil reqest params are not defined', function () {
+          it('does not allow the request to be submitted', function () {
+            expect(controller.canSubmit()).toBe(false);
           });
         });
       });
