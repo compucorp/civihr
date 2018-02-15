@@ -100,10 +100,10 @@ define([
         loadSupportedFileExtensions(),
         loadAttachments()
       ])
-      .then(initFileUploader)
-      .finally(function () {
-        vm.filesLoaded = true;
-      });
+        .then(initFileUploader)
+        .finally(function () {
+          vm.filesLoaded = true;
+        });
     }());
 
     /**
@@ -186,11 +186,11 @@ define([
             mimeTypes[fileExtension.label] = mimeType;
           });
       }))
-      .catch(function () {
-        // if the API calls throws an error or fails, "allowedMimeTypes" will be undefined
-        // hence the default file extension will be set to the uploader in file-upload.js
-        mimeTypes = null;
-      });
+        .catch(function () {
+          // if the API calls throws an error or fails, "allowedMimeTypes" will be undefined
+          // hence the default file extension will be set to the uploader in file-upload.js
+          mimeTypes = null;
+        });
     }
 
     /**
