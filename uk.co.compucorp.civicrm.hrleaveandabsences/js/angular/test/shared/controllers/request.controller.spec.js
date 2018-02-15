@@ -355,8 +355,6 @@
           describe('when a comment is added', function () {
             beforeEach(function () {
               controller.request.comments.push(jasmine.any(Object));
-              controller.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
-              controller.checkSubmitConditions.and.returnValue(true);
             });
 
             it('allows to submit the leave request', function () {
@@ -594,9 +592,6 @@
             }
             // set status id manually as manager would set it on UI
             controller.newStatusOnSave = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
-
-            controller.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
-            controller.checkSubmitConditions.and.returnValue(true);
 
             controller.submit();
           });

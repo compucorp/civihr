@@ -12,7 +12,6 @@ define([
       absencePeriods: '<',
       absenceTypes: '<',
       balance: '=',
-      checkSubmitConditions: '=',
       request: '<',
       isLeaveStatus: '<',
       leaveType: '<',

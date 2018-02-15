@@ -194,13 +194,12 @@ define([
      * @return {Boolean}
      */
     function canSubmit () {
-      var canSubmit = vm.checkSubmitConditions ? vm.checkSubmitConditions() : false;
-
-      canSubmit = canSubmit || tabs.some(function (tab) {
+      // checks if one of the tabs can be submitted
+      var canSubmit = tabs.some(function (tab) {
         return tab.canSubmit && tab.canSubmit();
       });
 
-      // check if user has changed any attribute or added a comment
+      // check if user has changed any attribute
       if (vm.isMode('edit')) {
         canSubmit = canSubmit || hasRequestChanged();
       }

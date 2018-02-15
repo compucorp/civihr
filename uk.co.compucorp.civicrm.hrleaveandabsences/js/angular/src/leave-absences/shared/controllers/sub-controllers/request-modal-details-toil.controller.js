@@ -15,7 +15,7 @@ define([
 
     detailsController.calculateBalanceChange = calculateBalanceChange;
     detailsController.canCalculateChange = canCalculateChange;
-    detailsController.checkSubmitConditions = checkSubmitConditions;
+    detailsController.canSubmit = canSubmit;
     detailsController.clearExpiryDate = clearExpiryDate;
     detailsController.initChildController = initChildController;
     detailsController.onDateChangeExtended = onDateChangeExtended;
@@ -101,7 +101,7 @@ define([
      *
      * @return {Boolean}
      */
-    function checkSubmitConditions () {
+    function canSubmit () {
       return !!detailsController.request.from_date && !!detailsController.request.to_date &&
         !!detailsController.request.toil_duration && !!detailsController.request.toil_to_accrue;
     }

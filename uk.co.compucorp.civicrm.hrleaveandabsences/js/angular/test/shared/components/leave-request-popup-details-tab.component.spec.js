@@ -1362,7 +1362,7 @@ define([
               });
 
               it('does not allow to submit', function () {
-                expect(controller.checkSubmitConditions()).toBeFalsy();
+                expect(controller.canSubmit()).toBeFalsy();
               });
             });
 
@@ -1372,7 +1372,7 @@ define([
               });
 
               it('does not allow to submit', function () {
-                expect(controller.checkSubmitConditions()).toBeTruthy();
+                expect(controller.canSubmit()).toBeTruthy();
               });
             });
           });
@@ -1940,7 +1940,6 @@ define([
      * - {Array} absencePeriods - a list of absence periods. Defaults to all absence periods.
      * - {Array} absenceTypes - a list of absence types. Defaults to all absence types.
      * - {Object} balance - the request balance. Defaults to the globally defined balance.
-     * - {JasmineSpy} checkSubmitConditions - a spy to execute the checkSubmitConditions callback.
      * - {JasmineSpy} isLeaveStatus - a spy to execute the isLeaveStatus callback.
      * - {String} leaveType - the leave absence type. Options are "leave", "sick", "toil". Defaults to "leave".
      * - {Object} period - the currently selected period. Defaults to first period.
@@ -1958,7 +1957,6 @@ define([
         }),
         absenceTypes: absenceTypeData.all().values,
         balance: balance, // balance is set globally
-        checkSubmitConditions: params.checkSubmitConditions,
         isLeaveStatus: params.isLeaveStatus,
         leaveType: 'leave',
         period: absencePeriodData.all().values[0],
@@ -1996,7 +1994,6 @@ define([
           return role === params.role;
         });
 
-      params.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
       params.isLeaveStatus = jasmine.createSpy('isLeaveStatus')
         .and.callFake(function (statusName) {
           return getStatusValueFromName(statusName) === params.request.status_id;
