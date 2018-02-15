@@ -15,6 +15,7 @@ class CRM_HRSampleData_BaseCSVProcessorTest extends \PHPUnit_Framework_TestCase 
   public function setUpHeadless() {
     return \Civi\Test::headless()
       ->install('uk.co.compucorp.civicrm.hrcore')
+      ->install('uk.co.compucorp.civicrm.hrleaveandabsences')
       ->install('org.civicrm.hrjobcontract')
       ->install('com.civicrm.hrjobroles')
       ->install('org.civicrm.hrrecruitment')

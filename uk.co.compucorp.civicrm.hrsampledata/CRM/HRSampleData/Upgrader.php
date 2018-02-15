@@ -145,6 +145,7 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
       'BankDetails' => 'civicrm_value_bank_details',
       'EmergencyContacts' => 'civicrm_value_emergency_contacts',
       'ExtendedDemographics' => 'civicrm_value_extended_demographics',
+      'AbsencePeriod' => 'civicrm_hrleaveandabsences_absence_period',
     ];
 
     foreach($csvFiles as $class => $file) {
