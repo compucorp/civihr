@@ -161,7 +161,7 @@ class CRM_Contactaccessrights_Helper_ContactActionsMenu_ContactAccessActionGroup
   private function getGroupTitle() {
     $groupTitleToolTip = new GroupTitleToolTipItem();
 
-    return 'User Has Access To: ' . $groupTitleToolTip->render();
+    return 'User Has CiviHR Admin Access To: ' . $groupTitleToolTip->render();
   }
 
   /**
