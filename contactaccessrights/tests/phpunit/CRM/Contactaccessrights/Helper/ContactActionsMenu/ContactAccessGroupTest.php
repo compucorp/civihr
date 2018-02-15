@@ -224,6 +224,6 @@ class CRM_Contactaccessrights_Helper_ContactAccessGroupTest extends BaseHeadless
   private function getGroupTitle() {
     $groupTitleToolTip = new GroupTitleToolTipItem();
 
-    return 'User Has Access To: ' . $groupTitleToolTip->render();
+    return 'User Has CiviHR Admin Access To: ' . $groupTitleToolTip->render();
   }
 }
