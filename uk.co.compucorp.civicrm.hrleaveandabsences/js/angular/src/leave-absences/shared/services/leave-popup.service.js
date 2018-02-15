@@ -2,7 +2,9 @@
 
 define([
   'common/lodash',
+  'common/modules/angular-date',
   'leave-absences/shared/modules/services',
+  'common/services/angular-date/date-format',
   'common/services/notification.service',
   'leave-absences/shared/controllers/request.controller'
 ], function (_, services) {
