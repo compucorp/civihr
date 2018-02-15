@@ -24,6 +24,6 @@ class CRM_HRContactActionsMenu_Helper_CommunicationActionGroupTest extends BaseH
     $this->assertInstanceOf(GroupButtonItem::class, $communicationGroupItems[2]);
 
     //check that the group title is correct
-    $this->assertEquals('Communicate:', $communicationGroup->getTitle());
+    $this->assertEquals('Communications:', $communicationGroup->getTitle());
   }
 }
