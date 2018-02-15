@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/absence-period.data',
+  'leave-absences/mocks/data/absence-period.data',
   'common/moment',
   'leave-absences/shared/apis/absence-period.api',
   'leave-absences/shared/modules/shared-settings'

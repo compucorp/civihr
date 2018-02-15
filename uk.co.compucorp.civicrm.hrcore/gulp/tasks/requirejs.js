@@ -5,6 +5,7 @@ var fs = require('fs');
 var gulp = require('gulp');
 var gulpSequence = require('gulp-sequence');
 var path = require('path');
+var replace = require('gulp-replace');
 
 var test = require('../test');
 var utils = require('../utils');
@@ -157,6 +158,33 @@ function requireJsMainTask (cb) {
 }
 
 /**
+ * Changes the sourceMappingURL inside minified files from file path to URL path.
+ * This helps making source map files to be more easily located.
+ *
+ * @param {Function} cb
+ */
+function requireJsSourceMapPath (cb) {
+  var distFolder;
+  var extensionPath = utils.getExtensionPath();
+  var extensionUrl = utils.getExtensionUrlPath();
+
+  // finds /dist folders that are outside /node_modules:
+  distFolder = find.dirSync(/^((?!node_modules).)*\/dist$/, extensionPath).pop();
+
+  gulp.src(path.join(distFolder, '*.min.js'))
+    .pipe(replace(/sourceMappingURL=(.+)/, function (regExpMatch, fileName) {
+      // stores the relative path from the min file to the extension. Ex:
+      // /js/angular/dist/file.min.js
+      var relativeDistFolderPath = this.file.base.replace(extensionPath, '');
+
+      return 'sourceMappingURL=' + path.join(extensionUrl, relativeDistFolderPath, fileName);
+    }))
+    .pipe(gulp.dest(distFolder));
+
+  cb();
+}
+
+/**
  * Sets up and runs the task sequences
  *
  * @param {Function} cb
@@ -170,7 +198,10 @@ function requireJsTask (cb) {
     ], 'requirejs');
 
     if (!utils.hasMainTaskBeenReplaced(sequence)) {
-      sequence.push(utils.spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask));
+      sequence.push(
+        utils.spawnTaskForExtension('requirejs:dependencies', extensionDependenciesTask),
+        utils.spawnTaskForExtension('requirejs:sourceMapPath', requireJsSourceMapPath)
+      );
     }
 
     gulpSequence.apply(null, sequence)(cb);

@@ -1,9 +1,28 @@
+/* globals Event */
+
 var _ = require('lodash');
 var Promise = require('es6-promise').Promise;
 var page = require('./page');
 
 module.exports = (function () {
   return page.extend({
+
+    /**
+     * Selects the days mode for the opened leave request
+     *
+     * @param  {String} mode single|multiple
+     * @return {Promise}
+     */
+    changeRequestDaysMode: function (mode) {
+      var casper = this.casper;
+      var optionIndex = ['multiple', 'single'].indexOf(mode) + 1;
+
+      casper.then(function () {
+        casper.click('[ng-model="detailsTab.uiOptions.multipleDays"]:nth-child(' + optionIndex + ')');
+      });
+
+      return this;
+    },
 
     /**
      * User clicks on the edit/respond action
@@ -26,6 +45,25 @@ module.exports = (function () {
     },
 
     /**
+     * Expands deduction field to show selectors
+     *
+     * @param  {String} type from|to
+     * @return {Promise}
+     */
+    expandDeductionField: function (type) {
+      var casper = this.casper;
+      var fieldSelector = '[ng-switch="detailsTab.uiOptions.times.' + type + '.amountExpanded"] a';
+
+      casper.then(function () {
+        casper.waitForSelector(fieldSelector, function () {
+          casper.click(fieldSelector);
+        });
+      });
+
+      return this;
+    },
+
+    /**
      * Opens the Leave Request Modal for a new request of the given type
      *
      * @param  {String} requestType leave|sickness|toil
@@ -39,7 +77,7 @@ module.exports = (function () {
       var actionButtonSelector = actionDropdownSelector + ' .dropdown-menu a:nth-child(' + requestTypeButtonIndex + ')';
 
       casper.then(function () {
-        casper.click(actionDropdownSelector + ' [uib-dropdown] > button')
+        casper.click(actionDropdownSelector + ' [uib-dropdown] > button');
         casper.waitForSelector(actionButtonSelector, function () {
           casper.click(actionButtonSelector);
           casper.waitUntilVisible('.chr_leave-request-modal__tab .form-group');
@@ -91,11 +129,11 @@ module.exports = (function () {
      * @return {Promise}
      */
     selectRequestAbsenceType: function (absenceTypeLabel) {
-      var absenceTypeSelect, absenceTypeOptionIndex;
+      var absenceTypeSelect;
       var casper = this.casper;
 
       casper.then(function () {
-        casper.evaluate(function(absenceTypeLabel) {
+        casper.evaluate(function (absenceTypeLabel) {
           absenceTypeSelect = document.querySelector('[name=absenceTypeSelect]');
 
           absenceTypeSelect.selectedIndex = _.findIndex(absenceTypeSelect.querySelectorAll('option'), function (option) {
@@ -109,12 +147,51 @@ module.exports = (function () {
     },
 
     /**
+     * Selects a date in the datepicker
+     *
+     * @param  {String} type from|to
+     * @param  {Number} weekPosition eg. 2 for second week in the calendar
+     * @param  {Number} weekDayPosition eg. 1 for Monday or 4 for Thursday
+     * @return {Promise}
+     */
+    selectRequestDate: function (type, weekPosition, weekDayPosition) {
+      var casper = this.casper;
+      var daySelector = '.uib-daypicker tr:nth-child(' +
+        weekPosition + ') td:nth-child( ' + weekDayPosition + ') button';
+
+      casper.then(function () {
+        casper.click('[ng-model="detailsTab.uiOptions.' + type + 'Date"]');
+        casper.waitForSelector(daySelector, function () {
+          casper.click(daySelector);
+          casper.waitUntilVisible('[ng-switch="detailsTab.uiOptions.times.' + type + '.amountExpanded"]');
+        });
+      });
+
+      return this;
+    },
+
+    /**
      * Wait for the page to be ready
      *
      * @return {Object} this object
      */
     waitForReady: function () {
       this.waitUntilVisible('td[ng-click="report.toggleSection(\'pending\')"]');
+    },
+
+    /**
+     * Waits for the request balance to be calculated
+     *
+     * @return {Promise}
+     */
+    waitUntilRequestBalanceIsCalculated: function () {
+      var casper = this.casper;
+
+      casper.then(function () {
+        casper.waitUntilVisible('[ng-show="detailsTab.uiOptions.showBalance"]');
+      });
+
+      return this;
     }
   });
 })();

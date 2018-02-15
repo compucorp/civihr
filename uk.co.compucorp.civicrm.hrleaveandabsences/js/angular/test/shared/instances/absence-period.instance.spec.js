@@ -2,7 +2,7 @@
 
 define([
   'common/lodash',
-  'mocks/data/absence-period.data',
+  'leave-absences/mocks/data/absence-period.data',
   'leave-absences/shared/instances/absence-period.instance',
   'common/mocks/services/hr-settings-mock'
 ], function (_, mockData) {

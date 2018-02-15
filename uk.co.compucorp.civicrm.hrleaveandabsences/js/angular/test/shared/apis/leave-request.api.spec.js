@@ -3,11 +3,11 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/leave-request.data',
-  'mocks/data/sickness-leave-request.data',
-  'mocks/data/toil-leave-request.data',
-  'mocks/data/comments.data',
-  'mocks/helpers/helper',
+  'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/mocks/data/sickness-leave-request.data',
+  'leave-absences/mocks/data/toil-leave-request.data',
+  'leave-absences/mocks/data/comments.data',
+  'leave-absences/mocks/helpers/helper',
   'leave-absences/shared/apis/leave-request.api',
   'leave-absences/shared/modules/shared-settings'
 ], function (_, moment, mockData, sicknessMockData, toilMockData, commentsData, helper) {

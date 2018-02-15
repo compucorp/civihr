@@ -146,6 +146,24 @@ $row-margin-bottom: 15px;
   z-index: 2;
 }
 
+.chr_leave-request-modal__small-text {
+  font-size: 80%;
+}
+
+.chr_leave-request-modal__custom-deduction-toggling-row {
+  margin-top: -5px; // The toggling row needs to look "attached" to the row above it
+}
+
+.chr_leave-request-modal__custom-deduction-label {
+  @media screen and (min-width: $screen-xs-max + 1px) {
+    text-align: right;
+  }
+  @media screen and (max-width: $screen-xs-max) {
+    margin-bottom: 10px;
+  }
+}
+
+
 /*
  * This is a temporary patch which fixes CSS in the modal
  * @TODO remove this patch when Shoreditch theme is migrated to SSP

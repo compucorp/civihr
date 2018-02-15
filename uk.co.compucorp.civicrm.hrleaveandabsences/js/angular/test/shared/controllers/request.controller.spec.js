@@ -4,19 +4,19 @@
   define([
     'common/lodash',
     'common/moment',
-    'mocks/data/option-group.data',
-    'mocks/data/leave-request.data',
-    'mocks/helpers/helper',
+    'leave-absences/mocks/data/option-group.data',
+    'leave-absences/mocks/data/leave-request.data',
+    'leave-absences/mocks/helpers/helper',
     'common/modules/dialog',
     'leave-absences/shared/config',
     'common/mocks/services/hr-settings-mock',
     'common/mocks/services/file-uploader-mock',
-    'mocks/apis/absence-period-api-mock',
-    'mocks/apis/absence-type-api-mock',
-    'mocks/apis/entitlement-api-mock',
-    'mocks/apis/work-pattern-api-mock',
-    'mocks/apis/leave-request-api-mock',
-    'mocks/apis/option-group-api-mock',
+    'leave-absences/mocks/apis/absence-period-api-mock',
+    'leave-absences/mocks/apis/absence-type-api-mock',
+    'leave-absences/mocks/apis/entitlement-api-mock',
+    'leave-absences/mocks/apis/work-pattern-api-mock',
+    'leave-absences/mocks/apis/leave-request-api-mock',
+    'leave-absences/mocks/apis/option-group-api-mock',
     'common/mocks/services/api/contact-mock',
     'common/services/pub-sub',
     'leave-absences/shared/modules/shared-settings'
@@ -160,9 +160,9 @@
             });
 
             it('gets absence types with false sick param', function () {
-              expect(AbsenceTypeAPI.all).toHaveBeenCalledWith({
+              expect(AbsenceTypeAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
                 is_sick: false
-              });
+              }));
             });
 
             it('allows to change absence type', function () {
@@ -298,9 +298,9 @@
                 expect(pubSub.publish).toHaveBeenCalledWith('LeaveRequest::new', controller.request);
               });
 
-              it('does not send kek in hours parameters to the server', function () {
+              it('does not send leave in hours parameters to the server', function () {
                 expect(controller.request['from_date_amount']).not.toBeDefined();
-                expect(controller.request['from_date_amount']).not.toBeDefined();
+                expect(controller.request['to_date_amount']).not.toBeDefined();
               });
             });
 
