@@ -1,11 +1,11 @@
 <?php
 
-use CRM_HRContactActionsMenu_Component_GenericTooltipItem as GenericTooltipItem;
+use CRM_HRContactActionsMenu_Component_GenericToolTipItem as GenericToolTipItem;
 
 /**
  * Class CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipTextItem
  */
-class CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipItem extends GenericTooltipItem {
+class CRM_Contactaccessrights_Component_ContactActionsMenu_GroupTitleToolTipItem extends GenericToolTipItem {
 
   /**
    * Returns the Tooltip Text.

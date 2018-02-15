@@ -2,7 +2,7 @@
 
 use CRM_HRContactActionsMenu_Component_GroupItem as ActionsGroupItemInterface;
 
-abstract class CRM_HRContactActionsMenu_Component_GenericTooltipItem implements ActionsGroupItemInterface {
+abstract class CRM_HRContactActionsMenu_Component_GenericToolTipItem implements ActionsGroupItemInterface {
 
   /**
    * {@inheritdoc}
