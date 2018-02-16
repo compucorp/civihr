@@ -197,7 +197,7 @@ function hrcontactactionsmenu_civicrm_alterSettingsFolders(&$metaDataFolders = N
  * @return bool
  */
 function _hrcontactactionsmenu_get_is_user_disabled($contactInfo) {
-  if(empty($contactInfo['id'])) {
+  if(empty($contactInfo['cmsId'])) {
     return false;
   }
   $userAccount = UserAccountFactory::create();

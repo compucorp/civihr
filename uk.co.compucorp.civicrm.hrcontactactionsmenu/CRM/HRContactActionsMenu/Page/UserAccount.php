@@ -13,7 +13,7 @@ class CRM_HRContactActionsMenu_Page_UserAccount {
    * contact.
    */
   public static function delete() {
-    self::doUserAction('delete', 'User account has been deleted');
+    self::doUserAction('cancel', 'User account has been deleted');
   }
 
   /**
