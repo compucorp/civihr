@@ -783,15 +783,17 @@ define([
       return _.compact(absenceTypes.map(function (absenceType) {
         entitlement = _.find(entitlements, { type_id: absenceType.id });
 
-        if (entitlement) {
-          return {
-            id: entitlement.type_id,
-            title: absenceType.title + ' ( ' + entitlement.remainder.current + ' ) ',
-            remainder: entitlement.remainder.current,
-            allow_overuse: absenceType.allow_overuse,
-            calculation_unit_name: absenceType.calculation_unit_name
-          };
+        if (!entitlement) {
+          return;
         }
+
+        return {
+          id: entitlement.type_id,
+          title: absenceType.title + ' ( ' + entitlement.remainder.current + ' ) ',
+          remainder: entitlement.remainder.current,
+          allow_overuse: absenceType.allow_overuse,
+          calculation_unit_name: absenceType.calculation_unit_name
+        };
       }));
     }
 

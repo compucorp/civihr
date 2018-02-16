@@ -76,7 +76,8 @@ define([
      * @return {String}
      */
     function formatDateTime (dateTime) {
-      return moment.utc(dateTime, sharedSettings.serverDateTimeFormat).local()
+      return moment
+        .utc(dateTime, sharedSettings.serverDateTimeFormat).local()
         .format(HRSettings.DATE_FORMAT.toUpperCase() + ' HH:mm');
     }
 
@@ -184,11 +185,13 @@ define([
     function loadLoggedInContactId () {
       vm.loading.component = true;
 
-      return Session.get().then(function (value) {
-        loggedInContactId = value.contactId;
-      }).then(function () {
-        vm.loading.component = false;
-      });
+      return Session.get()
+        .then(function (value) {
+          loggedInContactId = value.contactId;
+        })
+        .then(function () {
+          vm.loading.component = false;
+        });
     }
   }
 });
