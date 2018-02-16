@@ -148,7 +148,7 @@ define([
       });
     });
 
-    describe('when the request is about to be saved', function () {
+    describe('when submitting the tab', function () {
       beforeEach(function () {
         spyOn(controller, 'addComment');
       });
@@ -156,7 +156,7 @@ define([
       describe('when there are comments waiting to be added', function () {
         beforeEach(function () {
           controller.comment.text = 'Request comment';
-          $rootScope.$broadcast('LeaveRequest::beforeSaving');
+          controller.submit();
         });
 
         it('stores the comment before the request is saved', function () {
@@ -167,7 +167,7 @@ define([
       describe('when there are not comments to add', function () {
         beforeEach(function () {
           controller.comment.text = '';
-          $rootScope.$broadcast('LeaveRequest::beforeSaving');
+          controller.submit();
         });
 
         it('does not store the comment', function () {

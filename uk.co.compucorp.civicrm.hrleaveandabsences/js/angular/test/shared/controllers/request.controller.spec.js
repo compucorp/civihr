@@ -99,7 +99,13 @@
         spyOn(EntitlementAPI, 'all').and.callThrough();
 
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
-        requiredTab = { isRequired: true, canSubmit: function () { return true; } };
+        requiredTab = {
+          isRequired: true,
+          canSubmit: function () {
+            return true;
+          },
+          submit: jasmine.createSpy('submit').and.returnValue($q.resolve())
+        };
       }));
 
       describe('staff opens request popup', function () {
@@ -276,15 +282,20 @@
             });
 
             describe('basic tests', function () {
-              var hasCalledRequestCreateMethod;
+              var hasCalledRequestCreateMethod, nonRequiredTab;
 
               beforeEach(function () {
-                spyOn($scope, '$broadcast').and.callThrough();
+                nonRequiredTab = {
+                  submit: jasmine.createSpy('submit').and.returnValue($q.resolve())
+                };
 
-                $scope.$on('LeaveRequest::beforeSaving', function () {
+                requiredTab.submit.and.callFake(function () {
                   hasCalledRequestCreateMethod = LeaveRequestAPI.create.calls.count() > 0;
-                });
 
+                  return $q.resolve();
+                });
+                $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
+                $scope.$emit('LeaveRequestPopup::addTab', nonRequiredTab);
                 controller.submit();
                 $scope.$digest();
               });
@@ -294,11 +305,12 @@
                 expect(controller.request.id).toBeDefined();
               });
 
-              it('broadcasts a "before saving" event', function () {
-                expect($scope.$broadcast).toHaveBeenCalledWith('LeaveRequest::beforeSaving');
+              it('submits all tabs', function () {
+                expect(requiredTab.submit).toHaveBeenCalled();
+                expect(nonRequiredTab.submit).toHaveBeenCalled();
               });
 
-              it('broadcasts the "before saving" event before the request has been created', function () {
+              it('submits all tabs before saving the request', function () {
                 expect(hasCalledRequestCreateMethod).toBe(false);
               });
 
@@ -314,6 +326,19 @@
               it('does not send leave in hours parameters to the server', function () {
                 expect(controller.request['from_date_amount']).not.toBeDefined();
                 expect(controller.request['to_date_amount']).not.toBeDefined();
+              });
+
+              describe('when one of the tabs fails to submit', function () {
+                beforeEach(function () {
+                  nonRequiredTab.submit.and.returnValue($q.reject());
+                  LeaveRequestAPI.create.calls.reset();
+                  controller.submit();
+                  $scope.$digest();
+                });
+
+                it('does not save the leave request', function () {
+                  expect(LeaveRequestAPI.create).not.toHaveBeenCalled();
+                });
               });
             });
 

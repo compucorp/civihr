@@ -40,10 +40,10 @@ define([
     vm.isMode = isMode;
     vm.orderComment = orderComment;
     vm.removeCommentVisibility = removeCommentVisibility;
+    vm.submit = submit;
 
     (function init () {
       $scope.$emit('LeaveRequestPopup::addTab', vm);
-      initWatchers();
       loadCommentsAndContactNames();
       loadLoggedInContactId();
     }());
@@ -106,16 +106,13 @@ define([
     }
 
     /**
-     * Initializes the component's watchers:
-     * - LeaveRequest::beforeSaving before saving the request, it makes sure to
-     * add comments that were waiting to be submitted.
+     * When submitting the tab, if there are comments waiting to be added, it
+     * automatically adds them to the request.
      */
-    function initWatchers () {
-      $scope.$on('LeaveRequest::beforeSaving', function () {
-        if (vm.comment.text.length) {
-          vm.addComment();
-        }
-      });
+    function submit () {
+      if (vm.comment.text.length) {
+        vm.addComment();
+      }
     }
 
     /**

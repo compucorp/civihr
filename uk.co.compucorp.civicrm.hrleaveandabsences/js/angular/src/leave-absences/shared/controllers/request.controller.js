@@ -922,9 +922,7 @@ define([
       return vm.request.isValid()
         .then(checkIfBalanceChangeHasChanged)
         .then(decideIfBalanceChangeNeedsAForceRecalculation)
-        .then(function () {
-          $scope.$broadcast('LeaveRequest::beforeSaving');
-        })
+        .then(submitAllTabs)
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
         })
@@ -936,6 +934,17 @@ define([
         .finally(function () {
           vm.submitting = false;
         });
+    }
+
+    /**
+     * Submits all tabs and returns a promise of the result.
+     *
+     * @return {Promise}
+     */
+    function submitAllTabs () {
+      return $q.all(tabs.map(function (tab) {
+        return tab.submit && tab.submit();
+      }));
     }
 
     /**
