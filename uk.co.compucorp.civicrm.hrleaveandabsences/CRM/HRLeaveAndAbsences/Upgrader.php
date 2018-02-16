@@ -23,6 +23,7 @@ class CRM_HRLeaveAndAbsences_Upgrader extends CRM_HRLeaveAndAbsences_Upgrader_Ba
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1015;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1016;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1017;
+  use CRM_HRLeaveAndAbsences_Upgrader_Step_1018;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1019;
 
   /**

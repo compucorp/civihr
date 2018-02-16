@@ -1,5 +1,7 @@
 <?php
 
+use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
+
 trait CRM_HRUI_Upgrader_Steps_4701 {
   /**
    * Adds Custom Inline Data group for fields to be shown within contact details
@@ -43,7 +45,7 @@ trait CRM_HRUI_Upgrader_Steps_4701 {
     $createResult = civicrm_api3('CustomField', 'create', $fieldData);
     $niSSNField = array_shift($createResult['values']);
 
-    $isEnabled = _hrui_is_extension_enabled('org.civicrm.hrident');
+    $isEnabled = ExtensionHelper::isExtensionEnabled('org.civicrm.hrident');
 
     if (!$isEnabled) {
       return TRUE;
