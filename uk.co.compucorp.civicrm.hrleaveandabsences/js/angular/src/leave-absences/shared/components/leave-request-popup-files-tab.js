@@ -38,13 +38,13 @@ define([
     vm.userDateFormat = HRSettings.DATE_FORMAT;
 
     vm.$onDestroy = unsubscribeFromEvents;
+    vm.canRemoveAttachment = canRemoveAttachment;
     vm.canSubmit = canSubmit;
     vm.canUploadMore = canUploadMore;
     vm.formatDateTime = formatDateTime;
     vm.getAuthorName = getAuthorName;
-    vm.getFilesCount = getFilesCount;
+    vm.getFilesAmount = getFilesAmount;
     vm.listFileTypes = listFileTypes;
-    vm.removeAttachmentVisibility = removeAttachmentVisibility;
 
     (function init () {
       $rootScope.$broadcast('LeaveRequestPopup::childComponent::register');
@@ -71,13 +71,47 @@ define([
     }
 
     /**
-     * Checks if user can upload more file, it totals the number of already
-     * uploaded files and those which are in queue and compares it to limit.
+     * Checks if the total of already uploaded and queued files does not exceed
+     * the allowed limit
      *
      * @return {Boolean} true is user can upload more else false
      */
     function canUploadMore () {
-      return vm.getFilesCount() < sharedSettings.fileUploader.queueLimit;
+      return vm.getFilesAmount() < sharedSettings.fileUploader.queueLimit;
+    }
+
+    /**
+     * Format a date-time into user format and returns
+     *
+     * @return {String}
+     */
+    function formatDateTime (dateTime) {
+      return moment(dateTime, sharedSettings.serverDateTimeFormat)
+        .format(vm.userDateFormat.toUpperCase() + ' HH:mm');
+    }
+
+    /**
+     * Returns the attachment author name
+     *
+     * @param {String} contactId
+     * @return {String}
+     */
+    function getAuthorName (contactId) {
+      // @TODO Author name cannot be fetched for already uploaded attachments
+      // as the attachment API does not support saving the contact id
+      return (contactId === vm.request.contact_id ? 'Me -' : '');
+    }
+
+    /**
+     * Calculates the total number of files associated with request.
+     *
+     * @return {Number} of files
+     */
+    function getFilesAmount () {
+      var filesToDelete = getFilesMarkedForDeletion();
+      var queue = getFileUploaderQueue();
+
+      return vm.request.files.length + queue.length - filesToDelete.length;
     }
 
     /**
@@ -85,7 +119,7 @@ define([
      *
      * @return {Array}
      */
-    function filesMarkedForDeletion () {
+    function getFilesMarkedForDeletion () {
       return _.filter(vm.request.files, function (file) {
         return file.toBeDeleted;
       });
@@ -96,45 +130,10 @@ define([
      *
      * @return {Array}
      */
-    function fileUploaderQueue () {
+    function getFileUploaderQueue () {
       return (vm.fileUploader && vm.fileUploader.queue)
         ? vm.fileUploader.queue
         : [];
-    }
-
-    /**
-     * Format a date-time into user format and returns
-     *
-     * @return {String}
-     */
-    function formatDateTime (dateTime) {
-      return moment(dateTime, sharedSettings.serverDateTimeFormat).format(vm.userDateFormat.toUpperCase() + ' HH:mm');
-    }
-
-    /**
-     * Returns the attachment author name
-     * @param {String} contactId
-     *
-     * @return {String}
-     */
-    function getAuthorName (contactId) {
-      // @TODO Author name cannot be fetched for already uploaded attachments
-      // as the attachment API does not support saving the contact id
-      if (contactId === vm.request.contact_id) {
-        return 'Me -';
-      }
-    }
-
-    /**
-     * Calculates the total number of files associated with request.
-     *
-     * @return {Number} of files
-     */
-    function getFilesCount () {
-      var filesToDelete = filesMarkedForDeletion();
-      var queue = fileUploaderQueue();
-
-      return vm.request.files.length + queue.length - filesToDelete.length;
     }
 
     /**
@@ -215,12 +214,13 @@ define([
     }
 
     /**
-     * Decides visibility of remove attachment button
-     * @param {Object} attachment - attachment object
+     * Returns true if the attachment can be removed because it has not yet been
+     * saved or because the user can manage the request.
      *
+     * @param {Object} attachment - attachment object
      * @return {Boolean}
      */
-    function removeAttachmentVisibility (attachment) {
+    function canRemoveAttachment (attachment) {
       return !attachment.attachment_id || vm.canManage;
     }
 

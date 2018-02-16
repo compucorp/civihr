@@ -33,12 +33,12 @@ define([
     };
 
     vm.addComment = addComment;
+    vm.canRemoveComment = canRemoveComment;
     vm.canSubmit = canSubmit;
     vm.formatDateTime = formatDateTime;
     vm.getActiveComments = getActiveComments;
     vm.getCommentorName = getCommentorName;
     vm.isMode = isMode;
-    vm.canRemoveComment = canRemoveComment;
     vm.submit = submit;
 
     (function init () {
