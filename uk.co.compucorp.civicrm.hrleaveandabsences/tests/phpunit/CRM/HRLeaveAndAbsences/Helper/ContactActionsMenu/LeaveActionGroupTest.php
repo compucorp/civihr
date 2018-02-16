@@ -20,14 +20,15 @@ class CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroupTest exte
     $leaveActionGroupHelper = new LeaveActionGroupHelper($leaveManagerService->reveal(), $contactID);
     $leaveActionGroup = $leaveActionGroupHelper->get();
 
-    //When user has no leave approver, seven items are expected,
-    //Record Leave, Record Sickness, Record Overtime, View Entitlements buttons,
-    //No Leave Approver Text Item and Add Leave Approver button with a separator item.
+    //When user has no leave approver, eight items are expected,
+    //Record Leave, Record Sickness, Record Overtime, Separator Item,
+    //View Entitlements buttons, Separator Item,
+    //No Leave Approver Text Item and Add Leave Approver button
     $leaveActionGroupItems = $leaveActionGroup->getItems();
-    $this->assertCount(7, $leaveActionGroupItems);
+    $this->assertCount(8, $leaveActionGroupItems);
     $this->assertDefaultLeaveGroupItems($leaveActionGroupItems);
-    $this->assertInstanceOf(ParagraphItem::class, $leaveActionGroupItems[5]);
-    $this->assertInstanceOf(GroupButtonItem::class, $leaveActionGroupItems[6]);
+    $this->assertInstanceOf(ParagraphItem::class, $leaveActionGroupItems[6]);
+    $this->assertInstanceOf(GroupButtonItem::class, $leaveActionGroupItems[7]);
 
     //check that the group title is correct
     $this->assertEquals('Leave:', $leaveActionGroup->getTitle());
@@ -40,15 +41,15 @@ class CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroupTest exte
     $leaveActionGroupHelper = new LeaveActionGroupHelper($leaveManagerService->reveal(), $contactID);
     $leaveActionGroup = $leaveActionGroupHelper->get();
 
-    //When user has no leave approver, seven items are expected,
-    //Record Leave, Record Sickness, Record Overtime, View Entitlements buttons,
-    //Leave Approvers List and Manage Leave Approver button with a separator item.
-    //When user has no line manager, nine items are expected,
+    //When user has leave approver, eight items are expected,
+    //Record Leave, Record Sickness, Record Overtime, Separator Item,
+    //View Entitlements button, Separator Item,
+    //Leave Approvers List and Manage Leave Approver button.
     $leaveActionGroupItems = $leaveActionGroup->getItems();
-    $this->assertCount(7, $leaveActionGroupItems);
+    $this->assertCount(8, $leaveActionGroupItems);
     $this->assertDefaultLeaveGroupItems($leaveActionGroupItems);
-    $this->assertInstanceOf(LeaveApproversListItem::class, $leaveActionGroupItems[5]);
-    $this->assertInstanceOf(GroupButtonItem::class, $leaveActionGroupItems[6]);
+    $this->assertInstanceOf(LeaveApproversListItem::class, $leaveActionGroupItems[6]);
+    $this->assertInstanceOf(GroupButtonItem::class, $leaveActionGroupItems[7]);
 
     //check that the group title is correct
     $this->assertEquals('Leave:', $leaveActionGroup->getTitle());
@@ -58,7 +59,8 @@ class CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroupTest exte
     $this->assertInstanceOf(GroupButtonItem::class, $leaveActionGroupItems[0]);
     $this->assertInstanceOf(GroupButtonItem::class, $leaveActionGroupItems[1]);
     $this->assertInstanceOf(GroupButtonItem::class, $leaveActionGroupItems[2]);
-    $this->assertInstanceOf(GroupButtonItem::class, $leaveActionGroupItems[3]);
-    $this->assertInstanceOf(GroupSeparatorItem::class, $leaveActionGroupItems[4]);
+    $this->assertInstanceOf(GroupSeparatorItem::class, $leaveActionGroupItems[3]);
+    $this->assertInstanceOf(GroupButtonItem::class, $leaveActionGroupItems[4]);
+    $this->assertInstanceOf(GroupSeparatorItem::class, $leaveActionGroupItems[5]);
   }
 }
