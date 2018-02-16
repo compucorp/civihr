@@ -162,7 +162,7 @@ define([
      *
      * @return {Boolean}
      */
-    function canAllRequiredTabsSubmit () {
+    function canAllRequiredTabsBeSubmitted () {
       return tabs.filter(function (tab) {
         return tab.isRequired;
       }).every(function (tab) {
@@ -175,7 +175,7 @@ define([
      *
      * @return {Boolean}
      */
-    function canAnyNonRequiredTabSubmit () {
+    function canAnyNonRequiredTabBeSubmitted () {
       return tabs.filter(function (tab) {
         return !tab.isRequired;
       }).some(function (tab) {
@@ -219,11 +219,11 @@ define([
      */
     function canSubmit () {
       // checks if one of the tabs can be submitted
-      var canSubmit = canAllRequiredTabsSubmit();
+      var canSubmit = canAllRequiredTabsBeSubmitted();
 
       // check if user has changed any attribute
       if (vm.isMode('edit')) {
-        canSubmit = canSubmit && (hasRequestChanged() || canAnyNonRequiredTabSubmit());
+        canSubmit = canSubmit && (hasRequestChanged() || canAnyNonRequiredTabBeSubmitted());
       }
 
       // check if manager has changed status
