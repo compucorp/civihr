@@ -10,7 +10,9 @@
     "url": "https://github.com/civicrm/civihr/issues"
   },
   "scripts": {
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "postinstall": "npm run sub-install",
+    "sub-install": "for folder in ./*; do if [ -d $folder ] && [ -e \"${folder}/package.json\" ]; then pushd $folder; npm i; popd >> /dev/null; fi done"
   },
   "lint-staged": {
     "*.js": [
