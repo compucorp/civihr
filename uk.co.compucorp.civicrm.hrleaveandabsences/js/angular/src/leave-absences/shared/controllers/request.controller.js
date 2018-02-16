@@ -48,8 +48,6 @@ define([
     vm.canManage = false; // vm flag is set on initialisation of the controller
     vm.contactName = null; // contact name of the owner of leave request
     vm.errors = [];
-    vm.fileUploader = null;
-    vm.haveCommentsBeenUpdated = false;
     vm.loading = { absenceTypes: true, entitlements: true };
     vm.managedContacts = [];
     vm.mode = ''; // can be edit, create, view
@@ -407,8 +405,7 @@ define([
       return !angular.equals(
         initialLeaveRequestAttributes,
         vm.request.attributes()
-      ) || (vm.fileUploader && vm.fileUploader.queue.length !== 0) ||
-        (vm.canManage && vm.newStatusOnSave);
+      ) || (vm.canManage && vm.newStatusOnSave);
     }
 
     /**

@@ -10,7 +10,6 @@ define([
   components.component('leaveRequestPopupCommentsTab', {
     bindings: {
       canManage: '<',
-      haveCommentsBeenUpdated: '=',
       mode: '<',
       request: '<'
     },
@@ -34,6 +33,7 @@ define([
     };
 
     vm.addComment = addComment;
+    vm.canSubmit = canSubmit;
     vm.formatDateTime = formatDateTime;
     vm.getActiveComments = getActiveComments;
     vm.getCommentorName = getCommentorName;
@@ -58,6 +58,16 @@ define([
         text: vm.comment.text
       });
       vm.comment.text = '';
+    }
+
+    /**
+     * Allows the user to submit the request if there is a comment waiting to be
+     * added.
+     *
+     * @return {Boolean}
+     */
+    function canSubmit () {
+      return vm.comment.text.length > 0;
     }
 
     /**

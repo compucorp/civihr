@@ -126,6 +126,28 @@ define([
       });
     });
 
+    describe('can submit', function () {
+      describe('when the comment box has text', function () {
+        beforeEach(function () {
+          controller.comment.text = 'Request comment';
+        });
+
+        it('allows the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(true);
+        });
+      });
+
+      describe('when the comment box does not have text', function () {
+        beforeEach(function () {
+          controller.comment.text = '';
+        });
+
+        it('does not allow the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(false);
+        });
+      });
+    });
+
     describe('when the request is about to be saved', function () {
       beforeEach(function () {
         spyOn(controller, 'addComment');

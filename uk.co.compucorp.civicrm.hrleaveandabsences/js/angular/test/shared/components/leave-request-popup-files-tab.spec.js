@@ -74,6 +74,28 @@ define([
       });
     });
 
+    describe('can submit', function () {
+      describe('when files have been queued for uploading', function () {
+        beforeEach(function () {
+          controller.fileUploader.queue = [1, 2, 3];
+        });
+
+        it('allows the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(true);
+        });
+      });
+
+      describe('when files have not been queued for uploading', function () {
+        beforeEach(function () {
+          controller.fileUploader.queue = [];
+        });
+
+        it('does not allow the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(false);
+        });
+      });
+    });
+
     function compileComponent (canManage, request) {
       $scope = $rootScope.$new();
       spyOn($scope, '$emit').and.callThrough();

@@ -163,10 +163,6 @@
               expect(controller.canChangeAbsenceType()).toBeTruthy();
             });
 
-            it('sets have comments been updated equal to false', function () {
-              expect(controller.haveCommentsBeenUpdated).toBe(false);
-            });
-
             describe('leave request instance', function () {
               it('has new instance created', function () {
                 expect(controller.request).toEqual(jasmine.any(Object));
@@ -340,7 +336,6 @@
             var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-            leaveRequest.fileUploader = { queue: [] };
 
             initTestController({
               mode: 'edit',
@@ -443,7 +438,6 @@
               leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-              leaveRequest.fileUploader = { queue: [] };
 
               spyOn(controller.request, 'update').and.callThrough();
               initTestController({ leaveRequest: leaveRequest });
@@ -545,7 +539,6 @@
           var waitingApprovalStatus;
 
           beforeEach(function () {
-            controller.request.fileUploader = { queue: [] };
             waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
           });
 

@@ -11,7 +11,6 @@ define([
   components.component('leaveRequestPopupFilesTab', {
     bindings: {
       canManage: '<',
-      fileUploader: '=',
       mode: '<',
       request: '<'
     },
@@ -31,11 +30,14 @@ define([
     var listeners = [];
     var mimeTypes = {};
     var vm = Object.create(this);
+
     vm.filesLoaded = false;
+    vm.fileUploader = null;
     vm.today = Date.now();
     vm.userDateFormatWithTime = HRSettings.DATE_FORMAT + ' HH:mm';
     vm.userDateFormat = HRSettings.DATE_FORMAT;
 
+    vm.canSubmit = canSubmit;
     vm.listFileTypes = listFileTypes;
     vm.$onDestroy = unsubscribeFromEvents;
 
@@ -108,6 +110,15 @@ define([
           vm.filesLoaded = true;
         });
     }());
+
+    /**
+     * Allows the user to submit the request if files are waiting to be uploaded.
+     *
+     * @return {Boolean}
+     */
+    function canSubmit () {
+      return vm.fileUploader && vm.fileUploader.queue.length > 0;
+    }
 
     /**
      * Returns an array of files marked for deletion
