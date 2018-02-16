@@ -29,8 +29,9 @@ class CRM_HRLeaveAndAbsences_Component_ContactActionsMenu_LeaveApproversListItem
   public function render() {
     $markup = '<h4>Leave Approver(s): </h4>';
 
-    foreach($this->leaveApprovers as $leaveApprover) {
-      $markup .= '<p><a href="#" class="text-primary"> ' . $leaveApprover . ' </a></p>';
+    foreach($this->leaveApprovers as $contactID => $contactName) {
+      $markup .= '<p><a href="/civicrm/contact/view?reset=1&cid=' . $contactID . '" class="text-primary"> 
+        ' . $contactName . ' </a></p>';
     }
 
     return $markup;
