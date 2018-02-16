@@ -38,8 +38,7 @@ define([
     vm.getActiveComments = getActiveComments;
     vm.getCommentorName = getCommentorName;
     vm.isMode = isMode;
-    vm.orderComment = orderComment;
-    vm.removeCommentVisibility = removeCommentVisibility;
+    vm.canRemoveComment = canRemoveComment;
     vm.submit = submit;
 
     (function init () {
@@ -49,7 +48,7 @@ define([
     }());
 
     /**
-     * Add a comment into comments array, also clears the comments textbox
+     * Adds a comment into comments array and also clears the comments textbox
      */
     function addComment () {
       vm.request.comments.push({
@@ -111,38 +110,28 @@ define([
      * automatically adds them to the request.
      */
     function submit () {
-      if (vm.comment.text.length) {
-        vm.addComment();
-      }
+      (vm.comment.text.length) && vm.addComment();
     }
 
     /**
      * Checks if popup is opened in given mode
      *
-     * @param {String} modeParam to open leave request like edit or view or create
+     * @param {String} mode to open leave request like edit or view or create
      * @return {Boolean}
      */
-    function isMode (modeParam) {
-      return vm.mode === modeParam;
+    function isMode (mode) {
+      return vm.mode === mode;
     }
 
     /**
-     * Orders comment, used as a angular filter
-     * @param {Object} comment
+     * Determines if a comment can be deleted when the comment has not been saved
+     * or if the user can manage the request and has permission to remove the
+     * comments.
      *
-     * @return {Date}
-     */
-    function orderComment (comment) {
-      return moment(comment.created_at, sharedSettings.serverDateTimeFormat);
-    }
-
-    /**
-     * Decides visiblity of remove comment button
      * @param {Object} comment - comment object
-     *
      * @return {Boolean}
      */
-    function removeCommentVisibility (comment) {
+    function canRemoveComment (comment) {
       return !comment.comment_id || vm.canManage;
     }
 
@@ -186,8 +175,8 @@ define([
       vm.loading.component = true;
 
       return Session.get()
-        .then(function (value) {
-          loggedInContactId = value.contactId;
+        .then(function (session) {
+          loggedInContactId = session.contactId;
         })
         .then(function () {
           vm.loading.component = false;

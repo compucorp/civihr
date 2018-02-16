@@ -207,7 +207,7 @@ define([
       });
     });
 
-    describe('removeCommentVisibility()', function () {
+    describe('canRemoveComment()', function () {
       var returnValue;
       var comment = {};
 
@@ -217,7 +217,7 @@ define([
 
           compileComponent(true, leaveRequest);
 
-          returnValue = controller.removeCommentVisibility(comment);
+          returnValue = controller.canRemoveComment(comment);
         });
 
         it('button should be visible', function () {
@@ -231,7 +231,7 @@ define([
 
           compileComponent(true, leaveRequest);
 
-          returnValue = controller.removeCommentVisibility(comment);
+          returnValue = controller.canRemoveComment(comment);
         });
 
         it('button should be visible', function () {
@@ -245,7 +245,7 @@ define([
 
           compileComponent(false, leaveRequest);
 
-          returnValue = controller.removeCommentVisibility(comment);
+          returnValue = controller.canRemoveComment(comment);
         });
 
         it('button should not be visible', function () {
@@ -259,7 +259,7 @@ define([
 
           compileComponent(false, leaveRequest);
 
-          returnValue = controller.removeCommentVisibility(comment);
+          returnValue = controller.canRemoveComment(comment);
         });
 
         it('button should be visible', function () {
