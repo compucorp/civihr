@@ -12,7 +12,7 @@
   "scripts": {
     "precommit": "lint-staged",
     "postinstall": "npm run sub-install",
-    "sub-install": "for folder in ./*; do if [ -d $folder ] && [ -e \"${folder}/package.json\" ]; then pushd $folder; npm i; popd >> /dev/null; fi done"
+    "sub-install": "for folder in ./*; do if [ -d $folder ] && [ -e \"${folder}/package.json\" ]; then cd $folder; npm i; cd ..; fi done"
   },
   "lint-staged": {
     "*.js": [
