@@ -44,6 +44,7 @@ define([
     vm.canManage = false;
     vm.calendar = {};
     vm.errors = [];
+    vm.isRequired = true;
     vm.requestDayTypes = [];
     vm.statusNames = sharedSettings.statusNames;
     vm.loading = {

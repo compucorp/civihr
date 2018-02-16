@@ -158,6 +158,32 @@ define([
     }
 
     /**
+     * Determines if all of the required tabs can be submitted
+     *
+     * @return {Boolean}
+     */
+    function canAllRequiredTabsSubmit () {
+      return tabs.filter(function (tab) {
+        return tab.isRequired;
+      }).every(function (tab) {
+        return tab.canSubmit && tab.canSubmit();
+      });
+    }
+
+    /**
+     * Determines if at least one of the non-required tabs can be submitted.
+     *
+     * @return {Boolean}
+     */
+    function canAnyNonRequiredTabSubmit () {
+      return tabs.filter(function (tab) {
+        return !tab.isRequired;
+      }).some(function (tab) {
+        return tab.canSubmit && tab.canSubmit();
+      });
+    }
+
+    /**
      * Checks if Absence Type can be changed
      * - Disregarding any conditions, if entitlements are being loaded you cannot change
      * - Admins can always change, disregarding the mode
@@ -193,13 +219,11 @@ define([
      */
     function canSubmit () {
       // checks if one of the tabs can be submitted
-      var canSubmit = tabs.some(function (tab) {
-        return tab.canSubmit && tab.canSubmit();
-      });
+      var canSubmit = canAllRequiredTabsSubmit();
 
       // check if user has changed any attribute
       if (vm.isMode('edit')) {
-        canSubmit = canSubmit || hasRequestChanged();
+        canSubmit = canSubmit && (hasRequestChanged() || canAnyNonRequiredTabSubmit());
       }
 
       // check if manager has changed status

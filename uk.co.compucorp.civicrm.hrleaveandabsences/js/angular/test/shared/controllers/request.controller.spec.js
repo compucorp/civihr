@@ -21,7 +21,7 @@
       var $log, $rootScope, controller, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
         Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, pubSub,
-        WorkPatternAPI;
+        requiredTab, WorkPatternAPI;
       var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
@@ -99,6 +99,7 @@
         spyOn(EntitlementAPI, 'all').and.callThrough();
 
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
+        requiredTab = { isRequired: true, canSubmit: function () { return true; } };
       }));
 
       describe('staff opens request popup', function () {
@@ -248,6 +249,8 @@
 
           describe('when submit with invalid fields', function () {
             beforeEach(function () {
+              requiredTab.canSubmit = function () { return false; };
+              $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
               controller.submit();
               $scope.$digest();
             });
@@ -358,27 +361,63 @@
           });
 
           describe('tabs', function () {
-            describe('when a tab can be submitted', function () {
+            describe('on create', function () {
               beforeEach(function () {
-                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
-                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
-                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnTrue });
+                controller.mode = 'create';
               });
 
-              it('allows to submit the leave request', function () {
-                expect(controller.canSubmit()).toBe(true);
+              describe('when all required tabs can be submitted', function () {
+                beforeEach(function () {
+                  $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
+                  $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                });
+
+                it('allows to submit the leave request', function () {
+                  expect(controller.canSubmit()).toBe(true);
+                });
+              });
+
+              describe('when not all required tabs can be submitted', function () {
+                beforeEach(function () {
+                  $scope.$emit('LeaveRequestPopup::addTab', { isRequired: true, canSubmit: returnFalse });
+                  $scope.$emit('LeaveRequestPopup::addTab', { isRequired: true, canSubmit: returnTrue });
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnTrue });
+                });
+
+                it('does not allow to submit the leave request', function () {
+                  expect(controller.canSubmit()).toBe(false);
+                });
               });
             });
 
-            describe('when no tabs can be submitted', function () {
+            describe('on edit', function () {
               beforeEach(function () {
-                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
-                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
-                $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                controller.mode = 'edit';
               });
 
-              it('does not allow to submit the leave request', function () {
-                expect(controller.canSubmit()).toBe(false);
+              describe('when some of the non-required tabs can be submitted', function () {
+                beforeEach(function () {
+                  $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnTrue });
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                });
+
+                it('allows to submit the leave request', function () {
+                  expect(controller.canSubmit()).toBe(true);
+                });
+              });
+
+              describe('when none of the non-required tabs can be submitted', function () {
+                beforeEach(function () {
+                  $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                });
+
+                it('does not allow to submit the leave request', function () {
+                  expect(controller.canSubmit()).toBe(false);
+                });
               });
             });
 

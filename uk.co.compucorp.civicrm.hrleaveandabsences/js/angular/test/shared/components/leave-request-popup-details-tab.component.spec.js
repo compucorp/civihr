@@ -118,6 +118,10 @@ define([
           expect(controller.uiOptions.time_interval).toBe(15);
         });
 
+        it('is defined as a required tab', function () {
+          expect(controller.isRequired).toBe(true);
+        });
+
         describe('initChildController()', function () {
           it('has days of work pattern loaded', function () {
             expect(controller.calendar).toBeDefined();
