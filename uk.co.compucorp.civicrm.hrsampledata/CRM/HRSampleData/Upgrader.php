@@ -147,6 +147,7 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
       'ExtendedDemographics' => 'civicrm_value_extended_demographics',
       'AbsencePeriod' => 'civicrm_hrleaveandabsences_absence_period',
       'AbsenceType' => 'civicrm_hrleaveandabsences_absence_type',
+      'PublicHoliday' => 'civicrm_hrleaveandabsences_public_holiday',
     ];
 
     foreach($csvFiles as $class => $file) {
