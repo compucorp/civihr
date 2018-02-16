@@ -39,7 +39,7 @@ define([
     vm.getActiveComments = getActiveComments;
     vm.getCommentorName = getCommentorName;
     vm.isMode = isMode;
-    vm.submit = submit;
+    vm.onBeforeSubmit = onBeforeSubmit;
 
     (function init () {
       $scope.$emit('LeaveRequestPopup::addTab', vm);
@@ -67,6 +67,18 @@ define([
      */
     function canSubmit () {
       return vm.comment.text.length > 0;
+    }
+
+    /**
+     * Determines if a comment can be deleted when the comment has not been saved
+     * or if the user can manage the request and has permission to remove the
+     * comments.
+     *
+     * @param {Object} comment - comment object
+     * @return {Boolean}
+     */
+    function canRemoveComment (comment) {
+      return !comment.comment_id || vm.canManage;
     }
 
     /**
@@ -106,14 +118,6 @@ define([
     }
 
     /**
-     * When submitting the tab, if there are comments waiting to be added, it
-     * automatically adds them to the request.
-     */
-    function submit () {
-      (vm.comment.text.length) && vm.addComment();
-    }
-
-    /**
      * Checks if popup is opened in given mode
      *
      * @param {String} mode to open leave request like edit or view or create
@@ -124,15 +128,11 @@ define([
     }
 
     /**
-     * Determines if a comment can be deleted when the comment has not been saved
-     * or if the user can manage the request and has permission to remove the
-     * comments.
-     *
-     * @param {Object} comment - comment object
-     * @return {Boolean}
+     * When submitting the tab, if there are comments waiting to be added, it
+     * automatically adds them to the request.
      */
-    function canRemoveComment (comment) {
-      return !comment.comment_id || vm.canManage;
+    function onBeforeSubmit () {
+      (vm.comment.text.length) && vm.addComment();
     }
 
     /**

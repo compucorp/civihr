@@ -104,7 +104,7 @@
           canSubmit: function () {
             return true;
           },
-          submit: jasmine.createSpy('submit').and.returnValue($q.resolve())
+          onBeforeSubmit: jasmine.createSpy('onBeforeSubmit').and.returnValue($q.resolve())
         };
       }));
 
@@ -286,10 +286,10 @@
 
               beforeEach(function () {
                 nonRequiredTab = {
-                  submit: jasmine.createSpy('submit').and.returnValue($q.resolve())
+                  onBeforeSubmit: jasmine.createSpy('onBeforeSubmit').and.returnValue($q.resolve())
                 };
 
-                requiredTab.submit.and.callFake(function () {
+                requiredTab.onBeforeSubmit.and.callFake(function () {
                   hasCalledRequestCreateMethod = LeaveRequestAPI.create.calls.count() > 0;
 
                   return $q.resolve();
@@ -306,8 +306,8 @@
               });
 
               it('submits all tabs', function () {
-                expect(requiredTab.submit).toHaveBeenCalled();
-                expect(nonRequiredTab.submit).toHaveBeenCalled();
+                expect(requiredTab.onBeforeSubmit).toHaveBeenCalled();
+                expect(nonRequiredTab.onBeforeSubmit).toHaveBeenCalled();
               });
 
               it('submits all tabs before saving the request', function () {
@@ -330,7 +330,7 @@
 
               describe('when one of the tabs fails to submit', function () {
                 beforeEach(function () {
-                  nonRequiredTab.submit.and.returnValue($q.reject());
+                  nonRequiredTab.onBeforeSubmit.and.returnValue($q.reject());
                   LeaveRequestAPI.create.calls.reset();
                   controller.submit();
                   $scope.$digest();

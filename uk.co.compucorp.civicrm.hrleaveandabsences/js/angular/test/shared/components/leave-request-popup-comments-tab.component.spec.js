@@ -156,7 +156,7 @@ define([
       describe('when there are comments waiting to be added', function () {
         beforeEach(function () {
           controller.comment.text = 'Request comment';
-          controller.submit();
+          controller.onBeforeSubmit();
         });
 
         it('stores the comment before the request is saved', function () {
@@ -167,7 +167,7 @@ define([
       describe('when there are not comments to add', function () {
         beforeEach(function () {
           controller.comment.text = '';
-          controller.submit();
+          controller.onBeforeSubmit();
         });
 
         it('does not store the comment', function () {

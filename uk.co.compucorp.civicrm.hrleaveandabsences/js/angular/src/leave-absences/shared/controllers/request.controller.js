@@ -945,7 +945,7 @@ define([
      */
     function submitAllTabs () {
       return $q.all(tabs.map(function (tab) {
-        return tab.submit && tab.submit();
+        return tab.onBeforeSubmit && tab.onBeforeSubmit();
       }));
     }
 
