@@ -46,6 +46,7 @@ class CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroup {
     $actionsGroup->addItem($this->getRecordLeaveButton());
     $actionsGroup->addItem($this->getRecordSicknessButton());
     $actionsGroup->addItem($this->getRecordOvertimeButton());
+    $actionsGroup->addItem(new GroupSeparatorItem());
     $actionsGroup->addItem($this->getViewEntitlementsButton());
     $actionsGroup->addItem(new GroupSeparatorItem());
 
@@ -57,7 +58,7 @@ class CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroup {
       $actionsGroup->addItem($this->getManageLeaveApproverButton());
     }
     else {
-      $noLeaveApprovertItem = new ParagraphItem('You have not selected a Leave Approver');
+      $noLeaveApprovertItem = new ParagraphItem('The staff member does not have a leave approver');
       $actionsGroup->addItem($noLeaveApprovertItem);
       $actionsGroup->addItem($this->getAddLeaveApproverButton());
     }
