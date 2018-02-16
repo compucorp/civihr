@@ -1,6 +1,6 @@
 <?php
 
-trait CRM_HRLeaveAndAbsences_Upgrader_Step_1018 {
+trait CRM_HRLeaveAndAbsences_Upgrader_Step_1019 {
 
   /**
    * Make the 'is Leave Approver of/has Leave Approved by'
@@ -8,7 +8,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1018 {
    *
    * @return bool
    */
-  public function upgrade_1018() {
+  public function upgrade_1019() {
     civicrm_api3('RelationshipType', 'get', [
       'sequential' => 1,
       'name_a_b' => 'has Leave Approved by',

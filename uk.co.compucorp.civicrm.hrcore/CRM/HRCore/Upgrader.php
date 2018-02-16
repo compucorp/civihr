@@ -14,8 +14,8 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   use CRM_HRCore_Upgrader_Steps_1004;
   use CRM_HRCore_Upgrader_Steps_1005;
   use CRM_HRCore_Upgrader_Steps_1006;
-  use CRM_HRCore_Upgrader_Steps_1007;
   use CRM_HRCore_Upgrader_Steps_1008;
+  use CRM_HRCore_Upgrader_Steps_1009;
 
   /**
    * @var array
