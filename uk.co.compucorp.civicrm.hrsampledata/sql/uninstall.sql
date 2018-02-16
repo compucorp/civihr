@@ -19,6 +19,7 @@ TRUNCATE TABLE civicrm_hrjobcontract_revision;
 TRUNCATE TABLE civicrm_hrjobcontract_role;
 TRUNCATE TABLE civicrm_hrjobroles;
 TRUNCATE TABLe civicrm_hrleaveandabsences_absence_period;
+TRUNCATE TABLe civicrm_hrleaveandabsences_absence_type;
 TRUNCATE TABLE civicrm_hrvacancy;
 TRUNCATE TABLE civicrm_hrvacancy_permission;
 TRUNCATE TABLE civicrm_hrvacancy_stage;
