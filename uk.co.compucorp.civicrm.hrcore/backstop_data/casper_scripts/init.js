@@ -1,9 +1,16 @@
 'use strict';
+var config = require('../site-config');
 
 module.exports = function (casper, scenario) {
-  var config = require('../site-config');
   var loginFormSelector = 'form#user-login-form';
   var credentials = config.credentials[scenario.credential];
+
+  casper.echo('--------------------------------------------', 'COMMENT');
+  casper.echo('Running Scenario "' + scenario.label + '" ' + scenario.count, 'PARAMETER');
+
+  if (!scenario.performLogin) {
+    return;
+  }
 
   casper
     .then(function () {
