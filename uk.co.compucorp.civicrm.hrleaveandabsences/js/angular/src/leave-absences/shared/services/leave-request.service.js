@@ -2,71 +2,46 @@
 
 define([
   'common/lodash',
-  'leave-absences/shared/modules/services',
-  'leave-absences/shared/models/absence-type.model'
+  'leave-absences/shared/modules/services'
 ], function (_, services) {
   'use strict';
 
   services.factory('LeaveRequestService', LeaveRequestService);
 
   LeaveRequestService.$inject = [
-    '$log', '$q', 'dialog', 'AbsenceType'
+    '$log', '$q', 'dialog'
   ];
 
-  function LeaveRequestService ($log, $q, dialog, AbsenceType) {
+  function LeaveRequestService ($log, $q, dialog) {
     $log.debug('LeaveRequest');
 
     return {
-      checkIfBalanceChangeNeedsForceRecalculation: checkIfBalanceChangeNeedsForceRecalculation
+      promptIfProceedWithBalanceChangeRecalculation: promptIfProceedWithBalanceChangeRecalculation
     };
 
     /**
-     * Checks if the balance change of the leave request need to be recalculated,
-     * and if yes, prompts the recalculation via a dialog
+     * Prompts the user if they would like to proceed with
+     * balance change recalculation via a dialog
      *
-     * @param  {LeaveRequestInstance} leaveRequest
-     * @return {Promise} resolves with {Boolean}:
-     *   true if balance change has been changed and that was acknowledged;
-     *   false if balance change has not been changed.
+     * @return {Promise}
      */
-    function checkIfBalanceChangeNeedsForceRecalculation (leaveRequest) {
-      var originalBalanceAmount, unitName;
-
-      return AbsenceType.all({ id: leaveRequest.type_id })
-        .then(AbsenceType.loadCalculationUnits)
-        .then(function (absenceTypes) {
-          unitName = absenceTypes[0].calculation_unit_name;
-        })
-        .then(leaveRequest.getBalanceChangeBreakdown.bind(this))
-        .then(function (originalBalance) {
-          originalBalanceAmount = originalBalance.amount;
-
-          return leaveRequest.calculateBalanceChange(unitName);
-        })
-        .then(function (balanceChange) {
-          if (+originalBalanceAmount === +balanceChange.amount) {
-            return $q.resolve(false);
-          }
-
-          return openConfirmationDialog();
-        });
-    }
-
-    function openConfirmationDialog () {
-      var defer = $q.defer();
+    function promptIfProceedWithBalanceChangeRecalculation () {
+      var deferred = $q.defer();
 
       dialog.open({
-        title: 'The balance has been changed',
+        title: 'Recalculate Balance Change?',
         copyCancel: 'Cancel',
-        copyConfirm: 'Review changes',
-        classConfirm: 'btn-primary',
-        msg: 'The balance has been changed',
+        copyConfirm: 'Yes',
+        classConfirm: 'btn-warning',
+        msg: 'The leave balance change has updated since ' +
+          'this leave request was created. ' +
+          'Do you want to recalculate the balance change?',
         onConfirm: function () {
-          defer.resolve(true);
+          deferred.resolve(true);
         }
       });
 
-      return defer.promise;
+      return deferred.promise;
     }
   }
 });
