@@ -18,11 +18,11 @@ define([
   });
 
   LeaveBalanceTabController.$inject = ['$q', '$rootScope', 'AbsencePeriod',
-    'AbsenceType', 'LeaveBalanceReport', 'notificationService', 'pubSub',
+    'AbsenceType', 'Contact', 'LeaveBalanceReport', 'notificationService', 'pubSub',
     'Session', 'shared-settings', 'checkPermissions'];
 
   function LeaveBalanceTabController ($q, $rootScope, AbsencePeriod,
-    AbsenceType, LeaveBalanceReport, notification, pubSub, Session,
+    AbsenceType, Contact, LeaveBalanceReport, notification, pubSub, Session,
     sharedSettings, checkPermissions) {
     var filters = {};
     var vm = this;
@@ -31,6 +31,7 @@ define([
     vm.absenceTypes = [];
     vm.loading = { component: true, report: true };
     vm.loggedInContactId = null;
+    vm.lookupContacts = [];
     vm.pagination = { page: 1, size: 50 };
     vm.report = [];
     vm.reportCount = 0;
@@ -65,12 +66,27 @@ define([
     /**
      * Uses the AbsenceType model to populate a list of abesence types
      * sorted by title in an ascending order.
+     *
+     * @return {Promise}
      */
     function loadAbsenceTypes () {
       return AbsenceType.all()
         .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
           vm.absenceTypes = absenceTypes;
+        });
+    }
+
+    /**
+     * Uses the Contact model to populate a list of all contacts
+     * sorted by sort_name in an ascending order.
+     *
+     * @return {Promise}
+     */
+    function loadAllContacts () {
+      return Contact.all(null, null, 'sort_name ASC')
+        .then(function (contacts) {
+          vm.lookupContacts = contacts.list;
         });
     }
 
@@ -83,6 +99,7 @@ define([
       return $q.all([
         loadAbsencePeriods(),
         loadAbsenceTypes(),
+        loadAllContacts(),
         loadLoggedInContactId(),
         loadUserRole()
       ]).catch(function (error) {
@@ -179,6 +196,7 @@ define([
      * @param {Object} event - the component event handler.
      * @param {Object} _filters_ - The filter values to use for updating the report.
      * it contains the following properties:
+     * - contact_id - the contact ID to filter by.
      * - period_id - the absence period ID to filter by.
      * - type_id - the abence type ID to filter by.
      * - managed_by - the managing user ID to filter by.
