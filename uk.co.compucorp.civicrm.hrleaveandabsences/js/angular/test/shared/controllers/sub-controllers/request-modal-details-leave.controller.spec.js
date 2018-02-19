@@ -8,6 +8,12 @@ define([
   'leave-absences/mocks/data/absence-type.data',
   'leave-absences/mocks/data/leave-request.data',
   'leave-absences/mocks/helpers/request-modal-helper',
+  'common/mocks/services/hr-settings-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/leave-request-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/apis/public-holiday-api-mock',
+  'leave-absences/mocks/apis/work-pattern-api-mock',
   'leave-absences/manager-leave/app'
 ], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, requestModalHelper) {
   'use strict';
@@ -64,6 +70,192 @@ define([
 
       it('has leave type as "leave"', function () {
         expect(controller.isLeaveType('leave')).toBeTruthy();
+      });
+    });
+
+    describe('calculateBalanceChange()', function () {
+      var returnValue;
+      var expectedReturnValue = 'somevalue';
+
+      beforeEach(function () {
+        controller.request.calculateBalanceChange = jasmine.createSpy();
+        controller.request.calculateBalanceChange.and.returnValue(expectedReturnValue);
+
+        returnValue = controller.calculateBalanceChange();
+      })
+
+      it('calculates balance change', function () {
+        expect(controller.request.calculateBalanceChange)
+          .toHaveBeenCalledWith(controller.selectedAbsenceType.calculation_unit_name);
+      });
+
+      it('returns the promise returned by balance change function', function () {
+        expect(returnValue).toBe(expectedReturnValue);
+      });
+    });
+
+    describe('checkSubmitConditions()', function () {
+      var returnValue;
+      var expectedReturnValue = 'somevalue';
+
+      beforeEach(function () {
+        controller.canCalculateChange = jasmine.createSpy();
+        controller.canCalculateChange.and.returnValue(expectedReturnValue);
+
+        returnValue = controller.checkSubmitConditions();
+      });
+
+      it('checks if change can be calculated', function () {
+        expect(controller.canCalculateChange).toHaveBeenCalled();
+      });
+
+      it('returns the promise returned by canCalculateChange function', function () {
+        expect(returnValue).toBe(expectedReturnValue);
+      });
+    });
+
+    describe('canCalculateChange()', function () {
+      beforeEach(function () {
+        leaveRequest = LeaveRequestInstance.init();
+
+        compileComponent({
+          request: leaveRequest,
+          selectedAbsenceType: selectedAbsenceType
+        });
+      });
+
+      describe('when unit is in days', function () {
+        beforeEach(function () {
+          controller.selectedAbsenceType.calculation_unit_name = 'days';
+        });
+
+        describe('when there is no from date', function () {
+          beforeEach(function () {
+            controller.request.from_date = false;
+          });
+
+          it('change cannot be calculated', function () {
+            expect(controller.canCalculateChange()).toBe(false);
+          });
+        });
+
+        describe('when there is no to date', function () {
+          beforeEach(function () {
+            controller.request.from_date = '03/10/2017';
+            controller.request.to_date = false;
+          });
+
+          it('change cannot be calculated', function () {
+            expect(controller.canCalculateChange()).toBe(false);
+          });
+        });
+
+        describe('when there is no from date type', function () {
+          beforeEach(function () {
+            controller.request.from_date = '03/10/2017';
+            controller.request.to_date = '03/10/2017';
+            controller.request.from_date_type = false;
+          });
+
+          it('change cannot be calculated', function () {
+            expect(controller.canCalculateChange()).toBe(false);
+          });
+        });
+
+        describe('when there is no to date type', function () {
+          beforeEach(function () {
+            controller.request.from_date = '03/10/2017';
+            controller.request.to_date = '03/10/2017';
+            controller.request.from_date_type = 'half_day_am';
+            controller.request.to_date_type = false;
+          });
+
+          it('change cannot be calculated', function () {
+            expect(controller.canCalculateChange()).toBe(false);
+          });
+        });
+
+        describe('when from date, from date type, to date, to date type, all are set', function () {
+          beforeEach(function () {
+            controller.request.from_date = '03/10/2017';
+            controller.request.to_date = '03/10/2017';
+            controller.request.from_date_type = 'half_day_am';
+            controller.request.to_date_type = 'half_day_am';
+          });
+
+          it('change can be calculated', function () {
+            expect(controller.canCalculateChange()).toBe(true);
+          });
+        });
+      });
+
+      describe('when unit is in hours', function () {
+        beforeEach(function () {
+          controller.selectedAbsenceType.calculation_unit_name = 'hours';
+        });
+
+        afterEach(function () {
+          controller.selectedAbsenceType.calculation_unit_name = 'days';
+        });
+
+        describe('when there is no from date', function () {
+          beforeEach(function () {
+            controller.request.from_date = false;
+          });
+
+          it('change cannot be calculated', function () {
+            expect(controller.canCalculateChange()).toBe(false);
+          });
+        });
+
+        describe('when there is no to date', function () {
+          beforeEach(function () {
+            controller.request.from_date = '03/10/2017';
+            controller.request.to_date = false;
+          });
+
+          it('change cannot be calculated', function () {
+            expect(controller.canCalculateChange()).toBe(false);
+          });
+        });
+
+        describe('when from date amount is not a number', function () {
+          beforeEach(function () {
+            controller.request.from_date = '03/10/2017';
+            controller.request.to_date = '03/10/2017';
+            controller.request.from_date_amount = 'not a number';
+          });
+
+          it('change cannot be calculated', function () {
+            expect(controller.canCalculateChange()).toBe(false);
+          });
+        });
+
+        describe('when to date amount is not a number', function () {
+          beforeEach(function () {
+            controller.request.from_date = '03/10/2017';
+            controller.request.to_date = '03/10/2017';
+            controller.request.from_date_amount = 1;
+            controller.request.to_date_amount = 'not a number';
+          });
+
+          it('change cannot be calculated', function () {
+            expect(controller.canCalculateChange()).toBe(false);
+          });
+        });
+
+        describe('when from date and to date is present, and from and to date amount are numbers ', function () {
+          beforeEach(function () {
+            controller.request.from_date = '03/10/2017';
+            controller.request.to_date = '03/10/2017';
+            controller.request.from_date_amount = 1;
+            controller.request.to_date_amount = 1;
+          });
+
+          it('change can be calculated', function () {
+            expect(controller.canCalculateChange()).toBe(true);
+          });
+        });
       });
     });
 

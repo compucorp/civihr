@@ -10,7 +10,12 @@ define([
   'leave-absences/mocks/data/option-group.data',
   'leave-absences/mocks/helpers/helper',
   'leave-absences/mocks/helpers/request-modal-helper',
+  'common/mocks/services/hr-settings-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/leave-request-api-mock',
   'leave-absences/mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/apis/public-holiday-api-mock',
+  'leave-absences/mocks/apis/work-pattern-api-mock',
   'leave-absences/manager-leave/app'
 ], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper, requestModalHelper) {
   'use strict';
@@ -53,6 +58,7 @@ define([
       spyOn($log, 'debug');
       spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
       spyOn(AbsenceType, 'canExpire').and.callThrough();
+      spyOn(AbsenceType, 'calculateToilExpiryDate').and.callThrough();
     }));
 
     describe('on initialize', function () {
@@ -321,7 +327,6 @@ define([
 
       describe('when request date changes', function () {
         beforeEach(function () {
-          spyOn(AbsenceType, 'calculateToilExpiryDate');
           controller.request.to_date = new Date();
           $rootScope.$digest();
         });
@@ -334,6 +339,99 @@ define([
           expect(controller.request.toil_expiry_date).toBe(false);
         });
       });
+    });
+
+    describe('calculateBalanceChange()', function() {
+      beforeEach(function () {
+        controller.request.toil_to_accrue = '1';
+
+        compileComponent({
+          leaveType: 'toil',
+          request: controller.request
+        });
+
+        $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+        $rootScope.$digest();
+
+        controller.calculateBalanceChange();
+      });
+
+      it('sets balance change amount to the toil to accrue', function () {
+        expect(controller.balance.change.amount).toBe(+controller.request.toil_to_accrue);
+      });
+    });
+
+    describe('canCalculateChange()', function() {
+      beforeEach(function () {
+        compileComponent({
+          leaveType: 'toil',
+          request: controller.request
+        });
+
+        controller.request.toil_to_accrue = '1';
+
+        $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+        $rootScope.$digest();
+      });
+
+      it('retunrs true if toil to accrue has a value', function () {
+        expect(controller.canCalculateChange()).toBe(!!controller.request.toil_to_accrue);
+      });
+    });
+
+    describe('setDaysSelectionModeExtended()', function() {
+      describe('when expiry date can be calculated', function () {
+        beforeEach(function () {
+          compileComponent({
+            leaveType: 'toil',
+            request: controller.request
+          });
+
+          controller.canManage = false;
+          controller.uiOptions.multipleDays = true;
+          controller.requestCanExpire = false;
+
+          $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+          $rootScope.$digest();
+
+
+          controller.setDaysSelectionModeExtended();
+        });
+
+        it('does calclulation for toil expiry date', function () {
+          // as controller.requestCanExpire is set to false, expiry date is
+          // supposed to be set to false.
+          expect(controller.request.toil_expiry_date).toBe(false);
+        });
+      });
+
+      describe('when expiry date can not be calculated', function () {
+        beforeEach(function () {
+          compileComponent({
+            leaveType: 'toil',
+            request: controller.request
+          });
+
+          controller.request.toil_expiry_date = true;
+          controller.canManage = false;
+          controller.uiOptions.multipleDays = true;
+          controller.requestCanExpire = true;
+
+          $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+          $rootScope.$digest();
+
+
+          controller.setDaysSelectionModeExtended();
+        });
+
+        it('does not recalculate toil expiry date', function () {
+          // as controller.requestCanExpire is set to true, expiry date is
+          // not supposed to be set to false.
+          expect(controller.request.toil_expiry_date).toBe(true);
+        });
+      });
+
+      // describe('when expiry date can not be calculated')
     });
 
     /**
