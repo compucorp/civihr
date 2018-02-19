@@ -1,5 +1,5 @@
 <section id="bootstrap-theme" data-leave-absences-absence-tab>
-  <absence-tab-container></absence-tab-container>
+  <ui-view></ui-view>
 </section>
 {literal}
   <script type="text/javascript">

@@ -13,6 +13,7 @@ define([
   'common/services/check-permissions',
   'common/services/angular-date/date-format',
   'common/services/notification.service',
+  'leave-absences/shared/ui-router',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/models/absence-type.model',
   'leave-absences/shared/models/calendar.model',
@@ -51,6 +52,7 @@ define([
   angular.module('absence-tab', [
     'ngResource',
     'ui.bootstrap',
+    'ui.router',
     'textAngular',
     'common.angularDate',
     'common.dialog',

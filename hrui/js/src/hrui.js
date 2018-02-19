@@ -9,6 +9,14 @@
       amendContactPageAndForm(e);
       applyMiscChanges();
       changeContactSourceFieldHelpText();
+
+      $('#mainTabContainer')
+        .on('tabscreate', function (event, ui) {
+          updateHash(ui.tab);
+        })
+        .on('tabsbeforeactivate', function (e, ui) {
+          updateHash(ui.newTab);
+        });
     })
     .ready(function () {
       addUserMenuToMainMenu();
@@ -17,6 +25,17 @@
       useFontAwesomeArrowsInSubMenuItems();
       toggleActiveClassOnHoverOnAnyMainMenuItem();
     });
+
+  function updateHash (tab) {
+    var $newTab = $(tab);
+    var hash = $newTab.find('a').prop('hash');
+
+    if (hash) {
+      window.location.hash = hash;
+    } else {
+      window.location.hash = '/';
+    }
+  }
 
   /**
    * Customizes the app logo menu item, switching from the CiviCRM logo

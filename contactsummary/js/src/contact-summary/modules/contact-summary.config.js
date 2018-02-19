@@ -22,8 +22,7 @@ define([
         controllerAs: 'ContactSummaryCtrl',
         templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
         resolve: {}
-      })
-      .otherwise({redirectTo: '/'});
+      });
 
     $resourceProvider.defaults.stripTrailingSlashes = false;
 

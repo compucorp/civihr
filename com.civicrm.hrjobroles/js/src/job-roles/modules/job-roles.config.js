@@ -27,8 +27,7 @@ define([
         resolve: {},
         controller: 'JobRolesController',
         controllerAs: 'jobroles'
-      })
-      .otherwise({ redirectTo: '/' });
+      });
 
     $resourceProvider.defaults.stripTrailingSlashes = false;
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';

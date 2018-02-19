@@ -31,8 +31,7 @@ define([
           }]
         }
       }
-      )
-      .otherwise({ redirectTo: '/' });
+      );
 
     $resourceProvider.defaults.stripTrailingSlashes = false;
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
