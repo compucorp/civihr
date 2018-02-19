@@ -9,26 +9,38 @@ define([
   'leave-absences/mocks/data/leave-request.data',
   'common/services/notification.service',
   'common/services/pub-sub',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/leave-request-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/shared/config',
+  'leave-absences/shared/services/leave-request.service',
   'leave-absences/manager-leave/app'
 ], function (angular, _, moment, optionGroupMock, absenceTypeData, leaveRequestData) {
   'use strict';
 
   describe('leaveRequestActions', function () {
-    var $componentController, $log, $q, $rootScope, controller,
+    var $componentController, $log, $provide, $q, $rootScope, controller,
       LeaveRequestInstance, dialog, sharedSettings, role, leaveRequest,
-      LeavePopup, notification, pubSub;
+      LeavePopup, LeaveRequestService, notification, pubSub;
     var absenceTypes = _.indexBy(absenceTypeData.all().values, 'id');
     var leaveRequestStatuses = _.indexBy(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), 'value');
 
-    beforeEach(module('manager-leave'));
+    beforeEach(module('leave-absences.mocks', 'manager-leave', function (_$provide_) {
+      $provide = _$provide_;
+    }));
+
+    beforeEach(inject(function (_AbsenceTypeAPIMock_, _LeaveRequestAPIMock_, _OptionGroupAPIMock_) {
+      $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
+      $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
+      $provide.value('api.optionGroup', _OptionGroupAPIMock_);
+    }));
 
     beforeEach(inject(['shared-settings', function (_sharedSettings_) {
       sharedSettings = _sharedSettings_;
     }]));
 
     beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-      _dialog_, _LeaveRequestInstance_, _LeavePopup_, _notificationService_, _pubSub_) {
+      _dialog_, _LeaveRequestInstance_, _LeavePopup_, _LeaveRequestService_, _notificationService_, _pubSub_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -36,6 +48,7 @@ define([
       dialog = _dialog_;
       LeaveRequestInstance = _LeaveRequestInstance_;
       LeavePopup = _LeavePopup_;
+      LeaveRequestService = _LeaveRequestService_;
       notification = _notificationService_;
       pubSub = _pubSub_;
     }));
@@ -492,6 +505,7 @@ define([
     });
 
     describe('when the user wants to change status of leave request', function () {
+      var checkIfBalanceChangeNeedsForceRecalculationSpy;
       // Any action, role or request could be specified here
       var action = 'approve';
 
@@ -499,55 +513,130 @@ define([
         // Any role or request could be specified here
         role = 'admin';
         leaveRequest = getRequest();
+        checkIfBalanceChangeNeedsForceRecalculationSpy =
+          spyOn(leaveRequest, 'checkIfBalanceChangeNeedsForceRecalculation').and.callThrough();
 
+        leaveRequest.checkIfBalanceChangeNeedsForceRecalculation.calls.reset();
+        compileComponent();
         spyOn($rootScope, '$emit');
-        resolveDialogWith(null);
         controller.action(action);
         $rootScope.$digest();
-        compileComponent();
       });
 
-      it('shows a confirmation dialog', function () {
-        expect(dialog.open).toHaveBeenCalled();
+      it('checks if the balance has been changed', function () {
+        expect(leaveRequest.checkIfBalanceChangeNeedsForceRecalculation)
+          .toHaveBeenCalled();
       });
 
-      it('does not emit an event', function () {
-        expect($rootScope.$emit).not.toHaveBeenCalled();
-      });
-
-      describe('when the user confirms the action', function () {
-        describe('when the action is successfully executed', function () {
-          beforeEach(function () {
-            spyOn(leaveRequest, action).and.returnValue($q.resolve());
-            resolveDialogWith(true);
-            controller.action(action);
-            $rootScope.$digest();
-          });
-
-          it('emits an event', function () {
-            expect(pubSub.publish)
-              .toHaveBeenCalledWith('LeaveRequest::statusUpdate', {
-                status: action,
-                leaveRequest: leaveRequest
-              });
-          });
+      describe('when balance change has not been changed', function () {
+        beforeEach(function () {
+          checkIfBalanceChangeNeedsForceRecalculationSpy
+            .and.returnValue($q.resolve(false));
+          resolveDialogWith(null);
+          controller.action(action);
+          $rootScope.$digest();
         });
 
-        describe('when the action is rejected by server', function () {
+        it('shows a confirmation dialog', function () {
+          expect(dialog.open).toHaveBeenCalledWith(jasmine.objectContaining({
+            title: 'Confirm Approval?'
+          }));
+        });
+
+        it('does not emit an event', function () {
+          expect($rootScope.$emit).not.toHaveBeenCalled();
+        });
+
+        describe('when the user confirms the action', function () {
+          describe('when the action is successfully executed', function () {
+            beforeEach(function () {
+              spyOn(leaveRequest, action).and.returnValue($q.resolve());
+              resolveDialogWith(true);
+              controller.action(action);
+              $rootScope.$digest();
+            });
+
+            it('emits an event', function () {
+              expect(pubSub.publish)
+                .toHaveBeenCalledWith('LeaveRequest::statusUpdate', {
+                  status: action,
+                  leaveRequest: leaveRequest
+                });
+            });
+          });
+
+          describe('when the action is rejected by server', function () {
+            beforeEach(function () {
+              spyOn(leaveRequest, action).and.returnValue($q.reject());
+              spyOn(notification, 'error').and.callThrough();
+              resolveDialogWith(true);
+              controller.action(action);
+              $rootScope.$digest();
+            });
+
+            it('does not emit an event', function () {
+              expect(pubSub.publish).not.toHaveBeenCalled();
+            });
+
+            it('shows a notification', function () {
+              expect(notification.error).toHaveBeenCalled();
+            });
+          });
+        });
+      });
+
+      describe('when balance change has been changed', function () {
+        var proceedWithBalanceChangeRecalculation;
+
+        beforeEach(function () {
+          checkIfBalanceChangeNeedsForceRecalculationSpy
+            .and.returnValue($q.resolve(true));
+          spyOn(dialog, 'open').and.callFake(function (params) {
+            proceedWithBalanceChangeRecalculation = params.onConfirm;
+          });
+          spyOn(LeaveRequestService,
+            'promptIfProceedWithBalanceChangeRecalculation').and.callThrough();
+          controller.action(action);
+          $rootScope.$digest();
+        });
+
+        it('prompts if user would like to proceed with balance change recalculation', function () {
+          expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
+            .toHaveBeenCalled();
+          expect(dialog.open).toHaveBeenCalled();
+        });
+
+        describe('when user proceeds with balance change recalculation', function () {
           beforeEach(function () {
-            spyOn(leaveRequest, action).and.returnValue($q.reject());
-            spyOn(notification, 'error').and.callThrough();
-            resolveDialogWith(true);
+            spyOn(LeavePopup, 'openModal');
+            proceedWithBalanceChangeRecalculation();
+            $rootScope.$digest();
+          });
+
+          it('opens a leave request modal with this request', function () {
+            expect(LeavePopup.openModal).toHaveBeenCalledWith(
+              leaveRequest, leaveRequest.request_type, leaveRequest.contact_id, jasmine.any(Boolean),
+              true);
+          });
+        });
+      });
+
+      describe('when the user wants either to cancel, reject or delete the leave request', function () {
+        ['cancel', 'reject', 'delete'].forEach(function (action) {
+          beforeEach(function () {
+            leaveRequest = getRequest();
+            checkIfBalanceChangeNeedsForceRecalculationSpy =
+              spyOn(leaveRequest, 'checkIfBalanceChangeNeedsForceRecalculation');
+
+            leaveRequest.checkIfBalanceChangeNeedsForceRecalculation.calls.reset();
+            compileComponent();
             controller.action(action);
             $rootScope.$digest();
           });
 
-          it('does not emit an event', function () {
-            expect(pubSub.publish).not.toHaveBeenCalled();
-          });
-
-          it('shows a notification', function () {
-            expect(notification.error).toHaveBeenCalled();
+          it('skips checking of the balance change', function () {
+            expect(leaveRequest.checkIfBalanceChangeNeedsForceRecalculation)
+              .not.toHaveBeenCalled();
           });
         });
       });

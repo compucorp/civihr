@@ -6,7 +6,8 @@ define([
   'leave-absences/shared/modules/components',
   'common/services/hr-settings',
   'common/services/notification.service',
-  'common/services/pub-sub'
+  'common/services/pub-sub',
+  'leave-absences/shared/services/leave-request.service'
 ], function (_, moment, components) {
   components.component('leaveRequestActions', {
     bindings: {
@@ -28,10 +29,10 @@ define([
   });
 
   LeaveRequestActionsController.$inject = ['$log', '$rootScope', 'dialog',
-    'LeavePopup', 'pubSub', 'shared-settings', 'notificationService'];
+    'LeavePopup', 'LeaveRequestService', 'pubSub', 'shared-settings', 'notificationService'];
 
   function LeaveRequestActionsController ($log, $rootScope, dialog,
-    LeavePopup, pubSub, sharedSettings, notification) {
+    LeavePopup, LeaveRequestService, pubSub, sharedSettings, notification) {
     $log.debug('Component: leave-request-action-dropdown');
 
     var vm = this;
@@ -127,26 +128,23 @@ define([
      * @param {string} action
      */
     function action (action) {
-      var dialogParams = actions[action].dialog;
-
       statusIdBeforeAction = vm.leaveRequest.status_id;
 
-      dialog.open({
-        title: 'Confirm ' + dialogParams.title + '?',
-        copyCancel: 'Cancel',
-        copyConfirm: dialogParams.btnLabel,
-        classConfirm: 'btn-' + dialogParams.btnClass,
-        msg: dialogParams.msg,
-        onConfirm: function () {
-          return vm.leaveRequest[action]()
-            .then(function () {
-              publishEvents(action);
-            })
-            .catch(function (error) {
-              notification.error('Error:', error);
-            });
-        }
-      });
+      if (!_.includes(['cancel', 'reject', 'delete'], action)) {
+        vm.leaveRequest.checkIfBalanceChangeNeedsForceRecalculation()
+          .then(function (balanceChangeNeedsForceRecalculation) {
+            if (balanceChangeNeedsForceRecalculation) {
+              LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation()
+                .then(function () {
+                  LeavePopup.openModal(vm.leaveRequest, vm.leaveRequest.request_type, vm.leaveRequest.contact_id, $rootScope.section === 'my-leave', true);
+                });
+            } else {
+              openConfirmationDialog(action);
+            }
+          });
+      } else {
+        openConfirmationDialog(action);
+      }
     }
 
     /**
@@ -209,6 +207,27 @@ define([
       if (_.isArray(vm.absenceTypes)) {
         vm.absenceTypes = _.indexBy(vm.absenceTypes, 'id');
       }
+    }
+
+    function openConfirmationDialog (action) {
+      var dialogParams = actions[action].dialog;
+
+      dialog.open({
+        title: 'Confirm ' + dialogParams.title + '?',
+        copyCancel: 'Cancel',
+        copyConfirm: dialogParams.btnLabel,
+        classConfirm: 'btn-' + dialogParams.btnClass,
+        msg: dialogParams.msg,
+        onConfirm: function () {
+          return vm.leaveRequest[action]()
+            .then(function () {
+              publishEvents(action);
+            })
+            .catch(function (error) {
+              notification.error('Error:', error);
+            });
+        }
+      });
     }
 
     /**

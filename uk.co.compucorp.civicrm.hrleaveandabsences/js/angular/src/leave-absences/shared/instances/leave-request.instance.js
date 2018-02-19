@@ -4,32 +4,15 @@ define([
   'common/lodash',
   'leave-absences/shared/modules/models-instances',
   'common/models/option-group',
-  'common/models/instances/instance'
+  'common/models/instances/instance',
+  'leave-absences/shared/models/absence-type.model'
 ], function (_, instances) {
   'use strict';
 
   instances.factory('LeaveRequestInstance', ['$q', 'checkPermissions', 'OptionGroup',
-    'shared-settings', 'ModelInstance', 'LeaveRequestAPI',
-    function ($q, checkPermissions, OptionGroup, sharedSettings, ModelInstance, LeaveRequestAPI) {
-      /**
-       * Amends the first and last days of the balance by setting values from the
-       * selected time deductions. It also re-calculates the total amount.
-       *
-       * @param  {Object} balanceChange
-       */
-      function recalculateBalanceChange (balanceChange) {
-        _.first(_.values(balanceChange.breakdown)).amount = this['from_date_amount'];
-
-        if (balanceChange.breakdown.length > 1) {
-          _.last(_.values(balanceChange.breakdown)).amount = this['to_date_amount'];
-        }
-
-        balanceChange.amount = _.reduce(balanceChange.breakdown,
-          function (updatedChange, day) {
-            return updatedChange - day.amount;
-          }, 0);
-      }
-
+    'shared-settings', 'ModelInstance', 'LeaveRequestAPI', 'AbsenceType',
+    function ($q, checkPermissions, OptionGroup, sharedSettings, ModelInstance,
+      LeaveRequestAPI, AbsenceType) {
       /**
        * Update status ID
        *
@@ -50,6 +33,32 @@ define([
                 return $q.reject(error);
               }.bind(this));
           }.bind(this));
+      }
+
+      /**
+       * Checks if the balance change of the leave request need to be recalculated
+       *
+       * @return {Promise} resolves with {Boolean}
+       */
+      function checkIfBalanceChangeNeedsForceRecalculation () {
+        var originalBalanceAmount, unitName;
+
+        return AbsenceType.all({ id: this.type_id })
+          .then(AbsenceType.loadCalculationUnits)
+          .then(function (absenceTypes) {
+            unitName = absenceTypes[0].calculation_unit_name;
+          })
+          .then(function () {
+            return this.getBalanceChangeBreakdown();
+          }.bind(this))
+          .then(function (originalBalance) {
+            originalBalanceAmount = originalBalance.amount;
+
+            return this.calculateBalanceChange(unitName);
+          }.bind(this))
+          .then(function (balanceChange) {
+            return +originalBalanceAmount !== +balanceChange.amount;
+          });
       }
 
       /**
@@ -96,6 +105,25 @@ define([
               return statusObj.name === name;
             });
           });
+      }
+
+      /**
+       * Amends the first and last days of the balance by setting values from the
+       * selected time deductions. It also re-calculates the total amount.
+       *
+       * @param {Object} balanceChange
+       */
+      function recalculateBalanceChange (balanceChange) {
+        _.first(_.values(balanceChange.breakdown)).amount = this['from_date_amount'];
+
+        if (balanceChange.breakdown.length > 1) {
+          _.last(_.values(balanceChange.breakdown)).amount = this['to_date_amount'];
+        }
+
+        balanceChange.amount = _.reduce(balanceChange.breakdown,
+          function (updatedChange, day) {
+            return updatedChange - day.amount;
+          }, 0);
       }
 
       /**
@@ -178,6 +206,13 @@ define([
          */
         approve: function () {
           return changeLeaveStatus.call(this, sharedSettings.statusNames.approved);
+        },
+
+        /**
+         * Checks if the balance change of the leave request need to be recalculated
+         */
+        checkIfBalanceChangeNeedsForceRecalculation: function () {
+          return checkIfBalanceChangeNeedsForceRecalculation.call(this);
         },
 
         /**

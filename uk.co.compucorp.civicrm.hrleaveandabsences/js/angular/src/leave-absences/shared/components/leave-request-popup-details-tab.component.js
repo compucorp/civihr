@@ -19,7 +19,8 @@ define([
       isSelfRecord: '<',
       period: '=',
       isRole: '<',
-      selectedAbsenceType: '='
+      selectedAbsenceType: '=',
+      forceRecalculateBalanceChange: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup-details-tab.html';
@@ -510,7 +511,9 @@ define([
      * @return {Promise}
      */
     function initBalanceChange () {
-      return (!vm.isMode('create') ? getOriginalBalanceChange() : performBalanceChangeCalculation());
+      return !vm.isMode('create') && !vm.forceRecalculateBalanceChange
+        ? getOriginalBalanceChange()
+        : performBalanceChangeCalculation();
     }
 
     /**
