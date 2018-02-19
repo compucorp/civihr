@@ -341,6 +341,39 @@ define([
       });
     });
 
+    describe('can submit', function () {
+      var toilRequest;
+
+      beforeEach(function () {
+        toilRequest = TOILRequestInstance.init();
+
+        compileComponent({
+          leaveType: 'toil',
+          request: toilRequest,
+          role: 'manager'
+        });
+      });
+
+      describe('when toil request params are defined', function () {
+        beforeEach(function () {
+          toilRequest.from_date = date2016;
+          toilRequest.to_date = date2016To;
+          toilRequest.toil_duration = 10;
+          toilRequest.toil_to_accrue = 1;
+        });
+
+        it('allows the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(true);
+        });
+      });
+
+      describe('when toil reqest params are not defined', function () {
+        it('does not allow the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(false);
+        });
+      });
+    });
+
     describe('calculateBalanceChange()', function() {
       beforeEach(function () {
         controller.request.toil_to_accrue = '1';
@@ -389,11 +422,12 @@ define([
 
           controller.canManage = false;
           controller.uiOptions.multipleDays = true;
+          controller.request.to_date = date2016;
+          controller.request.id = 1;
           controller.requestCanExpire = false;
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
-
 
           controller.setDaysSelectionModeExtended();
         });

@@ -7,6 +7,7 @@ define([
   'leave-absences/mocks/data/absence-period.data',
   'leave-absences/mocks/data/absence-type.data',
   'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/mocks/helpers/helper',
   'leave-absences/mocks/helpers/request-modal-helper',
   'common/mocks/services/hr-settings-mock',
   'leave-absences/mocks/apis/absence-type-api-mock',
@@ -15,20 +16,24 @@ define([
   'leave-absences/mocks/apis/public-holiday-api-mock',
   'leave-absences/mocks/apis/work-pattern-api-mock',
   'leave-absences/manager-leave/app'
-], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, requestModalHelper) {
+], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, helper, requestModalHelper) {
   'use strict';
 
   describe('RequestModalDetailsLeaveController', function () {
     var $componentController, $provide, $log, $rootScope, controller, leaveRequest,
       AbsencePeriodInstance, LeaveRequestInstance, selectedAbsenceType;
 
+    var date2016 = '01/12/2016';
+    var date2016InServerFormat = moment(helper.getUTCDate(date2016)).format('YYYY-MM-D'); // Must match the date of `date2016`
+
     beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (_PublicHolidayAPIMock_, _WorkPatternAPIMock_, _OptionGroupAPIMock_) {
+    beforeEach(inject(function (_PublicHolidayAPIMock_, _WorkPatternAPIMock_, _OptionGroupAPIMock_, _LeaveRequestAPIMock_) {
       $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
       $provide.value('WorkPatternAPI', _WorkPatternAPIMock_);
+      $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
       $provide.value('api.optionGroup', _OptionGroupAPIMock_);
     }));
 
@@ -90,26 +95,6 @@ define([
       });
 
       it('returns the promise returned by balance change function', function () {
-        expect(returnValue).toBe(expectedReturnValue);
-      });
-    });
-
-    describe('checkSubmitConditions()', function () {
-      var returnValue;
-      var expectedReturnValue = 'somevalue';
-
-      beforeEach(function () {
-        controller.canCalculateChange = jasmine.createSpy();
-        controller.canCalculateChange.and.returnValue(expectedReturnValue);
-
-        returnValue = controller.checkSubmitConditions();
-      });
-
-      it('checks if change can be calculated', function () {
-        expect(controller.canCalculateChange).toHaveBeenCalled();
-      });
-
-      it('returns the promise returned by canCalculateChange function', function () {
         expect(returnValue).toBe(expectedReturnValue);
       });
     });
@@ -255,6 +240,48 @@ define([
           it('change can be calculated', function () {
             expect(controller.canCalculateChange()).toBe(true);
           });
+        });
+      });
+    });
+
+    describe('can submit', function () {
+      describe('when the leave request has all the details parameters defined', function () {
+        beforeEach(function () {
+          var leaveRequest = LeaveRequestInstance.init({
+            from_date: date2016InServerFormat,
+            to_date: date2016InServerFormat,
+            from_date_type: 1,
+            to_date_type: 1,
+            from_date_amount: 1,
+            to_date_amount: 1
+          });
+
+          compileComponent({
+            mode: 'edit',
+            request: leaveRequest
+          });
+        });
+
+        it('allows the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(true);
+        });
+      });
+
+      describe('when the leave request does not have all details parameters defined', function () {
+        beforeEach(function () {
+          var leaveRequest = LeaveRequestInstance.init({
+            from_date: date2016InServerFormat,
+            to_date: date2016InServerFormat
+          });
+
+          compileComponent({
+            mode: 'edit',
+            request: leaveRequest
+          });
+        });
+
+        it('does not allow the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(false);
         });
       });
     });

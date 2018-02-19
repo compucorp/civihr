@@ -10,15 +10,19 @@ define([
   'leave-absences/mocks/data/option-group.data',
   'leave-absences/mocks/helpers/helper',
   'leave-absences/mocks/helpers/request-modal-helper',
+  'common/mocks/services/hr-settings-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/leave-request-api-mock',
   'leave-absences/mocks/apis/option-group-api-mock',
-  'leave-absences/mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/apis/public-holiday-api-mock',
+  'leave-absences/mocks/apis/work-pattern-api-mock',
   'leave-absences/manager-leave/app'
 ], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper, requestModalHelper) {
   'use strict';
 
   describe('leaveRequestPopupDetailsTab', function () {
-    var $controllerProvider, $componentController, $provide, $q, $log, $rootScope, controller, sharedSettings, LeaveRequestAPI,
-      AbsenceType, AbsenceTypeAPI, AbsencePeriodInstance, LeaveRequestInstance,
+    var $controllerProvider, $componentController, $provide, $q, $log, $rootScope, $scope, controller,
+      sharedSettings, LeaveRequestAPI, AbsenceType, AbsenceTypeAPI, AbsencePeriodInstance, LeaveRequestInstance,
       OptionGroup, OptionGroupAPIMock, selectedAbsenceType, WorkPatternAPI, EntitlementAPI;
 
     var date2013 = '02/02/2013';
@@ -116,12 +120,20 @@ define([
           expect($log.debug).toHaveBeenCalled();
         });
 
+        it('emits an "add tab" event', function () {
+          expect($scope.$emit).toHaveBeenCalledWith('LeaveRequestPopup::addTab', controller);
+        });
+
         it('has leave type as "leave"', function () {
           expect(controller.isLeaveType('leave')).toBeTruthy();
         });
 
         it('has time interval set to 15 minutes', function () {
           expect(controller.uiOptions.time_interval).toBe(15);
+        });
+
+        it('is defined as a required tab', function () {
+          expect(controller.isRequired).toBe(true);
         });
 
         describe('initChildController()', function () {
@@ -1494,6 +1506,77 @@ define([
     });
 
     /**
+<<<<<<< HEAD
+=======
+     * Appends default values to the controller initialiation.
+     *
+     * @param {Object} params - the object to wich defaults will be appented to.
+     * properties and defaults:
+     * - {Array} absencePeriods - a list of absence periods. Defaults to all absence periods.
+     * - {Array} absenceTypes - a list of absence types. Defaults to all absence types.
+     * - {Object} balance - the request balance. Defaults to the globally defined balance.
+     * - {JasmineSpy} isLeaveStatus - a spy to execute the isLeaveStatus callback.
+     * - {String} leaveType - the leave absence type. Options are "leave", "sick", "toil". Defaults to "leave".
+     * - {Object} period - the currently selected period. Defaults to first period.
+     * - {Object} selectedAbsenceType - the selected absence type. Defaults to the first absence type, and sets remainder value to 0.
+     * - {Object} request - The leave request data. Defaults to an empty leave request.
+     * - {JasmineSpy} isMode - a isMode spy function.
+     * - {JasmineSpy} isRole - a isRole spy function.
+     */
+    function addDefaultComponentParams (params) {
+      addSpyParams(params);
+
+      var defaultParams = {
+        absencePeriods: absencePeriodData.all().values.map(function (period) {
+          return AbsencePeriodInstance.init(period);
+        }),
+        absenceTypes: absenceTypeData.all().values,
+        balance: balance, // balance is set globally
+        isLeaveStatus: params.isLeaveStatus,
+        leaveType: 'leave',
+        period: absencePeriodData.all().values[0],
+        selectedAbsenceType: _.assign(absenceTypeData.all().values[0], {
+          remainder: 0
+        }),
+        request: LeaveRequestInstance.init(),
+        isMode: params.isMode,
+        isRole: params.isRole
+      };
+
+      _.defaults(params, defaultParams);
+    }
+
+    /**
+     * Appends default spy functions to the params object.
+     *
+     * @param {Object} params - the object which spy functions will be appened to.
+     */
+    function addSpyParams (params) {
+      var defaultParams = {
+        mode: 'create',
+        role: 'staff'
+      };
+
+      _.defaults(params, defaultParams);
+
+      params.isMode = jasmine.createSpy('isMode')
+        .and.callFake(function (mode) {
+          return mode === params.mode;
+        });
+
+      params.isRole = jasmine.createSpy('isRole')
+        .and.callFake(function (role) {
+          return role === params.role;
+        });
+
+      params.isLeaveStatus = jasmine.createSpy('isLeaveStatus')
+        .and.callFake(function (statusName) {
+          return getStatusValueFromName(statusName) === params.request.status_id;
+        });
+    }
+
+    /**
+>>>>>>> staging
      * Compiles and initializes the component's controller. It returns the
      * parameters used to initialize the controller plus default parameter
      * values.
@@ -1506,12 +1589,14 @@ define([
     function compileComponent (params) {
       params = params || {};
       params.request = params.request || LeaveRequestInstance.init();
+      $scope = $rootScope.$new();
 
       requestModalHelper.addDefaultComponentParams(params, AbsencePeriodInstance);
+      spyOn($scope, '$emit').and.callThrough();
 
       controller = $componentController(
         'leaveRequestPopupDetailsTab',
-        null,
+        { $scope: $scope },
         params
       );
 

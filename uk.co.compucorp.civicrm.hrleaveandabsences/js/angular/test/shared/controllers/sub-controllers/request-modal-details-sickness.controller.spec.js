@@ -195,7 +195,7 @@ define([
             });
 
             it('does not allow to submit', function () {
-              expect(controller.checkSubmitConditions()).toBeFalsy();
+              expect(controller.canSubmit()).toBeFalsy();
             });
           });
 
@@ -205,7 +205,7 @@ define([
             });
 
             it('does not allow to submit', function () {
-              expect(controller.checkSubmitConditions()).toBeTruthy();
+              expect(controller.canSubmit()).toBeTruthy();
             });
           });
         });
