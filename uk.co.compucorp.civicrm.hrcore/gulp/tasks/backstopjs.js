@@ -6,6 +6,7 @@ var exec = require('child_process').exec;
 var file = require('gulp-file');
 var fs = require('fs');
 var gulp = require('gulp');
+var notify = require('gulp-notify');
 var path = require('path');
 var Promise = require('es6-promise').Promise;
 
@@ -131,6 +132,8 @@ function runBackstopJS (command) {
   return getRolesAndIDs()
     .then(function (contactIdsByRoles) {
       return new Promise(function (resolve) {
+        var isBackstopJSSuccessful;
+
         gulp.src(BACKSTOP_DIR_PATH + FILES.tpl)
           .pipe(file(destFile, tempFileContent(contactIdsByRoles)))
           .pipe(gulp.dest(BACKSTOP_DIR_PATH))
@@ -138,8 +141,17 @@ function runBackstopJS (command) {
             var promise = backstopjs(command, {
               configPath: BACKSTOP_DIR_PATH + destFile,
               filter: argv.filter
+            }).then(function () {
+              isBackstopJSSuccessful = true;
             }).catch(_.noop).then(function () { // equivalent to .finally()
-              gulp.src(BACKSTOP_DIR_PATH + destFile, { read: false }).pipe(clean());
+              gulp
+                .src(BACKSTOP_DIR_PATH + destFile, { read: false })
+                .pipe(clean())
+                .pipe(notify({
+                  message: isBackstopJSSuccessful ? 'Successful' : 'Error',
+                  title: 'BackstopJS',
+                  sound: 'Beep'
+                }));
             });
 
             resolve(promise);
@@ -199,9 +211,11 @@ function scenariosList () {
 
       scenarios.forEach(function (scenario, index) {
         scenario.credential = scenario.credential || DEFAULT_CREDENTIAL;
+        scenario.count = '(' + (index + 1) + ' of ' + scenarios.length + ')';
+        scenario.onBeforeScript = 'init';
 
         if (index === 0 || previousCredential !== scenario.credential) {
-          scenario.onBeforeScript = 'login';
+          scenario.performLogin = true;
 
           if (index !== 0) {
             scenario.performLogout = true;
