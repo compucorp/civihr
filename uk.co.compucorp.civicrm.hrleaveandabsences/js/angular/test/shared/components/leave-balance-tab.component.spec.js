@@ -2,12 +2,12 @@
 
 define([
   'common/lodash',
-  'mocks/data/absence-period.data',
-  'mocks/data/absence-type.data',
-  'mocks/data/leave-balance-report.data',
+  'leave-absences/mocks/data/absence-period.data',
+  'leave-absences/mocks/data/absence-type.data',
+  'leave-absences/mocks/data/leave-balance-report.data',
   'common/mocks/services/api/option-group-mock',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/apis/entitlement-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/entitlement-api-mock',
   'leave-absences/shared/models/entitlement.model',
   'leave-absences/shared/components/leave-balance-tab.component',
   'leave-absences/shared/config',
@@ -21,10 +21,12 @@ define([
     var filters = { any_filter: 'any value' };
     var userRole = 'admin';
 
-    beforeEach(module('common.services', 'leave-absences.mocks',
-      'leave-absences.models', 'leave-absences.components', function (_$provide_) {
+    beforeEach(module('common.services', 'leave-absences.mocks', 'leave-absences.models',
+      'leave-absences.components',
+      function (_$provide_) {
         $provide = _$provide_;
-      }));
+      }
+    ));
 
     beforeEach(inject(function (_AbsencePeriodAPIMock_, _AbsenceTypeAPIMock_,
       _EntitlementAPIMock_) {
@@ -51,9 +53,8 @@ define([
       $provide.value('api.optionGroup', _OptionGroupAPIMock_);
     }]));
 
-    beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
-      _AbsencePeriod_, _AbsenceType_, _LeaveBalanceReport_, _pubSub_, _Session_,
-      _notificationService_) {
+    beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_,
+      _LeaveBalanceReport_, _pubSub_, _Session_, _notificationService_) {
       $componentController = _$componentController_;
       $q = _$q_;
       $rootScope = _$rootScope_;

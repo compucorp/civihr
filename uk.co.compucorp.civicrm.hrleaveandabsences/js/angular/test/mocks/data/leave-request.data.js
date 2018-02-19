@@ -3,8 +3,8 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/option-group.data',
-  'mocks/data/absence-type.data'
+  'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/data/absence-type.data'
 ], function (_, moment, optionGroupMock, absenceTypeData) {
   var mockData = {
     allData: {
@@ -488,7 +488,7 @@ define([
     workDayForDate: (function () {
       var timeFrom = moment({
         hours: Math.ceil(Math.random() * 14),
-        minutes: Math.ceil(Math.random() * 20)
+        minutes: Math.ceil(Math.random() * 2) * 15
       });
 
       return {
@@ -499,7 +499,7 @@ define([
           time_from: timeFrom.format('HH:mm'),
           time_to: timeFrom
             .add(4 + Math.ceil(Math.random() * 5), 'hours')
-            .add(Math.ceil(Math.random() * 39), 'minutes')
+            .add(Math.ceil(Math.random() * 2) * 15, 'minutes')
             .format('HH:mm'),
           number_of_hours: '' + (Math.ceil(Math.random() * 24 / 0.25) * 0.25)
         }

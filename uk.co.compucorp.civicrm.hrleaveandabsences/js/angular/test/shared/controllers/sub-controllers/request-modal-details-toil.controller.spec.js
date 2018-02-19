@@ -4,12 +4,12 @@ define([
   'common/angular',
   'common/lodash',
   'common/moment',
-  'mocks/data/absence-period.data',
-  'mocks/data/absence-type.data',
-  'mocks/data/leave-request.data',
-  'mocks/data/option-group.data',
-  'mocks/helpers/helper',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/data/absence-period.data',
+  'leave-absences/mocks/data/absence-type.data',
+  'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/helpers/helper',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/manager-leave/app'
 ], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper) {
   'use strict';

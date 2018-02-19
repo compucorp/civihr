@@ -3,11 +3,11 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/helpers/controller-on-changes',
-  'mocks/data/absence-type.data',
-  'mocks/data/option-group.data',
-  'mocks/apis/leave-request-api-mock',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/helpers/controller-on-changes',
+  'leave-absences/mocks/data/absence-type.data',
+  'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/apis/leave-request-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/shared/components/leave-widget/leave-widget.component'
 ], function (_, moment, controllerOnChanges, absenceTypesData, OptionGroupData) {
   describe('leaveWidgetNextLeave', function () {
@@ -26,10 +26,8 @@ define([
       $provide.value('OptionGroup', OptionGroupAPIMock);
     }));
 
-    beforeEach(inject(['$componentController', '$q', '$rootScope',
-      'LeaveRequest', 'OptionGroup', 'shared-settings',
-      function (_$componentController_, _$q_, _$rootScope_, _LeaveRequest_,
-        _OptionGroup_, _sharedSettings_) {
+    beforeEach(inject(['$componentController', '$q', '$rootScope', 'LeaveRequest', 'OptionGroup', 'shared-settings',
+      function (_$componentController_, _$q_, _$rootScope_, _LeaveRequest_, _OptionGroup_, _sharedSettings_) {
         $componentController = _$componentController_;
         $q = _$q_;
         $rootScope = _$rootScope_;

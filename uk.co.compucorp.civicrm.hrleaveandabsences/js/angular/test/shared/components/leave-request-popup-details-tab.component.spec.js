@@ -4,12 +4,13 @@ define([
   'common/angular',
   'common/lodash',
   'common/moment',
-  'mocks/data/absence-period.data',
-  'mocks/data/absence-type.data',
-  'mocks/data/leave-request.data',
-  'mocks/data/option-group.data',
-  'mocks/helpers/helper',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/data/absence-period.data',
+  'leave-absences/mocks/data/absence-type.data',
+  'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/helpers/helper',
+  'leave-absences/mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/manager-leave/app'
 ], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper) {
   'use strict';
@@ -21,11 +22,11 @@ define([
 
     var date2013 = '02/02/2013';
     var date2016 = '01/12/2016';
-    var date2016InServerFormat = '2016-01-12'; // Must match the date of `date2016`
+    var date2016InServerFormat = moment(getUTCDate(date2016)).format('YYYY-MM-D'); // Must match the date of `date2016`
     var date2016To = '02/12/2016'; // Must be greater than `date2016`
     var date2017 = '01/02/2017';
     var date2017To = '02/02/2017'; // Must be greater than `date2017`
-    var date2017ToInServerFormat = '2017-02-02'; // Must match the date of `date2017To`
+    var date2017ToInServerFormat = moment(date2017To, 'D/MM/YYYY').format('YYYY-MM-D'); // Must match the date of `date2017To`
 
     beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
       $provide = _$provide_;
@@ -561,10 +562,6 @@ define([
                 expect(timeFromObject.time).toBe(timeFromObject.min);
               });
 
-              it('sets the maximum deduction amount', function () {
-                expect(timeFromObject.maxAmount).toBe(workDayMock.number_of_hours);
-              });
-
               it('sets the default deduction amount same as maximum', function () {
                 expect(timeFromObject.amount).toBe(timeFromObject.maxAmount);
               });
@@ -594,6 +591,33 @@ define([
                   expect(timeToObject.max).toBe(workDayMock.time_to);
                   expect(timeToObject.time).toBe(timeToObject.max);
                   expect(timeToObject.disabled).toBeFalsy();
+                });
+
+                describe('after to date is selected', function () {
+                  beforeEach(function () {
+                    setTestDates(undefined, date2016To);
+                  });
+
+                  describe('after both start and end times are selected', function () {
+                    beforeEach(function () {
+                      controller.uiOptions.times.from.time =
+                        getMomentDateWithGivenTime(workDayMock.time_from)
+                          .add(controller.uiOptions.time_interval * 2, 'minutes')
+                          .format('HH:mm');
+                      controller.uiOptions.times.to.time =
+                        getMomentDateWithGivenTime(workDayMock.time_to)
+                          .subtract(controller.uiOptions.time_interval * 2, 'minutes')
+                          .format('HH:mm');
+
+                      $rootScope.$digest();
+                    });
+
+                    it('sets the maximum deduction amount according to the chosen timeframe', function () {
+                      expect(controller.uiOptions.times.from.maxAmount).toBe(
+                        getTimeDifferenceInHours(controller.uiOptions.times.from.time, controller.uiOptions.times.to.time)
+                      );
+                    });
+                  });
                 });
               });
 
@@ -631,20 +655,44 @@ define([
                   expect(timeToObject.disabled).toBeFalsy();
                 });
 
-                it('sets the maximum deduction amount', function () {
-                  expect(timeToObject.maxAmount).toBe(workDayMock.number_of_hours);
-                });
-
-                it('sets the default deduction amount same as maximum', function () {
-                  expect(timeToObject.amount).toBe(timeToObject.maxAmount);
-                });
-
                 it('sets the "from" date to request in a date+time format', function () {
                   expect(request.to_date.length).toBe('YYYY-MM-DD hh:mm'.length);
                 });
 
                 it('shows the balance', function () {
                   expect(controller.uiOptions.showBalance).toBeTruthy();
+                });
+
+                describe('after both start and end times are selected', function () {
+                  beforeEach(function () {
+                    controller.uiOptions.times.from.time =
+                      getMomentDateWithGivenTime(workDayMock.time_from)
+                        .add(15, 'minutes')
+                        .format('HH:mm');
+                    controller.uiOptions.times.to.time =
+                      getMomentDateWithGivenTime(workDayMock.time_to)
+                        .subtract(30, 'minutes')
+                        .format('HH:mm');
+
+                    $rootScope.$digest();
+                  });
+
+                  it('sets the maximum "from" deduction amount according to maximum and chosen "from" times', function () {
+                    expect(controller.uiOptions.times.from.maxAmount).toBe(
+                      getTimeDifferenceInHours(controller.uiOptions.times.from.time, controller.uiOptions.times.from.max)
+                    );
+                  });
+
+                  it('sets the maximum "to" deduction amount according to minimum and chosen "to" times', function () {
+                    expect(controller.uiOptions.times.to.maxAmount).toBe(
+                      getTimeDifferenceInHours(controller.uiOptions.times.to.min, controller.uiOptions.times.to.time)
+                    );
+                  });
+
+                  it('sets the default deductions amounts same as maximum', function () {
+                    expect(controller.uiOptions.times.from.amount).toBe(controller.uiOptions.times.from.maxAmount);
+                    expect(controller.uiOptions.times.to.amount).toBe(controller.uiOptions.times.to.maxAmount);
+                  });
                 });
 
                 describe('and it is a single day request', function () {
@@ -655,10 +703,11 @@ define([
                   });
 
                   describe('when "time from" and "time to" are set', function () {
-                    var timeTo = '14:35';
+                    var timeTo;
 
                     beforeEach(function () {
-                      controller.uiOptions.times.from.time = '10:45';
+                      timeTo = controller.uiOptions.times.to.max;
+                      controller.uiOptions.times.from.time = controller.uiOptions.times.from.min;
                       controller.uiOptions.times.to.time = timeTo;
 
                       $rootScope.$digest();
@@ -726,7 +775,7 @@ define([
           describe('when user edits the request', function () {
             var leaveRequest;
             var fromDeduction = '1.5';
-            var toDeduction = '4.75';
+            var toDeduction = '1.25';
 
             beforeEach(function () {
               var status = optionGroupMock.specificValue(
@@ -752,8 +801,8 @@ define([
             it('sets time and deduction', function () {
               expect(controller.uiOptions.times.from.time).toBe(moment(leaveRequest.from_date).format('HH:mm'));
               expect(controller.uiOptions.times.to.time).toBe(moment(leaveRequest.to_date).format('HH:mm'));
-              expect(controller.uiOptions.times.from.amount).toBe(leaveRequest.from_date_amount);
-              expect(controller.uiOptions.times.to.amount).toBe(leaveRequest.to_date_amount);
+              expect(controller.uiOptions.times.from.amount).toBe(fromDeduction);
+              expect(controller.uiOptions.times.to.amount).toBe(toDeduction);
             });
 
             it('does not recalculate the balance', function () {
@@ -762,6 +811,7 @@ define([
 
             describe('and is a single day request', function () {
               var workDayMock;
+              var fromDeduction = '1';
 
               beforeEach(function () {
                 var status = optionGroupMock.specificValue(
@@ -775,6 +825,7 @@ define([
                     .add(30, 'minutes')
                     .format('HH:mm');
                 leaveRequest.to_date = date2016InServerFormat + ' ' + workDayMock.time_to;
+                leaveRequest.from_date_amount = fromDeduction;
 
                 compileComponent({
                   mode: 'edit',
@@ -799,6 +850,12 @@ define([
                     .format('HH:mm')
                 );
               });
+
+              it('sets time and deduction', function () {
+                expect(controller.uiOptions.times.from.time).toBe(moment(leaveRequest.from_date).format('HH:mm'));
+                expect(controller.uiOptions.times.to.time).toBe(moment(leaveRequest.to_date).format('HH:mm'));
+                expect(controller.uiOptions.times.from.amount).toBe(fromDeduction);
+              });
             });
 
             describe('when received the balance change recalculation event', function () {
@@ -809,28 +866,6 @@ define([
 
               it('recalculates the balance change', function () {
                 expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
-              });
-            });
-
-            describe('when deduction is greater than allowed', function () {
-              var maxDeduction;
-
-              beforeEach(function () {
-                maxDeduction = (Math.min(controller.request.from_date_amount, controller.request.to_date_amount) - 0.001).toString();
-
-                spyOn(controller.request, 'getWorkDayForDate').and
-                  .returnValue($q.resolve({ number_of_hours: maxDeduction }));
-                compileComponent({
-                  mode: 'edit',
-                  request: leaveRequest
-                });
-                $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
-                $rootScope.$digest();
-              });
-
-              it('resets both "from" and "to" to their maximum allowed values', function () {
-                expect(controller.request.from_date_amount).toBe(maxDeduction);
-                expect(controller.request.to_date_amount).toBe(maxDeduction);
               });
             });
           });
@@ -1269,6 +1304,7 @@ define([
       describe('when the calculation unit is "hours"', function () {
         beforeEach(function () {
           selectedAbsenceType.calculation_unit_name = 'hours';
+          controller.uiOptions.multipleDays = true;
 
           spyOn(controller, 'dateChangeHandler').and.callThrough();
         });
@@ -1385,6 +1421,9 @@ define([
         describe('when the calculation unit is "hours"', function () {
           beforeEach(function () {
             selectedAbsenceType.calculation_unit_name = 'hours';
+            controller.uiOptions.multipleDays = true;
+
+            $rootScope.$digest();
           });
 
           describe('when "from" date is changed', function () {
@@ -1549,6 +1588,46 @@ define([
     }
 
     /**
+     * Returns the id for a specific status by filtering using the status name.
+     *
+     * @param {String} statusName - The name of the status to filter by.
+     * @return {Number}
+     */
+    function getStatusValueFromName (statusName) {
+      var status = optionGroupMock.specificObject(
+        'hrleaveandabsences_leave_request_status',
+        'name',
+        statusName
+      );
+
+      return status.value;
+    }
+
+      /**
+     * Calculates time difference in hours
+     *
+     * @param  {String} timeFrom in HH:mm format
+     * @param  {String} timeTo in HH:mm format
+     * @return {String} amount of hours, eg. '7.5'
+     */
+    function getTimeDifferenceInHours (timeFrom, timeTo) {
+      return (getMomentDateWithGivenTime(timeTo)
+        .diff(getMomentDateWithGivenTime(timeFrom), 'minutes') / 60)
+        .toString();
+    }
+
+    /**
+     * Returns a UTC Date object from a string.
+     *
+     * @param {String} date - the date to convert to UTC Date object.
+     * @return {Date}
+     */
+    function getUTCDate (date) {
+      var now = new Date(date);
+      return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+    }
+
+    /**
      * sets from and/or to dates
      * @param {String} from date set if passed
      * @param {String} to date set if passed
@@ -1565,33 +1644,6 @@ define([
         controller.dateChangeHandler('to');
         $rootScope.$digest();
       }
-    }
-
-    /**
-     * Returns a UTC Date object from a string.
-     *
-     * @param {String} date - the date to convert to UTC Date object.
-     * @return {Date}
-     */
-    function getUTCDate (date) {
-      var now = new Date(date);
-      return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
-    }
-
-    /**
-     * Returns the id for a specific status by filtering using the status name.
-     *
-     * @param {String} statusName - The name of the status to filter by.
-     * @return {Number}
-     */
-    function getStatusValueFromName (statusName) {
-      var status = optionGroupMock.specificObject(
-        'hrleaveandabsences_leave_request_status',
-        'name',
-        statusName
-      );
-
-      return status.value;
     }
   });
 });

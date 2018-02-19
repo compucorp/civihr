@@ -3,8 +3,8 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/helpers/controller-on-changes',
-  'mocks/data/leave-request.data',
+  'leave-absences/mocks/helpers/controller-on-changes',
+  'leave-absences/mocks/data/leave-request.data',
   'leave-absences/shared/components/leave-requests-heatmap.component'
 ], function (_, moment, controllerOnChanges, leaveRequestData) {
   describe('leaveRequestsHeatmap', function () {
@@ -33,18 +33,19 @@ define([
         controllerOnChanges.mockChange('leaveRequests', leaveRequests);
 
         expectedHeatMap = {};
-        leaveRequests.reduce(function (dates, request) {
-          return dates.concat(request.dates);
-        }, [])
-        .forEach(function (date) {
-          var dayOfTheWeek = moment(date.date).isoWeekday();
+        leaveRequests
+          .reduce(function (dates, request) {
+            return dates.concat(request.dates);
+          }, [])
+          .forEach(function (date) {
+            var dayOfTheWeek = moment(date.date).isoWeekday();
 
-          if (!expectedHeatMap[dayOfTheWeek]) {
-            expectedHeatMap[dayOfTheWeek] = 0;
-          }
+            if (!expectedHeatMap[dayOfTheWeek]) {
+              expectedHeatMap[dayOfTheWeek] = 0;
+            }
 
-          expectedHeatMap[dayOfTheWeek]++;
-        });
+            expectedHeatMap[dayOfTheWeek]++;
+          });
       });
 
       it('transforms leave requests into heatmap values', function () {

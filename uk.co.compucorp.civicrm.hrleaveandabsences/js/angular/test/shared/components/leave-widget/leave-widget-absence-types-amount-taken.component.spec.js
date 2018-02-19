@@ -3,12 +3,12 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/helpers/controller-on-changes',
-  'mocks/data/option-group.data',
-  'mocks/apis/absence-period-api-mock',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/apis/leave-request-api-mock',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/helpers/controller-on-changes',
+  'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/leave-request-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/shared/components/leave-widget/leave-widget.component'
 ], function (_, moment, controllerOnChanges, OptionGroupData) {
   describe('leaveWidgetAbsenceTypesAmountTaken', function () {
@@ -125,11 +125,13 @@ define([
              */
             function mapAbsenceTypeBalances () {
               expectedAbsenceTypes = absenceTypes.map(function (absenceType) {
-                var balance = leaveRequests.filter(function (request) {
-                  return +request.type_id === +absenceType.id;
-                }).reduce(function (balance, request) {
-                  return balance + request.balance_change;
-                }, 0);
+                var balance = leaveRequests
+                  .filter(function (request) {
+                    return +request.type_id === +absenceType.id;
+                  })
+                  .reduce(function (balance, request) {
+                    return balance + request.balance_change;
+                  }, 0);
 
                 return _.assign({ balance: Math.abs(balance) }, absenceType);
               });

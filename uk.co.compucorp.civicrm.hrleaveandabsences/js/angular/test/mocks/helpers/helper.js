@@ -2,9 +2,9 @@
 
 define([
   'common/lodash',
-  'mocks/data/option-group.data',
-  'mocks/data/absence-type.data',
-  'mocks/data/work-pattern.data'
+  'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/data/absence-type.data',
+  'leave-absences/mocks/data/work-pattern.data'
 ], function (_, optionGroupMock, absenceTypeData, workPatternMocked) {
   return {
     /**
@@ -23,6 +23,7 @@ define([
         'to_date_type': optionGroupMock.randomValue('hrleaveandabsences_leave_request_day_type', 'name')
       };
     },
+
     /**
      * Creates a Sickness LeaveRequest with random values
      *
@@ -40,6 +41,7 @@ define([
         'reason': optionGroupMock.randomValue('hrleaveandabsences_sickness_reason', 'name')
       };
     },
+
     /**
      * Creates a TOIL LeaveRequest with random values
      *
@@ -57,6 +59,7 @@ define([
         'duration': 180
       };
     },
+
     /**
      * Find if HTTP POST is for entity LeaveRequest and action create/update
      *
@@ -85,6 +88,7 @@ define([
 
       return false;
     },
+
     /**
      * Gets a date for given day type
      *
@@ -98,12 +102,12 @@ define([
     }
   };
 
-   /**
-    * Finds a day type Option Value based on its name
-    *
-    * @param  {string} name
-    * @return {object}
-    */
+  /**
+   * Finds a day type Option Value based on its name
+   *
+   * @param  {string} name
+   * @return {object}
+   **/
   function dayTypeByName (name) {
     var dayTypes = optionGroupMock.getCollection('hrleaveandabsences_work_day_type');
 

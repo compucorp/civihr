@@ -4,6 +4,7 @@ use CRM_HRCore_Date_BasicDatePeriod as BasicDatePeriod;
 use CRM_HRLeaveAndAbsences_Validator_Date as DateValidator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException as InvalidAbsencePeriodException;
 
 class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DAO_AbsencePeriod {
@@ -617,5 +618,46 @@ class CRM_HRLeaveAndAbsences_BAO_AbsencePeriod extends CRM_HRLeaveAndAbsences_DA
     }
 
     return $absencePeriods;
+  }
+
+  /**
+   * Returns the closest Absence Period to the current date.
+   * The absence period could be the one before the current date or
+   * could be after or could even be the one containing the
+   * current date.
+   *
+   * An absence period containing the current date is the most
+   * preferred, If it does not exist, then the next closest absence
+   * period in the future is preferred, If that does not exists, then
+   * the closest absence period in the past is considered.
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsencePeriod|null
+   *   Returns null if there are no absence periods.
+   */
+  public static function getClosestToCurrentDate() {
+    $absencePeriodTable = self::getTableName();
+    $today = new DateTime('today');
+
+    $query = "SELECT * FROM {$absencePeriodTable} 
+              WHERE end_date >= '{$today->format('Y-m-d')}'
+              ORDER BY start_date ASC LIMIT 1";
+
+    $absencePeriod = CRM_Core_DAO::executeQuery($query, [], true, self::class);
+
+    if ($absencePeriod->N != 1) {
+      $query = "SELECT * FROM {$absencePeriodTable}
+              WHERE end_date < '{$today->format('Y-m-d')}'
+              ORDER BY start_date DESC LIMIT 1";
+
+      $absencePeriod = CRM_Core_DAO::executeQuery($query, [], true, self::class);
+    }
+
+    if ($absencePeriod->N !== 1) {
+      return null;
+    }
+
+    $absencePeriod->fetch();
+
+    return $absencePeriod;
   }
 }
