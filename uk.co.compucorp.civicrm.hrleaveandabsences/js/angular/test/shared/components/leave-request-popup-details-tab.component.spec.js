@@ -17,7 +17,7 @@ define([
   'use strict';
 
   describe('leaveRequestPopupDetailsTab', function () {
-    var $componentController, $provide, $q, $log, $rootScope, controller, sharedSettings, LeaveRequestAPI,
+    var $controllerProvider, $componentController, $provide, $q, $log, $rootScope, controller, sharedSettings, LeaveRequestAPI,
       AbsenceType, AbsenceTypeAPI, AbsencePeriodInstance, LeaveRequestInstance,
       OptionGroup, OptionGroupAPIMock, selectedAbsenceType, WorkPatternAPI, EntitlementAPI;
 
@@ -29,9 +29,11 @@ define([
     var date2017To = '02/02/2017'; // Must be greater than `date2017`
     var date2017ToInServerFormat = moment(date2017To, 'D/MM/YYYY').format('YYYY-MM-D'); // Must match the date of `date2017To`
 
-    beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'manager-leave',
+      function (_$controllerProvider_, _$provide_) {
+        $controllerProvider = _$controllerProvider_;
+        $provide = _$provide_;
+      }));
 
     beforeEach(inject(function (_AbsenceTypeAPIMock_, _WorkPatternAPIMock_, _PublicHolidayAPIMock_, _LeaveRequestAPIMock_, _OptionGroupAPIMock_) {
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
@@ -75,6 +77,29 @@ define([
         return OptionGroupAPIMock.valuesOf(name);
       });
     }));
+
+    describe('child controller override', function () {
+      describe('when child controller defines a same property as parent componenet', function () {
+        var valueSetInParentController = 2;
+        var valueSetInChildController = 1;
+
+        beforeEach(inject(function () {
+          $controllerProvider.register('RequestModalDetailsLeaveController', function ($controller, $log, $q, detailsController) {
+            detailsController.canCalculateChange = jasmine.createSpy();
+            detailsController.initChildController = jasmine.createSpy();
+            detailsController.initChildController.and.returnValue($q.resolve());
+
+            detailsController.someProperty = valueSetInChildController;
+          });
+
+          compileComponent({someProperty: valueSetInParentController});
+        }));
+
+        it('child controller overrides the properties defined in parent component', function () {
+          expect(controller.someProperty).toBe(valueSetInChildController);
+        });
+      });
+    });
 
     describe('when user CREATES leave request', function () {
       describe('on init', function () {
