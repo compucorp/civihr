@@ -66,41 +66,42 @@ define([
         promiseFields[entityName] = entityServices[entityName].getFields();
       }
 
-      $q.all(promiseFields).then(function (fields) {
-        $scope.fields = fields;
+      $q.all(promiseFields)
+        .then(function (fields) {
+          $scope.fields = fields;
 
-        $log.debug('FIELDS:');
-        $log.debug(fields);
+          $log.debug('FIELDS:');
+          $log.debug(fields);
 
-        for (entityName in entityServices) {
-          promiseModel[entityName] = entityServices[entityName].model(fields[entityName]);
-        }
+          for (entityName in entityServices) {
+            promiseModel[entityName] = entityServices[entityName].model(fields[entityName]);
+          }
 
-        return $q.all(promiseModel);
-      })
-      .then(function (model) {
-        $scope.model = model;
+          return $q.all(promiseModel);
+        })
+        .then(function (model) {
+          $scope.model = model;
 
-        $log.debug('MODEL:');
-        $log.debug(model);
+          $log.debug('MODEL:');
+          $log.debug(model);
 
-        contractList = $filter('orderBy')(contractList, '-is_primary');
+          contractList = $filter('orderBy')(contractList, '-is_primary');
 
-        angular.forEach(contractList, function (contract) {
-          +contract.is_current ? $scope.contractCurrent.push(contract) : $scope.contractPast.push(contract);
+          angular.forEach(contractList, function (contract) {
+            +contract.is_current ? $scope.contractCurrent.push(contract) : $scope.contractPast.push(contract);
+          });
+
+          $scope.$watchCollection('contractCurrent', function () {
+            $scope.utils.contractListLen = $scope.contractCurrent.length + $scope.contractPast.length;
+          });
+
+          $scope.$watchCollection('contractPast', function () {
+            $scope.utils.contractListLen = $scope.contractCurrent.length + $scope.contractPast.length;
+          });
+
+          $rootScope.$broadcast('hrjc-loader-hide');
+          $scope.contractListLoaded = true;
         });
-
-        $scope.$watchCollection('contractCurrent', function () {
-          $scope.utils.contractListLen = $scope.contractCurrent.length + $scope.contractPast.length;
-        });
-
-        $scope.$watchCollection('contractPast', function () {
-          $scope.utils.contractListLen = $scope.contractCurrent.length + $scope.contractPast.length;
-        });
-
-        $rootScope.$broadcast('hrjc-loader-hide');
-        $scope.contractListLoaded = true;
-      });
 
       $q.all(promiseUtils).then(function (utils) {
         angular.extend($scope.utils, utils);
@@ -188,7 +189,7 @@ define([
           $scope.toggleIsPrimary(contract.id);
         }
 
-        $window.location.assign(utilsService.getManageEntitlementsPageURL(contract.contact_id));
+        utilsService.updateEntitlements(contract.contact_id);
       });
     }
 

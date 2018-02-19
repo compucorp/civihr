@@ -33,10 +33,11 @@ define([
 
       beforeEach(function () {
         contractLeaves = angular.copy(MockContract.contractLeaves.values)
-        .map(function (contract) {
-          contract.add_public_holidays = contract.add_public_holidays === '1';
-          return contract;
-        });
+          .map(function (contract) {
+            contract.add_public_holidays = contract.add_public_holidays === '1';
+
+            return contract;
+          });
       });
 
       it('calls getOne() and returns expected contract leaves', function () {
@@ -60,8 +61,8 @@ define([
         $rootScope.$digest();
       });
 
-      it('fetches Absence Types sorted by weight', function () {
-        expect(AbsenceType.all).toHaveBeenCalledWith(jasmine.objectContaining({ options: { sort: 'weight ASC' } }));
+      it('fetches Absence Types', function () {
+        expect(AbsenceType.all).toHaveBeenCalledWith();
       });
 
       it('sets entitlement to 0 for Absence Types created after the Job Contract was saved last time', function () {

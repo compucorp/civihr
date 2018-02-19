@@ -5,7 +5,7 @@ define([
   'common/moment',
   'common/mocks/services/api/option-group-mock',
   'leave-absences/shared/models/absence-type.model',
-  'mocks/apis/absence-type-api-mock'
+  'leave-absences/mocks/apis/absence-type-api-mock'
 ], function (_, moment) {
   'use strict';
 

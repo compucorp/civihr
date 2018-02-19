@@ -2,9 +2,9 @@
 
 define([
   'common/lodash',
-  'mocks/module',
-  'mocks/data/entitlement.data',
-  'mocks/data/leave-balance-report.data',
+  'leave-absences/mocks/module',
+  'leave-absences/mocks/data/entitlement.data',
+  'leave-absences/mocks/data/leave-balance-report.data',
   'common/angularMocks'
 ], function (_, mocks, mockData, leaveBalanceReportMockData) {
   'use strict';

@@ -3,12 +3,12 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/entitlement-log.data',
-  'mocks/apis/absence-period-api-mock',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/apis/entitlement-api-mock',
-  'mocks/apis/entitlement-log-api-mock',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/data/entitlement-log.data',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/entitlement-api-mock',
+  'leave-absences/mocks/apis/entitlement-log-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/absence-tab/components/annual-entitlement-change-log.component'
 ], function (_, moment, entitlementLogData) {
   describe('Annual entitlement change log', function () {
@@ -17,35 +17,37 @@ define([
     var contactId = 204;
     var periodId = 304;
 
-    beforeEach(module('leave-absences.mocks', 'absence-tab',
-    function (_$provide_) {
+    beforeEach(module('leave-absences.mocks', 'absence-tab', function (_$provide_) {
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock,
-    EntitlementAPIMock, EntitlementLogAPIMock, OptionGroupAPIMock) {
-      $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
-      $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
-      $provide.value('EntitlementAPI', EntitlementAPIMock);
-      $provide.value('EntitlementLogAPI', EntitlementLogAPIMock);
-      $provide.value('api.optionGroup', OptionGroupAPIMock);
-    }));
+    beforeEach(inject(
+      function (AbsencePeriodAPIMock, AbsenceTypeAPIMock, EntitlementAPIMock, EntitlementLogAPIMock,
+        OptionGroupAPIMock) {
+        $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
+        $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
+        $provide.value('EntitlementAPI', EntitlementAPIMock);
+        $provide.value('EntitlementLogAPI', EntitlementLogAPIMock);
+        $provide.value('api.optionGroup', OptionGroupAPIMock);
+      }
+    ));
 
-    beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_, _Entitlement_) {
-      $componentController = _$componentController_;
-      $q = _$q_;
-      $rootScope = _$rootScope_;
-      AbsencePeriod = _AbsencePeriod_;
-      AbsenceType = _AbsenceType_;
-      Entitlement = _Entitlement_;
+    beforeEach(inject(
+      function (_$componentController_, _$q_, _$rootScope_, _AbsencePeriod_, _AbsenceType_, _Entitlement_) {
+        $componentController = _$componentController_;
+        $q = _$q_;
+        $rootScope = _$rootScope_;
+        AbsencePeriod = _AbsencePeriod_;
+        AbsenceType = _AbsenceType_;
+        Entitlement = _Entitlement_;
 
-      spyOn(AbsencePeriod, 'all').and.callThrough();
-      spyOn(Entitlement, 'all').and.callThrough();
-      spyOn(Entitlement, 'logs').and.callThrough();
+        spyOn(AbsencePeriod, 'all').and.callThrough();
+        spyOn(Entitlement, 'all').and.callThrough();
+        spyOn(Entitlement, 'logs').and.callThrough();
 
-      compileComponent();
-    }));
+        compileComponent();
+      }
+    ));
 
     describe('on init', function () {
       it('sets absence period equal to null', function () {
@@ -75,12 +77,10 @@ define([
       var expectedAbsenceTypes, expectedAbsencePeriod;
 
       beforeEach(function () {
-        AbsencePeriod.all({
-          id: periodId
-        })
-        .then(function (periods) {
-          expectedAbsencePeriod = periods[0];
-        });
+        AbsencePeriod.all({ id: periodId })
+          .then(function (periods) {
+            expectedAbsencePeriod = periods[0];
+          });
 
         AbsenceType.all().then(function (absenceTypes) {
           expectedAbsenceTypes = absenceTypes.map(function (absenceType) {

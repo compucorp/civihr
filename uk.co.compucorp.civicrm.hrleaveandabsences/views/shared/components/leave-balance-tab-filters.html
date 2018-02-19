@@ -13,7 +13,7 @@
     <select class="form-control no-select2"
       ng-change="balanceFilters.submitFilters()"
       ng-model="balanceFilters.filters.type_id"
-      ng-options="type.id as type.title for type in balanceFilters.absenceTypes | orderBy:'title'">
+      ng-options="type.id as type.title for type in balanceFilters.absenceTypes">
     </select>
     <span class="crm_custom-select__arrow"></span>
   </div>

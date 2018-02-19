@@ -3,10 +3,10 @@
 define([
   'common/angular',
   'common/moment',
-  'mocks/apis/absence-period-api-mock',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/data/absence-period.data',
-  'mocks/data/absence-type.data',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/data/absence-period.data',
+  'leave-absences/mocks/data/absence-type.data',
   'leave-absences/shared/components/leave-balance-tab-filters.component',
   'leave-absences/shared/models/absence-period.model',
   'leave-absences/shared/models/absence-type.model',
@@ -20,23 +20,25 @@ define([
     var loggedInContactId = 101;
     var userRole = 'admin';
 
-    beforeEach(module('leave-absences.components', 'leave-absences.mocks',
-    'leave-absences.models', 'leave-absences.settings', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(module('leave-absences.components', 'leave-absences.mocks', 'leave-absences.models',
+      'leave-absences.settings', function (_$provide_) {
+        $provide = _$provide_;
+      }
+    ));
 
     beforeEach(inject(function (AbsencePeriodAPIMock, AbsenceTypeAPIMock) {
       $provide.value('AbsencePeriodAPI', AbsencePeriodAPIMock);
       $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
     }));
 
-    beforeEach(inject(function (_$componentController_, _$rootScope_,
-    _AbsencePeriod_, _AbsenceType_) {
-      $componentController = _$componentController_;
-      $rootScope = _$rootScope_;
-      AbsencePeriod = _AbsencePeriod_;
-      AbsenceType = _AbsenceType_;
-    }));
+    beforeEach(
+      inject(function (_$componentController_, _$rootScope_, _AbsencePeriod_,
+        _AbsenceType_) {
+        $componentController = _$componentController_;
+        $rootScope = _$rootScope_;
+        AbsencePeriod = _AbsencePeriod_;
+        AbsenceType = _AbsenceType_;
+      }));
 
     beforeEach(function () {
       setupController();

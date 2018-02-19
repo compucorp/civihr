@@ -3,16 +3,16 @@
 define([
   'common/lodash',
   'common/mocks/data/contact.data',
-  'mocks/data/absence-period.data',
-  'mocks/data/absence-type.data',
-  'mocks/data/leave-balance-report.data',
+  'leave-absences/mocks/data/absence-period.data',
+  'leave-absences/mocks/data/absence-type.data',
+  'leave-absences/mocks/data/leave-balance-report.data',
   'common/models/contact',
   'common/models/session.model',
   'common/mocks/services/api/contact-mock',
   'common/mocks/services/api/option-group-mock',
-  'mocks/apis/absence-period-api-mock',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/apis/entitlement-api-mock',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/entitlement-api-mock',
   'leave-absences/shared/models/absence-period.model',
   'leave-absences/shared/models/absence-type.model',
   'leave-absences/shared/models/entitlement.model',
@@ -28,7 +28,8 @@ define([
     var filters = { any_filter: 'any value' };
     var userRole = 'admin';
 
-    beforeEach(module('common.services', 'leave-absences.mocks', 'leave-absences.models', 'leave-absences.components',
+    beforeEach(module('common.services', 'leave-absences.mocks', 'leave-absences.models',
+      'leave-absences.components',
       function (_$provide_) {
         $provide = _$provide_;
       }
@@ -162,10 +163,8 @@ define([
           $rootScope.$digest();
         });
 
-        it('loads the absence types sorted by title', function () {
-          expect(AbsenceType.all).toHaveBeenCalledWith({
-            options: { sort: 'title ASC' }
-          });
+        it('loads the absence types', function () {
+          expect(AbsenceType.all).toHaveBeenCalledWith();
         });
 
         it('populates calculation units to loaded absence types', function () {

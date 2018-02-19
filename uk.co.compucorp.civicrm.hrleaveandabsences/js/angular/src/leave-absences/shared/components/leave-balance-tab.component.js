@@ -70,7 +70,7 @@ define([
      * @return {Promise}
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({ options: { sort: 'title ASC' } })
+      return AbsenceType.all()
         .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
           vm.absenceTypes = absenceTypes;

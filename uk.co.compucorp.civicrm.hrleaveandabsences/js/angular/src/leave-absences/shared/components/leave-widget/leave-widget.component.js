@@ -26,8 +26,7 @@ define([
     'leave-absences.components',
     'leave-absences.models',
     'leave-absences.settings'
-  ])
-  .component('leaveWidget', {
+  ]).component('leaveWidget', {
     bindings: {
       contactId: '<'
     },
@@ -165,8 +164,7 @@ define([
           loadAbsencePeriod(),
           loadLeaveRequestTypes()
         ]);
-      })
-      .finally(function () {
+      }).finally(function () {
         vm.loading.component = false;
       });
     }
@@ -177,7 +175,7 @@ define([
      * @return {Promise}
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({ is_active: true })
+      return AbsenceType.all()
         .then(AbsenceType.loadCalculationUnits)
         .then(function (types) {
           vm.absenceTypes = types;
@@ -197,13 +195,11 @@ define([
       return Contract.all({
         contact_id: vm.contactId,
         deleted: false
-      })
-      .then(function (contracts) {
+      }).then(function (contracts) {
         vm.jobContract = _.find(contracts, function (contract) {
           return +contract.is_current;
         });
-      })
-      .then(function () {
+      }).then(function () {
         if (!vm.jobContract) {
           return $q.reject();
         }
