@@ -13,7 +13,9 @@
     'leave-absences/mocks/apis/entitlement-api-mock',
     'leave-absences/mocks/apis/leave-request-api-mock',
     'leave-absences/mocks/apis/option-group-api-mock',
-    'leave-absences/mocks/apis/work-pattern-api-mock'
+    'leave-absences/mocks/apis/work-pattern-api-mock',
+    'leave-absences/shared/services/leave-request.service',
+    'leave-absences/manager-leave/app'
   ], function (_, moment, optionGroupMock, mockData) {
     'use strict';
 
@@ -21,12 +23,12 @@
       var $log, $rootScope, controller, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
         Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, pubSub,
-        requiredTab, WorkPatternAPI;
+        requiredTab, WorkPatternAPI, LeaveRequestService;
       var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
         'leave-absences.mocks', 'common.mocks', 'common.dialog', 'common.services',
-        'leave-absences.settings',
+        'leave-absences.settings', 'manager-leave',
         function (_$provide_, $exceptionHandlerProvider) {
           $provide = _$provide_;
           // this will consume all throw
@@ -65,7 +67,7 @@
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_, _dialog_,
         _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_, _Entitlement_,
         _LeaveRequestInstance_, _LeaveRequest_, _LeaveRequestAPI_, _pubSub_,
-        _WorkPatternAPI_) {
+        _WorkPatternAPI_, _LeaveRequestService_) {
         $log = _$log_;
         $rootScope = _$rootScope_;
         $controller = _$controller_;
@@ -81,6 +83,7 @@
         pubSub = _pubSub_;
 
         LeaveRequestInstance = _LeaveRequestInstance_;
+        LeaveRequestService = _LeaveRequestService_;
 
         spyOn($log, 'debug');
         spyOn(Contact, 'all').and.callFake(function () {
@@ -655,7 +658,10 @@
 
           describe('if balance change has not been updated', function () {
             beforeEach(function () {
-              $scope.$apply();
+              spyOn(controller.request,
+                'checkIfBalanceChangeNeedsForceRecalculation')
+                .and.returnValue($q.resolve(false));
+              $scope.$digest();
             });
 
             it('allows user to submit', function () {
@@ -681,30 +687,37 @@
           });
 
           describe('if balance change has been updated', function () {
-            var confirmFunction;
+            var proceedWithBalanceChangeRecalculation;
 
             beforeEach(function () {
               // Make original balance differ from the calculated balance
               controller.balance.change.amount--;
 
+              spyOn(controller.request,
+                'checkIfBalanceChangeNeedsForceRecalculation')
+                .and.returnValue($q.resolve(true));
+              spyOn(LeaveRequestService,
+                'promptIfProceedWithBalanceChangeRecalculation')
+                .and.callThrough();
               spyOn(dialog, 'open').and.callFake(function (params) {
-                confirmFunction = params.onConfirm;
+                proceedWithBalanceChangeRecalculation = params.onConfirm;
               });
-              $rootScope.$apply();
+              $rootScope.$digest();
             });
 
             it('does not call update method on instance', function () {
               expect(controller.request.update).not.toHaveBeenCalled();
             });
 
-            it('opens a dialog', function () {
-              expect(dialog.open).toHaveBeenCalled();
+            it('prompts a force balance change recalculation', function () {
+              expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
+                .toHaveBeenCalled();
             });
 
             describe('on confirm the balance change recalculation', function () {
               beforeEach(function () {
-                confirmFunction();
-                $rootScope.$apply();
+                proceedWithBalanceChangeRecalculation();
+                $rootScope.$digest();
               });
 
               it('initiates the balance change recalculation', function () {
