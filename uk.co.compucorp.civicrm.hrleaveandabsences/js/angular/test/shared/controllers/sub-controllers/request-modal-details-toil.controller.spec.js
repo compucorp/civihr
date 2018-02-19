@@ -14,7 +14,7 @@ define([
 ], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper) {
   'use strict';
 
-  describe('when request type is TOIL', function () {
+  describe('RequestModalDetailsToilController', function () {
     var $componentController, $provide, $q, $log, $rootScope, controller, leaveRequest,
       AbsenceType, AbsenceTypeAPI, AbsencePeriodInstance, LeaveRequestInstance, TOILRequestInstance,
       balance;
