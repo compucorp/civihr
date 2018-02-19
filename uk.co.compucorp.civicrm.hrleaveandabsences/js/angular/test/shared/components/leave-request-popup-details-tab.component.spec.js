@@ -9,20 +9,21 @@ define([
   'leave-absences/mocks/data/leave-request.data',
   'leave-absences/mocks/data/option-group.data',
   'leave-absences/mocks/helpers/helper',
+  'leave-absences/mocks/helpers/request-modal-helper',
   'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/manager-leave/app'
-], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper) {
+], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper, requestModalHelper) {
   'use strict';
 
   describe('leaveRequestPopupDetailsTab', function () {
     var $componentController, $provide, $q, $log, $rootScope, controller, sharedSettings, LeaveRequestAPI,
       AbsenceType, AbsenceTypeAPI, AbsencePeriodInstance, LeaveRequestInstance,
-      OptionGroup, OptionGroupAPIMock, balance, selectedAbsenceType, WorkPatternAPI, EntitlementAPI;
+      OptionGroup, OptionGroupAPIMock, selectedAbsenceType, WorkPatternAPI, EntitlementAPI;
 
     var date2013 = '02/02/2013';
     var date2016 = '01/12/2016';
-    var date2016InServerFormat = moment(getUTCDate(date2016)).format('YYYY-MM-D'); // Must match the date of `date2016`
+    var date2016InServerFormat = moment(helper.getUTCDate(date2016)).format('YYYY-MM-D'); // Must match the date of `date2016`
     var date2016To = '02/12/2016'; // Must be greater than `date2016`
     var date2017 = '01/02/2017';
     var date2017To = '02/02/2017'; // Must be greater than `date2017`
@@ -73,15 +74,6 @@ define([
       spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
         return OptionGroupAPIMock.valuesOf(name);
       });
-
-      balance = {
-        closing: 0,
-        opening: 0,
-        change: {
-          amount: 0,
-          breakdown: []
-        }
-      };
     }));
 
     describe('when user CREATES leave request', function () {
@@ -167,7 +159,7 @@ define([
         describe('after from date is selected and it does not belong to any absence period', function () {
           beforeEach(function () {
             spyOn($rootScope, '$broadcast');
-            controller.uiOptions.fromDate = getUTCDate('01/01/1800');
+            controller.uiOptions.fromDate = helper.getUTCDate('01/01/1800');
             controller.dateChangeHandler('from');
             $rootScope.$digest();
           });
@@ -184,7 +176,7 @@ define([
           beforeEach(function () {
             controller.period = {};
 
-            setTestDates(date2016);
+            requestModalHelper.setTestDates(controller, $rootScope, date2016);
             fromDate = moment(controller.uiOptions.fromDate).format(sharedSettings.serverDateFormat);
           });
 
@@ -216,7 +208,7 @@ define([
           describe('after another "from" date is selected from the same absence period', function () {
             beforeEach(function () {
               WorkPatternAPI.getCalendar.calls.reset();
-              setTestDates(date2016To);
+              requestModalHelper.setTestDates(controller, $rootScope, date2016To);
             });
 
             it('does not update calendar', function () {
@@ -229,7 +221,7 @@ define([
 
             beforeEach(function () {
               testDate = helper.getDate('weekend');
-              setTestDates(testDate.date);
+              requestModalHelper.setTestDates(controller, $rootScope, testDate.date);
             });
 
             it('sets weekend day type', function () {
@@ -242,7 +234,7 @@ define([
 
             beforeEach(function () {
               testDate = helper.getDate('non_working_day');
-              setTestDates(testDate.date);
+              requestModalHelper.setTestDates(controller, $rootScope, testDate.date);
             });
 
             it('sets non_working_day day type', function () {
@@ -255,7 +247,7 @@ define([
 
             beforeEach(function () {
               testDate = helper.getDate('working_day');
-              setTestDates(testDate.date);
+              requestModalHelper.setTestDates(controller, $rootScope, testDate.date);
             });
 
             it('sets non_working_day day type', function () {
@@ -268,7 +260,7 @@ define([
           var toDate;
 
           beforeEach(function () {
-            setTestDates(date2016, date2016To);
+            requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
             toDate = moment(controller.uiOptions.toDate).format(sharedSettings.serverDateFormat);
           });
 
@@ -283,7 +275,7 @@ define([
 
         describe('from and to dates are selected', function () {
           beforeEach(function () {
-            setTestDates(date2016, date2016To);
+            requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
           });
 
           it('does show balance change', function () {
@@ -360,7 +352,7 @@ define([
 
             describe('after from date is selected', function () {
               beforeEach(function () {
-                setTestDates(date2016, date2016To);
+                requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
               });
 
               it('sets from and to dates', function () {
@@ -378,7 +370,7 @@ define([
         describe('calendar', function () {
           describe('when from date is selected', function () {
             beforeEach(function () {
-              setTestDates(date2016);
+              requestModalHelper.setTestDates(controller, $rootScope, date2016);
             });
 
             it('sets from date', function () {
@@ -388,7 +380,7 @@ define([
 
           describe('when to date is selected', function () {
             beforeEach(function () {
-              setTestDates(date2016, date2016To);
+              requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
             });
 
             it('sets to date', function () {
@@ -403,7 +395,7 @@ define([
 
             beforeEach(function () {
               expectedDayType = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1');
-              setTestDates(null, date2016);
+              requestModalHelper.setTestDates(controller, $rootScope, null, date2016);
             });
 
             it('selects to date type', function () {
@@ -413,7 +405,7 @@ define([
 
           describe('when from and to are selected', function () {
             beforeEach(function () {
-              setTestDates(date2016, date2016To);
+              requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
             });
 
             it('calculates balance change', function () {
@@ -445,7 +437,7 @@ define([
               beforeEach(function () {
                 controller.uiOptions.multipleDays = true;
                 // select all_day to get multiple day mock data
-                setTestDates(date2016, date2016To);
+                requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
 
                 controller.request.from_date_type = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'name', 'all_day');
 
@@ -466,7 +458,7 @@ define([
 
           describe('when balance change is expanded during pagination', function () {
             beforeEach(function () {
-              setTestDates(date2016, date2016To);
+              requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
             });
 
             it('paginates by 7 items', function () {
@@ -537,7 +529,7 @@ define([
                 request = controller.request;
                 workDayMock = leaveRequestData.workDayForDate().values;
 
-                setTestDates(date2016);
+                requestModalHelper.setTestDates(controller, $rootScope, date2016);
                 $rootScope.$digest();
               });
 
@@ -577,7 +569,7 @@ define([
                   timeToObject = controller.uiOptions.times.to;
                   controller.uiOptions.multipleDays = false;
 
-                  setTestDates(date2016);
+                  requestModalHelper.setTestDates(controller, $rootScope, date2016);
                 });
 
                 it('allows to select end time ("to" time)', function () {
@@ -595,7 +587,7 @@ define([
 
                 describe('after to date is selected', function () {
                   beforeEach(function () {
-                    setTestDates(undefined, date2016To);
+                    requestModalHelper.setTestDates(controller, $rootScope, undefined, date2016To);
                   });
 
                   describe('after both start and end times are selected', function () {
@@ -628,7 +620,7 @@ define([
                   controller.uiOptions.multipleDays = true;
                   timeToObject = controller.uiOptions.times.to;
 
-                  setTestDates(date2016, date2017);
+                  requestModalHelper.setTestDates(controller, $rootScope, date2016, date2017);
                 });
 
                 it('reverts maximum time range for "from" time', function () {
@@ -699,7 +691,7 @@ define([
                   beforeEach(function () {
                     controller.uiOptions.multipleDays = false;
 
-                    setTestDates(date2016);
+                    requestModalHelper.setTestDates(controller, $rootScope, date2016);
                   });
 
                   describe('when "time from" and "time to" are set', function () {
@@ -723,7 +715,7 @@ define([
                   beforeEach(function () {
                     spyOn($rootScope, '$broadcast');
                     spyOn(request, 'getWorkDayForDate').and.returnValue($q.reject());
-                    setTestDates(date2016, date2017);
+                    requestModalHelper.setTestDates(controller, $rootScope, date2016, date2017);
                   });
 
                   it('flushes and disables time and deduction fields', function () {
@@ -744,8 +736,8 @@ define([
                     timesTo = controller.uiOptions.times.to;
                     controller.uiOptions.multipleDays = true;
 
-                    setTestDates(null, '10/12/2016');
-                    setTestDates('11/12/2016');
+                    requestModalHelper.setTestDates(controller, $rootScope, null, '10/12/2016');
+                    requestModalHelper.setTestDates(controller, $rootScope, '11/12/2016');
                   });
 
                   it('resets "to" times and durations', function () {
@@ -900,7 +892,7 @@ define([
           describe('and after from date is selected', function () {
             beforeEach(function () {
               WorkPatternAPI.getCalendar.calls.reset();
-              setTestDates(date2017);
+              requestModalHelper.setTestDates(controller, $rootScope, date2017);
             });
 
             it('enables to date and to type', function () {
@@ -930,7 +922,7 @@ define([
                 controller.uiOptions.toDate = null;
                 oldPeriodId = controller.period.id;
                 spyOn($rootScope, '$broadcast').and.callThrough();
-                setTestDates(date2016);
+                requestModalHelper.setTestDates(controller, $rootScope, date2016);
               });
 
               it('notifies the parent controller that the period has been changed', function () {
@@ -957,7 +949,7 @@ define([
 
             describe('from unavailable absence period', function () {
               beforeEach(function () {
-                setTestDates(date2013);
+                requestModalHelper.setTestDates(controller, $rootScope, date2013);
               });
 
               it('shows error', function () {
@@ -967,7 +959,7 @@ define([
 
             describe('and to date is selected', function () {
               beforeEach(function () {
-                setTestDates(date2016, date2016To);
+                requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
               });
 
               it('selects date from selected absence period without errors', function () {
@@ -991,8 +983,8 @@ define([
               var from, to, minDate;
 
               beforeEach(function () {
-                setTestDates(date2016);
-                minDate = moment(getUTCDate(date2016)).add(1, 'd').toDate();
+                requestModalHelper.setTestDates(controller, $rootScope, date2016);
+                minDate = moment(helper.getUTCDate(date2016)).add(1, 'd').toDate();
               });
 
               describe('when parent controller responds back', function () {
@@ -1030,8 +1022,8 @@ define([
                     from = '9/12/2016';
                     to = '10/12/2016';
 
-                    setTestDates(null, to);
-                    setTestDates(from);
+                    requestModalHelper.setTestDates(controller, $rootScope, null, to);
+                    requestModalHelper.setTestDates(controller, $rootScope, from);
                   });
 
                   it('does not reset to date to equal from date', function () {
@@ -1044,8 +1036,8 @@ define([
                     from = '11/12/2016';
                     to = '10/12/2016';
 
-                    setTestDates(null, to);
-                    setTestDates(from);
+                    requestModalHelper.setTestDates(controller, $rootScope, null, to);
+                    requestModalHelper.setTestDates(controller, $rootScope, from);
                   });
 
                   it('resets To date', function () {
@@ -1067,8 +1059,8 @@ define([
               beforeEach(function () {
                 var absenceTypesWithBalances = _.cloneDeep(controller.absenceTypes);
 
-                setTestDates(date2017, date2017To);
-                setTestDates(date2016);
+                requestModalHelper.setTestDates(controller, $rootScope, date2017, date2017To);
+                requestModalHelper.setTestDates(controller, $rootScope, date2016);
                 $rootScope.$broadcast('LeaveRequestPopup::absencePeriodBalancesUpdated', absenceTypesWithBalances);
               });
 
@@ -1178,7 +1170,7 @@ define([
         beforeEach(function () {
           absenceTypes = absenceTypeData.all().values;
           request = leaveRequestData.all().values[0];
-          request.status_id = getStatusValueFromName(sharedSettings.statusNames.approved);
+          request.status_id = helper.getStatusValueFromName(sharedSettings.statusNames.approved);
 
           compileComponent({
             mode: 'edit',
@@ -1217,7 +1209,7 @@ define([
         describe('when status is admin approved', function () {
           beforeEach(function () {
             request = leaveRequestData.all().values[0];
-            request.status_id = getStatusValueFromName(sharedSettings.statusNames.adminApproved);
+            request.status_id = helper.getStatusValueFromName(sharedSettings.statusNames.adminApproved);
             expectedOpeningBalance = absenceTypes[0].remainder - request.balance_change;
 
             compileComponent({
@@ -1236,7 +1228,7 @@ define([
         describe('when status is "Awaiting Approval"', function () {
           beforeEach(function () {
             request = leaveRequestData.all().values[0];
-            request.status_id = getStatusValueFromName(sharedSettings.statusNames.awaitingApproval);
+            request.status_id = helper.getStatusValueFromName(sharedSettings.statusNames.awaitingApproval);
             expectedOpeningBalance = absenceTypes[0].remainder;
 
             compileComponent({
@@ -1340,7 +1332,7 @@ define([
           var fromTime = '19:00';
 
           beforeEach(function () {
-            setTestDates(date2016);
+            requestModalHelper.setTestDates(controller, $rootScope, date2016);
 
             controller.uiOptions.times.from.time = fromTime;
 
@@ -1356,7 +1348,7 @@ define([
           var toTime = '12:45';
 
           beforeEach(function () {
-            setTestDates(undefined, date2017);
+            requestModalHelper.setTestDates(controller, $rootScope, undefined, date2017);
 
             controller.uiOptions.times.to.time = toTime;
 
@@ -1372,7 +1364,7 @@ define([
           beforeEach(function () {
             controller.uiOptions.multipleDays = false;
 
-            setTestDates(date2017);
+            requestModalHelper.setTestDates(controller, $rootScope, date2017);
           });
 
           describe('when start time is set and it is greater than or equal to end time', function () {
@@ -1428,7 +1420,7 @@ define([
 
           describe('when "from" date is changed', function () {
             beforeEach(function () {
-              setTestDates(date2016);
+              requestModalHelper.setTestDates(controller, $rootScope, date2016);
             });
 
             it('loads the time and deduction ranges', function () {
@@ -1439,7 +1431,7 @@ define([
 
           describe('when "to" date is changed', function () {
             beforeEach(function () {
-              setTestDates(null, date2016);
+              requestModalHelper.setTestDates(controller, $rootScope, null, date2016);
             });
 
             it('loads the time and deduction ranges', function () {
@@ -1455,7 +1447,7 @@ define([
 
           describe('when "from" date is changed', function () {
             beforeEach(function () {
-              setTestDates(date2016);
+              requestModalHelper.setTestDates(controller, $rootScope, date2016);
             });
 
             it('loads the time and deduction ranges', function () {
@@ -1465,7 +1457,7 @@ define([
 
           describe('when "to" date is changed', function () {
             beforeEach(function () {
-              setTestDates(null, date2016);
+              requestModalHelper.setTestDates(controller, $rootScope, null, date2016);
             });
 
             it('loads the time and deduction ranges', function () {
@@ -1475,77 +1467,6 @@ define([
         });
       });
     });
-
-    /**
-     * Appends default values to the controller initialiation.
-     *
-     * @param {Object} params - the object to wich defaults will be appented to.
-     * properties and defaults:
-     * - {Array} absencePeriods - a list of absence periods. Defaults to all absence periods.
-     * - {Array} absenceTypes - a list of absence types. Defaults to all absence types.
-     * - {Object} balance - the request balance. Defaults to the globally defined balance.
-     * - {JasmineSpy} checkSubmitConditions - a spy to execute the checkSubmitConditions callback.
-     * - {JasmineSpy} isLeaveStatus - a spy to execute the isLeaveStatus callback.
-     * - {String} leaveType - the leave absence type. Options are "leave", "sick", "toil". Defaults to "leave".
-     * - {Object} period - the currently selected period. Defaults to first period.
-     * - {Object} selectedAbsenceType - the selected absence type. Defaults to the first absence type, and sets remainder value to 0.
-     * - {Object} request - The leave request data. Defaults to an empty leave request.
-     * - {JasmineSpy} isMode - a isMode spy function.
-     * - {JasmineSpy} isRole - a isRole spy function.
-     */
-    function addDefaultComponentParams (params) {
-      addSpyParams(params);
-
-      var defaultParams = {
-        absencePeriods: absencePeriodData.all().values.map(function (period) {
-          return AbsencePeriodInstance.init(period);
-        }),
-        absenceTypes: absenceTypeData.all().values,
-        balance: balance, // balance is set globally
-        checkSubmitConditions: params.checkSubmitConditions,
-        isLeaveStatus: params.isLeaveStatus,
-        leaveType: 'leave',
-        period: absencePeriodData.all().values[0],
-        selectedAbsenceType: _.assign(absenceTypeData.all().values[0], {
-          remainder: 0
-        }),
-        request: LeaveRequestInstance.init(),
-        isMode: params.isMode,
-        isRole: params.isRole
-      };
-
-      _.defaults(params, defaultParams);
-    }
-
-    /**
-     * Appends default spy functions to the params object.
-     *
-     * @param {Object} params - the object which spy functions will be appened to.
-     */
-    function addSpyParams (params) {
-      var defaultParams = {
-        mode: 'create',
-        role: 'staff'
-      };
-
-      _.defaults(params, defaultParams);
-
-      params.isMode = jasmine.createSpy('isMode')
-        .and.callFake(function (mode) {
-          return mode === params.mode;
-        });
-
-      params.isRole = jasmine.createSpy('isRole')
-        .and.callFake(function (role) {
-          return role === params.role;
-        });
-
-      params.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
-      params.isLeaveStatus = jasmine.createSpy('isLeaveStatus')
-        .and.callFake(function (statusName) {
-          return getStatusValueFromName(statusName) === params.request.status_id;
-        });
-    }
 
     /**
      * Compiles and initializes the component's controller. It returns the
@@ -1559,8 +1480,9 @@ define([
      */
     function compileComponent (params) {
       params = params || {};
+      params.request = params.request || LeaveRequestInstance.init();
 
-      addDefaultComponentParams(params);
+      requestModalHelper.addDefaultComponentParams(params, AbsencePeriodInstance);
 
       controller = $componentController(
         'leaveRequestPopupDetailsTab',
@@ -1588,22 +1510,6 @@ define([
     }
 
     /**
-     * Returns the id for a specific status by filtering using the status name.
-     *
-     * @param {String} statusName - The name of the status to filter by.
-     * @return {Number}
-     */
-    function getStatusValueFromName (statusName) {
-      var status = optionGroupMock.specificObject(
-        'hrleaveandabsences_leave_request_status',
-        'name',
-        statusName
-      );
-
-      return status.value;
-    }
-
-      /**
      * Calculates time difference in hours
      *
      * @param  {String} timeFrom in HH:mm format
@@ -1614,36 +1520,6 @@ define([
       return (getMomentDateWithGivenTime(timeTo)
         .diff(getMomentDateWithGivenTime(timeFrom), 'minutes') / 60)
         .toString();
-    }
-
-    /**
-     * Returns a UTC Date object from a string.
-     *
-     * @param {String} date - the date to convert to UTC Date object.
-     * @return {Date}
-     */
-    function getUTCDate (date) {
-      var now = new Date(date);
-      return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
-    }
-
-    /**
-     * sets from and/or to dates
-     * @param {String} from date set if passed
-     * @param {String} to date set if passed
-     */
-    function setTestDates (from, to) {
-      if (from) {
-        controller.uiOptions.fromDate = getUTCDate(from);
-        controller.dateChangeHandler('from');
-        $rootScope.$digest();
-      }
-
-      if (to) {
-        controller.uiOptions.toDate = getUTCDate(to);
-        controller.dateChangeHandler('to');
-        $rootScope.$digest();
-      }
     }
   });
 });
