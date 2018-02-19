@@ -18,6 +18,7 @@
     'leave-absences/mocks/apis/absence-type-api-mock',
     'leave-absences/mocks/apis/entitlement-api-mock',
     'leave-absences/mocks/apis/leave-request-api-mock',
+    'leave-absences/mocks/apis/option-group-api-mock',
     'leave-absences/my-leave/app'
   ], function (angular, _, moment, helper, absencePeriodData, absenceTypeData, entitlementMock, leaveRequestMock, optionGroupMock) {
     'use strict';
@@ -32,7 +33,8 @@
 
       var $componentController, $q, $log, $provide, $rootScope, controller;
       var AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
-        LeaveRequestInstance, OptionGroup, pubSub, HRSettings, sharedSettings;
+        LeaveRequestInstance, OptionGroup, pubSub, HRSettings, sharedSettings,
+        EntitlementAllSpy;
 
       beforeEach(module('common.services', 'leave-absences.templates',
         'my-leave', 'leave-absences.mocks', 'leave-absences.settings',
@@ -58,7 +60,7 @@
         $provide.value('checkPermissions', function () { return $q.resolve(isUserAdmin); });
       }));
 
-      beforeEach(inject(['shared-settings', 'HR_settingsMock', 'api.optionGroup.mock',
+      beforeEach(inject(['shared-settings', 'HR_settingsMock',
         function (_sharedSettings_, HRSettingsMock, _OptionGroupAPIMock_) {
           sharedSettings = _sharedSettings_;
 
@@ -77,11 +79,12 @@
         LeaveRequestInstance = _LeaveRequestInstance_;
         OptionGroup = _OptionGroup_;
         pubSub = _pubSub_;
+        EntitlementAllSpy = spyOn(Entitlement, 'all');
 
+        EntitlementAllSpy.and.callThrough();
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
         spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
-        spyOn(Entitlement, 'all').and.callThrough();
         spyOn(Entitlement, 'breakdown').and.callThrough();
         spyOn(LeaveRequest, 'all').and.callThrough();
         spyOn(LeaveRequest, 'balanceChangeByAbsenceType').and.callThrough();
@@ -109,176 +112,190 @@
         })).toBe(true);
       });
 
+      it('is in loading mode', function () {
+        expect(controller.loading.page).toBe(true);
+        expect(controller.loading.content).toBe(true);
+      });
+
+      describe('in the middle of initialisation', function () {
+        beforeEach(function () {
+          EntitlementAllSpy.and.returnValue($q.reject());
+          $rootScope.$digest();
+        });
+
+        it('page is already loaded', function () {
+          expect(controller.loading.page).toBe(false);
+        });
+
+        it('content has not yet been loaded', function () {
+          expect(controller.loading.content).toBe(true);
+        });
+      });
+
       describe('after initialisation', function () {
+        beforeEach(function () {
+          $rootScope.$digest();
+        });
+
         describe('initialization', function () {
-          xdescribe('data loading', function () {
-            describe('before data is loaded', function () {
-              // TODO: check why it doesn't work
-              it('is in loading mode', function () {
-                expect(controller.loading.page).toBe(true);
-                expect(controller.loading.content).toBe(false);
+          describe('after data is loaded', function () {
+            it('is out of loading mode', function () {
+              expect(controller.loading.page).toBe(false);
+              expect(controller.loading.content).toBe(false);
+            });
+
+            it('has fetched the leave request statuses', function () {
+              expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
+              expect(controller.leaveRequestStatuses.length).not.toBe(0);
+            });
+
+            it('has fetched the absence types', function () {
+              expect(AbsenceType.all).toHaveBeenCalledWith();
+              expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
+              expect(controller.absenceTypes.length).not.toBe(0);
+            });
+
+            it('has indexed absence types', function () {
+              expect(controller.absenceTypesIndexed[controller.absenceTypes[0].id])
+                .toEqual(controller.absenceTypes[0]);
+            });
+
+            describe('absence periods', function () {
+              it('has fetched the absence periods', function () {
+                expect(AbsencePeriod.all).toHaveBeenCalled();
+                expect(controller.absencePeriods.length).not.toBe(0);
+              });
+
+              it('sorts absence periods by start_date', function () {
+                var extractStartDate = function (period) {
+                  return period.start_date;
+                };
+                var absencePeriodSortedByDate = _.sortBy(absencePeriodData.all().values, 'start_date').map(extractStartDate);
+
+                expect(controller.absencePeriods.map(extractStartDate)).toEqual(absencePeriodSortedByDate);
               });
             });
 
-            describe('after data is loaded', function () {
-              it('is out of loading mode', function () {
-                expect(controller.loading.page).toBe(false);
-                expect(controller.loading.content).toBe(false);
+            it('has automatically selected the period, choosing the current one', function () {
+              expect(controller.selectedPeriod).not.toBe(null);
+              expect(controller.selectedPeriod).toBe(_.find(controller.absencePeriods, function (period) {
+                return period.current === true;
+              }));
+            });
+
+            describe('entitlements', function () {
+              it('has fetched all the entitlements', function () {
+                expect(Entitlement.all).toHaveBeenCalled();
+                expect(controller.entitlements.length).not.toBe(0);
               });
 
-              it('has fetched the leave request statuses', function () {
-                expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_leave_request_status');
-                expect(controller.leaveRequestStatuses.length).not.toBe(0);
-              });
-
-              it('has fetched the absence types', function () {
-                expect(AbsenceType.all).toHaveBeenCalledWith();
-                expect(AbsenceType.loadCalculationUnits).toHaveBeenCalled();
-                expect(controller.absenceTypes.length).not.toBe(0);
-              });
-
-              it('has indexed absence types', function () {
-                expect(controller.absenceTypesIndexed[controller.absenceTypes[0].id])
-                  .toEqual(controller.absenceTypes[0]);
-              });
-
-              describe('absence periods', function () {
-                it('has fetched the absence periods', function () {
-                  expect(AbsencePeriod.all).toHaveBeenCalled();
-                  expect(controller.absencePeriods.length).not.toBe(0);
-                });
-
-                it('sorts absence periods by start_date', function () {
-                  var extractStartDate = function (period) {
-                    return period.start_date;
-                  };
-                  var absencePeriodSortedByDate = _.sortBy(absencePeriodData.all().values, 'start_date').map(extractStartDate);
-
-                  expect(controller.absencePeriods.map(extractStartDate)).toEqual(absencePeriodSortedByDate);
+              it('has fetched the entitlements for the current contact and selected period', function () {
+                expect(Entitlement.all.calls.argsFor(0)[0]).toEqual({
+                  contact_id: contactId,
+                  period_id: controller.selectedPeriod.id
                 });
               });
 
-              it('has automatically selected the period, choosing the current one', function () {
-                expect(controller.selectedPeriod).not.toBe(null);
-                expect(controller.selectedPeriod).toBe(_.find(controller.absencePeriods, function (period) {
-                  return period.current === true;
-                }));
+              it('has fetched current and future remainder of the entitlements', function () {
+                expect(Entitlement.all.calls.argsFor(0)[1]).toEqual(true);
               });
 
-              describe('entitlements', function () {
-                it('has fetched all the entitlements', function () {
-                  expect(Entitlement.all).toHaveBeenCalled();
-                  expect(controller.entitlements.length).not.toBe(0);
-                });
-
-                it('has fetched the entitlements for the current contact and selected period', function () {
-                  expect(Entitlement.all.calls.argsFor(0)[0]).toEqual({
-                    contact_id: contactId,
-                    period_id: controller.selectedPeriod.id
+              it('has stored the entitlement, remainder in each absence type which has entitlement', function () {
+                _.forEach(controller.absenceTypes, function (absenceType) {
+                  var entitlement = _.find(controller.entitlements, function (entitlement) {
+                    return entitlement.type_id === absenceType.id;
                   });
-                });
 
-                it('has fetched current and future remainder of the entitlements', function () {
-                  expect(Entitlement.all.calls.argsFor(0)[1]).toEqual(true);
-                });
-
-                it('has stored the entitlement, remainder in each absence type which has entitlement', function () {
-                  _.forEach(controller.absenceTypes, function (absenceType) {
-                    var entitlement = _.find(controller.entitlements, function (entitlement) {
-                      return entitlement.type_id === absenceType.id;
-                    });
-
-                    if (entitlement) {
-                      expect(absenceType.entitlement).toEqual(entitlement['value']);
-                      expect(absenceType.remainder).toEqual(entitlement['remainder']);
-                    }
-                  });
-                });
-
-                it('display only the absence types which has entitlement or allows negative balance or allows accrual requests', function () {
-                  _.forEach(controller.absenceTypesFiltered, function (absenceType) {
-                    expect((absenceType.entitlement === 0) && (absenceType.allow_overuse === '0') &&
-                      (absenceType.allow_accruals_request === '0')).toBe(false);
-                  });
-                });
-
-                it('has stored the 0 value for entitlement, remainder for absence types which does not have entitlement', function () {
-                  _.forEach(controller.absenceTypes, function (absenceType) {
-                    var entitlement = _.find(controller.entitlements, function (entitlement) {
-                      return entitlement.type_id === absenceType.id;
-                    });
-
-                    if (!entitlement) {
-                      expect(absenceType.entitlement).toEqual(0);
-                      expect(absenceType.remainder).toEqual({ current: 0, future: 0 });
-                    }
-                  });
+                  if (entitlement) {
+                    expect(absenceType.entitlement).toEqual(entitlement['value']);
+                    expect(absenceType.remainder).toEqual(entitlement['remainder']);
+                  }
                 });
               });
 
-              describe('balance changes', function () {
-                var mockData;
-
-                beforeEach(function () {
-                  mockData = leaveRequestMock.balanceChangeByAbsenceType().values;
+              it('display only the absence types which has entitlement or allows negative balance or allows accrual requests', function () {
+                _.forEach(controller.absenceTypesFiltered, function (absenceType) {
+                  expect((absenceType.entitlement === 0) && (absenceType.allow_overuse === '0') &&
+                    (absenceType.allow_accruals_request === '0')).toBe(false);
                 });
+              });
 
-                it('has fetched the balance changes for the current contact and selected period', function () {
+              it('has stored the 0 value for entitlement, remainder for absence types which does not have entitlement', function () {
+                _.forEach(controller.absenceTypes, function (absenceType) {
+                  var entitlement = _.find(controller.entitlements, function (entitlement) {
+                    return entitlement.type_id === absenceType.id;
+                  });
+
+                  if (!entitlement) {
+                    expect(absenceType.entitlement).toEqual(0);
+                    expect(absenceType.remainder).toEqual({ current: 0, future: 0 });
+                  }
+                });
+              });
+            });
+
+            describe('balance changes', function () {
+              var mockData;
+
+              beforeEach(function () {
+                mockData = leaveRequestMock.balanceChangeByAbsenceType().values;
+              });
+
+              it('has fetched the balance changes for the current contact and selected period', function () {
+                var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0);
+
+                expect(args[0]).toEqual(contactId);
+                expect(args[1]).toEqual(controller.selectedPeriod.id);
+              });
+
+              describe('public holidays', function () {
+                it('has fetched the balance changes for the public holidays', function () {
                   var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0);
-
-                  expect(args[0]).toEqual(contactId);
-                  expect(args[1]).toEqual(controller.selectedPeriod.id);
+                  expect(args[3]).toEqual(true);
                 });
 
-                describe('public holidays', function () {
-                  it('has fetched the balance changes for the public holidays', function () {
-                    var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0);
-                    expect(args[3]).toEqual(true);
-                  });
+                it('has stored them in each absence type', function () {
+                  _.forEach(controller.absenceTypes, function (absenceType) {
+                    var balanceChanges = absenceType.balanceChanges.holidays;
 
-                  it('has stored them in each absence type', function () {
-                    _.forEach(controller.absenceTypes, function (absenceType) {
-                      var balanceChanges = absenceType.balanceChanges.holidays;
-
-                      expect(balanceChanges).toBeDefined();
-                      expect(balanceChanges).toBe(mockData[absenceType.id]);
-                    });
+                    expect(balanceChanges).toBeDefined();
+                    expect(balanceChanges).toBe(mockData[absenceType.id]);
                   });
                 });
+              });
 
-                describe('approved requests', function () {
-                  it('has fetched the balance changes for the approved requests', function () {
-                    var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(1);
-                    expect(args[2]).toEqual([ valueOfRequestStatus(sharedSettings.statusNames.approved) ]);
-                  });
-
-                  it('has stored them in each absence type', function () {
-                    _.forEach(controller.absenceTypes, function (absenceType) {
-                      var balanceChanges = absenceType.balanceChanges.approved;
-
-                      expect(balanceChanges).toBeDefined();
-                      expect(balanceChanges).toBe(mockData[absenceType.id]);
-                    });
-                  });
+              describe('approved requests', function () {
+                it('has fetched the balance changes for the approved requests', function () {
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(1);
+                  expect(args[2]).toEqual([ valueOfRequestStatus(sharedSettings.statusNames.approved) ]);
                 });
 
-                describe('open requests', function () {
-                  it('has fetched the balance changes for the open requests', function () {
-                    var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2);
+                it('has stored them in each absence type', function () {
+                  _.forEach(controller.absenceTypes, function (absenceType) {
+                    var balanceChanges = absenceType.balanceChanges.approved;
 
-                    expect(args[2]).toEqual([
-                      valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
-                      valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
-                    ]);
+                    expect(balanceChanges).toBeDefined();
+                    expect(balanceChanges).toBe(mockData[absenceType.id]);
                   });
+                });
+              });
 
-                  it('has stored them in each absence type', function () {
-                    _.forEach(controller.absenceTypes, function (absenceType) {
-                      var balanceChanges = absenceType.balanceChanges.pending;
+              describe('open requests', function () {
+                it('has fetched the balance changes for the open requests', function () {
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2);
 
-                      expect(balanceChanges).toBeDefined();
-                      expect(balanceChanges).toBe(mockData[absenceType.id]);
-                    });
+                  expect(args[2]).toEqual([
+                    valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
+                    valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
+                  ]);
+                });
+
+                it('has stored them in each absence type', function () {
+                  _.forEach(controller.absenceTypes, function (absenceType) {
+                    var balanceChanges = absenceType.balanceChanges.pending;
+
+                    expect(balanceChanges).toBeDefined();
+                    expect(balanceChanges).toBe(mockData[absenceType.id]);
                   });
                 });
               });
@@ -844,7 +861,6 @@
 
       function compileComponent () {
         controller = $componentController('staffLeaveReport', null, { contactId: contactId });
-        $rootScope.$digest();
       }
 
       /**
