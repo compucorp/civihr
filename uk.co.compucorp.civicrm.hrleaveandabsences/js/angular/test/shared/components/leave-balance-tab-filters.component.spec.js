@@ -3,9 +3,13 @@
 define([
   'common/angular',
   'common/moment',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
   'leave-absences/mocks/data/absence-period.data',
   'leave-absences/mocks/data/absence-type.data',
   'leave-absences/shared/components/leave-balance-tab-filters.component',
+  'leave-absences/shared/models/absence-period.model',
+  'leave-absences/shared/models/absence-type.model',
   'leave-absences/shared/modules/shared-settings'
 ], function (angular, moment) {
   'use strict';
@@ -142,6 +146,7 @@ define([
         beforeEach(function () {
           controllerOnChanges('absencePeriods', []);
           controllerOnChanges('absenceTypes', []);
+          controllerOnChanges('lookupContacts', []);
           controllerOnChanges('loggedInContactId', loggedInContactId);
         });
 
@@ -190,6 +195,7 @@ define([
       }, {
         absencePeriods: [],
         absenceTypes: [],
+        lookupContacts: [],
         loggedInContactId: null,
         userRole: userRole
       });
