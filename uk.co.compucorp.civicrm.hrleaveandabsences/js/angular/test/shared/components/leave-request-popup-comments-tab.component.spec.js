@@ -3,13 +3,14 @@
 define([
   'common/angular',
   'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/manager-leave/app',
   'common/mocks/models/instances/session-mock',
-  'leave-absences/manager-leave/app'
+  'leave-absences/mocks/apis/option-group-api-mock'
 ], function (angular, leaveRequestData) {
   'use strict';
 
   describe('leaveRequestPopupCommentsTab', function () {
-    var $componentController, $provide, $log, $rootScope, controller,
+    var $componentController, $provide, $log, $rootScope, $scope, controller,
       leaveRequest, LeaveRequestInstance, OptionGroup, OptionGroupAPIMock,
       SessionMock;
     var managerId = '102';
@@ -17,11 +18,10 @@ define([
     var contactId = '101';
     var commentId = '12';
 
-    beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks',
-      'manager-leave', function (_$provide_) {
+    beforeEach(module('common.mocks', 'leave-absences.templates',
+      'leave-absences.mocks', 'manager-leave', function (_$provide_) {
         $provide = _$provide_;
-      }
-    ));
+      }));
 
     beforeEach(inject(function (_SessionMock_) {
       SessionMock = _SessionMock_;
@@ -39,7 +39,6 @@ define([
       OptionGroup = _OptionGroup_;
 
       spyOn($log, 'debug');
-
       spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
         return OptionGroupAPIMock.valuesOf(name);
       });
@@ -52,6 +51,10 @@ define([
     });
 
     describe('on init', function () {
+      it('triggers an "add tab" event', function () {
+        expect($scope.$emit).toHaveBeenCalledWith('LeaveRequestPopup::addTab', controller);
+      });
+
       describe('comments', function () {
         it('text is empty', function () {
           expect(controller.comment.text).toBe('');
@@ -123,6 +126,56 @@ define([
       });
     });
 
+    describe('can submit', function () {
+      describe('when the comment box has text', function () {
+        beforeEach(function () {
+          controller.comment.text = 'Request comment';
+        });
+
+        it('allows the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(true);
+        });
+      });
+
+      describe('when the comment box does not have text', function () {
+        beforeEach(function () {
+          controller.comment.text = '';
+        });
+
+        it('does not allow the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(false);
+        });
+      });
+    });
+
+    describe('when submitting the tab', function () {
+      beforeEach(function () {
+        spyOn(controller, 'addComment');
+      });
+
+      describe('when there are comments waiting to be added', function () {
+        beforeEach(function () {
+          controller.comment.text = 'Request comment';
+          controller.onBeforeSubmit();
+        });
+
+        it('stores the comment before the request is saved', function () {
+          expect(controller.addComment).toHaveBeenCalled();
+        });
+      });
+
+      describe('when there are not comments to add', function () {
+        beforeEach(function () {
+          controller.comment.text = '';
+          controller.onBeforeSubmit();
+        });
+
+        it('does not store the comment', function () {
+          expect(controller.addComment).not.toHaveBeenCalled();
+        });
+      });
+    });
+
     describe('getCommentorName()', function () {
       var returnValue;
 
@@ -154,7 +207,7 @@ define([
       });
     });
 
-    describe('removeCommentVisibility()', function () {
+    describe('canRemoveComment()', function () {
       var returnValue;
       var comment = {};
 
@@ -164,7 +217,7 @@ define([
 
           compileComponent(true, leaveRequest);
 
-          returnValue = controller.removeCommentVisibility(comment);
+          returnValue = controller.canRemoveComment(comment);
         });
 
         it('button should be visible', function () {
@@ -178,7 +231,7 @@ define([
 
           compileComponent(true, leaveRequest);
 
-          returnValue = controller.removeCommentVisibility(comment);
+          returnValue = controller.canRemoveComment(comment);
         });
 
         it('button should be visible', function () {
@@ -192,7 +245,7 @@ define([
 
           compileComponent(false, leaveRequest);
 
-          returnValue = controller.removeCommentVisibility(comment);
+          returnValue = controller.canRemoveComment(comment);
         });
 
         it('button should not be visible', function () {
@@ -206,7 +259,7 @@ define([
 
           compileComponent(false, leaveRequest);
 
-          returnValue = controller.removeCommentVisibility(comment);
+          returnValue = controller.canRemoveComment(comment);
         });
 
         it('button should be visible', function () {
@@ -216,11 +269,18 @@ define([
     });
 
     function compileComponent (canManage, request) {
-      controller = $componentController('leaveRequestPopupCommentsTab', null, {
-        canManage: canManage,
-        mode: 'edit',
-        request: request
-      });
+      $scope = $rootScope.$new();
+      spyOn($scope, '$emit').and.callThrough();
+
+      controller = $componentController('leaveRequestPopupCommentsTab',
+        { $scope: $scope },
+        {
+          $scope: $scope,
+          canManage: canManage,
+          mode: 'edit',
+          request: request
+        }
+      );
       $rootScope.$digest();
     }
   });

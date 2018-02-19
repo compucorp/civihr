@@ -20,7 +20,7 @@ define([
   'use strict';
 
   describe('leaveRequestPopupDetailsTab', function () {
-    var $componentController, $provide, $q, $log, $rootScope, controller, sharedSettings, LeaveRequestAPI,
+    var $componentController, $provide, $q, $log, $rootScope, $scope, controller, sharedSettings, LeaveRequestAPI,
       AbsenceType, leaveRequest, AbsenceTypeAPI, AbsencePeriodInstance, LeaveRequestInstance, SicknessRequestInstance,
       TOILRequestInstance, OptionGroup, OptionGroupAPIMock, balance, selectedAbsenceType, WorkPatternAPI, EntitlementAPI;
 
@@ -108,12 +108,20 @@ define([
           expect($log.debug).toHaveBeenCalled();
         });
 
+        it('emits an "add tab" event', function () {
+          expect($scope.$emit).toHaveBeenCalledWith('LeaveRequestPopup::addTab', controller);
+        });
+
         it('has leave type as "leave"', function () {
           expect(controller.isLeaveType('leave')).toBeTruthy();
         });
 
         it('has time interval set to 15 minutes', function () {
           expect(controller.uiOptions.time_interval).toBe(15);
+        });
+
+        it('is defined as a required tab', function () {
+          expect(controller.isRequired).toBe(true);
         });
 
         describe('initChildController()', function () {
@@ -1215,6 +1223,48 @@ define([
           expect(controller.request.contact_id).toEqual(leaveRequest.contact_id);
         });
       });
+
+      describe('can submit', function () {
+        describe('when the leave request has all the details parameters defined', function () {
+          beforeEach(function () {
+            var leaveRequest = LeaveRequestInstance.init({
+              from_date: date2016InServerFormat,
+              to_date: date2016InServerFormat,
+              from_date_type: 1,
+              to_date_type: 1,
+              from_date_amount: 1,
+              to_date_amount: 1
+            });
+
+            compileComponent({
+              mode: 'edit',
+              request: leaveRequest
+            });
+          });
+
+          it('allows the request to be submitted', function () {
+            expect(controller.canSubmit()).toBe(true);
+          });
+        });
+
+        describe('when the leave request does not have all details parameters defined', function () {
+          beforeEach(function () {
+            var leaveRequest = LeaveRequestInstance.init({
+              from_date: date2016InServerFormat,
+              to_date: date2016InServerFormat
+            });
+
+            compileComponent({
+              mode: 'edit',
+              request: leaveRequest
+            });
+          });
+
+          it('does not allow the request to be submitted', function () {
+            expect(controller.canSubmit()).toBe(false);
+          });
+        });
+      });
     });
 
     describe('when request type is Sick', function () {
@@ -1360,7 +1410,7 @@ define([
               });
 
               it('does not allow to submit', function () {
-                expect(controller.checkSubmitConditions()).toBeFalsy();
+                expect(controller.canSubmit()).toBeFalsy();
               });
             });
 
@@ -1370,7 +1420,7 @@ define([
               });
 
               it('does not allow to submit', function () {
-                expect(controller.checkSubmitConditions()).toBeTruthy();
+                expect(controller.canSubmit()).toBeTruthy();
               });
             });
           });
@@ -1531,6 +1581,39 @@ define([
 
           it('shows balance', function () {
             expect(controller.uiOptions.showBalance).toBeTruthy();
+          });
+        });
+      });
+
+      describe('can submit', function () {
+        var toilRequest;
+
+        beforeEach(function () {
+          toilRequest = TOILRequestInstance.init();
+
+          compileComponent({
+            leaveType: 'toil',
+            request: toilRequest,
+            role: 'manager'
+          });
+        });
+
+        describe('when toil request params are defined', function () {
+          beforeEach(function () {
+            toilRequest.from_date = date2016;
+            toilRequest.to_date = date2016To;
+            toilRequest.toil_duration = 10;
+            toilRequest.toil_to_accrue = 1;
+          });
+
+          it('allows the request to be submitted', function () {
+            expect(controller.canSubmit()).toBe(true);
+          });
+        });
+
+        describe('when toil reqest params are not defined', function () {
+          it('does not allow the request to be submitted', function () {
+            expect(controller.canSubmit()).toBe(false);
           });
         });
       });
@@ -1938,7 +2021,6 @@ define([
      * - {Array} absencePeriods - a list of absence periods. Defaults to all absence periods.
      * - {Array} absenceTypes - a list of absence types. Defaults to all absence types.
      * - {Object} balance - the request balance. Defaults to the globally defined balance.
-     * - {JasmineSpy} checkSubmitConditions - a spy to execute the checkSubmitConditions callback.
      * - {JasmineSpy} isLeaveStatus - a spy to execute the isLeaveStatus callback.
      * - {String} leaveType - the leave absence type. Options are "leave", "sick", "toil". Defaults to "leave".
      * - {Object} period - the currently selected period. Defaults to first period.
@@ -1956,7 +2038,6 @@ define([
         }),
         absenceTypes: absenceTypeData.all().values,
         balance: balance, // balance is set globally
-        checkSubmitConditions: params.checkSubmitConditions,
         isLeaveStatus: params.isLeaveStatus,
         leaveType: 'leave',
         period: absencePeriodData.all().values[0],
@@ -1994,7 +2075,6 @@ define([
           return role === params.role;
         });
 
-      params.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
       params.isLeaveStatus = jasmine.createSpy('isLeaveStatus')
         .and.callFake(function (statusName) {
           return getStatusValueFromName(statusName) === params.request.status_id;
@@ -2013,12 +2093,14 @@ define([
      */
     function compileComponent (params) {
       params = params || {};
+      $scope = $rootScope.$new();
 
       addDefaultComponentParams(params);
+      spyOn($scope, '$emit').and.callThrough();
 
       controller = $componentController(
         'leaveRequestPopupDetailsTab',
-        null,
+        { $scope: $scope },
         params
       );
 

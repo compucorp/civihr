@@ -12,7 +12,6 @@ define([
       absencePeriods: '<',
       absenceTypes: '<',
       balance: '=',
-      checkSubmitConditions: '=',
       request: '<',
       isLeaveStatus: '<',
       leaveType: '<',
@@ -45,6 +44,7 @@ define([
     vm.canManage = false;
     vm.calendar = {};
     vm.errors = [];
+    vm.isRequired = true;
     vm.requestDayTypes = [];
     vm.statusNames = sharedSettings.statusNames;
     vm.loading = {
@@ -133,6 +133,8 @@ define([
 
       vm.canManage = vm.isRole('manager') || vm.isRole('admin');
       vm.loading.tab = true;
+
+      $scope.$emit('LeaveRequestPopup::addTab', vm);
       initListeners();
 
       vm.initChildController()

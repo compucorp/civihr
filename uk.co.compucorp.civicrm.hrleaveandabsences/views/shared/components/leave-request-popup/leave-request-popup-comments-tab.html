@@ -14,7 +14,7 @@
           class="btn btn-link"
           ng-disabled="commentsCtrl.isMode('view')"
           ng-click="commentsCtrl.request.deleteComment(comment)"
-          ng-show="commentsCtrl.removeCommentVisibility(comment)">Remove
+          ng-show="commentsCtrl.canRemoveComment(comment)">Remove
         </button>
       </div>
       <div class="chr_leave-request-comment__text" ng-bind-html="comment.text"></div>

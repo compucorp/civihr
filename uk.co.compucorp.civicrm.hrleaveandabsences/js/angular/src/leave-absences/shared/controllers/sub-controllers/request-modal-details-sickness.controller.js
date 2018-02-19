@@ -13,7 +13,7 @@ define([
     // Shares basic logic with the the leave controller
     $controller('RequestModalDetailsLeaveController', { detailsController: detailsController });
 
-    detailsController.checkSubmitConditions = checkSubmitConditions;
+    detailsController.canSubmit = canSubmit;
     detailsController.initChildController = initChildController;
     detailsController.isChecked = isChecked;
     detailsController.isDocumentInRequest = isDocumentInRequest;
@@ -23,7 +23,7 @@ define([
      *
      * @return {Boolean}
      */
-    function checkSubmitConditions () {
+    function canSubmit () {
       return !!(detailsController.canCalculateChange() && detailsController.request.sickness_reason);
     }
 
