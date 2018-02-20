@@ -15,6 +15,10 @@ define([
       hasPreviousExpirationDate: null,
       hasExpirationFromAdminSettings: null
     };
+    var originalRequestDates = {
+      from_date: detailsController.request.from_date,
+      to_date: detailsController.request.to_date
+    };
 
     detailsController.canDisplayToilExpirationField = false;
 
@@ -44,22 +48,12 @@ define([
     }
 
     /**
-     * Calculates toil expiry date.
+     * Calculates the TOIL expiry date and updates the UI and the Request's
+     * expiry date value.
      *
      * @return {Promise}
      */
     function calculateToilExpiryDate () {
-      var isOpenRequestWithoutExpiryDateDefined = detailsController.isMode('edit') &&
-        !expirationConditions.hasPreviousExpirationDate;
-
-      // skips calculation of expiration date if request never expires
-      // according to admin setting or if the request did not have an expiry date
-      // defined:
-      if (!expirationConditions.hasExpirationFromAdminSettings ||
-        isOpenRequestWithoutExpiryDateDefined) {
-        return $q.resolve(false);
-      }
-
       return getReferenceDate()
         .catch(function (errors) {
           if (errors.length) {
@@ -91,17 +85,25 @@ define([
     }
 
     /**
-     * Determines if the expiry date can be calculated based on the
-     * Number Of Days selected and the corresponding date field has value.
+     * Determines if the expiry date can be calculated based on the visibility
+     * of the expiry date field, if the dates selected are valid, TOIL requests
+     * are set to expire according to the admin settings, and the selected
+     * dates have changed.
      *
      * @return {Boolean}
      */
     function canCalculateExpiryDate () {
-      var requestExistsAndCantBeManaged = (!detailsController.canManage && detailsController.request.id);
-      var multipleDaysWithToDateSet = (detailsController.uiOptions.multipleDays && detailsController.request.to_date);
-      var singleDayWithFromDateSet = (!detailsController.uiOptions.multipleDays && detailsController.request.from_date);
+      var multipleDaysWithToDateSet = (detailsController.uiOptions.multipleDays &&
+        !!detailsController.request.to_date);
+      var singleDayWithFromDateSet = (!detailsController.uiOptions.multipleDays &&
+        !!detailsController.request.from_date);
+      var dateFieldsAreDefined = singleDayWithFromDateSet || multipleDaysWithToDateSet;
+      var datesHaveChanged = originalRequestDates.from_date !== detailsController.request.from_date ||
+        originalRequestDates.to_date !== detailsController.request.to_date;
 
-      return requestExistsAndCantBeManaged && (multipleDaysWithToDateSet || singleDayWithFromDateSet);
+      return detailsController.canDisplayToilExpirationField && dateFieldsAreDefined &&
+        expirationConditions.hasExpirationFromAdminSettings &&
+        datesHaveChanged;
     }
 
     /**
@@ -262,7 +264,8 @@ define([
      * @return {Promise}
      */
     function onDateChangeExtended () {
-      return calculateToilExpiryDate().catch($q.resolve);
+      return (canCalculateExpiryDate() && calculateToilExpiryDate().catch($q.resolve)) ||
+        $q.resolve();
     }
 
     /**

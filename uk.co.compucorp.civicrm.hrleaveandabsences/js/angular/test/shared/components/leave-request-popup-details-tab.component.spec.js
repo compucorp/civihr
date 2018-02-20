@@ -1527,11 +1527,11 @@ define([
             controller.request.toil_to_accrue = originalToilToAccrue.value;
           });
 
-          it('expiry date is set on ui', function () {
+          it('sets the expiry date on the UI', function () {
             expect(controller.uiOptions.expiryDate).toEqual(expiryDate);
           });
 
-          describe('and changes expiry date', function () {
+          describe('and changes the expiry date', function () {
             var oldExpiryDate, newExpiryDate;
 
             beforeEach(function () {
@@ -1539,10 +1539,6 @@ define([
               controller.uiOptions.expiryDate = new Date();
               newExpiryDate = controller.convertDateToServerFormat(controller.uiOptions.expiryDate);
               controller.updateExpiryDate();
-            });
-
-            it('new expiry date is not same as old expiry date', function () {
-              expect(oldExpiryDate).not.toEqual(controller.request.toil_expiry_date);
             });
 
             it('sets new expiry date', function () {
@@ -1614,6 +1610,7 @@ define([
           beforeEach(function () {
             spyOn(AbsenceType, 'calculateToilExpiryDate');
             controller.request.to_date = new Date();
+            controller.onDateChangeExtended();
             $rootScope.$digest();
           });
 
@@ -1621,7 +1618,7 @@ define([
             expect(AbsenceType.calculateToilExpiryDate).not.toHaveBeenCalled();
           });
 
-          it('doesn not update the expiry date', function () {
+          it('does not update the expiry date', function () {
             expect(controller.request.toil_expiry_date).toBeFalsy();
           });
         });
@@ -1653,20 +1650,40 @@ define([
           delete toilRequest.toil_expiry_date;
 
           AbsenceType.canExpire.and.returnValue($q.resolve(true));
-          compileComponent({
-            mode: 'edit',
-            leaveType: 'toil',
-            request: toilRequest
-          });
         });
 
-        describe('when request date changes', function () {
+        describe('when request date changes for manager', function () {
           beforeEach(function () {
+            compileComponent({
+              mode: 'edit',
+              leaveType: 'toil',
+              role: 'manager',
+              request: toilRequest
+            });
             controller.request.to_date = new Date();
+            controller.onDateChangeExtended();
             $rootScope.$digest();
           });
 
-          it('does not update the toil expiry date', function () {
+          it('update the toil expiry date', function () {
+            expect(controller.request.toil_expiry_date).toBeDefined();
+          });
+        });
+
+        describe('when request date changes for staff', function () {
+          beforeEach(function () {
+            compileComponent({
+              mode: 'edit',
+              leaveType: 'toil',
+              role: 'staff',
+              request: toilRequest
+            });
+            controller.request.to_date = new Date();
+            controller.onDateChangeExtended();
+            $rootScope.$digest();
+          });
+
+          it('update the toil expiry date', function () {
             expect(controller.request.toil_expiry_date).toBeUndefined();
           });
         });
