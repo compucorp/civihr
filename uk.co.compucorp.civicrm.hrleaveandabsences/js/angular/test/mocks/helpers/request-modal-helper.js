@@ -23,9 +23,10 @@ define([
      * - {Object} request - The leave request data.
      * - {JasmineSpy} isMode - a isMode spy function.
      * - {JasmineSpy} isRole - a isRole spy function.
-     * @param {Object} AbsencePeriodInstance
      */
-    addDefaultComponentParams: function (params, AbsencePeriodInstance) {
+    addDefaultComponentParams: function (params) {
+      var AbsencePeriodInstance = getDependency('AbsencePeriodInstance');
+
       this.addSpyParams(params);
 
       var defaultParams = {
@@ -87,12 +88,14 @@ define([
 
     /**
      * sets from and/or to dates
+     *
      * @param {object} controller controller object
-     * @param {object} $rootScope
      * @param {String} from date set if passed
      * @param {String} to date set if passed
      */
-    setTestDates: function (controller, $rootScope, from, to) {
+    setTestDates: function (controller, from, to) {
+      var $rootScope = getDependency('$rootScope');
+
       if (from) {
         controller.uiOptions.fromDate = helper.getUTCDate(from);
         controller.dateChangeHandler('from');
@@ -106,4 +109,20 @@ define([
       }
     }
   };
+
+  /**
+   * Get an angular dependency
+   *
+   * @param {String} dependencyName name of the dependency
+   * @return {Object} requested dependency
+   */
+  function getDependency (dependencyName) {
+    var dependency;
+
+    inject([dependencyName, function (_dependency_) {
+      dependency = _dependency_;
+    }]);
+
+    return dependency;
+  }
 });

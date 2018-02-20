@@ -102,7 +102,7 @@ define([
     },
 
     /**
-     * Returns the id for a specific status by filtering using the status name.
+     * Returns the id for a specific leave request status by filtering them using the status name
      *
      * @param {String} statusName - The name of the status to filter by.
      * @return {Number}

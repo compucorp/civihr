@@ -22,7 +22,7 @@ define([
 
   describe('RequestModalDetailsToilController', function () {
     var $componentController, $provide, $q, $log, $rootScope, controller, leaveRequest,
-      AbsenceType, AbsenceTypeAPI, AbsencePeriodInstance, TOILRequestInstance;
+      AbsenceType, AbsenceTypeAPI, TOILRequestInstance;
 
     var date2016 = '01/12/2016';
     var date2016To = '02/12/2016'; // Must be greater than `date2016`
@@ -44,15 +44,13 @@ define([
     }]));
 
     beforeEach(inject(function (
-      _$componentController_, _$q_, _$log_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_, _AbsencePeriodInstance_,
-      _TOILRequestInstance_) {
+      _$componentController_, _$q_, _$log_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_, _TOILRequestInstance_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
       $rootScope = _$rootScope_;
       AbsenceType = _AbsenceType_;
       AbsenceTypeAPI = _AbsenceTypeAPI_;
-      AbsencePeriodInstance = _AbsencePeriodInstance_;
       TOILRequestInstance = _TOILRequestInstance_;
 
       spyOn($log, 'debug');
@@ -134,7 +132,7 @@ define([
             beforeEach(function () {
               var toilAccrue = optionGroupMock.specificObject('hrleaveandabsences_toil_amounts', 'name', 'quarter_day');
 
-              requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
+              requestModalHelper.setTestDates(controller, date2016, date2016To);
               controller.request.toilDurationHours = 1;
               controller.request.updateDuration();
               controller.request.toil_to_accrue = toilAccrue.value;
@@ -167,7 +165,7 @@ define([
           describe('when single days request', function () {
             beforeEach(function () {
               controller.uiOptions.multipleDays = false;
-              requestModalHelper.setTestDates(controller, $rootScope, date2016);
+              requestModalHelper.setTestDates(controller, date2016);
             });
 
             it('calls calculateToilExpiryDate on AbsenceType', function () {
@@ -236,7 +234,7 @@ define([
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
           controller.request.type_id = params.selectedAbsenceType.id;
-          requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
+          requestModalHelper.setTestDates(controller, date2016, date2016To);
           $rootScope.$digest();
 
           expiryDate = new Date(controller.request.toil_expiry_date);
@@ -374,7 +372,7 @@ define([
       });
     });
 
-    describe('calculateBalanceChange()', function() {
+    describe('calculateBalanceChange()', function () {
       beforeEach(function () {
         controller.request.toil_to_accrue = '1';
 
@@ -394,7 +392,7 @@ define([
       });
     });
 
-    describe('canCalculateChange()', function() {
+    describe('canCalculateChange()', function () {
       beforeEach(function () {
         compileComponent({
           leaveType: 'toil',
@@ -412,7 +410,7 @@ define([
       });
     });
 
-    describe('setDaysSelectionModeExtended()', function() {
+    describe('setDaysSelectionModeExtended()', function () {
       describe('when expiry date can be calculated', function () {
         beforeEach(function () {
           compileComponent({
@@ -454,7 +452,6 @@ define([
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
           $rootScope.$digest();
 
-
           controller.setDaysSelectionModeExtended();
         });
 
@@ -464,8 +461,6 @@ define([
           expect(controller.request.toil_expiry_date).toBe(true);
         });
       });
-
-      // describe('when expiry date can not be calculated')
     });
 
     /**
@@ -481,7 +476,7 @@ define([
     function compileComponent (params) {
       params = params || {};
 
-      requestModalHelper.addDefaultComponentParams(params, AbsencePeriodInstance);
+      requestModalHelper.addDefaultComponentParams(params);
 
       controller = $componentController(
         'leaveRequestPopupDetailsTab',

@@ -21,7 +21,7 @@ define([
 
   describe('RequestModalDetailsLeaveController', function () {
     var $componentController, $provide, $log, $rootScope, controller, leaveRequest,
-      AbsencePeriodInstance, LeaveRequestInstance, selectedAbsenceType;
+      LeaveRequestInstance, selectedAbsenceType;
 
     var date2016 = '01/12/2016';
     var date2016InServerFormat = moment(helper.getUTCDate(date2016)).format('YYYY-MM-D'); // Must match the date of `date2016`
@@ -42,12 +42,10 @@ define([
     }]));
 
     beforeEach(inject(function (
-      _$componentController_, _$log_, _$rootScope_, _AbsencePeriodInstance_,
-      _LeaveRequestInstance_) {
+      _$componentController_, _$log_, _$rootScope_, _LeaveRequestInstance_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
-      AbsencePeriodInstance = _AbsencePeriodInstance_;
       LeaveRequestInstance = _LeaveRequestInstance_;
 
       spyOn($log, 'debug');
@@ -87,7 +85,7 @@ define([
         controller.request.calculateBalanceChange.and.returnValue(expectedReturnValue);
 
         returnValue = controller.calculateBalanceChange();
-      })
+      });
 
       it('calculates balance change', function () {
         expect(controller.request.calculateBalanceChange)
@@ -299,7 +297,7 @@ define([
     function compileComponent (params) {
       params = params || {};
 
-      requestModalHelper.addDefaultComponentParams(params, AbsencePeriodInstance);
+      requestModalHelper.addDefaultComponentParams(params);
 
       controller = $componentController(
         'leaveRequestPopupDetailsTab',

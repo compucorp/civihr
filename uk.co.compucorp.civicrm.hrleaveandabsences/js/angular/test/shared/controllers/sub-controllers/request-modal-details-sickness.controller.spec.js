@@ -17,7 +17,7 @@ define([
 
   describe('RequestModalDetailsSicknessController', function () {
     var $componentController, $provide, $log, $rootScope, controller, leaveRequest,
-      AbsencePeriodInstance, SicknessRequestInstance, selectedAbsenceType;
+      SicknessRequestInstance, selectedAbsenceType;
 
     var date2016 = '01/12/2016';
     var date2016To = '02/12/2016'; // Must be greater than `date2016`
@@ -40,12 +40,10 @@ define([
     }]));
 
     beforeEach(inject(function (
-      _$componentController_, _$log_, _$rootScope_, _AbsencePeriodInstance_,
-      _SicknessRequestInstance_) {
+      _$componentController_, _$log_, _$rootScope_, _SicknessRequestInstance_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
-      AbsencePeriodInstance = _AbsencePeriodInstance_;
       SicknessRequestInstance = _SicknessRequestInstance_;
 
       spyOn($log, 'debug');
@@ -97,7 +95,7 @@ define([
 
       describe('with selected reason', function () {
         beforeEach(function () {
-          requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
+          requestModalHelper.setTestDates(controller, date2016, date2016To);
           setReason();
         });
 
@@ -149,7 +147,7 @@ define([
               request: sicknessRequest,
               selectedAbsenceType: selectedAbsenceType
             });
-            requestModalHelper.setTestDates(controller, $rootScope, date2016, date2017);
+            requestModalHelper.setTestDates(controller, date2016, date2017);
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
           });
@@ -165,7 +163,7 @@ define([
               request: sicknessRequest,
               leaveType: 'sick'
             });
-            requestModalHelper.setTestDates(controller, $rootScope, date2016, date2016To);
+            requestModalHelper.setTestDates(controller, date2016, date2016To);
             $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
             $rootScope.$digest();
           });
@@ -225,7 +223,7 @@ define([
     function compileComponent (params) {
       params = params || {};
 
-      requestModalHelper.addDefaultComponentParams(params, AbsencePeriodInstance);
+      requestModalHelper.addDefaultComponentParams(params);
 
       controller = $componentController(
         'leaveRequestPopupDetailsTab',
