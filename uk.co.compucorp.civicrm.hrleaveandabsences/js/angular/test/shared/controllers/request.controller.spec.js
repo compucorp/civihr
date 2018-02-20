@@ -4,22 +4,16 @@
   define([
     'common/lodash',
     'common/moment',
-    'mocks/data/option-group.data',
-    'mocks/data/leave-request.data',
-    'mocks/helpers/helper',
-    'common/modules/dialog',
-    'leave-absences/shared/config',
+    'leave-absences/mocks/data/option-group.data',
+    'leave-absences/mocks/data/leave-request.data',
+    'leave-absences/manager-leave/app',
     'common/mocks/services/hr-settings-mock',
-    'common/mocks/services/file-uploader-mock',
-    'mocks/apis/absence-period-api-mock',
-    'mocks/apis/absence-type-api-mock',
-    'mocks/apis/entitlement-api-mock',
-    'mocks/apis/work-pattern-api-mock',
-    'mocks/apis/leave-request-api-mock',
-    'mocks/apis/option-group-api-mock',
-    'common/mocks/services/api/contact-mock',
-    'common/services/pub-sub',
-    'leave-absences/shared/modules/shared-settings'
+    'leave-absences/mocks/apis/absence-period-api-mock',
+    'leave-absences/mocks/apis/absence-type-api-mock',
+    'leave-absences/mocks/apis/entitlement-api-mock',
+    'leave-absences/mocks/apis/leave-request-api-mock',
+    'leave-absences/mocks/apis/option-group-api-mock',
+    'leave-absences/mocks/apis/work-pattern-api-mock'
   ], function (_, moment, optionGroupMock, mockData) {
     'use strict';
 
@@ -27,7 +21,7 @@
       var $log, $rootScope, controller, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
         Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, pubSub,
-        WorkPatternAPI;
+        requiredTab, WorkPatternAPI;
       var role = 'staff'; // change this value to set other roles
 
       beforeEach(module('leave-absences.templates', 'leave-absences.controllers',
@@ -105,6 +99,13 @@
         spyOn(EntitlementAPI, 'all').and.callThrough();
 
         modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
+        requiredTab = {
+          isRequired: true,
+          canSubmit: function () {
+            return true;
+          },
+          onBeforeSubmit: jasmine.createSpy('onBeforeSubmit').and.returnValue($q.resolve())
+        };
       }));
 
       describe('staff opens request popup', function () {
@@ -245,7 +246,7 @@
               expect(controller.submitting).toBeTruthy();
             });
 
-            it('submit does not create request again', function () {
+            it('does not create request again', function () {
               spyOn(controller.request, 'create').and.callThrough();
               controller.submit();
               expect(controller.request.create).not.toHaveBeenCalled();
@@ -254,6 +255,8 @@
 
           describe('when submit with invalid fields', function () {
             beforeEach(function () {
+              requiredTab.canSubmit = function () { return false; };
+              $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
               controller.submit();
               $scope.$digest();
             });
@@ -279,7 +282,20 @@
             });
 
             describe('basic tests', function () {
+              var hasCalledRequestCreateMethod, nonRequiredTab;
+
               beforeEach(function () {
+                nonRequiredTab = {
+                  onBeforeSubmit: jasmine.createSpy('onBeforeSubmit').and.returnValue($q.resolve())
+                };
+
+                requiredTab.onBeforeSubmit.and.callFake(function () {
+                  hasCalledRequestCreateMethod = LeaveRequestAPI.create.calls.count() > 0;
+
+                  return $q.resolve();
+                });
+                $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
+                $scope.$emit('LeaveRequestPopup::addTab', nonRequiredTab);
                 controller.submit();
                 $scope.$digest();
               });
@@ -287,6 +303,15 @@
               it('is successful', function () {
                 expect(controller.errors.length).toBe(0);
                 expect(controller.request.id).toBeDefined();
+              });
+
+              it('submits all tabs', function () {
+                expect(requiredTab.onBeforeSubmit).toHaveBeenCalled();
+                expect(nonRequiredTab.onBeforeSubmit).toHaveBeenCalled();
+              });
+
+              it('submits all tabs before saving the request', function () {
+                expect(hasCalledRequestCreateMethod).toBe(false);
               });
 
               it('calls corresponding API end points', function () {
@@ -301,6 +326,19 @@
               it('does not send leave in hours parameters to the server', function () {
                 expect(controller.request['from_date_amount']).not.toBeDefined();
                 expect(controller.request['to_date_amount']).not.toBeDefined();
+              });
+
+              describe('when one of the tabs fails to submit', function () {
+                beforeEach(function () {
+                  nonRequiredTab.onBeforeSubmit.and.returnValue($q.reject());
+                  LeaveRequestAPI.create.calls.reset();
+                  controller.submit();
+                  $scope.$digest();
+                });
+
+                it('does not save the leave request', function () {
+                  expect(LeaveRequestAPI.create).not.toHaveBeenCalled();
+                });
               });
             });
 
@@ -326,9 +364,11 @@
             var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-            leaveRequest.fileUploader = { queue: [] };
 
-            initTestController({ leaveRequest: leaveRequest });
+            initTestController({
+              mode: 'edit',
+              leaveRequest: leaveRequest
+            });
           });
 
           it('does not allow to submit the leave request without changes', function () {
@@ -338,13 +378,81 @@
           describe('when a comment is added', function () {
             beforeEach(function () {
               controller.request.comments.push(jasmine.any(Object));
-              controller.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
-              controller.checkSubmitConditions.and.returnValue(true);
             });
 
             it('allows to submit the leave request', function () {
               expect(controller.canSubmit()).toBe(true);
             });
+          });
+
+          describe('tabs', function () {
+            describe('on create', function () {
+              beforeEach(function () {
+                controller.mode = 'create';
+              });
+
+              describe('when all required tabs can be submitted', function () {
+                beforeEach(function () {
+                  $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
+                  $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                });
+
+                it('allows to submit the leave request', function () {
+                  expect(controller.canSubmit()).toBe(true);
+                });
+              });
+
+              describe('when not all required tabs can be submitted', function () {
+                beforeEach(function () {
+                  $scope.$emit('LeaveRequestPopup::addTab', { isRequired: true, canSubmit: returnFalse });
+                  $scope.$emit('LeaveRequestPopup::addTab', { isRequired: true, canSubmit: returnTrue });
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnTrue });
+                });
+
+                it('does not allow to submit the leave request', function () {
+                  expect(controller.canSubmit()).toBe(false);
+                });
+              });
+            });
+
+            describe('on edit', function () {
+              beforeEach(function () {
+                controller.mode = 'edit';
+              });
+
+              describe('when some of the non-required tabs can be submitted', function () {
+                beforeEach(function () {
+                  $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnTrue });
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                });
+
+                it('allows to submit the leave request', function () {
+                  expect(controller.canSubmit()).toBe(true);
+                });
+              });
+
+              describe('when none of the non-required tabs can be submitted', function () {
+                beforeEach(function () {
+                  $scope.$emit('LeaveRequestPopup::addTab', requiredTab);
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                  $scope.$emit('LeaveRequestPopup::addTab', { canSubmit: returnFalse });
+                });
+
+                it('does not allow to submit the leave request', function () {
+                  expect(controller.canSubmit()).toBe(false);
+                });
+              });
+            });
+
+            function returnTrue () {
+              return true;
+            }
+
+            function returnFalse () {
+              return false;
+            }
           });
         });
 
@@ -394,7 +502,6 @@
               leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
               leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-              leaveRequest.fileUploader = { queue: [] };
 
               spyOn(controller.request, 'update').and.callThrough();
               initTestController({ leaveRequest: leaveRequest });
@@ -496,7 +603,6 @@
           var waitingApprovalStatus;
 
           beforeEach(function () {
-            controller.request.fileUploader = { queue: [] };
             waitingApprovalStatus = optionGroupMock.specificObject('hrleaveandabsences_leave_request_status', 'value', '3');
           });
 
@@ -543,9 +649,6 @@
             }
             // set status id manually as manager would set it on UI
             controller.newStatusOnSave = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
-
-            controller.checkSubmitConditions = jasmine.createSpy('checkSubmitConditions');
-            controller.checkSubmitConditions.and.returnValue(true);
 
             controller.submit();
           });

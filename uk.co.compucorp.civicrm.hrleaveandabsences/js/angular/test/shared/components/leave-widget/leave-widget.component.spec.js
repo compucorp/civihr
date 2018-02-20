@@ -3,9 +3,9 @@
 define([
   'common/lodash',
   'leave-absences/shared/components/leave-widget/leave-widget.component',
-  'mocks/apis/absence-period-api-mock',
-  'mocks/apis/absence-type-api-mock',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/apis/absence-period-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'common/mocks/services/api/contract-mock',
   'common/services/pub-sub'
 ], function (_) {
@@ -17,7 +17,8 @@ define([
     beforeEach(module('common.mocks', 'leave-absences.components.leave-widget',
       'leave-absences.mocks', function (_$provide_) {
         $provide = _$provide_;
-      }));
+      }
+    ));
 
     beforeEach(inject(['AbsencePeriodAPIMock', 'AbsenceTypeAPIMock',
       'api.contract.mock', 'OptionGroupAPIMock', function (AbsencePeriodAPIMock,
@@ -26,7 +27,8 @@ define([
         $provide.value('AbsenceTypeAPI', AbsenceTypeAPIMock);
         $provide.value('Contract', ContractMock);
         $provide.value('OptionGroup', OptionGroupAPIMock);
-      }]));
+      }]
+    ));
 
     beforeEach(inject(function (_$componentController_, _$q_, _$rootScope_,
       _AbsencePeriod_, _AbsenceType_, _Contract_, _OptionGroup_, _pubSub_) {
@@ -161,14 +163,12 @@ define([
           var expectedJobContract;
 
           beforeEach(function () {
-            Contract.all({
-              contact_id: contactId,
-              deleted: false
-            }).then(function (contracts) {
-              expectedJobContract = _.find(contracts, function (contract) {
-                return +contract.is_current === 1;
+            Contract.all({ contact_id: contactId, deleted: false })
+              .then(function (contracts) {
+                expectedJobContract = _.find(contracts, function (contract) {
+                  return +contract.is_current === 1;
+                });
               });
-            });
             $rootScope.$digest();
           });
 

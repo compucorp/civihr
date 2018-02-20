@@ -12,7 +12,7 @@ define([
 
     detailsController.calculateBalanceChange = calculateBalanceChange;
     detailsController.canCalculateChange = canCalculateChange;
-    detailsController.checkSubmitConditions = checkSubmitConditions;
+    detailsController.canSubmit = canSubmit;
     detailsController.initChildController = initChildController;
 
     /**
@@ -55,7 +55,7 @@ define([
      *
      * @return {Boolean}
      */
-    function checkSubmitConditions () {
+    function canSubmit () {
       return detailsController.canCalculateChange();
     }
 

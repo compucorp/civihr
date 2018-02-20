@@ -2,13 +2,13 @@
 
 define([
   'common/lodash',
-  'mocks/data/leave-request.data',
-  'mocks/data/option-group.data',
-  'mocks/data/comments.data',
-  'mocks/helpers/helper',
+  'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/data/comments.data',
+  'leave-absences/mocks/helpers/helper',
   'common/mocks/services/file-uploader-mock',
-  'mocks/apis/leave-request-api-mock',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/apis/leave-request-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/shared/instances/leave-request.instance',
   'leave-absences/shared/modules/models'
 ], function (_, leaveRequestMockData, optionGroupMockData, commentsData, helper) {

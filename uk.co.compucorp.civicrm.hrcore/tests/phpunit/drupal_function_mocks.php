@@ -62,7 +62,10 @@ function batch_process() {}
 
 function _get_uf_match_contact() {}
 
-function user_access() {
+function user_access($permission, $user) {
+  if($user->uid == 0) {
+    return FALSE;
+  }
   return TRUE;
 }
 

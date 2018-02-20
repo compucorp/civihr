@@ -92,8 +92,7 @@ define([
         contractLeaveService.getOne({
           jobcontract_revision_id: revision.leave_revision_id
         })
-      ])
-      .then(function (results) {
+      ]).then(function (results) {
         revisionDetails = {
           'details': results[0],
           'hour': results[1],
@@ -293,7 +292,7 @@ define([
         }
 
         CRM.refreshParent('#hrjobroles');
-        $window.location.assign(utilsService.getManageEntitlementsPageURL($scope.contract.contact_id));
+        utilsService.updateEntitlements($scope.contract.contact_id);
       });
     }
 
