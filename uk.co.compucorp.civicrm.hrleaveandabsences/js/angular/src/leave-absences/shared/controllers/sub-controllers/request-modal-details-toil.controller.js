@@ -11,13 +11,10 @@ define([
   function RequestModalDetailsToilController ($log, $q, $rootScope, OptionGroup, AbsenceType, detailsController) {
     $log.debug('RequestModalDetailsToilController');
 
+    var initialRequestAttributes;
     var expirationConditions = {
       hasPreviousExpirationDate: null,
       hasExpirationFromAdminSettings: null
-    };
-    var originalRequestDates = {
-      from_date: detailsController.request.from_date,
-      to_date: detailsController.request.to_date
     };
 
     detailsController.canDisplayToilExpirationField = false;
@@ -33,6 +30,7 @@ define([
 
     (function init () {
       initAccrueValueWatcher();
+      setInitialRequestAttributes();
     })();
 
     /**
@@ -98,8 +96,8 @@ define([
       var singleDayWithFromDateSet = (!detailsController.uiOptions.multipleDays &&
         !!detailsController.request.from_date);
       var dateFieldsAreDefined = singleDayWithFromDateSet || multipleDaysWithToDateSet;
-      var datesHaveChanged = originalRequestDates.from_date !== detailsController.request.from_date ||
-        originalRequestDates.to_date !== detailsController.request.to_date;
+      var datesHaveChanged = initialRequestAttributes.from_date !== detailsController.request.from_date ||
+        initialRequestAttributes.to_date !== detailsController.request.to_date;
 
       return detailsController.canDisplayToilExpirationField && dateFieldsAreDefined &&
         expirationConditions.hasExpirationFromAdminSettings &&
@@ -264,8 +262,9 @@ define([
      * @return {Promise}
      */
     function onDateChangeExtended () {
-      return (canCalculateExpiryDate() && calculateToilExpiryDate().catch($q.resolve)) ||
-        $q.resolve();
+      return canCalculateExpiryDate()
+        ? calculateToilExpiryDate().catch($q.resolve)
+        : $q.resolve();
     }
 
     /**
@@ -277,6 +276,13 @@ define([
      */
     function setDaysSelectionModeExtended () {
       return canCalculateExpiryDate() ? calculateToilExpiryDate() : $q.resolve();
+    }
+
+    /**
+     * Stores the initial request attributes to determine if there has been a change.
+     */
+    function setInitialRequestAttributes () {
+      initialRequestAttributes = angular.copy(detailsController.request.attributes());
     }
 
     /**

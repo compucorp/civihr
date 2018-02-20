@@ -1779,12 +1779,12 @@ define([
               role: 'manager',
               request: toilRequest
             });
-            controller.request.to_date = new Date();
+            controller.request.to_date = date2017To;
             controller.onDateChangeExtended();
             $rootScope.$digest();
           });
 
-          it('update the toil expiry date', function () {
+          it('updates the toil expiry date', function () {
             expect(controller.request.toil_expiry_date).toBeDefined();
           });
         });
@@ -1797,12 +1797,13 @@ define([
               role: 'staff',
               request: toilRequest
             });
-            controller.request.to_date = new Date();
+            controller.request.to_date = date2017To;
             controller.onDateChangeExtended();
             $rootScope.$digest();
           });
 
-          it('update the toil expiry date', function () {
+          it('does not update the toil expiry date', function () {
+            // staff can't change the expiry date of toil requests
             expect(controller.request.toil_expiry_date).toBeUndefined();
           });
         });
