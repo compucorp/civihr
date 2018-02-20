@@ -6,6 +6,7 @@ use CRM_HRContactActionsMenu_Component_UserInformationLinkItem as UserInformatio
 use CRM_HRContactActionsMenu_Component_UserRoleItem as UserRoleItem;
 use CRM_HRCore_CMSData_UserRoleInterface as CMSUserRole;
 use CRM_HRCore_CMSData_Paths_PathsInterface as CMSUserPath;
+use CRM_HRCore_CMSData_UserAccountInterface as CMSUserAccount;
 use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 
 /**
@@ -19,10 +20,12 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroupTest extends Bas
     $contactUserInfo = ['contact_id' => 2];
     $cmsUserPath = $this->prophesize(CMSUserPath::class);
     $cmsUserRole = $this->prophesize(CMSUserRole::class);
+    $cmsUserAccount = $this->prophesize(CMSUserAccount::class);
     $userActionGroupHelper = new UserInformationActionGroupHelper(
       $contactUserInfo,
       $cmsUserPath->reveal(),
-      $cmsUserRole->reveal()
+      $cmsUserRole->reveal(),
+      $cmsUserAccount->reveal()
     );
 
     $userActionGroup = $userActionGroupHelper->get();
@@ -42,10 +45,12 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroupTest extends Bas
     $contactUserInfo = ['cmsId' => 3, 'name' => 'cms username', 'contact_id' => 2];
     $cmsUserPath = $this->prophesize(CMSUserPath::class);
     $cmsUserRole = $this->prophesize(CMSUserRole::class);
+    $cmsUserAccount = $this->prophesize(CMSUserAccount::class);
     $userActionGroupHelper= new UserInformationActionGroupHelper(
       $contactUserInfo,
       $cmsUserPath->reveal(),
-      $cmsUserRole->reveal()
+      $cmsUserRole->reveal(),
+      $cmsUserAccount->reveal()
     );
 
     $userActionGroup = $userActionGroupHelper->get();

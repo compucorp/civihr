@@ -28,15 +28,22 @@ function hrcontactactionsmenu_addContactMenuActions(ActionsMenu $menu) {
   }
   $cmsUserPath = '';
   $cmsUserRole = '';
+  $cmsUserAccount = '';
 
   $contactUserInfo = ContactHelper::getUserInformation($contactID);
   if(!empty($contactUserInfo['cmsId'])) {
     $cmsFramework = CRM_Core_Config::singleton()->userFramework;
     $cmsUserPath = CMSUserPathFactory::create($cmsFramework, $contactUserInfo);
     $cmsUserRole = CMSUserRoleFactory::create($cmsFramework, $contactUserInfo);
+    $cmsUserAccount = UserAccountFactory::create($contactUserInfo);
   }
 
-  $userInformationActionGroup = new UserInformationActionGroupHelper($contactUserInfo, $cmsUserPath, $cmsUserRole);
+  $userInformationActionGroup = new UserInformationActionGroupHelper(
+    $contactUserInfo,
+    $cmsUserPath,
+    $cmsUserRole,
+    $cmsUserAccount
+  );
   $menu->addToHighlightedPanel($userInformationActionGroup->get());
 
   $communicationActionGroup = new CommunicationActionGroupHelper($contactID);
