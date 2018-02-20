@@ -44,36 +44,6 @@
   }
 
   /**
-   * Adds the Government ID field on the Personal Details page and on the Edit
-   * Contact form.
-   */
-  function addGovernmentIdField () {
-    // Updates Personal Details Page
-    var inlineDataBlock = $('.Inline_Custom_Data');
-
-    inlineDataBlock.appendTo($('#contactinfo-block').parent('div').parent('div'));
-    inlineDataBlock.removeClass('crm-collapsible');
-    inlineDataBlock.removeClass('collapsed');
-    inlineDataBlock.addClass('crm-summary-block');
-
-    $('.Inline_Custom_Data div.collapsible-title').css({display: 'none'});
-    $('.Inline_Custom_Data div.crm-summary-block').css({display: 'block'});
-
-    // Updates Edit Contact Form
-    if ($('#customFields').length < 1) {
-      $('#Inline_Custom_Data label').each(function () {
-        $('#nick_name').parent().after('<td id="customFields"></td>');
-        var nodeID = $(this).attr('for');
-        var customField = $('#' + nodeID).detach();
-        $('#customFields').append($(this));
-        $('#customFields').append(customField);
-      });
-
-      $('#Inline_Custom_Data').remove();
-    }
-  }
-
-  /**
    * Add an event listener on input[type="file"]
    * @param {jQuery Object} selector [selector from input file]
    */
@@ -102,7 +72,7 @@
         $('.crm-contact-tabs-list #tab_summary a', e.target).text('Personal Details');
       }
 
-      addGovernmentIdField(e.target);
+      manipulateDOMOfInlineCustomData(e.target);
       miscContactPageChanges(e.target);
     }
   }
@@ -210,6 +180,37 @@
    */
   function linkLabelToDatepickerInput ($line) {
     $line.find('label').attr('for', $line.find('.crm-form-date').attr('id'));
+  }
+
+  /**
+   * Manipulates, at the DOM level, the blocks/fields belonging to the
+   * Inline Custom Data custom fields set
+   */
+  function manipulateDOMOfInlineCustomData () {
+    // In Personal Details Page
+    var $inlineDataBlock = $('.Inline_Custom_Data');
+
+    if ($inlineDataBlock.length) {
+      $inlineDataBlock
+        .removeClass('crm-collapsible collapsed')
+        .addClass('crm-summary-block')
+        .insertAfter('.crm-summary-contactinfo-block')
+        .find('.collapsible-title').hide().end()
+        .find('.crm-summary-block').show();
+    }
+
+    // In Edit Contact Form
+    if ($('#customFields').length < 1) {
+      $('#Inline_Custom_Data label').each(function () {
+        $('#nick_name').parent().after('<td id="customFields"></td>');
+        var nodeID = $(this).attr('for');
+        var customField = $('#' + nodeID).detach();
+        $('#customFields').append($(this));
+        $('#customFields').append(customField);
+      });
+
+      $('#Inline_Custom_Data').remove();
+    }
   }
 
   /**
