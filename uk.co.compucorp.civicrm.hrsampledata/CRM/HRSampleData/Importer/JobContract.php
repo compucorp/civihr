@@ -31,18 +31,7 @@ class CRM_HRSampleData_Importer_JobContract extends CRM_HRSampleData_CSVImporter
   public function __construct() {
     $this->standardHours = $this->getFixData('HRHoursLocation', 'location', 'id');
     $this->payScales = $this->getFixData('HRPayScale', 'pay_scale', 'id');
-    //$this->absenceTypes = $this->getFixData('HRAbsenceType', 'name', 'id');
-    // Hardcoded while there's no sample data for L&A
-    $this->absenceTypes = [
-      'Sick' => 1,
-      'TOIL' => 2,
-      'Annual_Leave' => 3,
-      'Parental_Leave' => 4,
-      'Maternity' => 5,
-      'Paternity' => 6,
-      'Other' => 7,
-      'Compassionate_Leave' => 8
-    ];
+    $this->absenceTypes = $this->getFixData('AbsenceType', 'title', 'id');
   }
 
   /**

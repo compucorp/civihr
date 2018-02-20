@@ -87,7 +87,7 @@ class CRM_HRSampleData_CSVProcessor_JobContractTest extends CRM_HRSampleData_Bas
       5,
       5,
       $this->testContact['id'],
-      'Sick:0,Annual_Leave:28,Maternity:0,Paternity:0,TOIL:0,Other:0',
+      'Holiday / Vacation:28,Sick:3,TOIL:0',
     ];
 
     $mapping = [
