@@ -49,17 +49,15 @@
    */
   function addGovernmentIdField () {
     // Updates Personal Details Page
-    if (CRM.cid && CRM.hideGId) {
-      var inlineDataBlock = $('.Inline_Custom_Data');
+    var inlineDataBlock = $('.Inline_Custom_Data');
 
-      inlineDataBlock.appendTo($('#contactinfo-block').parent('div').parent('div'));
-      inlineDataBlock.removeClass('crm-collapsible');
-      inlineDataBlock.removeClass('collapsed');
-      inlineDataBlock.addClass('crm-summary-block');
+    inlineDataBlock.appendTo($('#contactinfo-block').parent('div').parent('div'));
+    inlineDataBlock.removeClass('crm-collapsible');
+    inlineDataBlock.removeClass('collapsed');
+    inlineDataBlock.addClass('crm-summary-block');
 
-      $('.Inline_Custom_Data div.collapsible-title').css({display: 'none'});
-      $('.Inline_Custom_Data div.crm-summary-block').css({display: 'block'});
-    }
+    $('.Inline_Custom_Data div.collapsible-title').css({display: 'none'});
+    $('.Inline_Custom_Data div.crm-summary-block').css({display: 'block'});
 
     // Updates Edit Contact Form
     if ($('#customFields').length < 1) {
