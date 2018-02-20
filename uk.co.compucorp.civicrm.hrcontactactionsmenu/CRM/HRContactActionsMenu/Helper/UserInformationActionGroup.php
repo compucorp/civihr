@@ -6,6 +6,7 @@ use CRM_HRContactActionsMenu_Component_UserInformationLinkItem as UserInformatio
 use CRM_HRContactActionsMenu_Component_UserRoleItem as UserRoleItem;
 use CRM_HRCore_CMSData_Paths_PathsInterface as CMSUserPath;
 use CRM_HRCore_CMSData_UserRoleInterface as CMSUserRole;
+use CRM_HRCore_CMSData_UserAccountInterface as CMSUserAccount;
 use CRM_HRContactActionsMenu_Component_ParagraphItem as ParagraphItem;
 
 /**
@@ -18,13 +19,18 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
    */
   private $contactUserInfo;
   /**
-   * @var \CRM_HRCore_CMSData_Paths_PathsInterface
+   * @var CMSUserPath
    */
   private $cmsUserPath;
   /**
-   * @var \CRM_HRCore_CMSData_UserRoleInterface
+   * @var CMSUserRole
    */
   private $cmsUserRole;
+
+  /**
+   * @var CMSUserAccount
+   */
+  private $cmsUserAccount;
 
   /**
    * CRM_HRContactActionsMenu_Helper_UserInformationActionGroup constructor.
@@ -33,12 +39,19 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
    *   Contact user info gotten from the contact helper
    * @param CMSUserPath|null $cmsUserPath
    * @param CMSUserRole|null $cmsUserRole
+   * @param CMSUserAccount|null $cmsUserAccount;
    *
    */
-  public function __construct($contactUserInfo, $cmsUserPath = null, $cmsUserRole = null) {
+  public function __construct(
+    $contactUserInfo,
+    CMSUserPath $cmsUserPath = null,
+    CMSUserRole $cmsUserRole = null,
+    CMSUserAccount $cmsUserAccount = null
+  ) {
     $this->contactUserInfo = $contactUserInfo;
     $this->cmsUserRole = $cmsUserRole;
     $this->cmsUserPath = $cmsUserPath;
+    $this->cmsUserAccount = $cmsUserAccount;
   }
 
   /**
@@ -52,7 +65,11 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
     $actionsGroup = new ActionsGroup('User Information:');
 
     if(!empty($this->contactUserInfo['cmsId'])) {
-      $userInformationLinkItem = new UserInformationLinkItem($this->cmsUserPath, $this->contactUserInfo);
+      $userInformationLinkItem = new UserInformationLinkItem(
+        $this->cmsUserPath,
+        $this->cmsUserAccount,
+        $this->contactUserInfo
+      );
       $actionsGroup->addItem($userInformationLinkItem);
 
       $userRoleItem = new UserRoleItem($this->cmsUserRole);
@@ -61,7 +78,7 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
       $actionsGroup->addItem($this->getSendWelcomeMailButton($contactID));
       $actionsGroup->addItem($this->getSendPasswordResetButton($contactID));
     } else {
-      $noUserTextItem = new ParagraphItem('There is no user for this staff member');
+      $noUserTextItem = new ParagraphItem('There is no user account for this staff member');
       $actionsGroup->addItem($noUserTextItem);
       $actionsGroup->addItem($this->getCreateUserButton($contactID));
     }
@@ -133,7 +150,7 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
   private function getCreateUserButton($contactID) {
     $url = CRM_Utils_System::url('civicrm/user/create-account', "cid=$contactID");
     $params = [
-      'label' => 'Create a user for this staff member',
+      'label' => 'Add User account',
       'class' => 'btn-primary',
       'icon' => 'fa-plus',
       'url' => $url
