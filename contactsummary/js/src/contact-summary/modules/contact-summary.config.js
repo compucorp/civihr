@@ -9,21 +9,21 @@ define([
 
   config.$inject = [
     'settings', '$routeProvider', '$resourceProvider', '$httpProvider',
-    '$logProvider'
+    '$logProvider', '$urlRouterProvider', '$stateProvider'
   ];
 
   function config (settings, $routeProvider, $resourceProvider, $httpProvider,
-    $logProvider) {
+    $logProvider, $urlRouterProvider, $stateProvider) {
     $logProvider.debugEnabled(settings.debug);
 
-    $routeProvider
-      .when('/', {
+    $urlRouterProvider.otherwise('/');
+    $stateProvider
+      .state('contact-summary', {
+        url: '/',
         controller: 'ContactSummaryController',
         controllerAs: 'ContactSummaryCtrl',
-        templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
-        resolve: {}
-      })
-      .otherwise({ redirectTo: '/' });
+        templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html'
+      });
 
     $resourceProvider.defaults.stripTrailingSlashes = false;
 

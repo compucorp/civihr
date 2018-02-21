@@ -1,8 +1,7 @@
-/* eslint-env amd */
-
 define([
   'common/angular',
-  'common/services/pub-sub'
+  'common/services/pub-sub',
+  'common/angularUiRouter'
 ], function (angular) {
   'use strict';
 
@@ -10,6 +9,7 @@ define([
     'ngRoute',
     'ngResource',
     'ui.bootstrap',
+    'ui.router',
     'common.services'
   ]);
 });
