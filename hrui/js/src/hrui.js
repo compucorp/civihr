@@ -31,7 +31,7 @@
     var hash = $newTab.find('a').prop('hash');
 
     if (hash) {
-      window.location.hash = hash;
+      window.location.hash = window.location.hash || hash;
     } else {
       window.location.hash = '/';
     }
