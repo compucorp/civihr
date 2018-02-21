@@ -50,20 +50,6 @@ function hrui_civicrm_pageRun($page) {
 
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()->addSetting(array('pageName' => 'viewSummary'));
-
-    //set government field value for individual page
-    $contactType = CRM_Contact_BAO_Contact::getContactType(CRM_Utils_Request::retrieve('cid', 'Integer'));
-
-    $isEnabled = ExtensionHelper::isExtensionEnabled('org.civicrm.hrident');
-
-    if ($isEnabled && $contactType == 'Individual') {
-      $hideGId = civicrm_api3('CustomField', 'getvalue', array('custom_group_id' => 'Identify', 'name' => 'is_government', 'return' => 'id'));
-      CRM_Core_Resources::singleton()
-        ->addSetting(array(
-          'cid' => CRM_Utils_Request::retrieve('cid', 'Integer'),
-          'hideGId' => $hideGId)
-        );
-    }
   }
 }
 
