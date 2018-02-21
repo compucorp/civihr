@@ -12,7 +12,7 @@
 
       $('#mainTabContainer')
         .on('tabscreate', function (event, ui) {
-          updateHash(ui.tab);
+          updateHash(ui.tab, true);
         })
         .on('tabsbeforeactivate', function (e, ui) {
           updateHash(ui.newTab);
@@ -26,12 +26,12 @@
       toggleActiveClassOnHoverOnAnyMainMenuItem();
     });
 
-  function updateHash (tab) {
+  function updateHash (tab, useFragmentInUrl) {
     var $newTab = $(tab);
     var hash = $newTab.find('a').prop('hash');
 
     if (hash) {
-      window.location.hash = window.location.hash || hash;
+      window.location.hash = useFragmentInUrl ? (window.location.hash || hash) : hash;
     } else {
       window.location.hash = '/';
     }
