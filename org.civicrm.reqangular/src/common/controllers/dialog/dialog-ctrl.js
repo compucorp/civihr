@@ -1,29 +1,61 @@
-define([], function () {
+/* eslint-env amd */
+
+define([
+  'common/lodash',
+  'common/modules/controllers'
+], function (_, controllers) {
   'use strict';
 
-  return ['$q', '$scope','$uibModalInstance', 'content', 'onConfirm',
-    function ($q, $scope, $modalInstance, content, onConfirm) {
-      $scope.loading = false
+  controllers.controller('DialogController', DialogController);
 
-      $scope.title = content.title || 'CiviHR';
-      $scope.msg = content.msg || '';
-      $scope.copyConfirm = content.copyConfirm || 'Yes';
-      $scope.copyCancel = content.copyCancel || 'Cancel';
-      $scope.classConfirm = content.classConfirm || 'btn-primary';
+  DialogController.$inject = ['$q', '$scope', '$uibModalInstance', 'props'];
 
-      $scope.confirm = function () {
-        $scope.loading = true;
+  function DialogController ($q, $scope, $modalInstance, props) {
+    $scope.cancel = cancel;
+    $scope.confirm = confirm;
 
-        $q
-          .resolve(onConfirm ? onConfirm() : null)
-          .then(function () {
-            $modalInstance.close(true);
-          });
-      };
+    (function init () {
+      assignProps(props);
+      props.delayedProps && props.delayedProps().then(function (_props_) {
+        assignProps(_props_);
+      });
+    }());
 
-      $scope.cancel = function () {
-        $modalInstance.close(false);
-      };
+    /**
+     * Assignes passed properties to the $scope,
+     * uses default values for some of properties
+     *
+     * @param {Object} props
+     */
+    function assignProps (props) {
+      _.assign($scope, _.defaultsDeep(props, {
+        title: 'CiviHR',
+        msg: '',
+        copyConfirm: '',
+        copyCancel: '',
+        classConfirm: 'btn-primary',
+        loading: false
+      }));
     }
-  ];
+
+    /**
+     * Handles cancellation action in the modal
+     */
+    function cancel () {
+      $modalInstance.close(false);
+    }
+
+    /**
+     * Handles confirmation action in the modal
+     */
+    function confirm () {
+      $scope.loading = true;
+
+      $q.resolve()
+        .then($scope.onConfirm)
+        .then(function () {
+          $modalInstance.close(true);
+        });
+    }
+  }
 });

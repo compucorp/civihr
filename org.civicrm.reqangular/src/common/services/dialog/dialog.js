@@ -1,52 +1,48 @@
+/* eslint-env amd */
+
 define([
-  'common/lodash'
-], function (_) {
+  'common/lodash',
+  'common/modules/services'
+], function (_, services) {
   'use strict';
 
-  return ['$uibModal', '$rootElement', '$templateCache',
-    function ($modal, $rootElement, $templateCache) {
+  services.factory('dialog', DialogService);
 
-      return {
+  DialogService.$inject = ['$uibModal', '$rootElement', '$templateCache'];
 
-        /**
-         * Opens the small dialog modal
-         *
-         * @param {object} options
-         *   Contains the labels for OK and Cancel button, the body
-         *   of the modal, and the title of the modal
-         * @return {Promise}
-         */
-        open: function (options) {
-          var $children;
+  function DialogService ($modal, $rootElement, $templateCache) {
+    return {
+      open: open
+    };
 
-          if (options && typeof options !== 'object') {
-            return;
+    /**
+     * Opens a small dialog modal
+     *
+     * @param {object} options
+     *   Contains labels for OK and Cancel button, a body
+     *   of the modal, and a title of the modal
+     * @return {Promise}
+     */
+    function open (options) {
+      var $children;
+
+      if (options && typeof options !== 'object') {
+        return;
+      }
+
+      $children = $rootElement.children();
+
+      return $modal.open({
+        appendTo: $children.length ? $children.eq(0) : $rootElement,
+        size: 'sm',
+        controller: 'DialogController',
+        template: $templateCache.get('dialog.html'),
+        resolve: {
+          props: function () {
+            return options;
           }
-
-          $children = $rootElement.children();
-
-          return $modal.open({
-            appendTo: $children.length ? $children.eq(0) : $rootElement,
-            size: 'sm',
-            controller: 'DialogCtrl',
-            template: $templateCache.get('dialog.html'),
-            resolve: {
-              content: function (){
-                return {
-                  copyCancel: options.copyCancel || '',
-                  copyConfirm: options.copyConfirm || '',
-                  classConfirm: options.classConfirm || '',
-                  title: options.title || '',
-                  msg: options.msg || ''
-                };
-              },
-              onConfirm: function () {
-                return _.isFunction(options.onConfirm) ? options.onConfirm : null;
-              }
-            }
-          }).result;
         }
-      };
+      }).result;
     }
-  ];
+  }
 });
