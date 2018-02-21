@@ -505,7 +505,6 @@ define([
     });
 
     describe('when the user wants to change status of leave request', function () {
-      var checkIfBalanceChangeNeedsForceRecalculationSpy;
       // Any action, role or request could be specified here
       var action = 'approve';
 
@@ -513,33 +512,37 @@ define([
         // Any role or request could be specified here
         role = 'admin';
         leaveRequest = getRequest();
-        checkIfBalanceChangeNeedsForceRecalculationSpy =
-          spyOn(leaveRequest, 'checkIfBalanceChangeNeedsForceRecalculation').and.callThrough();
-
-        leaveRequest.checkIfBalanceChangeNeedsForceRecalculation.calls.reset();
         compileComponent();
         spyOn($rootScope, '$emit');
-        controller.action(action);
-        $rootScope.$digest();
       });
 
-      it('checks if the balance has been changed', function () {
-        expect(leaveRequest.checkIfBalanceChangeNeedsForceRecalculation)
-          .toHaveBeenCalled();
+      describe('', function () {
+        beforeEach(function () {
+          spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsForceRecalculation')
+            .and.callThrough();
+
+          controller.action(action);
+          $rootScope.$digest();
+        });
+
+        it('checks if the balance has been changed', function () {
+          expect(controller.leaveRequest.checkIfBalanceChangeNeedsForceRecalculation)
+            .toHaveBeenCalled();
+        });
       });
 
       describe('when balance change has not been changed', function () {
         beforeEach(function () {
-          checkIfBalanceChangeNeedsForceRecalculationSpy
+          spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsForceRecalculation')
             .and.returnValue($q.resolve(false));
           resolveDialogWith(null);
           controller.action(action);
           $rootScope.$digest();
         });
 
-        it('shows a confirmation dialog', function () {
+        it('shows a loading confirmation dialog', function () {
           expect(dialog.open).toHaveBeenCalledWith(jasmine.objectContaining({
-            title: 'Confirm Approval?'
+            loading: true
           }));
         });
 
@@ -589,19 +592,21 @@ define([
         var proceedWithBalanceChangeRecalculation;
 
         beforeEach(function () {
-          checkIfBalanceChangeNeedsForceRecalculationSpy
+          spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsForceRecalculation')
             .and.returnValue($q.resolve(true));
           spyOn(dialog, 'open').and.callFake(function (params) {
-            proceedWithBalanceChangeRecalculation = params.onConfirm;
+            params.delayedProps().then(function (props) {
+              proceedWithBalanceChangeRecalculation = props.onConfirm;
+            });
           });
           spyOn(LeaveRequestService,
-            'promptIfProceedWithBalanceChangeRecalculation').and.callThrough();
+            'getBalanceChangeRecalculationPromptOptions').and.callThrough();
           controller.action(action);
           $rootScope.$digest();
         });
 
         it('prompts if user would like to proceed with balance change recalculation', function () {
-          expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
+          expect(LeaveRequestService.getBalanceChangeRecalculationPromptOptions)
             .toHaveBeenCalled();
           expect(dialog.open).toHaveBeenCalled();
         });
@@ -622,20 +627,19 @@ define([
       });
 
       describe('when the user wants either to cancel, reject or delete the leave request', function () {
+        beforeEach(function () {
+          spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsForceRecalculation')
+            .and.callThrough();
+        });
+
         ['cancel', 'reject', 'delete'].forEach(function (action) {
           beforeEach(function () {
-            leaveRequest = getRequest();
-            checkIfBalanceChangeNeedsForceRecalculationSpy =
-              spyOn(leaveRequest, 'checkIfBalanceChangeNeedsForceRecalculation');
-
-            leaveRequest.checkIfBalanceChangeNeedsForceRecalculation.calls.reset();
-            compileComponent();
             controller.action(action);
             $rootScope.$digest();
           });
 
           it('skips checking of the balance change', function () {
-            expect(leaveRequest.checkIfBalanceChangeNeedsForceRecalculation)
+            expect(controller.leaveRequest.checkIfBalanceChangeNeedsForceRecalculation)
               .not.toHaveBeenCalled();
           });
         });
@@ -725,10 +729,17 @@ define([
       }
 
       spy.and.callFake(function (options) {
+        if (!value) {
+          return;
+        }
+
         return $q.resolve()
-          .then(function () {
-            return options.onConfirm && value ? options.onConfirm() : null;
+          .then(options.delayedProps)
+          .then()
+          .then(function (props) {
+            return props && props.onConfirm ? props.onConfirm() : null;
           })
+          .then(options.onConfirm)
           .then(function () {
             return value;
           });

@@ -8,14 +8,13 @@ define([
 
   services.factory('LeaveRequestService', LeaveRequestService);
 
-  LeaveRequestService.$inject = [
-    '$log', '$q', 'dialog'
-  ];
+  LeaveRequestService.$inject = ['$log', '$q', 'dialog'];
 
   function LeaveRequestService ($log, $q, dialog) {
     $log.debug('LeaveRequest');
 
     return {
+      getBalanceChangeRecalculationPromptOptions: getBalanceChangeRecalculationPromptOptions,
       promptIfProceedWithBalanceChangeRecalculation: promptIfProceedWithBalanceChangeRecalculation
     };
 
@@ -28,20 +27,28 @@ define([
     function promptIfProceedWithBalanceChangeRecalculation () {
       var deferred = $q.defer();
 
-      dialog.open({
+      dialog.open(_.defaults(getBalanceChangeRecalculationPromptOptions(), {
+        onConfirm: function () {
+          deferred.resolve(true);
+        }
+      }));
+
+      return deferred.promise;
+    }
+
+    /**
+     * Returns properties for the balance change recalculation prompt dialog
+     */
+    function getBalanceChangeRecalculationPromptOptions () {
+      return {
         title: 'Recalculate Balance Change?',
         copyCancel: 'Cancel',
         copyConfirm: 'Yes',
         classConfirm: 'btn-warning',
         msg: 'The leave balance change has updated since ' +
           'this leave request was created. ' +
-          'Do you want to recalculate the balance change?',
-        onConfirm: function () {
-          deferred.resolve(true);
-        }
-      });
-
-      return deferred.promise;
+          'Do you want to recalculate the balance change?'
+      };
     }
   }
 });

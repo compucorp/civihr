@@ -29,10 +29,10 @@ define([
   });
 
   LeaveRequestActionsController.$inject = ['$log', '$rootScope', 'dialog',
-    'LeavePopup', 'LeaveRequestService', 'pubSub', 'shared-settings', 'notificationService'];
+    'LeavePopup', 'LeaveRequestService', 'pubSub', 'shared-settings', 'notificationService', '$timeout'];
 
   function LeaveRequestActionsController ($log, $rootScope, dialog,
-    LeavePopup, LeaveRequestService, pubSub, sharedSettings, notification) {
+    LeavePopup, LeaveRequestService, pubSub, sharedSettings, notification, $timeout) {
     $log.debug('Component: leave-request-action-dropdown');
 
     var vm = this;
@@ -131,19 +131,34 @@ define([
       statusIdBeforeAction = vm.leaveRequest.status_id;
 
       if (!_.includes(['cancel', 'reject', 'delete'], action)) {
-        vm.leaveRequest.checkIfBalanceChangeNeedsForceRecalculation()
-          .then(function (balanceChangeNeedsForceRecalculation) {
-            if (balanceChangeNeedsForceRecalculation) {
-              LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation()
-                .then(function () {
-                  LeavePopup.openModal(vm.leaveRequest, vm.leaveRequest.request_type, vm.leaveRequest.contact_id, $rootScope.section === 'my-leave', true);
-                });
-            } else {
-              openConfirmationDialog(action);
-            }
-          });
+        dialog.open({
+          title: 'Checking balance change...',
+          loading: true,
+          delayedProps: function () {
+            return vm.leaveRequest.checkIfBalanceChangeNeedsForceRecalculation()
+              .then(function (balanceChangeNeedsForceRecalculation) {
+                if (balanceChangeNeedsForceRecalculation) {
+                  return _.assign(
+                    LeaveRequestService.getBalanceChangeRecalculationPromptOptions(),
+                    {
+                      onConfirm: function () {
+                        // @TODO tick problem here
+                        LeavePopup.openModal(vm.leaveRequest,
+                          vm.leaveRequest.request_type,
+                          vm.leaveRequest.contact_id,
+                          $rootScope.section === 'my-leave',
+                          true);
+                      }
+                    }
+                  );
+                } else {
+                  return getConfirmationDialogOptions(action);
+                }
+              });
+          }
+        });
       } else {
-        openConfirmationDialog(action);
+        dialog.open(getConfirmationDialogOptions(action));
       }
     }
 
@@ -209,10 +224,16 @@ define([
       }
     }
 
-    function openConfirmationDialog (action) {
+    /**
+     * Returns options for an action confirmation dialog
+     *
+     * @param  {String} action
+     * @return {Object}
+     */
+    function getConfirmationDialogOptions (action) {
       var dialogParams = actions[action].dialog;
 
-      dialog.open({
+      return {
         title: 'Confirm ' + dialogParams.title + '?',
         copyCancel: 'Cancel',
         copyConfirm: dialogParams.btnLabel,
@@ -227,7 +248,7 @@ define([
               notification.error('Error:', error);
             });
         }
-      });
+      };
     }
 
     /**

@@ -62,5 +62,14 @@ define([
         });
       });
     });
+
+    describe('getBalanceChangeRecalculationPromptOptions()', function () {
+      it('returns balance change recalculation prompt options', function () {
+        expect(LeaveRequestService.getBalanceChangeRecalculationPromptOptions())
+          .toEqual(jasmine.objectContaining({
+            title: 'Recalculate Balance Change?'
+          }));
+      });
+    });
   });
 });
