@@ -201,12 +201,16 @@
 
     // In Edit Contact Form
     if ($('#customFields').length < 1) {
-      $('#Inline_Custom_Data label').each(function () {
-        $('#nick_name').parent().after('<td id="customFields"></td>');
-        var nodeID = $(this).attr('for');
-        var customField = $('#' + nodeID).detach();
-        $('#customFields').append($(this));
-        $('#customFields').append(customField);
+      $('#Inline_Custom_Data .label').each(function () {
+        var $labelCell = $(this);
+        var $fieldCell = $labelCell.next();
+        var $newTd = $('<td/>');
+
+        $newTd.append($labelCell.find('label'));
+        $newTd.append($('<br/>'));
+        $newTd.append($fieldCell.html());
+
+        $('#nick_name').parent().after($newTd);
       });
 
       $('#Inline_Custom_Data').remove();
