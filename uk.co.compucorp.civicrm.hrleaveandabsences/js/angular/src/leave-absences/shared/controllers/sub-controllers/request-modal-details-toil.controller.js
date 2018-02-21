@@ -24,8 +24,8 @@ define([
     detailsController.canSubmit = canSubmit;
     detailsController.clearExpiryDate = clearExpiryDate;
     detailsController.initChildController = initChildController;
-    detailsController.onDateChangeExtended = onDateChangeExtended;
-    detailsController.setDaysSelectionModeExtended = setDaysSelectionModeExtended;
+    detailsController.onDateChangeExtended = tryToCalculateExpiryDate;
+    detailsController.setDaysSelectionModeExtended = tryToCalculateExpiryDate;
     detailsController.updateExpiryDate = updateExpiryDate;
 
     (function init () {
@@ -257,32 +257,22 @@ define([
     }
 
     /**
-     * Extends the parent's dateChangeHandler() function
-     *
-     * @return {Promise}
-     */
-    function onDateChangeExtended () {
-      return canCalculateExpiryDate()
-        ? calculateToilExpiryDate().catch($q.resolve)
-        : $q.resolve();
-    }
-
-    /**
-     * Extends setDaysSelectionMode() method from the details controller.
-     * Fires calculation of expiry date when the number of days changes
-     * and the expiry date can be calculated.
-     *
-     * @return {Promise}
-     */
-    function setDaysSelectionModeExtended () {
-      return canCalculateExpiryDate() ? calculateToilExpiryDate() : $q.resolve();
-    }
-
-    /**
      * Stores the initial request attributes to determine if there has been a change.
      */
     function setInitialRequestAttributes () {
       initialRequestAttributes = angular.copy(detailsController.request.attributes());
+    }
+
+    /**
+     * Calculates the expiry date if all conditions are met, otherwise it resolves
+     * into an empty promise.
+     *
+     * @return {Promise}
+     */
+    function tryToCalculateExpiryDate () {
+      return canCalculateExpiryDate()
+        ? calculateToilExpiryDate().catch($q.resolve)
+        : $q.resolve();
     }
 
     /**
