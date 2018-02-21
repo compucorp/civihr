@@ -1,6 +1,6 @@
 <crm-loading show="filesTab.filesLoaded">
   <div>
-    <ul class="chr_leave-request-files_list container-fluid" ng-if="filesTab.getFilesCount() > 0">
+    <ul class="chr_leave-request-files_list container-fluid" ng-if="filesTab.getFilesAmount() > 0">
       <li ng-repeat="file in filesTab.request.files | filter: {toBeDeleted: '!'}">{{file.toBeDeleted}}
         <div class="chr_leave-request-files_meta">
           <span class="chr_leave-request-files_author">{{filesTab.getAuthorName(file.contact_id)}}</span>
@@ -22,7 +22,7 @@
             </span>
           </div>
           <div
-            ng-show="filesTab.removeAttachmentVisibility(file)"
+            ng-show="filesTab.canRemoveAttachment(file)"
             class="chr_leave-request-files_delete text-danger col-xs-6 col-sm-4">
             <i class="fa fa-trash-o" aria-hidden="true"></i>
             <span
@@ -56,7 +56,7 @@
               <span class="chr_leave-request-files_file-name">{{file.file.name}}</span>
             </div>
             <div
-              ng-show="filesTab.removeAttachmentVisibility(file)"
+              ng-show="filesTab.canRemoveAttachment(file)"
               class="chr_leave-request-files_delete text-danger col-xs-4">
               <i class="fa fa-trash-o" aria-hidden="true"></i>
               <span

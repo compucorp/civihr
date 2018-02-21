@@ -99,6 +99,33 @@ define([
       return _.find(workPatternMocked.getCalendar.values[0].calendar, function (day) {
         return day.type === dayTypeByName(dayType).value;
       });
+    },
+
+    /**
+     * Returns the id for a specific leave request status by filtering them using the status name
+     *
+     * @param {String} statusName - The name of the status to filter by.
+     * @return {Number}
+     */
+    getStatusValueFromName: function (statusName) {
+      var status = optionGroupMock.specificObject(
+        'hrleaveandabsences_leave_request_status',
+        'name',
+        statusName
+      );
+
+      return status.value;
+    },
+
+    /**
+     * Returns a UTC Date object from a string.
+     *
+     * @param {String} date - the date to convert to UTC Date object.
+     * @return {Date}
+     */
+    getUTCDate: function (date) {
+      var now = new Date(date);
+      return new Date(now.getTime() + now.getTimezoneOffset() * 60000);
     }
   };
 

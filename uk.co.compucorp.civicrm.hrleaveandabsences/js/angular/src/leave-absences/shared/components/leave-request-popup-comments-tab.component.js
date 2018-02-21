@@ -17,10 +17,10 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup-comments-tab.html';
     }],
     controllerAs: 'commentsCtrl',
-    controller: ['$log', '$rootScope', 'HR_settings', 'shared-settings', 'Contact', 'Session', controller]
+    controller: ['$log', '$rootScope', '$scope', 'HR_settings', 'shared-settings', 'Contact', 'Session', controller]
   });
 
-  function controller ($log, $rootScope, HRSettings, sharedSettings, Contact, Session) {
+  function controller ($log, $rootScope, $scope, HRSettings, sharedSettings, Contact, Session) {
     $log.debug('Component: leave-request-popup-comments-tab');
 
     var loggedInContactId = null;
@@ -32,42 +32,76 @@ define([
       contacts: {}
     };
 
+    vm.addComment = addComment;
+    vm.canRemoveComment = canRemoveComment;
+    vm.canSubmit = canSubmit;
+    vm.formatDateTime = formatDateTime;
+    vm.getActiveComments = getActiveComments;
+    vm.getCommentorName = getCommentorName;
+    vm.isMode = isMode;
+    vm.onBeforeSubmit = onBeforeSubmit;
+
     (function init () {
+      $scope.$emit('LeaveRequestPopup::addTab', vm);
       loadCommentsAndContactNames();
       loadLoggedInContactId();
     }());
 
     /**
-     * Add a comment into comments array, also clears the comments textbox
+     * Adds a comment into comments array and also clears the comments textbox
      */
-    vm.addComment = function () {
+    function addComment () {
       vm.request.comments.push({
         contact_id: loggedInContactId,
         leave_request_id: vm.request.id,
         text: vm.comment.text
       });
       vm.comment.text = '';
-    };
+    }
+
+    /**
+     * Allows the user to submit the request if there is a comment waiting to be
+     * added.
+     *
+     * @return {Boolean}
+     */
+    function canSubmit () {
+      return vm.comment.text.length > 0;
+    }
+
+    /**
+     * Determines if a comment can be deleted when the comment has not been saved
+     * or if the user can manage the request and has permission to remove the
+     * comments.
+     *
+     * @param {Object} comment - comment object
+     * @return {Boolean}
+     */
+    function canRemoveComment (comment) {
+      return !comment.comment_id || vm.canManage;
+    }
 
     /**
      * Format a date-time into user format and returns
      *
      * @return {String}
      */
-    vm.formatDateTime = function (dateTime) {
-      return moment.utc(dateTime, sharedSettings.serverDateTimeFormat).local().format(HRSettings.DATE_FORMAT.toUpperCase() + ' HH:mm');
-    };
+    function formatDateTime (dateTime) {
+      return moment
+        .utc(dateTime, sharedSettings.serverDateTimeFormat).local()
+        .format(HRSettings.DATE_FORMAT.toUpperCase() + ' HH:mm');
+    }
 
     /**
      * Returns the comments which are not marked for deletion
      *
      * @return {Array}
      */
-    vm.getActiveComments = function () {
+    function getActiveComments () {
       return vm.request.comments.filter(function (comment) {
         return !comment.toBeDeleted;
       });
-    };
+    }
 
     /**
      * Returns the comment author name
@@ -75,43 +109,31 @@ define([
      *
      * @return {String}
      */
-    vm.getCommentorName = function (contactId) {
+    function getCommentorName (contactId) {
       if (contactId === loggedInContactId) {
         return 'Me';
       } else if (vm.comment.contacts[contactId]) {
         return vm.comment.contacts[contactId].display_name;
       }
-    };
+    }
 
     /**
      * Checks if popup is opened in given mode
      *
-     * @param {String} modeParam to open leave request like edit or view or create
+     * @param {String} mode to open leave request like edit or view or create
      * @return {Boolean}
      */
-    vm.isMode = function (modeParam) {
-      return vm.mode === modeParam;
-    };
+    function isMode (mode) {
+      return vm.mode === mode;
+    }
 
     /**
-     * Orders comment, used as a angular filter
-     * @param {Object} comment
-     *
-     * @return {Date}
+     * When submitting the tab, if there are comments waiting to be added, it
+     * automatically adds them to the request.
      */
-    vm.orderComment = function (comment) {
-      return moment(comment.created_at, sharedSettings.serverDateTimeFormat);
-    };
-
-    /**
-     * Decides visiblity of remove comment button
-     * @param {Object} comment - comment object
-     *
-     * @return {Boolean}
-     */
-    vm.removeCommentVisibility = function (comment) {
-      return !comment.comment_id || vm.canManage;
-    };
+    function onBeforeSubmit () {
+      (vm.comment.text.length) && vm.addComment();
+    }
 
     /**
      * Loads unique contact names for all the comments
@@ -152,12 +174,13 @@ define([
     function loadLoggedInContactId () {
       vm.loading.component = true;
 
-      return Session.get().then(function (value) {
-        loggedInContactId = value.contactId;
-      })
-      .then(function () {
-        vm.loading.component = false;
-      });
+      return Session.get()
+        .then(function (session) {
+          loggedInContactId = session.contactId;
+        })
+        .then(function () {
+          vm.loading.component = false;
+        });
     }
   }
 });

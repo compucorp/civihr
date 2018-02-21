@@ -12,7 +12,7 @@ define([
 
     detailsController.calculateBalanceChange = calculateBalanceChange;
     detailsController.canCalculateChange = canCalculateChange;
-    detailsController.checkSubmitConditions = checkSubmitConditions;
+    detailsController.canSubmit = canSubmit;
     detailsController.initChildController = initChildController;
 
     /**
@@ -40,9 +40,7 @@ define([
       if (unit === 'days') {
         canCalculate = canCalculate &&
           !!request.from_date_type && !!request.to_date_type;
-      }
-
-      if (unit === 'hours') {
+      } else if (unit === 'hours') {
         canCalculate = canCalculate &&
           !isNaN(+request.from_date_amount) && !isNaN(+request.to_date_amount);
       }
@@ -55,7 +53,7 @@ define([
      *
      * @return {Boolean}
      */
-    function checkSubmitConditions () {
+    function canSubmit () {
       return detailsController.canCalculateChange();
     }
 
