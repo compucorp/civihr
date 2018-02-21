@@ -187,33 +187,12 @@
    * Inline Custom Data custom fields set
    */
   function manipulateDOMOfInlineCustomData () {
-    // In Personal Details Page
-    var $inlineDataBlock = $('.Inline_Custom_Data');
-
-    if ($inlineDataBlock.length) {
-      $inlineDataBlock
-        .removeClass('crm-collapsible collapsed')
-        .addClass('crm-summary-block')
-        .insertAfter('.crm-summary-contactinfo-block')
-        .find('.collapsible-title').hide().end()
-        .find('.crm-summary-block').show();
+    if ($('.Inline_Custom_Data').length) {
+      repositionInlineCustomDataBlockInPersonalDetailsTab();
     }
 
-    // In Edit Contact Form
     if ($('#customFields').length < 1) {
-      $('#Inline_Custom_Data .label').each(function () {
-        var $labelCell = $(this);
-        var $fieldCell = $labelCell.next();
-        var $newTd = $('<td/>');
-
-        $newTd.append($labelCell.find('label'));
-        $newTd.append($('<br/>'));
-        $newTd.append($fieldCell.html());
-
-        $('#nick_name').parent().after($newTd);
-      });
-
-      $('#Inline_Custom_Data').remove();
+      repositionInlineCustomDataFieldsInEditContactForm();
     }
   }
 
@@ -269,6 +248,39 @@
       .find('#civicrm-home')
       .before($homeLink)
       .remove();
+  }
+
+  /**
+   * Moves the "Inline Custom Data" fields towards the top of the
+   * edit contact form
+   */
+  function repositionInlineCustomDataFieldsInEditContactForm () {
+    var $fields = $('#Inline_Custom_Data').detach();
+
+    $fields.find('.label').each(function () {
+      var $labelCell = $(this);
+      var $fieldCell = $labelCell.next();
+      var $newTd = $('<td/>');
+
+      $newTd.append($labelCell.find('label'));
+      $newTd.append($('<br/>'));
+      $newTd.append($fieldCell.html());
+
+      $('#nick_name').parent().after($newTd);
+    });
+  }
+
+  /**
+   * Moves the "Inline Custom Data" block towards the top of the
+   * personal details tab
+   */
+  function repositionInlineCustomDataBlockInPersonalDetailsTab () {
+    $('.Inline_Custom_Data')
+      .removeClass('crm-collapsible collapsed')
+      .addClass('crm-summary-block')
+      .insertAfter('.crm-summary-contactinfo-block')
+      .find('.collapsible-title').hide().end()
+      .find('.crm-summary-block').show();
   }
 
   /**
