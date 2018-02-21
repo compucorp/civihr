@@ -51,11 +51,11 @@ define([
     function confirm () {
       $scope.loading = true;
 
-      $q.resolve()
-        .then($scope.onConfirm)
-        .then(function () {
-          $modalInstance.close(true);
-        });
+      $modalInstance.closed.then(function () {
+        $scope.onConfirm();
+      });
+
+      $modalInstance.close(true);
     }
   }
 });

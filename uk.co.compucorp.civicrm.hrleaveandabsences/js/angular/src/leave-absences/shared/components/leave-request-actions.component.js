@@ -29,10 +29,10 @@ define([
   });
 
   LeaveRequestActionsController.$inject = ['$log', '$rootScope', 'dialog',
-    'LeavePopup', 'LeaveRequestService', 'pubSub', 'shared-settings', 'notificationService', '$timeout'];
+    'LeavePopup', 'LeaveRequestService', 'pubSub', 'shared-settings', 'notificationService'];
 
   function LeaveRequestActionsController ($log, $rootScope, dialog,
-    LeavePopup, LeaveRequestService, pubSub, sharedSettings, notification, $timeout) {
+    LeavePopup, LeaveRequestService, pubSub, sharedSettings, notification) {
     $log.debug('Component: leave-request-action-dropdown');
 
     var vm = this;
@@ -125,38 +125,13 @@ define([
     /**
      * Performs an action on a given leave request
      *
-     * @param {string} action
+     * @param {String} action
      */
     function action (action) {
       statusIdBeforeAction = vm.leaveRequest.status_id;
 
       if (!_.includes(['cancel', 'reject', 'delete'], action)) {
-        dialog.open({
-          title: 'Checking balance change...',
-          loading: true,
-          delayedProps: function () {
-            return vm.leaveRequest.checkIfBalanceChangeNeedsForceRecalculation()
-              .then(function (balanceChangeNeedsForceRecalculation) {
-                if (balanceChangeNeedsForceRecalculation) {
-                  return _.assign(
-                    LeaveRequestService.getBalanceChangeRecalculationPromptOptions(),
-                    {
-                      onConfirm: function () {
-                        // @TODO tick problem here
-                        LeavePopup.openModal(vm.leaveRequest,
-                          vm.leaveRequest.request_type,
-                          vm.leaveRequest.contact_id,
-                          $rootScope.section === 'my-leave',
-                          true);
-                      }
-                    }
-                  );
-                } else {
-                  return getConfirmationDialogOptions(action);
-                }
-              });
-          }
-        });
+        checkBalanceChangeAndPromptForAnAction(action);
       } else {
         dialog.open(getConfirmationDialogOptions(action));
       }
@@ -208,6 +183,41 @@ define([
 
       // If request can always be cancelled
       return allowCancellationValue === '2';
+    }
+
+    /**
+     * Opens dialog and immediately starts checking balance change
+     * If balance changed, prompts to recalculate the balance change,
+     * if not - simply asks for the action confirmation
+     *
+     * @param {String} action
+     */
+    function checkBalanceChangeAndPromptForAnAction (action) {
+      dialog.open({
+        title: 'Checking balance change...',
+        loading: true,
+        delayedProps: function () {
+          return vm.leaveRequest.checkIfBalanceChangeNeedsForceRecalculation()
+            .then(function (balanceChangeNeedsForceRecalculation) {
+              if (balanceChangeNeedsForceRecalculation) {
+                return _.assign(
+                  LeaveRequestService.getBalanceChangeRecalculationPromptOptions(),
+                  {
+                    onConfirm: function () {
+                      LeavePopup.openModal(vm.leaveRequest,
+                        vm.leaveRequest.request_type,
+                        vm.leaveRequest.contact_id,
+                        $rootScope.section === 'my-leave',
+                        true);
+                    }
+                  }
+                );
+              } else {
+                return getConfirmationDialogOptions(action);
+              }
+            });
+        }
+      });
     }
 
     /**

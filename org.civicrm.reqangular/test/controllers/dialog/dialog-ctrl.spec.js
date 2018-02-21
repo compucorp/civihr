@@ -21,7 +21,8 @@ define([
     }));
 
     beforeEach(function () {
-      modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['close']);
+      modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['close', 'closed']);
+      modalInstanceSpy.closed = $q.resolve();
     });
 
     describe('basic tests', function () {
