@@ -26,9 +26,6 @@ function hrcontactactionsmenu_addContactMenuActions(ActionsMenu $menu) {
   if (!$contactID) {
     return;
   }
-  $cmsUserPath = '';
-  $cmsUserRole = '';
-  $cmsUserAccount = '';
 
   $contactUserInfo = ContactHelper::getUserInformation($contactID);
   if(!empty($contactUserInfo['cmsId'])) {
@@ -40,9 +37,9 @@ function hrcontactactionsmenu_addContactMenuActions(ActionsMenu $menu) {
 
   $userInformationActionGroup = new UserInformationActionGroupHelper(
     $contactUserInfo,
-    $cmsUserPath,
-    $cmsUserRole,
-    $cmsUserAccount
+    !empty($cmsUserPath) ? $cmsUserPath : null,
+    !empty($cmsUserRole) ? $cmsUserRole : null,
+    !empty($cmsUserAccount) ? $cmsUserAccount : null
   );
   $menu->addToHighlightedPanel($userInformationActionGroup->get());
 
