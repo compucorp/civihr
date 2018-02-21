@@ -13,6 +13,7 @@ define([
         $resourceProvider.defaults.stripTrailingSlashes = false;
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
+        $urlRouterProvider.otherwise('/absence-tab/report');
         $stateProvider
           .state('absence-tab', {
             abstract: true,
