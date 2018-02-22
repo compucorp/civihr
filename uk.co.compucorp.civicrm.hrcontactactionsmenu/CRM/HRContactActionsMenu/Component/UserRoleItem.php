@@ -18,6 +18,7 @@ class CRM_HRContactActionsMenu_Component_UserRoleItem implements ActionsGroupIte
    * CRM_HRContactActionsMenu_Component_UserRoleItem constructor.
    *
    * @param CMSUserRole $cmsUserRole
+   * @param CMSUserPath $cmsUserPath
    */
   public function __construct(CMSUserRole $cmsUserRole, CMSUserPath $cmsUserPath) {
     $this->cmsUserRole = $cmsUserRole;
