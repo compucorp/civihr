@@ -11,7 +11,7 @@ define([
 
   describe('ContractController', function () {
     var $controller, $httpBackend, $modal, $q, $rootScope, $scope, $window, controller,
-      AbsenceType, contractService, utilsService;
+      AbsenceType, contractService, notificationService, utilsService;
     var calculationUnitsMock = [{ value: 1, name: 'days' }, { value: 2, name: 'hours' }];
 
     // Populate contract mock leaves with values
@@ -24,7 +24,8 @@ define([
     }));
 
     beforeEach(inject(function (_$controller_, _$rootScope_, _$uibModal_, _$q_,
-      _$httpBackend_, _$window_, _AbsenceType_, _contractService_, _utilsService_) {
+      _$httpBackend_, _$window_, _AbsenceType_, _contractService_, _notificationService_,
+      _utilsService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $q = _$q_;
@@ -35,12 +36,14 @@ define([
       $window = _$window_;
       AbsenceType = _AbsenceType_;
       contractService = _contractService_;
+      notificationService = _notificationService_;
       utilsService = _utilsService_;
 
       mockBackendCalls();
       spyOn(AbsenceType, 'all').and.callThrough();
       spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
       spyOn(contractService, 'fullDetails').and.callThrough();
+      spyOn(notificationService, 'success');
       makeController();
     }));
 
@@ -111,7 +114,7 @@ define([
       describe('When end date is past', function () {
         beforeEach(function () {
           var date = moment().day(-7); // Seven days ago
-          createModalSpy(date);
+          createModalSpy({ details: { period_end_date: date } });
           $scope.modalContract('edit');
           $rootScope.$digest();
         });
@@ -124,7 +127,7 @@ define([
       describe('When end date is today', function () {
         beforeEach(function () {
           var date = moment();
-          createModalSpy(date);
+          createModalSpy({ details: { period_end_date: date } });
           $scope.modalContract('edit');
           $rootScope.$digest();
         });
@@ -137,7 +140,7 @@ define([
       describe('When date is future', function () {
         beforeEach(function () {
           var date = moment().day(7); // Seven days from now
-          createModalSpy(date);
+          createModalSpy({ details: { period_end_date: date } });
           $scope.modalContract('edit');
           $rootScope.$digest();
         });
@@ -150,7 +153,7 @@ define([
       describe('When end date is empty', function () {
         beforeEach(function () {
           var date = ''; //  end date empty
-          createModalSpy(date);
+          createModalSpy({ details: { period_end_date: date } });
           $scope.modalContract('edit');
           $rootScope.$digest();
         });
@@ -161,18 +164,36 @@ define([
       });
 
       describe('after updating the contract', function () {
-        var url;
+        describe('when the contract entitlements have changed', function () {
+          var url;
 
-        beforeEach(function () {
-          url = utilsService.getManageEntitlementsPageURL($scope.contract.contact_id);
+          beforeEach(function () {
+            url = utilsService.getManageEntitlementsPageURL($scope.contract.contact_id);
 
-          createModalSpy();
-          $scope.modalContract('edit');
-          $rootScope.$digest();
+            createModalSpy({ haveEntitlementFieldsChanged: true });
+            $scope.modalContract('edit');
+            $rootScope.$digest();
+          });
+
+          it('changes the window location to the Manage Entitlements for the contact', function () {
+            expect($window.location.assign).toHaveBeenCalledWith(url);
+          });
         });
 
-        it('changes the window location to the Manage Entitlements for the contact', function () {
-          expect($window.location.assign).toHaveBeenCalledWith(url);
+        describe('when the contract entitlements have not changed', function () {
+          beforeEach(function () {
+            createModalSpy({ haveEntitlementFieldsChanged: false });
+            $scope.modalContract('edit');
+            $rootScope.$digest();
+          });
+
+          it('does not change the window location to the Manage Entitlements for the contact', function () {
+            expect($window.location.assign).not.toHaveBeenCalled();
+          });
+
+          it('displays a success message', function () {
+            expect(notificationService.success).toHaveBeenCalledWith('CiviHR', 'Contract updated');
+          });
         });
       });
     });
@@ -209,26 +230,27 @@ define([
       });
     }
 
-    function createModalSpy (newEndDate) {
+    function createModalSpy (results) {
       spyOn($modal, 'open').and.callFake(function () {
         return {
-          result: $q.resolve({
-            'files': false,
-            'health': {},
-            'contract': {
-              'id': '48',
-              'contact_id': '84',
-              'is_primary': '1',
-              'deleted': '0'
+          result: $q.resolve(_.defaults(results, {
+            files: false,
+            health: {},
+            contract: {
+              id: '48',
+              contact_id: '84',
+              is_primary: '1',
+              deleted: '0'
             },
-            'pay': {},
-            'hour': {},
-            'leave': [],
-            'details': {
-              'period_end_date': newEndDate
+            pay: {},
+            hour: {},
+            leave: [],
+            details: {
+              period_end_date: null
             },
-            'pension': {}
-          })
+            pension: {},
+            haveEntitlementFieldsChanged: false
+          }))
         };
       });
     }

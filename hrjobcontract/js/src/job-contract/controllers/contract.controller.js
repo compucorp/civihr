@@ -12,14 +12,14 @@ define([
     'settings', 'apiService', 'contractService', 'contractDetailsService', 'contractHourService',
     'contractPayService', 'contractLeaveService', 'contractHealthService',
     'contractPensionService', 'contractFilesService', 'contactService',
-    'contractRevisionListService', 'utilsService'
+    'contractRevisionListService', 'notificationService', 'utilsService'
   ];
 
   function ContractController ($filter, $log, $q, $rootElement, $route, $scope, $window, $modal,
     settings, API, contractService, contractDetailsService, contractHourService,
     contractPayService, contractLeaveService, contractHealthService,
     contractPensionService, contractFilesService, contactService,
-    contractRevisionListService, utilsService) {
+    contractRevisionListService, notificationService, utilsService) {
     $log.debug('Controller: ContractController');
 
     var promiseFiles;
@@ -292,7 +292,12 @@ define([
         }
 
         CRM.refreshParent('#hrjobroles');
-        $window.location.assign(utilsService.getManageEntitlementsPageURL($scope.contract.contact_id));
+
+        if (results.haveEntitlementFieldsChanged) {
+          $window.location.assign(utilsService.getManageEntitlementsPageURL($scope.contract.contact_id));
+        } else {
+          notificationService.success('CiviHR', 'Contract updated');
+        }
       });
     }
 

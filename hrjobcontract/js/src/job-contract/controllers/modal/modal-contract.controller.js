@@ -2,8 +2,9 @@
 
 define([
   'common/angular',
-  'common/lodash'
-], function (angular, _) {
+  'common/lodash',
+  'common/moment'
+], function (angular, _, moment) {
   'use strict';
 
   ModalContractController.__name = 'ModalContractController';
@@ -145,6 +146,21 @@ define([
       });
 
       return modalChangeReason.result;
+    }
+
+    /**
+     * Determines if the contract entitlements have beem modified. These include
+     * the contract start and end dates as well as the leave entitlements.
+     *
+     * @return {Boolean}
+     */
+    function checkIfEntitlementFieldsChanged () {
+      var hasEndDateChanged = hasContractDateChanged('period_end_date');
+      var hasStartDateChanged = hasContractDateChanged('period_start_date');
+      var haveEntitlementsChanged = !angular.equals($scope.entity.leave,
+        entity.leave);
+
+      return hasStartDateChanged || hasEndDateChanged || haveEntitlementsChanged;
     }
 
     /**
@@ -297,8 +313,11 @@ define([
           });
 
           results.files = modalInstance.result;
+
           return $q.all(results);
         }
+
+        results.haveEntitlementFieldsChanged = checkIfEntitlementFieldsChanged();
 
         return results;
       }).then(function (results) {
@@ -405,6 +424,22 @@ define([
     }
 
     /**
+     * Determines if the given contract date has changed from its original value.
+     *
+     * @param {String} dateName either "period_start_date" or "period_end_date".
+     * @return {Boolean}
+     */
+    function hasContractDateChanged (dateName) {
+      var originalDate = entity.details[dateName];
+      var currentDate = $scope.entity.details[dateName];
+      var originalDateIsEmptyAndCurrentIsNot = _.isEmpty(originalDate) && !_.isEmpty(currentDate);
+      var currentDateIsDifferentFromOriginal = moment.isDate(currentDate) &&
+        !moment.utc(originalDate).isSame(moment.utc(currentDate), 'day');
+
+      return originalDateIsEmptyAndCurrentIsNot || currentDateIsDifferentFromOriginal;
+    }
+
+    /**
      * Initializes the form entity fields by having a copy of the form entity
      * and converting date strings into date objects.
      */
@@ -476,10 +511,13 @@ define([
         jobcontract_id: entity.contract.id
       }).then(function (result) {
         if (result.success) {
-          confirmUpdateEntitlements()
-            .then(function () {
-              processContractUpdate();
-            });
+          var promise = checkIfEntitlementFieldsChanged()
+            ? confirmUpdateEntitlements()
+            : $q.resolve();
+
+          promise.then(function () {
+            processContractUpdate();
+          });
         } else {
           CRM.alert(result.message, 'Error', 'error');
           $scope.$broadcast('hrjc-loader-hide');
@@ -630,6 +668,8 @@ define([
             results.files = modalInstance.result;
             return $q.all(results);
           }
+
+          results.haveEntitlementFieldsChanged = checkIfEntitlementFieldsChanged();
 
           return results;
         }).then(function (results) {

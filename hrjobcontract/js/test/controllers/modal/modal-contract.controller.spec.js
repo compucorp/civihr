@@ -80,7 +80,7 @@ define([
       contractHealthServiceSpy();
       makeController();
       createContractDetailsServiceSpy(true);
-      createUIBModalSpy();
+      addSpiesToServicesSaveMethod();
     });
 
     describe('init()', function () {
@@ -171,21 +171,7 @@ define([
       });
 
       describe('when the contract dates are valid', function () {
-        var startDate, endDate;
-
         beforeEach(function () {
-          spyOn(contractDetailsService, 'save').and.callThrough();
-          spyOn(contractHourService, 'save').and.callThrough();
-          spyOn(contractLeaveService, 'save').and.callThrough();
-          spyOn(contractPayService, 'save').and.callThrough();
-          spyOn(contractPensionService, 'save').and.callThrough();
-          spyOn(contractService, 'save').and.callThrough();
-
-          startDate = $scope.entity.details.period_start_date
-            ? moment($scope.entity.details.period_start_date).format('YYYY-MM-DD') : '';
-          endDate = $scope.entity.details.period_end_date
-            ? moment($scope.entity.details.period_end_date).format('YYYY-MM-DD') : '';
-
           $scope.save();
           $scope.$digest();
         });
@@ -195,10 +181,7 @@ define([
         });
 
         it('saves the contract details', function () {
-          expect(contractDetailsService.save).toHaveBeenCalledWith(_.defaults({
-            period_start_date: startDate,
-            period_end_date: endDate
-          }, $scope.entity.details));
+          expect(contractDetailsService.save).toHaveBeenCalledWith($scope.entity.details);
         });
 
         it('saves the contract hours', function () {
@@ -220,8 +203,123 @@ define([
         it('saves the pension information', function () {
           expect(contractPensionService.save).toHaveBeenCalledWith($scope.entity.pension);
         });
+
+        it('closes the modal and returns a result', function () {
+          expect($uibModalInstanceMock.close).toHaveBeenCalledWith(jasmine.objectContaining({
+            contract: $scope.entity.contract
+          }));
+        });
       });
     });
+
+    describe('Confirming entitlement changes', function () {
+      var confirmationModalOptions = jasmine.objectContaining({
+        controller: 'ModalDialogController',
+        resolve: {
+          content: {
+            title: 'Update leave entitlements?',
+            msg: 'The system will now update the staff member leave entitlement.',
+            copyConfirm: 'Proceed'
+          }
+        }
+      });
+
+      describe('when the job contract start date changes', function () {
+        beforeEach(function () {
+          $scope.entity.details.period_start_date = new Date();
+
+          $scope.save();
+          $scope.$digest();
+        });
+
+        it('opens a dialog to confirm the entitlements change', function () {
+          expect($uibModalMock.open).toHaveBeenCalledWith(confirmationModalOptions);
+        });
+      });
+
+      describe('when the job contract end date changes', function () {
+        beforeEach(function () {
+          $scope.entity.details.period_end_date = new Date();
+
+          $scope.save();
+          $scope.$digest();
+        });
+
+        it('opens a dialog to confirm the entitlements change', function () {
+          expect($uibModalMock.open).toHaveBeenCalledWith(confirmationModalOptions);
+        });
+      });
+
+      describe('when the contract entitlements change', function () {
+        beforeEach(function () {
+          $scope.entity.leave.push({ id: 123 });
+
+          $scope.save();
+          $scope.$digest();
+        });
+
+        it('opens a dialog to confirm the entitlements change', function () {
+          expect($uibModalMock.open).toHaveBeenCalledWith(confirmationModalOptions);
+        });
+      });
+
+      describe('when none of the entitlement fields change', function () {
+        beforeEach(function () {
+          $scope.entity.details.position = 'Team Leader';
+
+          $scope.save();
+          $scope.$digest();
+        });
+
+        it('does not open a dialog to confirm the entitlements change', function () {
+          expect($uibModalMock.open).not.toHaveBeenCalledWith(confirmationModalOptions);
+        });
+      });
+    });
+
+    describe('when closing the modal after confirming the entitlements change', function () {
+      beforeEach(function () {
+        $scope.entity.details.period_end_date = new Date();
+
+        $scope.save();
+        $scope.$digest();
+      });
+
+      it('returns a "have entitlement fields changed" variable set to true', function () {
+        expect($uibModalInstanceMock.close).toHaveBeenCalledWith(jasmine.objectContaining({
+          haveEntitlementFieldsChanged: true
+        }));
+      });
+    });
+
+    describe('when closing the modal and entitlement fields did not change', function () {
+      beforeEach(function () {
+        $scope.save();
+        $scope.$digest();
+      });
+
+      it('returns a "have entitlement fields changed" variable set to false', function () {
+        expect($uibModalInstanceMock.close).toHaveBeenCalledWith(jasmine.objectContaining({
+          haveEntitlementFieldsChanged: false
+        }));
+      });
+    });
+
+    /**
+     * Add spies and return values to the save methods of the different services
+     * used by the job contract.
+     */
+    function addSpiesToServicesSaveMethod () {
+      $scope.entity.pay.annual_benefits = [{}];
+      $scope.entity.pay.annual_deductions = [{}];
+
+      spyOn(contractDetailsService, 'save').and.returnValue($q.resolve($scope.entity.details));
+      spyOn(contractHourService, 'save').and.returnValue($q.resolve($scope.entity.hour));
+      spyOn(contractLeaveService, 'save').and.returnValue($q.resolve($scope.entity.leave));
+      spyOn(contractPayService, 'save').and.returnValue($q.resolve($scope.entity.pay));
+      spyOn(contractPensionService, 'save').and.returnValue($q.resolve($scope.entity.pension));
+      spyOn(contractService, 'save').and.returnValue($q.resolve($scope.entity.contract));
+    }
 
     function makeController () {
       $scope = $rootScope.$new();
@@ -247,13 +345,14 @@ define([
       $uibModalInstanceMock = {
         opened: {
           then: jasmine.createSpy()
-        }
+        },
+        close: jasmine.createSpy('close')
       };
     }
 
     function mockUIBModal (mode) {
       $uibModalMock = {
-        open: function () {
+        open: jasmine.createSpy('open').and.callFake(function () {
           return {
             result: {
               then: function (callback) {
@@ -261,7 +360,7 @@ define([
               }
             }
           };
-        }
+        })
       };
     }
 
@@ -274,10 +373,6 @@ define([
 
         return deferred.promise;
       });
-    }
-
-    function createUIBModalSpy () {
-      spyOn($uibModalMock, 'open').and.callThrough();
     }
 
     function contractHealthServiceSpy () {
