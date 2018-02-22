@@ -20,6 +20,14 @@
   }
 }
 
+.crm_contact-actions__edit-roles {
+  cursor: pointer;
+  display: inline-block;
+  font-size: 15px;
+  margin-left: 5px;
+  vertical-align: middle;
+}
+
 .crm_contact-actions__group {
   .crm_contact-actions__action:not(:last-child) {
     margin-bottom: 10px;

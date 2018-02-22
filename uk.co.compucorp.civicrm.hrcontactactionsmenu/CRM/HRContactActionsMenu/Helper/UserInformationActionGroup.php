@@ -72,7 +72,7 @@ class CRM_HRContactActionsMenu_Helper_UserInformationActionGroup {
       );
       $actionsGroup->addItem($userInformationLinkItem);
 
-      $userRoleItem = new UserRoleItem($this->cmsUserRole);
+      $userRoleItem = new UserRoleItem($this->cmsUserRole, $this->cmsUserPath);
       $actionsGroup->addItem($userRoleItem);
 
       $actionsGroup->addItem($this->getSendWelcomeMailButton($contactID));
