@@ -23,7 +23,16 @@ define([
         templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
         resolve: {}
       })
-      .otherwise({redirectTo: '/'});
+      .when('/secondpath', {
+        controller: 'ContactSummaryController',
+        controllerAs: 'ContactSummaryCtrl',
+        templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
+        resolve: {}
+      })
+      .when('/:otherwise*', {
+        template: '<script>window.location.hash = "/";</script>',
+        resolve: {}
+      });
 
     $resourceProvider.defaults.stripTrailingSlashes = false;
 
