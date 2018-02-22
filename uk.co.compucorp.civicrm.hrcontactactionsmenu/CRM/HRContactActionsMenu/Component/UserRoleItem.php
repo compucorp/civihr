@@ -2,6 +2,7 @@
 
 use CRM_HRContactActionsMenu_Component_GroupItem as ActionsGroupItemInterface;
 use CRM_HRCore_CMSData_UserRoleInterface as CMSUserRole;
+use CRM_HRCore_CMSData_Paths_PathsInterface as CMSUserPath;
 
 /**
  * Class CRM_HRContactActionsMenu_Component_UserRoleItem
@@ -18,8 +19,9 @@ class CRM_HRContactActionsMenu_Component_UserRoleItem implements ActionsGroupIte
    *
    * @param CMSUserRole $cmsUserRole
    */
-  public function __construct(CMSUserRole $cmsUserRole) {
+  public function __construct(CMSUserRole $cmsUserRole, CMSUserPath $cmsUserPath) {
     $this->cmsUserRole = $cmsUserRole;
+    $this->cmsUserPath = $cmsUserPath;
   }
 
   /**
@@ -29,6 +31,7 @@ class CRM_HRContactActionsMenu_Component_UserRoleItem implements ActionsGroupIte
    */
   public function render() {
     $roles = implode(', ', $this->cmsUserRole->getRoles());
+    $userPath = $this->cmsUserPath->getEditAccountPath();
 
     $userRolesMarkup = '
       <div class="crm_contact-actions__user-info">
@@ -36,11 +39,15 @@ class CRM_HRContactActionsMenu_Component_UserRoleItem implements ActionsGroupIte
           <dt>Roles:</dt>
           <dd>%s</dd>
         </dl>
+        <a class="crm_contact-actions__edit-roles" href="%s">
+          <i class="fa fa-edit"></i>
+        </a>
       </div>';
 
     return sprintf(
       $userRolesMarkup,
-      $roles
+      $roles,
+      $userPath
     );
   }
 }
