@@ -1,7 +1,6 @@
 <?php
 
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
-use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 /**
  * Class CRM_HRSampleData_Importer_LeaveRequestTest
@@ -17,6 +16,7 @@ class CRM_HRSampleData_Importer_LeaveRequestTest extends CRM_HRSampleData_BaseCS
 
   public function testProcess() {
     $contactID = 1;
+    $absenceTypeID = 1;
 
     // The Leave Request API only returns requests overlapping a Job Contract.
     // So we need to create a Job Contract first
@@ -25,15 +25,11 @@ class CRM_HRSampleData_Importer_LeaveRequestTest extends CRM_HRSampleData_BaseCS
       [ 'period_start_date' => '2017-01-01' ]
     );
 
-    $absenceType = AbsenceTypeFabricator::fabricate([
-      'title' => 'FooBar'
-    ]);
-
     $absencePeriod = $this->apiGet('LeaveRequest');
     $this->assertEmpty($absencePeriod);
 
     $this->rows[] = [
-      $absenceType->title,
+      $absenceTypeID,
       $contactID,
       1,
       '2017-01-16 00:00:00',
@@ -44,11 +40,13 @@ class CRM_HRSampleData_Importer_LeaveRequestTest extends CRM_HRSampleData_BaseCS
       0,
     ];
 
-    // The importer uses a mapping to cover the contact ids in the csv file
-    // to the actual ids after the contact were imported, so we create a fake
-    // mapping here to maps a contact to itself
+    // The importer uses a mapping to convert the contact and absence type ids
+    // in the csv file to the actual ids after the contact were imported, so we
+    // create a fake mapping here that maps a contact and an absence type to
+    // themselves
     $mapping = [
-      ['contact_mapping', $contactID, $contactID],
+      [ 'contact_mapping', $contactID, $contactID ],
+      [ 'absence_type_mapping', $absenceTypeID, $absenceTypeID ]
     ];
 
     $this->runProcessor('CRM_HRSampleData_Importer_LeaveRequest', $this->rows, $mapping);
@@ -56,19 +54,13 @@ class CRM_HRSampleData_Importer_LeaveRequestTest extends CRM_HRSampleData_BaseCS
     $leaveRequest = $this->apiGet('LeaveRequest');
 
     foreach($this->rows[0] as $index => $fieldName) {
-      // During the import, the type_name is converted to a type_id
-      // so here we check if it was converted to the right id
-      if($fieldName == 'type_name') {
-        $this->assertEquals($absenceType->id, $leaveRequest['type_id']);
-      } else {
-        $this->assertEquals($this->rows[1][$index], $leaveRequest[$fieldName]);
-      }
+      $this->assertEquals($this->rows[1][$index], $leaveRequest[$fieldName]);
     }
   }
 
   private function importHeadersFixture() {
     return [
-      'type_name',
+      'type_id',
       'contact_id',
       'status_id',
       'from_date',

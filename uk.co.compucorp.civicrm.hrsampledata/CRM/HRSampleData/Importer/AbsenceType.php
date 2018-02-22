@@ -15,7 +15,9 @@ class CRM_HRSampleData_Importer_AbsenceType extends CRM_HRSampleData_CSVImporter
    * {@inheritdoc}
    */
   protected function importRecord(array $row) {
-    $this->callAPI('AbsenceType', 'create', $row);
+    $currentID = $this->unsetArrayElement($row, 'id');
+    $absenceType = $this->callAPI('AbsenceType', 'create', $row);
+    $this->setDataMapping('absence_type_mapping', $currentID, $absenceType['id']);
   }
 
   /**

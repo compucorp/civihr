@@ -18,6 +18,7 @@ class CRM_HRSampleData_CSVProcessor_AbsenceTypeTest extends CRM_HRSampleData_Bas
     $this->assertEmpty($absenceType);
 
     $this->rows[] = [
+      1,
       'Annual Leave',
       1,
       '#151D2C',
@@ -44,6 +45,12 @@ class CRM_HRSampleData_CSVProcessor_AbsenceTypeTest extends CRM_HRSampleData_Bas
     $absenceType = $this->apiGet('AbsenceType', ['type' => 'Annual Leave']);
 
     foreach($this->rows[0] as $index => $fieldName) {
+      // ID is just a placeholder and it will be changed once inserted into the
+      // database, so we ignore it here
+      if($fieldName == 'id') {
+        continue;
+      }
+
       $this->assertEquals(
         $this->rows[1][$index],
         $absenceType[$fieldName],
@@ -54,6 +61,7 @@ class CRM_HRSampleData_CSVProcessor_AbsenceTypeTest extends CRM_HRSampleData_Bas
 
   private function importHeadersFixture() {
     return [
+      'id',
       'title',
       'weight',
       'color',
