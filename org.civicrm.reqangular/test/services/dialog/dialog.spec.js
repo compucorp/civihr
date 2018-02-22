@@ -31,12 +31,14 @@ define([
       describe('when called with incorrect options', function () {
         beforeEach(function () {
           options = 'For example, a String instead of Object';
-
-          dialog.open(options);
         });
 
         it('does not open a modal', function () {
           expect(modal.open).not.toHaveBeenCalled();
+        });
+
+        it('throws an error', function () {
+          expect(function () { dialog.open(options); }).toThrow();
         });
       });
 
@@ -59,7 +61,7 @@ define([
         });
 
         it('passes correct parameters to the controller', function () {
-          expect(modal.open.calls.mostRecent().args[0].resolve.props())
+          expect(modal.open.calls.mostRecent().args[0].resolve.options())
             .toEqual(options);
         });
       });

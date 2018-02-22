@@ -863,7 +863,7 @@ define([
       describe('when called', function () {
         beforeEach(function () {
           spyOn(LeaveRequestInstance, 'calculateBalanceChange').and.callThrough();
-          LeaveRequestInstance.checkIfBalanceChangeNeedsForceRecalculation();
+          LeaveRequestInstance.checkIfBalanceChangeNeedsRecalculation();
           $rootScope.$digest();
         });
 
@@ -876,7 +876,7 @@ define([
         beforeEach(function () {
           spyOn(LeaveRequestInstance, 'calculateBalanceChange').and.returnValue(
             $q.resolve({ amount: originalBalanceChangeAmount }));
-          LeaveRequestInstance.checkIfBalanceChangeNeedsForceRecalculation()
+          LeaveRequestInstance.checkIfBalanceChangeNeedsRecalculation()
             .then(function (_result_) {
               result = _result_;
             });
@@ -892,7 +892,7 @@ define([
         beforeEach(function () {
           spyOn(LeaveRequestInstance, 'calculateBalanceChange').and.returnValue(
             $q.resolve({ amount: originalBalanceChangeAmount - 1 }));
-          LeaveRequestInstance.checkIfBalanceChangeNeedsForceRecalculation()
+          LeaveRequestInstance.checkIfBalanceChangeNeedsRecalculation()
             .then(function (_result_) {
               result = _result_;
             });

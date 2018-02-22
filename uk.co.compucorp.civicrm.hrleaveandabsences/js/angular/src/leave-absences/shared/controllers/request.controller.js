@@ -260,7 +260,7 @@ define([
     function checkIfBalanceChangeHasChanged () {
       if (!vm.isMode('edit') || vm.isRole('staff') || getLeaveType() === 'toil') { return; }
 
-      return vm.request.checkIfBalanceChangeNeedsForceRecalculation()
+      return vm.request.checkIfBalanceChangeNeedsRecalculation()
         .then(function (balanceChangeHasBeenChanged) {
           if (balanceChangeHasBeenChanged) {
             LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation()

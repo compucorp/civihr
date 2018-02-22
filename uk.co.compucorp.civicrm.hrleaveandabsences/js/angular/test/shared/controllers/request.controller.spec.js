@@ -659,7 +659,7 @@
           describe('if balance change has not been updated', function () {
             beforeEach(function () {
               spyOn(controller.request,
-                'checkIfBalanceChangeNeedsForceRecalculation')
+                'checkIfBalanceChangeNeedsRecalculation')
                 .and.returnValue($q.resolve(false));
               $scope.$digest();
             });
@@ -694,7 +694,7 @@
               controller.balance.change.amount--;
 
               spyOn(controller.request,
-                'checkIfBalanceChangeNeedsForceRecalculation')
+                'checkIfBalanceChangeNeedsRecalculation')
                 .and.returnValue($q.resolve(true));
               spyOn(LeaveRequestService,
                 'promptIfProceedWithBalanceChangeRecalculation')
@@ -709,7 +709,7 @@
               expect(controller.request.update).not.toHaveBeenCalled();
             });
 
-            it('prompts a force balance change recalculation', function () {
+            it('prompts a balance change recalculation', function () {
               expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
                 .toHaveBeenCalled();
             });

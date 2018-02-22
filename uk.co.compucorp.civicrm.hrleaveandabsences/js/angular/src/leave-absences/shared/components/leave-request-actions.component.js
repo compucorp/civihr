@@ -196,10 +196,10 @@ define([
       dialog.open({
         title: 'Checking balance change...',
         loading: true,
-        delayedProps: function () {
-          return vm.leaveRequest.checkIfBalanceChangeNeedsForceRecalculation()
-            .then(function (balanceChangeNeedsForceRecalculation) {
-              if (balanceChangeNeedsForceRecalculation) {
+        optionsPromise: function () {
+          return vm.leaveRequest.checkIfBalanceChangeNeedsRecalculation()
+            .then(function (balanceChangeNeedsRecalculation) {
+              if (balanceChangeNeedsRecalculation) {
                 return _.assign(
                   LeaveRequestService.getBalanceChangeRecalculationPromptOptions(),
                   {

@@ -8,27 +8,31 @@ define([
 
   controllers.controller('DialogController', DialogController);
 
-  DialogController.$inject = ['$q', '$scope', '$uibModalInstance', 'props'];
+  DialogController.$inject = ['$q', '$scope', '$uibModalInstance', 'options'];
 
-  function DialogController ($q, $scope, $modalInstance, props) {
+  function DialogController ($q, $scope, $modalInstance, options) {
     $scope.cancel = cancel;
     $scope.confirm = confirm;
 
     (function init () {
-      assignProps(props);
-      props.delayedProps && props.delayedProps().then(function (_props_) {
-        assignProps(_props_);
-      });
+      assignOptionsToScope(options);
+
+      if (options.optionsPromise) {
+        options.optionsPromise()
+          .then(function (_options_) {
+            assignOptionsToScope(_options_);
+          });
+      }
     }());
 
     /**
-     * Assignes passed properties to the $scope,
-     * uses default values for some of properties
+     * Assigns passed options to the $scope,
+     * uses default values for some of options
      *
-     * @param {Object} props
+     * @param {Object} options
      */
-    function assignProps (props) {
-      _.assign($scope, _.defaultsDeep(props, {
+    function assignOptionsToScope (options) {
+      _.assign($scope, _.defaultsDeep(options, {
         title: 'CiviHR',
         msg: '',
         copyConfirm: '',

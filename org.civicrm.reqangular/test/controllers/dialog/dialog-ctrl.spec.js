@@ -26,13 +26,13 @@ define([
     });
 
     describe('basic tests', function () {
-      var props = {
+      var options = {
         title: 'Are you sure?',
         onConfirm: function () {}
       };
 
       beforeEach(function () {
-        initController(props);
+        initController(options);
       });
 
       it('has a "cancel" public function', function () {
@@ -44,7 +44,7 @@ define([
       });
 
       it('sets properties to the scope', function () {
-        expect($scope).toEqual(jasmine.objectContaining(props));
+        expect($scope).toEqual(jasmine.objectContaining(options));
       });
 
       describe('when user cancels the action', function () {
@@ -89,9 +89,9 @@ define([
       var confirmationHandler = function () {};
 
       beforeEach(function () {
-        var props = {
+        var options = {
           title: titleBeforeLoad,
-          delayedProps: function () {
+          optionsPromise: function () {
             return $q.resolve().then(function () {
               return {
                 title: titleAfterLoad,
@@ -101,7 +101,7 @@ define([
           }
         };
 
-        initController(props);
+        initController(options);
       });
 
       it('sets initial title', function () {
@@ -128,15 +128,15 @@ define([
     });
 
     /**
-     * Initiates the controller with properties
+     * Initiates the controller with options
      *
-     * @param {Object}  props
+     * @param {Object}  options
      */
-    function initController (props) {
+    function initController (options) {
       $controller('DialogController', {
         $scope: $scope,
         $uibModalInstance: modalInstanceSpy,
-        props: props
+        options: options
       });
     }
   });

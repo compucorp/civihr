@@ -40,24 +40,18 @@ define([
        *
        * @return {Promise} resolves with {Boolean}
        */
-      function checkIfBalanceChangeNeedsForceRecalculation () {
-        var originalBalanceAmount, unitName;
-
+      function checkIfBalanceChangeNeedsRecalculation () {
         return AbsenceType.all({ id: this.type_id })
           .then(AbsenceType.loadCalculationUnits)
           .then(function (absenceTypes) {
-            unitName = absenceTypes[0].calculation_unit_name;
-          })
-          .then(function () {
-            return this.getBalanceChangeBreakdown();
+            return $q.all({
+              calculatedBalanceChange: this.calculateBalanceChange(
+                absenceTypes[0].calculation_unit_name),
+              currentBalanceChange: this.getBalanceChangeBreakdown()
+            });
           }.bind(this))
-          .then(function (originalBalance) {
-            originalBalanceAmount = originalBalance.amount;
-
-            return this.calculateBalanceChange(unitName);
-          }.bind(this))
-          .then(function (balanceChange) {
-            return +originalBalanceAmount !== +balanceChange.amount;
+          .then(function (results) {
+            return +results.currentBalanceChange.amount !== +results.calculatedBalanceChange.amount;
           });
       }
 
@@ -211,8 +205,8 @@ define([
         /**
          * Checks if the balance change of the leave request need to be recalculated
          */
-        checkIfBalanceChangeNeedsForceRecalculation: function () {
-          return checkIfBalanceChangeNeedsForceRecalculation.call(this);
+        checkIfBalanceChangeNeedsRecalculation: function () {
+          return checkIfBalanceChangeNeedsRecalculation.call(this);
         },
 
         /**
