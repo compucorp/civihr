@@ -198,6 +198,10 @@ define([
       });
     });
 
+    /**
+     * Initializes the Contract controller and adds default values to the $scope
+     * object.
+     */
     function makeController () {
       $scope = $rootScope.$new();
 
@@ -230,6 +234,12 @@ define([
       });
     }
 
+    /**
+     * Adds a spy to the open method of the UI modal and allows to modify the
+     * results of the promise resolved when the modal closes.
+     *
+     * @param {Object} results the object returned when the modal instance is closed.
+     */
     function createModalSpy (results) {
       spyOn($modal, 'open').and.callFake(function () {
         return {

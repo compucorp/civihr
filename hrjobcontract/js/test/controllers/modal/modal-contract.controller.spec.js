@@ -321,6 +321,9 @@ define([
       spyOn(contractService, 'save').and.returnValue($q.resolve($scope.entity.contract));
     }
 
+    /**
+     * Initializes the modal contract controller.
+     */
     function makeController () {
       $scope = $rootScope.$new();
       $controller('ModalContractController', {
@@ -341,6 +344,9 @@ define([
       });
     }
 
+    /**
+     * Mocks the modal instance returned by $modal.open.
+     */
     function mockUIBModalInstance () {
       $uibModalInstanceMock = {
         opened: {
@@ -350,6 +356,9 @@ define([
       };
     }
 
+    /**
+     * Mocks the $modal.open method.
+     */
     function mockUIBModal (mode) {
       $uibModalMock = {
         open: jasmine.createSpy('open').and.callFake(function () {
@@ -364,6 +373,12 @@ define([
       };
     }
 
+    /**
+     * Spies on the validateDates method of the contractDetailsService and resolves
+     * the validation to the provided status.
+     *
+     * @param {Boolean} status determines if the validation was successful or not.
+     */
     function createContractDetailsServiceSpy (status) {
       spyOn(contractDetailsService, 'validateDates').and.callFake(function () {
         var deferred = $q.defer();
@@ -375,6 +390,9 @@ define([
       });
     }
 
+    /**
+     * Mocks the response of the getOptions method from contractHealthService.
+     */
     function contractHealthServiceSpy () {
       spyOn(contractHealthService, 'getOptions').and.callFake(function () {
         return $q.resolve(InsurancePlanTypesMock.values);
