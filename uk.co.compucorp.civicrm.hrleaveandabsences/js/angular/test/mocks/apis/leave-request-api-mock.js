@@ -3,10 +3,10 @@
 // intercepts paths for real APIs and returns mock data
 define([
   'common/lodash',
-  'mocks/module',
-  'mocks/data/leave-request.data',
-  'mocks/data/comments.data',
-  'mocks/data/sickness-leave-request.data',
+  'leave-absences/mocks/module',
+  'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/mocks/data/comments.data',
+  'leave-absences/mocks/data/sickness-leave-request.data',
   'common/angularMocks'
 ], function (_, mocks, mockData, commentsMock, sicknessMockData) {
   'use strict';

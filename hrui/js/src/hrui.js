@@ -44,38 +44,6 @@
   }
 
   /**
-   * Adds the Government ID field on the Personal Details page and on the Edit
-   * Contact form.
-   */
-  function addGovernmentIdField () {
-    // Updates Personal Details Page
-    if (CRM.cid && CRM.hideGId) {
-      var inlineDataBlock = $('.Inline_Custom_Data');
-
-      inlineDataBlock.appendTo($('#contactinfo-block').parent('div').parent('div'));
-      inlineDataBlock.removeClass('crm-collapsible');
-      inlineDataBlock.removeClass('collapsed');
-      inlineDataBlock.addClass('crm-summary-block');
-
-      $('.Inline_Custom_Data div.collapsible-title').css({display: 'none'});
-      $('.Inline_Custom_Data div.crm-summary-block').css({display: 'block'});
-    }
-
-    // Updates Edit Contact Form
-    if ($('#customFields').length < 1) {
-      $('#Inline_Custom_Data label').each(function () {
-        $('#nick_name').parent().after('<td id="customFields"></td>');
-        var nodeID = $(this).attr('for');
-        var customField = $('#' + nodeID).detach();
-        $('#customFields').append($(this));
-        $('#customFields').append(customField);
-      });
-
-      $('#Inline_Custom_Data').remove();
-    }
-  }
-
-  /**
    * Add an event listener on input[type="file"]
    * @param {jQuery Object} selector [selector from input file]
    */
@@ -104,7 +72,7 @@
         $('.crm-contact-tabs-list #tab_summary a', e.target).text('Personal Details');
       }
 
-      addGovernmentIdField(e.target);
+      manipulateDOMOfInlineCustomData(e.target);
       miscContactPageChanges(e.target);
     }
   }
@@ -215,6 +183,20 @@
   }
 
   /**
+   * Manipulates, at the DOM level, the blocks/fields belonging to the
+   * Inline Custom Data custom fields set
+   */
+  function manipulateDOMOfInlineCustomData () {
+    if ($('.Inline_Custom_Data').length) {
+      repositionInlineCustomDataBlockInPersonalDetailsTab();
+    }
+
+    if ($('#customFields').length < 1) {
+      repositionInlineCustomDataFieldsInEditContactForm();
+    }
+  }
+
+  /**
    * Misc changes to the page (hiding elements, inserting new ones, etc)
    */
   function miscContactPageChanges (target) {
@@ -266,6 +248,39 @@
       .find('#civicrm-home')
       .before($homeLink)
       .remove();
+  }
+
+  /**
+   * Moves the "Inline Custom Data" fields towards the top of the
+   * edit contact form
+   */
+  function repositionInlineCustomDataFieldsInEditContactForm () {
+    var $fields = $('#Inline_Custom_Data').detach();
+
+    $fields.find('.label').each(function () {
+      var $labelCell = $(this);
+      var $fieldCell = $labelCell.next();
+      var $newTd = $('<td/>');
+
+      $newTd.append($labelCell.find('label'));
+      $newTd.append($('<br/>'));
+      $newTd.append($fieldCell.html());
+
+      $('#nick_name').parent().after($newTd);
+    });
+  }
+
+  /**
+   * Moves the "Inline Custom Data" block towards the top of the
+   * personal details tab
+   */
+  function repositionInlineCustomDataBlockInPersonalDetailsTab () {
+    $('.Inline_Custom_Data')
+      .removeClass('crm-collapsible collapsed')
+      .addClass('crm-summary-block')
+      .insertAfter('.crm-summary-contactinfo-block')
+      .find('.collapsible-title').hide().end()
+      .find('.crm-summary-block').show();
   }
 
   /**

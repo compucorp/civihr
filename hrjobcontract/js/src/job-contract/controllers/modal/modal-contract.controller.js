@@ -187,30 +187,6 @@ define([
     }
 
     /**
-     * Shows a confirmation dialog warning the user that, if they proceed, the staff
-     * leave entitlement will be updated.
-     *
-     * @returns {Promise} resolves when the modal closes.
-     */
-    function confirmUpdateEntitlements () {
-      var modalUpdateEntitlements = $modal.open({
-        appendTo: $rootElement.find('div').eq(0),
-        size: 'sm',
-        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
-        controller: 'ModalDialogController',
-        resolve: {
-          content: {
-            title: 'Update leave entitlements?',
-            msg: 'The system will now update the staff member leave entitlement.',
-            copyConfirm: 'Proceed'
-          }
-        }
-      });
-
-      return modalUpdateEntitlements.result;
-    }
-
-    /**
      * Confirms that the contract change is valid and saves it.
      */
     function contractChange (reasonId, date) {
@@ -511,13 +487,7 @@ define([
         jobcontract_id: entity.contract.id
       }).then(function (result) {
         if (result.success) {
-          var promise = checkIfEntitlementFieldsChanged()
-            ? confirmUpdateEntitlements()
-            : $q.resolve();
-
-          promise.then(function () {
-            processContractUpdate();
-          });
+          processContractUpdate();
         } else {
           CRM.alert(result.message, 'Error', 'error');
           $scope.$broadcast('hrjc-loader-hide');

@@ -12,6 +12,7 @@ define([
   'common/services/pub-sub',
   'common/services/angular-date/date-format',
   'leave-absences/shared/models/absence-type.model',
+  'leave-absences/shared/models/absence-period.model',
   'job-contract/vendor/fraction',
   'job-contract/vendor/job-summary'
 ], function (angular) {

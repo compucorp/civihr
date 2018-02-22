@@ -3,9 +3,9 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/absence-type.data',
-  'mocks/data/leave-request.data',
-  'mocks/data/option-group.data',
+  'leave-absences/mocks/data/absence-type.data',
+  'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/mocks/data/option-group.data',
   'leave-absences/shared/components/leave-calendar-day.component',
   'leave-absences/manager-leave/app'
 ], function (_, moment, absenceTypeData, leaveRequestData, optionGroupData) {
@@ -17,8 +17,7 @@ define([
       contactData, controller, dayTypes, LeavePopup, leaveRequest;
 
     beforeEach(module('manager-leave'));
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_,
-    _LeavePopup_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _LeavePopup_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;

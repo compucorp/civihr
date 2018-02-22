@@ -294,7 +294,7 @@ define([
         CRM.refreshParent('#hrjobroles');
 
         if (results.haveEntitlementFieldsChanged) {
-          $window.location.assign(utilsService.getManageEntitlementsPageURL($scope.contract.contact_id));
+          utilsService.updateEntitlements($scope.contract.contact_id);
         } else {
           notificationService.success('CiviHR', 'Contract updated');
         }

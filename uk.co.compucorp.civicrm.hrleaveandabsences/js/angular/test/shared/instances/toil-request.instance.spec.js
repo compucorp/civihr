@@ -1,10 +1,10 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/leave-request.data',
-  'mocks/apis/leave-request-api-mock',
+  'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/mocks/apis/leave-request-api-mock',
   'common/mocks/services/file-uploader-mock',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/shared/instances/toil-request.instance'
 ], function (requestMockData) {
   'use strict';

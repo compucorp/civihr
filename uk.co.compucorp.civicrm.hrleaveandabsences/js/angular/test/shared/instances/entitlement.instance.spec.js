@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/apis/entitlement-api-mock',
+  'leave-absences/mocks/apis/entitlement-api-mock',
   'leave-absences/shared/instances/entitlement.instance'
 ], function () {
   'use strict';

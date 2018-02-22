@@ -5,16 +5,16 @@
     'common/angular',
     'common/moment',
     'common/lodash',
-    'mocks/helpers/helper',
-    'mocks/data/absence-period.data',
-    'mocks/data/absence-type.data',
-    'mocks/data/option-group.data',
-    'mocks/data/public-holiday.data',
+    'leave-absences/mocks/helpers/helper',
+    'leave-absences/mocks/data/absence-period.data',
+    'leave-absences/mocks/data/absence-type.data',
+    'leave-absences/mocks/data/option-group.data',
+    'leave-absences/mocks/data/public-holiday.data',
     'common/mocks/services/api/contact-mock',
-    'mocks/apis/absence-period-api-mock',
-    'mocks/apis/absence-type-api-mock',
-    'mocks/apis/public-holiday-api-mock',
-    'mocks/apis/option-group-api-mock',
+    'leave-absences/mocks/apis/absence-period-api-mock',
+    'leave-absences/mocks/apis/absence-type-api-mock',
+    'leave-absences/mocks/apis/public-holiday-api-mock',
+    'leave-absences/mocks/apis/option-group-api-mock',
     'leave-absences/shared/config',
     'leave-absences/my-leave/app'
   ], function (angular, moment, _, helper, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData) {
@@ -433,17 +433,12 @@
 
           it('loads the absence types', function () {
             expect(controller.supportData.absenceTypes.length).not.toBe(0);
+            expect(AbsenceType.all).toHaveBeenCalledWith();
           });
 
           it('loads the absence types calculation units', function () {
             expect(absenceTypeRecord.calculation_unit_name).toEqual(jasmine.any(String));
             expect(absenceTypeRecord.calculation_unit_label).toEqual(jasmine.any(String));
-          });
-
-          it('excludes the inactive absence types', function () {
-            expect(AbsenceType.all).toHaveBeenCalledWith({
-              is_active: true
-            });
           });
         });
 

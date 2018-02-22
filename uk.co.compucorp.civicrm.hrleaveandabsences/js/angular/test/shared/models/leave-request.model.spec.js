@@ -2,7 +2,7 @@
 
 define([
   'leave-absences/shared/models/leave-request.model',
-  'mocks/apis/leave-request-api-mock'
+  'leave-absences/mocks/apis/leave-request-api-mock'
 ], function () {
   'use strict';
 
