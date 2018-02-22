@@ -24,6 +24,7 @@ TRUNCATE TABLE civicrm_hrleaveandabsences_public_holiday;
 TRUNCATE TABLE civicrm_hrleaveandabsences_leave_request;
 TRUNCATE TABLE civicrm_hrleaveandabsences_leave_request_date;
 TRUNCATE TABLE civicrm_hrleaveandabsences_leave_balance_change;
+TRUNCATE TABLE civicrm_hrleaveandabsences_leave_period_entitlement;
 TRUNCATE TABLE civicrm_hrvacancy;
 TRUNCATE TABLE civicrm_hrvacancy_permission;
 TRUNCATE TABLE civicrm_hrvacancy_stage;
