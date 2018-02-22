@@ -73,6 +73,16 @@ function hrcontactactionsmenu_civicrm_pageRun(&$page) {
 }
 
 /**
+ * Implements hook_civicrm_permission().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_permission
+ */
+function hrcontactactionsmenu_civicrm_permission(&$permissions) {
+  $prefix = ts('CiviHRContactActions') . ': '; // name of extension or module
+  $permissions['administer staff accounts'] = $prefix . ts('Administer Staff Accounts');
+}
+
+/**
  * Implements hook_civicrm_config().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
