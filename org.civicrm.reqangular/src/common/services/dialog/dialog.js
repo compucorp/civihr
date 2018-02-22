@@ -18,15 +18,16 @@ define([
     /**
      * Opens a small dialog modal
      *
-     * @param  {Object}   options
-     * @param  {String}   options.title custom text used in the title
-     * @param  {String}   options.msg custom text used in the body message
-     * @param  {String}   options.copyConfirm custom text used in the confirmation button
-     * @param  {String}   options.copyCancel custom text used in the cancel button
-     * @param  {String}   options.classConfirm class name for the confirmation button, eg. "btn-success"
-     * @param  {Boolean}  options.loading toggles a loading icon and hides action buttons and body message
-     * @param  {Function} options.onConfirm is executed on the confirmation button click
-     * @param  {Promise}  options.optionsPromise once resolves, sets resolved options
+     * @param  {Object}  options
+     * @param  {String}  options.title custom text used in the title
+     * @param  {String}  options.msg custom text used in the body message
+     * @param  {String}  options.copyConfirm custom text used in the confirmation button
+     * @param  {String}  options.copyCancel custom text used in the cancel button
+     * @param  {String}  options.classConfirm class name for the confirmation button, eg. "btn-success"
+     * @param  {Boolean} options.loading toggles a loading icon and hides action buttons and body message
+     * @param  {Promise} options.onConfirm is executed on the confirmation button click
+     * @param  {Promise} options.onCloseAfterConfirm is executed on the confirmation button click after modal closes
+     * @param  {Promise} options.optionsPromise once resolves, sets resolved options
      * @return {Promise}
      */
     function open (options) {

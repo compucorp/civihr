@@ -28,7 +28,8 @@ define([
     describe('basic tests', function () {
       var options = {
         title: 'Are you sure?',
-        onConfirm: function () {}
+        onConfirm: function () {},
+        onCloseAfterConfirm: function () {}
       };
 
       beforeEach(function () {
@@ -60,6 +61,7 @@ define([
       describe('when user confirms the action', function () {
         beforeEach(function () {
           spyOn($scope, 'onConfirm').and.callThrough();
+          spyOn($scope, 'onCloseAfterConfirm').and.callThrough();
           $scope.confirm();
         });
 
@@ -74,6 +76,10 @@ define([
 
           it('executes the confirmation handler', function () {
             expect($scope.onConfirm).toHaveBeenCalled();
+          });
+
+          it('executes the on modal close after confirmation handler', function () {
+            expect($scope.onCloseAfterConfirm).toHaveBeenCalled();
           });
 
           it('closes the dialog', function () {

@@ -596,7 +596,7 @@ define([
             .and.returnValue($q.resolve(true));
           spyOn(dialog, 'open').and.callFake(function (params) {
             params.optionsPromise().then(function (props) {
-              proceedWithBalanceChangeRecalculation = props.onConfirm;
+              proceedWithBalanceChangeRecalculation = props.onCloseAfterConfirm;
             });
           });
           spyOn(LeaveRequestService,

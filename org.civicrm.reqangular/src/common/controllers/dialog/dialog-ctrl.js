@@ -55,11 +55,12 @@ define([
     function confirm () {
       $scope.loading = true;
 
-      $modalInstance.closed.then(function () {
-        $scope.onConfirm();
-      });
-
-      $modalInstance.close(true);
+      $modalInstance.closed.then($scope.onCloseAfterConfirm);
+      $q.resolve()
+        .then($scope.onConfirm)
+        .then(function () {
+          $modalInstance.close(true);
+        });
     }
   }
 });

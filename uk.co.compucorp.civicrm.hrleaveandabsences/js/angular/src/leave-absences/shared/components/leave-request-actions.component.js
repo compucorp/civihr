@@ -203,7 +203,7 @@ define([
                 return _.assign(
                   LeaveRequestService.getBalanceChangeRecalculationPromptOptions(),
                   {
-                    onConfirm: function () {
+                    onCloseAfterConfirm: function () {
                       LeavePopup.openModal(vm.leaveRequest,
                         vm.leaveRequest.request_type,
                         vm.leaveRequest.contact_id,
