@@ -194,7 +194,7 @@ define([
      */
     function checkBalanceChangeAndPromptForAnAction (action) {
       dialog.open({
-        title: 'Checking balance change...',
+        title: 'Verifying balance...',
         loading: true,
         optionsPromise: function () {
           return vm.leaveRequest.checkIfBalanceChangeNeedsRecalculation()
