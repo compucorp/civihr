@@ -279,21 +279,20 @@ define([
       });
 
       describe('when calculation unit is "hours"', function () {
-        var promise;
+        var balanceChange;
 
-        beforeEach(function () {
-          instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
-          instance.from_date_amount = 0;
-          instance.to_date_amount = 20;
-          promise = instance.calculateBalanceChange('hours');
-        });
+        describe('when custom deductions are less than allowed', function () {
+          beforeEach(function () {
+            instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+            instance.from_date_amount = 0;
+            instance.to_date_amount = 20;
+            instance.calculateBalanceChange('hours').then(function (_balanceChange_) {
+              balanceChange = _balanceChange_;
+            });
+            $rootScope.$digest();
+          });
 
-        afterEach(function () {
-          $rootScope.$apply();
-        });
-
-        it('calls equivalent API method', function () {
-          promise.then(function () {
+          it('calls equivalent API method', function () {
             expect(LeaveRequestAPI.calculateBalanceChange)
               .toHaveBeenCalledWith(jasmine.objectContaining({
                 contact_id: jasmine.any(String),
@@ -301,22 +300,16 @@ define([
                 to_date: jasmine.any(String)
               }));
           });
-        });
 
-        it('amends the breakdown "from" day amount', function () {
-          promise.then(function (balanceChange) {
+          it('amends the breakdown "from" day amount', function () {
             expect(_.first(balanceChange.breakdown).amount).toBe(instance.from_date_amount);
           });
-        });
 
-        it('amends the breakdown "to" day amount', function () {
-          promise.then(function (balanceChange) {
+          it('amends the breakdown "to" day amount', function () {
             expect(_.last(balanceChange.breakdown).amount).toBe(instance.to_date_amount);
           });
-        });
 
-        it('amends the breakdown', function () {
-          promise.then(function (balanceChange) {
+          it('amends the breakdown', function () {
             expect(balanceChange.amount).toBe(-23);
           });
         });
