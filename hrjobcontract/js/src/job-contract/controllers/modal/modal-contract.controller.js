@@ -214,7 +214,7 @@ define([
      *
      * @return {Promise} resolves when all the tabs are saved.
      */
-    function contractEdit () {
+    function saveAllContractSections () {
       $scope.$broadcast('hrjc-loader-show');
       $scope.entity.details.period_end_date = $scope.entity.details.period_end_date || '';
 
@@ -362,25 +362,15 @@ define([
      * Validates that all files are within the max file size limit.
      */
     function filesValidate () {
-      var entityName, fieldName, i, len, uploaderEntity, uploaderEntityField, uploaderEntityFieldQueue;
-      var fileMaxSize = $scope.fileMaxSize;
-      var uploader = $scope.uploader;
       var isValid = true;
 
-      for (entityName in uploader) {
-        uploaderEntity = uploader[entityName];
-
-        for (fieldName in uploaderEntity) {
-          i = 0;
-          len = uploaderEntityFieldQueue.length;
-          uploaderEntityField = uploaderEntity[fieldName];
-          uploaderEntityFieldQueue = uploaderEntityField.queue;
-
-          for (; i < len && isValid; i++) {
-            isValid = uploaderEntityFieldQueue[i].file.size < fileMaxSize;
+      _.each($scope.uploader, function (uploaderEntity) {
+        _.each(uploaderEntity, function (uploaderEntityField) {
+          for (var i = 0; i < uploaderEntityField.queue && uploaderEntityField.queue.length && isValid; i++) {
+            isValid = uploaderEntityField.queue[i].file.size < $scope.fileMaxSize;
           }
-        }
-      }
+        });
+      });
 
       $scope.contractForm.$setValidity('maxFileSize', isValid);
     }
@@ -449,7 +439,7 @@ define([
             confirmEdit().then(function (confirmed) {
               switch (confirmed) {
                 case 'edit':
-                  contractEdit();
+                  saveAllContractSections();
                   break;
                 case 'change':
                   changeReason().then(function (results) {
@@ -459,7 +449,7 @@ define([
               }
             });
           } else {
-            contractEdit();
+            saveAllContractSections();
           }
           break;
         case 'change':
