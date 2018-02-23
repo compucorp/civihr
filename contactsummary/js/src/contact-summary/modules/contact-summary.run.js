@@ -1,33 +1,54 @@
 /* eslint-env amd */
 
-define([
-  'common/angular'
-], function (angular) {
-  'use strict';
+(function ($) {
+  define([
+    'common/angular'
+  ], function (angular) {
+    'use strict';
 
-  angular.module('contactsummary.run', ['contactsummary.constants']).run(run);
+    angular.module('contactsummary.run', ['contactsummary.constants']).run(run);
 
-  run.$inject = ['settings', '$rootScope', '$q', '$log', '$state', '$stateRegistry', '$urlService'];
+    run.$inject = ['settings', '$rootScope', '$q', '$log', '$state', '$stateRegistry', '$urlService'];
 
-  function run (settings, $rootScope, $q, $log, $state, $stateRegistry, $urlService) {
-    $log.debug('app.run');
+    function run (settings, $rootScope, $q, $log, $state, $stateRegistry, $urlService) {
+      $log.debug('app.run');
 
-    window.delstates = function () {
-      console.log('before: ', $state.get());
+      $rootScope.pathTpl = settings.pathTpl;
+      $rootScope.prefix = settings.classNamePrefix;
 
-      $state.get().filter(function (state) {
-        return state.name !== '';
-      })
-        .forEach(function (state) {
-          $stateRegistry.deregister(state.name);
+      addstates();
+
+      $('#mainTabContainer')
+        .on('tabsbeforeactivate', function (e, ui) {
+          var id = ui.newTab.attr('id');
+
+          if (id !== 'tab_contactsummary') {
+            delstates();
+          } else {
+            addstates();
+          }
         });
 
-      $stateRegistry.deregister('');
-      console.log('rules: ', $urlService.rules.rules());
-      console.log('after: ', $state.get());
-    };
+      function addstates () {
+        $urlService.rules.otherwise('/foobarbaz');
+        $stateRegistry
+          .register({
+            name: 'contact-summary',
+            url: '/foobarbaz',
+            controller: 'ContactSummaryController',
+            controllerAs: 'ContactSummaryCtrl',
+            templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html'
+          });
 
-    $rootScope.pathTpl = settings.pathTpl;
-    $rootScope.prefix = settings.classNamePrefix;
-  }
-});
+        console.log('after addstates: ', $state.get());
+      }
+
+      function delstates () {
+        $stateRegistry.dispose();
+        $urlService.rules.otherwise(function () {});
+
+        console.log('after delstates: ', $state.get());
+      }
+    }
+  });
+}(CRM.$));

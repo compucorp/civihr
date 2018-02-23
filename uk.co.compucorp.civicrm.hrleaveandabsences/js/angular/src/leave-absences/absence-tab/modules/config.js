@@ -12,30 +12,6 @@ define([
 
         $resourceProvider.defaults.stripTrailingSlashes = false;
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
-        $urlRouterProvider.otherwise('/absence-tab/report');
-        $stateProvider
-          .state('absence-tab', {
-            abstract: true,
-            url: '/absence-tab',
-            template: '<absence-tab-container></absence-tab-container>'
-          })
-          .state('absence-tab.report', {
-            url: '/report',
-            template: '<staff-leave-report contact-id="$root.settings.contactId"></staff-leave-report>'
-          })
-          .state('absence-tab.calendar', {
-            url: '/calendar',
-            template: '<leave-calendar contact-id="$root.settings.contactId" role-override="staff"></leave-calendar>'
-          })
-          .state('absence-tab.entitlements', {
-            url: '/entitlements',
-            template: '<absence-tab-entitlements contact-id="$root.settings.contactId"></absence-tab-entitlements>'
-          })
-          .state('absence-tab.work-patterns', {
-            url: '/work-patterns',
-            template: '<absence-tab-work-patterns contact-id="$root.settings.contactId"></absence-tab-work-patterns>'
-          });
       }
     ]);
 });
