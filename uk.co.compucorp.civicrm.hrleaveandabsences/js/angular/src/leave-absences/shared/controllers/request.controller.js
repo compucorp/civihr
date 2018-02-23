@@ -260,9 +260,9 @@ define([
     function checkIfBalanceChangeHasChanged () {
       if (!vm.isMode('edit') || vm.isRole('staff') || getLeaveType() === 'toil') { return; }
 
-      return vm.request.checkIfBalanceChangeNeedsRecalculation()
-        .then(function (balanceChangeHasBeenChanged) {
-          if (balanceChangeHasBeenChanged) {
+      return vm.request.calculateBalanceChange(vm.selectedAbsenceType.calculation_unit_name)
+        .then(function (balanceChange) {
+          if (+vm.balance.change.amount !== +balanceChange.amount) {
             LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation()
               .then(function () {
                 $rootScope.$emit('LeaveRequestPopup::recalculateBalanceChange');

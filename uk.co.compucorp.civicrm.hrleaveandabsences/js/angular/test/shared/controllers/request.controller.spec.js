@@ -637,14 +637,17 @@
         });
 
         describe('on submit', function () {
+          var calculatedBalanceChangeAmount;
+
           beforeEach(function () {
             controller.balance.change.amount = controller.request.balance_change;
+            calculatedBalanceChangeAmount = controller.balance.change.amount;
 
             spyOn($rootScope, '$emit');
             spyOn(controller.request, 'update').and.callThrough();
             // Pretending original balance change has not been updated
             spyOn(LeaveRequestInstance, 'calculateBalanceChange').and.returnValue(
-              $q.resolve({ amount: controller.balance.change.amount }));
+              $q.resolve({ amount: calculatedBalanceChangeAmount }));
 
             // entitlements are randomly generated so resetting them to positive here
             if (controller.balance.closing < 0) {
@@ -723,6 +726,18 @@
               it('initiates the balance change recalculation', function () {
                 expect($rootScope.$emit).toHaveBeenCalledWith(
                   'LeaveRequestPopup::recalculateBalanceChange');
+              });
+
+              describe('after recalculation on submit attempt', function () {
+                beforeEach(function () {
+                  controller.balance.change.amount = calculatedBalanceChangeAmount;
+                  controller.submit();
+                  $rootScope.$digest();
+                });
+
+                it('updates leave request', function () {
+                  expect(controller.request.update).toHaveBeenCalled();
+                });
               });
             });
           });
