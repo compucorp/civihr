@@ -315,6 +315,8 @@ define([
      * If the date is not valid it returns the same date string provided.
      *
      * @todo This should probably happen inside the service that returns the data #
+     * @todo this function should not return Date or String, it should be more strict,
+     * but we need more test coverage before refactoring it.
      *
      * @param  {String} dateString the string representing a date.
      * @return {Date|String}
@@ -362,13 +364,16 @@ define([
      * Validates that all files are within the max file size limit.
      */
     function filesValidate () {
-      var isValid = true;
-
-      _.each($scope.uploader, function (uploaderEntity) {
-        _.each(uploaderEntity, function (uploaderEntityField) {
-          for (var i = 0; i < uploaderEntityField.queue && uploaderEntityField.queue.length && isValid; i++) {
-            isValid = uploaderEntityField.queue[i].file.size < $scope.fileMaxSize;
+      var isValid = _.every($scope.uploader, function (uploaderEntity) {
+        return _.every(uploaderEntity, function (uploaderEntityField) {
+          // if there is no queue check other entities:
+          if (!uploaderEntityField.queue) {
+            return true;
           }
+
+          return _.every(uploaderEntityField.queue, function (queue) {
+            return queue.file.size < $scope.fileMaxSize;
+          });
         });
       });
 
