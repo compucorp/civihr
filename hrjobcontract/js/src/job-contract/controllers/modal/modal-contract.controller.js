@@ -430,6 +430,7 @@ define([
         !$scope.uploader.pension.evidence_file.queue.length) {
         $scope.$broadcast('hrjc-loader-hide');
         $modalInstance.dismiss('cancel');
+
         return;
       }
 
@@ -491,6 +492,14 @@ define([
       $scope.$broadcast('hrjc-loader-hide');
     }
 
+    /**
+     * This method saves the contract revision and the contract sections.
+     *
+     * @todo Need to integrate saveAllContractSections to avoid repetition.
+     *
+     * @param {Number} reasonId the reason given for the revision.
+     * @param {Date} date the efective date of the revision.
+     */
     function saveContractChange (reasonId, date) {
       var modalInstance, revisionId;
       var entityChangedList = [];
