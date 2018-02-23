@@ -130,7 +130,8 @@ define([
     function action (action) {
       statusIdBeforeAction = vm.leaveRequest.status_id;
 
-      if (!_.includes(['cancel', 'reject', 'delete'], action)) {
+      if (!_.includes(['cancel', 'reject', 'delete'], action) &&
+        vm.leaveRequest.request_type !== 'toil') {
         checkBalanceChangeAndPromptForAnAction(action);
       } else {
         dialog.open(getConfirmationDialogOptions(action));

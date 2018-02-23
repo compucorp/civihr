@@ -644,6 +644,23 @@ define([
           });
         });
       });
+
+      describe('when request is TOIL', function () {
+        beforeEach(function () {
+          leaveRequest = getRequest('toil', 'awaitingApproval');
+
+          compileComponent();
+          spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
+            .and.callThrough();
+          controller.action('approve');
+          $rootScope.$digest();
+        });
+
+        it('skips checking of the balance change', function () {
+          expect(controller.leaveRequest.checkIfBalanceChangeNeedsRecalculation)
+            .not.toHaveBeenCalled();
+        });
+      });
     });
 
     describe('openLeavePopup()', function () {
