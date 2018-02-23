@@ -80,6 +80,7 @@ define([
           !$scope.uploader.details.contract_file.queue.length && !$scope.uploader.pension.evidence_file.queue.length)) {
         $scope.$broadcast('hrjc-loader-hide');
         $modalInstance.dismiss('cancel');
+
         return;
       }
 
@@ -149,7 +150,7 @@ define([
     }
 
     /**
-     * Determines if the contract entitlements have beem modified. These include
+     * Determines if the contract entitlements have been modified. These include
      * the contract start and end dates as well as the leave entitlements.
      *
      * @return {Boolean}
@@ -188,6 +189,9 @@ define([
 
     /**
      * Confirms that the contract change is valid and saves it.
+     *
+     * @param {Number} reasonId the ID of the reason option selected by the user.
+     * @param {Date} date effective date for the change as selected by the user.
      */
     function contractChange (reasonId, date) {
       $scope.$broadcast('hrjc-loader-show');
@@ -307,12 +311,13 @@ define([
     }
 
     /**
-     * Converts a date string into a Date object (if string is not empty)
+     * Converts a date string into a Date object.
+     * If the date is not valid it returns the same date string provided.
      *
      * @todo This should probably happen inside the service that returns the data #
      *
-     * @param {string} dateString
-     * @param {Date/null}
+     * @param  {String} dateString the string representing a date.
+     * @return {Date|String}
      */
     function convertToDateObject (dateString) {
       var dateObj = $filter('formatDate')(dateString, Date);
@@ -402,7 +407,7 @@ define([
     /**
      * Determines if the given contract date has changed from its original value.
      *
-     * @param {String} dateName either "period_start_date" or "period_end_date".
+     * @param  {String} dateName either "period_start_date" or "period_end_date".
      * @return {Boolean}
      */
     function hasContractDateChanged (dateName) {

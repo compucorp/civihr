@@ -189,7 +189,7 @@ define([
           });
 
           it('displays a success message', function () {
-            expect(notificationService.success).toHaveBeenCalledWith('CiviHR', 'Contract updated');
+            expect(notificationService.success).toHaveBeenCalledWith('Success', 'Contract successfully updated');
           });
         });
       });

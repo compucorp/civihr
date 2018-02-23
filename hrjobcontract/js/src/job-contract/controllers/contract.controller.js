@@ -296,7 +296,7 @@ define([
         if (results.haveEntitlementFieldsChanged) {
           utilsService.updateEntitlements($scope.contract.contact_id);
         } else {
-          notificationService.success('CiviHR', 'Contract updated');
+          notificationService.success('Success', 'Contract successfully updated');
         }
       });
     }
