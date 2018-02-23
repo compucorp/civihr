@@ -240,6 +240,55 @@ define([
       });
     });
 
+    describe('cancel', function () {
+      describe('when the modal is on view mode', function () {
+        beforeEach(function () {
+          makeController({ action: 'view' });
+          $scope.cancel();
+        });
+
+        it('closes the modal', function () {
+          expect($uibModalInstanceMock.dismiss).toHaveBeenCalledWith('cancel');
+        });
+      });
+
+      describe('when the user has not changed the contract', function () {
+        beforeEach(function () {
+          makeController();
+          $scope.cancel();
+        });
+
+        it('closes the modal', function () {
+          expect($uibModalInstanceMock.dismiss).toHaveBeenCalledWith('cancel');
+        });
+      });
+
+      describe('when the user changes the contract', function () {
+        var modalOptions;
+
+        beforeEach(function () {
+          makeController();
+
+          $scope.entity.details.period_end_date = new Date();
+
+          $scope.cancel();
+
+          modalOptions = $uibModalMock.open.calls.mostRecent().args[0];
+        });
+
+        it('warns the user before confirming the modal close', function () {
+          expect($uibModalMock.open).toHaveBeenCalledWith(jasmine.objectContaining({
+            controller: 'ModalDialogController'
+          }));
+          expect(modalOptions.resolve.content()).toEqual({
+            copyCancel: 'No',
+            title: 'Alert',
+            msg: 'Are you sure you want to cancel? Changes will be lost!'
+          });
+        });
+      });
+    });
+
     /**
      * Add spies and return values to the save methods of the different services
      * used by the job contract.
@@ -259,9 +308,9 @@ define([
     /**
      * Initializes the modal contract controller.
      */
-    function makeController () {
+    function makeController (options) {
       $scope = $rootScope.$new();
-      $controller('ModalContractController', {
+      $controller('ModalContractController', _.defaults(options || {}, {
         $scope: $scope,
         $rootScope: $rootScope,
         $uibModal: $uibModalMock,
@@ -276,7 +325,7 @@ define([
         utils: {
           contractListLen: 1
         }
-      });
+      }));
     }
 
     /**
@@ -287,7 +336,8 @@ define([
         opened: {
           then: jasmine.createSpy()
         },
-        close: jasmine.createSpy('close')
+        close: jasmine.createSpy('close'),
+        dismiss: jasmine.createSpy('dismiss')
       };
     }
 

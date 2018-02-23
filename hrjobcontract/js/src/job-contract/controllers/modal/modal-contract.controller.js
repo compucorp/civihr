@@ -50,7 +50,7 @@ define([
     };
     $scope.utils = utils;
 
-    $scope.cancel = cancel;
+    $scope.cancel = promptAboutChangesLossAndCloseOnConfirm;
     $scope.fileMoveToTrash = fileMoveToTrash;
     $scope.filesValidate = filesValidate;
     $scope.save = save;
@@ -74,7 +74,7 @@ define([
      * Hides the job contract modal, but before doing so asks for confirmation
      * before changes are lost.
      */
-    function cancel () {
+    function promptAboutChangesLossAndCloseOnConfirm () {
       if (action === 'view' ||
         (angular.equals(entity, $scope.entity) && angular.equals(files, $scope.files) &&
           !$scope.uploader.details.contract_file.queue.length && !$scope.uploader.pension.evidence_file.queue.length)) {
@@ -84,7 +84,6 @@ define([
         return;
       }
 
-      // DEBUG
       if (settings.debug) {
         angular.forEach(entity, function (entityData, entityName) {
           if (!angular.equals(entityData, $scope.entity[entityName])) {
@@ -192,16 +191,17 @@ define([
      *
      * @param {Number} reasonId the ID of the reason option selected by the user.
      * @param {Date} date effective date for the change as selected by the user.
+     * @return {Promise} resolves after the contract has been saved.
      */
-    function contractChange (reasonId, date) {
+    function validateContractAndSave (reasonId, date) {
       $scope.$broadcast('hrjc-loader-show');
 
-      contractRevisionService.validateEffectiveDate({
+      return contractRevisionService.validateEffectiveDate({
         contact_id: settings.contactId,
         effective_date: date
       }).then(function (result) {
         if (result.success) {
-          saveContractChange(reasonId, date);
+          return saveContractChange(reasonId, date);
         } else {
           CRM.alert(result.message, 'Error', 'error');
           $scope.$broadcast('hrjc-loader-hide');
@@ -453,7 +453,7 @@ define([
                   break;
                 case 'change':
                   changeReason().then(function (results) {
-                    contractChange(results.reasonId, results.date);
+                    return validateContractAndSave(results.reasonId, results.date);
                   });
                   break;
               }
@@ -464,7 +464,7 @@ define([
           break;
         case 'change':
           changeReason().then(function (results) {
-            contractChange(results.reasonId, results.date);
+            validateContractAndSave(results.reasonId, results.date);
           });
           break;
         default:
