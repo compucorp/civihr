@@ -370,7 +370,7 @@ function hrleaveandabsences_civicrm_tabset($tabsetName, &$tabs, $context) {
     $contactId = $context['contact_id'];
     $tabs[] = [
       'id'        => 'absence',
-      'url'       => CRM_Utils_System::url('civicrm/contact/view/absence', ['cid' => $contactId], FALSE, '/absence-tab/report'),
+      'url'       => CRM_Utils_System::url('civicrm/contact/view/absence', ['cid' => $contactId], FALSE),
       'title'     => ts('Leave'),
       'weight'    => 10
     ];

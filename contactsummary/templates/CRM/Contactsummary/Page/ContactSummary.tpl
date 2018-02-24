@@ -1,7 +1,8 @@
 {assign var="module" value="contactsummary" }
 
 <div id="bootstrap-theme">
-  <div id="{$module}" ng-view>
+  <div id="{$module}">
+    <ui-view></ui-view>
   </div>
 </div>
 {literal}

@@ -9,21 +9,12 @@ define([
 
   config.$inject = [
     'settings', '$routeProvider', '$resourceProvider', '$httpProvider',
-    '$logProvider'
+    '$logProvider', '$urlServiceProvider', '$stateProvider'
   ];
 
   function config (settings, $routeProvider, $resourceProvider, $httpProvider,
-    $logProvider) {
+    $logProvider, $urlServiceProvider, $stateProvider) {
     $logProvider.debugEnabled(settings.debug);
-
-    $routeProvider
-      .when('/', {
-        controller: 'ContactSummaryController',
-        controllerAs: 'ContactSummaryCtrl',
-        templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
-        resolve: {}
-      });
-
     $resourceProvider.defaults.stripTrailingSlashes = false;
 
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
