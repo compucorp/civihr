@@ -2,11 +2,12 @@
 
 define([
   'common/lodash',
+  'common/moment',
   'leave-absences/shared/modules/models-instances',
   'common/models/option-group',
   'common/models/instances/instance',
   'leave-absences/shared/models/absence-type.model'
-], function (_, instances) {
+], function (_, moment, instances) {
   'use strict';
 
   instances.factory('LeaveRequestInstance', ['$q', 'checkPermissions', 'OptionGroup',
@@ -87,6 +88,18 @@ define([
       }
 
       /**
+       * Calculates time difference in hours
+       *
+       * @param  {String} timeFrom in HH:mm format
+       * @param  {String} timeTo in HH:mm format
+       * @return {String} amount of hours, eg. '7.5'
+       */
+      function getMaxPossibleDeduction (workDay) {
+        return moment.duration(workDay.time_to)
+          .subtract(moment.duration(workDay.time_from)).asHours();
+      }
+
+      /**
        * Get ID of an option value
        *
        * @param {string} name - name of the option value
@@ -102,22 +115,41 @@ define([
       }
 
       /**
-       * Amends the first and last days of the balance by setting values from the
+       * Amends the first and last days of the balance breakdown for
+       * leave requests in hours calculation unit by setting values from the
        * selected time deductions. It also re-calculates the total amount.
        *
-       * @param {Object} balanceChange
+       * @param  {Object} balanceChange
+       * @return {Promise} resolves with amended `balanceChange` object
        */
-      function recalculateBalanceChange (balanceChange) {
-        _.first(_.values(balanceChange.breakdown)).amount = this['from_date_amount'];
+      function recalculateBalanceChangeForHoursUnit (balanceChange) {
+        var balanceObject = _.cloneDeep(balanceChange);
+        var multipleDays = balanceObject.breakdown.length > 1;
+        var firstDay = _.first(_.values(balanceObject.breakdown));
+        var lastDay = _.last(_.values(balanceObject.breakdown));
 
-        if (balanceChange.breakdown.length > 1) {
-          _.last(_.values(balanceChange.breakdown)).amount = this['to_date_amount'];
-        }
+        return $q.all([
+          this.getWorkDayForDate(firstDay.date),
+          multipleDays && this.getWorkDayForDate(lastDay.date)
+        ])
+          .then(function (workDays) {
+            firstDay.amount = workDays[0].time_from
+              ? Math.min(this['from_date_amount'], getMaxPossibleDeduction(workDays[0]))
+              : 0;
 
-        balanceChange.amount = _.reduce(balanceChange.breakdown,
-          function (updatedChange, day) {
-            return updatedChange - day.amount;
-          }, 0);
+            if (multipleDays) {
+              lastDay.amount = workDays[1].time_from
+                ? Math.min(this['to_date_amount'], getMaxPossibleDeduction(workDays[1]))
+                : 0;
+            }
+
+            balanceObject.amount = _.reduce(balanceObject.breakdown,
+              function (balanceObject, day) {
+                return balanceObject - day.amount;
+              }, 0);
+
+            return balanceObject;
+          }.bind(this));
       }
 
       /**
@@ -180,11 +212,9 @@ define([
 
           return LeaveRequestAPI.calculateBalanceChange(_.pick(this, params))
             .then(function (balanceChange) {
-              if (calculationUnit === 'hours') {
-                recalculateBalanceChange.call(this, balanceChange);
-              }
-
-              return balanceChange;
+              return calculationUnit === 'hours'
+                ? recalculateBalanceChangeForHoursUnit.call(this, balanceChange)
+                : balanceChange;
             }.bind(this));
         },
 

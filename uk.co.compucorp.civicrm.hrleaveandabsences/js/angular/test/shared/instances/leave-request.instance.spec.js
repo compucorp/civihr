@@ -2,6 +2,7 @@
 
 define([
   'common/lodash',
+  'common/moment',
   'leave-absences/mocks/data/leave-request.data',
   'leave-absences/mocks/data/option-group.data',
   'leave-absences/mocks/data/comments.data',
@@ -12,7 +13,7 @@ define([
   'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/shared/instances/leave-request.instance',
   'leave-absences/shared/modules/models'
-], function (_, leaveRequestMockData, optionGroupMockData, commentsData, helper) {
+], function (_, moment, leaveRequestMockData, optionGroupMockData, commentsData, helper) {
   'use strict';
 
   describe('LeaveRequestInstance', function () {
@@ -64,7 +65,6 @@ define([
         spyOn(LeaveRequestAPI, 'getAttachments').and.callThrough();
         spyOn(LeaveRequestAPI, 'deleteAttachment').and.callThrough();
         spyOn(LeaveRequestAPI, 'getBalanceChangeBreakdown').and.callThrough();
-        spyOn(LeaveRequestAPI, 'getWorkDayForDate').and.callThrough();
         spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
       }
     ]));
@@ -279,14 +279,18 @@ define([
       });
 
       describe('when calculation unit is "hours"', function () {
-        var balanceChange;
+        var balanceChange, calculateBalanceChange;
 
-        describe('when custom deductions are less than allowed', function () {
+        beforeEach(function () {
+          instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+          calculateBalanceChange = instance.calculateBalanceChange('hours');
+        });
+
+        describe('when set deductions are less than allowed', function () {
           beforeEach(function () {
-            instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
-            instance.from_date_amount = 0;
-            instance.to_date_amount = 20;
-            instance.calculateBalanceChange('hours').then(function (_balanceChange_) {
+            instance.from_date_amount = 1;
+            instance.to_date_amount = 1.5;
+            calculateBalanceChange.then(function (_balanceChange_) {
               balanceChange = _balanceChange_;
             });
             $rootScope.$digest();
@@ -310,7 +314,66 @@ define([
           });
 
           it('amends the breakdown', function () {
-            expect(balanceChange.amount).toBe(-23);
+            expect(balanceChange.amount).toBe(-5.5);
+          });
+        });
+
+        describe('when custom deductions are more than allowed', function () {
+          var workDayMaxPossibleDeductionFrom, workDayMaxPossibleDeductionTo;
+
+          beforeEach(function () {
+            var workDayFrom = leaveRequestMockData.workDayForDate().values;
+            var workDayTo = leaveRequestMockData.workDayForDate().values;
+
+            workDayMaxPossibleDeductionFrom =
+              moment.duration(workDayFrom.time_to)
+                .subtract(moment.duration(workDayFrom.time_from)).asHours();
+            workDayMaxPossibleDeductionTo =
+              moment.duration(workDayTo.time_to)
+                .subtract(moment.duration(workDayTo.time_from)).asHours();
+            instance.from_date_amount = 2000;
+            instance.to_date_amount = 1500;
+            calculateBalanceChange.then(function (_balanceChange_) {
+              balanceChange = _balanceChange_;
+            });
+            $rootScope.$digest();
+          });
+
+          it('reduces "from" day amount to the allowed value', function () {
+            expect(_.first(balanceChange.breakdown).amount).toBe(
+              workDayMaxPossibleDeductionFrom);
+          });
+
+          it('reduces "to" day amount to the allowed value', function () {
+            expect(_.last(balanceChange.breakdown).amount).toBe(
+              workDayMaxPossibleDeductionTo);
+          });
+        });
+
+        describe('when days that deduction are set are not working days', function () {
+          beforeEach(function () {
+            var workDay = _.cloneDeep(leaveRequestMockData.workDayForDate());
+
+            workDay.values.time_from = '';
+            workDay.values.time_to = '';
+
+            spyOn(LeaveRequestAPI, 'getWorkDayForDate').and.returnValue(
+              $q.resolve(workDay));
+
+            instance.from_date_amount = 10;
+            instance.to_date_amount = 15;
+            calculateBalanceChange.then(function (_balanceChange_) {
+              balanceChange = _balanceChange_;
+            });
+            $rootScope.$digest();
+          });
+
+          it('sets "from" day amount to 0', function () {
+            expect(_.first(balanceChange.breakdown).amount).toBe(0);
+          });
+
+          it('sets "to" day amount to 0', function () {
+            expect(_.last(balanceChange.breakdown).amount).toBe(0);
           });
         });
       });
@@ -431,6 +494,7 @@ define([
         leaveRequest = helper.createRandomLeaveRequest();
         instance = LeaveRequestInstance.init(leaveRequest);
 
+        spyOn(LeaveRequestAPI, 'getWorkDayForDate').and.callThrough();
         instance.getWorkDayForDate(date).then(function (_promiseResult_) {
           promiseResult = _promiseResult_;
         });
