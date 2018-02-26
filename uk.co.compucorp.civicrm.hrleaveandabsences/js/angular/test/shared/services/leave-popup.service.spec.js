@@ -39,10 +39,25 @@ define([
           controller: 'RequestCtrl'
         }));
       });
+
+      describe('when balance change force recalculation is needed', function () {
+        var forceRecalculateBalanceChange = true;
+
+        beforeEach(function () {
+          LeavePopup.openModal(jasmine.any(String), jasmine.any(String), jasmine.any(String), jasmine.any(String),
+            forceRecalculateBalanceChange);
+          $rootScope.$digest();
+        });
+
+        it('opens the leave popup', function () {
+          expect($uibModal.open.calls.mostRecent().args[0].resolve.directiveOptions().forceRecalculateBalanceChange)
+            .toBe(forceRecalculateBalanceChange);
+        });
+      });
     });
 
     describe('openModalByID()', function () {
-      var promise, errorMessage;
+      var errorMessage;
 
       afterEach(function () {
         $rootScope.$digest();
@@ -51,13 +66,12 @@ define([
       describe('when Leave Request is not found', function () {
         beforeEach(function () {
           LeaveRequest.find.and.returnValue($q.reject(errorMessage));
-          promise = LeavePopup.openModalByID('101');
+          LeavePopup.openModalByID('101');
+          $rootScope.$digest();
         });
 
         it('shows an error notification', function () {
-          promise.then(function () {
-            expect(notification.error).toHaveBeenCalledWith('Error', errorMessage);
-          });
+          expect(notification.error).toHaveBeenCalledWith('Error', errorMessage);
         });
       });
 
@@ -72,13 +86,12 @@ define([
             spyOn(instance, 'roleOf').and.returnValue($q.resolve('admin'));
             LeaveRequest.find.and.returnValue($q.resolve(instance));
 
-            promise = LeavePopup.openModalByID('101');
+            LeavePopup.openModalByID('101');
+            $rootScope.$digest();
           });
 
           it('opens the leave popup', function () {
-            promise.then(function () {
-              expect($uibModal.open).toHaveBeenCalled();
-            });
+            expect($uibModal.open).toHaveBeenCalled();
           });
         });
 
@@ -89,14 +102,12 @@ define([
             spyOn(LeavePopup, 'openModal');
             spyOn(instance, 'roleOf').and.returnValue($q.resolve('none'));
             LeaveRequest.find.and.returnValue($q.resolve(instance));
-
-            promise = LeavePopup.openModalByID('101');
+            LeavePopup.openModalByID('101');
+            $rootScope.$digest();
           });
 
           it('shows an error message', function () {
-            promise.then(function () {
-              expect(notification.error).toHaveBeenCalledWith('Error', 'You dont have permission to see this leave request');
-            });
+            expect(notification.error).toHaveBeenCalledWith('Error', 'You dont have permission to see this leave request');
           });
         });
       });
