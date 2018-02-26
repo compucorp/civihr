@@ -427,7 +427,7 @@ function _hrcore_createHelpMenu(&$menu) {
     'name' => ts('CiviHR website'),
     'url' => 'https://www.civihr.org/',
     'target' => '_blank',
-    'permission' => 'access CiviCRM'
+    'permission' => 'access root menu items and configurations'
   ]);
 
   _hrcore_civix_insert_navigation_menu($menu, 'Help', [
