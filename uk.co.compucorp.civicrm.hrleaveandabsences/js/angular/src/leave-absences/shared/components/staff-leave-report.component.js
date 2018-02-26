@@ -26,7 +26,6 @@ define([
   HRSettings, sharedSettings) {
     $log.debug('Component: staff-leave-report');
 
-    var requestSort = 'from_date ASC';
     var statusUpdateHandlers = {
       delete: removeLeaveRequestFromItsSection,
       cancel: cancelLeaveRequestStatusHandler
@@ -34,8 +33,9 @@ define([
     var vm = this;
 
     vm.absencePeriods = [];
-    vm.absenceTypes = {};
-    vm.absenceTypesFiltered = {};
+    vm.absenceTypes = [];
+    vm.absenceTypesFiltered = [];
+    vm.absenceTypesIndexed = {};
     vm.dateFormat = HRSettings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
     vm.selectedPeriod = null;
@@ -177,7 +177,8 @@ define([
       return AbsenceType.all()
         .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
-          vm.absenceTypes = _.indexBy(absenceTypes, 'id');
+          vm.absenceTypes = absenceTypes;
+          vm.absenceTypesIndexed = _.indexBy(absenceTypes, 'id');
         });
     }
 
@@ -187,15 +188,8 @@ define([
      * @return {Promise}
      */
     function loadApprovedRequests () {
-      return LeaveRequest.all({
-        contact_id: vm.contactId,
-        from_date: { from: vm.selectedPeriod.start_date },
-        to_date: { to: vm.selectedPeriod.end_date },
-        status_id: valueOfRequestStatus(sharedSettings.statusNames.approved),
-        type_id: { IN: _.keys(vm.absenceTypes) }
-      }, null, requestSort, null, false)
-      .then(function (leaveRequests) {
-        vm.sections.approved.data = leaveRequests.list;
+      return loadLeaveRequestsForSection('approved', {
+        status_id: valueOfRequestStatus(sharedSettings.statusNames.approved)
       });
     }
 
@@ -217,7 +211,7 @@ define([
         ])
       ])
       .then(function (results) {
-        _.forEach(vm.absenceTypes, function (absenceType) {
+        vm.absenceTypes.forEach(function (absenceType) {
           absenceType.balanceChanges = {
             holidays: results[0][absenceType.id],
             approved: results[1][absenceType.id],
@@ -244,7 +238,7 @@ define([
         vm.entitlements = entitlements;
       })
       .then(function () {
-        vm.absenceTypesFiltered = _.filter(vm.absenceTypes, function (absenceType) {
+        vm.absenceTypesFiltered = vm.absenceTypes.filter(function (absenceType) {
           var entitlement = _.find(vm.entitlements, function (entitlement) {
             return entitlement.type_id === absenceType.id;
           });
@@ -254,8 +248,8 @@ define([
           absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
 
           return !((absenceType.entitlement === 0) &&
-          (absenceType.allow_overuse !== '1') &&
-          (absenceType.allow_accruals_request !== '1'));
+            (absenceType.allow_overuse !== '1') &&
+            (absenceType.allow_accruals_request !== '1'));
         });
       });
     }
@@ -290,14 +284,10 @@ define([
           period_id: vm.selectedPeriod.id,
           expired: true
         }),
-        LeaveRequest.all({
-          contact_id: vm.contactId,
-          from_date: {from: vm.selectedPeriod.start_date},
-          to_date: {to: vm.selectedPeriod.end_date},
+        loadLeaveRequests({
           request_type: 'toil',
-          expired: true,
-          type_id: { IN: _.keys(vm.absenceTypes) }
-        }, null, requestSort, null, false)
+          expired: true
+        })
       ])
         .then(function (results) {
           return $q.all({
@@ -308,6 +298,40 @@ define([
         .then(function (results) {
           vm.sections.expired.data = results.expiredBalanceChangesFlatten.concat(results.expiredTOILS);
           vm.sections.expired.data = _.sortBy(vm.sections.expired.data, 'expiry_date');
+        });
+    }
+
+    /**
+     * Fetches leave requests for the contact, for the available absence types,
+     * for the selected period and optionally by extra parameters
+     *
+     * @param  {Object} params extra parameters for the leave requests search
+     * @return {Promise} resolves with a response from API containing leave requests
+     */
+    function loadLeaveRequests (params) {
+      return LeaveRequest.all(_.assign({
+        contact_id: vm.contactId,
+        from_date: { from: vm.selectedPeriod.start_date },
+        to_date: { to: vm.selectedPeriod.end_date },
+        type_id: {
+          IN: vm.absenceTypes.map(function (absenceType) {
+            return absenceType.id;
+          })
+        }
+      }, params), null, 'from_date ASC', null, false);
+    }
+
+    /**
+     * Loads leave requests and populates them to the given section
+     *
+     * @param  {String} section
+     * @param  {Object} params extra parameters for the leave requests search
+     * @return {Promise}
+     */
+    function loadLeaveRequestsForSection (section, params) {
+      return loadLeaveRequests(params)
+        .then(function (leaveRequests) {
+          vm.sections[section].data = leaveRequests.list;
         });
     }
 
@@ -330,18 +354,11 @@ define([
      * @return {Promise}
      */
     function loadOtherRequests () {
-      return LeaveRequest.all({
-        contact_id: vm.contactId,
-        from_date: { from: vm.selectedPeriod.start_date },
-        to_date: { to: vm.selectedPeriod.end_date },
+      return loadLeaveRequestsForSection('other', {
         status_id: { in: [
           valueOfRequestStatus(sharedSettings.statusNames.rejected),
           valueOfRequestStatus(sharedSettings.statusNames.cancelled)
-        ] },
-        type_id: { IN: _.keys(vm.absenceTypes) }
-      }, null, requestSort, null, false)
-      .then(function (leaveRequests) {
-        vm.sections.other.data = leaveRequests.list;
+        ] }
       });
     }
 
@@ -351,18 +368,11 @@ define([
      * @return {Promise}
      */
     function loadPendingRequests () {
-      return LeaveRequest.all({
-        contact_id: vm.contactId,
-        from_date: { from: vm.selectedPeriod.start_date },
-        to_date: { to: vm.selectedPeriod.end_date },
+      return loadLeaveRequestsForSection('pending', {
         status_id: { in: [
           valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
           valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
         ] },
-        type_id: { IN: _.keys(vm.absenceTypes) }
-      }, null, requestSort, null, false)
-      .then(function (leaveRequests) {
-        vm.sections.pending.data = leaveRequests.list;
       });
     }
 
@@ -372,15 +382,8 @@ define([
      * @return {Promise}
      */
     function loadPublicHolidaysRequests () {
-      return LeaveRequest.all({
-        contact_id: vm.contactId,
-        from_date: { from: vm.selectedPeriod.start_date },
-        to_date: { to: vm.selectedPeriod.end_date },
-        public_holiday: true,
-        type_id: { IN: _.keys(vm.absenceTypes) }
-      }, null, requestSort, null, false)
-      .then(function (leaveRequests) {
-        vm.sections.holidays.data = leaveRequests.list;
+      return loadLeaveRequestsForSection('holidays', {
+        public_holiday: true
       });
     }
 
@@ -506,7 +509,7 @@ define([
      * @param {string} section
      */
     function updateSectionNumbersWithLeaveRequestBalanceChange (leaveRequest, section) {
-      var absenceType = vm.absenceTypes[leaveRequest.type_id];
+      var absenceType = vm.absenceTypesIndexed[leaveRequest.type_id];
       var remainderType = (section === 'pending') ? 'future' : 'current';
 
       absenceType.balanceChanges[section] -= leaveRequest.balance_change;

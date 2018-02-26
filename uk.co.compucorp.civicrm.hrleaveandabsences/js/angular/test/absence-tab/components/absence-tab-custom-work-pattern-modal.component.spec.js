@@ -4,9 +4,9 @@
   define([
     'common/angular',
     'common/lodash',
-    'mocks/data/option-group.data',
-    'mocks/data/work-pattern.data',
-    'mocks/apis/work-pattern-api-mock',
+    'leave-absences/mocks/data/option-group.data',
+    'leave-absences/mocks/data/work-pattern.data',
+    'leave-absences/mocks/apis/work-pattern-api-mock',
     'leave-absences/absence-tab/app'
   ], function (angular, _, optionGroupMock, workPatternData) {
     'use strict';

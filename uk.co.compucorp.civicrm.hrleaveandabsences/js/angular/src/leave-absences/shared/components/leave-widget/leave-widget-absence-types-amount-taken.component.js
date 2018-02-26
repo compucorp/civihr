@@ -23,7 +23,7 @@ define([
     }]
   });
 
-  absenceTypesTakenController.$include = ['$scope', 'LeaveRequest',
+  absenceTypesTakenController.$inject = ['$scope', 'LeaveRequest',
     'OptionGroup'];
 
   function absenceTypesTakenController ($scope, LeaveRequest, OptionGroup) {
@@ -60,8 +60,9 @@ define([
      * @return {Boolean}
      */
     function areBindingsReady () {
-      return vm.absenceTypes && vm.contactId && vm.absencePeriod &&
-        vm.leaveRequestStatuses && vm.leaveRequestStatuses.length;
+      return vm.absenceTypes && vm.absenceTypes.length && vm.contactId &&
+        vm.absencePeriod && vm.leaveRequestStatuses &&
+        vm.leaveRequestStatuses.length;
     }
 
     /**
@@ -81,10 +82,10 @@ define([
         status_id: { IN: statusIds },
         type_id: { IN: absenceTypeIds }
       }, null, null, null, false) // No Cache
-      .then(function (response) {
-        vm.leaveRequests = response.list;
-      })
-      .then(mapAbsenceTypesBalance);
+        .then(function (response) {
+          vm.leaveRequests = response.list;
+        })
+        .then(mapAbsenceTypesBalance);
     }
 
     /**
@@ -120,8 +121,7 @@ define([
 
         balance = vm.leaveRequests.filter(function (request) {
           return +request.type_id === +absenceType.id;
-        })
-        .reduce(function (balance, request) {
+        }).reduce(function (balance, request) {
           return balance + request.balance_change;
         }, 0);
 

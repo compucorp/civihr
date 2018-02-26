@@ -12,6 +12,7 @@ define([
       absencePeriods: '<',
       absenceTypes: '<',
       loggedInContactId: '<',
+      lookupContacts: '<',
       userRole: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {

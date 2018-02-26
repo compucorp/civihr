@@ -1,7 +1,7 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'mocks/data/leave-balance-report.data',
+  'leave-absences/mocks/data/leave-balance-report.data',
   'leave-absences/shared/models/leave-balance-report.model'
 ], function (mockData) {
   'use strict';

@@ -81,4 +81,47 @@ class CRM_HRLeaveAndAbsences_Service_LeaveManager {
   public function currentUserIsAdmin() {
     return CRM_Core_Permission::check('administer leave and absences');
   }
+
+  /**
+   * Gets the Contact info of the currently active Leave Approvers of the given contact
+   *
+   * @return array
+   *   An array of display names of leave approvers indexed by their contact Id's
+   */
+  public function getLeaveApproversForContact($contactID) {
+    $leaveApproverRelationships = $this->getLeaveApproverRelationshipsTypes();
+
+    if (!$leaveApproverRelationships) {
+      return [];
+    }
+
+    $relationshipTable = CRM_Contact_BAO_Relationship::getTableName();
+    $relationshipTypeTable = CRM_Contact_BAO_RelationshipType::getTableName();
+    $contactTable = CRM_Contact_BAO_Contact::getTableName();
+    $today = date('Y-m-d');
+
+    $query = "
+      SELECT c.id, c.display_name
+      FROM {$contactTable } c
+      INNER JOIN {$relationshipTable} r
+        ON r.contact_id_b = c.id
+      INNER JOIN {$relationshipTypeTable} rt 
+        ON rt.id = r.relationship_type_id
+      WHERE r.is_active = 1 AND rt.is_active = 1
+      AND rt.id IN(" . implode(',', $leaveApproverRelationships) . ")
+      AND r.contact_id_a = {$contactID}
+      AND (r.start_date IS NULL OR r.start_date <= '$today')
+      AND (r.end_date IS NULL OR r.end_date >= '$today')
+      ORDER by c.id ASC
+    ";
+
+    $result = CRM_Core_DAO::executeQuery($query);
+    $leaveApprovers = [];
+
+    while($result->fetch()) {
+      $leaveApprovers[$result->id] = $result->display_name;
+    }
+
+    return $leaveApprovers;
+  }
 }

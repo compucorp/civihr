@@ -15,9 +15,11 @@
 use CRM_HRLeaveAndAbsences_Factory_PublicHolidayLeaveRequestService as PublicHolidayLeaveRequestServiceFactory;
 use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
 use CRM_HRLeaveAndAbsences_Mail_Message as Message;
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSender as LeaveRequestMailNotificationSenderService;
 use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotificationTemplateFactory;
+use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
+use CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroup as LeaveActionGroupHelper;
 
 require_once 'hrleaveandabsences.civix.php';
 
@@ -446,6 +448,25 @@ function hrleaveandabsences_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   $wrappers[] = new CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestDates();
 }
 
+
+/**
+ * Implementation of hook_addContactMenuActions to add the
+ * Leave menu group to the contact actions menu.
+ *
+ * @param ActionsMenu $menu
+ */
+function hrleaveandabsences_addContactMenuActions(ActionsMenu $menu){
+  $contactID = empty($_GET['cid']) ? '' : $_GET['cid'];
+  if (!$contactID) {
+    return;
+  }
+
+  $leaveManagerService = new LeaveManagerService();
+  $leaveActionGroup = new LeaveActionGroupHelper($leaveManagerService, $contactID);
+  $leaveActionGroup = $leaveActionGroup->get();
+  $leaveActionGroup->setWeight(1);
+  $menu->addToMainPanel($leaveActionGroup);
+}
 //----------------------------------------------------------------------------//
 //                               Helper Functions                             //
 //----------------------------------------------------------------------------//
@@ -652,7 +673,8 @@ function _hrleaveandabsences_civicrm_post_leaverequest($op, $objectId, &$objectR
   try {
     //get the message for the leave request
     $leaveRequestTemplateFactory = new RequestNotificationTemplateFactory();
-    $message = new Message($objectRef, $leaveRequestTemplateFactory);
+    $leaveManagerService = new LeaveManagerService();
+    $message = new Message($objectRef, $leaveRequestTemplateFactory, $leaveManagerService);
 
     if (!$message->getTemplateID()) {
       return;

@@ -2,8 +2,9 @@
 
 define([
   'common/mocks/services/file-uploader-mock',
-  'mocks/apis/leave-request-api-mock',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/leave-request-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/shared/instances/sickness-request.instance'
 ], function () {
   'use strict';
@@ -11,12 +12,14 @@ define([
   describe('SicknessRequestInstance', function () {
     var $provide, SicknessRequestInstance, instance, LeaveRequestAPI;
 
-    beforeEach(module('leave-absences.models.instances', 'leave-absences.mocks', 'common.mocks', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(module('leave-absences.models.instances', 'leave-absences.mocks',
+      'common.mocks', 'leave-absences.models', function (_$provide_) {
+        $provide = _$provide_;
+      }));
 
-    beforeEach(inject(function (_LeaveRequestAPIMock_, _OptionGroupAPIMock_,
-      _FileUploaderMock_) {
+    beforeEach(inject(function (_AbsenceTypeAPIMock_, _LeaveRequestAPIMock_,
+      _OptionGroupAPIMock_, _FileUploaderMock_) {
+      $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
       $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
       $provide.value('OptionGroup', _OptionGroupAPIMock_);
       $provide.value('FileUploader', _FileUploaderMock_);

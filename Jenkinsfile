@@ -72,6 +72,10 @@ pipeline {
             checkoutPrBranchInCiviHRRepos(prBranch)
             mergeEnvBranchInAllRepos(envBranch)
           }
+
+          // The JS tests use the cv tool to find the path  of an extension.
+          // For it to work, the extensions have to be installed on the site
+          installCiviHRExtensions()
         }
       }
     }
@@ -81,7 +85,9 @@ pipeline {
         stage('Test PHP') {
           steps {
             script {
-              for (extension in listCivihrExtensions()) {
+              for (item in mapToList(listCivihrExtensions())) {
+                def extension = item.value
+
                 if (extension.hasPHPTests) {
                   testPHPUnit(extension)
                 }
@@ -115,15 +121,21 @@ pipeline {
         stage('Test JS') {
           steps {
             script {
+              installNodePackages();
+
+              // HRCore is the extension where the JS tests are ran from
+              def hrcore = listCivihrExtensions().hrcore;
+
               // This is necessary to avoid an additional loop
               // in each extension folder to read the XML.
               // After each test we move the reports to this folder
               sh "mkdir -p $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER"
 
-              for (extension in listCivihrExtensions()) {
+              for (item in mapToList(listCivihrExtensions())) {
+                def extension = item.value
+
                 if (extension.hasJSTests) {
-                  installJSPackages(extension)
-                  testJS(extension)
+                  testJS(hrcore.folder, extension)
                 }
               }
             }
@@ -283,27 +295,26 @@ def testPHPUnit(java.util.LinkedHashMap extension) {
 
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    phpunit4 --testsuite="Unit Tests" --log-junit $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/result-phpunit_${extension
-    .shortName}.xml
+    phpunit4 --testsuite="Unit Tests" --log-junit $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/result-phpunit_${extension.folder}.xml
   """
 }
 
 /*
- * Install JS Testing
- * params: extension
+ * Install Node packages in all of CiviHR extensions
  */
-def installJSPackages(java.util.LinkedHashMap extension) {
+def installNodePackages() {
   sh """
-    cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
+    cd $CIVICRM_EXT_ROOT/civihr/
     yarn || true
   """
 }
 
 /*
  * Execute JS Testing
+ * params: hrcoreFolder
  * params: extension
  */
-def testJS(java.util.LinkedHashMap extension) {
+def testJS(hrcoreFolder, java.util.LinkedHashMap extension) {
   echo "JS Testing ${extension.name}"
 
   // We cannot change, using CLI arguments, the place where
@@ -311,8 +322,10 @@ def testJS(java.util.LinkedHashMap extension) {
   // here copies the XML from the extension folder to the
   // workspace, where Jenkins will read it
   sh """
+    cd $CIVICRM_EXT_ROOT/civihr/${hrcoreFolder}
+    gulp test --ext ${extension.folder} --reporters junit,progress || true
+
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    gulp test --reporters junit,progress || true
     mv test-reports/*.xml $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/ || true
   """
 }
@@ -340,96 +353,124 @@ def listCivihrGitRepoPath() {
  */
 def listCivihrExtensions() {
   return [
-    [
+    hrjobroles: [
       name: 'Job Roles',
-      shortName: 'hrjobroles',
       folder: 'com.civicrm.hrjobroles',
       hasJSTests: true,
       hasPHPTests: true
     ],
-    [
+    contactaccessrights: [
       name: 'Contacts Access Rights',
-      shortName: 'contactaccessrights',
       folder: 'contactaccessrights',
       hasJSTests: true,
       hasPHPTests: true
     ],
-    [
+    contactsummary: [
       name: 'Contacts Summary',
-      shortName: 'contactsummary',
       folder: 'contactsummary',
       hasJSTests: true,
       hasPHPTests: false
     ],
-    [
+    hrjobcontract: [
       name: 'Job Contracts',
-      shortName: 'hrjobcontract',
       folder: 'hrjobcontract',
       hasJSTests: true,
       hasPHPTests: true
     ],
-    [
+    hrrecruitment: [
       name: 'Recruitment',
-      shortName: 'hrrecruitment',
       folder: 'hrrecruitment',
       hasJSTests: false,
       hasPHPTests: true
     ],
-    [
+    hrreport: [
       name: 'Reports',
-      shortName: 'hrreport',
       folder: 'hrreport',
       hasJSTests: false,
       hasPHPTests: false
     ],
-    [
+    hrui: [
       name: 'HR UI',
-      shortName: 'hrui',
       folder: 'hrui',
       hasJSTests: false,
       hasPHPTests: false
     ],
-    [
+    hrvisa: [
       name: 'HR Visa',
-      shortName: 'hrvisa',
       folder: 'hrvisa',
       hasJSTests: false,
       hasPHPTests: true
     ],
-    [
+    reqangular: [
       name: 'Reqangular',
-      shortName: 'reqangular',
       folder: 'org.civicrm.reqangular',
       hasJSTests: true,
       hasPHPTests: false
     ],
-    [
+    hrcore: [
       name: 'HRCore',
-      shortName: 'hrcore',
       folder: 'uk.co.compucorp.civicrm.hrcore',
       hasJSTests: false,
       hasPHPTests: true
     ],
-    [
+    hrleaveandabsences: [
       name: 'Leave and Absences',
-      shortName: 'hrleaveandabsences',
       folder: 'uk.co.compucorp.civicrm.hrleaveandabsences',
       hasJSTests: true,
       hasPHPTests: true
     ],
-    [
+    hrsampledata: [
       name: 'Sample Data',
-      shortName: 'hrsampledata',
       folder: 'uk.co.compucorp.civicrm.hrsampledata',
       hasJSTests: false,
       hasPHPTests: true
     ],
-    [
+    hremergency: [
       name: 'Emergency Contacts ',
-      shortName: 'hremergency',
       folder: 'org.civicrm.hremergency',
       hasJSTests: false,
       hasPHPTests: true
+    ],
+    bootstrapcivihr: [
+      name: 'Bootstrap CiviHR',
+      folder: 'org.civicrm.bootstrapcivihr',
+      hasJSTests: false,
+      hasPHPTests: false
+    ],
+    hrcontactactionsmenu: [
+      name: 'Contact Actions Menu',
+      folder: 'uk.co.compucorp.civicrm.hrcontactactionsmenu',
+      hasJSTests: false,
+      hasJSPackages: false,
+      hasPHPTests: true
     ]
   ]
+}
+
+/*
+ * Converts a Hashmap to a List
+ * This is mainly for supporting looping through the list of
+ * extensions returned by listCivihrExtensions()
+ * See this for more details:
+ *  https://stackoverflow.com/questions/40159258/impossibility-to-iterate-over-a-map-using-groovy-within-jenkins-pipeline#40166064
+ */
+@NonCPS def mapToList(map) {
+  def list = []
+
+  for (def entry in map) {
+    list.add(new java.util.AbstractMap.SimpleImmutableEntry(entry.key, entry.value))
+  }
+
+  list
+}
+
+/*
+ * Installs the CiviHR extensions in the build site
+ */
+def installCiviHRExtensions() {
+  sh """
+    cd $CIVICRM_EXT_ROOT/civihr
+    drush cvapi extension.refresh
+    ./bin/drush-install.sh
+  """
 }

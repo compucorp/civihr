@@ -18,11 +18,11 @@ define([
   });
 
   LeaveBalanceTabController.$inject = ['$q', '$rootScope', 'AbsencePeriod',
-    'AbsenceType', 'LeaveBalanceReport', 'notificationService', 'pubSub',
+    'AbsenceType', 'Contact', 'LeaveBalanceReport', 'notificationService', 'pubSub',
     'Session', 'shared-settings', 'checkPermissions'];
 
   function LeaveBalanceTabController ($q, $rootScope, AbsencePeriod,
-    AbsenceType, LeaveBalanceReport, notification, pubSub, Session,
+    AbsenceType, Contact, LeaveBalanceReport, notification, pubSub, Session,
     sharedSettings, checkPermissions) {
     var filters = {};
     var vm = this;
@@ -31,6 +31,7 @@ define([
     vm.absenceTypes = [];
     vm.loading = { component: true, report: true };
     vm.loggedInContactId = null;
+    vm.lookupContacts = [];
     vm.pagination = { page: 1, size: 50 };
     vm.report = [];
     vm.reportCount = 0;
@@ -45,9 +46,9 @@ define([
     (function init () {
       initWatchers();
       loadDependencies()
-      .then(function () {
-        vm.loading.component = false;
-      });
+        .then(function () {
+          vm.loading.component = false;
+        });
     })();
 
     /**
@@ -57,21 +58,36 @@ define([
      */
     function loadAbsencePeriods () {
       return AbsencePeriod.all({ options: { sort: 'title ASC' } })
-      .then(function (response) {
-        vm.absencePeriods = response;
-      });
+        .then(function (response) {
+          vm.absencePeriods = response;
+        });
     }
 
     /**
      * Uses the AbsenceType model to populate a list of abesence types
      * sorted by title in an ascending order.
+     *
+     * @return {Promise}
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({ options: { sort: 'title ASC' } })
-      .then(AbsenceType.loadCalculationUnits)
-      .then(function (absenceTypes) {
-        vm.absenceTypes = absenceTypes;
-      });
+      return AbsenceType.all()
+        .then(AbsenceType.loadCalculationUnits)
+        .then(function (absenceTypes) {
+          vm.absenceTypes = absenceTypes;
+        });
+    }
+
+    /**
+     * Uses the Contact model to populate a list of all contacts
+     * sorted by sort_name in an ascending order.
+     *
+     * @return {Promise}
+     */
+    function loadAllContacts () {
+      return Contact.all(null, null, 'sort_name ASC')
+        .then(function (contacts) {
+          vm.lookupContacts = contacts.list;
+        });
     }
 
     /**
@@ -83,10 +99,10 @@ define([
       return $q.all([
         loadAbsencePeriods(),
         loadAbsenceTypes(),
+        loadAllContacts(),
         loadLoggedInContactId(),
         loadUserRole()
-      ])
-      .catch(function (error) {
+      ]).catch(function (error) {
         notification.error('Error', error);
       });
     }
@@ -111,16 +127,16 @@ define([
       vm.loading.report = true;
 
       return LeaveBalanceReport.all(filters, vm.pagination, undefined, undefined, false)
-      .then(function (response) {
-        vm.report = indexLeaveBalanceAbsenceTypes(response.list);
-        vm.reportCount = response.total;
-      })
-      .catch(function (error) {
-        notification.error('Error', error.error_message);
-      })
-      .finally(function () {
-        vm.loading.report = false;
-      });
+        .then(function (response) {
+          vm.report = indexLeaveBalanceAbsenceTypes(response.list);
+          vm.reportCount = response.total;
+        })
+        .catch(function (error) {
+          notification.error('Error', error.error_message);
+        })
+        .finally(function () {
+          vm.loading.report = false;
+        });
     }
 
     /**
@@ -180,6 +196,7 @@ define([
      * @param {Object} event - the component event handler.
      * @param {Object} _filters_ - The filter values to use for updating the report.
      * it contains the following properties:
+     * - contact_id - the contact ID to filter by.
      * - period_id - the absence period ID to filter by.
      * - type_id - the abence type ID to filter by.
      * - managed_by - the managing user ID to filter by.

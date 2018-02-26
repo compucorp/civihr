@@ -1,0 +1,11 @@
+<tr>
+  <th class="chr_leave-report__table__heading--label"></th>
+  <th class="chr_leave-report__table__heading--dates">Dates</th>
+  <th class="chr_leave-report__table__heading--status">Status</th>
+  <th
+    class="chr_leave-report__table__heading--type"
+    ng-repeat="absenceType in report.absenceTypesFiltered track by $index">
+    {{absenceType.title}}
+  </th>
+  <th class="chr_leave-report__table__heading--action"></th>
+</tr>

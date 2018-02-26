@@ -2,14 +2,15 @@
 
 define([
   'common/angular',
-  'mocks/data/leave-request.data',
-  'leave-absences/manager-leave/app'
+  'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/manager-leave/app',
+  'leave-absences/mocks/apis/option-group-api-mock'
 ], function (angular, leaveRequestData) {
   'use strict';
 
   describe('leaveRequestPopupFilesTab', function () {
-    var leaveRequest, $componentController, $log, $rootScope, controller, OptionGroup, OptionGroupAPIMock,
-      LeaveRequestInstance;
+    var leaveRequest, $componentController, $log, $rootScope, $scope, controller,
+      OptionGroup, OptionGroupAPIMock, LeaveRequestInstance;
 
     beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'manager-leave'));
 
@@ -35,6 +36,10 @@ define([
 
     it('is initialized', function () {
       expect($log.debug).toHaveBeenCalled();
+    });
+
+    it('emits a "add tab" event', function () {
+      expect($scope.$emit).toHaveBeenCalledWith('LeaveRequestPopup::addTab', controller);
     });
 
     describe('canUploadMore()', function () {
@@ -69,12 +74,40 @@ define([
       });
     });
 
-    function compileComponent (canManage, request) {
-      controller = $componentController('leaveRequestPopupFilesTab', null, {
-        canManage: canManage,
-        mode: 'edit',
-        request: request
+    describe('can submit', function () {
+      describe('when files have been queued for uploading', function () {
+        beforeEach(function () {
+          controller.fileUploader.queue = [1, 2, 3];
+        });
+
+        it('allows the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(true);
+        });
       });
+
+      describe('when files have not been queued for uploading', function () {
+        beforeEach(function () {
+          controller.fileUploader.queue = [];
+        });
+
+        it('does not allow the request to be submitted', function () {
+          expect(controller.canSubmit()).toBe(false);
+        });
+      });
+    });
+
+    function compileComponent (canManage, request) {
+      $scope = $rootScope.$new();
+      spyOn($scope, '$emit').and.callThrough();
+
+      controller = $componentController('leaveRequestPopupFilesTab',
+        { $scope: $scope },
+        {
+          canManage: canManage,
+          mode: 'edit',
+          request: request
+        }
+      );
       $rootScope.$digest();
     }
   });

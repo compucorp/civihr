@@ -6,7 +6,8 @@ define([
   'leave-absences/shared/modules/components',
   'common/services/hr-settings',
   'common/services/notification.service',
-  'common/services/pub-sub'
+  'common/services/pub-sub',
+  'leave-absences/shared/services/leave-request.service'
 ], function (_, moment, components) {
   components.component('leaveRequestActions', {
     bindings: {
@@ -28,10 +29,10 @@ define([
   });
 
   LeaveRequestActionsController.$inject = ['$log', '$rootScope', 'dialog',
-    'LeavePopup', 'pubSub', 'shared-settings', 'notificationService'];
+    'LeavePopup', 'LeaveRequestService', 'pubSub', 'shared-settings', 'notificationService'];
 
   function LeaveRequestActionsController ($log, $rootScope, dialog,
-    LeavePopup, pubSub, sharedSettings, notification) {
+    LeavePopup, LeaveRequestService, pubSub, sharedSettings, notification) {
     $log.debug('Component: leave-request-action-dropdown');
 
     var vm = this;
@@ -124,29 +125,17 @@ define([
     /**
      * Performs an action on a given leave request
      *
-     * @param {string} action
+     * @param {String} action
      */
     function action (action) {
-      var dialogParams = actions[action].dialog;
-
       statusIdBeforeAction = vm.leaveRequest.status_id;
 
-      dialog.open({
-        title: 'Confirm ' + dialogParams.title + '?',
-        copyCancel: 'Cancel',
-        copyConfirm: dialogParams.btnLabel,
-        classConfirm: 'btn-' + dialogParams.btnClass,
-        msg: dialogParams.msg,
-        onConfirm: function () {
-          return vm.leaveRequest[action]()
-            .then(function () {
-              publishEvents(action);
-            })
-            .catch(function (error) {
-              notification.error('Error:', error);
-            });
-        }
-      });
+      if (!_.includes(['cancel', 'reject', 'delete'], action) &&
+        vm.leaveRequest.request_type !== 'toil') {
+        checkBalanceChangeAndPromptForAnAction(action);
+      } else {
+        dialog.open(getConfirmationDialogOptions(action));
+      }
     }
 
     /**
@@ -198,6 +187,41 @@ define([
     }
 
     /**
+     * Opens dialog and immediately starts checking balance change
+     * If balance changed, prompts to recalculate the balance change,
+     * if not - simply asks for the action confirmation
+     *
+     * @param {String} action
+     */
+    function checkBalanceChangeAndPromptForAnAction (action) {
+      dialog.open({
+        title: 'Verifying balance...',
+        loading: true,
+        optionsPromise: function () {
+          return vm.leaveRequest.checkIfBalanceChangeNeedsRecalculation()
+            .then(function (balanceChangeNeedsRecalculation) {
+              if (balanceChangeNeedsRecalculation) {
+                return _.assign(
+                  LeaveRequestService.getBalanceChangeRecalculationPromptOptions(),
+                  {
+                    onCloseAfterConfirm: function () {
+                      LeavePopup.openModal(vm.leaveRequest,
+                        vm.leaveRequest.request_type,
+                        vm.leaveRequest.contact_id,
+                        $rootScope.section === 'my-leave',
+                        true);
+                    }
+                  }
+                );
+              } else {
+                return getConfirmationDialogOptions(action);
+              }
+            });
+        }
+      });
+    }
+
+    /**
      * Indexes leave request statuses and absence types
      * if they are passed as arrays to the component
      */
@@ -209,6 +233,33 @@ define([
       if (_.isArray(vm.absenceTypes)) {
         vm.absenceTypes = _.indexBy(vm.absenceTypes, 'id');
       }
+    }
+
+    /**
+     * Returns options for an action confirmation dialog
+     *
+     * @param  {String} action
+     * @return {Object}
+     */
+    function getConfirmationDialogOptions (action) {
+      var dialogParams = actions[action].dialog;
+
+      return {
+        title: 'Confirm ' + dialogParams.title + '?',
+        copyCancel: 'Cancel',
+        copyConfirm: dialogParams.btnLabel,
+        classConfirm: 'btn-' + dialogParams.btnClass,
+        msg: dialogParams.msg,
+        onConfirm: function () {
+          return vm.leaveRequest[action]()
+            .then(function () {
+              publishEvents(action);
+            })
+            .catch(function (error) {
+              notification.error('Error:', error);
+            });
+        }
+      };
     }
 
     /**

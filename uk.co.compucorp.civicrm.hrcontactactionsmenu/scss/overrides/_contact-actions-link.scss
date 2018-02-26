@@ -1,0 +1,7 @@
+#crm-contact-actions-link {
+  &.active,
+  &.active span i {
+    background: $gray-light !important;
+    color: $brand-primary !important;
+  }
+}

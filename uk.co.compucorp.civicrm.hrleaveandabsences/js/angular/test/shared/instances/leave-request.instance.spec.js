@@ -2,13 +2,14 @@
 
 define([
   'common/lodash',
-  'mocks/data/leave-request.data',
-  'mocks/data/option-group.data',
-  'mocks/data/comments.data',
-  'mocks/helpers/helper',
+  'leave-absences/mocks/data/leave-request.data',
+  'leave-absences/mocks/data/option-group.data',
+  'leave-absences/mocks/data/comments.data',
+  'leave-absences/mocks/helpers/helper',
   'common/mocks/services/file-uploader-mock',
-  'mocks/apis/leave-request-api-mock',
-  'mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/leave-request-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/shared/instances/leave-request.instance',
   'leave-absences/shared/modules/models'
 ], function (_, leaveRequestMockData, optionGroupMockData, commentsData, helper) {
@@ -20,15 +21,18 @@ define([
     var isUserAdmin = false;
 
     beforeEach(module('leave-absences.models', 'leave-absences.models.instances',
-      'leave-absences.mocks', 'common.mocks', 'leave-absences.settings', 'leave-absences.services',
+      'leave-absences.mocks', 'common.mocks', 'leave-absences.settings',
       function (_$provide_) {
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (_LeaveRequestAPIMock_, _FileUploaderMock_) {
-      $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
-      $provide.value('FileUploader', _FileUploaderMock_);
+    beforeEach(inject(function (_AbsenceTypeAPIMock_, _FileUploaderMock_,
+      _LeaveRequestAPIMock_, _OptionGroupAPIMock_) {
+      $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
       $provide.value('checkPermissions', function () { return $q.resolve(isUserAdmin); });
+      $provide.value('FileUploader', _FileUploaderMock_);
+      $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
+      $provide.value('api.optionGroup', _OptionGroupAPIMock_);
     }));
 
     afterEach(function () {
@@ -844,6 +848,61 @@ define([
       function setIsManagedResponseTo (value) {
         return $q.resolve(value);
       }
+    });
+
+    describe('checkIfBalanceChangeHasBeenChanged()', function () {
+      var originalBalanceChangeAmount, result;
+
+      beforeEach(function () {
+        LeaveRequestInstance.getBalanceChangeBreakdown().then(function (balanceChange) {
+          originalBalanceChangeAmount = balanceChange.amount;
+        });
+        $rootScope.$digest();
+      });
+
+      describe('when called', function () {
+        beforeEach(function () {
+          spyOn(LeaveRequestInstance, 'calculateBalanceChange').and.callThrough();
+          LeaveRequestInstance.checkIfBalanceChangeNeedsRecalculation();
+          $rootScope.$digest();
+        });
+
+        it('calls the calculateBalanceChange method of leave request instance', function () {
+          expect(LeaveRequestInstance.calculateBalanceChange).toHaveBeenCalled();
+        });
+      });
+
+      describe('when balance change has not been changed', function () {
+        beforeEach(function () {
+          spyOn(LeaveRequestInstance, 'calculateBalanceChange').and.returnValue(
+            $q.resolve({ amount: originalBalanceChangeAmount }));
+          LeaveRequestInstance.checkIfBalanceChangeNeedsRecalculation()
+            .then(function (_result_) {
+              result = _result_;
+            });
+          $rootScope.$digest();
+        });
+
+        it('resolves with false', function () {
+          expect(result).toBe(false);
+        });
+      });
+
+      describe('when balance change has been changed', function () {
+        beforeEach(function () {
+          spyOn(LeaveRequestInstance, 'calculateBalanceChange').and.returnValue(
+            $q.resolve({ amount: originalBalanceChangeAmount - 1 }));
+          LeaveRequestInstance.checkIfBalanceChangeNeedsRecalculation()
+            .then(function (_result_) {
+              result = _result_;
+            });
+          $rootScope.$digest();
+        });
+
+        it('resolves with true', function () {
+          expect(result).toBe(true);
+        });
+      });
     });
   });
 });

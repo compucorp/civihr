@@ -60,7 +60,7 @@
       </tr>
     </tbody>
   </table>
-  <div ng-if="nextLeave.nextLeaveRequest">
+  <div ng-if="nextLeave.nextLeaveRequest && nextLeave.nextLeaveRequest['type_id.calculation_unit_name']">
     <h4>Deduction</h4>
     <span class="leave-widget__next-leave__deduction">
       {{nextLeave.nextLeaveRequest.balance_change | timeUnitApplier:nextLeave.nextLeaveRequest['type_id.calculation_unit_name']}}

@@ -1,12 +1,10 @@
 <?php
 
+use CRM_Contactaccessrights_Utils_RightType_RightTypeInterface as RightTypeInterface;
+use CRM_Contactaccessrights_Utils_RightType_Region as RegionRightType;
+use CRM_Contactaccessrights_Utils_RightType_Location as LocationRightType;
+
 class CRM_Contactaccessrights_BAO_Rights extends CRM_Contactaccessrights_DAO_Rights {
-  /**
-   * Rights grouped by type.
-   *
-   * @var array
-   */
-  private $rights = [];
 
   /**
    * Create a new Rights based on array-data.
@@ -32,13 +30,42 @@ class CRM_Contactaccessrights_BAO_Rights extends CRM_Contactaccessrights_DAO_Rig
   }
 
   /**
-   * @param \CRM_Contactaccessrights_Utils_RightType_RightTypeInterface $rightType
-   * @param int|null                                                    $contactId
+   * Gets the regions that the contact has access to.
+   *
+   * @param int $contactID
    *
    * @return array
    */
-  public function getRightsByType(CRM_Contactaccessrights_Utils_RightType_RightTypeInterface $rightType, $contactId = NULL) {
-    $contactId = $contactId ?: CRM_Core_Session::singleton()->get('userID');
+  public function getContactRightsByLocations($contactID) {
+    $rightType = new LocationRightType();
+
+    return $this->getRightsByType($rightType, $contactID);
+  }
+
+  /**
+   * Gets the locations that the contact has access to.
+   *
+   * @param int $contactID
+   *
+   * @return array
+   */
+  public function getContactRightsByRegions($contactID) {
+    $rightType = new RegionRightType();
+
+    return $this->getRightsByType($rightType, $contactID);
+  }
+
+  /**
+   * Gets the Entity that the given contact has access to depending on
+   * the right type. (Locations and Regions for now)
+   *
+   * @param RightTypeInterface $rightType
+   * @param int $contactID
+   *
+   * @return array
+   */
+  private function getRightsByType(RightTypeInterface $rightType, $contactID) {
+    $contactID = $contactID ?: CRM_Core_Session::getLoggedInContactID();
 
     $sql = "
     SELECT
@@ -59,28 +86,20 @@ class CRM_Contactaccessrights_BAO_Rights extends CRM_Contactaccessrights_DAO_Rig
 
     WHERE rights.contact_id = %2";
 
-    $queryParams = array(1 => array($rightType->getEntityType(), 'String'), 2 => array($contactId, 'Integer'));
+    $entityType = $rightType->getEntityType();
+    $queryParams = [
+      1 => [$entityType, 'String'],
+      2 => [$contactID, 'Integer']
+    ];
 
-    $bao = static::executeQuery($sql, $queryParams);
+    $bao = CRM_Core_DAO::executeQuery($sql, $queryParams);
+
+    $rights = [$entityType => []];
 
     while ($bao->fetch()) {
-      $this->addRight($bao->toArray(), $rightType->getEntityType());
+      $rights[$entityType][$bao->id] = $bao->toArray();
     }
 
-    return isset($this->rights[$rightType->getEntityType()])
-      ? $this->rights[$rightType->getEntityType()]
-      : [];
-  }
-
-  /**
-   * @param $right
-   * @param $entityType
-   */
-  private function addRight($right, $entityType) {
-    if (!isset($this->rights[$entityType])) {
-      $this->rights[$entityType] = [];
-    }
-
-    $this->rights[$entityType][$right['id']] = $right;
+    return !empty($rights[$entityType]) ? $rights[$entityType] : [];
   }
 }

@@ -2,7 +2,7 @@
 
 define([
   'common/lodash',
-  'mocks/data/option-group.data'
+  'leave-absences/mocks/data/option-group.data'
 ], function (_, OptionGroupData) {
   var allData = {
     'is_error': 0,

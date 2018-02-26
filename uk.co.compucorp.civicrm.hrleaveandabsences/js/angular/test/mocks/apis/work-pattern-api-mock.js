@@ -2,8 +2,8 @@
 
 define([
   'common/lodash',
-  'mocks/module',
-  'mocks/data/work-pattern.data'
+  'leave-absences/mocks/module',
+  'leave-absences/mocks/data/work-pattern.data'
 ], function (_, mocks, WorkPatternData) {
   'use strict';
 

@@ -36,7 +36,7 @@
             ng-change="$ctrl.updateAbsenceType()"></select>
           <select
             class="no-select2"
-            ng-show="$ctrl.absenceTypes.length === 0"
+            ng-if="$ctrl.absenceTypes.length === 0"
             disabled="disabled">
             <option>You don't have any leave entitlement</option>
           </select>
@@ -58,14 +58,18 @@
               request="$ctrl.request" is-self-record="$ctrl.isSelfRecord" is-mode="$ctrl.isMode" period="$ctrl.period" absence-types="$ctrl.absenceTypes"
               is-leave-status="$ctrl.isLeaveStatus" selected-absence-type="$ctrl.selectedAbsenceType" balance="$ctrl.balance"
               absence-periods="$ctrl.absencePeriods" is-role="$ctrl.isRole" leave-type="$ctrl.leaveType"
-              check-submit-conditions="$ctrl.checkSubmitConditions">
+              force-recalculate-balance-change="$ctrl.forceRecalculateBalanceChange">
             </leave-request-popup-details-tab>
           </uib-tab>
           <uib-tab heading="Comments">
-            <leave-request-popup-comments-tab request="$ctrl.request" mode="$ctrl.mode" can-manage="$ctrl.canManage"></leave-request-popup-comments-tab>
+            <leave-request-popup-comments-tab
+              request="$ctrl.request"
+              mode="$ctrl.mode"
+              can-manage="$ctrl.canManage"
+            ></leave-request-popup-comments-tab>
           </uib-tab>
           <uib-tab heading="Files">
-            <leave-request-popup-files-tab request="$ctrl.request" file-uploader="$ctrl.fileUploader" mode="$ctrl.mode" can-manage="$ctrl.canManage"></leave-request-popup-files-tab>
+            <leave-request-popup-files-tab request="$ctrl.request" mode="$ctrl.mode" can-manage="$ctrl.canManage"></leave-request-popup-files-tab>
           </uib-tab>
         </uib-tabset>
       </div>

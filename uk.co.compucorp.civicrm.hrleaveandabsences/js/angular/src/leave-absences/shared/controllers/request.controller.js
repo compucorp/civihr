@@ -17,7 +17,8 @@ define([
   'leave-absences/shared/models/public-holiday.model',
   'leave-absences/shared/instances/leave-request.instance',
   'leave-absences/shared/instances/sickness-request.instance',
-  'leave-absences/shared/instances/toil-request.instance'
+  'leave-absences/shared/instances/toil-request.instance',
+  'leave-absences/shared/services/leave-request.service'
 ], function (angular, controllers, _, moment) {
   'use strict';
 
@@ -25,11 +26,11 @@ define([
 
   RequestCtrl.$inject = ['$log', '$q', '$rootScope', '$scope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup',
     'dialog', 'pubSub', 'directiveOptions', 'Contact', 'Session', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
-    'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance'];
+    'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance', 'LeaveRequestService'];
 
   function RequestCtrl ($log, $q, $rootScope, $scope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub,
     directiveOptions, Contact, Session, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
-    LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance) {
+    LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance, LeaveRequestService) {
     $log.debug('RequestCtrl');
 
     var absenceTypesAndIds;
@@ -40,6 +41,7 @@ define([
     var loggedInContactId = '';
     var NO_ENTITLEMENT_ERROR = 'No entitlement';
     var role = '';
+    var tabs = [];
     var vm = _.assign(this, directiveOptions); // put all directive options directly in the vm
 
     vm.absencePeriods = [];
@@ -47,8 +49,6 @@ define([
     vm.canManage = false; // vm flag is set on initialisation of the controller
     vm.contactName = null; // contact name of the owner of leave request
     vm.errors = [];
-    vm.fileUploader = null;
-    vm.staffMemberSelectionComplete = false;
     vm.loading = { absenceTypes: true, entitlements: true };
     vm.managedContacts = [];
     vm.mode = ''; // can be edit, create, view
@@ -57,6 +57,7 @@ define([
     vm.postContactSelection = false; // flag to track if user is selected for enabling UI
     vm.requestStatuses = {};
     vm.selectedAbsenceType = {};
+    vm.staffMemberSelectionComplete = false;
     vm.submitting = false;
     vm.balance = {
       closing: 0,
@@ -100,25 +101,25 @@ define([
         loadAbsencePeriods(),
         loadStatuses()
       ])
-      .then(initRequest)
-      .then(setModalMode)
-      .then(setInitialAbsencePeriod)
-      .then(function () {
-        return vm.canManage && !vm.isMode('edit') && loadManagees();
-      })
-      .then(function () {
-        if (vm.selectedContactId) {
-          vm.request.contact_id = vm.selectedContactId;
-        }
-        // The additional check here prevents error being displayed on startup when no contact is selected
-        if (vm.request.contact_id) {
-          return vm.initAfterContactSelection();
-        }
-      })
-      .catch(handleError)
-      .finally(function () {
-        vm.loading.absenceTypes = false;
-      });
+        .then(initRequest)
+        .then(setModalMode)
+        .then(setInitialAbsencePeriod)
+        .then(function () {
+          return vm.canManage && !vm.isMode('edit') && loadManagees();
+        })
+        .then(function () {
+          if (vm.selectedContactId) {
+            vm.request.contact_id = vm.selectedContactId;
+          }
+          // The additional check here prevents error being displayed on startup when no contact is selected
+          if (vm.request.contact_id) {
+            return vm.initAfterContactSelection();
+          }
+        })
+        .catch(handleError)
+        .finally(function () {
+          vm.loading.absenceTypes = false;
+        });
     }());
 
     /**
@@ -158,6 +159,32 @@ define([
     }
 
     /**
+     * Determines if all of the required tabs can be submitted
+     *
+     * @return {Boolean}
+     */
+    function canAllRequiredTabsBeSubmitted () {
+      return tabs.filter(function (tab) {
+        return tab.isRequired;
+      }).every(function (tab) {
+        return tab.canSubmit && tab.canSubmit();
+      });
+    }
+
+    /**
+     * Determines if at least one of the non-required tabs can be submitted.
+     *
+     * @return {Boolean}
+     */
+    function canAnyNonRequiredTabBeSubmitted () {
+      return tabs.filter(function (tab) {
+        return !tab.isRequired;
+      }).some(function (tab) {
+        return tab.canSubmit && tab.canSubmit();
+      });
+    }
+
+    /**
      * Checks if Absence Type can be changed
      * - Disregarding any conditions, if entitlements are being loaded you cannot change
      * - Admins can always change, disregarding the mode
@@ -192,11 +219,12 @@ define([
      * @return {Boolean}
      */
     function canSubmit () {
-      var canSubmit = vm.checkSubmitConditions ? vm.checkSubmitConditions() : false;
+      // checks if one of the tabs can be submitted
+      var canSubmit = canAllRequiredTabsBeSubmitted();
 
       // check if user has changed any attribute
       if (vm.isMode('edit')) {
-        canSubmit = canSubmit && hasRequestChanged();
+        canSubmit = canSubmit && (hasRequestChanged() || canAnyNonRequiredTabBeSubmitted());
       }
 
       // check if manager has changed status
@@ -235,7 +263,10 @@ define([
       return vm.request.calculateBalanceChange(vm.selectedAbsenceType.calculation_unit_name)
         .then(function (balanceChange) {
           if (+vm.balance.change.amount !== +balanceChange.amount) {
-            promptBalanceChangeRecalculation(balanceChange);
+            LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation()
+              .then(function () {
+                $rootScope.$emit('LeaveRequestPopup::recalculateBalanceChange');
+              });
 
             return $q.reject();
           }
@@ -400,10 +431,9 @@ define([
     function hasRequestChanged () {
       // using angular.equals to automatically ignore the $$hashkey property
       return !angular.equals(
-          initialLeaveRequestAttributes,
-          vm.request.attributes()
-        ) || (vm.fileUploader && vm.fileUploader.queue.length !== 0) ||
-        (vm.canManage && vm.newStatusOnSave);
+        initialLeaveRequestAttributes,
+        vm.request.attributes()
+      ) || (vm.canManage && vm.newStatusOnSave);
     }
 
     /**
@@ -500,6 +530,9 @@ define([
       );
 
       $scope.$on('$destroy', unsubscribeFromEvents);
+      $scope.$on('LeaveRequestPopup::addTab', function (event, tab) {
+        tabs.push(tab);
+      });
     }
 
     /**
@@ -749,21 +782,23 @@ define([
      * @return {Array} of filtered absence types for given entitlements
      */
     function mapAbsenceTypesWithBalance (absenceTypes, entitlements) {
-      var absenceType;
+      var entitlement;
 
-      return entitlements.map(function (entitlementItem) {
-        absenceType = _.find(absenceTypes, function (absenceTypeItem) {
-          return absenceTypeItem.id === entitlementItem.type_id;
-        });
+      return _.compact(absenceTypes.map(function (absenceType) {
+        entitlement = _.find(entitlements, { type_id: absenceType.id });
+
+        if (!entitlement) {
+          return;
+        }
 
         return {
-          id: entitlementItem.type_id,
-          title: absenceType.title + ' ( ' + entitlementItem.remainder.current + ' ) ',
-          remainder: entitlementItem.remainder.current,
+          id: entitlement.type_id,
+          title: absenceType.title + ' ( ' + entitlement.remainder.current + ' ) ',
+          remainder: entitlement.remainder.current,
           allow_overuse: absenceType.allow_overuse,
           calculation_unit_name: absenceType.calculation_unit_name
         };
-      });
+      }));
     }
 
     /**
@@ -778,24 +813,6 @@ define([
       vm.errors = [];
 
       vm.dismissModal();
-    }
-
-    /**
-     * Prompts to confirm the recalculation of the balance change via a dialog
-     */
-    function promptBalanceChangeRecalculation (balanceChange) {
-      dialog.open({
-        title: 'Recalculate Balance Change?',
-        copyCancel: 'Cancel',
-        copyConfirm: 'Yes',
-        classConfirm: 'btn-warning',
-        msg: 'The leave balance change has updated since ' +
-          'this leave request was created. ' +
-          'Do you want to recalculate the balance change?',
-        onConfirm: function () {
-          $rootScope.$emit('LeaveRequestPopup::recalculateBalanceChange');
-        }
-      });
     }
 
     /**
@@ -893,6 +910,7 @@ define([
       return vm.request.isValid()
         .then(checkIfBalanceChangeHasChanged)
         .then(decideIfBalanceChangeNeedsAForceRecalculation)
+        .then(submitAllTabs)
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
         })
@@ -904,6 +922,17 @@ define([
         .finally(function () {
           vm.submitting = false;
         });
+    }
+
+    /**
+     * Submits all tabs and returns a promise of the result.
+     *
+     * @return {Promise}
+     */
+    function submitAllTabs () {
+      return $q.all(tabs.map(function (tab) {
+        return tab.onBeforeSubmit && tab.onBeforeSubmit();
+      }));
     }
 
     /**

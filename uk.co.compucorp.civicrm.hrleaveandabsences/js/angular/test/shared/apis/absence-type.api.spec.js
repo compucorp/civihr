@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'common/moment',
-  'mocks/data/absence-type.data',
+  'leave-absences/mocks/data/absence-type.data',
   'leave-absences/shared/apis/absence-type.api'
 ], function (_, moment, mockData) {
   'use strict';
@@ -33,9 +33,7 @@ define([
       beforeEach(function () {
         $httpBackend.whenGET(/action=get&entity=AbsenceType/)
           .respond(mockData.all());
-      });
 
-      beforeEach(function () {
         totalAbsenceTypes = mockData.all().values.length;
         absenceTypePromise = AbsenceTypeAPI.all(params);
       });
@@ -45,8 +43,9 @@ define([
         $httpBackend.flush();
       });
 
-      it('sends GET request with correct parameters', function () {
-        expect(AbsenceTypeAPI.sendGET).toHaveBeenCalledWith('AbsenceType', 'get', {is_active: true});
+      it('sends GET request with correct parameters and default values', function () {
+        expect(AbsenceTypeAPI.sendGET).toHaveBeenCalledWith('AbsenceType', 'get',
+          { is_active: true, options: { sort: 'weight ASC' } });
       });
 
       it('with expected length', function () {
@@ -74,6 +73,43 @@ define([
           expect(firstAbsenceType.allow_accruals_request).toBeDefined();
           expect(firstAbsenceType.allow_accrue_in_the_past).toBeDefined();
           expect(firstAbsenceType.allow_carry_forward).toBeDefined();
+        });
+      });
+
+      describe('when passing "is_active" as false', function () {
+        beforeEach(function () {
+          AbsenceTypeAPI.all({ is_active: false });
+        });
+
+        it('sends GET request with correct parameters', function () {
+          expect(AbsenceTypeAPI.sendGET.calls.mostRecent().args[2])
+            .toEqual(jasmine.objectContaining({ is_active: false }))
+        });
+      });
+
+      describe('when overriding "sort" option', function () {
+        beforeEach(function () {
+          AbsenceTypeAPI.all({ options: { sort: 'title' } });
+        });
+
+        it('overrides the default "sort" option value', function () {
+          expect(AbsenceTypeAPI.sendGET.calls.mostRecent().args[2])
+            .toEqual(jasmine.objectContaining({
+              options: { sort: 'title' }
+            }))
+        });
+      });
+
+      describe('when passing other options', function () {
+        beforeEach(function () {
+          AbsenceTypeAPI.all({ options: { another: 'option' } });
+        });
+
+        it('merges options with default ones', function () {
+          expect(AbsenceTypeAPI.sendGET.calls.mostRecent().args[2])
+            .toEqual(jasmine.objectContaining({
+              options: { sort: 'weight ASC', another: 'option' }
+            }))
         });
       });
     });
