@@ -1157,6 +1157,21 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     return TRUE;
   }
 
+    /**
+     * Update CustomGroup, setting Contact_Length_Of_Service is_reserved to Yes
+     * @return bool
+     */
+  public function upgrade_1034() {
+      $result = civicrm_api3('CustomGroup', 'get', [
+          'sequential' => 1,
+          'return' => ["id"],
+          'name' => "Contact_Length_Of_Service",
+          'api.CustomGroup.create' => ['id' => "\$value.id", 'is_reserved' => 0],
+      ]);
+
+      return true;
+  }
+
   /**
    * Removes the "Pension Type" item from the
    *  "Administer -> Customize Data and Screens -> Dropdowns" menu

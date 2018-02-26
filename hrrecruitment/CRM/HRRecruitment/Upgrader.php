@@ -49,4 +49,19 @@ class CRM_HRRecruitment_Upgrader extends CRM_HRRecruitment_Upgrader_Base {
 
     return TRUE;
   }
+
+    /**
+     * Upgrade CustomGroup, setting Application, application_case and Evaluation_fields names to is_reserved Yes
+     * @return bool
+     */
+  public function upgrade_1403() {
+      $result = civicrm_api3('CustomGroup', 'get', array(
+          'sequential' => 1,
+          'return' => array("id"),
+          'name' => array('IN' => array("Application", "application_case", "Evaluation_fields")),
+          'api.CustomGroup.create' => array('id' => "\$value.id", 'is_reserved' => 0),
+      ));
+
+      return true;
+  }
 }
