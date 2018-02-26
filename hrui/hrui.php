@@ -275,7 +275,7 @@ function hrui_civicrm_install() {
 
   // get a list of all tab options
   $options = CRM_Core_OptionGroup::values('contact_view_options', TRUE, FALSE);
-  $tabsToUnset = array($options['Activities'], $options['Tags']);
+  $tabsToUnset = array($options['Tags']);
 
   // get tab options from DB
   $options = hrui_getViewOptionsSetting();

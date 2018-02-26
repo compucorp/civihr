@@ -7,14 +7,9 @@ define([
 
   angular.module('access-rights.config', []).config(config);
 
-  config.$inject = ['$locationProvider', '$httpProvider'];
+  config.$inject = ['$httpProvider'];
 
-  function config ($locationProvider, $httpProvider) {
-    $locationProvider.html5Mode({
-      enabled: true,
-      requireBase: false
-    });
-
+  function config ($httpProvider) {
     $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
   }
 });

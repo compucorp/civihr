@@ -436,6 +436,13 @@ def listCivihrExtensions() {
       folder: 'org.civicrm.bootstrapcivihr',
       hasJSTests: false,
       hasPHPTests: false
+    ],
+    hrcontactactionsmenu: [
+      name: 'Contact Actions Menu',
+      folder: 'uk.co.compucorp.civicrm.hrcontactactionsmenu',
+      hasJSTests: false,
+      hasJSPackages: false,
+      hasPHPTests: true
     ]
   ]
 }

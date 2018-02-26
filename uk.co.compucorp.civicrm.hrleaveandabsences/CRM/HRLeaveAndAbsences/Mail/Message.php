@@ -7,8 +7,6 @@ use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotific
 
 class CRM_HRLeaveAndAbsences_Mail_Message {
 
-  use CRM_HRLeaveAndAbsences_Service_SettingsManagerTrait;
-
   /**
    * @var array
    */
@@ -30,17 +28,25 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
   private $requestTemplateFactory;
 
   /**
+   * @var \CRM_HRLeaveAndAbsences_Service_LeaveManager
+   */
+  private $leaveManagerService;
+
+  /**
    * CRM_HRLeaveAndAbsences_Mail_Message constructor.
    *
    * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
    * @param \CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate $requestTemplateFactory
+   * @param \CRM_HRLeaveAndAbsences_Service_LeaveManager $leaveManagerService
    */
   public function __construct(
     LeaveRequest $leaveRequest,
-    RequestNotificationTemplateFactory $requestTemplateFactory
+    RequestNotificationTemplateFactory $requestTemplateFactory,
+    $leaveManagerService
   ) {
     $this->leaveRequest = $leaveRequest;
     $this->requestTemplateFactory = $requestTemplateFactory;
+    $this->leaveManagerService = $leaveManagerService;
   }
 
   /**
@@ -172,35 +178,9 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
    *   An array of contact IDs of leave approvers for the current leave request
    */
   private function getLeaveApprovers() {
-    $leaveApproverRelationships = $this->getLeaveApproverRelationshipsTypes();
-
-    if (!$leaveApproverRelationships) {
-      return [];
-    }
-
-    $relationshipTable = CRM_Contact_BAO_Relationship::getTableName();
-    $relationshipTypeTable = CRM_Contact_BAO_RelationshipType::getTableName();
-    $today = date('Y-m-d');
-
-    $query = "
-      SELECT r.contact_id_b
-      FROM {$relationshipTable} r
-      LEFT JOIN {$relationshipTypeTable} rt ON rt.id = r.relationship_type_id
-      WHERE r.is_active = 1 AND rt.is_active = 1
-      AND rt.id IN(" . implode(',', $leaveApproverRelationships) . ")
-      AND r.contact_id_a = {$this->leaveRequest->contact_id}
-      AND (r.start_date IS NULL OR r.start_date <= '$today')
-      AND (r.end_date IS NULL OR r.end_date >= '$today')
-    ";
-
-    $result = CRM_Core_DAO::executeQuery($query);
-    $leaveApprovers = [];
-
-    while($result->fetch()) {
-      $leaveApprovers[] = $result->contact_id_b;
-    }
-
-    return $leaveApprovers;
+    $leaveApprovers = $this->leaveManagerService->getLeaveApproversForContact($this->leaveRequest->contact_id);
+    
+    return array_keys($leaveApprovers);
   }
 
   /**
