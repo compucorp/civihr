@@ -63,7 +63,7 @@ class CRM_HRContactActionsMenu_Component_UserInformationLinkItem implements Acti
     return sprintf(
       $userInformationMarkup,
       $this->cmsUserPath->getEditAccountPath(),
-      $this->contactData['cmsId'] . ' ' . $this->contactData['name']
+      $this->contactData['name']
     );
   }
 }
