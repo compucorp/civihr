@@ -31,7 +31,7 @@ class CRM_HRContactActionsMenu_Component_UserRoleItem implements ActionsGroupIte
    * @return string
    */
   public function render() {
-    $roles = implode(', ', $this->cmsUserRole->getRoles());
+    $roles = implode(', ', $this->cmsUserRole->getRoles(TRUE));
     $userPath = $this->cmsUserPath->getEditAccountPath();
 
     $userRolesMarkup = '
