@@ -406,13 +406,20 @@ define([
      * @return {Boolean}
      */
     function hasContractDateChanged (dateName) {
-      var originalDate = entity.details[dateName];
-      var currentDate = $scope.entity.details[dateName];
-      var originalDateIsEmptyAndCurrentIsNot = _.isEmpty(originalDate) && !_.isEmpty(currentDate);
-      var currentDateIsDifferentFromOriginal = moment.isDate(currentDate) &&
-        !moment.utc(originalDate).isSame(moment.utc(currentDate), 'day');
+      var currentDate, currentDateIsDifferentFromOriginal, originalDate,
+        oneisEmptyAndTheOtherIsNot;
 
-      return originalDateIsEmptyAndCurrentIsNot || currentDateIsDifferentFromOriginal;
+      originalDate = entity.details[dateName];
+      currentDate = $scope.entity.details[dateName] !== ''
+        ? $scope.entity.details[dateName]
+        : null;
+
+      oneisEmptyAndTheOtherIsNot = (currentDate === null || originalDate === null) &&
+        currentDate !== originalDate;
+      currentDateIsDifferentFromOriginal = moment.isDate(currentDate) &&
+        !moment(originalDate).isSame(moment(currentDate), 'day');
+
+      return oneisEmptyAndTheOtherIsNot || currentDateIsDifferentFromOriginal;
     }
 
     /**

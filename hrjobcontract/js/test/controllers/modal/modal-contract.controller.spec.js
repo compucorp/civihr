@@ -227,6 +227,23 @@ define([
       });
     });
 
+    describe('when closing the modal after removing the period end date', function () {
+      beforeEach(function () {
+        MockContract.contractEntity.details.period_end_date = moment().format('YYYY-MM-DD');
+        makeController();
+        $scope.entity.details.period_end_date = '';
+
+        $scope.save();
+        $scope.$digest();
+      });
+
+      it('returns a "have entitlement fields changed" variable set to true', function () {
+        expect($uibModalInstanceMock.close).toHaveBeenCalledWith(jasmine.objectContaining({
+          haveEntitlementFieldsChanged: true
+        }));
+      });
+    });
+
     describe('when closing the modal and entitlement fields did not change', function () {
       beforeEach(function () {
         $scope.save();
