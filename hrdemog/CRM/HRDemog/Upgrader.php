@@ -162,17 +162,20 @@ class CRM_HRDemog_Upgrader extends CRM_HRDemog_Upgrader_Base {
     return TRUE;
   }
 
-    /**
-     * Upgrade CustomGroup, setting Extended_Demographics is_reserved value to YES
-     */
+  /**
+   * Upgrade CustomGroup, setting Extended_Demographics is_reserved value to YES
+   *
+   * @return bool
+   */
   public function upgrade_1401() {
-      $result = civicrm_api3('CustomGroup', 'get', [
-          'sequential' => 1,
-          'return' => ["id"],
-          'name' => "Extended_Demographics",
-          'api.CustomGroup.create' => ['id' => "\$value.id", 'is_reserved' => 0],
-      ]);
+    civicrm_api3('CustomGroup', 'get', [
+      'sequential' => 1,
+      'return' => ['id'],
+      'name' => 'Extended_Demographics',
+      'api.CustomGroup.create' => ['id' => '\$value.id', 'is_reserved' => 1],
+    ]);
 
-      return true;
+    return TRUE;
   }
+
 }
