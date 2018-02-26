@@ -487,9 +487,8 @@ define([
      * @return {String} amount of hours, eg. '7.5'
      */
     function getTimeDifferenceInHours (timeFrom, timeTo) {
-      return (getMomentDateWithGivenTime(timeTo)
-        .diff(getMomentDateWithGivenTime(timeFrom), 'minutes') / 60)
-        .toString();
+      return moment.duration(timeTo)
+        .subtract(moment.duration(timeFrom)).asHours().toString();
     }
 
     /**
