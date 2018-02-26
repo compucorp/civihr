@@ -47,7 +47,7 @@ class CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroup {
     $actionsGroup->addItem($this->getRecordSicknessButton());
     $actionsGroup->addItem($this->getRecordOvertimeButton());
     $actionsGroup->addItem(new GroupSeparatorItem());
-    $actionsGroup->addItem($this->getViewEntitlementsButton());
+    $actionsGroup->addItem($this->getViewReportButton());
     $actionsGroup->addItem(new GroupSeparatorItem());
 
     $leaveApprovers = $this->getLeaveApprovers();
@@ -67,13 +67,13 @@ class CRM_HRLeaveAndAbsences_Helper_ContactActionsMenu_LeaveActionGroup {
   }
 
   /**
-   * Gets the View Entitlement button
+   * Gets the View Report button
    *
    * @return ActionsGroupButtonItem
    */
-  private function getViewEntitlementsButton() {
+  private function getViewReportButton() {
     $params = [
-      'label' => 'View Entitlements',
+      'label' => 'View Report',
       'class' => 'btn-primary-outline',
       'icon' => 'fa-search',
       'url' => $this->getLeaveTabUrl()
