@@ -318,10 +318,70 @@ define([
           });
         });
 
-        describe('when custom deductions are more than allowed', function () {
+        describe('when custom deductions are exceeding the allowed values', function () {
           var workDayMaxPossibleDeductionFrom, workDayMaxPossibleDeductionTo;
 
-          beforeEach(function () {
+          describe('when only "from" deduction is out of bounds', function () {
+            beforeEach(function () {
+              instance.from_date_amount = 8888;
+              instance.to_date_amount = 0.25;
+
+              runCalculateBalanceChange();
+            });
+
+            it('reduces "from" deduction to the allowed value', function () {
+              expect(_.first(balanceChange.breakdown).amount).toBe(
+                workDayMaxPossibleDeductionFrom);
+            });
+
+            it('leaves "to" deduction as is', function () {
+              expect(_.last(balanceChange.breakdown).amount).toBe(
+                instance.to_date_amount);
+            });
+          });
+
+          describe('when only "to" deduction is out of bounds', function () {
+            beforeEach(function () {
+              instance.from_date_amount = 0.25;
+              instance.to_date_amount = 8888;
+
+              runCalculateBalanceChange();
+            });
+
+            it('leaves "from" deduction as is', function () {
+              expect(_.first(balanceChange.breakdown).amount).toBe(
+                instance.from_date_amount);
+            });
+
+            it('reduces "to" deduction to the allowed value', function () {
+              expect(_.last(balanceChange.breakdown).amount).toBe(
+                workDayMaxPossibleDeductionTo);
+            });
+          });
+
+          describe('when both "from" and "to" deductions are out of bounds', function () {
+            beforeEach(function () {
+              instance.from_date_amount = 8888;
+              instance.to_date_amount = 8888;
+
+              runCalculateBalanceChange();
+            });
+
+            it('reduces "from" deduction to the allowed value', function () {
+              expect(_.first(balanceChange.breakdown).amount).toBe(
+                workDayMaxPossibleDeductionFrom);
+            });
+
+            it('reduces "to" deduction to the allowed value', function () {
+              expect(_.last(balanceChange.breakdown).amount).toBe(
+                workDayMaxPossibleDeductionTo);
+            });
+          });
+
+          /**
+           * Sets maximum possible deductions and runs the balance change calculation
+           */
+          function runCalculateBalanceChange () {
             var workDayFrom = leaveRequestMockData.workDayForDate().values;
             var workDayTo = leaveRequestMockData.workDayForDate().values;
 
@@ -331,23 +391,12 @@ define([
             workDayMaxPossibleDeductionTo =
               moment.duration(workDayTo.time_to)
                 .subtract(moment.duration(workDayTo.time_from)).asHours();
-            instance.from_date_amount = 2000;
-            instance.to_date_amount = 1500;
+
             calculateBalanceChange.then(function (_balanceChange_) {
               balanceChange = _balanceChange_;
             });
             $rootScope.$digest();
-          });
-
-          it('reduces "from" day amount to the allowed value', function () {
-            expect(_.first(balanceChange.breakdown).amount).toBe(
-              workDayMaxPossibleDeductionFrom);
-          });
-
-          it('reduces "to" day amount to the allowed value', function () {
-            expect(_.last(balanceChange.breakdown).amount).toBe(
-              workDayMaxPossibleDeductionTo);
-          });
+          }
         });
 
         describe('when days that deduction are set are not working days', function () {

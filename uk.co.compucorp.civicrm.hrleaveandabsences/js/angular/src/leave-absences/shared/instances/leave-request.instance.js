@@ -88,11 +88,11 @@ define([
       }
 
       /**
-       * Calculates time difference in hours
+       * Calculates the maximum possible deduction
+       * for the specified working day based on the from and end times
        *
-       * @param  {String} timeFrom in HH:mm format
-       * @param  {String} timeTo in HH:mm format
-       * @return {String} amount of hours, eg. '7.5'
+       * @param  {Object} workDay
+       * @return {Number} amount of hours, eg. 7.5
        */
       function getMaxPossibleDeduction (workDay) {
         return moment.duration(workDay.time_to)
@@ -144,8 +144,8 @@ define([
             }
 
             balanceObject.amount = _.reduce(balanceObject.breakdown,
-              function (balanceObject, day) {
-                return balanceObject - day.amount;
+              function (totalAmount, day) {
+                return totalAmount - day.amount;
               }, 0);
 
             return balanceObject;

@@ -474,11 +474,11 @@ define([
      *
      * @param  {String} timeFrom in HH:mm format
      * @param  {String} timeTo in HH:mm format
-     * @return {String} amount of hours, eg. '7.5'
+     * @return {Number} amount of hours, eg. 7.5
      */
     function getTimeDifferenceInHours (timeFrom, timeTo) {
       return moment.duration(timeTo)
-        .subtract(moment.duration(timeFrom)).asHours().toString();
+        .subtract(moment.duration(timeFrom)).asHours();
     }
 
     /**
@@ -576,10 +576,13 @@ define([
     function initTime (dateType) {
       var time = moment(vm.request[dateType + '_date']).format('HH:mm');
       var timeObject = vm.uiOptions.times[dateType];
+      var isBeforeWorkPatternRange = getTimeDifferenceInHours(timeObject.min, time) <= 0;
+      var isAfterWorkPatternRange = getTimeDifferenceInHours(timeObject.max, time) >= 0;
 
-      if (moment.duration(time).subtract(moment.duration(timeObject.min)).asHours() <= 0 ||
-        moment.duration(time).subtract(moment.duration(timeObject.max)).asHours() >= 0) {
-        return timeObject[dateType === 'from' ? 'min' : 'max'];
+      if (dateType === 'from' && isBeforeWorkPatternRange) {
+        time = timeObject.min;
+      } else if (dateType === 'to' && isAfterWorkPatternRange) {
+        time = timeObject.max;
       }
 
       vm.uiOptions.times[dateType].time = time;
@@ -914,7 +917,9 @@ define([
       var timeObject = uiOptions.times[dateType];
       var timeFrom = uiOptions.multipleDays && dateType === 'to' ? timeObject.min : uiOptions.times.from.time;
       var timeTo = uiOptions.multipleDays && dateType === 'from' ? timeObject.max : uiOptions.times.to.time;
-      var deduction = workDays[dateType].number_of_hours ? getTimeDifferenceInHours(timeFrom, timeTo) : '0';
+      var deduction = workDays[dateType].number_of_hours
+        ? getTimeDifferenceInHours(timeFrom, timeTo).toString()
+        : '0';
 
       timeObject.maxAmount = deduction;
       (setDefaultValue) && (timeObject.amount = timeObject.maxAmount);
