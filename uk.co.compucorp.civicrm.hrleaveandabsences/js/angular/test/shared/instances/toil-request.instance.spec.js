@@ -4,6 +4,7 @@ define([
   'leave-absences/mocks/data/leave-request.data',
   'leave-absences/mocks/apis/leave-request-api-mock',
   'common/mocks/services/file-uploader-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
   'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/shared/instances/toil-request.instance'
 ], function (requestMockData) {
@@ -12,11 +13,14 @@ define([
   describe('TOILRequestInstance', function () {
     var $provide, TOILRequestInstance, instance, LeaveRequestAPI;
 
-    beforeEach(module('leave-absences.models.instances', 'leave-absences.mocks', 'common.mocks', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(module('leave-absences.models.instances', 'leave-absences.mocks',
+      'common.mocks', 'leave-absences.models', function (_$provide_) {
+        $provide = _$provide_;
+      }));
 
-    beforeEach(inject(function (_LeaveRequestAPIMock_, _OptionGroupAPIMock_, _FileUploaderMock_) {
+    beforeEach(inject(function (_AbsenceTypeAPIMock_, _LeaveRequestAPIMock_,
+      _OptionGroupAPIMock_, _FileUploaderMock_) {
+      $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
       $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
       $provide.value('OptionGroup', _OptionGroupAPIMock_);
       $provide.value('FileUploader', _FileUploaderMock_);

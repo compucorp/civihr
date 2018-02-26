@@ -2,7 +2,9 @@
 
 define([
   'common/lodash',
+  'common/modules/angular-date',
   'leave-absences/shared/modules/services',
+  'common/services/angular-date/date-format',
   'common/services/notification.service',
   'leave-absences/shared/controllers/request.controller'
 ], function (_, services) {
@@ -46,8 +48,9 @@ define([
      * @param {String} selectedContactId - Contact ID for the contact dropdown
      *                                     when the manager/admin is opening the request
      * @param {Boolean} isSelfRecord - True If the owner is opening the leave request
+     * @param {Boolean} forceRecalculateBalanceChange optional
      */
-    function openModal (leaveRequest, leaveType, selectedContactId, isSelfRecord) {
+    function openModal (leaveRequest, leaveType, selectedContactId, isSelfRecord, forceRecalculateBalanceChange) {
       $modal.open({
         appendTo: $rootElement.children().eq(0),
         templateUrl: sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup.html',
@@ -60,7 +63,8 @@ define([
               leaveType: leaveType,
               leaveRequest: leaveRequest,
               selectedContactId: selectedContactId,
-              isSelfRecord: isSelfRecord
+              isSelfRecord: isSelfRecord,
+              forceRecalculateBalanceChange: forceRecalculateBalanceChange
             };
           },
           // to set HR_settings DateFormat
@@ -75,7 +79,7 @@ define([
     /**
      * Open leave request popup for a given ID
      *
-     * @param {String} leaveRequestID
+     * @param  {String}  leaveRequestID
      * @return {Promise}
      */
     function openModalByID (leaveRequestID) {
