@@ -220,7 +220,7 @@ define([
         $scope.$digest();
       });
 
-      it('returns a "have entitlement fields changed" variable set to true', function () {
+      it('closes the modal and tells it that the entitlement fields have changed', function () {
         expect($uibModalInstanceMock.close).toHaveBeenCalledWith(jasmine.objectContaining({
           haveEntitlementFieldsChanged: true
         }));
@@ -231,13 +231,14 @@ define([
       beforeEach(function () {
         MockContract.contractEntity.details.period_end_date = moment().format('YYYY-MM-DD');
         makeController();
+
         $scope.entity.details.period_end_date = '';
 
         $scope.save();
         $scope.$digest();
       });
 
-      it('returns a "have entitlement fields changed" variable set to true', function () {
+      it('closes the modal and tells it that the entitlement fields have changed', function () {
         expect($uibModalInstanceMock.close).toHaveBeenCalledWith(jasmine.objectContaining({
           haveEntitlementFieldsChanged: true
         }));
@@ -250,7 +251,7 @@ define([
         $scope.$digest();
       });
 
-      it('returns a "have entitlement fields changed" variable set to false', function () {
+      it('closes the modal and tells it that the entitlement fields have not changed', function () {
         expect($uibModalInstanceMock.close).toHaveBeenCalledWith(jasmine.objectContaining({
           haveEntitlementFieldsChanged: false
         }));

@@ -407,19 +407,17 @@ define([
      */
     function hasContractDateChanged (dateName) {
       var currentDate, currentDateIsDifferentFromOriginal, originalDate,
-        oneisEmptyAndTheOtherIsNot;
+        oneDateIsEmptyAndOtherIsNot;
 
       originalDate = entity.details[dateName];
-      currentDate = $scope.entity.details[dateName] !== ''
-        ? $scope.entity.details[dateName]
-        : null;
+      currentDate = $scope.entity.details[dateName] || null;
 
-      oneisEmptyAndTheOtherIsNot = (currentDate === null || originalDate === null) &&
+      oneDateIsEmptyAndOtherIsNot = (!currentDate || !originalDate) &&
         currentDate !== originalDate;
       currentDateIsDifferentFromOriginal = moment.isDate(currentDate) &&
         !moment(originalDate).isSame(moment(currentDate), 'day');
 
-      return oneisEmptyAndTheOtherIsNot || currentDateIsDifferentFromOriginal;
+      return oneDateIsEmptyAndOtherIsNot || currentDateIsDifferentFromOriginal;
     }
 
     /**
