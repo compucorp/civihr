@@ -691,7 +691,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * This method checks that the number of days for the Leave Request
+   * This method checks that the number of working days for the Leave Request
    * is not greater than the max_consecutive_leave_days for the absence type
    *
    * @param array $params
@@ -701,14 +701,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params, $absenceType) {
-    $fromDate = new DateTime($params['from_date']);
-    $toDate = new DateTime($params['to_date']);
-
-    $interval = $toDate->diff($fromDate);
-    $intervalInDays = $interval->format("%a");
+    $leaveDays = self::getNumberOfWorkingDaysForLeaveRequest($params);
     $maxConsecutiveLeaveDays = $absenceType->max_consecutive_leave_days;
 
-    if (!empty($maxConsecutiveLeaveDays) && $intervalInDays > $maxConsecutiveLeaveDays) {
+    if (!empty($maxConsecutiveLeaveDays) && $leaveDays > $maxConsecutiveLeaveDays) {
       throw new InvalidLeaveRequestException(
         'Only a maximum '. round($maxConsecutiveLeaveDays, 1) .' days leave can be taken in one request. Please modify days of this request',
         'leave_request_days_greater_than_max_consecutive_days',
@@ -1439,5 +1435,34 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $currentLeaveRequest = LeaveRequest::findById($leaveRequestID);
 
     return AbsenceType::findById($currentLeaveRequest->type_id);
+  }
+
+  /**
+   * Get the number of working days for a leave request, Days with
+   * balance change of zero or that evaluates to false are either non
+   * working day, weekend or public holidays.
+   * The days for which the balance amounts are not zero are equal
+   * to the number of working days.
+   *
+   * @param array $params
+   *
+   * @return int
+   */
+  private static function getNumberOfWorkingDaysForLeaveRequest($params) {
+    $fromDate = new DateTime($params['from_date']);
+    $toDate = new DateTime($params['to_date']);
+    $balanceDetails = self::calculateBalanceChange(
+      $params['contact_id'],
+      $fromDate,
+      $toDate,
+      $params['type_id'],
+      !empty($params['from_date_type']) ? $params['from_date_type'] : null,
+      !empty($params['to_date_type']) ? $params['to_date_type'] : null
+    );
+
+    $balanceAmounts = array_column($balanceDetails['breakdown'], 'amount');
+    $balanceAmounts = array_filter($balanceAmounts);
+
+    return count($balanceAmounts);
   }
 }
