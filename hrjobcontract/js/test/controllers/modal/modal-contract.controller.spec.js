@@ -258,6 +258,21 @@ define([
       });
     });
 
+    describe('when closing the modal and period end date was empty but did not change', function () {
+      beforeEach(function () {
+        MockContract.contractEntity.details.period_end_date = '';
+        makeController();
+        $scope.save();
+        $scope.$digest();
+      });
+
+      it('closes the modal and tells it that the entitlement fields have not changed', function () {
+        expect($uibModalInstanceMock.close).toHaveBeenCalledWith(jasmine.objectContaining({
+          haveEntitlementFieldsChanged: false
+        }));
+      });
+    });
+
     describe('cancel', function () {
       describe('when the modal is on view mode', function () {
         beforeEach(function () {

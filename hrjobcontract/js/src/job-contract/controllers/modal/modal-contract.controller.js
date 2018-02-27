@@ -409,7 +409,7 @@ define([
       var currentDate, currentDateIsDifferentFromOriginal, originalDate,
         oneDateIsEmptyAndOtherIsNot;
 
-      originalDate = entity.details[dateName];
+      originalDate = entity.details[dateName] || null;
       currentDate = $scope.entity.details[dateName] || null;
 
       oneDateIsEmptyAndOtherIsNot = (!currentDate || !originalDate) &&
