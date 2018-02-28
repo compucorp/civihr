@@ -88,21 +88,21 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
   }
 
   public function testMovingNestedItemsWillChangeTheirPositions() {
-    $nestedName = 'Activity Types';
-    $nestedParent = 'Customize Data and Screens';
+    $itemName = 'Activity Types';
+    $originalParent = 'Customize Data and Screens';
     $moveAfter = 'Membership Status Rules';
     $targetParent = 'CiviMember';
 
     $menu = $this->getSampleMenu();
-    NavigationMenuHelper::relocateAfter($menu, $nestedName, $moveAfter);
+    NavigationMenuHelper::relocateAfter($menu, $itemName, $moveAfter);
 
-    $origParent = NavigationMenuHelper::findMenuItemByName($menu, $nestedParent);
+    $origParent = NavigationMenuHelper::findMenuItemByName($menu, $originalParent);
     $newParent = NavigationMenuHelper::findMenuItemByName($menu, $targetParent);
 
     $origChildren = $origParent['child'];
     $newChildren = $newParent['child'];
-    $finderFunc = function ($child) use ($nestedName) {
-      return $child['attributes']['name'] === $nestedName;
+    $finderFunc = function ($child) use ($itemName) {
+      return $child['attributes']['name'] === $itemName;
     };
     $matchingOriginalChildren = array_filter($origChildren, $finderFunc);
     $matchingNewChildren = array_filter($newChildren, $finderFunc);
@@ -115,7 +115,7 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
     }, $newChildren);
 
     $moveAfterPosition = array_search($moveAfter, $newChildrenNames);
-    $movedItemPosition = array_search($nestedName, $newChildrenNames);
+    $movedItemPosition = array_search($itemName, $newChildrenNames);
     $this->assertEquals($moveAfterPosition + 1, $movedItemPosition);
   }
 
@@ -125,8 +125,8 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $childElement = 'Custom Fields';
     NavigationMenuHelper::remove($menu, $rootElement);
 
-    $foundRoot = NavigationMenuHelper::findParentItemName($menu, $rootElement);
-    $foundChild = NavigationMenuHelper::findParentItemName($menu, $childElement);
+    $foundRoot = NavigationMenuHelper::findMenuItemByName($menu, $rootElement);
+    $foundChild = NavigationMenuHelper::findMenuItemByName($menu, $childElement);
     $this->assertNull($foundRoot);
     $this->assertNull($foundChild);
   }
