@@ -339,20 +339,20 @@ define([
     });
 
     describe('Saving the change revision', function () {
-      var changeReason = 123;
+      var changeReasonId = 123;
 
       beforeEach(function () {
         mockUIBModal({
           ModalDialogController: 'change',
           ModalChangeReasonController: {
-            reasonId: changeReason,
+            reasonId: changeReasonId,
             date: today
           }
         });
         makeController({ action: 'change' });
       });
 
-      describe('normal behaviour', function () {
+      describe('basic tests', function () {
         beforeEach(function () {
           $scope.save();
           $scope.$digest();
@@ -426,7 +426,7 @@ define([
           it('saves the contract revision', function () {
             expect(contractService.saveRevision).toHaveBeenCalledWith({
               id: revisionId,
-              change_reason: changeReason,
+              change_reason: changeReasonId,
               effective_date: today
             });
           });
