@@ -1,0 +1,4348 @@
+{
+  "1": {
+    "attributes": {
+      "label": "Home",
+      "name": "Home",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "icon": null,
+      "permission": null,
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "1",
+      "active": "1"
+    }
+  },
+  "2": {
+    "attributes": {
+      "label": "Search",
+      "name": "Search...",
+      "url": null,
+      "icon": "crm-i fa-search",
+      "permission": null,
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "2",
+      "active": "1"
+    },
+    "child": {
+      "3": {
+        "attributes": {
+          "label": "Find Contacts",
+          "name": "Find Contacts",
+          "url": "civicrm/contact/search?reset=1",
+          "icon": null,
+          "permission": null,
+          "operator": "",
+          "separator": null,
+          "parentID": "2",
+          "navID": "3",
+          "active": "1"
+        }
+      },
+      "4": {
+        "attributes": {
+          "label": "Advanced Search",
+          "name": "Advanced Search",
+          "url": "civicrm/contact/search/advanced?reset=1",
+          "icon": null,
+          "permission": null,
+          "operator": "",
+          "separator": null,
+          "parentID": "2",
+          "navID": "4",
+          "active": "1"
+        }
+      },
+      "5": {
+        "attributes": {
+          "label": "Full-text Search",
+          "name": "Full-text Search",
+          "url": "civicrm/contact/search/custom?csid=15&reset=1",
+          "icon": null,
+          "permission": null,
+          "operator": "",
+          "separator": null,
+          "parentID": "2",
+          "navID": "5",
+          "active": "1"
+        }
+      },
+      "6": {
+        "attributes": {
+          "label": "Search Builder",
+          "name": "Search Builder",
+          "url": "civicrm/contact/search/builder?reset=1",
+          "icon": null,
+          "permission": null,
+          "operator": "",
+          "separator": "1",
+          "parentID": "2",
+          "navID": "6",
+          "active": "1"
+        }
+      },
+      "7": {
+        "attributes": {
+          "label": "Find Cases",
+          "name": "Find Cases",
+          "url": "civicrm/case/search?reset=1",
+          "icon": null,
+          "permission": "access my cases and activities,access all cases and activities",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "2",
+          "navID": "7",
+          "active": "1"
+        }
+      },
+      "8": {
+        "attributes": {
+          "label": "Find Contributions",
+          "name": "Find Contributions",
+          "url": "civicrm/contribute/search?reset=1",
+          "icon": null,
+          "permission": "access CiviContribute",
+          "operator": "",
+          "separator": null,
+          "parentID": "2",
+          "navID": "8",
+          "active": "1"
+        }
+      },
+      "9": {
+        "attributes": {
+          "label": "Find Mailings",
+          "name": "Find Mailings",
+          "url": "civicrm/mailing?reset=1",
+          "icon": null,
+          "permission": "access CiviMail",
+          "operator": "",
+          "separator": null,
+          "parentID": "2",
+          "navID": "9",
+          "active": "1"
+        }
+      },
+      "10": {
+        "attributes": {
+          "label": "Find Memberships",
+          "name": "Find Memberships",
+          "url": "civicrm/member/search?reset=1",
+          "icon": null,
+          "permission": "access CiviMember",
+          "operator": "",
+          "separator": null,
+          "parentID": "2",
+          "navID": "10",
+          "active": "1"
+        }
+      },
+      "11": {
+        "attributes": {
+          "label": "Find Participants",
+          "name": "Find Participants",
+          "url": "civicrm/event/search?reset=1",
+          "icon": null,
+          "permission": "access CiviEvent",
+          "operator": "",
+          "separator": null,
+          "parentID": "2",
+          "navID": "11",
+          "active": "1"
+        }
+      },
+      "12": {
+        "attributes": {
+          "label": "Find Pledges",
+          "name": "Find Pledges",
+          "url": "civicrm/pledge/search?reset=1",
+          "icon": null,
+          "permission": "access CiviPledge",
+          "operator": "",
+          "separator": null,
+          "parentID": "2",
+          "navID": "12",
+          "active": "1"
+        }
+      },
+      "13": {
+        "attributes": {
+          "label": "Find Activities",
+          "name": "Find Activities",
+          "url": "civicrm/activity/search?reset=1",
+          "icon": null,
+          "permission": null,
+          "operator": "",
+          "separator": "1",
+          "parentID": "2",
+          "navID": "13",
+          "active": "1"
+        }
+      },
+      "14": {
+        "attributes": {
+          "label": "Custom Searches",
+          "name": "Custom Searches",
+          "url": "civicrm/contact/search/custom/list?reset=1",
+          "icon": null,
+          "permission": null,
+          "operator": "",
+          "separator": null,
+          "parentID": "2",
+          "navID": "14",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "15": {
+    "attributes": {
+      "label": "Contacts",
+      "name": "Contacts",
+      "url": null,
+      "icon": "crm-i fa-users",
+      "permission": null,
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "15",
+      "active": "1"
+    },
+    "child": {
+      "16": {
+        "attributes": {
+          "label": "New Individual",
+          "name": "New Individual",
+          "url": "civicrm/contact/add?reset=1&ct=Individual",
+          "icon": null,
+          "permission": "add contacts",
+          "operator": "",
+          "separator": null,
+          "parentID": "15",
+          "navID": "16",
+          "active": "1"
+        }
+      },
+      "17": {
+        "attributes": {
+          "label": "New Household",
+          "name": "New Household",
+          "url": "civicrm/contact/add?reset=1&ct=Household",
+          "icon": null,
+          "permission": "add contacts",
+          "operator": "",
+          "separator": null,
+          "parentID": "15",
+          "navID": "17",
+          "active": "0"
+        }
+      },
+      "18": {
+        "attributes": {
+          "label": "New Organization",
+          "name": "New Organization",
+          "url": "civicrm/contact/add?reset=1&ct=Organization",
+          "icon": null,
+          "permission": "add contacts",
+          "operator": "",
+          "separator": "1",
+          "parentID": "15",
+          "navID": "18",
+          "active": "1"
+        },
+        "child": {
+          "265": {
+            "attributes": {
+              "label": "New Health Insurance Provider",
+              "name": "New Health_Insurance_Provider",
+              "url": "civicrm/contact/add?ct=Organization&cst=Health_Insurance_Provider&reset=1",
+              "icon": null,
+              "permission": "add contacts",
+              "operator": null,
+              "separator": "0",
+              "parentID": "18",
+              "navID": "265",
+              "active": "1"
+            }
+          },
+          "266": {
+            "attributes": {
+              "label": "New Life Insurance Provider",
+              "name": "New Life_Insurance_Provider",
+              "url": "civicrm/contact/add?ct=Organization&cst=Life_Insurance_Provider&reset=1",
+              "icon": null,
+              "permission": "add contacts",
+              "operator": null,
+              "separator": "0",
+              "parentID": "18",
+              "navID": "266",
+              "active": "1"
+            }
+          },
+          "282": {
+            "attributes": {
+              "label": "New Pension Provider",
+              "name": "New Pension_Provider",
+              "url": "civicrm/contact/add?ct=Organization&cst=Pension_Provider&reset=1",
+              "icon": null,
+              "permission": "add contacts",
+              "operator": null,
+              "separator": "0",
+              "parentID": "18",
+              "navID": "282",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "19": {
+        "attributes": {
+          "label": "Contact Reports",
+          "name": "Contact Reports",
+          "url": "civicrm/report/list?compid=99&reset=1",
+          "icon": null,
+          "permission": "access CiviReport",
+          "operator": "",
+          "separator": "1",
+          "parentID": "15",
+          "navID": "19",
+          "active": "1"
+        }
+      },
+      "20": {
+        "attributes": {
+          "label": "New Activity",
+          "name": "New Activity",
+          "url": "civicrm/activity?reset=1&action=add&context=standalone",
+          "icon": null,
+          "permission": null,
+          "operator": "",
+          "separator": null,
+          "parentID": "15",
+          "navID": "20",
+          "active": "1"
+        }
+      },
+      "21": {
+        "attributes": {
+          "label": "New Email",
+          "name": "New Email",
+          "url": "civicrm/activity/email/add?atype=3&action=add&reset=1&context=standalone",
+          "icon": null,
+          "permission": null,
+          "operator": "",
+          "separator": "1",
+          "parentID": "15",
+          "navID": "21",
+          "active": "1"
+        }
+      },
+      "22": {
+        "attributes": {
+          "label": "Import Contacts",
+          "name": "Import Contacts",
+          "url": "civicrm/import/contact?reset=1",
+          "icon": null,
+          "permission": "import contacts",
+          "operator": "",
+          "separator": null,
+          "parentID": "15",
+          "navID": "22",
+          "active": "1"
+        }
+      },
+      "23": {
+        "attributes": {
+          "label": "Import Activities",
+          "name": "Import Activities",
+          "url": "civicrm/import/activity?reset=1",
+          "icon": null,
+          "permission": "import contacts",
+          "operator": "",
+          "separator": "1",
+          "parentID": "15",
+          "navID": "23",
+          "active": "1"
+        }
+      },
+      "24": {
+        "attributes": {
+          "label": "New Group",
+          "name": "New Group",
+          "url": "civicrm/group/add?reset=1",
+          "icon": null,
+          "permission": "edit groups",
+          "operator": "",
+          "separator": null,
+          "parentID": "15",
+          "navID": "24",
+          "active": "1"
+        }
+      },
+      "25": {
+        "attributes": {
+          "label": "Manage Groups",
+          "name": "Manage Groups",
+          "url": "civicrm/group?reset=1",
+          "icon": null,
+          "permission": "access CiviCRM",
+          "operator": "",
+          "separator": "1",
+          "parentID": "15",
+          "navID": "25",
+          "active": "1"
+        }
+      },
+      "26": {
+        "attributes": {
+          "label": "New Tag",
+          "name": "New Tag",
+          "url": "civicrm/tag?reset=1&action=add",
+          "icon": null,
+          "permission": "manage tags",
+          "operator": "",
+          "separator": null,
+          "parentID": "15",
+          "navID": "26",
+          "active": "1"
+        }
+      },
+      "27": {
+        "attributes": {
+          "label": "Manage Tags (Categories)",
+          "name": "Manage Tags (Categories)",
+          "url": "civicrm/tag?reset=1",
+          "icon": null,
+          "permission": "manage tags",
+          "operator": "",
+          "separator": "1",
+          "parentID": "15",
+          "navID": "27",
+          "active": "1"
+        }
+      },
+      "28": {
+        "attributes": {
+          "label": "Find and Merge Duplicate Contacts",
+          "name": "Find and Merge Duplicate Contacts",
+          "url": "civicrm/contact/deduperules?reset=1",
+          "icon": null,
+          "permission": "administer dedupe rules,merge duplicate contacts",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "15",
+          "navID": "28",
+          "active": "1"
+        }
+      },
+      "280": {
+        "attributes": {
+          "label": "Import / Export",
+          "name": "import_export_job_contracts",
+          "url": null,
+          "icon": null,
+          "permission": "access HRJobs",
+          "operator": null,
+          "separator": null,
+          "parentID": "15",
+          "navID": "280",
+          "active": "1"
+        },
+        "child": {
+          "281": {
+            "attributes": {
+              "label": "Import Job Contracts",
+              "name": "import_job_contracts",
+              "url": "civicrm/job/import",
+              "icon": null,
+              "permission": "access HRJobs",
+              "operator": null,
+              "separator": "0",
+              "parentID": "280",
+              "navID": "281",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "302": {
+        "attributes": {
+          "label": "Import Custom Fields",
+          "name": "import_custom_fields",
+          "url": "civicrm/import/custom?reset=1",
+          "icon": null,
+          "permission": "access CiviCRM",
+          "operator": null,
+          "separator": null,
+          "parentID": "15",
+          "navID": "302",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "29": {
+    "attributes": {
+      "label": "Contributions",
+      "name": "Contributions",
+      "url": null,
+      "icon": null,
+      "permission": "access CiviContribute",
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "29",
+      "active": "1"
+    },
+    "child": {
+      "30": {
+        "attributes": {
+          "label": "Dashboard",
+          "name": "Dashboard",
+          "url": "civicrm/contribute?reset=1",
+          "icon": null,
+          "permission": "access CiviContribute",
+          "operator": "",
+          "separator": null,
+          "parentID": "29",
+          "navID": "30",
+          "active": "1"
+        }
+      },
+      "31": {
+        "attributes": {
+          "label": "New Contribution",
+          "name": "New Contribution",
+          "url": "civicrm/contribute/add?reset=1&action=add&context=standalone",
+          "icon": null,
+          "permission": "access CiviContribute,edit contributions",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "29",
+          "navID": "31",
+          "active": "1"
+        }
+      },
+      "32": {
+        "attributes": {
+          "label": "Find Contributions",
+          "name": "Find Contributions",
+          "url": "civicrm/contribute/search?reset=1",
+          "icon": null,
+          "permission": "access CiviContribute",
+          "operator": "",
+          "separator": null,
+          "parentID": "29",
+          "navID": "32",
+          "active": "1"
+        }
+      },
+      "33": {
+        "attributes": {
+          "label": "Contribution Reports",
+          "name": "Contribution Reports",
+          "url": "civicrm/report/list?compid=2&reset=1",
+          "icon": null,
+          "permission": "access CiviContribute",
+          "operator": "",
+          "separator": "1",
+          "parentID": "29",
+          "navID": "33",
+          "active": "1"
+        }
+      },
+      "34": {
+        "attributes": {
+          "label": "Import Contributions",
+          "name": "Import Contributions",
+          "url": "civicrm/contribute/import?reset=1",
+          "icon": null,
+          "permission": "access CiviContribute,edit contributions",
+          "operator": "AND",
+          "separator": "1",
+          "parentID": "29",
+          "navID": "34",
+          "active": "1"
+        }
+      },
+      "35": {
+        "attributes": {
+          "label": "Batch Data Entry",
+          "name": "Batch Data Entry",
+          "url": "civicrm/batch?reset=1",
+          "icon": null,
+          "permission": "access CiviContribute",
+          "operator": "",
+          "separator": null,
+          "parentID": "29",
+          "navID": "35",
+          "active": "1"
+        }
+      },
+      "36": {
+        "attributes": {
+          "label": "Pledges",
+          "name": "Pledges",
+          "url": null,
+          "icon": null,
+          "permission": "access CiviPledge",
+          "operator": "",
+          "separator": "1",
+          "parentID": "29",
+          "navID": "36",
+          "active": "1"
+        },
+        "child": {
+          "38": {
+            "attributes": {
+              "label": "Dashboard",
+              "name": "Dashboard",
+              "url": "civicrm/pledge?reset=1",
+              "icon": null,
+              "permission": "access CiviPledge",
+              "operator": "",
+              "separator": null,
+              "parentID": "36",
+              "navID": "38",
+              "active": "1"
+            }
+          },
+          "39": {
+            "attributes": {
+              "label": "New Pledge",
+              "name": "New Pledge",
+              "url": "civicrm/pledge/add?reset=1&action=add&context=standalone",
+              "icon": null,
+              "permission": "access CiviPledge,edit pledges",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "36",
+              "navID": "39",
+              "active": "1"
+            }
+          },
+          "40": {
+            "attributes": {
+              "label": "Find Pledges",
+              "name": "Find Pledges",
+              "url": "civicrm/pledge/search?reset=1",
+              "icon": null,
+              "permission": "access CiviPledge",
+              "operator": "",
+              "separator": null,
+              "parentID": "36",
+              "navID": "40",
+              "active": "1"
+            }
+          },
+          "41": {
+            "attributes": {
+              "label": "Pledge Reports",
+              "name": "Pledge Reports",
+              "url": "civicrm/report/list?compid=6&reset=1",
+              "icon": null,
+              "permission": "access CiviPledge",
+              "operator": "",
+              "separator": "0",
+              "parentID": "36",
+              "navID": "41",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "37": {
+        "attributes": {
+          "label": "Accounting Batches",
+          "name": "Accounting Batches",
+          "url": null,
+          "icon": null,
+          "permission": "view own manual batches,view all manual batches",
+          "operator": "OR",
+          "separator": "1",
+          "parentID": "29",
+          "navID": "37",
+          "active": "1"
+        },
+        "child": {
+          "48": {
+            "attributes": {
+              "label": "New Batch",
+              "name": "New Batch",
+              "url": "civicrm/financial/batch?reset=1&action=add",
+              "icon": null,
+              "permission": "create manual batch",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "37",
+              "navID": "48",
+              "active": "1"
+            }
+          },
+          "49": {
+            "attributes": {
+              "label": "Open Batches",
+              "name": "Open Batches",
+              "url": "civicrm/financial/financialbatches?reset=1&batchStatus=1",
+              "icon": null,
+              "permission": "view own manual batches,view all manual batches",
+              "operator": "OR",
+              "separator": null,
+              "parentID": "37",
+              "navID": "49",
+              "active": "1"
+            }
+          },
+          "50": {
+            "attributes": {
+              "label": "Closed Batches",
+              "name": "Closed Batches",
+              "url": "civicrm/financial/financialbatches?reset=1&batchStatus=2",
+              "icon": null,
+              "permission": "view own manual batches,view all manual batches",
+              "operator": "OR",
+              "separator": null,
+              "parentID": "37",
+              "navID": "50",
+              "active": "1"
+            }
+          },
+          "51": {
+            "attributes": {
+              "label": "Exported Batches",
+              "name": "Exported Batches",
+              "url": "civicrm/financial/financialbatches?reset=1&batchStatus=5",
+              "icon": null,
+              "permission": "view own manual batches,view all manual batches",
+              "operator": "OR",
+              "separator": null,
+              "parentID": "37",
+              "navID": "51",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "42": {
+        "attributes": {
+          "label": "New Contribution Page",
+          "name": "New Contribution Page",
+          "url": "civicrm/admin/contribute/add?reset=1&action=add",
+          "icon": null,
+          "permission": "access CiviContribute,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "29",
+          "navID": "42",
+          "active": "1"
+        }
+      },
+      "43": {
+        "attributes": {
+          "label": "Manage Contribution Pages",
+          "name": "Manage Contribution Pages",
+          "url": "civicrm/admin/contribute?reset=1",
+          "icon": null,
+          "permission": "access CiviContribute,administer CiviCRM",
+          "operator": "AND",
+          "separator": "1",
+          "parentID": "29",
+          "navID": "43",
+          "active": "1"
+        }
+      },
+      "44": {
+        "attributes": {
+          "label": "Personal Campaign Pages",
+          "name": "Personal Campaign Pages",
+          "url": "civicrm/admin/pcp?reset=1&page_type=contribute",
+          "icon": null,
+          "permission": "access CiviContribute,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "29",
+          "navID": "44",
+          "active": "1"
+        }
+      },
+      "45": {
+        "attributes": {
+          "label": "Premiums (Thank-you Gifts)",
+          "name": "Premiums",
+          "url": "civicrm/admin/contribute/managePremiums?reset=1",
+          "icon": null,
+          "permission": "access CiviContribute,administer CiviCRM",
+          "operator": "AND",
+          "separator": "1",
+          "parentID": "29",
+          "navID": "45",
+          "active": "1"
+        }
+      },
+      "46": {
+        "attributes": {
+          "label": "New Price Set",
+          "name": "New Price Set",
+          "url": "civicrm/admin/price?reset=1&action=add",
+          "icon": null,
+          "permission": "access CiviContribute,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "29",
+          "navID": "46",
+          "active": "1"
+        }
+      },
+      "47": {
+        "attributes": {
+          "label": "Manage Price Sets",
+          "name": "Manage Price Sets",
+          "url": "civicrm/admin/price?reset=1",
+          "icon": null,
+          "permission": "access CiviContribute,administer CiviCRM",
+          "operator": "AND",
+          "separator": "1",
+          "parentID": "29",
+          "navID": "47",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "52": {
+    "attributes": {
+      "label": "Events",
+      "name": "Events",
+      "url": null,
+      "icon": null,
+      "permission": "access CiviEvent",
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "52",
+      "active": "1"
+    },
+    "child": {
+      "53": {
+        "attributes": {
+          "label": "Dashboard",
+          "name": "CiviEvent Dashboard",
+          "url": "civicrm/event?reset=1",
+          "icon": null,
+          "permission": "access CiviEvent",
+          "operator": "",
+          "separator": null,
+          "parentID": "52",
+          "navID": "53",
+          "active": "1"
+        }
+      },
+      "54": {
+        "attributes": {
+          "label": "Register Event Participant",
+          "name": "Register Event Participant",
+          "url": "civicrm/participant/add?reset=1&action=add&context=standalone",
+          "icon": null,
+          "permission": "access CiviEvent,edit event participants",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "52",
+          "navID": "54",
+          "active": "1"
+        }
+      },
+      "55": {
+        "attributes": {
+          "label": "Find Participants",
+          "name": "Find Participants",
+          "url": "civicrm/event/search?reset=1",
+          "icon": null,
+          "permission": "access CiviEvent",
+          "operator": "",
+          "separator": null,
+          "parentID": "52",
+          "navID": "55",
+          "active": "1"
+        }
+      },
+      "56": {
+        "attributes": {
+          "label": "Event Reports",
+          "name": "Event Reports",
+          "url": "civicrm/report/list?compid=1&reset=1",
+          "icon": null,
+          "permission": "access CiviEvent",
+          "operator": "",
+          "separator": "1",
+          "parentID": "52",
+          "navID": "56",
+          "active": "1"
+        }
+      },
+      "57": {
+        "attributes": {
+          "label": "Import Participants",
+          "name": "Import Participants",
+          "url": "civicrm/event/import?reset=1",
+          "icon": null,
+          "permission": "access CiviEvent,edit event participants",
+          "operator": "AND",
+          "separator": "1",
+          "parentID": "52",
+          "navID": "57",
+          "active": "1"
+        }
+      },
+      "58": {
+        "attributes": {
+          "label": "New Event",
+          "name": "New Event",
+          "url": "civicrm/event/add?reset=1&action=add",
+          "icon": null,
+          "permission": "access CiviEvent,edit all events",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "52",
+          "navID": "58",
+          "active": "1"
+        }
+      },
+      "59": {
+        "attributes": {
+          "label": "Manage Events",
+          "name": "Manage Events",
+          "url": "civicrm/event/manage?reset=1",
+          "icon": null,
+          "permission": "access CiviEvent,edit all events",
+          "operator": "AND",
+          "separator": "1",
+          "parentID": "52",
+          "navID": "59",
+          "active": "1"
+        }
+      },
+      "60": {
+        "attributes": {
+          "label": "Personal Campaign Pages",
+          "name": "Personal Campaign Pages",
+          "url": "civicrm/admin/pcp?reset=1&page_type=event",
+          "icon": null,
+          "permission": "access CiviEvent,administer CiviCRM",
+          "operator": "AND",
+          "separator": "1",
+          "parentID": "52",
+          "navID": "60",
+          "active": "1"
+        }
+      },
+      "61": {
+        "attributes": {
+          "label": "Event Templates",
+          "name": "Event Templates",
+          "url": "civicrm/admin/eventTemplate?reset=1",
+          "icon": null,
+          "permission": "access CiviEvent,edit all events",
+          "operator": "AND",
+          "separator": "1",
+          "parentID": "52",
+          "navID": "61",
+          "active": "1"
+        }
+      },
+      "62": {
+        "attributes": {
+          "label": "New Price Set",
+          "name": "New Price Set",
+          "url": "civicrm/admin/price?reset=1&action=add",
+          "icon": null,
+          "permission": "access CiviEvent,edit all events",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "52",
+          "navID": "62",
+          "active": "1"
+        }
+      },
+      "63": {
+        "attributes": {
+          "label": "Manage Price Sets",
+          "name": "Manage Price Sets",
+          "url": "civicrm/admin/price?reset=1",
+          "icon": null,
+          "permission": "access CiviEvent,edit all events",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "52",
+          "navID": "63",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "64": {
+    "attributes": {
+      "label": "Mailings",
+      "name": "Mailings",
+      "url": null,
+      "icon": null,
+      "permission": "access CiviMail,create mailings,approve mailings,schedule mailings",
+      "operator": "OR",
+      "separator": null,
+      "parentID": null,
+      "navID": "64",
+      "active": "1"
+    },
+    "child": {
+      "65": {
+        "attributes": {
+          "label": "New Mailing",
+          "name": "New Mailing",
+          "url": "civicrm/mailing/send?reset=1",
+          "icon": null,
+          "permission": "access CiviMail,create mailings",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "64",
+          "navID": "65",
+          "active": "1"
+        }
+      },
+      "66": {
+        "attributes": {
+          "label": "Draft and Unscheduled Mailings",
+          "name": "Draft and Unscheduled Mailings",
+          "url": "civicrm/mailing/browse/unscheduled?reset=1&scheduled=false",
+          "icon": null,
+          "permission": "access CiviMail,create mailings,schedule mailings",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "64",
+          "navID": "66",
+          "active": "1"
+        }
+      },
+      "67": {
+        "attributes": {
+          "label": "Scheduled and Sent Mailings",
+          "name": "Scheduled and Sent Mailings",
+          "url": "civicrm/mailing/browse/scheduled?reset=1&scheduled=true",
+          "icon": null,
+          "permission": "access CiviMail,approve mailings,create mailings,schedule mailings",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "64",
+          "navID": "67",
+          "active": "1"
+        }
+      },
+      "68": {
+        "attributes": {
+          "label": "Archived Mailings",
+          "name": "Archived Mailings",
+          "url": "civicrm/mailing/browse/archived?reset=1",
+          "icon": null,
+          "permission": "access CiviMail,create mailings",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "64",
+          "navID": "68",
+          "active": "1"
+        }
+      },
+      "69": {
+        "attributes": {
+          "label": "Mailing Reports",
+          "name": "Mailing Reports",
+          "url": "civicrm/report/list?compid=4&reset=1",
+          "icon": null,
+          "permission": "access CiviMail",
+          "operator": "",
+          "separator": "1",
+          "parentID": "64",
+          "navID": "69",
+          "active": "1"
+        }
+      },
+      "70": {
+        "attributes": {
+          "label": "Headers, Footers, and Automated Messages",
+          "name": "Headers, Footers, and Automated Messages",
+          "url": "civicrm/admin/component?reset=1",
+          "icon": null,
+          "permission": "access CiviMail,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "64",
+          "navID": "70",
+          "active": "1"
+        }
+      },
+      "71": {
+        "attributes": {
+          "label": "Message Templates",
+          "name": "Message Templates",
+          "url": "civicrm/admin/messageTemplates?reset=1",
+          "icon": null,
+          "permission": "edit message templates",
+          "operator": "",
+          "separator": null,
+          "parentID": "64",
+          "navID": "71",
+          "active": "1"
+        }
+      },
+      "72": {
+        "attributes": {
+          "label": "From Email Addresses",
+          "name": "From Email Addresses",
+          "url": "civicrm/admin/options/from_email_address?reset=1",
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": "",
+          "separator": "1",
+          "parentID": "64",
+          "navID": "72",
+          "active": "1"
+        }
+      },
+      "73": {
+        "attributes": {
+          "label": "New SMS",
+          "name": "New SMS",
+          "url": "civicrm/sms/send?reset=1",
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": null,
+          "separator": null,
+          "parentID": "64",
+          "navID": "73",
+          "active": "1"
+        }
+      },
+      "74": {
+        "attributes": {
+          "label": "Find Mass SMS",
+          "name": "Find Mass SMS",
+          "url": "civicrm/mailing/browse?reset=1&sms=1",
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": null,
+          "separator": "1",
+          "parentID": "64",
+          "navID": "74",
+          "active": "1"
+        }
+      },
+      "75": {
+        "attributes": {
+          "label": "New A/B Test",
+          "name": "New A/B Test",
+          "url": "civicrm/a/#/abtest/new",
+          "icon": null,
+          "permission": "access CiviMail",
+          "operator": "",
+          "separator": null,
+          "parentID": "64",
+          "navID": "75",
+          "active": "1"
+        }
+      },
+      "76": {
+        "attributes": {
+          "label": "Manage A/B Tests",
+          "name": "Manage A/B Tests",
+          "url": "civicrm/a/#/abtest",
+          "icon": null,
+          "permission": "access CiviMail",
+          "operator": "",
+          "separator": "1",
+          "parentID": "64",
+          "navID": "76",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "77": {
+    "attributes": {
+      "label": "Memberships",
+      "name": "Memberships",
+      "url": null,
+      "icon": null,
+      "permission": "access CiviMember",
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "77",
+      "active": "1"
+    },
+    "child": {
+      "78": {
+        "attributes": {
+          "label": "Dashboard",
+          "name": "Dashboard",
+          "url": "civicrm/member?reset=1",
+          "icon": null,
+          "permission": "access CiviMember",
+          "operator": "",
+          "separator": null,
+          "parentID": "77",
+          "navID": "78",
+          "active": "1"
+        }
+      },
+      "79": {
+        "attributes": {
+          "label": "New Membership",
+          "name": "New Membership",
+          "url": "civicrm/member/add?reset=1&action=add&context=standalone",
+          "icon": null,
+          "permission": "access CiviMember,edit memberships",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "77",
+          "navID": "79",
+          "active": "1"
+        }
+      },
+      "80": {
+        "attributes": {
+          "label": "Find Memberships",
+          "name": "Find Memberships",
+          "url": "civicrm/member/search?reset=1",
+          "icon": null,
+          "permission": "access CiviMember",
+          "operator": "",
+          "separator": null,
+          "parentID": "77",
+          "navID": "80",
+          "active": "1"
+        }
+      },
+      "81": {
+        "attributes": {
+          "label": "Membership Reports",
+          "name": "Membership Reports",
+          "url": "civicrm/report/list?compid=3&reset=1",
+          "icon": null,
+          "permission": "access CiviMember",
+          "operator": "",
+          "separator": "1",
+          "parentID": "77",
+          "navID": "81",
+          "active": "1"
+        }
+      },
+      "82": {
+        "attributes": {
+          "label": "Batch Data Entry",
+          "name": "Batch Data Entry",
+          "url": "civicrm/batch?reset=1",
+          "icon": null,
+          "permission": "access CiviContribute",
+          "operator": "",
+          "separator": null,
+          "parentID": "77",
+          "navID": "82",
+          "active": "1"
+        }
+      },
+      "83": {
+        "attributes": {
+          "label": "Import Memberships",
+          "name": "Import Members",
+          "url": "civicrm/member/import?reset=1",
+          "icon": null,
+          "permission": "access CiviMember,edit memberships",
+          "operator": "AND",
+          "separator": "1",
+          "parentID": "77",
+          "navID": "83",
+          "active": "1"
+        }
+      },
+      "84": {
+        "attributes": {
+          "label": "New Price Set",
+          "name": "New Price Set",
+          "url": "civicrm/admin/price?reset=1&action=add",
+          "icon": null,
+          "permission": "access CiviMember,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "77",
+          "navID": "84",
+          "active": "1"
+        }
+      },
+      "85": {
+        "attributes": {
+          "label": "Manage Price Sets",
+          "name": "Manage Price Sets",
+          "url": "civicrm/admin/price?reset=1",
+          "icon": null,
+          "permission": "access CiviMember,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "77",
+          "navID": "85",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "86": {
+    "attributes": {
+      "label": "Campaigns",
+      "name": "Campaigns",
+      "url": null,
+      "icon": null,
+      "permission": "interview campaign contacts,release campaign contacts,reserve campaign contacts,manage campaign,administer CiviCampaign,gotv campaign contacts",
+      "operator": "OR",
+      "separator": null,
+      "parentID": null,
+      "navID": "86",
+      "active": "1"
+    },
+    "child": {
+      "87": {
+        "attributes": {
+          "label": "Dashboard",
+          "name": "Dashboard",
+          "url": "civicrm/campaign?reset=1",
+          "icon": null,
+          "permission": "manage campaign,administer CiviCampaign",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "86",
+          "navID": "87",
+          "active": "1"
+        },
+        "child": {
+          "88": {
+            "attributes": {
+              "label": "Surveys",
+              "name": "Survey Dashboard",
+              "url": "civicrm/campaign?reset=1&subPage=survey",
+              "icon": null,
+              "permission": "manage campaign,administer CiviCampaign",
+              "operator": "OR",
+              "separator": null,
+              "parentID": "87",
+              "navID": "88",
+              "active": "1"
+            }
+          },
+          "89": {
+            "attributes": {
+              "label": "Petitions",
+              "name": "Petition Dashboard",
+              "url": "civicrm/campaign?reset=1&subPage=petition",
+              "icon": null,
+              "permission": "manage campaign,administer CiviCampaign",
+              "operator": "OR",
+              "separator": null,
+              "parentID": "87",
+              "navID": "89",
+              "active": "1"
+            }
+          },
+          "90": {
+            "attributes": {
+              "label": "Campaigns",
+              "name": "Campaign Dashboard",
+              "url": "civicrm/campaign?reset=1&subPage=campaign",
+              "icon": null,
+              "permission": "manage campaign,administer CiviCampaign",
+              "operator": "OR",
+              "separator": null,
+              "parentID": "87",
+              "navID": "90",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "91": {
+        "attributes": {
+          "label": "New Campaign",
+          "name": "New Campaign",
+          "url": "civicrm/campaign/add?reset=1",
+          "icon": null,
+          "permission": "manage campaign,administer CiviCampaign",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "86",
+          "navID": "91",
+          "active": "1"
+        }
+      },
+      "92": {
+        "attributes": {
+          "label": "New Survey",
+          "name": "New Survey",
+          "url": "civicrm/survey/add?reset=1",
+          "icon": null,
+          "permission": "manage campaign,administer CiviCampaign",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "86",
+          "navID": "92",
+          "active": "1"
+        }
+      },
+      "93": {
+        "attributes": {
+          "label": "New Petition",
+          "name": "New Petition",
+          "url": "civicrm/petition/add?reset=1",
+          "icon": null,
+          "permission": "manage campaign,administer CiviCampaign",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "86",
+          "navID": "93",
+          "active": "1"
+        }
+      },
+      "94": {
+        "attributes": {
+          "label": "Reserve Respondents",
+          "name": "Reserve Respondents",
+          "url": "civicrm/survey/search?reset=1&op=reserve",
+          "icon": null,
+          "permission": "administer CiviCampaign,manage campaign,reserve campaign contacts",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "86",
+          "navID": "94",
+          "active": "1"
+        }
+      },
+      "95": {
+        "attributes": {
+          "label": "Interview Respondents",
+          "name": "Interview Respondents",
+          "url": "civicrm/survey/search?reset=1&op=interview",
+          "icon": null,
+          "permission": "administer CiviCampaign,manage campaign,interview campaign contacts",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "86",
+          "navID": "95",
+          "active": "1"
+        }
+      },
+      "96": {
+        "attributes": {
+          "label": "Release Respondents",
+          "name": "Release Respondents",
+          "url": "civicrm/survey/search?reset=1&op=release",
+          "icon": null,
+          "permission": "administer CiviCampaign,manage campaign,release campaign contacts",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "86",
+          "navID": "96",
+          "active": "1"
+        }
+      },
+      "97": {
+        "attributes": {
+          "label": "Campaign Reports",
+          "name": "Campaign Reports",
+          "url": "civicrm/report/list?compid=9&reset=1",
+          "icon": null,
+          "permission": "interview campaign contacts,release campaign contacts,reserve campaign contacts,manage campaign,administer CiviCampaign,gotv campaign contacts",
+          "operator": "OR",
+          "separator": "1",
+          "parentID": "86",
+          "navID": "97",
+          "active": "1"
+        }
+      },
+      "98": {
+        "attributes": {
+          "label": "Conduct Survey",
+          "name": "Conduct Survey",
+          "url": "civicrm/campaign/vote?reset=1",
+          "icon": null,
+          "permission": "administer CiviCampaign,manage campaign,reserve campaign contacts,interview campaign contacts",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "86",
+          "navID": "98",
+          "active": "1"
+        }
+      },
+      "99": {
+        "attributes": {
+          "label": "GOTV (Voter Tracking)",
+          "name": "Voter Listing",
+          "url": "civicrm/campaign/gotv?reset=1",
+          "icon": null,
+          "permission": "administer CiviCampaign,manage campaign,release campaign contacts,gotv campaign contacts",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "86",
+          "navID": "99",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "100": {
+    "attributes": {
+      "label": "Cases",
+      "name": "Cases",
+      "url": null,
+      "icon": null,
+      "permission": "access my cases and activities,access all cases and activities",
+      "operator": "OR",
+      "separator": null,
+      "parentID": null,
+      "navID": "100",
+      "active": "0"
+    },
+    "child": {
+      "101": {
+        "attributes": {
+          "label": "Dashboard",
+          "name": "Dashboard",
+          "url": "civicrm/case?reset=1",
+          "icon": null,
+          "permission": "access my cases and activities,access all cases and activities",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "100",
+          "navID": "101",
+          "active": "1"
+        }
+      },
+      "102": {
+        "attributes": {
+          "label": "New Case",
+          "name": "New Case",
+          "url": "civicrm/case/add?reset=1&action=add&atype=13&context=standalone",
+          "icon": null,
+          "permission": "add cases,access all cases and activities",
+          "operator": "OR",
+          "separator": null,
+          "parentID": "100",
+          "navID": "102",
+          "active": "1"
+        }
+      },
+      "103": {
+        "attributes": {
+          "label": "Find Cases",
+          "name": "Find Cases",
+          "url": "civicrm/case/search?reset=1",
+          "icon": null,
+          "permission": "access my cases and activities,access all cases and activities",
+          "operator": "OR",
+          "separator": "1",
+          "parentID": "100",
+          "navID": "103",
+          "active": "1"
+        }
+      },
+      "104": {
+        "attributes": {
+          "label": "Case Reports",
+          "name": "Case Reports",
+          "url": "civicrm/report/list?compid=7&reset=1",
+          "icon": null,
+          "permission": "access my cases and activities,access all cases and activities,administer CiviCase",
+          "operator": "OR",
+          "separator": "0",
+          "parentID": "100",
+          "navID": "104",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "105": {
+    "attributes": {
+      "label": "Grants",
+      "name": "Grants",
+      "url": null,
+      "icon": null,
+      "permission": "access CiviGrant",
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "105",
+      "active": "1"
+    },
+    "child": {
+      "106": {
+        "attributes": {
+          "label": "Dashboard",
+          "name": "Dashboard",
+          "url": "civicrm/grant?reset=1",
+          "icon": null,
+          "permission": "access CiviGrant",
+          "operator": "",
+          "separator": null,
+          "parentID": "105",
+          "navID": "106",
+          "active": "1"
+        }
+      },
+      "107": {
+        "attributes": {
+          "label": "New Grant",
+          "name": "New Grant",
+          "url": "civicrm/grant/add?reset=1&action=add&context=standalone",
+          "icon": null,
+          "permission": "access CiviGrant,edit grants",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "105",
+          "navID": "107",
+          "active": "1"
+        }
+      },
+      "108": {
+        "attributes": {
+          "label": "Find Grants",
+          "name": "Find Grants",
+          "url": "civicrm/grant/search?reset=1",
+          "icon": null,
+          "permission": "access CiviGrant",
+          "operator": "",
+          "separator": "1",
+          "parentID": "105",
+          "navID": "108",
+          "active": "1"
+        }
+      },
+      "109": {
+        "attributes": {
+          "label": "Grant Reports",
+          "name": "Grant Reports",
+          "url": "civicrm/report/list?compid=5&reset=1",
+          "icon": null,
+          "permission": "access CiviGrant",
+          "operator": "",
+          "separator": "0",
+          "parentID": "105",
+          "navID": "109",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "110": {
+    "attributes": {
+      "label": "Administer",
+      "name": "Administer",
+      "url": null,
+      "icon": "crm-i fa-cog",
+      "permission": "administer CiviCRM",
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "110",
+      "active": "1"
+    },
+    "child": {
+      "111": {
+        "attributes": {
+          "label": "Administration Console",
+          "name": "Administration Console",
+          "url": "civicrm/admin?reset=1",
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": "",
+          "separator": null,
+          "parentID": "110",
+          "navID": "111",
+          "active": "1"
+        },
+        "child": {
+          "112": {
+            "attributes": {
+              "label": "System Status",
+              "name": "System Status",
+              "url": "civicrm/a/#/status",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "111",
+              "navID": "112",
+              "active": "1"
+            }
+          },
+          "113": {
+            "attributes": {
+              "label": "Configuration Checklist",
+              "name": "Configuration Checklist",
+              "url": "civicrm/admin/configtask?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "111",
+              "navID": "113",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "114": {
+        "attributes": {
+          "label": "Customize Data and Screens",
+          "name": "Customize Data and Screens",
+          "url": null,
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": "",
+          "separator": null,
+          "parentID": "110",
+          "navID": "114",
+          "active": "1"
+        },
+        "child": {
+          "115": {
+            "attributes": {
+              "label": "Custom Fields",
+              "name": "Custom Fields",
+              "url": "civicrm/admin/custom/group?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "115",
+              "active": "1"
+            }
+          },
+          "116": {
+            "attributes": {
+              "label": "Profiles",
+              "name": "Profiles",
+              "url": "civicrm/admin/uf/group?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "116",
+              "active": "1"
+            }
+          },
+          "117": {
+            "attributes": {
+              "label": "Tags (Categories)",
+              "name": "Tags (Categories)",
+              "url": "civicrm/tag?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "117",
+              "active": "1"
+            }
+          },
+          "118": {
+            "attributes": {
+              "label": "Activity Types",
+              "name": "Activity Types",
+              "url": "civicrm/admin/options/activity_type?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "118",
+              "active": "1"
+            }
+          },
+          "119": {
+            "attributes": {
+              "label": "Relationship Types",
+              "name": "Relationship Types",
+              "url": "civicrm/admin/reltype?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "119",
+              "active": "1"
+            }
+          },
+          "120": {
+            "attributes": {
+              "label": "Contact Types",
+              "name": "Contact Types",
+              "url": "civicrm/admin/options/subtype?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "120",
+              "active": "1"
+            }
+          },
+          "121": {
+            "attributes": {
+              "label": "Display Preferences",
+              "name": "Display Preferences",
+              "url": "civicrm/admin/setting/preferences/display?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "121",
+              "active": "1"
+            }
+          },
+          "122": {
+            "attributes": {
+              "label": "Search Preferences",
+              "name": "Search Preferences",
+              "url": "civicrm/admin/setting/search?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "122",
+              "active": "1"
+            }
+          },
+          "123": {
+            "attributes": {
+              "label": "Date Preferences",
+              "name": "Date Preferences",
+              "url": "civicrm/admin/setting/preferences/date?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "123",
+              "active": "1"
+            }
+          },
+          "124": {
+            "attributes": {
+              "label": "Navigation Menu",
+              "name": "Navigation Menu",
+              "url": "civicrm/admin/menu?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "124",
+              "active": "1"
+            }
+          },
+          "125": {
+            "attributes": {
+              "label": "Word Replacements",
+              "name": "Word Replacements",
+              "url": "civicrm/admin/options/wordreplacements?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "125",
+              "active": "1"
+            }
+          },
+          "126": {
+            "attributes": {
+              "label": "Manage Custom Searches",
+              "name": "Manage Custom Searches",
+              "url": "civicrm/admin/options/custom_search?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "126",
+              "active": "1"
+            }
+          },
+          "127": {
+            "attributes": {
+              "label": "Dropdown Options",
+              "name": "Dropdown Options",
+              "url": null,
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "127",
+              "active": "1"
+            },
+            "child": {
+              "128": {
+                "attributes": {
+                  "label": "Gender Options",
+                  "name": "Gender Options",
+                  "url": "civicrm/admin/options/gender?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": "",
+                  "separator": null,
+                  "parentID": "127",
+                  "navID": "128",
+                  "active": "1"
+                }
+              },
+              "129": {
+                "attributes": {
+                  "label": "Individual Prefixes (Ms, Mr...)",
+                  "name": "Individual Prefixes (Ms, Mr...)",
+                  "url": "civicrm/admin/options/individual_prefix?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": "",
+                  "separator": null,
+                  "parentID": "127",
+                  "navID": "129",
+                  "active": "1"
+                }
+              },
+              "130": {
+                "attributes": {
+                  "label": "Individual Suffixes (Jr, Sr...)",
+                  "name": "Individual Suffixes (Jr, Sr...)",
+                  "url": "civicrm/admin/options/individual_suffix?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": "",
+                  "separator": null,
+                  "parentID": "127",
+                  "navID": "130",
+                  "active": "1"
+                }
+              },
+              "131": {
+                "attributes": {
+                  "label": "Instant Messenger Services",
+                  "name": "Instant Messenger Services",
+                  "url": "civicrm/admin/options/instant_messenger_service?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": "",
+                  "separator": null,
+                  "parentID": "127",
+                  "navID": "131",
+                  "active": "1"
+                }
+              },
+              "132": {
+                "attributes": {
+                  "label": "Location Types (Home, Work...)",
+                  "name": "Location Types (Home, Work...)",
+                  "url": "civicrm/admin/locationType?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": "",
+                  "separator": null,
+                  "parentID": "127",
+                  "navID": "132",
+                  "active": "1"
+                }
+              },
+              "133": {
+                "attributes": {
+                  "label": "Mobile Phone Providers",
+                  "name": "Mobile Phone Providers",
+                  "url": "civicrm/admin/options/mobile_provider?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": "",
+                  "separator": null,
+                  "parentID": "127",
+                  "navID": "133",
+                  "active": "1"
+                }
+              },
+              "134": {
+                "attributes": {
+                  "label": "Phone Types",
+                  "name": "Phone Types",
+                  "url": "civicrm/admin/options/phone_type?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": "",
+                  "separator": null,
+                  "parentID": "127",
+                  "navID": "134",
+                  "active": "1"
+                }
+              },
+              "135": {
+                "attributes": {
+                  "label": "Website Types",
+                  "name": "Website Types",
+                  "url": "civicrm/admin/options/website_type?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": "",
+                  "separator": null,
+                  "parentID": "127",
+                  "navID": "135",
+                  "active": "1"
+                }
+              },
+              "267": {
+                "attributes": {
+                  "label": "Hours Types",
+                  "name": "hoursType",
+                  "url": "civicrm/hour/editoption",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "267",
+                  "active": "1"
+                }
+              },
+              "268": {
+                "attributes": {
+                  "label": "Job Contract Pay Scale",
+                  "name": "pay_scale",
+                  "url": "civicrm/pay_scale",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "268",
+                  "active": "1"
+                }
+              },
+              "269": {
+                "attributes": {
+                  "label": "Job Contract Hours/Location",
+                  "name": "hours_location",
+                  "url": "civicrm/hours_location",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "269",
+                  "active": "1"
+                }
+              },
+              "270": {
+                "attributes": {
+                  "label": "Contract Type",
+                  "name": "hrjc_contract_type",
+                  "url": "civicrm/admin/options/hrjc_contract_type?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "270",
+                  "active": "1"
+                }
+              },
+              "271": {
+                "attributes": {
+                  "label": "Normal place of work",
+                  "name": "hrjc_location",
+                  "url": "civicrm/admin/options/hrjc_location?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "271",
+                  "active": "1"
+                }
+              },
+              "272": {
+                "attributes": {
+                  "label": "Pay cycle",
+                  "name": "hrjc_pay_cycle",
+                  "url": "civicrm/admin/options/hrjc_pay_cycle?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "272",
+                  "active": "1"
+                }
+              },
+              "273": {
+                "attributes": {
+                  "label": "Benefits",
+                  "name": "hrjc_benefit_name",
+                  "url": "civicrm/admin/options/hrjc_benefit_name?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "273",
+                  "active": "1"
+                }
+              },
+              "274": {
+                "attributes": {
+                  "label": "Benefit type",
+                  "name": "hrjc_benefit_type",
+                  "url": "civicrm/admin/options/hrjc_benefit_type?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "274",
+                  "active": "1"
+                }
+              },
+              "275": {
+                "attributes": {
+                  "label": "Deductions",
+                  "name": "hrjc_deduction_name",
+                  "url": "civicrm/admin/options/hrjc_deduction_name?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "275",
+                  "active": "1"
+                }
+              },
+              "276": {
+                "attributes": {
+                  "label": "Deduction type",
+                  "name": "hrjc_deduction_type",
+                  "url": "civicrm/admin/options/hrjc_deduction_type?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "276",
+                  "active": "1"
+                }
+              },
+              "278": {
+                "attributes": {
+                  "label": "Reason for change",
+                  "name": "hrjc_revision_change_reason",
+                  "url": "civicrm/admin/options/hrjc_revision_change_reason?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "278",
+                  "active": "1"
+                }
+              },
+              "279": {
+                "attributes": {
+                  "label": "Reason for Job Contract end",
+                  "name": "hrjc_contract_end_reason",
+                  "url": "civicrm/admin/options/hrjc_contract_end_reason?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": null,
+                  "separator": "0",
+                  "parentID": "127",
+                  "navID": "279",
+                  "active": "1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "136": {
+        "attributes": {
+          "label": "Communications",
+          "name": "Communications",
+          "url": null,
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": "",
+          "separator": null,
+          "parentID": "110",
+          "navID": "136",
+          "active": "1"
+        },
+        "child": {
+          "137": {
+            "attributes": {
+              "label": "Organization Address and Contact Info",
+              "name": "Organization Address and Contact Info",
+              "url": "civicrm/admin/domain?action=update&reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "136",
+              "navID": "137",
+              "active": "1"
+            }
+          },
+          "138": {
+            "attributes": {
+              "label": "FROM Email Addresses",
+              "name": "FROM Email Addresses",
+              "url": "civicrm/admin/options/from_email_address?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "136",
+              "navID": "138",
+              "active": "1"
+            }
+          },
+          "139": {
+            "attributes": {
+              "label": "Message Templates",
+              "name": "Message Templates",
+              "url": "civicrm/admin/messageTemplates?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "136",
+              "navID": "139",
+              "active": "1"
+            }
+          },
+          "140": {
+            "attributes": {
+              "label": "Schedule Reminders",
+              "name": "Schedule Reminders",
+              "url": "civicrm/admin/scheduleReminders?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "136",
+              "navID": "140",
+              "active": "1"
+            }
+          },
+          "141": {
+            "attributes": {
+              "label": "Preferred Communication Methods",
+              "name": "Preferred Communication Methods",
+              "url": "civicrm/admin/options/preferred_communication_method?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "136",
+              "navID": "141",
+              "active": "1"
+            }
+          },
+          "142": {
+            "attributes": {
+              "label": "Label Formats",
+              "name": "Label Formats",
+              "url": "civicrm/admin/labelFormats?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "136",
+              "navID": "142",
+              "active": "1"
+            }
+          },
+          "143": {
+            "attributes": {
+              "label": "Print Page (PDF) Formats",
+              "name": "Print Page (PDF) Formats",
+              "url": "civicrm/admin/pdfFormats?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "136",
+              "navID": "143",
+              "active": "1"
+            }
+          },
+          "144": {
+            "attributes": {
+              "label": "Communication Style Options",
+              "name": "Communication Style Options",
+              "url": "civicrm/admin/options/communication_style?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "136",
+              "navID": "144",
+              "active": "1"
+            }
+          },
+          "145": {
+            "attributes": {
+              "label": "Email Greeting Formats",
+              "name": "Email Greeting Formats",
+              "url": "civicrm/admin/options/email_greeting?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "136",
+              "navID": "145",
+              "active": "1"
+            }
+          },
+          "146": {
+            "attributes": {
+              "label": "Postal Greeting Formats",
+              "name": "Postal Greeting Formats",
+              "url": "civicrm/admin/options/postal_greeting?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "136",
+              "navID": "146",
+              "active": "1"
+            }
+          },
+          "147": {
+            "attributes": {
+              "label": "Addressee Formats",
+              "name": "Addressee Formats",
+              "url": "civicrm/admin/options/addressee?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "136",
+              "navID": "147",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "148": {
+        "attributes": {
+          "label": "Localization",
+          "name": "Localization",
+          "url": null,
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": "",
+          "separator": null,
+          "parentID": "110",
+          "navID": "148",
+          "active": "1"
+        },
+        "child": {
+          "149": {
+            "attributes": {
+              "label": "Languages, Currency, Locations",
+              "name": "Languages, Currency, Locations",
+              "url": "civicrm/admin/setting/localization?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "148",
+              "navID": "149",
+              "active": "1"
+            }
+          },
+          "150": {
+            "attributes": {
+              "label": "Address Settings",
+              "name": "Address Settings",
+              "url": "civicrm/admin/setting/preferences/address?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "148",
+              "navID": "150",
+              "active": "1"
+            }
+          },
+          "151": {
+            "attributes": {
+              "label": "Date Formats",
+              "name": "Date Formats",
+              "url": "civicrm/admin/setting/date?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "148",
+              "navID": "151",
+              "active": "1"
+            }
+          },
+          "152": {
+            "attributes": {
+              "label": "Preferred Language Options",
+              "name": "Preferred Language Options",
+              "url": "civicrm/admin/options/languages?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "148",
+              "navID": "152",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "153": {
+        "attributes": {
+          "label": "Users and Permissions",
+          "name": "Users and Permissions",
+          "url": null,
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": "",
+          "separator": null,
+          "parentID": "110",
+          "navID": "153",
+          "active": "1"
+        },
+        "child": {
+          "154": {
+            "attributes": {
+              "label": "Permissions (Access Control)",
+              "name": "Permissions (Access Control)",
+              "url": "civicrm/admin/access?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "153",
+              "navID": "154",
+              "active": "1"
+            }
+          },
+          "155": {
+            "attributes": {
+              "label": "Synchronize Users to Contacts",
+              "name": "Synchronize Users to Contacts",
+              "url": "civicrm/admin/synchUser?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "153",
+              "navID": "155",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "156": {
+        "attributes": {
+          "label": "System Settings",
+          "name": "System Settings",
+          "url": null,
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": "",
+          "separator": null,
+          "parentID": "110",
+          "navID": "156",
+          "active": "1"
+        },
+        "child": {
+          "157": {
+            "attributes": {
+              "label": "Components",
+              "name": "Enable Components",
+              "url": "civicrm/admin/setting/component?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "157",
+              "active": "1"
+            }
+          },
+          "158": {
+            "attributes": {
+              "label": "Connections",
+              "name": "Connections",
+              "url": "civicrm/a/#/cxn",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "158",
+              "active": "1"
+            }
+          },
+          "159": {
+            "attributes": {
+              "label": "Extensions",
+              "name": "Manage Extensions",
+              "url": "civicrm/admin/extensions?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": "1",
+              "parentID": "156",
+              "navID": "159",
+              "active": "1"
+            }
+          },
+          "160": {
+            "attributes": {
+              "label": "Cleanup Caches and Update Paths",
+              "name": "Cleanup Caches and Update Paths",
+              "url": "civicrm/admin/setting/updateConfigBackend?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "160",
+              "active": "1"
+            }
+          },
+          "161": {
+            "attributes": {
+              "label": "CMS Database Integration",
+              "name": "CMS Integration",
+              "url": "civicrm/admin/setting/uf?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "161",
+              "active": "1"
+            }
+          },
+          "162": {
+            "attributes": {
+              "label": "Debugging and Error Handling",
+              "name": "Debugging and Error Handling",
+              "url": "civicrm/admin/setting/debug?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "162",
+              "active": "1"
+            }
+          },
+          "163": {
+            "attributes": {
+              "label": "Directories",
+              "name": "Directories",
+              "url": "civicrm/admin/setting/path?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "163",
+              "active": "1"
+            }
+          },
+          "164": {
+            "attributes": {
+              "label": "Import/Export Mappings",
+              "name": "Import/Export Mappings",
+              "url": "civicrm/admin/mapping?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "164",
+              "active": "1"
+            }
+          },
+          "165": {
+            "attributes": {
+              "label": "Mapping and Geocoding",
+              "name": "Mapping and Geocoding",
+              "url": "civicrm/admin/setting/mapping?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "165",
+              "active": "1"
+            }
+          },
+          "166": {
+            "attributes": {
+              "label": "Misc (Undelete, PDFs, Limits, Logging, Captcha, etc.)",
+              "name": "Misc (Undelete, PDFs, Limits, Logging, Captcha, etc.)",
+              "url": "civicrm/admin/setting/misc?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "166",
+              "active": "1"
+            }
+          },
+          "167": {
+            "attributes": {
+              "label": "Multi Site Settings",
+              "name": "Multi Site Settings",
+              "url": "civicrm/admin/setting/preferences/multisite?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "167",
+              "active": "1"
+            }
+          },
+          "168": {
+            "attributes": {
+              "label": "Option Groups",
+              "name": "Option Groups",
+              "url": "civicrm/admin/options?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "168",
+              "active": "1"
+            }
+          },
+          "169": {
+            "attributes": {
+              "label": "Outbound Email (SMTP/Sendmail)",
+              "name": "Outbound Email",
+              "url": "civicrm/admin/setting/smtp?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "169",
+              "active": "1"
+            }
+          },
+          "170": {
+            "attributes": {
+              "label": "Payment Processors",
+              "name": "Payment Processors",
+              "url": "civicrm/admin/paymentProcessor?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "170",
+              "active": "1"
+            }
+          },
+          "171": {
+            "attributes": {
+              "label": "Resource URLs",
+              "name": "Resource URLs",
+              "url": "civicrm/admin/setting/url?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "171",
+              "active": "1"
+            }
+          },
+          "172": {
+            "attributes": {
+              "label": "Safe File Extensions",
+              "name": "Safe File Extensions",
+              "url": "civicrm/admin/options/safe_file_extension?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "172",
+              "active": "1"
+            }
+          },
+          "173": {
+            "attributes": {
+              "label": "Scheduled Jobs",
+              "name": "Scheduled Jobs",
+              "url": "civicrm/admin/job?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "173",
+              "active": "1"
+            }
+          },
+          "174": {
+            "attributes": {
+              "label": "SMS Providers",
+              "name": "SMS Providers",
+              "url": "civicrm/admin/sms/provider?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "156",
+              "navID": "174",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "175": {
+        "attributes": {
+          "label": "CiviCampaign",
+          "name": "CiviCampaign",
+          "url": null,
+          "icon": null,
+          "permission": "administer CiviCampaign,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "110",
+          "navID": "175",
+          "active": "1"
+        },
+        "child": {
+          "176": {
+            "attributes": {
+              "label": "Survey Types",
+              "name": "Survey Types",
+              "url": "civicrm/admin/campaign/surveyType?reset=1",
+              "icon": null,
+              "permission": "administer CiviCampaign",
+              "operator": "",
+              "separator": null,
+              "parentID": "175",
+              "navID": "176",
+              "active": "1"
+            }
+          },
+          "177": {
+            "attributes": {
+              "label": "Campaign Types",
+              "name": "Campaign Types",
+              "url": "civicrm/admin/options/campaign_type?reset=1",
+              "icon": null,
+              "permission": "administer CiviCampaign",
+              "operator": "",
+              "separator": null,
+              "parentID": "175",
+              "navID": "177",
+              "active": "1"
+            }
+          },
+          "178": {
+            "attributes": {
+              "label": "Campaign Status",
+              "name": "Campaign Status",
+              "url": "civicrm/admin/options/campaign_status?reset=1",
+              "icon": null,
+              "permission": "administer CiviCampaign",
+              "operator": "",
+              "separator": null,
+              "parentID": "175",
+              "navID": "178",
+              "active": "1"
+            }
+          },
+          "179": {
+            "attributes": {
+              "label": "Engagement Index",
+              "name": "Engagement Index",
+              "url": "civicrm/admin/options/engagement_index?reset=1",
+              "icon": null,
+              "permission": "administer CiviCampaign",
+              "operator": "",
+              "separator": null,
+              "parentID": "175",
+              "navID": "179",
+              "active": "1"
+            }
+          },
+          "180": {
+            "attributes": {
+              "label": "CiviCampaign Component Settings",
+              "name": "CiviCampaign Component Settings",
+              "url": "civicrm/admin/setting/preferences/campaign?reset=1",
+              "icon": null,
+              "permission": "administer CiviCampaign",
+              "operator": "",
+              "separator": null,
+              "parentID": "175",
+              "navID": "180",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "181": {
+        "attributes": {
+          "label": "CiviCase",
+          "name": "CiviCase",
+          "url": null,
+          "icon": null,
+          "permission": "administer CiviCase",
+          "operator": null,
+          "separator": null,
+          "parentID": "110",
+          "navID": "181",
+          "active": "1"
+        },
+        "child": {
+          "182": {
+            "attributes": {
+              "label": "CiviCase Settings",
+              "name": "CiviCase Settings",
+              "url": "civicrm/admin/setting/case?reset=1",
+              "icon": null,
+              "permission": "administer CiviCase",
+              "operator": null,
+              "separator": null,
+              "parentID": "181",
+              "navID": "182",
+              "active": "1"
+            }
+          },
+          "183": {
+            "attributes": {
+              "label": "Case Types",
+              "name": "Case Types",
+              "url": "civicrm/a/#/caseType",
+              "icon": null,
+              "permission": "administer CiviCase",
+              "operator": null,
+              "separator": null,
+              "parentID": "181",
+              "navID": "183",
+              "active": "1"
+            }
+          },
+          "184": {
+            "attributes": {
+              "label": "Redaction Rules",
+              "name": "Redaction Rules",
+              "url": "civicrm/admin/options/redaction_rule?reset=1",
+              "icon": null,
+              "permission": "administer CiviCase",
+              "operator": null,
+              "separator": null,
+              "parentID": "181",
+              "navID": "184",
+              "active": "1"
+            }
+          },
+          "185": {
+            "attributes": {
+              "label": "Case Statuses",
+              "name": "Case Statuses",
+              "url": "civicrm/admin/options/case_status?reset=1",
+              "icon": null,
+              "permission": "administer CiviCase",
+              "operator": null,
+              "separator": null,
+              "parentID": "181",
+              "navID": "185",
+              "active": "1"
+            }
+          },
+          "186": {
+            "attributes": {
+              "label": "Encounter Medium",
+              "name": "Encounter Medium",
+              "url": "civicrm/admin/options/encounter_medium?reset=1",
+              "icon": null,
+              "permission": "administer CiviCase",
+              "operator": null,
+              "separator": null,
+              "parentID": "181",
+              "navID": "186",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "187": {
+        "attributes": {
+          "label": "CiviContribute",
+          "name": "CiviContribute",
+          "url": null,
+          "icon": null,
+          "permission": "access CiviContribute,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "110",
+          "navID": "187",
+          "active": "1"
+        },
+        "child": {
+          "188": {
+            "attributes": {
+              "label": "New Contribution Page",
+              "name": "New Contribution Page",
+              "url": "civicrm/admin/contribute?reset=1&action=add",
+              "icon": null,
+              "permission": "access CiviContribute,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "187",
+              "navID": "188",
+              "active": "1"
+            }
+          },
+          "189": {
+            "attributes": {
+              "label": "Manage Contribution Pages",
+              "name": "Manage Contribution Pages",
+              "url": "civicrm/admin/contribute?reset=1",
+              "icon": null,
+              "permission": "access CiviContribute,administer CiviCRM",
+              "operator": "AND",
+              "separator": "1",
+              "parentID": "187",
+              "navID": "189",
+              "active": "1"
+            }
+          },
+          "190": {
+            "attributes": {
+              "label": "Personal Campaign Pages",
+              "name": "Personal Campaign Pages",
+              "url": "civicrm/admin/pcp?reset=1&page_type=contribute",
+              "icon": null,
+              "permission": "access CiviContribute,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "187",
+              "navID": "190",
+              "active": "1"
+            }
+          },
+          "191": {
+            "attributes": {
+              "label": "Premiums (Thank-you Gifts)",
+              "name": "Premiums",
+              "url": "civicrm/admin/contribute/managePremiums?reset=1",
+              "icon": null,
+              "permission": "access CiviContribute,administer CiviCRM",
+              "operator": "AND",
+              "separator": "1",
+              "parentID": "187",
+              "navID": "191",
+              "active": "1"
+            }
+          },
+          "192": {
+            "attributes": {
+              "label": "Financial Types",
+              "name": "Financial Types",
+              "url": "civicrm/admin/financial/financialType?reset=1",
+              "icon": null,
+              "permission": "access CiviContribute,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "187",
+              "navID": "192",
+              "active": "1"
+            }
+          },
+          "193": {
+            "attributes": {
+              "label": "Financial Accounts",
+              "name": "Financial Accounts",
+              "url": "civicrm/admin/financial/financialAccount?reset=1",
+              "icon": null,
+              "permission": "access CiviContribute,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "187",
+              "navID": "193",
+              "active": "1"
+            }
+          },
+          "194": {
+            "attributes": {
+              "label": "Payment Methods",
+              "name": "Payment Instruments",
+              "url": "civicrm/admin/options/payment_instrument?reset=1",
+              "icon": null,
+              "permission": "access CiviContribute,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "187",
+              "navID": "194",
+              "active": "1"
+            }
+          },
+          "195": {
+            "attributes": {
+              "label": "Accepted Credit Cards",
+              "name": "Accepted Credit Cards",
+              "url": "civicrm/admin/options/accept_creditcard?reset=1",
+              "icon": null,
+              "permission": "access CiviContribute,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "187",
+              "navID": "195",
+              "active": "1"
+            }
+          },
+          "196": {
+            "attributes": {
+              "label": "Soft Credit Types",
+              "name": "Soft Credit Types",
+              "url": "civicrm/admin/options/soft_credit_type?reset=1",
+              "icon": null,
+              "permission": "access CiviContribute,administer CiviCRM",
+              "operator": "AND",
+              "separator": "1",
+              "parentID": "187",
+              "navID": "196",
+              "active": "1"
+            }
+          },
+          "197": {
+            "attributes": {
+              "label": "New Price Set",
+              "name": "New Price Set",
+              "url": "civicrm/admin/price?reset=1&action=add",
+              "icon": null,
+              "permission": "access CiviContribute,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "187",
+              "navID": "197",
+              "active": "1"
+            }
+          },
+          "198": {
+            "attributes": {
+              "label": "Manage Price Sets",
+              "name": "Manage Price Sets",
+              "url": "civicrm/admin/price?reset=1",
+              "icon": null,
+              "permission": "access CiviContribute,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "187",
+              "navID": "198",
+              "active": "1"
+            }
+          },
+          "199": {
+            "attributes": {
+              "label": "Payment Processors",
+              "name": "Payment Processors",
+              "url": "civicrm/admin/paymentProcessor?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "187",
+              "navID": "199",
+              "active": "1"
+            }
+          },
+          "200": {
+            "attributes": {
+              "label": "CiviContribute Component Settings",
+              "name": "CiviContribute Component Settings",
+              "url": "civicrm/admin/setting/preferences/contribute?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "187",
+              "navID": "200",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "201": {
+        "attributes": {
+          "label": "CiviEvent",
+          "name": "CiviEvent",
+          "url": null,
+          "icon": null,
+          "permission": "access CiviEvent,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "110",
+          "navID": "201",
+          "active": "1"
+        },
+        "child": {
+          "202": {
+            "attributes": {
+              "label": "New Event",
+              "name": "New Event",
+              "url": "civicrm/event/add?reset=1&action=add",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "201",
+              "navID": "202",
+              "active": "1"
+            }
+          },
+          "203": {
+            "attributes": {
+              "label": "Manage Events",
+              "name": "Manage Events",
+              "url": "civicrm/event/manage?reset=1",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": "1",
+              "parentID": "201",
+              "navID": "203",
+              "active": "1"
+            }
+          },
+          "204": {
+            "attributes": {
+              "label": "Personal Campaign Pages",
+              "name": "Personal Campaign Pages",
+              "url": "civicrm/admin/pcp?reset=1&page_type=event",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": "1",
+              "parentID": "201",
+              "navID": "204",
+              "active": "1"
+            }
+          },
+          "205": {
+            "attributes": {
+              "label": "Event Templates",
+              "name": "Event Templates",
+              "url": "civicrm/admin/eventTemplate?reset=1",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": "1",
+              "parentID": "201",
+              "navID": "205",
+              "active": "1"
+            }
+          },
+          "206": {
+            "attributes": {
+              "label": "New Price Set",
+              "name": "New Price Set",
+              "url": "civicrm/admin/price?reset=1&action=add",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "201",
+              "navID": "206",
+              "active": "1"
+            }
+          },
+          "207": {
+            "attributes": {
+              "label": "Manage Price Sets",
+              "name": "Manage Price Sets",
+              "url": "civicrm/admin/price?reset=1",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": "1",
+              "parentID": "201",
+              "navID": "207",
+              "active": "1"
+            }
+          },
+          "208": {
+            "attributes": {
+              "label": "Event Types",
+              "name": "Event Types",
+              "url": "civicrm/admin/options/event_type?reset=1",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "201",
+              "navID": "208",
+              "active": "1"
+            }
+          },
+          "209": {
+            "attributes": {
+              "label": "Participant Statuses",
+              "name": "Participant Statuses",
+              "url": "civicrm/admin/participant_status?reset=1",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "201",
+              "navID": "209",
+              "active": "1"
+            }
+          },
+          "210": {
+            "attributes": {
+              "label": "Participant Roles",
+              "name": "Participant Roles",
+              "url": "civicrm/admin/options/participant_role?reset=1",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "201",
+              "navID": "210",
+              "active": "1"
+            }
+          },
+          "211": {
+            "attributes": {
+              "label": "Participant Listing Options",
+              "name": "Participant Listing Options",
+              "url": "civicrm/admin/options/participant_listing?reset=1",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "201",
+              "navID": "211",
+              "active": "1"
+            }
+          },
+          "212": {
+            "attributes": {
+              "label": "Event Name Badge Layouts",
+              "name": "Event Name Badge Layouts",
+              "url": "civicrm/admin/badgelayout?reset=1",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "201",
+              "navID": "212",
+              "active": "1"
+            }
+          },
+          "213": {
+            "attributes": {
+              "label": "Payment Processors",
+              "name": "Payment Processors",
+              "url": "civicrm/admin/paymentProcessor?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "201",
+              "navID": "213",
+              "active": "1"
+            }
+          },
+          "214": {
+            "attributes": {
+              "label": "CiviEvent Component Settings",
+              "name": "CiviEvent Component Settings",
+              "url": "civicrm/admin/setting/preferences/event?reset=1",
+              "icon": null,
+              "permission": "access CiviEvent,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "201",
+              "navID": "214",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "215": {
+        "attributes": {
+          "label": "CiviGrant",
+          "name": "CiviGrant",
+          "url": null,
+          "icon": null,
+          "permission": "access CiviGrant,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "110",
+          "navID": "215",
+          "active": "1"
+        },
+        "child": {
+          "216": {
+            "attributes": {
+              "label": "Grant Types",
+              "name": "Grant Types",
+              "url": "civicrm/admin/options/grant_type?reset=1",
+              "icon": null,
+              "permission": "access CiviGrant,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "215",
+              "navID": "216",
+              "active": "1"
+            }
+          },
+          "217": {
+            "attributes": {
+              "label": "Grant Status",
+              "name": "Grant Status",
+              "url": "civicrm/admin/options/grant_status?reset=1",
+              "icon": null,
+              "permission": "access CiviGrant,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "215",
+              "navID": "217",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "218": {
+        "attributes": {
+          "label": "CiviMail",
+          "name": "CiviMail",
+          "url": null,
+          "icon": null,
+          "permission": "access CiviMail,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "110",
+          "navID": "218",
+          "active": "1"
+        },
+        "child": {
+          "219": {
+            "attributes": {
+              "label": "Headers, Footers, and Automated Messages",
+              "name": "Headers, Footers, and Automated Messages",
+              "url": "civicrm/admin/component?reset=1",
+              "icon": null,
+              "permission": "access CiviMail,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "218",
+              "navID": "219",
+              "active": "1"
+            }
+          },
+          "220": {
+            "attributes": {
+              "label": "Message Templates",
+              "name": "Message Templates",
+              "url": "civicrm/admin/messageTemplates?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "218",
+              "navID": "220",
+              "active": "1"
+            }
+          },
+          "221": {
+            "attributes": {
+              "label": "From Email Addresses",
+              "name": "From Email Addresses",
+              "url": "civicrm/admin/options/from_email_address?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "218",
+              "navID": "221",
+              "active": "1"
+            }
+          },
+          "222": {
+            "attributes": {
+              "label": "Mail Accounts",
+              "name": "Mail Accounts",
+              "url": "civicrm/admin/mailSettings?reset=1",
+              "icon": null,
+              "permission": "access CiviMail,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "218",
+              "navID": "222",
+              "active": "1"
+            }
+          },
+          "223": {
+            "attributes": {
+              "label": "Mailer Settings",
+              "name": "Mailer Settings",
+              "url": "civicrm/admin/mail?reset=1",
+              "icon": null,
+              "permission": "access CiviMail,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "218",
+              "navID": "223",
+              "active": "1"
+            }
+          },
+          "224": {
+            "attributes": {
+              "label": "CiviMail Component Settings",
+              "name": "CiviMail Component Settings",
+              "url": "civicrm/admin/setting/preferences/mailing?reset=1",
+              "icon": null,
+              "permission": "access CiviMail,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "218",
+              "navID": "224",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "225": {
+        "attributes": {
+          "label": "CiviMember",
+          "name": "CiviMember",
+          "url": null,
+          "icon": null,
+          "permission": "access CiviMember,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "110",
+          "navID": "225",
+          "active": "1"
+        },
+        "child": {
+          "226": {
+            "attributes": {
+              "label": "Membership Types",
+              "name": "Membership Types",
+              "url": "civicrm/admin/member/membershipType?reset=1",
+              "icon": null,
+              "permission": "access CiviMember,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "225",
+              "navID": "226",
+              "active": "1"
+            }
+          },
+          "227": {
+            "attributes": {
+              "label": "Membership Status Rules",
+              "name": "Membership Status Rules",
+              "url": "civicrm/admin/member/membershipStatus?reset=1",
+              "icon": null,
+              "permission": "access CiviMember,administer CiviCRM",
+              "operator": "AND",
+              "separator": "1",
+              "parentID": "225",
+              "navID": "227",
+              "active": "1"
+            }
+          },
+          "228": {
+            "attributes": {
+              "label": "New Price Set",
+              "name": "New Price Set",
+              "url": "civicrm/admin/price?reset=1&action=add",
+              "icon": null,
+              "permission": "access CiviMember,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "225",
+              "navID": "228",
+              "active": "1"
+            }
+          },
+          "229": {
+            "attributes": {
+              "label": "Manage Price Sets",
+              "name": "Manage Price Sets",
+              "url": "civicrm/admin/price?reset=1",
+              "icon": null,
+              "permission": "access CiviMember,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "225",
+              "navID": "229",
+              "active": "1"
+            }
+          },
+          "230": {
+            "attributes": {
+              "label": "CiviMember Component Settings",
+              "name": "CiviMember Component Settings",
+              "url": "civicrm/admin/setting/preferences/member?reset=1",
+              "icon": null,
+              "permission": "access CiviMember,administer CiviCRM",
+              "operator": "AND",
+              "separator": null,
+              "parentID": "225",
+              "navID": "230",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "231": {
+        "attributes": {
+          "label": "CiviReport",
+          "name": "CiviReport",
+          "url": null,
+          "icon": null,
+          "permission": "access CiviReport,administer CiviCRM",
+          "operator": "AND",
+          "separator": null,
+          "parentID": "110",
+          "navID": "231",
+          "active": "1"
+        },
+        "child": {
+          "232": {
+            "attributes": {
+              "label": "All Reports",
+              "name": "All Reports",
+              "url": "civicrm/report/list?reset=1",
+              "icon": null,
+              "permission": "access CiviReport",
+              "operator": "",
+              "separator": null,
+              "parentID": "231",
+              "navID": "232",
+              "active": "1"
+            }
+          },
+          "233": {
+            "attributes": {
+              "label": "Create New Report from Template",
+              "name": "Create New Report from Template",
+              "url": "civicrm/admin/report/template/list?reset=1",
+              "icon": null,
+              "permission": "administer Reports",
+              "operator": "",
+              "separator": null,
+              "parentID": "231",
+              "navID": "233",
+              "active": "1"
+            }
+          },
+          "234": {
+            "attributes": {
+              "label": "Manage Templates",
+              "name": "Manage Templates",
+              "url": "civicrm/admin/report/options/report_template?reset=1",
+              "icon": null,
+              "permission": "administer Reports",
+              "operator": "",
+              "separator": null,
+              "parentID": "231",
+              "navID": "234",
+              "active": "1"
+            }
+          },
+          "235": {
+            "attributes": {
+              "label": "Register Report",
+              "name": "Register Report",
+              "url": "civicrm/admin/report/register?reset=1",
+              "icon": null,
+              "permission": "administer Reports",
+              "operator": "",
+              "separator": null,
+              "parentID": "231",
+              "navID": "235",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "286": {
+        "attributes": {
+          "label": "Tasks",
+          "name": "tasksassignments_administer",
+          "url": null,
+          "icon": null,
+          "permission": null,
+          "operator": null,
+          "separator": null,
+          "parentID": "110",
+          "navID": "286",
+          "active": "1"
+        },
+        "child": {
+          "285": {
+            "attributes": {
+              "label": "Tasks Settings",
+              "name": "ta_settings",
+              "url": "civicrm/tasksassignments/settings",
+              "icon": null,
+              "permission": null,
+              "operator": null,
+              "separator": "0",
+              "parentID": "286",
+              "navID": "285",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "292": {
+        "attributes": {
+          "label": "Leave",
+          "name": "leave_and_absences",
+          "url": null,
+          "icon": null,
+          "permission": "administer leave and absences",
+          "operator": null,
+          "separator": null,
+          "parentID": "110",
+          "navID": "292",
+          "active": "1"
+        },
+        "child": {
+          "293": {
+            "attributes": {
+              "label": "Leave/Absence Types",
+              "name": "leave_and_absence_types",
+              "url": "civicrm/admin/leaveandabsences/types?action=browse&reset=1",
+              "icon": null,
+              "permission": "administer leave and absences",
+              "operator": null,
+              "separator": "0",
+              "parentID": "292",
+              "navID": "293",
+              "active": "1"
+            }
+          },
+          "294": {
+            "attributes": {
+              "label": "Leave/Absence Periods",
+              "name": "leave_and_absence_periods",
+              "url": "civicrm/admin/leaveandabsences/periods?action=browse&reset=1",
+              "icon": null,
+              "permission": "administer leave and absences",
+              "operator": null,
+              "separator": "0",
+              "parentID": "292",
+              "navID": "294",
+              "active": "1"
+            }
+          },
+          "295": {
+            "attributes": {
+              "label": "Public Holidays",
+              "name": "leave_and_absence_public_holidays",
+              "url": "civicrm/admin/leaveandabsences/public_holidays?action=browse&reset=1",
+              "icon": null,
+              "permission": "administer leave and absences",
+              "operator": null,
+              "separator": "0",
+              "parentID": "292",
+              "navID": "295",
+              "active": "1"
+            }
+          },
+          "296": {
+            "attributes": {
+              "label": "Manage Work Patterns",
+              "name": "leave_and_absence_manage_work_patterns",
+              "url": "civicrm/admin/leaveandabsences/work_patterns?action=browse&reset=1",
+              "icon": null,
+              "permission": "administer leave and absences",
+              "operator": null,
+              "separator": "0",
+              "parentID": "292",
+              "navID": "296",
+              "active": "1"
+            }
+          },
+          "297": {
+            "attributes": {
+              "label": "General Settings",
+              "name": "leave_and_absence_general_settings",
+              "url": "civicrm/admin/leaveandabsences/general_settings",
+              "icon": null,
+              "permission": "administer leave and absences",
+              "operator": null,
+              "separator": "0",
+              "parentID": "292",
+              "navID": "297",
+              "active": "1"
+            }
+          },
+          "298": {
+            "attributes": {
+              "label": "Import Leave/Absence Requests",
+              "name": "leave_and_absences_import",
+              "url": "civicrm/admin/leaveandabsences/import",
+              "icon": null,
+              "permission": "administer leave and absences",
+              "operator": null,
+              "separator": "0",
+              "parentID": "292",
+              "navID": "298",
+              "active": "1"
+            }
+          }
+        }
+      }
+    }
+  },
+  "236": {
+    "attributes": {
+      "label": "Support",
+      "name": "Support",
+      "url": null,
+      "icon": null,
+      "permission": null,
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "236",
+      "active": "1"
+    },
+    "child": {
+      "237": {
+        "attributes": {
+          "label": "Get started",
+          "name": "Get started",
+          "url": "https://civicrm.org/get-started?src=iam",
+          "icon": null,
+          "permission": null,
+          "operator": "AND",
+          "separator": null,
+          "parentID": "236",
+          "navID": "237",
+          "active": "1"
+        }
+      },
+      "238": {
+        "attributes": {
+          "label": "Documentation",
+          "name": "Documentation",
+          "url": "https://civicrm.org/documentation?src=iam",
+          "icon": null,
+          "permission": null,
+          "operator": "AND",
+          "separator": null,
+          "parentID": "236",
+          "navID": "238",
+          "active": "1"
+        }
+      },
+      "239": {
+        "attributes": {
+          "label": "Ask a question",
+          "name": "Ask a question",
+          "url": "https://civicrm.org/ask-a-question?src=iam",
+          "icon": null,
+          "permission": null,
+          "operator": "AND",
+          "separator": null,
+          "parentID": "236",
+          "navID": "239",
+          "active": "1"
+        }
+      },
+      "240": {
+        "attributes": {
+          "label": "Get expert help",
+          "name": "Get expert help",
+          "url": "https://civicrm.org/experts?src=iam",
+          "icon": null,
+          "permission": null,
+          "operator": "AND",
+          "separator": null,
+          "parentID": "236",
+          "navID": "240",
+          "active": "1"
+        }
+      },
+      "241": {
+        "attributes": {
+          "label": "About CiviCRM",
+          "name": "About CiviCRM",
+          "url": "https://civicrm.org/about?src=iam",
+          "icon": null,
+          "permission": null,
+          "operator": "AND",
+          "separator": "1",
+          "parentID": "236",
+          "navID": "241",
+          "active": "1"
+        }
+      },
+      "242": {
+        "attributes": {
+          "label": "Register your site",
+          "name": "Register your site",
+          "url": "https://civicrm.org/register-your-site?src=iam&sid={sid}",
+          "icon": null,
+          "permission": null,
+          "operator": "AND",
+          "separator": null,
+          "parentID": "236",
+          "navID": "242",
+          "active": "1"
+        }
+      },
+      "243": {
+        "attributes": {
+          "label": "Join CiviCRM",
+          "name": "Join CiviCRM",
+          "url": "https://civicrm.org/become-a-member?src=iam&sid={sid}",
+          "icon": null,
+          "permission": null,
+          "operator": "AND",
+          "separator": null,
+          "parentID": "236",
+          "navID": "243",
+          "active": "1"
+        }
+      },
+      "244": {
+        "attributes": {
+          "label": "Developer",
+          "name": "Developer",
+          "url": null,
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": "",
+          "separator": "1",
+          "parentID": "236",
+          "navID": "244",
+          "active": "1"
+        },
+        "child": {
+          "245": {
+            "attributes": {
+              "label": "API Explorer",
+              "name": "API Explorer",
+              "url": "civicrm/api",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "244",
+              "navID": "245",
+              "active": "1"
+            }
+          },
+          "246": {
+            "attributes": {
+              "label": "Developer Docs",
+              "name": "Developer Docs",
+              "url": "https://civicrm.org/developer-documentation?src=iam",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "244",
+              "navID": "246",
+              "active": "1"
+            }
+          }
+        }
+      }
+    }
+  },
+  "247": {
+    "attributes": {
+      "label": "Reports",
+      "name": "Reports",
+      "url": null,
+      "icon": null,
+      "permission": "access CiviReport",
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "247",
+      "active": "1"
+    },
+    "child": {
+      "248": {
+        "attributes": {
+          "label": "Contact Reports",
+          "name": "Contact Reports",
+          "url": "civicrm/report/list?compid=99&reset=1",
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": "",
+          "separator": "0",
+          "parentID": "247",
+          "navID": "248",
+          "active": "1"
+        }
+      },
+      "249": {
+        "attributes": {
+          "label": "Contribution Reports",
+          "name": "Contribution Reports",
+          "url": "civicrm/report/list?compid=2&reset=1",
+          "icon": null,
+          "permission": "access CiviContribute",
+          "operator": "",
+          "separator": "0",
+          "parentID": "247",
+          "navID": "249",
+          "active": "1"
+        }
+      },
+      "250": {
+        "attributes": {
+          "label": "Pledge Reports",
+          "name": "Pledge Reports",
+          "url": "civicrm/report/list?compid=6&reset=1",
+          "icon": null,
+          "permission": "access CiviPledge",
+          "operator": "",
+          "separator": "0",
+          "parentID": "247",
+          "navID": "250",
+          "active": "1"
+        }
+      },
+      "251": {
+        "attributes": {
+          "label": "Event Reports",
+          "name": "Event Reports",
+          "url": "civicrm/report/list?compid=1&reset=1",
+          "icon": null,
+          "permission": "access CiviEvent",
+          "operator": "",
+          "separator": "0",
+          "parentID": "247",
+          "navID": "251",
+          "active": "1"
+        }
+      },
+      "252": {
+        "attributes": {
+          "label": "Mailing Reports",
+          "name": "Mailing Reports",
+          "url": "civicrm/report/list?compid=4&reset=1",
+          "icon": null,
+          "permission": "access CiviMail",
+          "operator": "",
+          "separator": "0",
+          "parentID": "247",
+          "navID": "252",
+          "active": "1"
+        }
+      },
+      "253": {
+        "attributes": {
+          "label": "Membership Reports",
+          "name": "Membership Reports",
+          "url": "civicrm/report/list?compid=3&reset=1",
+          "icon": null,
+          "permission": "access CiviMember",
+          "operator": "",
+          "separator": "0",
+          "parentID": "247",
+          "navID": "253",
+          "active": "1"
+        }
+      },
+      "254": {
+        "attributes": {
+          "label": "Campaign Reports",
+          "name": "Campaign Reports",
+          "url": "civicrm/report/list?compid=9&reset=1",
+          "icon": null,
+          "permission": "interview campaign contacts,release campaign contacts,reserve campaign contacts,manage campaign,administer CiviCampaign,gotv campaign contacts",
+          "operator": "OR",
+          "separator": "0",
+          "parentID": "247",
+          "navID": "254",
+          "active": "1"
+        }
+      },
+      "255": {
+        "attributes": {
+          "label": "Case Reports",
+          "name": "Case Reports",
+          "url": "civicrm/report/list?compid=7&reset=1",
+          "icon": null,
+          "permission": "access my cases and activities,access all cases and activities,administer CiviCase",
+          "operator": "OR",
+          "separator": "0",
+          "parentID": "247",
+          "navID": "255",
+          "active": "1"
+        }
+      },
+      "256": {
+        "attributes": {
+          "label": "Grant Reports",
+          "name": "Grant Reports",
+          "url": "civicrm/report/list?compid=5&reset=1",
+          "icon": null,
+          "permission": "access CiviGrant",
+          "operator": "",
+          "separator": "0",
+          "parentID": "247",
+          "navID": "256",
+          "active": "1"
+        }
+      },
+      "257": {
+        "attributes": {
+          "label": "All Reports",
+          "name": "All Reports",
+          "url": "civicrm/report/list?reset=1",
+          "icon": null,
+          "permission": "access CiviReport",
+          "operator": "",
+          "separator": "1",
+          "parentID": "247",
+          "navID": "257",
+          "active": "1"
+        }
+      },
+      "258": {
+        "attributes": {
+          "label": "My Reports",
+          "name": "My Reports",
+          "url": "civicrm/report/list?myreports=1&reset=1",
+          "icon": null,
+          "permission": "access CiviReport",
+          "operator": "",
+          "separator": "1",
+          "parentID": "247",
+          "navID": "258",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "264": {
+    "attributes": {
+      "label": "Reports",
+      "name": "hr-reports",
+      "url": "civicrm/reports",
+      "icon": "fa fa-table",
+      "permission": "access hrreports",
+      "operator": null,
+      "separator": null,
+      "parentID": null,
+      "navID": "264",
+      "active": "1"
+    }
+  },
+  "283": {
+    "attributes": {
+      "label": "Tasks",
+      "name": "tasksassignments",
+      "url": "",
+      "icon": "crm-i fa-list-ul",
+      "permission": "access Tasks and Assignments",
+      "operator": null,
+      "separator": null,
+      "parentID": null,
+      "navID": "283",
+      "active": "1"
+    },
+    "child": {
+      "287": {
+        "attributes": {
+          "label": "Tasks",
+          "name": "ta_dashboard_tasks",
+          "url": "civicrm/tasksassignments/dashboard#/tasks",
+          "icon": null,
+          "permission": null,
+          "operator": null,
+          "separator": "0",
+          "parentID": "283",
+          "navID": "287",
+          "active": "1"
+        }
+      },
+      "288": {
+        "attributes": {
+          "label": "Documents",
+          "name": "ta_dashboard_documents",
+          "url": "civicrm/tasksassignments/dashboard#/documents",
+          "icon": null,
+          "permission": null,
+          "operator": null,
+          "separator": "0",
+          "parentID": "283",
+          "navID": "288",
+          "active": "1"
+        }
+      },
+      "289": {
+        "attributes": {
+          "label": "Calendar",
+          "name": "ta_dashboard_calendar",
+          "url": "civicrm/tasksassignments/dashboard#/calendar",
+          "icon": null,
+          "permission": null,
+          "operator": null,
+          "separator": "0",
+          "parentID": "283",
+          "navID": "289",
+          "active": "1"
+        }
+      },
+      "290": {
+        "attributes": {
+          "label": "Key Dates",
+          "name": "ta_dashboard_keydates",
+          "url": "civicrm/tasksassignments/dashboard#/key-dates",
+          "icon": null,
+          "permission": null,
+          "operator": null,
+          "separator": "0",
+          "parentID": "283",
+          "navID": "290",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "291": {
+    "attributes": {
+      "label": "Leave",
+      "name": "leave_and_absences_dashboard",
+      "url": null,
+      "icon": "crm-i fa-briefcase",
+      "permission": "access leave and absences",
+      "operator": null,
+      "separator": null,
+      "parentID": null,
+      "navID": "291",
+      "active": "1"
+    },
+    "child": {
+      "299": {
+        "attributes": {
+          "label": "Leave Requests",
+          "name": "leave_and_absences_leave_requests",
+          "url": "civicrm/leaveandabsences/dashboard#/requests",
+          "icon": null,
+          "permission": null,
+          "operator": null,
+          "separator": "0",
+          "parentID": "291",
+          "navID": "299",
+          "active": "1"
+        }
+      },
+      "300": {
+        "attributes": {
+          "label": "Leave Calendar",
+          "name": "leave_and_absences_leave_calendar",
+          "url": "civicrm/leaveandabsences/dashboard#/calendar",
+          "icon": null,
+          "permission": null,
+          "operator": null,
+          "separator": "0",
+          "parentID": "291",
+          "navID": "300",
+          "active": "1"
+        }
+      },
+      "301": {
+        "attributes": {
+          "label": "Leave Balances",
+          "name": "leave_and_absences_leave_balances",
+          "url": "civicrm/leaveandabsences/dashboard#/leave-balances",
+          "icon": null,
+          "permission": null,
+          "operator": null,
+          "separator": "0",
+          "parentID": "291",
+          "navID": "301",
+          "active": "1"
+        }
+      }
+    }
+  },
+  "303": {
+    "attributes": {
+      "label": "Recruitment",
+      "name": "Vacancies",
+      "url": null,
+      "icon": "crm-i fa-user-plus",
+      "permission": null,
+      "operator": null,
+      "separator": null,
+      "parentID": null,
+      "navID": "303",
+      "active": "1"
+    },
+    "child": {
+      "304": {
+        "attributes": {
+          "label": "Dashboard",
+          "name": "dashboard",
+          "url": "civicrm/vacancy/dashboard?reset=1",
+          "icon": null,
+          "permission": "view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM",
+          "operator": "OR",
+          "separator": "0",
+          "parentID": "303",
+          "navID": "304",
+          "active": "1"
+        }
+      },
+      "305": {
+        "attributes": {
+          "label": "Public Vacancy List",
+          "name": "public_list",
+          "url": "civicrm/vacancy/publiclisting?reset=1",
+          "icon": null,
+          "permission": null,
+          "operator": null,
+          "separator": "1",
+          "parentID": "303",
+          "navID": "305",
+          "active": "1"
+        }
+      },
+      "306": {
+        "attributes": {
+          "label": "New Vacancy",
+          "name": "new_vacancy",
+          "url": "civicrm/vacancy/add?reset=1",
+          "icon": null,
+          "permission": "administer Vacancy, administer CiviCRM",
+          "operator": "OR",
+          "separator": "0",
+          "parentID": "303",
+          "navID": "306",
+          "active": "1"
+        }
+      },
+      "307": {
+        "attributes": {
+          "label": "New Template",
+          "name": "new_template",
+          "url": "civicrm/vacancy/add?reset=1&template=1",
+          "icon": null,
+          "permission": "administer Vacancy, administer CiviCRM",
+          "operator": "OR",
+          "separator": "0",
+          "parentID": "303",
+          "navID": "307",
+          "active": "1"
+        }
+      },
+      "308": {
+        "attributes": {
+          "label": "New Applicant",
+          "name": "new_applicant",
+          "url": null,
+          "icon": null,
+          "permission": null,
+          "operator": null,
+          "separator": "1",
+          "parentID": "303",
+          "navID": "308",
+          "active": "1"
+        }
+      },
+      "309": {
+        "attributes": {
+          "label": "Find Vacancies",
+          "name": "find_vacancies",
+          "url": "civicrm/vacancy/find?reset=1",
+          "icon": null,
+          "permission": "view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM",
+          "operator": "OR",
+          "separator": "0",
+          "parentID": "303",
+          "navID": "309",
+          "active": "1"
+        }
+      },
+      "310": {
+        "attributes": {
+          "label": "Find Templates",
+          "name": "find_templates",
+          "url": "civicrm/vacancy/find?reset=1&template=1",
+          "icon": null,
+          "permission": "view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM",
+          "operator": "OR",
+          "separator": "0",
+          "parentID": "303",
+          "navID": "310",
+          "active": "1"
+        }
+      },
+      "311": {
+        "attributes": {
+          "label": "Search by Application Form Fields",
+          "name": "find_application",
+          "url": "civicrm/case/search?force=1&type=5&reset=1",
+          "icon": null,
+          "permission": "view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM",
+          "operator": "OR",
+          "separator": "0",
+          "parentID": "303",
+          "navID": "311",
+          "active": "1"
+        }
+      },
+      "312": {
+        "attributes": {
+          "label": "Search by Evaluation Criteria",
+          "name": "find_evaluation",
+          "url": "civicrm/activity/search?force=1&type=114&reset=1",
+          "icon": null,
+          "permission": "view Applicants, manage Applicants, evaluate Applicants, administer Vacancy, administer CiviCRM",
+          "operator": "OR",
+          "separator": "0",
+          "parentID": "303",
+          "navID": "312",
+          "active": "1"
+        }
+      }
+    }
+  }
+}
