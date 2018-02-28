@@ -1,19 +1,21 @@
 /* eslint-env amd, jasmine */
 
 define([
+  'common/angular',
   'common/lodash',
   'common/moment',
   'mocks/data/contract.data',
   'mocks/data/insurance-plan-types.data',
   'job-contract/modules/job-contract.module'
-], function (_, moment, MockContract, InsurancePlanTypesMock) {
+], function (angular, _, moment, MockContract, InsurancePlanTypesMock) {
   'use strict';
 
   describe('ModalContractController', function () {
     var $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock,
       $uibModalMock, contractDetailsService, contractHealthService,
       contractHourService, contractLeaveService, contractPayService,
-      contractPensionService, contractRevisionService, contractService, settings;
+      contractPensionService, contractRevisionService, contractService, settings,
+      utilsService;
     var today = moment().format('YYYY-MM-DD');
 
     beforeEach(module('job-contract'));
@@ -38,7 +40,7 @@ define([
     beforeEach(inject(function (_$controller_, _$rootScope_, _$httpBackend_, _$q_,
       _contractDetailsService_, _contractHealthService_, _contractHourService_,
       _contractLeaveService_, _contractPayService_, _contractPensionService_,
-      _contractService_, _settings_) {
+      _contractService_, _settings_, _utilsService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
@@ -51,6 +53,7 @@ define([
       contractPensionService = _contractPensionService_;
       contractService = _contractService_;
       settings = _settings_;
+      utilsService = _utilsService_;
     }));
 
     beforeEach(function () {
@@ -75,9 +78,6 @@ define([
     beforeEach(function () {
       var health = {};
 
-      contractRevisionService.validateEffectiveDate
-        .and.returnValue($q.resolve({ success: true }));
-
       $rootScope.$digest();
       health.plan_type = {};
       health.plan_type_life_insurance = {};
@@ -87,6 +87,9 @@ define([
     });
 
     beforeEach(function () {
+      contractRevisionService.validateEffectiveDate
+        .and.returnValue($q.resolve({ success: true }));
+
       mockUIBModalInstance();
       mockUIBModal({
         ModalDialogController: 'edit'
@@ -95,6 +98,7 @@ define([
       makeController();
       createContractDetailsServiceSpy(true);
       addSpiesToServicesSaveMethod();
+      spyOn(contractService, 'saveRevision').and.callThrough();
     });
 
     describe('init()', function () {
@@ -335,11 +339,13 @@ define([
     });
 
     describe('Saving the change revision', function () {
+      var changeReason = 123;
+
       beforeEach(function () {
         mockUIBModal({
           ModalDialogController: 'change',
           ModalChangeReasonController: {
-            reasonId: 1,
+            reasonId: changeReason,
             date: today
           }
         });
@@ -377,6 +383,76 @@ define([
 
         it('displays an error message', function () {
           expect(CRM.alert).toHaveBeenCalledWith('Message', 'Error', 'error');
+        });
+      });
+
+      describe('when the contract dates are valid', function () {
+        describe('when changes were made to the contract', function () {
+          var expectedEntity, revisionId;
+
+          beforeEach(function () {
+            revisionId = $scope.entity.details.jobcontract_revision_id;
+
+            $scope.entity.details.title = 'new job title';
+            $scope.entity.hour.hours_amount += 10;
+            $scope.entity.pay.is_paid = !$scope.entity.pay.is_paid;
+            $scope.entity.leave = [{ id: 1, leave_amount: 12 }];
+            $scope.entity.health.description = 'new health description';
+            $scope.entity.pension.er_contrib_pct += 10;
+            $scope.entity.details.funding_notes = 'new funding note';
+
+            expectedEntity = angular.copy($scope.entity);
+
+            utilsService.prepareEntityIds(expectedEntity.details, expectedEntity.contract.id);
+            utilsService.prepareEntityIds(expectedEntity.hour, expectedEntity.contract.id, revisionId);
+            utilsService.prepareEntityIds(expectedEntity.pay, expectedEntity.contract.id, revisionId);
+            utilsService.prepareEntityIds(expectedEntity.leave, expectedEntity.contract.id, revisionId);
+            utilsService.prepareEntityIds(expectedEntity.health, expectedEntity.contract.id, revisionId);
+            utilsService.prepareEntityIds(expectedEntity.pension, expectedEntity.contract.id, revisionId);
+
+            $scope.save();
+            $scope.$digest();
+          });
+
+          it('calls all the corresponding services', function () {
+            expect(contractDetailsService.save).toHaveBeenCalledWith(expectedEntity.details);
+            expect(contractHourService.save).toHaveBeenCalledWith(expectedEntity.hour);
+            expect(contractPayService.save).toHaveBeenCalledWith(expectedEntity.pay);
+            expect(contractLeaveService.save).toHaveBeenCalledWith(expectedEntity.leave);
+            expect(contractHealthService.save).toHaveBeenCalledWith(expectedEntity.health);
+            expect(contractPensionService.save).toHaveBeenCalledWith(expectedEntity.pension);
+          });
+
+          it('saves the contract revision', function () {
+            expect(contractService.saveRevision).toHaveBeenCalledWith({
+              id: revisionId,
+              change_reason: changeReason,
+              effective_date: today
+            });
+          });
+        });
+
+        describe('when no changes were made to the contract', function () {
+          beforeEach(function () {
+            $scope.save();
+            $scope.$digest();
+          });
+
+          it('saves the contract details', function () {
+            expect(contractDetailsService.save).toHaveBeenCalled();
+          });
+
+          it('does not save any other contract data', function () {
+            expect(contractHourService.save).not.toHaveBeenCalled();
+            expect(contractPayService.save).not.toHaveBeenCalled();
+            expect(contractLeaveService.save).not.toHaveBeenCalled();
+            expect(contractHealthService.save).not.toHaveBeenCalled();
+            expect(contractPensionService.save).not.toHaveBeenCalled();
+          });
+
+          it('saves the contract revision', function () {
+            expect(contractService.saveRevision).toHaveBeenCalled();
+          });
         });
       });
     });

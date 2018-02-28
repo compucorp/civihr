@@ -561,9 +561,9 @@ define([
           revisionId = !angular.isArray(results) ? results.jobcontract_revision_id : results[0].jobcontract_revision_id;
           promiseContractChange[entityChangedList[0].name] = results;
 
-          entityChangedList.slice(1).forEach(function (entity) {
-            utilsService.prepareEntityIds(entity.data, entity.contract.id, revisionId);
-            promiseContractChange[entity.name] = entity.service.save(entity.data);
+          entityChangedList.slice(1).forEach(function (entityChange) {
+            utilsService.prepareEntityIds(entityChange.data, entity.contract.id, revisionId);
+            promiseContractChange[entityChange.name] = entityChange.service.save(entityChange.data);
           });
 
           return $q.all(angular.extend(promiseContractChange, {
