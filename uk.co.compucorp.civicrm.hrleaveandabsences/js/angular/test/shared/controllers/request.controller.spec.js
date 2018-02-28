@@ -790,7 +790,27 @@
           expect(AbsenceTypeAPI.all).not.toHaveBeenCalled();
         });
 
+        describe('before contact is selected', function () {
+          it('sets post contact selection as false', function () {
+            expect(controller.postContactSelection).toBe(false);
+          });
+
+          it('sets staff member selection as false', function () {
+            expect(controller.staffMemberSelectionComplete).toBe(false);
+          });
+        });
+
         describe('after contact is selected', function () {
+          describe('when loading entitlements for the staff', function () {
+            beforeEach(function () {
+              controller.initAfterContactSelection();
+            });
+
+            it('sets post contact selection as true', function () {
+              expect(controller.postContactSelection).toBe(true);
+            });
+          });
+
           describe('when entitlement is present', function () {
             var approvalStatus;
 
@@ -817,6 +837,14 @@
               expect(controller.newStatusOnSave).toEqual(approvalStatus);
             });
 
+            it('sets post contact selection back to false', function () {
+              expect(controller.postContactSelection).toBe(false);
+            });
+
+            it('sets staff member selection as true', function () {
+              expect(controller.staffMemberSelectionComplete).toBe(true);
+            });
+
             describe('cancelled status', function () {
               var cancelStatus, availableStatuses;
 
@@ -828,6 +856,30 @@
               it('is not available', function () {
                 expect(availableStatuses).not.toContain(cancelStatus);
               });
+            });
+
+            describe('and then select a staff without entitlements', function () {
+              beforeEach(function () {
+                EntitlementAPI.all.and.returnValue($q.resolve([]));
+                controller.initAfterContactSelection();
+                $scope.$digest();
+              });
+
+              it('sets staff member selection complete as false', function () {
+                expect(controller.staffMemberSelectionComplete).toBe(false);
+              });
+            });
+          });
+
+          describe('when no entitlements are present', function () {
+            beforeEach(function () {
+              EntitlementAPI.all.and.returnValue($q.resolve([]));
+              controller.initAfterContactSelection();
+              $scope.$digest();
+            });
+
+            it('sets staff member selection complete as false', function () {
+              expect(controller.staffMemberSelectionComplete).toBe(false);
             });
           });
         });

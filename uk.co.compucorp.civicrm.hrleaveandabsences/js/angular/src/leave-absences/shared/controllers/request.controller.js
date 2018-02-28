@@ -443,6 +443,7 @@ define([
      */
     function initAfterContactSelection () {
       vm.postContactSelection = true;
+      vm.staffMemberSelectionComplete = false;
 
       // when manager deselects contact it is called without a selected contact_id
       if (!vm.request.contact_id) {
