@@ -13,11 +13,17 @@ define([
     var $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock,
       $uibModalMock, contractDetailsService, contractHealthService,
       contractHourService, contractLeaveService, contractPayService,
-      contractPensionService, contractService;
+      contractPensionService, contractRevisionService, contractService, settings;
+    var today = moment().format('YYYY-MM-DD');
 
     beforeEach(module('job-contract'));
 
     beforeEach(module(function ($provide) {
+      contractRevisionService = {
+        validateEffectiveDate: jasmine.createSpy('validateEffectiveDate'),
+        save: jasmine.createSpy('save')
+      };
+
       $provide.factory('contractHealthService', function () {
         return {
           getOptions: function () {},
@@ -25,15 +31,18 @@ define([
           save: jasmine.createSpy()
         };
       });
+
+      $provide.value('contractRevisionService', contractRevisionService);
     }));
 
     beforeEach(inject(function (_$controller_, _$rootScope_, _$httpBackend_, _$q_,
       _contractDetailsService_, _contractHealthService_, _contractHourService_,
       _contractLeaveService_, _contractPayService_, _contractPensionService_,
-      _contractService_) {
+      _contractService_, _settings_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
+      $q = _$q_;
       contractDetailsService = _contractDetailsService_;
       contractHealthService = _contractHealthService_;
       contractHourService = _contractHourService_;
@@ -41,7 +50,7 @@ define([
       contractPayService = _contractPayService_;
       contractPensionService = _contractPensionService_;
       contractService = _contractService_;
-      $q = _$q_;
+      settings = _settings_;
     }));
 
     beforeEach(function () {
@@ -66,6 +75,9 @@ define([
     beforeEach(function () {
       var health = {};
 
+      contractRevisionService.validateEffectiveDate
+        .and.returnValue($q.resolve({ success: true }));
+
       $rootScope.$digest();
       health.plan_type = {};
       health.plan_type_life_insurance = {};
@@ -76,7 +88,9 @@ define([
 
     beforeEach(function () {
       mockUIBModalInstance();
-      mockUIBModal('edit');
+      mockUIBModal({
+        ModalDialogController: 'edit'
+      });
       contractHealthServiceSpy();
       makeController();
       createContractDetailsServiceSpy(true);
@@ -118,11 +132,9 @@ define([
         });
 
         it('gets confirmation fron user to save contract data', function () {
-          expect($uibModalMock.open).toHaveBeenCalled();
-
-          $uibModalMock.open().result.then(function (data) {
-            expect(data).toBe('edit');
-          });
+          expect($uibModalMock.open).toHaveBeenCalledWith(jasmine.objectContaining({
+            controller: 'ModalDialogController'
+          }));
         });
       });
 
@@ -322,6 +334,53 @@ define([
       });
     });
 
+    describe('Saving the change revision', function () {
+      beforeEach(function () {
+        mockUIBModal({
+          ModalDialogController: 'change',
+          ModalChangeReasonController: {
+            reasonId: 1,
+            date: today
+          }
+        });
+        makeController({ action: 'change' });
+      });
+
+      describe('normal behaviour', function () {
+        beforeEach(function () {
+          $scope.save();
+          $scope.$digest();
+        });
+
+        it('opens the revision modal', function () {
+          expect($uibModalMock.open).toHaveBeenCalledWith(jasmine.objectContaining({
+            controller: 'ModalChangeReasonController'
+          }));
+        });
+
+        it('validates the contract revision effective date', function () {
+          expect(contractRevisionService.validateEffectiveDate).toHaveBeenCalledWith({
+            contact_id: settings.contactId,
+            effective_date: today
+          });
+        });
+      });
+
+      describe('when the contract dates are not valid', function () {
+        beforeEach(function () {
+          spyOn(CRM, 'alert');
+          contractRevisionService.validateEffectiveDate
+            .and.returnValue($q.resolve({ success: false, message: 'Message' }));
+          $scope.save();
+          $scope.$digest();
+        });
+
+        it('displays an error message', function () {
+          expect(CRM.alert).toHaveBeenCalledWith('Message', 'Error', 'error');
+        });
+      });
+    });
+
     /**
      * Add spies and return values to the save methods of the different services
      * used by the job contract.
@@ -375,15 +434,20 @@ define([
     }
 
     /**
-     * Mocks the $modal.open method.
+     * Mocks the $modal.open method and their results
+     *
+     * @param {Object} controllersAndResults - a map of the controller's name
+     * and the result will it return when the modal is closed.
      */
-    function mockUIBModal (mode) {
+    function mockUIBModal (controllersAndResults) {
       $uibModalMock = {
-        open: jasmine.createSpy('open').and.callFake(function () {
+        open: jasmine.createSpy('open').and.callFake(function (options) {
           return {
             result: {
               then: function (callback) {
-                callback(mode);
+                var result = controllersAndResults[options.controller];
+
+                callback(result);
               }
             }
           };
