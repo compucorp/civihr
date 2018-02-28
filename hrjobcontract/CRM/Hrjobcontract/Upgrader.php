@@ -165,7 +165,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
     ");
     CRM_Core_DAO::executeQuery("
-      INSERT INTO `civicrm_hrhours_location` (`id`, `location`, `standard_hours`, `periodicity`, `is_active`) 
+      INSERT INTO `civicrm_hrhours_location` (`id`, `location`, `standard_hours`, `periodicity`, `is_active`)
       VALUES (1, 'Head office', 40, 'Week', 1)
     ");
 
@@ -925,7 +925,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     if (empty($data)) {
       CRM_Core_DAO::executeQuery("
-        INSERT INTO `civicrm_hrpay_scale` (`pay_scale`, `pay_grade`, `currency`, `amount`, `periodicity`, `is_active`) 
+        INSERT INTO `civicrm_hrpay_scale` (`pay_scale`, `pay_grade`, `currency`, `amount`, `periodicity`, `is_active`)
         VALUES ('Not Applicable', NULL, NULL, NULL, NULL, 1)
     ");
     }
@@ -1007,8 +1007,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    */
   public function upgrade_1026() {
     $query = "
-      ALTER TABLE `civicrm_hrjobcontract_hour` 
-      CHANGE `fte_num` `fte_num` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT '.', 
+      ALTER TABLE `civicrm_hrjobcontract_hour`
+      CHANGE `fte_num` `fte_num` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT '.',
       CHANGE `fte_denom` `fte_denom` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT '.'
     ";
     CRM_Core_DAO::executeQuery($query);
@@ -1163,12 +1163,16 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1034() {
-    civicrm_api3('CustomGroup', 'get', [
+    $result = civicrm_api3('CustomGroup', 'get', array(
       'sequential' => 1,
       'return' => ['id'],
       'name' => 'Contact_Length_Of_Service',
-      'api.CustomGroup.create' => ['id' => '\$value.id', 'is_reserved' => 1],
-    ]);
+    ));
+  
+    civicrm_api3('CustomGroup', 'create', array(
+      'id' => $result['id'],
+      'is_reserved' => 1,
+    ));
 
     return TRUE;
   }

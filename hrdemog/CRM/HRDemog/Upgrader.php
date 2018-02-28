@@ -168,11 +168,15 @@ class CRM_HRDemog_Upgrader extends CRM_HRDemog_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1401() {
-    civicrm_api3('CustomGroup', 'get', [
+    $result = civicrm_api3('CustomGroup', 'get', [
       'sequential' => 1,
       'return' => ['id'],
       'name' => 'Extended_Demographics',
-      'api.CustomGroup.create' => ['id' => '\$value.id', 'is_reserved' => 1],
+    ]);
+  
+    civicrm_api3('CustomGroup', 'create', [
+      'id' => $result['id'],
+      'is_reserved' => 1,
     ]);
 
     return TRUE;

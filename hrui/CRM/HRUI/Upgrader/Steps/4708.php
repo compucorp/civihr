@@ -8,13 +8,17 @@ trait CRM_HRUI_Upgrader_Steps_4708 {
    * @return bool
    */
   public function upgrade_4708() {
-    civicrm_api3('CustomGroup', 'get', [
+    $result = civicrm_api3('CustomGroup', 'get', [
       'sequential' => 1,
       'return' => ['id'],
       'name' => 'Inline_Custom_Data',
-      'api.CustomGroup.create' => ['id' => '\$value.id', 'is_reserved' => 1],
     ]);
-
+  
+    civicrm_api3('CustomGroup', 'create', [
+      'id' => $result['id'],
+      'is_reserved' => 1,
+    ]);
+    
     return TRUE;
   }
 

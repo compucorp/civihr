@@ -56,12 +56,18 @@ class CRM_HRRecruitment_Upgrader extends CRM_HRRecruitment_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1403() {
-    civicrm_api3('CustomGroup', 'get', [
+    $result = civicrm_api3('CustomGroup', 'get', [
       'sequential' => 1,
       'return' => ['id'],
       'name' => ['IN' => ['Application', 'application_case', 'Evaluation_fields']],
-      'api.CustomGroup.create' => ['id' => '\$value.id', 'is_reserved' => 1],
     ]);
+  
+    foreach ($result['values'] as $value) {
+      civicrm_api3('CustomGroup', 'create', [
+        'id' => $value['id'],
+        'is_reserved' => 1,
+      ]);
+    }
 
     return TRUE;
   }
