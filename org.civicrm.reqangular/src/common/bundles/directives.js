@@ -6,7 +6,8 @@ define([
   'common/directives/loading',
   'common/directives/prevent-animations',
   'common/directives/timepicker-select.directive',
-  'common/directives/time-amount-picker.directive'
+  'common/directives/time-amount-picker.directive',
+  'common/directives/horizontal-scroll-shadows.directive'
 ], function () {
 
 });
