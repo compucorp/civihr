@@ -1,0 +1,40 @@
+.horizontal-scroll-shadows-master {
+  overflow: hidden; // this ensures the shadows are hidden behind
+  position: relative;
+}
+
+.horizontal-scroll-shadows-wrapper {
+  overflow-x: auto;
+
+  &::before,
+  &::after {
+    box-shadow: 0 0 10px 1px rgba(48, 40, 40, 0.5);
+    content: '';
+    display: block;
+    height: calc(100% - 10px); // if height is 100% then the shadow will be cut off
+    opacity: 0; // by default the shadows are invisible
+    position: absolute;
+    top: 5px;
+    transition: opacity 0.2s ease-out;
+    width: 1px; // in order to make the shadow appear
+    z-index: 1; // in order to appear on top of the inset content
+  }
+
+  &::before {
+    left: -1px; // This hides the actual object leaving the shadow still visible
+  }
+
+  &::after {
+    right: -1px;
+  }
+
+  &.insetShadowLeft::before,
+  &.insetShadowRight::after {
+    opacity: 1;
+  }
+
+  .horizontal-scroll-shadows-content {
+    display: inline-block; // to appear with :after and :before properly
+    min-width: 100%; // otherwise it will shrink the content with less than 100% width
+  }
+}
