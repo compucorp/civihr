@@ -965,9 +965,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $leaveRequest = new self();
     $leaveRequest->copyValues($params);
-
     $datePeriod = new BasicDatePeriod($fromDate, $toDate);
-    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
 
     $resultsBreakdown = [
       'amount' => 0,
@@ -980,6 +978,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $isCalculationUnitInHours = $absenceType->isCalculationUnitInHours();
     $dateDeductionService = LeaveDateAmountDeductionFactory::createForAbsenceType($leaveRequest->type_id);
     $contactWorkPatternService = new ContactWorkPatternService();
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
+    $leaveDateDayTypes = self::getLeaveDayTypesForLeaveRequestDates($fromDate, $toDate, $contactId);
 
     foreach ($datePeriod as $date) {
       if($excludeStartAndEndDates) {
@@ -987,16 +987,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
           continue;
         }
       }
-      $publicHolidayLeaveRequestExists = self::publicHolidayLeaveRequestExists($contactId, $date);
+
+      $dayType = $leaveDateDayTypes[$date->format('Y-m-d')];
+      $publicHolidayLeaveRequestExists = $dayType == $leaveRequestDayTypes['public_holiday'];
 
       if ($publicHolidayLeaveRequestExists) {
         $amount = 0.0;
-        $dayType = $leaveRequestDayTypes['public_holiday'];
       }
 
       if(!$publicHolidayLeaveRequestExists){
-        $type = ContactWorkPattern::getWorkDayType($contactId, $date);
-        $dayType = self::getLeaveRequestDayTypeFromWorkDayType($type);
         $amount = LeaveBalanceChange::calculateAmountForDate(
           $leaveRequest,
           $date,
@@ -1027,6 +1026,38 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     return $resultsBreakdown;
+  }
+
+  /**
+   * Gets the Leave Day type for each of the date in the the leave request date range
+   * for the contact.
+   *
+   * @param \DateTime $fromDate
+   * @param \DateTime $toDate
+   * @param int $contactID
+   *
+   * @return array
+   */
+  private static function getLeaveDayTypesForLeaveRequestDates(DateTime $fromDate, DateTime $toDate, $contactID) {
+    $datePeriod = new BasicDatePeriod($fromDate, $toDate);
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
+    $leaveDateDayTypes = [];
+    foreach ($datePeriod as $date) {
+      $publicHolidayLeaveRequestExists = self::publicHolidayLeaveRequestExists($contactID, $date);
+
+      if ($publicHolidayLeaveRequestExists) {
+        $dayType = $leaveRequestDayTypes['public_holiday'];
+      }
+
+      if(!$publicHolidayLeaveRequestExists) {
+        $type = ContactWorkPattern::getWorkDayType($contactID, $date);
+        $dayType = self::getLeaveRequestDayTypeFromWorkDayType($type);
+      }
+
+      $leaveDateDayTypes[$date->format('Y-m-d')] = $dayType;
+    }
+
+    return $leaveDateDayTypes;
   }
 
   /**
@@ -1451,18 +1482,19 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private static function getNumberOfWorkingDaysForLeaveRequest($params) {
     $fromDate = new DateTime($params['from_date']);
     $toDate = new DateTime($params['to_date']);
-    $balanceDetails = self::calculateBalanceChange(
-      $params['contact_id'],
-      $fromDate,
-      $toDate,
-      $params['type_id'],
-      !empty($params['from_date_type']) ? $params['from_date_type'] : null,
-      !empty($params['to_date_type']) ? $params['to_date_type'] : null
-    );
+    $leaveDatesDayTypes = self::getLeaveDayTypesForLeaveRequestDates($fromDate, $toDate, $params['contact_id']);
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
 
-    $balanceAmounts = array_column($balanceDetails['breakdown'], 'amount');
-    $balanceAmounts = array_filter($balanceAmounts);
+    $nonWorkingDayTypes = [
+      $leaveRequestDayTypes['non_working_day'],
+      $leaveRequestDayTypes['weekend'],
+      $leaveRequestDayTypes['public_holiday']
+    ];
 
-    return count($balanceAmounts);
+    $leaveDatesDayTypes = array_filter($leaveDatesDayTypes, function($item) use ($nonWorkingDayTypes) {
+      return !in_array($item, $nonWorkingDayTypes);
+    });
+
+    return count($leaveDatesDayTypes);
   }
 }
