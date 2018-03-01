@@ -5,6 +5,9 @@ require_once 'hrcore.civix.php';
 use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
 use CRM_HRCore_SearchTask_ContactFormSearchTaskAdder as ContactFormSearchTaskAdder;
 use Symfony\Component\Config\FileLocator;
+use CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup as WorkflowActionGroupHelper;
+use CRM_HRCore_Service_Manager as ManagerService;
+use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
@@ -37,6 +40,24 @@ function hrcore_civicrm_searchTasks($objectName, &$tasks) {
   }
 }
 
+/**
+ * Implements hook_civicrm_tabset().
+ *
+ * @param string $tabsetName
+ * @param array $tabs
+ * @param array $context
+ */
+function hrcore_civicrm_tabset($tabsetName, &$tabs, $context) {
+  $listeners = [
+    new CRM_HRCore_Hook_Tabset_ActivityTabModifier(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($tabsetName, $tabs, $context);
+  }
+}
+
+
 function hrcore_civicrm_summaryActions( &$actions, $contactID ) {
   $otherActions = CRM_Utils_Array::value('otherActions', $actions, []);
   $userAdd = CRM_Utils_Array::value('user-add', $otherActions, []);
@@ -54,6 +75,28 @@ function hrcore_civicrm_summaryActions( &$actions, $contactID ) {
 }
 
 /**
+ * Implementation of hook_addContactMenuActions to add the
+ * Workflow menu group to the contact actions menu.
+ *
+ * @param ActionsMenu $menu
+ */
+function hrcore_addContactMenuActions(ActionsMenu $menu) {
+  //We need to make sure that the T&A extension is enabled
+  if (ExtensionHelper::isExtensionEnabled('uk.co.compucorp.civicrm.tasksassignments')) {
+    $contactID = empty($_GET['cid']) ? '' : $_GET['cid'];
+    if (!$contactID) {
+      return;
+    }
+
+    $managerService = new ManagerService();
+    $workflowActionGroup = new WorkflowActionGroupHelper($managerService, $contactID);
+    $workflowActionGroup = $workflowActionGroup->get();
+    $workflowActionGroup->setWeight(2);
+    $menu->addToMainPanel($workflowActionGroup);
+  }
+}
+
+/**
  * Implements hook_civicrm_container().
  *
  * @param ContainerBuilder $container
@@ -61,6 +104,23 @@ function hrcore_civicrm_summaryActions( &$actions, $contactID ) {
 function hrcore_civicrm_container($container) {
   $loader = new XmlFileLoader($container, new FileLocator(__DIR__));
   $loader->load('config/container/container.xml');
+}
+
+/**
+ * Implements hook_civicrm_buildForm
+ *
+ * @param string $formName
+ * @param object $form
+ */
+function hrcore_civicrm_buildForm($formName, &$form) {
+  $listeners = [
+    new CRM_HRCore_Hook_BuildForm_ActivityFilterSelectFieldsModifier(),
+    new CRM_HRCore_Hook_BuildForm_ActivityLinksFilter(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($formName, $form);
+  }
 }
 
 /**

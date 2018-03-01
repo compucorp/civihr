@@ -1,29 +1,66 @@
-define([], function () {
+/* eslint-env amd */
+
+define([
+  'common/lodash',
+  'common/modules/controllers'
+], function (_, controllers) {
   'use strict';
 
-  return ['$q', '$scope','$uibModalInstance', 'content', 'onConfirm',
-    function ($q, $scope, $modalInstance, content, onConfirm) {
-      $scope.loading = false
+  controllers.controller('DialogController', DialogController);
 
-      $scope.title = content.title || 'CiviHR';
-      $scope.msg = content.msg || '';
-      $scope.copyConfirm = content.copyConfirm || 'Yes';
-      $scope.copyCancel = content.copyCancel || 'Cancel';
-      $scope.classConfirm = content.classConfirm || 'btn-primary';
+  DialogController.$inject = ['$q', '$scope', '$uibModalInstance', 'options'];
 
-      $scope.confirm = function () {
-        $scope.loading = true;
+  function DialogController ($q, $scope, $modalInstance, options) {
+    $scope.cancel = cancel;
+    $scope.confirm = confirm;
 
-        $q
-          .resolve(onConfirm ? onConfirm() : null)
-          .then(function () {
-            $modalInstance.close(true);
+    (function init () {
+      assignOptionsToScope(options);
+
+      if (options.optionsPromise) {
+        options.optionsPromise()
+          .then(function (_options_) {
+            assignOptionsToScope(_options_);
           });
-      };
+      }
+    }());
 
-      $scope.cancel = function () {
-        $modalInstance.close(false);
-      };
+    /**
+     * Assigns passed options to the $scope,
+     * uses default values for some of options
+     *
+     * @param {Object} options
+     */
+    function assignOptionsToScope (options) {
+      _.assign($scope, _.defaultsDeep(options, {
+        title: 'CiviHR',
+        msg: '',
+        copyConfirm: '',
+        copyCancel: '',
+        classConfirm: 'btn-primary',
+        loading: false
+      }));
     }
-  ];
+
+    /**
+     * Handles cancellation action in the modal
+     */
+    function cancel () {
+      $modalInstance.close(false);
+    }
+
+    /**
+     * Handles confirmation action in the modal
+     */
+    function confirm () {
+      $scope.loading = true;
+
+      $modalInstance.closed.then($scope.onCloseAfterConfirm);
+      $q.resolve()
+        .then($scope.onConfirm)
+        .then(function () {
+          $modalInstance.close(true);
+        });
+    }
+  }
 });

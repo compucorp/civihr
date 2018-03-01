@@ -39,12 +39,12 @@ define([
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (_AbsenceTypeAPIMock_, _WorkPatternAPIMock_, _PublicHolidayAPIMock_, _LeaveRequestAPIMock_, _OptionGroupAPIMock_) {
+    beforeEach(inject(function (_AbsenceTypeAPIMock_, _LeaveRequestAPIMock_, _PublicHolidayAPIMock_, _OptionGroupAPIMock_, _WorkPatternAPIMock_) {
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
-      $provide.value('WorkPatternAPI', _WorkPatternAPIMock_);
-      $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
       $provide.value('LeaveRequestAPI', _LeaveRequestAPIMock_);
       $provide.value('api.optionGroup', _OptionGroupAPIMock_);
+      $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
+      $provide.value('WorkPatternAPI', _WorkPatternAPIMock_);
     }));
 
     beforeEach(inject(['HR_settingsMock', 'shared-settings', function (_HRSettingsMock_, _sharedSettings_) {
@@ -189,7 +189,10 @@ define([
         });
 
         describe('right after from date is selected', function () {
-          it('flushes time deductions immediately');
+          it('flushes time deductions immediately', function () {
+            expect(controller.uiOptions.times.from.amount).toEqual(0);
+            expect(controller.uiOptions.times.to.amount).toEqual(0);
+          });
         });
 
         describe('after from date is selected and it does not belong to any absence period', function () {
@@ -893,6 +896,22 @@ define([
               });
 
               it('recalculates the balance change', function () {
+                expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
+              });
+            });
+
+            describe('if balance change needs to be recalculated on initiation', function () {
+              beforeEach(function () {
+                compileComponent({
+                  mode: 'edit',
+                  request: leaveRequest,
+                  forceRecalculateBalanceChange: true
+                });
+                $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+                $rootScope.$digest();
+              });
+
+              it('recalculates the balance', function () {
                 expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
               });
             });

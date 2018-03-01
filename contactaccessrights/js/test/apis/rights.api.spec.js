@@ -2,19 +2,19 @@
 
 define([
   'common/angularMocks',
-  'access-rights/modules/access-rights.apis'
+  'access-rights/modules/access-rights.module'
 ], function () {
   'use strict';
 
   describe('Right API', function () {
     var apiSpy;
 
-    beforeEach(module('access-rights.apis', function ($provide) {
+    beforeEach(module('access-rights', function ($provide) {
       apiSpy = jasmine.createSpyObj('apiSpy', ['extend', 'sendGET', 'sendPOST']);
       apiSpy.extend.and.returnValue({});
       $provide.value('api', apiSpy);
-      $provide.value('$location', {
-        search: function () {
+      $provide.value('beforeHashQueryParams', {
+        parse: function () {
           return {
             cid: 1
           };

@@ -30,6 +30,9 @@
     "globals": [
       "CRM",
       "inject"
+    ],
+    "ignore": [
+      "templates.js"
     ]
   },
   "stylelint": {

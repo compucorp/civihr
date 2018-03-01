@@ -2,8 +2,7 @@
 ##################################
 fileName=""
 ## List of extensions
-ENTITY_EXTS=( hrabsence \
-hrbank \
+ENTITY_EXTS=( hrbank \
 hrcareer \
 hrcase \
 hrdemog \
@@ -24,7 +23,6 @@ org.civicrm.hremergency \
 com.civicrm.hrjobroles \
 hrjobcontract \
 org.civicrm.reqangular \
-uk.co.compucorp.civicrm.appraisals \
 uk.co.compucorp.civicrm.hrcore \
 uk.co.compucorp.civicrm.hremails \
 uk.co.compucorp.civicrm.hrleaveandabsences \

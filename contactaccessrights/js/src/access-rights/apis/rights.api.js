@@ -4,12 +4,13 @@ define(function () {
   'use strict';
 
   RightsAPI.__name = 'RightsAPI';
-  RightsAPI.$inject = ['api', '$q', '$location'];
+  RightsAPI.$inject = ['api', '$q', 'beforeHashQueryParams'];
 
-  function RightsAPI (api, $q, $location) {
+  function RightsAPI (api, $q, beforeHashQueryParams) {
     var entityName = 'Rights';
+    var queryParams = beforeHashQueryParams.parse();
     var additionalParams = {
-      'contact_id': $location.search().cid
+      'contact_id': queryParams.cid
     };
     return api.extend({
       getLocations: function () {
@@ -21,7 +22,7 @@ define(function () {
       deleteByIds: function (ids) {
         return $q.all(ids.map(function (id) {
           return this.sendPOST(entityName, 'delete', {
-            'contact_id': $location.search().cid,
+            'contact_id': queryParams.cid,
             'id': id
           });
         }.bind(this)));
@@ -29,7 +30,7 @@ define(function () {
       saveRegions: function (ids) {
         return $q.all(ids.map(function (id) {
           return this.sendPOST(entityName, 'create', {
-            'contact_id': $location.search().cid,
+            'contact_id': queryParams.cid,
             'entity_id': id,
             'entity_type': 'hrjc_region'
           });
@@ -38,7 +39,7 @@ define(function () {
       saveLocations: function (ids) {
         return $q.all(ids.map(function (id) {
           return this.sendPOST(entityName, 'create', {
-            'contact_id': $location.search().cid,
+            'contact_id': queryParams.cid,
             'entity_id': id,
             'entity_type': 'hrjc_location'
           });

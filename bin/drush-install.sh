@@ -34,7 +34,8 @@ org.civicrm.reqangular,\
 org.civicrm.contactsummary,\
 org.civicrm.shoreditch,\
 org.civicrm.bootstrapcivihr,\
-org.civicrm.styleguide
+org.civicrm.styleguide,\
+uk.co.compucorp.civicrm.hrcontactactionsmenu
 
 ##################################
 ## Main
@@ -44,7 +45,11 @@ CIVI_PATH=$1
 shift
 
 set -ex
-drush "$@" cvapi extension.install keys=$CORE_EXTS,$ENTITY_EXTS,$APP_EXTS
+drush "$@" cvapi extension.install keys=$CORE_EXTS
+drush cvapi Extension.refresh
+drush "$@" cvapi extension.install keys=$ENTITY_EXTS
+drush cvapi Extension.refresh
+drush "$@" cvapi extension.install keys=$APP_EXTS
 set +ex
 
 if [ "$WITH_HR_SAMPLE" == "1" ]; then

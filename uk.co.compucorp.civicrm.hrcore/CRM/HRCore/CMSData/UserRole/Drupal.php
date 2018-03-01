@@ -26,7 +26,13 @@ class CRM_HRCore_CMSData_UserRole_Drupal implements UserRoleInterface {
    *
    * @return array
    */
-  public function getRoles() {
-    return $this->user->roles;
+  public function getRoles($excludeAuthenticatedRole = FALSE) {
+    $roles = $this->user->roles;
+
+    if ($excludeAuthenticatedRole) {
+      unset($roles[DRUPAL_AUTHENTICATED_RID]);
+    }
+
+    return $roles;
   }
 }

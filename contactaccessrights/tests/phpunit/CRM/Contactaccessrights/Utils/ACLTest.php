@@ -1,7 +1,5 @@
 <?php
 
-use Civi\Test\HeadlessInterface;
-use Civi\Test\TransactionalInterface;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 use CRM_Contactaccessrights_Test_Fabricator_Rights as RightsFabricator;
@@ -9,24 +7,10 @@ use CRM_Contactaccessrights_Test_Fabricator_Rights as RightsFabricator;
 /**
  * Class CRM_Contactaccessrights_BAO_RightsTest
  * Tests Rights BAO class for contact's access rights to civicrm.
- * 
+ *
  * @group headless
  */
-class CRM_Contactaccessrights_Utils_ACLTest extends PHPUnit_Framework_TestCase implements
-  HeadlessInterface, TransactionalInterface {
-
-  /**
-   * Installs extensions required for test
-   * 
-   * @return \Civi\Test\CiviEnvBuilder
-   */
-  public function setUpHeadless() {
-    return \Civi\Test::headless()
-      ->install('uk.co.compucorp.civicrm.hrcore')
-      ->install('org.civicrm.hrjobcontract')
-      ->installMe(__DIR__)
-      ->apply();
-  }
+class CRM_Contactaccessrights_Utils_ACLTest extends BaseHeadlessTest {
 
   /**
    * Tests if ACL Utility class is building the Job Roles Clause appropriately,
@@ -73,11 +57,11 @@ class CRM_Contactaccessrights_Utils_ACLTest extends PHPUnit_Framework_TestCase i
 
   /**
    * Creates a new record for Rights entity for the given contact.
-   * 
+   *
    * @param array $contact
    *   Associative array with details for the contact
    * @param array $entity
-   *   Details of either Region or Location for which the contact will be 
+   *   Details of either Region or Location for which the contact will be
    *   granted access
    * @return array
    *   Details of access right created in an associative array
@@ -92,7 +76,7 @@ class CRM_Contactaccessrights_Utils_ACLTest extends PHPUnit_Framework_TestCase i
 
   /**
    * Creates a Record in Option Value for given Option Group
-   * 
+   *
    * @param string $optionGroup
    *   Name of the option group to which the option will be added
    * @param string $value
@@ -109,7 +93,7 @@ class CRM_Contactaccessrights_Utils_ACLTest extends PHPUnit_Framework_TestCase i
     ];
     $result = OptionValueFabricator::fabricate($params);
     $result['entity_type'] = $optionGroup;
-    
+
     return $result;
   }
 

@@ -1,6 +1,7 @@
 /* eslint-env amd */
 
 define([
+  'common/services/before-hash-query-params.service',
   'common/services/check-permissions',
   'common/services/detect-device.service',
   'common/services/dom-event-trigger',

@@ -5,6 +5,7 @@ use CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSender as LeaveRe
 use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotificationTemplateFactory;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
+use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest
@@ -52,7 +53,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
     $this->assertEquals(0, $result->N);
 
     $leaveRequestTemplateFactory = new RequestNotificationTemplateFactory();
-    $message = new Message($leaveRequest, $leaveRequestTemplateFactory);
+    $managerService = new LeaveManagerService();
+    $message = new Message($leaveRequest, $leaveRequestTemplateFactory, $managerService);
 
     $leaveMailSenderService = new LeaveRequestMailNotificationSenderService();
     $leaveMailSenderService->send($message);
@@ -90,7 +92,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
     ], false);
 
     $leaveRequestTemplateFactory = new RequestNotificationTemplateFactory();
-    $message = new Message($leaveRequest, $leaveRequestTemplateFactory);
+    $managerService = new LeaveManagerService();
+    $message = new Message($leaveRequest, $leaveRequestTemplateFactory, $managerService);
 
     $leaveMailSenderService = new LeaveRequestMailNotificationSenderService();
 

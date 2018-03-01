@@ -17,7 +17,8 @@ define([
   'leave-absences/shared/models/public-holiday.model',
   'leave-absences/shared/instances/leave-request.instance',
   'leave-absences/shared/instances/sickness-request.instance',
-  'leave-absences/shared/instances/toil-request.instance'
+  'leave-absences/shared/instances/toil-request.instance',
+  'leave-absences/shared/services/leave-request.service'
 ], function (angular, controllers, _, moment) {
   'use strict';
 
@@ -25,11 +26,11 @@ define([
 
   RequestCtrl.$inject = ['$log', '$q', '$rootScope', '$scope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup',
     'dialog', 'pubSub', 'directiveOptions', 'Contact', 'Session', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
-    'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance'];
+    'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance', 'LeaveRequestService'];
 
   function RequestCtrl ($log, $q, $rootScope, $scope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub,
     directiveOptions, Contact, Session, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
-    LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance) {
+    LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance, LeaveRequestService) {
     $log.debug('RequestCtrl');
 
     var absenceTypesAndIds;
@@ -262,7 +263,10 @@ define([
       return vm.request.calculateBalanceChange(vm.selectedAbsenceType.calculation_unit_name)
         .then(function (balanceChange) {
           if (+vm.balance.change.amount !== +balanceChange.amount) {
-            promptBalanceChangeRecalculation(balanceChange);
+            LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation()
+              .then(function () {
+                $rootScope.$emit('LeaveRequestPopup::recalculateBalanceChange');
+              });
 
             return $q.reject();
           }
@@ -439,6 +443,7 @@ define([
      */
     function initAfterContactSelection () {
       vm.postContactSelection = true;
+      vm.staffMemberSelectionComplete = false;
 
       // when manager deselects contact it is called without a selected contact_id
       if (!vm.request.contact_id) {
@@ -809,24 +814,6 @@ define([
       vm.errors = [];
 
       vm.dismissModal();
-    }
-
-    /**
-     * Prompts to confirm the recalculation of the balance change via a dialog
-     */
-    function promptBalanceChangeRecalculation (balanceChange) {
-      dialog.open({
-        title: 'Recalculate Balance Change?',
-        copyCancel: 'Cancel',
-        copyConfirm: 'Yes',
-        classConfirm: 'btn-warning',
-        msg: 'The leave balance change has updated since ' +
-          'this leave request was created. ' +
-          'Do you want to recalculate the balance change?',
-        onConfirm: function () {
-          $rootScope.$emit('LeaveRequestPopup::recalculateBalanceChange');
-        }
-      });
     }
 
     /**
