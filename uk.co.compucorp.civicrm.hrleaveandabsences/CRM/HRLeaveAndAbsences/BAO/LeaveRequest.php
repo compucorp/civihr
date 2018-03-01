@@ -989,13 +989,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       }
 
       $dayType = $leaveDateDayTypes[$date->format('Y-m-d')];
-      $publicHolidayLeaveRequestExists = $dayType == $leaveRequestDayTypes['public_holiday'];
 
-      if ($publicHolidayLeaveRequestExists) {
+      if ($dayType == $leaveRequestDayTypes['public_holiday']) {
         $amount = 0.0;
       }
-
-      if(!$publicHolidayLeaveRequestExists){
+      else {
         $amount = LeaveBalanceChange::calculateAmountForDate(
           $leaveRequest,
           $date,
@@ -1048,8 +1046,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       if ($publicHolidayLeaveRequestExists) {
         $dayType = $leaveRequestDayTypes['public_holiday'];
       }
-
-      if(!$publicHolidayLeaveRequestExists) {
+      else {
         $type = ContactWorkPattern::getWorkDayType($contactID, $date);
         $dayType = self::getLeaveRequestDayTypeFromWorkDayType($type);
       }
@@ -1469,11 +1466,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Get the number of working days for a leave request, Days with
-   * balance change of zero or that evaluates to false are either non
-   * working day, weekend or public holidays.
-   * The days for which the balance amounts are not zero are equal
-   * to the number of working days.
+   * Get the number of working days for a leave request, Leave dates
+   * with day types that are non working days(public holiday, weekend and
+   * non working day) are excluded from the results.
    *
    * @param array $params
    *
