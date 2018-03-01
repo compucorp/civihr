@@ -951,10 +951,12 @@ define([
 
               it('sets from time to minimum allowed time', function () {
                 expect(controller.uiOptions.times.from.time).toBe(minTime);
+                expect(leaveRequest.from_date.slice(11, 16)).toBe(minTime);
               });
 
               it('sets to time to maximum allowed time', function () {
                 expect(controller.uiOptions.times.to.time).toBe(maxTime);
+                expect(leaveRequest.to_date.slice(11, 16)).toBe(maxTime);
               });
             });
           });

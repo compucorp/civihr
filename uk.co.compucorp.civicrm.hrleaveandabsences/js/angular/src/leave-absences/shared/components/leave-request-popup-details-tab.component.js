@@ -149,7 +149,8 @@ define([
         .then(setDaysSelectionMode)
         .then(function () {
           if (!vm.isMode('create') && isCalculationUnit('hours')) {
-            return initTimes();
+            return initTimes()
+              .then(setRequestDateTimesAndDateTypes);
           }
         })
         .then(!vm.isMode('create') && setDatepickerBoundariesForToDate)
