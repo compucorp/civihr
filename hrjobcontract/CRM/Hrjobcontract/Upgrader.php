@@ -1163,16 +1163,47 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1034() {
-    $result = civicrm_api3('CustomGroup', 'get', array(
+    $result = civicrm_api3('CustomGroup', 'get', [
       'sequential' => 1,
       'return' => ['id'],
       'name' => 'Contact_Length_Of_Service',
-    ));
-  
-    civicrm_api3('CustomGroup', 'create', array(
+    ]);
+
+    civicrm_api3('CustomGroup', 'create', [
       'id' => $result['id'],
       'is_reserved' => 1,
-    ));
+    ]);
+
+    return TRUE;
+  }
+
+  /**
+   * Upgrade CustomGroup, setting HRJobContract_Dates, HRJob_Summary and
+   * HRJobContract_Summary is_reserved value to Yes if it is existing.
+   *
+   * @return bool
+   */
+  public function upgrade_1035() {
+    $customGroups = [
+      'HRJobContract_Dates',
+      'HRJob_Summary',
+      'HRJobContract_Summary'
+    ];
+    
+    $result = civicrm_api3('CustomGroup', 'get', [
+      'sequential' => 1,
+      'return' => ['id'],
+      'name' => ['IN' => $customGroups],
+    ]);
+
+    if (count($result['values'])) {
+      foreach ($result['values'] as $value) {
+        civicrm_api3('CustomGroup', 'create', [
+          'id' => $value['id'],
+          'is_reserved' => 1,
+        ]);
+      }
+    }
 
     return TRUE;
   }
