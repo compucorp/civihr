@@ -1191,12 +1191,11 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     ];
     
     $result = civicrm_api3('CustomGroup', 'get', [
-      'sequential' => 1,
       'return' => ['id'],
       'name' => ['IN' => $customGroups],
     ]);
 
-    if (count($result['values'])) {
+    if ($result['count'] > 0) {
       foreach ($result['values'] as $value) {
         civicrm_api3('CustomGroup', 'create', [
           'id' => $value['id'],

@@ -144,7 +144,6 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
    */
   public function upgrade_1502() {
     $result = civicrm_api3('CustomGroup', 'get', [
-      'sequential' => 1,
       'return' => ['id'],
       'name' => 'Identify',
     ]);
