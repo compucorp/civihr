@@ -49,7 +49,11 @@
         {if !$isDeleted}
           {if call_user_func(array('CRM_Core_Permission','check'), 'access CiviCRM')}
             <li class="crm-contact-activity crm-summary-block">
-              {include file="CRM/Contact/Page/Inline/Actions.tpl"}
+              {if !empty($alternativeActionsTemplate)}
+                {include file="$alternativeActionsTemplate"}
+              {else}
+                {include file="CRM/Contact/Page/Inline/Actions.tpl"}
+              {/if}
             </li>
           {/if}
           {* Include Edit button if contact has 'edit contacts' permission OR user is viewing their own contact AND has 'edit my contact' permission. CRM_Contact_Page_View::checkUserPermission handles this and assigns $permission true as needed. *}

@@ -538,6 +538,83 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->assertEquals($overriddenEntitlement, $periodEntitlement->getEntitlement());
   }
 
+  public function testSaveFromEntitlementCalculationCanSaveCorrectlyWhenOverriddenEntitlementIsZero() {
+    $type = new AbsenceType();
+    $type->id = 1;
+    $period = new AbsencePeriod();
+    $period->id = 1;
+    $contact = ['id' => 1];
+
+    $broughtForward = 1;
+    $proRata = 10;
+    $overridden = true;
+    $calculation = $this->getEntitlementCalculationMock(
+      $period,
+      $contact,
+      $type,
+      $broughtForward,
+      $proRata,
+      0,
+      $overridden
+    );
+
+    $overriddenEntitlement = 0;
+    $createdDate = new DateTime();
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate, $overriddenEntitlement);
+
+    $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
+      $contact['id'],
+      $period->id,
+      $type->id
+    );
+
+    $this->assertNotNull($periodEntitlement);
+    $this->assertEquals($period->id, $periodEntitlement->period_id);
+    $this->assertEquals($type->id, $periodEntitlement->type_id);
+    $this->assertEquals($contact['id'], $periodEntitlement->contact_id);
+    $this->assertEquals(1, $periodEntitlement->overridden);
+    $this->assertEquals($overriddenEntitlement, $periodEntitlement->getEntitlement());
+  }
+
+  public function testSaveFromEntitlementCalculationWillNotOverrideEntitlementWhenOverriddenEntitlementIsAnEmptyString() {
+    $type = new AbsenceType();
+    $type->id = 1;
+    $period = new AbsencePeriod();
+    $period->id = 1;
+    $contact = ['id' => 1];
+
+    $broughtForward = 1;
+    $proRata = 10;
+    $overridden = false;
+    $calculation = $this->getEntitlementCalculationMock(
+      $period,
+      $contact,
+      $type,
+      $broughtForward,
+      $proRata,
+      0,
+      $overridden
+    );
+
+    $overriddenEntitlement = '';
+    $createdDate = new DateTime();
+    LeavePeriodEntitlement::saveFromCalculation($calculation, $createdDate, $overriddenEntitlement);
+
+    $periodEntitlement = LeavePeriodEntitlement::getPeriodEntitlementForContact(
+      $contact['id'],
+      $period->id,
+      $type->id
+    );
+
+    $this->assertNotNull($periodEntitlement);
+    $this->assertEquals($period->id, $periodEntitlement->period_id);
+    $this->assertEquals($type->id, $periodEntitlement->type_id);
+    $this->assertEquals($contact['id'], $periodEntitlement->contact_id);
+    $this->assertEquals(0, $periodEntitlement->overridden);
+    $entitlement = $broughtForward + $proRata;
+    $this->assertEquals($entitlement, $periodEntitlement->getEntitlement());
+  }
+
   public function testSaveFromEntitlementCalculationCanSaveOverriddenValuesLessThanTheProposedEntitlement() {
     $type = new AbsenceType();
     $type->id = 1;

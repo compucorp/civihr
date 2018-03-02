@@ -11,7 +11,7 @@ define([
 
   describe('ContractController', function () {
     var $controller, $httpBackend, $modal, $q, $rootScope, $scope, $window, controller,
-      AbsenceType, contractService, utilsService;
+      AbsenceType, contractService, notificationService, utilsService;
     var calculationUnitsMock = [{ value: 1, name: 'days' }, { value: 2, name: 'hours' }];
 
     // Populate contract mock leaves with values
@@ -23,8 +23,9 @@ define([
       $provide.value('$window', $window);
     }));
 
-    beforeEach(inject(function (_$controller_, _$rootScope_, _$uibModal_, _$q_, _$httpBackend_,
-      _$window_, _AbsenceType_, _contractService_, _utilsService_) {
+    beforeEach(inject(function (_$controller_, _$rootScope_, _$uibModal_, _$q_,
+      _$httpBackend_, _$window_, _AbsenceType_, _contractService_, _notificationService_,
+      _utilsService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $q = _$q_;
@@ -35,12 +36,14 @@ define([
       $window = _$window_;
       AbsenceType = _AbsenceType_;
       contractService = _contractService_;
+      notificationService = _notificationService_;
       utilsService = _utilsService_;
 
       mockBackendCalls();
       spyOn(AbsenceType, 'all').and.callThrough();
       spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
       spyOn(contractService, 'fullDetails').and.callThrough();
+      spyOn(notificationService, 'success');
       spyOn(utilsService, 'updateEntitlements');
       makeController();
     }));
@@ -112,7 +115,7 @@ define([
       describe('When end date is past', function () {
         beforeEach(function () {
           var date = moment().day(-7); // Seven days ago
-          createModalSpy(date);
+          createModalSpy({ details: { period_end_date: date } });
           $scope.modalContract('edit');
           $rootScope.$digest();
         });
@@ -125,7 +128,7 @@ define([
       describe('When end date is today', function () {
         beforeEach(function () {
           var date = moment();
-          createModalSpy(date);
+          createModalSpy({ details: { period_end_date: date } });
           $scope.modalContract('edit');
           $rootScope.$digest();
         });
@@ -138,7 +141,7 @@ define([
       describe('When date is future', function () {
         beforeEach(function () {
           var date = moment().day(7); // Seven days from now
-          createModalSpy(date);
+          createModalSpy({ details: { period_end_date: date } });
           $scope.modalContract('edit');
           $rootScope.$digest();
         });
@@ -151,7 +154,7 @@ define([
       describe('When end date is empty', function () {
         beforeEach(function () {
           var date = ''; //  end date empty
-          createModalSpy(date);
+          createModalSpy({ details: { period_end_date: date } });
           $scope.modalContract('edit');
           $rootScope.$digest();
         });
@@ -162,18 +165,40 @@ define([
       });
 
       describe('after updating the contract', function () {
-        beforeEach(function () {
-          createModalSpy();
-          $scope.modalContract('edit');
-          $rootScope.$digest();
+        describe('when the contract entitlements have changed', function () {
+          beforeEach(function () {
+            createModalSpy({ haveEntitlementFieldsChanged: true });
+            $scope.modalContract('edit');
+            $rootScope.$digest();
+          });
+
+          it('calls utility service to display entitlement update page', function () {
+            expect(utilsService.updateEntitlements).toHaveBeenCalledWith($scope.contract.contact_id);
+          });
         });
 
-        it('calls utility service to display entitlement update page', function () {
-          expect(utilsService.updateEntitlements).toHaveBeenCalledWith($scope.contract.contact_id);
+        describe('when the contract entitlements have not changed', function () {
+          beforeEach(function () {
+            createModalSpy({ haveEntitlementFieldsChanged: false });
+            $scope.modalContract('edit');
+            $rootScope.$digest();
+          });
+
+          it('does not call utility service to display entitlement update page', function () {
+            expect(utilsService.updateEntitlements).not.toHaveBeenCalled();
+          });
+
+          it('displays a success message', function () {
+            expect(notificationService.success).toHaveBeenCalledWith('Success', 'Contract successfully updated');
+          });
         });
       });
     });
 
+    /**
+     * Initializes the Contract controller and adds default values to the $scope
+     * object.
+     */
     function makeController () {
       $scope = $rootScope.$new();
 
@@ -206,26 +231,33 @@ define([
       });
     }
 
-    function createModalSpy (newEndDate) {
+    /**
+     * Adds a spy to the open method of the UI modal and allows to modify the
+     * results of the promise resolved when the modal closes.
+     *
+     * @param {Object} results the object returned when the modal instance is closed.
+     */
+    function createModalSpy (results) {
       spyOn($modal, 'open').and.callFake(function () {
         return {
-          result: $q.resolve({
-            'files': false,
-            'health': {},
-            'contract': {
-              'id': '48',
-              'contact_id': '84',
-              'is_primary': '1',
-              'deleted': '0'
+          result: $q.resolve(_.defaults(results, {
+            files: false,
+            health: {},
+            contract: {
+              id: '48',
+              contact_id: '84',
+              is_primary: '1',
+              deleted: '0'
             },
-            'pay': {},
-            'hour': {},
-            'leave': [],
-            'details': {
-              'period_end_date': newEndDate
+            pay: {},
+            hour: {},
+            leave: [],
+            details: {
+              period_end_date: null
             },
-            'pension': {}
-          })
+            pension: {},
+            haveEntitlementFieldsChanged: false
+          }))
         };
       });
     }

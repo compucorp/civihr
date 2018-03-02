@@ -2,8 +2,9 @@
 
 define([
   'common/angular',
-  'common/lodash'
-], function (angular, _) {
+  'common/lodash',
+  'common/moment'
+], function (angular, _, moment) {
   'use strict';
 
   ModalContractController.__name = 'ModalContractController';
@@ -49,27 +50,18 @@ define([
     };
     $scope.utils = utils;
 
-    angular.copy(entity, $scope.entity);
-    angular.copy(files, $scope.files);
-    $scope.entity.details.period_start_date = convertToDateObject($scope.entity.details.period_start_date);
-    $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
+    $scope.cancel = promptAboutChangesLossAndCloseOnConfirm;
+    $scope.fileMoveToTrash = fileMoveToTrash;
+    $scope.filesValidate = filesValidate;
+    $scope.save = save;
 
     // Init
     (function init () {
-      angular.forEach($scope.files, function (entityFiles, entityName) {
-        $scope.filesTrash[entityName] = [];
-      });
+      initFormEntity();
+      initFilesAndUploaders();
 
       $modalInstance.opened.then(function () {
         $rootScope.$broadcast('hrjc-loader-hide');
-      });
-
-      angular.forEach($scope.uploader, function (entity) {
-        angular.forEach(entity, function (field) {
-          field.onAfterAddingAll = function () {
-            $scope.filesValidate();
-          };
-        });
       });
 
       $rootScope.$broadcast('hrjc-loader-show');
@@ -78,16 +70,20 @@ define([
       });
     }());
 
-    $scope.cancel = function () {
+    /**
+     * Hides the job contract modal, but before doing so asks for confirmation
+     * before changes are lost.
+     */
+    function promptAboutChangesLossAndCloseOnConfirm () {
       if (action === 'view' ||
         (angular.equals(entity, $scope.entity) && angular.equals(files, $scope.files) &&
           !$scope.uploader.details.contract_file.queue.length && !$scope.uploader.pension.evidence_file.queue.length)) {
         $scope.$broadcast('hrjc-loader-hide');
         $modalInstance.dismiss('cancel');
+
         return;
       }
 
-      // DEBUG
       if (settings.debug) {
         angular.forEach(entity, function (entityData, entityName) {
           if (!angular.equals(entityData, $scope.entity[entityName])) {
@@ -123,114 +119,14 @@ define([
           $modalInstance.dismiss('cancel');
         }
       });
-    };
-
-    $scope.fileMoveToTrash = function (index, entityName) {
-      var entityFiles = $scope.files[entityName];
-      var entityFilesTrash = $scope.filesTrash[entityName];
-
-      entityFilesTrash.push(entityFiles[index]);
-      entityFiles.splice(index, 1);
-    };
-
-    $scope.filesValidate = function () {
-      var entityName, fieldName, i, len, uploaderEntity, uploaderEntityField, uploaderEntityFieldQueue;
-      var fileMaxSize = $scope.fileMaxSize;
-      var uploader = $scope.uploader;
-      var isValid = true;
-
-      for (entityName in uploader) {
-        uploaderEntity = uploader[entityName];
-
-        for (fieldName in uploaderEntity) {
-          i = 0;
-          len = uploaderEntityFieldQueue.length;
-          uploaderEntityField = uploaderEntity[fieldName];
-          uploaderEntityFieldQueue = uploaderEntityField.queue;
-
-          for (; i < len && isValid; i++) {
-            isValid = uploaderEntityFieldQueue[i].file.size < fileMaxSize;
-          }
-        }
-      }
-
-      $scope.contractForm.$setValidity('maxFileSize', isValid);
-    };
-
-    if ($scope.allowSave) {
-      $scope.save = function () {
-        $scope.$broadcast('hrjc-loader-show');
-        contractDetailsService.validateDates({
-          contact_id: settings.contactId,
-          period_start_date: $scope.entity.details.period_start_date,
-          period_end_date: $scope.entity.details.period_end_date,
-          jobcontract_id: entity.contract.id
-        }).then(function (result) {
-          if (result.success) {
-            processContractUpdate();
-          } else {
-            CRM.alert(result.message, 'Error', 'error');
-            $scope.$broadcast('hrjc-loader-hide');
-          }
-        }, function (reason) {});
-        $scope.$broadcast('hrjc-loader-hide');
-      };
-    }
-
-    function processContractUpdate () {
-      if (angular.equals(entity, $scope.entity) &&
-        angular.equals(files, $scope.files) &&
-        !$scope.uploader.details.contract_file.queue.length &&
-        !$scope.uploader.pension.evidence_file.queue.length) {
-        $scope.$broadcast('hrjc-loader-hide');
-        $modalInstance.dismiss('cancel');
-        return;
-      }
-
-      switch (action) {
-        case 'edit':
-          if ($scope.entity.contract.is_primary === entity.contract.is_primary) {
-            confirmEdit().then(function (confirmed) {
-              switch (confirmed) {
-                case 'edit':
-                  contractEdit();
-                  break;
-                case 'change':
-                  changeReason().then(function (results) {
-                    contractChange(results.reasonId, results.date);
-                  });
-                  break;
-              }
-            });
-          } else {
-            contractEdit();
-          }
-          break;
-        case 'change':
-          changeReason().then(function (results) {
-            contractChange(results.reasonId, results.date);
-          });
-          break;
-        default:
-          $scope.$broadcast('hrjc-loader-hide');
-          $modalInstance.dismiss('cancel');
-      }
     }
 
     /**
-     * # TO DO: This should probably happen inside the service that returns the data #
+     * Displays the contract revision modal where the user specifies the reason
+     * for the changes made.
      *
-     * Converts a date string into a Date object (if string is not empty)
-     *
-     * @param {string} dateString
-     * @param {Date/null}
+     * @return {Promise} resolves when the modal closes.
      */
-    function convertToDateObject (dateString) {
-      var dateObj = $filter('formatDate')(dateString, Date);
-
-      return dateObj !== 'Unspecified' ? dateObj : dateString;
-    }
-
     function changeReason () {
       var modalChangeReason = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
@@ -252,6 +148,27 @@ define([
       return modalChangeReason.result;
     }
 
+    /**
+     * Determines if the contract entitlements have been modified. These include
+     * the contract start and end dates as well as the leave entitlements.
+     *
+     * @return {Boolean}
+     */
+    function checkIfEntitlementFieldsChanged () {
+      var hasEndDateChanged = hasContractDateChanged('period_end_date');
+      var hasStartDateChanged = hasContractDateChanged('period_start_date');
+      var haveEntitlementsChanged = !angular.equals($scope.entity.leave,
+        entity.leave);
+
+      return hasStartDateChanged || hasEndDateChanged || haveEntitlementsChanged;
+    }
+
+    /**
+     * Displays a confirmation modal to see if the user wants to record a new
+     * revision for the changes made.
+     *
+     * @return {Promise} resolves when the modal closes.
+     */
     function confirmEdit () {
       var modalConfirmEdit = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
@@ -269,7 +186,35 @@ define([
       return modalConfirmEdit.result;
     }
 
-    function contractEdit () {
+    /**
+     * Confirms that the contract change is valid and saves it.
+     *
+     * @param {Number} reasonId the ID of the reason option selected by the user.
+     * @param {Date} date effective date for the change as selected by the user.
+     * @return {Promise} resolves after the contract has been saved.
+     */
+    function validateContractAndSave (reasonId, date) {
+      $scope.$broadcast('hrjc-loader-show');
+
+      return contractRevisionService.validateEffectiveDate({
+        contact_id: settings.contactId,
+        effective_date: date
+      }).then(function (result) {
+        if (result.success) {
+          return saveContractChange(reasonId, date);
+        } else {
+          CRM.alert(result.message, 'Error', 'error');
+          $scope.$broadcast('hrjc-loader-hide');
+        }
+      }, function (reason) {});
+    }
+
+    /**
+     * Saves all the tabs in the contract's form.
+     *
+     * @return {Promise} resolves when all the tabs are saved.
+     */
+    function saveAllContractSections () {
       $scope.$broadcast('hrjc-loader-show');
       $scope.entity.details.period_end_date = $scope.entity.details.period_end_date || '';
 
@@ -348,8 +293,11 @@ define([
           });
 
           results.files = modalInstance.result;
+
           return $q.all(results);
         }
+
+        results.haveEntitlementFieldsChanged = checkIfEntitlementFieldsChanged();
 
         return results;
       }).then(function (results) {
@@ -362,32 +310,212 @@ define([
       });
     }
 
-    function contractChange (reasonId, date) {
-      $scope.$broadcast('hrjc-loader-show');
+    /**
+     * Converts a date string into a Date object.
+     * If the date is not valid it returns the same date string provided.
+     *
+     * @todo This should probably happen inside the service that returns the data #
+     * @todo this function should not return Date or String, it should be more strict,
+     * but we need more test coverage before refactoring it.
+     *
+     * @param  {String} dateString the string representing a date.
+     * @return {Date|String}
+     */
+    function convertToDateObject (dateString) {
+      var dateObj = $filter('formatDate')(dateString, Date);
 
-      contractRevisionService.validateEffectiveDate({
+      return dateObj !== 'Unspecified' ? dateObj : dateString;
+    }
+
+    /**
+     * Fetch updated Health and Life Insurance Plan Types
+     *
+     * @return {Promise}
+     */
+    function fetchInsurancePlanTypes () {
+      return $q.all([
+        { name: 'hrjobcontract_health_health_plan_type', key: 'plan_type' },
+        { name: 'hrjobcontract_health_life_insurance_plan_type', key: 'plan_type_life_insurance' }
+      ].map(function (planTypeData) {
+        contractHealthService.getOptions(planTypeData.name, true)
+          .then(function (planTypes) {
+            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
+              acc[type.key] = type.value;
+            }, {});
+          });
+      }));
+    }
+
+    /**
+     * Moves the file to a trash list that will later be used to delete the files.
+     *
+     * @param {Number} index the index of the file in the section list.
+     * @param {String} entityName the section name where the file is stored.
+     */
+    function fileMoveToTrash (index, entityName) {
+      var entityFiles = $scope.files[entityName];
+      var entityFilesTrash = $scope.filesTrash[entityName];
+
+      entityFilesTrash.push(entityFiles[index]);
+      entityFiles.splice(index, 1);
+    }
+
+    /**
+     * Validates that all files are within the max file size limit.
+     */
+    function filesValidate () {
+      var isValid = _.every($scope.uploader, function (uploaderEntity) {
+        return _.every(uploaderEntity, function (uploaderEntityField) {
+          // if there is no queue check other entities:
+          if (!uploaderEntityField.queue) {
+            return true;
+          }
+
+          return _.every(uploaderEntityField.queue, function (queue) {
+            return queue.file.size < $scope.fileMaxSize;
+          });
+        });
+      });
+
+      $scope.contractForm.$setValidity('maxFileSize', isValid);
+    }
+
+    /**
+     * Initializes files and uploader fields. For the files it creates a trash
+     * container in case the file is deleted and for uploaders it adds validators
+     * to run after file uploading.
+     */
+    function initFilesAndUploaders () {
+      angular.copy(files, $scope.files);
+      angular.forEach($scope.files, function (entityFiles, entityName) {
+        $scope.filesTrash[entityName] = [];
+      });
+      angular.forEach($scope.uploader, function (entity) {
+        angular.forEach(entity, function (field) {
+          field.onAfterAddingAll = function () {
+            $scope.filesValidate();
+          };
+        });
+      });
+    }
+
+    /**
+     * Determines if the given contract date has changed from its original value.
+     *
+     * @param  {String} dateName either "period_start_date" or "period_end_date".
+     * @return {Boolean}
+     */
+    function hasContractDateChanged (dateName) {
+      var currentDate, currentDateIsDifferentFromOriginal, originalDate,
+        oneDateIsEmptyAndOtherIsNot;
+
+      originalDate = entity.details[dateName] || null;
+      currentDate = $scope.entity.details[dateName] || null;
+
+      oneDateIsEmptyAndOtherIsNot = (!currentDate || !originalDate) &&
+        currentDate !== originalDate;
+      currentDateIsDifferentFromOriginal = moment.isDate(currentDate) &&
+        !moment(originalDate).isSame(moment(currentDate), 'day');
+
+      return oneDateIsEmptyAndOtherIsNot || currentDateIsDifferentFromOriginal;
+    }
+
+    /**
+     * Initializes the form entity fields by having a copy of the form entity
+     * and converting date strings into date objects.
+     */
+    function initFormEntity () {
+      angular.copy(entity, $scope.entity);
+      $scope.entity.details.period_start_date = convertToDateObject($scope.entity.details.period_start_date);
+      $scope.entity.details.period_end_date = convertToDateObject($scope.entity.details.period_end_date);
+    }
+
+    /**
+     * Handles all the confirmations that need to be displayed when updating the contract.
+     */
+    function processContractUpdate () {
+      if (angular.equals(entity, $scope.entity) &&
+        angular.equals(files, $scope.files) &&
+        !$scope.uploader.details.contract_file.queue.length &&
+        !$scope.uploader.pension.evidence_file.queue.length) {
+        $scope.$broadcast('hrjc-loader-hide');
+        $modalInstance.dismiss('cancel');
+
+        return;
+      }
+
+      switch (action) {
+        case 'edit':
+          if ($scope.entity.contract.is_primary === entity.contract.is_primary) {
+            confirmEdit().then(function (confirmed) {
+              switch (confirmed) {
+                case 'edit':
+                  saveAllContractSections();
+                  break;
+                case 'change':
+                  changeReason().then(function (results) {
+                    return validateContractAndSave(results.reasonId, results.date);
+                  });
+                  break;
+              }
+            });
+          } else {
+            saveAllContractSections();
+          }
+          break;
+        case 'change':
+          changeReason().then(function (results) {
+            validateContractAndSave(results.reasonId, results.date);
+          });
+          break;
+        default:
+          $scope.$broadcast('hrjc-loader-hide');
+          $modalInstance.dismiss('cancel');
+      }
+    }
+
+    /**
+     * Runs the contract saving sequence which includes:
+     * - Validating the contract dates.
+     * - Confirming if entitlements should be updated.
+     * - Updating the contract.
+     */
+    function save () {
+      if (!$scope.allowSave) {
+        return;
+      }
+
+      $scope.$broadcast('hrjc-loader-show');
+      contractDetailsService.validateDates({
         contact_id: settings.contactId,
-        effective_date: date
+        period_start_date: $scope.entity.details.period_start_date,
+        period_end_date: $scope.entity.details.period_end_date,
+        jobcontract_id: entity.contract.id
       }).then(function (result) {
         if (result.success) {
-          saveContractChange(reasonId, date);
+          processContractUpdate();
         } else {
           CRM.alert(result.message, 'Error', 'error');
           $scope.$broadcast('hrjc-loader-hide');
         }
       }, function (reason) {});
+      $scope.$broadcast('hrjc-loader-hide');
     }
 
+    /**
+     * This method saves the contract revision and the contract sections.
+     *
+     * @todo Need to integrate saveAllContractSections to avoid repetition.
+     *
+     * @param {Number} reasonId the reason given for the revision.
+     * @param {Date} date the efective date of the revision.
+     */
     function saveContractChange (reasonId, date) {
-      var entityName, entityFilesTrashLen, field, fieldName, file, ii,
-        isChanged, item, modalInstance, revisionId;
+      var modalInstance, revisionId;
       var entityChangedList = [];
       var entityNew = angular.copy($scope.entity);
       var filesTrash = $scope.filesTrash;
       var uploader = $scope.uploader;
-      var entityChangedListLen = 0;
-      var fieldQueueLen = 0;
-      var i = 0;
       var promiseContractChange = {};
       var promiseFilesChangeDelete = [];
       var promiseFilesChangeUpload = [];
@@ -400,47 +528,43 @@ define([
         pension: contractPensionService
       };
 
-      for (entityName in entityServices) {
-        isChanged = !angular.equals(entity[entityName], entityNew[entityName]);
+      for (var entityName in entityServices) {
+        var hasChanged = !angular.equals(entity[entityName], entityNew[entityName]);
 
-        if (!isChanged) {
-          isChanged = !!filesTrash[entityName] && !!filesTrash[entityName].length;
+        if (!hasChanged) {
+          hasChanged = !!filesTrash[entityName] && !!filesTrash[entityName].length;
 
-          if (!isChanged && uploader[entityName]) {
-            for (fieldName in uploader[entityName]) {
-              field = uploader[entityName][fieldName];
+          if (!hasChanged && uploader[entityName]) {
+            for (var fieldName in uploader[entityName]) {
+              var field = uploader[entityName][fieldName];
               if (field.queue.length) {
-                isChanged = true;
+                hasChanged = true;
                 break;
               }
             }
           }
         }
 
-        if (isChanged) {
-          entityChangedList[i] = {};
-          entityChangedList[i].name = entityName;
-          entityChangedList[i].data = entityNew[entityName];
-          entityChangedList[i].service = entityServices[entityName];
-          i++;
-          entityChangedListLen = i;
+        if (hasChanged) {
+          entityChangedList.push({
+            name: entityName,
+            data: entityNew[entityName],
+            service: entityServices[entityName]
+          });
         }
       }
 
-      if (entityChangedListLen) {
+      if (entityChangedList.length) {
         utilsService.prepareEntityIds(entityChangedList[0].data, entity.contract.id);
 
         entityChangedList[0].service.save(entityChangedList[0].data).then(function (results) {
-          i = 1;
           revisionId = !angular.isArray(results) ? results.jobcontract_revision_id : results[0].jobcontract_revision_id;
           promiseContractChange[entityChangedList[0].name] = results;
 
-          for (i; i < entityChangedListLen; i++) {
-            entityName = entityChangedList[i].name;
-
-            utilsService.prepareEntityIds(entityChangedList[i].data, entity.contract.id, revisionId);
-            promiseContractChange[entityName] = entityChangedList[i].service.save(entityChangedList[i].data);
-          }
+          entityChangedList.slice(1).forEach(function (entityChange) {
+            utilsService.prepareEntityIds(entityChange.data, entity.contract.id, revisionId);
+            promiseContractChange[entityChange.name] = entityChange.service.save(entityChange.data);
+          });
 
           return $q.all(angular.extend(promiseContractChange, {
             revisionCreated: contractService.saveRevision({
@@ -456,12 +580,10 @@ define([
             results[entityName] = results[entityName] || entityNew[entityName];
 
             if (filesTrash[entityName] && filesTrash[entityName].length) {
-              i = 0;
-              entityFilesTrashLen = filesTrash[entityName].length;
-              for (i; i < entityFilesTrashLen; i++) {
-                file = filesTrash[entityName][i];
-                promiseFilesChangeDelete.push(contractFilesService.delete(file.fileID, revisionId, file.entityTable));
-              }
+              filesTrash[entityName].forEach(function (file) {
+                promiseFilesChangeDelete.push(contractFilesService.delete(
+                  file.fileID, revisionId, file.entityTable));
+              });
             }
           }
 
@@ -469,7 +591,6 @@ define([
           results.details.period_start_date = entityNew.details.period_start_date;
           results.details.period_end_date = entityNew.details.period_end_date;
           results.revisionCreated.effective_date = date || '';
-          //
 
           // TODO (incorrect JSON format in the API response)
           results.pay.annual_benefits = entityNew.pay.annual_benefits;
@@ -492,31 +613,25 @@ define([
 
           return results;
         }).then(function (results) {
-          i = 0;
-          for (i; i < entityChangedListLen; i++) {
-            entityName = entityChangedList[i].name;
+          entityChangedList.forEach(function (entity) {
+            if (!uploader[entity.name]) {
+              return;
+            }
 
-            if (uploader[entityName]) {
-              for (fieldName in uploader[entityName]) {
-                field = uploader[entityName][fieldName];
-                fieldQueueLen = field.queue.length;
-                ii = 0;
+            for (var fieldName in uploader[entity.name]) {
+              field = uploader[entity.name][fieldName];
 
-                for (ii; ii < fieldQueueLen; ii++) {
-                  item = field.queue[ii];
-                  if (item.file.size > $scope.fileMaxSize) {
-                    item.remove();
-                    ii--;
-                    fieldQueueLen--;
-                  }
+              field.queue.forEach(function (item) {
+                if (item.file.size > $scope.fileMaxSize) {
+                  item.remove();
                 }
+              });
 
-                if (fieldQueueLen) {
-                  promiseFilesChangeUpload.push(contractFilesService.upload(field, revisionId));
-                }
+              if (field.queue.length) {
+                promiseFilesChangeUpload.push(contractFilesService.upload(field, revisionId));
               }
             }
-          }
+          });
 
           if (promiseFilesChangeUpload.length) {
             modalInstance = $modal.open({
@@ -538,6 +653,8 @@ define([
             return $q.all(results);
           }
 
+          results.haveEntitlementFieldsChanged = checkIfEntitlementFieldsChanged();
+
           return results;
         }).then(function (results) {
           $scope.$broadcast('hrjc-loader-hide');
@@ -548,23 +665,6 @@ define([
         $scope.$broadcast('hrjc-loader-hide');
         $modalInstance.close();
       }
-    }
-
-    /*
-     * Fetch updated Health and Life Insurance Plan Types
-     */
-    function fetchInsurancePlanTypes () {
-      return $q.all([
-        { name: 'hrjobcontract_health_health_plan_type', key: 'plan_type' },
-        { name: 'hrjobcontract_health_life_insurance_plan_type', key: 'plan_type_life_insurance' }
-      ].map(function (planTypeData) {
-        contractHealthService.getOptions(planTypeData.name, true)
-          .then(function (planTypes) {
-            $rootScope.options.health[planTypeData.key] = _.transform(planTypes, function (acc, type) {
-              acc[type.key] = type.value;
-            }, {});
-          });
-      }));
     }
   }
 

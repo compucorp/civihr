@@ -12,7 +12,6 @@ define([
       absencePeriods: '<',
       absenceTypes: '<',
       balance: '=',
-      checkSubmitConditions: '=',
       request: '<',
       isLeaveStatus: '<',
       leaveType: '<',
@@ -20,7 +19,8 @@ define([
       isSelfRecord: '<',
       period: '=',
       isRole: '<',
-      selectedAbsenceType: '='
+      selectedAbsenceType: '=',
+      forceRecalculateBalanceChange: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup-details-tab.html';
@@ -45,6 +45,7 @@ define([
     vm.canManage = false;
     vm.calendar = {};
     vm.errors = [];
+    vm.isRequired = true;
     vm.requestDayTypes = [];
     vm.statusNames = sharedSettings.statusNames;
     vm.loading = {
@@ -133,6 +134,8 @@ define([
 
       vm.canManage = vm.isRole('manager') || vm.isRole('admin');
       vm.loading.tab = true;
+
+      $scope.$emit('LeaveRequestPopup::addTab', vm);
       initListeners();
 
       vm.initChildController()
@@ -508,7 +511,9 @@ define([
      * @return {Promise}
      */
     function initBalanceChange () {
-      return (!vm.isMode('create') ? getOriginalBalanceChange() : performBalanceChangeCalculation());
+      return !vm.isMode('create') && !vm.forceRecalculateBalanceChange
+        ? getOriginalBalanceChange()
+        : performBalanceChangeCalculation();
     }
 
     /**

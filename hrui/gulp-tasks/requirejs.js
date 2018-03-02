@@ -17,7 +17,7 @@ module.exports = function () {
         .pipe(uglify())
         .pipe(concat('hrui.min.js'))
         .pipe(sourcemaps.write())
-        .pipe(gulp.dest(path.join(__dirname, '..', 'js/dist')));
+        .pipe(gulp.dest(path.join(__dirname, '..', 'js/dist'), { mode: '0644' }));
     },
     /**
      * Detects if there are any js files in the js/src folder

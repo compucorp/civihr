@@ -2,6 +2,7 @@
 
 define([
   'common/angular',
+  'common/services/notification.service',
   'job-contract/modules/job-contract.config',
   'job-contract/modules/job-contract.constants',
   'job-contract/modules/job-contract.controllers',
@@ -14,6 +15,7 @@ define([
   'use strict';
 
   angular.module('job-contract', [
+    'common.services',
     'job-contract.core',
     'job-contract.config',
     'job-contract.run',

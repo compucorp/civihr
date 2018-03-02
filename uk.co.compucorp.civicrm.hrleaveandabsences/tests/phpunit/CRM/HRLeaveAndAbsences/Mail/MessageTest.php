@@ -6,6 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRLeaveAndAbsences_Factory_RequestNotificationTemplate as RequestNotificationTemplateFactory;
+use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Mail_MessageTest
@@ -37,13 +38,14 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $manager2 = ContactFabricator::fabricateWithEmail([
       'first_name' => 'Manager2', 'last_name' => 'Manager2'], 'manager2@dummysite.com'
     );
-    $manager3 = ContactFabricator::fabricateWithEmail([
-      'first_name' => 'Manager3', 'last_name' => 'Manager3'], 'manager3@dummysite.com'
-    );
 
+    $managerService = $this->prophesize(LeaveManagerService::class);
+    $returnValue = [
+      $manager1['id'] => $manager1['first_name'],
+      $manager2['id'] => $manager2['first_name']
+    ];
     // Set manager1 and manager2 only to be leave aprovers for the leave contact
-    $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact);
-    $this->setContactAsLeaveApproverOf($manager2, $this->leaveContact);
+    $managerService->getLeaveApproversForContact($this->leaveContact['id'])->willReturn($returnValue);
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
@@ -52,7 +54,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
     ], false);
 
-    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $managerService->reveal());
 
     $recipientEmails = array_column($message->getRecipientEmails($leaveRequest), 'email');
     sort($recipientEmails);
@@ -71,6 +73,9 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'first_name' => 'Approver2', 'last_name' => 'Approver2'], 'approver2@dummysite.com'
     );
 
+    $managerService = $this->prophesize(LeaveManagerService::class);
+    $managerService->getLeaveApproversForContact($this->leaveContact['id'])->willReturn([]);
+
     $absenceType = 1;
     //add two default leave approvers for the absence type
     NotificationReceiver::addReceiversToAbsenceType($absenceType, [$defaultApprover1['id'], $defaultApprover2['id']]);
@@ -82,7 +87,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
     ], false);
 
-    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $managerService->reveal());
 
     $recipientEmails = array_column($message->getRecipientEmails($leaveRequest), 'email');
     sort($recipientEmails);
@@ -97,9 +102,13 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $manager1 = ContactFabricator::fabricateWithEmail([
       'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
     );
+    $managerService = $this->prophesize(LeaveManagerService::class);
+    $returnValue = [
+      $manager1['id'] => $manager1['first_name'],
+    ];
 
     // Set manager1 to be leave aprovers for the leave contact
-    $this->setContactAsLeaveApproverOf($manager1, $this->leaveContact);
+    $managerService->getLeaveApproversForContact($this->leaveContact['id'])->willReturn($returnValue);
 
     $defaultApprover1 = ContactFabricator::fabricateWithEmail([
       'first_name' => 'Approver1', 'last_name' => 'Approver1'], 'approver1@dummysite.com'
@@ -116,7 +125,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
     ], false);
 
-    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $managerService->reveal());
     $recipientEmails = array_column($message->getRecipientEmails($leaveRequest), 'email');
     sort($recipientEmails);
 
@@ -130,7 +139,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
   public function testGetLeaveContact() {
     $leaveRequest = new LeaveRequest();
     $leaveRequest->contact_id = 2;
-    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $this->getManagerService());
     $this->assertEquals($leaveRequest->contact_id, $message->getLeaveContactID());
   }
 
@@ -149,7 +158,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $leaveRequest = new LeaveRequest();
     $leaveRequest->id = $leaveRequestId;
     $leaveRequest->contact_id = 1;
-    $message = new Message($leaveRequest, $notificationTemplateFactory);
+    $message = new Message($leaveRequest, $notificationTemplateFactory, $this->getManagerService());
     $this->assertEquals($expectedParameters, $message->getTemplateParameters($leaveRequest->contact_id));
   }
 
@@ -169,7 +178,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $leaveRequest->id = $leaveRequestId;
     $leaveRequest->contact_id = 1;
     $managerID = 2;
-    $message = new Message($leaveRequest, $notificationTemplateFactory);
+    $message = new Message($leaveRequest, $notificationTemplateFactory, $this->getManagerService());
     $this->assertEquals($expectedParameters, $message->getTemplateParameters($managerID));
   }
 
@@ -179,7 +188,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $notificationTemplateFactory = $this->createRequestNotificationTemplateFactoryMock($leaveTemplate);
 
     $leaveRequest = new LeaveRequest();
-    $message = new Message($leaveRequest, $notificationTemplateFactory);
+    $message = new Message($leaveRequest, $notificationTemplateFactory, $this->getManagerService());
     $this->assertEquals($expectedTemplateID, $message->getTemplateID());
   }
 
@@ -194,7 +203,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       $this->createFromEmail($fromAddress);
     }
     $leaveRequest = new LeaveRequest();
-    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $this->getManagerService());
     $fromEmail = $message->getFromEmail();
 
     $this->assertEquals($fromEmailAddress[0], $fromEmail);
@@ -215,7 +224,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $this->createDefaultFromEmail($defaultEmailAddress);
 
     $leaveRequest = new LeaveRequest();
-    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $this->getManagerService());
     $fromEmail = $message->getFromEmail();
 
     $this->assertEquals($defaultEmailAddress, $fromEmail);
@@ -223,7 +232,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
 
   public function testGetFromEmailReturnsNullWhenThereIsNoOptionForTheFromEmailAddressOptionGroup() {
     $leaveRequest = new LeaveRequest();
-    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $this->getManagerService());
     $fromEmail = $message->getFromEmail();
 
     $this->assertNull($fromEmail);
@@ -238,7 +247,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'request_type' => 'test_request_type'
     ], false);
 
-    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $this->getManagerService());
     $this->assertNull($message->getTemplateParameters($leaveRequest->contact_id));
   }
 
@@ -251,7 +260,13 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'request_type' => 'test_request_type'
     ], false);
 
-    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory);
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $this->getManagerService());
     $this->assertNull($message->getTemplateID());
+  }
+
+  private function getManagerService() {
+    $managerService = $this->prophesize(LeaveManagerService::class);
+
+    return $managerService->reveal();
   }
 }

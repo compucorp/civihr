@@ -4,8 +4,8 @@ define([
   'common/angular',
   'common/modules/directives',
   'common/modules/models',
-  './shared-settings',
-  './models'
+  'leave-absences/shared/modules/shared-settings',
+  'leave-absences/shared/modules/models'
 ], function (angular) {
   return angular.module('leave-absences.components', [
     'common.directives',

@@ -199,12 +199,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement extends CRM_HRLeaveAndAb
     $absenceTypeID = $calculation->getAbsenceType()->id;
     $contactID = $calculation->getContact()['id'];
     $absencePeriodID = $calculation->getAbsencePeriod()->id;
+    $entitlementOverridden = isset($overriddenEntitlement) && trim($overriddenEntitlement) != '';
 
     $params = [
       'type_id' => $absenceTypeID,
       'contact_id' => $contactID,
       'period_id' => $absencePeriodID,
-      'overridden' => (boolean)$overriddenEntitlement,
+      'overridden' => $entitlementOverridden,
       'created_date' => $createdDate->format('YmdHis'),
       'comment' => $calculationComment ?: ''
     ];

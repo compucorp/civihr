@@ -121,11 +121,10 @@ pipeline {
         stage('Test JS') {
           steps {
             script {
-              // HRCore shares its dependencies with most of
-              // CiviHR extensions, so we need to install its
-              // packages first
+              installNodePackages();
+
+              // HRCore is the extension where the JS tests are ran from
               def hrcore = listCivihrExtensions().hrcore;
-              installJSPackages(hrcore);
 
               // This is necessary to avoid an additional loop
               // in each extension folder to read the XML.
@@ -136,10 +135,6 @@ pipeline {
                 def extension = item.value
 
                 if (extension.hasJSTests) {
-                  if(extension.hasJSPackages) {
-                    installJSPackages(extension)
-                  }
-
                   testJS(hrcore.folder, extension)
                 }
               }
@@ -305,12 +300,11 @@ def testPHPUnit(java.util.LinkedHashMap extension) {
 }
 
 /*
- * Install JS Testing
- * params: extension
+ * Install Node packages in all of CiviHR extensions
  */
-def installJSPackages(java.util.LinkedHashMap extension) {
+def installNodePackages() {
   sh """
-    cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
+    cd $CIVICRM_EXT_ROOT/civihr/
     yarn || true
   """
 }
@@ -363,99 +357,92 @@ def listCivihrExtensions() {
       name: 'Job Roles',
       folder: 'com.civicrm.hrjobroles',
       hasJSTests: true,
-      hasJSPackages: false,
       hasPHPTests: true
     ],
     contactaccessrights: [
       name: 'Contacts Access Rights',
       folder: 'contactaccessrights',
       hasJSTests: true,
-      hasJSPackages: false,
       hasPHPTests: true
     ],
     contactsummary: [
       name: 'Contacts Summary',
       folder: 'contactsummary',
       hasJSTests: true,
-      hasJSPackages: false,
       hasPHPTests: false
     ],
     hrjobcontract: [
       name: 'Job Contracts',
       folder: 'hrjobcontract',
       hasJSTests: true,
-      hasJSPackages: false,
       hasPHPTests: true
     ],
     hrrecruitment: [
       name: 'Recruitment',
       folder: 'hrrecruitment',
       hasJSTests: false,
-      hasJSPackages: false,
       hasPHPTests: true
     ],
     hrreport: [
       name: 'Reports',
       folder: 'hrreport',
       hasJSTests: false,
-      hasJSPackages: false,
       hasPHPTests: false
     ],
     hrui: [
       name: 'HR UI',
       folder: 'hrui',
       hasJSTests: false,
-      hasJSPackages: false,
       hasPHPTests: false
     ],
     hrvisa: [
       name: 'HR Visa',
       folder: 'hrvisa',
       hasJSTests: false,
-      hasJSPackages: false,
       hasPHPTests: true
     ],
     reqangular: [
       name: 'Reqangular',
       folder: 'org.civicrm.reqangular',
       hasJSTests: true,
-      hasJSPackages: true,
       hasPHPTests: false
     ],
     hrcore: [
       name: 'HRCore',
       folder: 'uk.co.compucorp.civicrm.hrcore',
       hasJSTests: false,
-      hasJSPackages: false,
       hasPHPTests: true
     ],
     hrleaveandabsences: [
       name: 'Leave and Absences',
       folder: 'uk.co.compucorp.civicrm.hrleaveandabsences',
       hasJSTests: true,
-      hasJSPackages: true,
       hasPHPTests: true
     ],
     hrsampledata: [
       name: 'Sample Data',
       folder: 'uk.co.compucorp.civicrm.hrsampledata',
       hasJSTests: false,
-      hasJSPackages: false,
       hasPHPTests: true
     ],
     hremergency: [
       name: 'Emergency Contacts ',
       folder: 'org.civicrm.hremergency',
       hasJSTests: false,
-      hasJSPackages: false,
       hasPHPTests: true
     ],
     bootstrapcivihr: [
       name: 'Bootstrap CiviHR',
       folder: 'org.civicrm.bootstrapcivihr',
       hasJSTests: false,
-      hasJSPackages: true,
       hasPHPTests: false
+    ],
+    hrcontactactionsmenu: [
+      name: 'Contact Actions Menu',
+      folder: 'uk.co.compucorp.civicrm.hrcontactactionsmenu',
+      hasJSTests: false,
+      hasJSPackages: false,
+      hasPHPTests: true
     ]
   ]
 }

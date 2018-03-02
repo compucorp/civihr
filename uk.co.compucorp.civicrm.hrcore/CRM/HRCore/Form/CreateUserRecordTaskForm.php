@@ -173,7 +173,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
    * @return array
    */
   private function getAssignableRoles() {
-    $roles = ['civihr_admin', 'civihr_manager', 'civihr_staff'];
+    $roles = ['HR Admin', 'Manager', 'Staff'];
     $assignable = [];
 
     foreach ($roles as $role) {
