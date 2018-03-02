@@ -1,9 +1,9 @@
-.horizontal-scroll-shadows-master {
+.chr_h-scroll-shadows__master {
   overflow: hidden; // this ensures the shadows are hidden behind
   position: relative;
 }
 
-.horizontal-scroll-shadows-wrapper {
+.chr_h-scroll-shadows__wrapper {
   overflow-x: auto;
 
   &::before,
@@ -21,19 +21,21 @@
   }
 
   &::before {
-    left: -1px; // This hides the actual object leaving the shadow still visible
+    // This hides the shadow element underneath the master element
+    // leaving the actual shadow still visible
+    left: -1px;
   }
 
   &::after {
     right: -1px;
   }
 
-  &.insetShadowLeft::before,
-  &.insetShadowRight::after {
+  &.chr_h-scroll-shadows__wrapper--inset-shadow-left::before,
+  &.chr_h-scroll-shadows__wrapper--inset-shadow-right::after {
     opacity: 1;
   }
 
-  .horizontal-scroll-shadows-content {
+  .chr_h-scroll-shadows__content {
     display: inline-block; // to appear with :after and :before properly
     min-width: 100%; // otherwise it will shrink the content with less than 100% width
   }

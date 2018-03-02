@@ -7,17 +7,18 @@ define([
 ], function (angular, directives) {
   'use strict';
 
-  directives.directive('horizontalScrollShadows', [function () {
+  directives.directive('hScrollShadows', [function () {
     return {
       restrict: 'A',
-      controller: horizontalScrollShadowsController
+      controller: hScrollShadowsController
     };
   }]);
 
-  horizontalScrollShadowsController.$inject = ['$element', '$scope', '$window'];
+  hScrollShadowsController.$inject = ['$element', '$scope', '$window'];
 
-  function horizontalScrollShadowsController ($element, $scope, $window) {
+  function hScrollShadowsController ($element, $scope, $window) {
     var content, wrapper;
+    var directiveClassPrefix = 'chr_h-scroll-shadows';
 
     (function init () {
       wrapContents();
@@ -47,30 +48,28 @@ define([
     function toggleShadows () {
       var scroll = wrapper.scrollLeft();
       var contentWidth = content.width();
+      var wrapperClassPrefix = directiveClassPrefix + '__wrapper';
       var wrapperWidth = wrapper.width();
 
       if (contentWidth <= wrapperWidth) {
-        wrapper.removeClass('insetShadowLeft insetShadowRight');
+        wrapper.removeClass(wrapperClassPrefix + '--inset-shadow-left');
+        wrapper.removeClass(wrapperClassPrefix + '--inset-shadow-right');
 
         return;
       }
 
-      wrapper[scroll > 0 ? 'addClass' : 'removeClass']('insetShadowLeft');
-      wrapper[scroll < contentWidth - wrapperWidth ? 'addClass' : 'removeClass']('insetShadowRight');
+      wrapper[scroll > 0 ? 'addClass' : 'removeClass'](wrapperClassPrefix + '--inset-shadow-left');
+      wrapper[scroll < contentWidth - wrapperWidth ? 'addClass' : 'removeClass'](wrapperClassPrefix + '--inset-shadow-right');
     }
 
     /**
      * Wraps original contents to make an environment for inset shadows
      */
     function wrapContents () {
-      $element.wrap(angular.element(
-        '<div class="horizontal-scroll-shadows-content"></div>'));
-      content = $element.parent();
-      content.wrap(angular.element(
-        '<div class="horizontal-scroll-shadows-wrapper"></div>'));
-      wrapper = content.parent();
-      wrapper.wrap(angular.element(
-        '<div class="horizontal-scroll-shadows-master"></div>'));
+      content = $element.wrap('<div class="' + directiveClassPrefix + '__content"></div>').parent();
+      wrapper = content.wrap('<div class="' + directiveClassPrefix + '__wrapper"></div>').parent();
+
+      wrapper.wrap('<div class="' + directiveClassPrefix + '__master"></div>');
     }
   }
 });

@@ -15,6 +15,5 @@
 
 #{$outsideNamespaceMarker} {
   @import 'components/outside-namespace/*';
-  @import 'directives/*';
   @import 'overrides/crm/*';
 }

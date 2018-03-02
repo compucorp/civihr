@@ -4,7 +4,7 @@ define([
   'common/angular',
   'common/angularBootstrap',
   'common/text-angular',
-  'common/directives/horizontal-scroll-shadows.directive',
+  'common/directives/h-scroll-shadows.directive',
   'common/directives/time-amount-picker.directive',
   'common/directives/timepicker-select.directive',
   'common/filters/angular-date/format-date',
