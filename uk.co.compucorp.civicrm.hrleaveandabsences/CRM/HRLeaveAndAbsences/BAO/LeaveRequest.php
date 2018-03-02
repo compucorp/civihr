@@ -803,15 +803,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param int $contactID
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   * @param boolean $nonDeletedOnly
+   *   When true will only return result if the given public
+   *   holiday request is not yet deleted.
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|null
    */
-  public static function findPublicHolidayLeaveRequest($contactID, PublicHoliday $publicHoliday) {
+  public static function findPublicHolidayLeaveRequest($contactID, PublicHoliday $publicHoliday, $nonDeletedOnly = TRUE) {
     $leaveRequest = new self();
     $leaveRequest->contact_id = (int)$contactID;
     $leaveRequest->from_date = date('Ymd', strtotime($publicHoliday->date));
     $leaveRequest->request_type = self::REQUEST_TYPE_PUBLIC_HOLIDAY;
-    $leaveRequest->is_deleted = 0;
+    if ($nonDeletedOnly) {
+      $leaveRequest->is_deleted = 0;
+    }
 
     $leaveRequest->find(true);
     if($leaveRequest->id) {

@@ -181,6 +181,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    *
    * @param int $contactID
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   *
+   * @return LeaveRequest|null
    */
   public function createForContact($contactID, PublicHoliday $publicHoliday) {
     if (!$this->absenceType) {
@@ -195,6 +197,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     $leaveRequest = $this->createLeaveRequest($contactID, $this->absenceType, $publicHoliday);
     $this->createLeaveBalanceChangeRecord($leaveRequest);
     $this->recalculateExpiredBalanceChange($leaveRequest);
+
+    return $leaveRequest;
   }
 
   /**
