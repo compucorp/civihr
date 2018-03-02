@@ -519,6 +519,16 @@ define([
         expect(LeaveRequestAPI.getBalanceChangeBreakdown).toHaveBeenCalledWith(instance.id);
       });
 
+      it('always returns daily amounts as non-negative numbers', function () {
+        expect(_.every(promiseResult.breakdown, function (day) {
+          return day.amount >= 0;
+        })).toBe(true);
+      });
+
+      it('always returns the total amount as a non-positive number', function () {
+        expect(promiseResult.amount <= 0).toBe(true);
+      });
+
       it('returns data with the same structure as LeaveRequestAPI.calculateBalanceChange() endpoint', function () {
         expect(promiseResult).toEqual(jasmine.objectContaining({
           amount: jasmine.any(Number),

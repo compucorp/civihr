@@ -143,9 +143,9 @@ define([
                 : 0;
             }
 
-            balanceObject.amount = _.reduce(balanceObject.breakdown,
+            balanceObject.amount = (-1) * _.reduce(balanceObject.breakdown,
               function (totalAmount, day) {
-                return totalAmount - day.amount;
+                return totalAmount + day.amount;
               }, 0);
 
             return balanceObject;
@@ -337,7 +337,7 @@ define([
                 }, 0),
                 breakdown: response.values.map(function (entry) {
                   return {
-                    amount: parseFloat(entry.amount),
+                    amount: Math.abs(parseFloat(entry.amount)),
                     date: entry.date,
                     type: {
                       id: entry.id,
