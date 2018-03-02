@@ -577,13 +577,12 @@ define([
     function initTime (dateType) {
       var time = moment(vm.request[dateType + '_date']).format('HH:mm');
       var timeObject = vm.uiOptions.times[dateType];
-      var isBeforeWorkPatternRange = getTimeDifferenceInHours(timeObject.min, time) <= 0;
-      var isAfterWorkPatternRange = getTimeDifferenceInHours(timeObject.max, time) >= 0;
+      var isOutsideWorkPatternRange =
+        getTimeDifferenceInHours(timeObject.min, time) <= 0 ||
+        getTimeDifferenceInHours(timeObject.max, time) >= 0;
 
-      if (dateType === 'from' && isBeforeWorkPatternRange) {
-        time = timeObject.min;
-      } else if (dateType === 'to' && isAfterWorkPatternRange) {
-        time = timeObject.max;
+      if (isOutsideWorkPatternRange) {
+        time = timeObject[dateType === 'from' ? 'min' : 'max'];
       }
 
       vm.uiOptions.times[dateType].time = time;

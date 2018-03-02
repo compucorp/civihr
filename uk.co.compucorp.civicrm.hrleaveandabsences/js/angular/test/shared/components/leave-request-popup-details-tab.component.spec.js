@@ -919,21 +919,54 @@ define([
             });
 
             describe('when set times are outside the allowed range', function () {
-              var minTime = '09:00';
-              var maxTime = '17:00';
+              initSetTimeAccordingToWorkPattern('02:00', '23:00', '09:00', '17:00');
 
+              it('sets from time to minimum allowed time', function () {
+                expect(controller.uiOptions.times.from.time).toBe('09:00');
+                expect(leaveRequest.from_date.slice(11, 16)).toBe('09:00');
+              });
+
+              it('sets to time to maximum allowed time', function () {
+                expect(controller.uiOptions.times.to.time).toBe('17:00');
+                expect(leaveRequest.to_date.slice(11, 16)).toBe('17:00');
+              });
+            });
+
+            describe('when work pattern day has change to a non-working day', function () {
+              initSetTimeAccordingToWorkPattern('02:00', '23:00', '', '');
+
+              it('sets from time to minimum allowed time', function () {
+                expect(controller.uiOptions.times.from.time).toBe('00:00');
+                expect(leaveRequest.from_date.slice(11, 16)).toBe('00:00');
+              });
+
+              it('sets to time to maximum allowed time', function () {
+                expect(controller.uiOptions.times.to.time).toBe('00:00');
+                expect(leaveRequest.to_date.slice(11, 16)).toBe('00:00');
+              });
+            });
+
+            /**
+             * Initialises set time for a given work pattern range
+             *
+             * @param {String} setFromTime HH:mm
+             * @param {String} setToTime HH:mm
+             * @param {String} wpFromTime HH:mm or empty string
+             * @param {String} wpToTime HH:mm or empty string
+             */
+            function initSetTimeAccordingToWorkPattern (setFromTime, setToTime, wpFromTime, wpToTime) {
               beforeEach(function () {
                 var status = optionGroupMock.specificValue(
                   'hrleaveandabsences_leave_request_status', 'value', '3');
 
                 leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
                 selectedAbsenceType.calculation_unit_name = 'hours';
-                leaveRequest.from_date = leaveRequest.from_date.slice(0, 11) + '02:00';
-                leaveRequest.to_date = leaveRequest.to_date.slice(0, 11) + '23:00';
+                leaveRequest.from_date = leaveRequest.from_date.slice(0, 11) + setFromTime;
+                leaveRequest.to_date = leaveRequest.to_date.slice(0, 11) + setToTime;
                 spyOn(leaveRequest, 'getWorkDayForDate').and.callFake(function () {
                   return $q.resolve({
-                    time_from: minTime,
-                    time_to: maxTime,
+                    time_from: wpFromTime,
+                    time_to: wpToTime,
                     number_of_hours: 4
                   });
                 });
@@ -948,17 +981,7 @@ define([
               afterEach(function () {
                 selectedAbsenceType.calculation_unit_name = 'days';
               });
-
-              it('sets from time to minimum allowed time', function () {
-                expect(controller.uiOptions.times.from.time).toBe(minTime);
-                expect(leaveRequest.from_date.slice(11, 16)).toBe(minTime);
-              });
-
-              it('sets to time to maximum allowed time', function () {
-                expect(controller.uiOptions.times.to.time).toBe(maxTime);
-                expect(leaveRequest.to_date.slice(11, 16)).toBe(maxTime);
-              });
-            });
+            }
           });
         });
       });
