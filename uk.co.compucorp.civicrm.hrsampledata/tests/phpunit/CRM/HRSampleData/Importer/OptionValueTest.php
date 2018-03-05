@@ -10,6 +10,11 @@ use CRM_HRCore_Test_Fabricator_OptionGroup as OptionGroupFabricator;
 class CRM_HRSampleData_CSVProcessor_OptionValueTest extends CRM_HRSampleData_BaseCSVProcessorTest {
 
   private $testOptionGroup;
+  private $fieldsToIgnoreInAssertion = [
+    'option_group_id',
+    'component_id',
+    'option_group_id_type'
+  ];
 
   public function setUp() {
     $this->rows = [];
@@ -39,11 +44,7 @@ class CRM_HRSampleData_CSVProcessor_OptionValueTest extends CRM_HRSampleData_Bas
       ['option_group_id' => $this->testOptionGroup['name'], 'name' => 'Compassionate_Leave']
     );
 
-    foreach($this->rows[0] as $index => $fieldName) {
-      if (!in_array($fieldName, ['option_group_id', 'component_id', 'option_group_id_type'])) {
-        $this->assertEquals($this->rows[1][$index], $optionValue[$fieldName]);
-      }
-    }
+    $this->assertEntityEqualsToRows($this->rows, $optionValue, $this->fieldsToIgnoreInAssertion);
   }
 
   public function testProcessWithOptionGroupTitle() {
@@ -67,11 +68,7 @@ class CRM_HRSampleData_CSVProcessor_OptionValueTest extends CRM_HRSampleData_Bas
       ['option_group_id' => $this->testOptionGroup['name'], 'name' => 'Compassionate_Leave']
     );
 
-    foreach($this->rows[0] as $index => $fieldName) {
-      if (!in_array($fieldName, ['option_group_id', 'component_id', 'option_group_id_type'])) {
-        $this->assertEquals($this->rows[1][$index], $optionValue[$fieldName]);
-      }
-    }
+    $this->assertEntityEqualsToRows($this->rows, $optionValue, $this->fieldsToIgnoreInAssertion);
   }
 
   private function importHeadersFixture() {

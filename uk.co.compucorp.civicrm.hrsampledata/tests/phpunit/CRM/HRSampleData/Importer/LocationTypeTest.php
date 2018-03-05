@@ -27,9 +27,7 @@ class CRM_HRSampleData_CSVProcessor_LocationTypeTest extends CRM_HRSampleData_Ba
 
     $locationType = $this->apiGet('LocationType', ['name' => 'Correspondence']);
 
-    foreach($this->rows[0] as $index => $fieldName) {
-      $this->assertEquals($this->rows[1][$index], $locationType[$fieldName]);
-    }
+    $this->assertEntityEqualsToRows($this->rows, $locationType);
   }
 
   private function importHeadersFixture() {

@@ -15,6 +15,7 @@ class CRM_HRSampleData_BaseCSVProcessorTest extends \PHPUnit_Framework_TestCase 
   public function setUpHeadless() {
     return \Civi\Test::headless()
       ->install('uk.co.compucorp.civicrm.hrcore')
+      ->install('uk.co.compucorp.civicrm.hrleaveandabsences')
       ->install('org.civicrm.hrjobcontract')
       ->install('com.civicrm.hrjobroles')
       ->install('org.civicrm.hrrecruitment')
@@ -54,6 +55,29 @@ class CRM_HRSampleData_BaseCSVProcessorTest extends \PHPUnit_Framework_TestCase 
     $fetchResult = array_shift($fetchResult['values']);
 
     return $fetchResult;
+  }
+
+  /**
+   * @param array $rows
+   *   An array of rows to be imported. The first rows contains the fields names,
+   *   and the second row contains the field values
+   * @param array $entity
+   *   The entity array, as returned by the API
+   * @param array $fieldsToIgnore
+   *   An array with names of fields that will be not checked
+   */
+  protected function assertEntityEqualsToRows($rows, $entity, $fieldsToIgnore = []) {
+    foreach($rows[0] as $index => $fieldName) {
+      if(in_array($fieldName, $fieldsToIgnore)) {
+        continue;
+      }
+
+      $this->assertEquals(
+        $rows[1][$index],
+        $entity[$fieldName],
+        "The value of {$fieldName} was expected to be {$this->rows[1][$index]}, but it is {$entity[$fieldName]}"
+      );
+    }
   }
 
   private function getSplFileObjectMock($rows) {

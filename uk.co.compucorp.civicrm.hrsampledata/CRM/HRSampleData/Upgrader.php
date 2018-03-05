@@ -130,6 +130,11 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
     $csvFiles  = [
       'OptionValue' => 'civicrm_option_value',
       'LocationType' => 'civicrm_location_type',
+      'AbsencePeriod' => 'civicrm_hrleaveandabsences_absence_period',
+      // Job Contracts depend on the Absence Types here. This is why we need
+      // to import them before the Contracts
+      'AbsenceType' => 'civicrm_hrleaveandabsences_absence_type',
+      'PublicHoliday' => 'civicrm_hrleaveandabsences_public_holiday',
       'Contact' => 'civicrm_contact',
       'ContactEmail' => 'civicrm_email',
       'ContactPhone' => 'civicrm_phone',
@@ -145,6 +150,7 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
       'BankDetails' => 'civicrm_value_bank_details',
       'EmergencyContacts' => 'civicrm_value_emergency_contacts',
       'ExtendedDemographics' => 'civicrm_value_extended_demographics',
+      'LeaveRequest' => 'civicrm_hrleaveandabsences_leave_request'
     ];
 
     foreach($csvFiles as $class => $file) {

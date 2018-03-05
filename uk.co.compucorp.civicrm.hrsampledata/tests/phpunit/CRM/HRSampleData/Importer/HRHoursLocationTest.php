@@ -23,9 +23,7 @@ class CRM_HRSampleData_Importer_HRHoursLocationTest extends CRM_HRSampleData_Bas
 
     $hoursLocation = $this->apiGet('HRHoursLocation', ['location' => 'Islington']);
 
-    foreach($this->rows[0] as $index => $fieldName) {
-      $this->assertEquals($this->rows[1][$index], $hoursLocation[$fieldName]);
-    }
+    $this->assertEntityEqualsToRows($this->rows, $hoursLocation);
   }
 
   private function importHeadersFixture() {
