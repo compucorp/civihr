@@ -14,8 +14,13 @@ module.exports = (function () {
 
       return new Promise(function (resolve) {
         casper.then(function () {
-          casper.click('#manage-roles-and-teams');
+          this.showActions();
+        }.bind(this));
+
+        casper.then(function () {
+          casper.click('[data-contact-access-rights]');
           casper.waitWhileVisible('.spinner');
+
           resolve(this.waitForModal('contact-access-rights'));
         }.bind(this));
       }.bind(this));
