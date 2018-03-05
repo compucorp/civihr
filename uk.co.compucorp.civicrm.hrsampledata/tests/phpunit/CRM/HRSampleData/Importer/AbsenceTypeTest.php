@@ -13,8 +13,7 @@ class CRM_HRSampleData_CSVProcessor_AbsenceTypeTest extends CRM_HRSampleData_Bas
   }
 
   public function testProcess() {
-
-    $absenceType = $this->apiGet('AbsenceType', ['title' => '2016']);
+    $absenceType = $this->apiGet('AbsenceType', ['title' => 'Annual Leave']);
     $this->assertEmpty($absenceType);
 
     $this->rows[] = [
@@ -24,20 +23,24 @@ class CRM_HRSampleData_CSVProcessor_AbsenceTypeTest extends CRM_HRSampleData_Bas
       '#151D2C',
       1,
       0,
+      5,
       3,
       0,
       1,
       20.00,
       1,
       1,
+      1,
       0,
-      0,
+      3,
+      1,
+      1,
       1,
       5.00,
       12,
       2,
       0,
-      1
+      1,
     ];
 
     $this->runProcessor('CRM_HRSampleData_Importer_AbsenceType', $this->rows);
@@ -67,6 +70,7 @@ class CRM_HRSampleData_CSVProcessor_AbsenceTypeTest extends CRM_HRSampleData_Bas
       'color',
       'is_default',
       'is_reserved',
+      'max_consecutive_leave_days',
       'allow_request_cancelation',
       'allow_overuse',
       'must_take_public_holiday_as_leave',
@@ -75,6 +79,9 @@ class CRM_HRSampleData_CSVProcessor_AbsenceTypeTest extends CRM_HRSampleData_Bas
       'is_active',
       'allow_accruals_request',
       'allow_accrue_in_the_past',
+      'max_leave_accrual',
+      'accrual_expiration_duration',
+      'accrual_expiration_unit',
       'allow_carry_forward',
       'max_number_of_days_to_carry_forward',
       'carry_forward_expiration_duration',
