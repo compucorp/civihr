@@ -1,0 +1,42 @@
+.chr_scroll-shadows__wrapper {
+  overflow: hidden; // this ensures the shadows are hidden behind
+  position: relative;
+}
+
+.chr_scroll-shadows__shadows {
+  overflow-x: auto;
+
+  &::before,
+  &::after {
+    box-shadow: 0 0 10px 1px rgba(48, 40, 40, 0.5);
+    content: '';
+    display: block;
+    height: calc(100% - 10px); // if height is 100% then the shadow will be cut off
+    opacity: 0; // by default the shadows are invisible
+    position: absolute;
+    top: 5px; // since the height is `100% - 10px`, this is to center the shadow vertically
+    transition: opacity 0.2s ease-out;
+    width: 1px; // in order to make the shadow appear
+    z-index: 1; // in order to appear on top of the inset content
+  }
+
+  &::before {
+    // This hides the shadow element underneath the container element
+    // leaving the actual shadow still visible
+    left: -1px;
+  }
+
+  &::after {
+    right: -1px;
+  }
+}
+
+.chr_scroll-shadows__shadows--show-left::before,
+.chr_scroll-shadows__shadows--show-right::after {
+  opacity: 1;
+}
+
+.chr_scroll-shadows__content {
+  display: inline-block; // otherwise it will collapse the content, and not wrap
+  min-width: 100%; // otherwise it will shrink the content with less than 100% width
+}
