@@ -63,6 +63,8 @@ class CRM_HRSampleData_BaseCSVProcessorTest extends \PHPUnit_Framework_TestCase 
    *   and the second row contains the field values
    * @param array $entity
    *   The entity array, as returned by the API
+   * @param array $fieldsToIgnore
+   *   An array with names of fields that will be not checked
    */
   protected function assertEntityEqualsToRows($rows, $entity, $fieldsToIgnore = []) {
     foreach($rows[0] as $index => $fieldName) {
