@@ -13,15 +13,14 @@ class CRM_HRSampleData_CSVProcessor_AbsencePeriodTest extends CRM_HRSampleData_B
   }
 
   public function testProcess() {
-
-    $absencePeriod = $this->apiGet('AbsencePeriod', ['name' => '2016']);
+    $absencePeriod = $this->apiGet('AbsencePeriod', ['start_date' => '2016-01-01']);
     $this->assertEmpty($absencePeriod);
 
     $this->rows[] = [
       1,
-      '2016 (Jan 1 to Dec 31)',
+      '2016',
       '2016-01-01',
-      '2017-01-31',
+      '2016-12-31',
       '1'
     ];
 

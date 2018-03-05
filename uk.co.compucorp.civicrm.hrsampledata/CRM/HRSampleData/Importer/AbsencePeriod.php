@@ -23,9 +23,8 @@ class CRM_HRSampleData_Importer_AbsencePeriod extends CRM_HRSampleData_CSVImport
    */
   private function removeAllPeriods() {
     $this->callAPI('AbsencePeriod', 'get', [
-      'sequential' => 1,
       'return' => ['id'],
-      'api.AbsencePeriod.delete' => ['id' => "\$value.id"],
+      'api.AbsencePeriod.delete' => ['id' => '$value.id'],
     ]);
   }
 
