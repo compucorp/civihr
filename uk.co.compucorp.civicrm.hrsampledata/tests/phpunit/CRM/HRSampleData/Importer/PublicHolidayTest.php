@@ -15,7 +15,6 @@ class CRM_HRSampleData_CSVProcessor_PublicHolidayTest extends CRM_HRSampleData_B
   }
 
   public function testProcess() {
-
     $publicHoliday = $this->apiGet('PublicHoliday', ['title' => 'Christmas']);
     $this->assertEmpty($publicHoliday);
 
@@ -36,9 +35,7 @@ class CRM_HRSampleData_CSVProcessor_PublicHolidayTest extends CRM_HRSampleData_B
 
     $publicHoliday = $this->apiGet('PublicHoliday', ['title' => 'Christmas']);
 
-    foreach($this->rows[0] as $index => $fieldName) {
-      $this->assertEquals($this->rows[1][$index], $publicHoliday[$fieldName]);
-    }
+    $this->assertEntityEqualsToRows($this->rows, $publicHoliday);
   }
 
   private function importHeadersFixture() {

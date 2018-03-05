@@ -44,11 +44,8 @@ class CRM_HRSampleData_CSVProcessor_RelationshipsTest extends CRM_HRSampleData_B
 
     $relationship = $this->apiGet('Relationship', ['contact_id_a' => $this->testContactA['id']]);
 
-    foreach($this->rows[0] as $index => $fieldName) {
-      if (!in_array($fieldName, ['relationship_type_id'])) {
-        $this->assertEquals($this->rows[1][$index], $relationship[$fieldName]);
-      }
-    }
+    $fieldsToIgnore = ['relationship_type_id'];
+    $this->assertEntityEqualsToRows($this->rows, $relationship, $fieldsToIgnore);
   }
 
   private function importHeadersFixture() {

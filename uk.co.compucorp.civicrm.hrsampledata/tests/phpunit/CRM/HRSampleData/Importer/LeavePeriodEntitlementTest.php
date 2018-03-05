@@ -51,13 +51,13 @@ class CRM_HRSampleData_Importer_LeavePeriodEntitlementTest extends CRM_HRSampleD
 
     $periodEntitlement = $this->apiGet('LeavePeriodEntitlement');
 
-    foreach($this->rows[0] as $index => $fieldName) {
-      // Fields ending with amount are fake fields and will not be returned by
-      // the API
-      if(!preg_match('/.+_amount$/', $fieldName)) {
-        $this->assertEquals($this->rows[1][$index], $periodEntitlement[$fieldName]);
-      }
-    }
+    $fieldsToIgnore = [
+      'leave_amount',
+      'brought_forward_amount',
+      'public_holiday_amount',
+      'overridden_amount'
+    ];
+    $this->assertEntityEqualsToRows($this->rows, $periodEntitlement, $fieldsToIgnore);
 
     $balanceChanges = civicrm_api3('LeaveBalanceChange', 'get', [
       'source_id' => $periodEntitlement['id'],

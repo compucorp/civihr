@@ -57,6 +57,27 @@ class CRM_HRSampleData_BaseCSVProcessorTest extends \PHPUnit_Framework_TestCase 
     return $fetchResult;
   }
 
+  /**
+   * @param array $rows
+   *   An array of rows to be imported. The first rows contains the fields names,
+   *   and the second row contains the field values
+   * @param array $entity
+   *   The entity array, as returned by the API
+   */
+  protected function assertEntityEqualsToRows($rows, $entity, $fieldsToIgnore = []) {
+    foreach($rows[0] as $index => $fieldName) {
+      if(in_array($fieldName, $fieldsToIgnore)) {
+        continue;
+      }
+
+      $this->assertEquals(
+        $rows[1][$index],
+        $entity[$fieldName],
+        "The value of {$fieldName} was expected to be {$this->rows[1][$index]}, but it is {$entity[$fieldName]}"
+      );
+    }
+  }
+
   private function getSplFileObjectMock($rows) {
     $calls = 0;
     $rowsCount = count($rows);

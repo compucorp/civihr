@@ -37,11 +37,8 @@ class CRM_HRSampleData_CSVProcessor_VacancyTest extends CRM_HRSampleData_BaseCSV
 
     $vacancy = $this->apiGet('HRVacancy', ['position' => 'Junior Programme Coordinator']);
 
-    foreach($this->rows[0] as $index => $fieldName) {
-      if (!in_array($fieldName, ['id', 'location', 'status_id'])) {
-        $this->assertEquals($this->rows[1][$index], $vacancy[$fieldName]);
-      }
-    }
+    $fieldsToIgnore = ['id', 'location', 'status_id'];
+    $this->assertEntityEqualsToRows($this->rows, $vacancy, $fieldsToIgnore);
   }
 
   private function importHeadersFixture() {

@@ -25,8 +25,8 @@ class CRM_HRSampleData_Importer_LeaveRequestTest extends CRM_HRSampleData_BaseCS
       [ 'period_start_date' => '2017-01-01' ]
     );
 
-    $absencePeriod = $this->apiGet('LeaveRequest');
-    $this->assertEmpty($absencePeriod);
+    $leaveRequest = $this->apiGet('LeaveRequest');
+    $this->assertEmpty($leaveRequest);
 
     $this->rows[] = [
       $absenceTypeID,
@@ -53,9 +53,7 @@ class CRM_HRSampleData_Importer_LeaveRequestTest extends CRM_HRSampleData_BaseCS
 
     $leaveRequest = $this->apiGet('LeaveRequest');
 
-    foreach($this->rows[0] as $index => $fieldName) {
-      $this->assertEquals($this->rows[1][$index], $leaveRequest[$fieldName]);
-    }
+    $this->assertEntityEqualsToRows($this->rows, $leaveRequest);
   }
 
   private function importHeadersFixture() {

@@ -65,24 +65,8 @@ class CRM_HRSampleData_CSVProcessor_JobRolesTest extends CRM_HRSampleData_BaseCS
 
     $jobRole = $this->apiGet('HrJobRoles', ['job_contract_id' => $this->testJobContract['id']]);
 
-    $fieldsToTest = [
-      'job_contract_id',
-      'title',
-      'cost_center_val_type',
-      'percent_pay_cost_center',
-      'amount_pay_cost_center',
-      'funder',
-      'funder_val_type',
-      'percent_pay_funder',
-      'amount_pay_funder',
-      'start_date',
-      'end_date',
-    ];
-    foreach($this->rows[0] as $index => $fieldName) {
-      if (in_array($fieldName, $fieldsToTest)) {
-        $this->assertEquals($this->rows[1][$index], $jobRole[$fieldName]);
-      }
-    }
+    $fieldsToIgnore = ['region', 'department', 'level_type', 'cost_center', 'location'];
+    $this->assertEntityEqualsToRows($this->rows, $jobRole, $fieldsToIgnore);
   }
 
   private function importHeadersFixture() {
