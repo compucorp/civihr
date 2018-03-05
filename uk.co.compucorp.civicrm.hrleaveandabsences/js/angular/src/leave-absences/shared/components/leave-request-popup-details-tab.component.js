@@ -582,7 +582,7 @@ define([
         getTimeDifferenceInHours(timeObject.max, time) >= 0;
 
       if (isOutsideWorkPatternRange) {
-        time = timeObject[dateType === 'from' ? 'min' : 'max'];
+        time = dateType === 'from' ? timeObject.min : timeObject.max;
       }
 
       vm.uiOptions.times[dateType].time = time;
