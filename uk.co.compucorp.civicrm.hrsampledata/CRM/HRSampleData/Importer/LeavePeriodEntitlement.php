@@ -8,11 +8,13 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 class CRM_HRSampleData_Importer_LeavePeriodEntitlement extends CRM_HRSampleData_CSVImporterVisitor {
 
   public function __construct() {
-    $this->removeAllLeavePeriodEntitlements();
+    $this->removeAllLeavePeriodEntitlementsWithTheirBalances();
   }
 
   /**
    * Imports Leave Requests and creates their balance changes
+   *
+   * @param array $row
    */
   protected function importRecord(array $row) {
     $row['type_id'] = $this->getDataMapping('absence_type_mapping', $row['type_id']);
@@ -28,45 +30,58 @@ class CRM_HRSampleData_Importer_LeavePeriodEntitlement extends CRM_HRSampleData_
 
     $balanceChangeTypes = array_flip(LeaveBalanceChange::buildOptions('type_id', 'validate'));
 
-    $this->callAPI('LeaveBalanceChange', 'create', [
-      'amount' => $leaveAmount,
-      'type_id' => $balanceChangeTypes['leave'],
-      'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
-      'source_id' => $periodEntitlement['id']
-    ]);
+    $this->createEntitlementBalanceChange(
+      $periodEntitlement['id'],
+      $balanceChangeTypes['leave'],
+      $leaveAmount
+    );
 
     if ($broughtForwardAmount) {
-      $this->callAPI('LeaveBalanceChange', 'create', [
-        'amount' => $broughtForwardAmount,
-        'type_id' => $balanceChangeTypes['brought_forward'],
-        'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
-        'source_id' => $periodEntitlement['id']
-      ]);
+      $this->createEntitlementBalanceChange(
+        $periodEntitlement['id'],
+        $balanceChangeTypes['brought_forward'],
+        $broughtForwardAmount
+      );
     }
 
     if ($publicHolidayAmount) {
-      $this->callAPI('LeaveBalanceChange', 'create', [
-        'amount' => $publicHolidayAmount,
-        'type_id' => $balanceChangeTypes['public_holiday'],
-        'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
-        'source_id' => $periodEntitlement['id']
-      ]);
+      $this->createEntitlementBalanceChange(
+        $periodEntitlement['id'],
+        $balanceChangeTypes['public_holiday'],
+        $publicHolidayAmount
+      );
     }
 
     if ($row['overridden']) {
-      $this->callAPI('LeaveBalanceChange', 'create', [
-        'amount' => $overriddenAmount,
-        'type_id' => $balanceChangeTypes['overridden'],
-        'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
-        'source_id' => $periodEntitlement['id']
-      ]);
+      $this->createEntitlementBalanceChange(
+        $periodEntitlement['id'],
+        $balanceChangeTypes['overridden'],
+        $overriddenAmount
+      );
     }
+  }
+
+  /**
+   * Creates a new Leave Balance Change for the Leave Period Entitlement with
+   * the given ID
+   *
+   * @param int $periodEntitlementID
+   * @param string $type
+   * @param float $amount
+   */
+  private function createEntitlementBalanceChange($periodEntitlementID, $type, $amount) {
+    $this->callAPI('LeaveBalanceChange', 'create', [
+      'amount' => $amount,
+      'type_id' => $type,
+      'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
+      'source_id' => $periodEntitlementID
+    ]);
   }
 
   /**
    * Removes existing Leave Period Entitlements and their Balance Changes.
    */
-  private function removeAllLeavePeriodEntitlements() {
+  private function removeAllLeavePeriodEntitlementsWithTheirBalances() {
     $this->callAPI('LeavePeriodEntitlement', 'get', [
       'api.LeavePeriodEntitlement.delete' => [ 'id' => '$value.id' ],
     ]);

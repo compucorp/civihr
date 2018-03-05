@@ -21,6 +21,8 @@ class CRM_HRSampleData_Importer_LeaveRequest extends CRM_HRSampleData_CSVImporte
 
   /**
    * Imports Leave Requests and creates their balance changes
+   *
+   * @param array $row
    */
   protected function importRecord(array $row) {
     $row['type_id'] = $this->getDataMapping('absence_type_mapping', $row['type_id']);
