@@ -534,15 +534,17 @@ define([
      */
     function initDeductionInputWatcher (dateType) {
       $scope.$watch('detailsTab.uiOptions.times.' + dateType + '.amount', function (amount, oldAmount) {
-        if (!isCalculationUnit('days') && +amount !== +oldAmount) {
-          if (vm.isRole('staff')) {
-            vm.request.change_balance = true;
-          }
-
-          setRequestHoursDeductions();
-          // @NOTE `vm.` is needed for testing purposes
-          vm.performBalanceChangeCalculation();
+        if (isCalculationUnit('days') || +amount === +oldAmount) {
+          return;
         }
+
+        if (vm.isRole('staff')) {
+          vm.request.change_balance = true;
+        }
+
+        setRequestHoursDeductions();
+        // @NOTE `vm.` is needed for testing purposes
+        vm.performBalanceChangeCalculation();
       });
     }
 
@@ -650,16 +652,18 @@ define([
      */
     function initTimeInputWatcher (dateType) {
       $scope.$watch('detailsTab.uiOptions.times.' + dateType + '.time', function (time, oldTime) {
-        if (!isCalculationUnit('days') && time !== oldTime) {
-          setRequestDateTimesAndDateTypes();
-
-          if (!time) {
-            return;
-          }
-
-          (!vm.uiOptions.multipleDays && dateType === 'from') && updateEndTimeInputMinTime(time);
-          setDeductionMaximumBoundary(dateType, true);
+        if (isCalculationUnit('days') || time === oldTime) {
+          return;
         }
+
+        setRequestDateTimesAndDateTypes();
+
+        if (!time) {
+          return;
+        }
+
+        (!vm.uiOptions.multipleDays && dateType === 'from') && updateEndTimeInputMinTime(time);
+        setDeductionMaximumBoundary(dateType, true);
       });
     }
 
