@@ -821,7 +821,8 @@ define([
 
               compileComponent({
                 mode: 'edit',
-                request: leaveRequest
+                request: leaveRequest,
+                role: 'staff'
               });
               $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
               $rootScope.$digest();
@@ -840,6 +841,10 @@ define([
 
             it('does not recalculate the balance', function () {
               expect(LeaveRequestAPI.calculateBalanceChange).not.toHaveBeenCalled();
+            });
+
+            it('will not recalculate the balance on save', function () {
+              expect(controller.request.change_balance).not.toBeDefined();
             });
 
             describe('and is a single day request', function () {
@@ -993,6 +998,30 @@ define([
                 selectedAbsenceType.calculation_unit_name = 'days';
               });
             }
+
+            describe('when the user changes the from custom deduction', function () {
+              beforeEach(function () {
+                controller.uiOptions.times.from.amount = (+fromDeduction + 1).toString();
+
+                $rootScope.$digest();
+              });
+
+              it('will recalculate the balance on save', function () {
+                expect(controller.request.change_balance).toBe(true);
+              });
+            });
+
+            describe('when the user changes the to custom deduction', function () {
+              beforeEach(function () {
+                controller.uiOptions.times.to.amount = (+toDeduction + 1).toString();
+
+                $rootScope.$digest();
+              });
+
+              it('will recalculate the balance on save', function () {
+                expect(controller.request.change_balance).toBe(true);
+              });
+            });
           });
         });
       });
@@ -1228,7 +1257,8 @@ define([
 
           var params = compileComponent({
             mode: 'edit',
-            request: leaveRequest
+            request: leaveRequest,
+            role: 'staff'
           });
 
           $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');

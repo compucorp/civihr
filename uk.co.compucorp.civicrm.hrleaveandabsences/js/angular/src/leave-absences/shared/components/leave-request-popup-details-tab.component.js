@@ -535,6 +535,10 @@ define([
     function initDeductionInputWatcher (dateType) {
       $scope.$watch('detailsTab.uiOptions.times.' + dateType + '.amount', function (amount, oldAmount) {
         if (!isCalculationUnit('days') && +amount !== +oldAmount) {
+          if (vm.isRole('staff')) {
+            vm.request.change_balance = true;
+          }
+
           setRequestHoursDeductions();
           // @NOTE `vm.` is needed for testing purposes
           vm.performBalanceChangeCalculation();
