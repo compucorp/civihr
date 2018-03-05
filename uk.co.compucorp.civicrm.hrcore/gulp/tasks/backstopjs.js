@@ -131,30 +131,33 @@ function runBackstopJS (command) {
 
   return getRolesAndIDs()
     .then(function (contactIdsByRoles) {
-      return new Promise(function (resolve) {
+      return new Promise(function (resolve, reject) {
         var isBackstopJSSuccessful;
 
         gulp.src(BACKSTOP_DIR_PATH + FILES.tpl)
           .pipe(file(destFile, tempFileContent(contactIdsByRoles)))
           .pipe(gulp.dest(BACKSTOP_DIR_PATH))
           .on('end', function () {
-            var promise = backstopjs(command, {
+            backstopjs(command, {
               configPath: BACKSTOP_DIR_PATH + destFile,
               filter: argv.filter
-            }).then(function () {
-              isBackstopJSSuccessful = true;
-            }).catch(_.noop).then(function () { // equivalent to .finally()
-              gulp
-                .src(BACKSTOP_DIR_PATH + destFile, { read: false })
-                .pipe(clean())
-                .pipe(notify({
-                  message: isBackstopJSSuccessful ? 'Successful' : 'Error',
-                  title: 'BackstopJS',
-                  sound: 'Beep'
-                }));
-            });
-
-            resolve(promise);
+            })
+              .then(function () {
+                isBackstopJSSuccessful = true;
+              })
+              .catch(_.noop).then(function () { // equivalent to .finally()
+                return gulp
+                  .src(BACKSTOP_DIR_PATH + destFile, { read: false })
+                  .pipe(clean())
+                  .pipe(notify({
+                    message: isBackstopJSSuccessful ? 'Successful' : 'Error',
+                    title: 'BackstopJS',
+                    sound: 'Beep'
+                  }));
+              })
+              .then(function () {
+                isBackstopJSSuccessful ? resolve() : reject(new Error('BackstopJS error'));
+              });
           });
       });
     })
