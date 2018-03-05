@@ -655,8 +655,6 @@
             }
             // set status id manually as manager would set it on UI
             controller.newStatusOnSave = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
-
-            controller.submit();
           });
 
           describe('if balance change has not been updated', function () {
@@ -664,6 +662,7 @@
               spyOn(controller.request,
                 'checkIfBalanceChangeNeedsRecalculation')
                 .and.returnValue($q.resolve(false));
+              controller.submit();
               $scope.$digest();
             });
 
@@ -705,38 +704,44 @@
               spyOn(dialog, 'open').and.callFake(function (params) {
                 proceedWithBalanceChangeRecalculation = params.onConfirm;
               });
-              $rootScope.$digest();
             });
 
-            it('does not call update method on instance', function () {
-              expect(controller.request.update).not.toHaveBeenCalled();
-            });
-
-            it('prompts a balance change recalculation', function () {
-              expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
-                .toHaveBeenCalled();
-            });
-
-            describe('on confirm the balance change recalculation', function () {
+            describe('basic tests', function () {
               beforeEach(function () {
-                proceedWithBalanceChangeRecalculation();
+                controller.submit();
                 $rootScope.$digest();
               });
 
-              it('initiates the balance change recalculation', function () {
-                expect($rootScope.$emit).toHaveBeenCalledWith(
-                  'LeaveRequestPopup::recalculateBalanceChange');
+              it('does not call update method on instance', function () {
+                expect(controller.request.update).not.toHaveBeenCalled();
               });
 
-              describe('after recalculation on submit attempt', function () {
+              it('prompts a balance change recalculation', function () {
+                expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
+                  .toHaveBeenCalled();
+              });
+
+              describe('on confirm the balance change recalculation', function () {
                 beforeEach(function () {
-                  controller.balance.change.amount = calculatedBalanceChangeAmount;
-                  controller.submit();
+                  proceedWithBalanceChangeRecalculation();
                   $rootScope.$digest();
                 });
 
-                it('updates leave request', function () {
-                  expect(controller.request.update).toHaveBeenCalled();
+                it('initiates the balance change recalculation', function () {
+                  expect($rootScope.$emit).toHaveBeenCalledWith(
+                    'LeaveRequestPopup::recalculateBalanceChange');
+                });
+
+                describe('after recalculation on submit attempt', function () {
+                  beforeEach(function () {
+                    controller.balance.change.amount = calculatedBalanceChangeAmount;
+                    controller.submit();
+                    $rootScope.$digest();
+                  });
+
+                  it('updates leave request', function () {
+                    expect(controller.request.update).toHaveBeenCalled();
+                  });
                 });
               });
             });
@@ -747,6 +752,7 @@
               controller.request.request_type = 'toil';
               controller.balance.change.amount--;
 
+              controller.submit();
               spyOn(dialog, 'open');
               $rootScope.$apply();
             });
