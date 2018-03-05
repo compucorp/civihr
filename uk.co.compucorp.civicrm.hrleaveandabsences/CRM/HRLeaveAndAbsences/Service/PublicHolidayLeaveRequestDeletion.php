@@ -46,8 +46,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
    *
    * @param int $contactID
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   * @param boolean $softDelete
+   *   If true, the public holiday request will be soft deleted
    */
-  public function deleteForContact($contactID, PublicHoliday $publicHoliday) {
+  public function deleteForContact($contactID, PublicHoliday $publicHoliday, $softDelete = FALSE) {
     $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
 
     if(!$leaveRequest) {
@@ -60,7 +62,13 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
       $date->delete();
     }
 
-    $leaveRequest->delete();
+    if ($softDelete) {
+      LeaveRequest::softDelete($leaveRequest->id);
+    }
+    else {
+      $leaveRequest->delete();
+    }
+
   }
 
   /**
