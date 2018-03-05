@@ -814,6 +814,8 @@ define([
 
               leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
               selectedAbsenceType.calculation_unit_name = 'hours';
+              leaveRequest.from_date = leaveRequest.from_date.slice(0, 11) + '12:00';
+              leaveRequest.to_date = leaveRequest.to_date.slice(0, 11) + '12:15';
               leaveRequest.from_date_amount = fromDeduction;
               leaveRequest.to_date_amount = toDeduction;
 
@@ -915,6 +917,82 @@ define([
                 expect(LeaveRequestAPI.calculateBalanceChange).toHaveBeenCalled();
               });
             });
+
+            describe('when set times are outside the allowed range', function () {
+              setRequestAndWorkPatternTimesAndInitComponent({
+                requestFromTime: '02:00',
+                requestToTime: '23:00',
+                workPatternStartTime: '09:00',
+                workPatternEndTime: '17:00'
+              });
+
+              it('sets from time to minimum allowed time', function () {
+                expect(controller.uiOptions.times.from.time).toBe('09:00');
+                expect(moment(leaveRequest.from_date).format('HH:mm')).toBe('09:00');
+              });
+
+              it('sets to time to maximum allowed time', function () {
+                expect(controller.uiOptions.times.to.time).toBe('17:00');
+                expect(moment(leaveRequest.to_date).format('HH:mm')).toBe('17:00');
+              });
+            });
+
+            describe('when work pattern day has change to a non-working day', function () {
+              setRequestAndWorkPatternTimesAndInitComponent({
+                requestFromTime: '02:00',
+                requestToTime: '23:00',
+                workPatternStartTime: '',
+                workPatternEndTime: ''
+              });
+
+              it('sets from time to minimum allowed time', function () {
+                expect(controller.uiOptions.times.from.time).toBe('00:00');
+                expect(moment(leaveRequest.from_date).format('HH:mm')).toBe('00:00');
+              });
+
+              it('sets to time to maximum allowed time', function () {
+                expect(controller.uiOptions.times.to.time).toBe('00:00');
+                expect(moment(leaveRequest.to_date).format('HH:mm')).toBe('00:00');
+              });
+            });
+
+            /**
+             * Initialises set time for a given work pattern range
+             *
+             * @param {Object} params
+             * @param {String} params.requestFromTime HH:mm
+             * @param {String} params.requestToTime HH:mm
+             * @param {String} params.workPatternStartTime HH:mm or empty string
+             * @param {String} params.workPatternEndTime HH:mm or empty string
+             */
+            function setRequestAndWorkPatternTimesAndInitComponent (params) {
+              beforeEach(function () {
+                var status = optionGroupMock.specificValue(
+                  'hrleaveandabsences_leave_request_status', 'value', '3');
+
+                leaveRequest = LeaveRequestInstance.init(leaveRequestData.findBy('status_id', status));
+                selectedAbsenceType.calculation_unit_name = 'hours';
+                leaveRequest.from_date = moment(leaveRequest.from_date).format('YYYY-MM-DD') + ' ' + params.requestFromTime;
+                leaveRequest.to_date = moment(leaveRequest.to_date).format('YYYY-MM-DD') + ' ' + params.requestToTime;
+                spyOn(leaveRequest, 'getWorkDayForDate').and.callFake(function () {
+                  return $q.resolve({
+                    time_from: params.workPatternStartTime,
+                    time_to: params.workPatternEndTime,
+                    number_of_hours: 4
+                  });
+                });
+                compileComponent({
+                  mode: 'edit',
+                  request: leaveRequest
+                });
+                $rootScope.$broadcast('LeaveRequestPopup::ContactSelectionComplete');
+                $rootScope.$digest();
+              });
+
+              afterEach(function () {
+                selectedAbsenceType.calculation_unit_name = 'days';
+              });
+            }
           });
         });
       });
@@ -1574,9 +1652,8 @@ define([
      * @return {String} amount of hours, eg. '7.5'
      */
     function getTimeDifferenceInHours (timeFrom, timeTo) {
-      return (getMomentDateWithGivenTime(timeTo)
-        .diff(getMomentDateWithGivenTime(timeFrom), 'minutes') / 60)
-        .toString();
+      return moment.duration(timeTo)
+        .subtract(moment.duration(timeFrom)).asHours().toString();
     }
   });
 });

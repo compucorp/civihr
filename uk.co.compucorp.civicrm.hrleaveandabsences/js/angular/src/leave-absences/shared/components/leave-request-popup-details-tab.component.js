@@ -149,7 +149,8 @@ define([
         .then(setDaysSelectionMode)
         .then(function () {
           if (!vm.isMode('create') && isCalculationUnit('hours')) {
-            return initTimes();
+            return initTimes()
+              .then(setRequestDateTimesAndDateTypes);
           }
         })
         .then(!vm.isMode('create') && setDatepickerBoundariesForToDate)
@@ -351,16 +352,6 @@ define([
     }
 
     /**
-     * Extracts time from server formatted date
-     *
-     * @param  {String} date in "YYYY-MM-DD hh:mm:ss" format
-     * @return {String} time in hh:mm format
-     */
-    function extractTimeFromServerDate (date) {
-      return moment(date).format('HH:mm');
-    }
-
-    /**
      * This method will be used on the view to return a list of available
      * leave request day types (All day, Half-day AM, Half-day PM, Non working day,
      * Weekend, Public holiday) for the given date (which is the date
@@ -484,12 +475,11 @@ define([
      *
      * @param  {String} timeFrom in HH:mm format
      * @param  {String} timeTo in HH:mm format
-     * @return {String} amount of hours, eg. '7.5'
+     * @return {Number} amount of hours, eg. 7.5
      */
     function getTimeDifferenceInHours (timeFrom, timeTo) {
-      return (getMomentDateWithGivenTime(timeTo)
-        .diff(getMomentDateWithGivenTime(timeFrom), 'minutes') / 60)
-        .toString();
+      return moment.duration(timeTo)
+        .subtract(moment.duration(timeFrom)).asHours();
     }
 
     /**
@@ -575,6 +565,30 @@ define([
     }
 
     /**
+     * Initialises time for a given date type.
+     * In general cases simply extracts the time from the date string and
+     * sets the time to the correspondent times property.
+     * If the time is outside the allowed range (for example after work parrern change),
+     * then it sets the minimum allowed time for "from" time
+     * and the maximum allowed time for "to" time.
+     *
+     * @param {String} dateType from|to
+     */
+    function initTime (dateType) {
+      var time = moment(vm.request[dateType + '_date']).format('HH:mm');
+      var timeObject = vm.uiOptions.times[dateType];
+      var isOutsideWorkPatternRange =
+        getTimeDifferenceInHours(timeObject.min, time) <= 0 ||
+        getTimeDifferenceInHours(timeObject.max, time) >= 0;
+
+      if (isOutsideWorkPatternRange) {
+        time = dateType === 'from' ? timeObject.min : timeObject.max;
+      }
+
+      vm.uiOptions.times[dateType].time = time;
+    }
+
+    /**
      * Initialises and sets the "from" and "to" times
      *
      * @return {Promise}
@@ -586,7 +600,7 @@ define([
       return $q.all(dateTypes.map(loadTimeRangesFromWorkPattern))
         .then(function () {
           ['from', 'to'].forEach(function (dateType) {
-            times[dateType].time = extractTimeFromServerDate(vm.request[dateType + '_date']);
+            initTime(dateType);
 
             setDeductionMaximumBoundary(dateType);
 
@@ -903,7 +917,9 @@ define([
       var timeObject = uiOptions.times[dateType];
       var timeFrom = uiOptions.multipleDays && dateType === 'to' ? timeObject.min : uiOptions.times.from.time;
       var timeTo = uiOptions.multipleDays && dateType === 'from' ? timeObject.max : uiOptions.times.to.time;
-      var deduction = workDays[dateType].number_of_hours ? getTimeDifferenceInHours(timeFrom, timeTo) : '0';
+      var deduction = workDays[dateType].number_of_hours
+        ? getTimeDifferenceInHours(timeFrom, timeTo).toString()
+        : '0';
 
       timeObject.maxAmount = deduction;
       (setDefaultValue) && (timeObject.amount = timeObject.maxAmount);
