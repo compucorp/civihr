@@ -159,7 +159,7 @@ define([
         .then(initBalanceChange)
         .then(function () {
           if (!vm.isMode('view') && !isLeaveType('toil')) {
-            initTimeAndDateInputsWatchers();
+            initTimeAndDeductionInputsWatchers();
           }
         })
         .catch(handleError)
@@ -528,6 +528,21 @@ define([
     }
 
     /**
+     * Initialises a watcher for a custom deduction input of a specified date type
+     *
+     * @param {String} dateType from|to
+     */
+    function initDeductionInputWatcher (dateType) {
+      $scope.$watch('detailsTab.uiOptions.times.' + dateType + '.amount', function (amount, oldAmount) {
+        if (!isCalculationUnit('days') && +amount !== +oldAmount) {
+          setRequestHoursDeductions();
+          // @NOTE `vm.` is needed for testing purposes
+          vm.performBalanceChangeCalculation();
+        }
+      });
+    }
+
+    /**
      * Initialises listeners
      */
     function initListeners () {
@@ -615,29 +630,32 @@ define([
     }
 
     /**
-     * Initialises watchers for time and date inputs
+     * Initialises watchers for time and deductions inputs
      */
-    function initTimeAndDateInputsWatchers () {
+    function initTimeAndDeductionInputsWatchers () {
       ['from', 'to'].forEach(function (dateType) {
-        $scope.$watch('detailsTab.uiOptions.times.' + dateType + '.amount', function (amount, oldAmount) {
-          if (!isCalculationUnit('days') && +amount !== +oldAmount) {
-            setRequestHoursDeductions();
-            // @NOTE `vm.` is needed for testing purposes
-            vm.performBalanceChangeCalculation();
-          }
-        });
-        $scope.$watch('detailsTab.uiOptions.times.' + dateType + '.time', function (time, oldTime) {
-          if (!isCalculationUnit('days') && time !== oldTime) {
-            setRequestDateTimesAndDateTypes();
+        initDeductionInputWatcher(dateType);
+        initTimeInputWatcher(dateType);
+      });
+    }
 
-            if (!time) {
-              return;
-            }
+    /**
+     * Initialises a watcher for a time input of a specified date type
+     *
+     * @param {String} dateType from|to
+     */
+    function initTimeInputWatcher (dateType) {
+      $scope.$watch('detailsTab.uiOptions.times.' + dateType + '.time', function (time, oldTime) {
+        if (!isCalculationUnit('days') && time !== oldTime) {
+          setRequestDateTimesAndDateTypes();
 
-            (!vm.uiOptions.multipleDays && dateType === 'from') && updateEndTimeInputMinTime(time);
-            setDeductionMaximumBoundary(dateType, true);
+          if (!time) {
+            return;
           }
-        });
+
+          (!vm.uiOptions.multipleDays && dateType === 'from') && updateEndTimeInputMinTime(time);
+          setDeductionMaximumBoundary(dateType, true);
+        }
       });
     }
 
