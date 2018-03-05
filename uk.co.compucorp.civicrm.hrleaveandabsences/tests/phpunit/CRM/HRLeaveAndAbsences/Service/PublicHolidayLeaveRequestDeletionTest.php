@@ -71,6 +71,43 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
   }
 
+  public function testDeleteForContactWithSoftDeleteAsTrue() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+    ]);
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests(
+      new DateTime('2017-01-01'),
+      new DateTime('2017-12-31')
+    );
+    $periodEntitlement->contact_id = 2;
+    $periodEntitlement->type_id = $this->absenceType->id;
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    $publicHoliday = $this->instantiatePublicHoliday('2017-01-01');
+
+    $publicHolidayRequest = $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($periodEntitlement->contact_id, $publicHoliday);
+
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+
+    $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
+    $deletionLogic->deleteForContact($periodEntitlement->contact_id, $publicHoliday, TRUE);
+
+    $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+    //Check that the public holiday leave request is soft deleted.
+    $publicHolidayLeaveRequestRecord = new LeaveRequest();
+    $publicHolidayLeaveRequestRecord->id = $publicHolidayRequest->id;
+    $publicHolidayLeaveRequestRecord->is_deleted = 1;
+    $publicHolidayLeaveRequestRecord->find(TRUE);
+
+    $this->assertNotNull($publicHolidayLeaveRequestRecord->id);
+    $this->assertEquals($periodEntitlement->contact_id, $publicHolidayLeaveRequestRecord->contact_id);
+  }
+
   public function testItUpdatesOverlappingLeaveRequestDatesAfterDeletingAPublicHolidayLeaveRequests() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),

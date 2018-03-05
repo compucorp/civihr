@@ -252,10 +252,13 @@ trait CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait {
    *
    * @param int $contactID
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   *
+   * @return LeaveRequest
    */
   public function fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contactID, PublicHoliday $publicHoliday) {
     $balanceChangeServiceMock = $this->createLeaveBalanceChangeServiceForPublicHolidayLeaveRequestMock();
-    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday, $balanceChangeServiceMock);
+
+    return PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday, $balanceChangeServiceMock);
   }
 
   public function createLeaveDateAmountDeductionServiceMock($amount) {
