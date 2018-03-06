@@ -26,6 +26,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
 
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
+  use CRM_HRLeaveAndAbsences_PublicHolidayHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -102,8 +103,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $periodEntitlement->type_id = $this->absenceType->id;
 
     $date = new DateTime('first monday of this year');
-    $publicHoliday = new PublicHoliday();
-    $publicHoliday->date = $date->format('YmdHis');
+    $publicHoliday = $this->instantiatePublicHoliday($date->format('Ymd'));
 
     $publicHolidayRequest = $this->getCreationLogic()->createForContact($periodEntitlement->contact_id, $publicHoliday);
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($periodEntitlement->contact_id, $date->format('Ymd')));
