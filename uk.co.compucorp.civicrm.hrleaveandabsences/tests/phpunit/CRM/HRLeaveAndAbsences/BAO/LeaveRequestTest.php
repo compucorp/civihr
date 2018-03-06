@@ -216,7 +216,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest(3, $publicHoliday));
   }
 
-  public function testCanFindAPublicHolidayLeaveRequestReturnsResultWhenNonDeletedIsFalseAndPublicHolidayRequestIsDeleted() {
+  public function testFindPublicHolidayLeaveRequestEvenIfDeletedReturnsResultForADeletedPublicHolidayRequest() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2017-12-01')
@@ -230,10 +230,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $publicHolidayRequest = PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
     LeaveRequest::softDelete($publicHolidayRequest->id);
 
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday, FALSE));
+    $publicHolidayRequest = LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted($contactID, $publicHoliday);
+    $this->assertNotNull($publicHolidayRequest->id);
+    $this->assertEquals(1, $publicHolidayRequest->is_deleted);
   }
 
-  public function testCanFindAPublicHolidayLeaveRequestReturnsResultWhenNonDeletedIsFalseAndPublicHolidayRequestIsNotDeleted() {
+  public function testFindPublicHolidayLeaveRequestEvenIfDeletedReturnsResultForANonDeletedPublicHolidayRequest() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2017-12-01')
@@ -246,10 +248,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
 
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday, FALSE));
+    $publicHolidayRequest = LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted($contactID, $publicHoliday);
+    $this->assertNotNull($publicHolidayRequest->id);
+    $this->assertEquals(0, $publicHolidayRequest->is_deleted);
   }
 
-  public function testCanFindAPublicHolidayLeaveRequestReturnsNullWhenNotDeletedIsTrueAndPublicHolidayRequestIsDeleted() {
+  public function testFindPublicHolidayLeaveRequestEvenIfDeletedReturnsNullForANonExistentPublicHolidayRequest() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2017-12-01')
@@ -260,10 +264,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = '2017-01-01';
 
-    $publicHolidayRequest = PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
-    LeaveRequest::softDelete($publicHolidayRequest->id);
-
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday, TRUE));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted($contactID, $publicHoliday));
   }
 
   public function testCalculateBalanceChangeForALeaveRequestForAContact() {

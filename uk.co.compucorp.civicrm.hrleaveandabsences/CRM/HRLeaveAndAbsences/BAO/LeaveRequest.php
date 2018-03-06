@@ -803,25 +803,43 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @param int $contactID
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
-   * @param boolean $nonDeletedOnly
-   *   When true will only return result if the given public
-   *   holiday request is not yet deleted.
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|null
    */
-  public static function findPublicHolidayLeaveRequest($contactID, PublicHoliday $publicHoliday, $nonDeletedOnly = TRUE) {
+  public static function findPublicHolidayLeaveRequest($contactID, PublicHoliday $publicHoliday) {
     $leaveRequest = new self();
     $leaveRequest->contact_id = (int)$contactID;
     $leaveRequest->from_date = date('Ymd', strtotime($publicHoliday->date));
     $leaveRequest->request_type = self::REQUEST_TYPE_PUBLIC_HOLIDAY;
-    if ($nonDeletedOnly) {
-      $leaveRequest->is_deleted = 0;
-    }
+    $leaveRequest->is_deleted = 0;
 
     $leaveRequest->find(true);
     if($leaveRequest->id) {
-      $leaveRequest->fetch();
+      return $leaveRequest;
+    }
 
+    return null;
+  }
+
+  /**
+   * Returns a LeaveRequest instance representing the Public Holiday Leave Request
+   * for the given $publicHoliday and assigned to the Contact with the given
+   * $contactID, the leave request is returned as long as it exists in the database
+   * either soft deleted or not.
+   *
+   * @param int $contactID
+   * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|null
+   */
+  public static function findPublicHolidayLeaveRequestEvenIfDeleted($contactID, PublicHoliday $publicHoliday) {
+    $leaveRequest = new self();
+    $leaveRequest->contact_id = (int)$contactID;
+    $leaveRequest->from_date = date('Ymd', strtotime($publicHoliday->date));
+    $leaveRequest->request_type = self::REQUEST_TYPE_PUBLIC_HOLIDAY;
+
+    $leaveRequest->find(true);
+    if($leaveRequest->id) {
       return $leaveRequest;
     }
 
