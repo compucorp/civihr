@@ -189,7 +189,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
       return;
     }
 
-    $existingLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday, FALSE);
+    $existingLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted($contactID, $publicHoliday);
     if($existingLeaveRequest) {
       return;
     }

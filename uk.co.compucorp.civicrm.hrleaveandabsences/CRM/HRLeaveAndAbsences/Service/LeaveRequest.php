@@ -135,7 +135,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     if($leaveRequest->request_type == LeaveRequest::REQUEST_TYPE_PUBLIC_HOLIDAY) {
       $publicHoliday = new PublicHoliday();
       $publicHoliday->date = $leaveRequest->from_date;
-      $this->publicHolidayLeaveRequestDeletionService->deleteForContact($leaveRequest->contact_id, $publicHoliday, TRUE);
+      $this->publicHolidayLeaveRequestDeletionService->softDeleteForContact($leaveRequest->contact_id, $publicHoliday);
     }
     else {
       LeaveRequest::softDelete($leaveRequestID);

@@ -42,33 +42,57 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
    * Deletes the Public Holiday Leave Request for the contact and Public Holiday.
    *
    * If there are LeaveRequestDates overlapping the public holiday, their
-   * balance change amount will be updated to no be 0 anymore.
+   * balance change amount will be updated to not be 0 anymore.
    *
    * @param int $contactID
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
-   * @param boolean $softDelete
-   *   If true, the public holiday request will be soft deleted
    */
-  public function deleteForContact($contactID, PublicHoliday $publicHoliday, $softDelete = FALSE) {
+  public function deleteForContact($contactID, PublicHoliday $publicHoliday) {
     $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
 
     if(!$leaveRequest) {
       return;
     }
 
+    $this->deleteDatesWithBalanceChanges($leaveRequest);
+    $leaveRequest->delete();
+
+  }
+
+  /**
+   * Soft Deletes the Public Holiday Leave Request for the contact and Public Holiday.
+   *
+   * If there are LeaveRequestDates overlapping the public holiday, their
+   * balance change amount will be updated to not be 0 anymore.
+   *
+   * @param int $contactID
+   * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   */
+  public function softDeleteForContact($contactID, PublicHoliday $publicHoliday) {
+    $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+
+    if(!$leaveRequest) {
+      return;
+    }
+
+    $this->deleteDatesWithBalanceChanges($leaveRequest);
+    LeaveRequest::softDelete($leaveRequest->id);
+  }
+
+  /**
+   * Deletes the public holiday leave dates and balance changes.
+   * It also updates the balance change of any leave request overlapping
+   * the public holiday date to not be zero again but the amount calculated
+   * from the contact's work pattern for the date.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   */
+  private function deleteDatesWithBalanceChanges(LeaveRequest $leaveRequest) {
     foreach($leaveRequest->getDates() as $date) {
       LeaveBalanceChange::deleteForLeaveRequestDate($date);
       $this->recalculateDeductionForOverlappingLeaveRequestDate($leaveRequest, new DateTime($date->date));
       $date->delete();
     }
-
-    if ($softDelete) {
-      LeaveRequest::softDelete($leaveRequest->id);
-    }
-    else {
-      $leaveRequest->delete();
-    }
-
   }
 
   /**

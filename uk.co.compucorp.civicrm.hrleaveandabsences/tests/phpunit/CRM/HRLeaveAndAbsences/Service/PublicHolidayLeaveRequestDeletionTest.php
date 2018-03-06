@@ -71,7 +71,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
   }
 
-  public function testDeleteForContactWithSoftDeleteAsTrue() {
+  public function testSoftDeleteForContactSoftDeletesThePublicHolidayRequest() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2017-12-31')
@@ -95,7 +95,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
     $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
-    $deletionLogic->deleteForContact($periodEntitlement->contact_id, $publicHoliday, TRUE);
+    $deletionLogic->softDeleteForContact($periodEntitlement->contact_id, $publicHoliday);
 
     $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
     //Check that the public holiday leave request is soft deleted.
