@@ -9,13 +9,15 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
    * Recursively search for a menu item by its name
    *
    * @param array $menu
-   * @param string $name
+   *   The menu array to search in
+   * @param string $path
+   *   The path to the item, e.g. "Events/Dashboard"
    *
    * @return array|null
    *   The menu item, if found, or null otherwise
    */
-  public static function findMenuItemByName($menu, $name) {
-    return self::findMenuItemReferenceByName($menu, $name);
+  public static function findMenuItemByPath($menu, $path) {
+    return self::findMenuItemReferenceByPath($menu, $path);
   }
 
   /**
@@ -23,16 +25,16 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
    *
    * @param array $menu
    *   menu hierarchy
-   * @param string $parentName
-   *   Name of the parent menu item
+   * @param string $parentPath
+   *   Path to the parent menu item, e.g. "Events/Dashboard"
    * @param array $itemAttributes
    *   Attributes of item to insert, e.g. ['name' => 'New Item']
    */
-  public static function insertChild(&$menu, $parentName, $itemAttributes) {
-    $parent = &self::findMenuItemReferenceByName($menu, $parentName);
+  public static function insertChild(&$menu, $parentPath, $itemAttributes) {
+    $parent = &self::findMenuItemReferenceByPath($menu, $parentPath);
 
     if (!$parent) {
-      $err = sprintf('Cannot find parent item "%s"', $parentName);
+      $err = sprintf('Cannot find parent item "%s"', $parentPath);
       throw new \Exception($err);
     }
 
@@ -48,28 +50,29 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
    *
    * @param array $menu
    *   The full menu structure
-   * @param string $itemToMoveName
-   *   The name of the menu item we want to move
-   * @param string $precedingItemName
-   *   The name of the item that the target should be inserted after
+   * @param string $itemToMovePath
+   *   The path to the menu item we want to move
+   * @param string $precedingItemPath
+   *   The path to the item that the target should be inserted after
    */
   public static function relocateAfter(
     &$menu,
-    $itemToMoveName,
-    $precedingItemName
+    $itemToMovePath,
+    $precedingItemPath
   ) {
-    $siblings = &self::getSiblingsReference($menu, $precedingItemName);
-    $itemToMove = self::findMenuItemByName($menu, $itemToMoveName);
+    $siblings = &self::getSiblingsReference($menu, $precedingItemPath);
+    $itemToMove = self::findMenuItemByPath($menu, $itemToMovePath);
 
     // remove original from the menu
-    self::remove($menu, $itemToMoveName);
+    self::remove($menu, $itemToMovePath);
 
     // re-index and find point to insert the new item
     $siblings = array_values($siblings);
+    $precedingItemName = self::getItemNameFromPath($precedingItemPath);
     $insertionIndex = self::getMenuItemIndex($siblings, $precedingItemName);
 
     if (NULL === $insertionIndex) {
-      $err = sprintf('Could not find menu item "%s"', $precedingItemName);
+      $err = sprintf('Could not find menu item "%s"', $precedingItemPath);
       throw new \Exception($err);
     }
 
@@ -78,16 +81,17 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
   }
 
   /**
-   * Removes an item from the menu by name
+   * Removes an item from the menu by path
    *
    * @param array $menu
-   * @param string $name
+   * @param string $path
    */
-  public static function remove(&$menu, $name) {
-    $siblings = &self::getSiblingsReference($menu, $name);
+  public static function remove(&$menu, $path) {
+    $siblings = &self::getSiblingsReference($menu, $path);
+    $itemName = self::getItemNameFromPath($path);
 
     foreach ($siblings as $index => $sibling) {
-      if ($sibling['attributes']['name'] === $name) {
+      if ($sibling['attributes']['name'] === $itemName) {
         unset($siblings[$index]);
         return;
       }
@@ -99,84 +103,60 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
    *
    * @param array $menu
    *   The full menu
-   * @param string $name
-   *   The name of the target menu item
+   * @param string $path
+   *   The path to the item, e.g. "Events/Dashboard"
    * @param string $newPermission
    *   The new permission for accessing this item
    */
-  public static function updatePermissionByName(&$menu, $name, $newPermission) {
-    $item = &self::findMenuItemReferenceByName($menu, $name);
+  public static function updatePermissionByPath(&$menu, $path, $newPermission) {
+    $item = &self::findMenuItemReferenceByPath($menu, $path);
 
     if (!$item) {
-      $err = sprintf('Cannot find menu item with name "%s"', $name);
+      $err = sprintf('Cannot find menu item with path "%s"', $path);
       throw new \Exception($err);
     }
 
     $item['attributes']['permission'] = $newPermission;
   }
 
-  /**
-   * Recursively search for a menu item's parent name by the child name
-   *
-   * This is a wrapper for a private function that requires a third argument.
-   *
-   * @param array $menu
-   * @param string $childName
-   *
-   * @return string|null
-   *   The parent item name, if found, or null otherwise.
-   *   If item is at top level parent name will be 'root'
-   */
-  public static function findParentItemName($menu, $childName) {
-    return self::findNestedItemParentName($menu, $childName, 'root');
-  }
 
   /**
-   * Recursively search for a menu item's parent name by the child name
-   *
    * @param array $menu
-   *   The full menu structure
-   * @param string $childName
-   *   The name of the child we are searching for
-   * @param string $parentAtThisLevel
-   *   The name of the parent at the current level of nesting
+   *   The menu array to search in
+   * @param string $path
+   *   The path to the item, e.g. "Events/Dashboard"
    *
-   * @return string|null
-   *   The parent item name, if found, or null otherwise.
-   *   If item is at top level parent name will be 'root'
+   * @return array|null
+   *   The menu item if found, or NULL if not
    */
-  private static function findNestedItemParentName(
-    $menu,
-    $childName,
-    $parentAtThisLevel
-  ) {
-    foreach ($menu as $item) {
-      if ($item['attributes']['name'] === $childName) {
-        return $parentAtThisLevel;
-      }
-      if (!empty($item['child'])) {
-        $children = $item['child'];
-        $found = self::findNestedItemParentName(
-          $children,
-          $childName,
-          $item['attributes']['name']
-        );
+  private static function &findMenuItemReferenceByPath(&$menu, $path) {
+    $path = explode('/', $path);
+    $submenu = &$menu;
 
-        if ($found) {
-          return $found;
-        }
+    while (count($path) > 1) {
+      $parentName = array_shift($path);
+      $submenu = &self::findMenuItemReferenceByName($submenu, $parentName);
+      if (!isset($submenu['child'])) {
+        $null = NULL; // must return reference to variable
+
+        return $null;
       }
+      $submenu = &$submenu['child'];
     }
 
-    return NULL;
+    $itemName = array_shift($path);
+    $item = &self::findMenuItemReferenceByName($submenu, $itemName);
+
+    return $item;
   }
 
   /**
-   * Recursively search for a menu item by its name. Returns a reference to
-   * the item.
+   * Search for a menu item by its name. Returns a reference to the item.
    *
    * @param array $menu
+   *   The menu to search, can be a submenu of the full structure
    * @param string $name
+   *   The name of the item to search for
    *
    * @return array|null
    *   The referenced menu item, if found, or null otherwise
@@ -185,13 +165,6 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
     foreach ($menu as &$item) {
       if ($item['attributes']['name'] === $name) {
         return $item;
-      }
-      if (!empty($item['child'])) {
-        $found = &self::findMenuItemReferenceByName($item['child'], $name);
-
-        if ($found) {
-          return $found;
-        }
       }
     }
 
@@ -207,25 +180,21 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
    *
    * @param array $menu
    *   The full menu structure
-   * @param string $name
-   *   The name of the menu item whose siblings we want
+   * @param string $path
+   *   The path of the menu item whose siblings we want
    *
    * @return array
    */
-  private static function &getSiblingsReference(&$menu, $name) {
-    $parentName = self::findParentItemName($menu, $name);
+  private static function &getSiblingsReference(&$menu, $path) {
+    $finalForwardSlashPos = strrpos($path, '/');
 
-    if ($parentName === NULL) {
-      $err = sprintf('Cannot find parent of menu item "%s"', $name);
-      throw new \Exception($err);
-    }
-
-    if ($parentName === 'root') {
-      $siblings = &$menu;
+    if (FALSE !== $finalForwardSlashPos) {
+      $parentPath = substr($path, 0, $finalForwardSlashPos);
+      $parent = &self::findMenuItemReferenceByPath($menu, $parentPath);
+      $siblings = &$parent['child'];
     }
     else {
-      $parent = &self::findMenuItemReferenceByName($menu, $parentName);
-      $siblings = &$parent['child'];
+      $siblings = &$menu;
     }
 
     return $siblings;
@@ -247,6 +216,21 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
     }
 
     return FALSE;
+  }
+
+  /**
+   * Gets the last item name in a menu item path
+   *
+   * @param string $path
+   *   The path of the menu item, e.g. "Events/Dashboard"
+   *
+   * @return string
+   *   The final item in the path, e.g. "Dashboard"
+   */
+  private static function getItemNameFromPath($path) {
+    $path = explode('/', $path);
+
+    return end($path);
   }
 
 }

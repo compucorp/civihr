@@ -10,16 +10,18 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
   /**
    * @dataProvider menuItemNameProvider
    *
-   * @param string $name
+   * @param string $path
    * @param bool $exists
    */
-  public function testFindingMenuItemWillReturnExpectedResult($name, $exists) {
+  public function testFindingMenuItemWillReturnExpectedResult($path, $exists) {
     $menu = $this->getSampleMenu();
-    $result = NavigationMenuHelper::findMenuItemByName($menu, $name);
+    $result = NavigationMenuHelper::findMenuItemByPath($menu, $path);
+    $parts = explode('/', $path);
+    $expectedName = end($parts);
 
     if ($exists) {
       $foundName = $result['attributes']['name'];
-      $this->assertEquals($name, $foundName);
+      $this->assertEquals($expectedName, $foundName);
     }
     else {
       $this->assertNull($result);
@@ -28,23 +30,25 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   public function testInsertionWillAddChildMenuItem() {
     $menu = $this->getSampleMenu();
-    $name = 'Test Item';
-    $newItem = ['name' => $name];
-    $parent = 'Dropdown Options';
-    NavigationMenuHelper::insertChild($menu, $parent, $newItem);
+    $childName = 'Test Item';
+    $newItem = ['name' => $childName];
+    $parentName = 'Dropdown Options';
+    $parentPath = 'Administer/Customize Data and Screens/' . $parentName;
+    $childPath = $parentPath . '/' . $childName;
+    NavigationMenuHelper::insertChild($menu, $parentPath, $newItem);
 
-    $added = NavigationMenuHelper::findMenuItemByName($menu, $name);
+    $added = NavigationMenuHelper::findMenuItemByPath($menu, $childPath);
     $this->assertNotNull($added);
 
-    $parent = NavigationMenuHelper::findMenuItemByName($menu, 'Dropdown Options');
-    $children = $parent['child'];
-    $matchingChildItems = array_filter($children, function ($item) use ($name) {
-      return $item['attributes']['name'] === $name;
+    $parentPath = NavigationMenuHelper::findMenuItemByPath($menu, $parentPath);
+    $children = $parentPath['child'];
+    $childMatches = array_filter($children, function ($item) use ($childName) {
+      return $item['attributes']['name'] === $childName;
     });
 
-    $this->assertCount(1, $matchingChildItems);
-    $matchingItem = reset($matchingChildItems);
-    $this->assertEquals($name, $matchingItem['attributes']['name']);
+    $this->assertCount(1, $childMatches);
+    $matchingItem = reset($childMatches);
+    $this->assertEquals($childName, $matchingItem['attributes']['name']);
   }
 
   public function testInsertionWillThrowExceptionWithInvalidPath() {
@@ -57,19 +61,19 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   public function testSettingPermissionWillUpdateItInMenu() {
     $menu = $this->getSampleMenu();
-    $name = 'System Status';
-    NavigationMenuHelper::updatePermissionByName($menu, $name, 'foo');
-    $item = NavigationMenuHelper::findMenuItemByName($menu, $name);
+    $path = 'Administer/Administration Console/System Status';
+    NavigationMenuHelper::updatePermissionByPath($menu, $path, 'foo');
+    $item = NavigationMenuHelper::findMenuItemByPath($menu, $path);
 
     $this->assertEquals('foo', $item['attributes']['permission']);
   }
 
   public function testFetchingWillNotReturnAReference() {
     $menu = $this->getSampleMenu();
-    $name = 'System Status';
-    $item = NavigationMenuHelper::findMenuItemByName($menu, $name);
+    $name = 'Administer/Administration Console/System Status';
+    $item = NavigationMenuHelper::findMenuItemByPath($menu, $name);
     $item['foo'] = 'bar';
-    $sameItem = NavigationMenuHelper::findMenuItemByName($menu, $name);
+    $sameItem = NavigationMenuHelper::findMenuItemByPath($menu, $name);
 
     $this->assertArrayNotHasKey('foo', $sameItem);
   }
@@ -89,15 +93,17 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   public function testMovingNestedItemsWillChangeTheirPositions() {
     $itemName = 'Activity Types';
-    $originalParent = 'Customize Data and Screens';
-    $moveAfter = 'Membership Status Rules';
-    $targetParent = 'CiviMember';
+    $originalParentPath = 'Administer/Customize Data and Screens';
+    $itemPath = $originalParentPath . '/' . $itemName;
+    $targetParentPath = 'Administer/CiviMember';
+    $precedingItemName = 'Membership Status Rules';
+    $moveAfterPath = $targetParentPath . '/' . $precedingItemName;
 
     $menu = $this->getSampleMenu();
-    NavigationMenuHelper::relocateAfter($menu, $itemName, $moveAfter);
+    NavigationMenuHelper::relocateAfter($menu, $itemPath, $moveAfterPath);
 
-    $origParent = NavigationMenuHelper::findMenuItemByName($menu, $originalParent);
-    $newParent = NavigationMenuHelper::findMenuItemByName($menu, $targetParent);
+    $origParent = NavigationMenuHelper::findMenuItemByPath($menu, $originalParentPath);
+    $newParent = NavigationMenuHelper::findMenuItemByPath($menu, $targetParentPath);
 
     $origChildren = $origParent['child'];
     $newChildren = $newParent['child'];
@@ -114,7 +120,7 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
       return $item['attributes']['name'];
     }, $newChildren);
 
-    $moveAfterPosition = array_search($moveAfter, $newChildrenNames);
+    $moveAfterPosition = array_search($precedingItemName, $newChildrenNames);
     $movedItemPosition = array_search($itemName, $newChildrenNames);
     $this->assertEquals($moveAfterPosition + 1, $movedItemPosition);
   }
@@ -122,26 +128,13 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
   public function testRemovalWillUnsetElementAndChildren() {
     $menu = $this->getSampleMenu();
     $rootElement = 'Administer';
-    $childElement = 'Custom Fields';
+    $childElement = 'Administer/Custom Fields';
     NavigationMenuHelper::remove($menu, $rootElement);
 
-    $foundRoot = NavigationMenuHelper::findMenuItemByName($menu, $rootElement);
-    $foundChild = NavigationMenuHelper::findMenuItemByName($menu, $childElement);
+    $foundRoot = NavigationMenuHelper::findMenuItemByPath($menu, $rootElement);
+    $foundChild = NavigationMenuHelper::findMenuItemByPath($menu, $childElement);
     $this->assertNull($foundRoot);
     $this->assertNull($foundChild);
-  }
-
-  /**
-   * @dataProvider menuItemParentNameProvider
-   *
-   * @param string $child
-   * @param string $expected
-   */
-  public function testFetchingParentItemNameWillReturnParentName($child, $expected) {
-    $menu = $this->getSampleMenu();
-    $parentName = NavigationMenuHelper::findParentItemName($menu, $child);
-
-    $this->assertEquals($expected, $parentName);
   }
 
   public function menuItemParentNameProvider() {
@@ -183,11 +176,15 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
         FALSE
       ],
       [
-        'About CiviCRM',
+        'Support/About CiviCRM',
         TRUE
       ],
       [
-        'New Life_Insurance_Provider',
+        'Contacts/New Organization/New Life_Insurance_Provider',
+        TRUE
+      ],
+      [
+        'Events/Register Event Participant',
         TRUE
       ]
     ];
