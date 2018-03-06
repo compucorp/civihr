@@ -27,6 +27,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveRequestStatusMatrixHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
+  use CRM_HRLeaveAndAbsences_PublicHolidayHelpersTrait;
 
 
   private $leaveBalanceChangeService;
@@ -241,9 +242,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'end_date' => CRM_Utils_Date::processDate('2017-12-31')
     ]);
 
-    $publicHoliday = new PublicHoliday();
-    $publicHoliday->date = CRM_Utils_Date::processDate('2017-10-10');
-
+    $publicHoliday = $this->instantiatePublicHoliday('2017-10-10');
     $publicHolidayLeaveRequest = PublicHolidayLeaveRequestFabricator::fabricate($this->leaveContact, $publicHoliday);
     $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->delete($publicHolidayLeaveRequest->id);
 
