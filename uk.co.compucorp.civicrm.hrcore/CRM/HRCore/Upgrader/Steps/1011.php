@@ -1,14 +1,11 @@
 <?php
 
-/**
- * Trait CRM_HRCore_Upgrader_Steps_1011
- */
 trait CRM_HRCore_Upgrader_Steps_1011 {
   
   /**
    * Upgrade CustomGroup, setting Identify is_reserved value to Yes
-   * if it existing. This implementation was made in HRCore instead of 
-   * HRIdent extension because HRIdent is currently disabled in some setup.
+   * if it exists. This implementation was made in HRCore instead of
+   * HRIdent extension because HRIdent is currently disabled in some setups.
    *
    * @return bool
    */
