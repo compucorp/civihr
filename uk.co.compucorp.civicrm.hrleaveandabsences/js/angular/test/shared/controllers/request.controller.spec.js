@@ -745,6 +745,52 @@
                 });
               });
             });
+
+            describe('when cancelling request', function () {
+              beforeEach(function () {
+                controller.newStatusOnSave = optionGroupMock.specificObject(
+                  'hrleaveandabsences_leave_request_status', 'name', 'cancelled').value;
+
+                controller.submit();
+                $rootScope.$digest();
+              });
+
+              it('does not check the balance change', function () {
+                expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
+                  .not.toHaveBeenCalled();
+              });
+
+              it('updates request', function () {
+                expect(controller.request.update).toHaveBeenCalled();
+              });
+
+              it('tells the backend to not recalculate balance change', function () {
+                expect(controller.request.change_balance).toBeUndefined();
+              });
+            });
+
+            describe('when rejecting request', function () {
+              beforeEach(function () {
+                controller.newStatusOnSave = optionGroupMock.specificObject(
+                  'hrleaveandabsences_leave_request_status', 'name', 'rejected').value;
+
+                controller.submit();
+                $rootScope.$digest();
+              });
+
+              it('does not check the balance change', function () {
+                expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
+                  .not.toHaveBeenCalled();
+              });
+
+              it('updates request', function () {
+                expect(controller.request.update).toHaveBeenCalled();
+              });
+
+              it('tells the backend to not recalculate balance change', function () {
+                expect(controller.request.change_balance).toBeUndefined();
+              });
+            });
           });
 
           describe('in case leave request is TOIL', function () {
