@@ -699,7 +699,7 @@
                 'checkIfBalanceChangeNeedsRecalculation')
                 .and.returnValue($q.resolve(true));
               spyOn(LeaveRequestService,
-                'promptIfProceedWithBalanceChangeRecalculation')
+                'promptBalanceChangeRecalculation')
                 .and.callThrough();
               spyOn(dialog, 'open').and.callFake(function (params) {
                 proceedWithBalanceChangeRecalculation = params.onConfirm;
@@ -717,11 +717,11 @@
               });
 
               it('prompts a balance change recalculation', function () {
-                expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
+                expect(LeaveRequestService.promptBalanceChangeRecalculation)
                   .toHaveBeenCalled();
               });
 
-              describe('on confirm the balance change recalculation', function () {
+              describe('when confirming balance change recalculation', function () {
                 beforeEach(function () {
                   proceedWithBalanceChangeRecalculation();
                   $rootScope.$digest();
@@ -756,7 +756,7 @@
               });
 
               it('does not check the balance change', function () {
-                expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
+                expect(LeaveRequestService.promptBalanceChangeRecalculation)
                   .not.toHaveBeenCalled();
               });
 
@@ -779,7 +779,7 @@
               });
 
               it('does not check the balance change', function () {
-                expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
+                expect(LeaveRequestService.promptBalanceChangeRecalculation)
                   .not.toHaveBeenCalled();
               });
 

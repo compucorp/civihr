@@ -263,7 +263,7 @@ define([
       return vm.request.calculateBalanceChange(vm.selectedAbsenceType.calculation_unit_name)
         .then(function (balanceChange) {
           if (+vm.balance.change.amount !== +balanceChange.amount) {
-            LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation()
+            LeaveRequestService.promptBalanceChangeRecalculation()
               .then(function () {
                 $rootScope.$emit('LeaveRequestPopup::recalculateBalanceChange');
               });
@@ -291,16 +291,6 @@ define([
         .then(function () {
           postSubmit('LeaveRequest::new');
         });
-    }
-
-    /**
-     * Sets the "change_balance" attribute to the leave request
-     * if a force balance change recalculation is needed
-     */
-    function decideIfBalanceChangeNeedsRecalculationOnBackend () {
-      if (isBalanceChangeRecalculationNeeded() && !vm.isRole('staff')) {
-        vm.request.change_balance = true;
-      }
     }
 
     /**
@@ -625,6 +615,16 @@ define([
     }
 
     /**
+     * Sets the "change_balance" attribute to the leave request
+     * if a force balance change recalculation is needed
+     */
+    function isBalanceChangeRecalculationNeededOnBackend () {
+      if (isBalanceChangeRecalculationNeeded() && !vm.isRole('staff')) {
+        vm.request.change_balance = true;
+      }
+    }
+
+    /**
      * Checks if the leave request has the given status
      *
      * @param {String} leaveStatus
@@ -920,7 +920,7 @@ define([
 
       return vm.request.isValid()
         .then(isBalanceChangeRecalculationNeeded() && checkIfBalanceChangeHasChanged)
-        .then(decideIfBalanceChangeNeedsRecalculationOnBackend)
+        .then(isBalanceChangeRecalculationNeededOnBackend)
         .then(submitAllTabs)
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
