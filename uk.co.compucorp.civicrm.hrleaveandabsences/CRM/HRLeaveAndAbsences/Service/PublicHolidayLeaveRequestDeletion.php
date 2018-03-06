@@ -56,7 +56,6 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
 
     $this->deleteDatesWithBalanceChanges($leaveRequest);
     $leaveRequest->delete();
-
   }
 
   /**
@@ -74,8 +73,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
     if(!$leaveRequest) {
       return;
     }
-
-    $this->deleteDatesWithBalanceChanges($leaveRequest);
+    
     LeaveRequest::softDelete($leaveRequest->id);
   }
 
