@@ -136,26 +136,4 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
     return true;
   }
   
-  /**
-   * Upgrade CustomGroup, setting Identify is_reserved value to Yes
-   * if it existing.
-   *
-   * @return bool
-   */
-  public function upgrade_1502() {
-    $result = civicrm_api3('CustomGroup', 'get', [
-      'return' => ['id'],
-      'name' => 'Identify',
-    ]);
-  
-    if ($result['id']) {
-      civicrm_api3('CustomGroup', 'create', [
-        'id' => $result['id'],
-        'is_reserved' => 1,
-      ]);
-    }
-  
-    return TRUE;
-  }
-  
 }
