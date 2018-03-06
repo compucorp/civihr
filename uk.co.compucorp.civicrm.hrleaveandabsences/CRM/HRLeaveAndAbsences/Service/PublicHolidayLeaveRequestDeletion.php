@@ -73,8 +73,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
     if(!$leaveRequest) {
       return;
     }
-    
+
     LeaveRequest::softDelete($leaveRequest->id);
+    foreach($leaveRequest->getDates() as $date) {
+      $this->recalculateDeductionForOverlappingLeaveRequestDate($leaveRequest, new DateTime($date->date));
+    }
   }
 
   /**
