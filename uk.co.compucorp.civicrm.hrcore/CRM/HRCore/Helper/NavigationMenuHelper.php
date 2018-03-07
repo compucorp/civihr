@@ -130,6 +130,9 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
       $insertionIndex++;
     }
 
+    // insertion index cannot be lower than 0 (the first element)
+    $insertionIndex = max(0, $insertionIndex);
+
     array_splice($siblings, $insertionIndex, 0, [$itemToMove]);
   }
 
