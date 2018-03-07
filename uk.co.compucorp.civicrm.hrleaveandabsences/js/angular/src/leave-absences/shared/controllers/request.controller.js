@@ -294,6 +294,16 @@ define([
     }
 
     /**
+     * Sets the "change_balance" attribute to the leave request
+     * if a force balance change recalculation is needed on the backend
+     */
+    function decideIfBalanceChangeNeedsAForceRecalculation () {
+      if (isBalanceChangeRecalculationNeeded() && !vm.isRole('staff')) {
+        vm.request.change_balance = true;
+      }
+    }
+
+    /**
      * Deletes the leave request
      */
     function deleteLeaveRequest () {
@@ -615,16 +625,6 @@ define([
     }
 
     /**
-     * Sets the "change_balance" attribute to the leave request
-     * if a force balance change recalculation is needed
-     */
-    function isBalanceChangeRecalculationNeededOnBackend () {
-      if (isBalanceChangeRecalculationNeeded() && !vm.isRole('staff')) {
-        vm.request.change_balance = true;
-      }
-    }
-
-    /**
      * Checks if the leave request has the given status
      *
      * @param {String} leaveStatus
@@ -920,7 +920,7 @@ define([
 
       return vm.request.isValid()
         .then(isBalanceChangeRecalculationNeeded() && checkIfBalanceChangeHasChanged)
-        .then(isBalanceChangeRecalculationNeededOnBackend)
+        .then(decideIfBalanceChangeNeedsAForceRecalculation)
         .then(submitAllTabs)
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
