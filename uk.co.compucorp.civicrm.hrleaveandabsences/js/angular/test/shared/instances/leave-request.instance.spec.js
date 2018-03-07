@@ -2,6 +2,7 @@
 
 define([
   'common/lodash',
+  'common/moment',
   'leave-absences/mocks/data/leave-request.data',
   'leave-absences/mocks/data/option-group.data',
   'leave-absences/mocks/data/comments.data',
@@ -12,7 +13,7 @@ define([
   'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/shared/instances/leave-request.instance',
   'leave-absences/shared/modules/models'
-], function (_, leaveRequestMockData, optionGroupMockData, commentsData, helper) {
+], function (_, moment, leaveRequestMockData, optionGroupMockData, commentsData, helper) {
   'use strict';
 
   describe('LeaveRequestInstance', function () {
@@ -64,7 +65,6 @@ define([
         spyOn(LeaveRequestAPI, 'getAttachments').and.callThrough();
         spyOn(LeaveRequestAPI, 'deleteAttachment').and.callThrough();
         spyOn(LeaveRequestAPI, 'getBalanceChangeBreakdown').and.callThrough();
-        spyOn(LeaveRequestAPI, 'getWorkDayForDate').and.callThrough();
         spyOn(LeaveRequestAPI, 'calculateBalanceChange').and.callThrough();
       }
     ]));
@@ -279,21 +279,24 @@ define([
       });
 
       describe('when calculation unit is "hours"', function () {
-        var promise;
+        var balanceChange, calculateBalanceChange;
 
         beforeEach(function () {
           instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
-          instance.from_date_amount = 0;
-          instance.to_date_amount = 20;
-          promise = instance.calculateBalanceChange('hours');
+          calculateBalanceChange = instance.calculateBalanceChange('hours');
         });
 
-        afterEach(function () {
-          $rootScope.$apply();
-        });
+        describe('when set deductions are less than allowed', function () {
+          beforeEach(function () {
+            instance.from_date_amount = 1;
+            instance.to_date_amount = 1.5;
+            calculateBalanceChange.then(function (_balanceChange_) {
+              balanceChange = _balanceChange_;
+            });
+            $rootScope.$digest();
+          });
 
-        it('calls equivalent API method', function () {
-          promise.then(function () {
+          it('calls equivalent API method', function () {
             expect(LeaveRequestAPI.calculateBalanceChange)
               .toHaveBeenCalledWith(jasmine.objectContaining({
                 contact_id: jasmine.any(String),
@@ -301,23 +304,125 @@ define([
                 to_date: jasmine.any(String)
               }));
           });
-        });
 
-        it('amends the breakdown "from" day amount', function () {
-          promise.then(function (balanceChange) {
+          it('amends the breakdown "from" day amount', function () {
             expect(_.first(balanceChange.breakdown).amount).toBe(instance.from_date_amount);
           });
-        });
 
-        it('amends the breakdown "to" day amount', function () {
-          promise.then(function (balanceChange) {
+          it('amends the breakdown "to" day amount', function () {
             expect(_.last(balanceChange.breakdown).amount).toBe(instance.to_date_amount);
+          });
+
+          it('amends the breakdown', function () {
+            expect(balanceChange.amount).toBe(-5.5);
           });
         });
 
-        it('amends the breakdown', function () {
-          promise.then(function (balanceChange) {
-            expect(balanceChange.amount).toBe(-23);
+        describe('when custom deductions are exceeding the allowed values', function () {
+          var workDayMaxPossibleDeductionFrom, workDayMaxPossibleDeductionTo;
+
+          describe('when only "from" deduction is out of bounds', function () {
+            beforeEach(function () {
+              instance.from_date_amount = 8888;
+              instance.to_date_amount = 0.25;
+
+              runCalculateBalanceChange();
+            });
+
+            it('reduces "from" deduction to the allowed value', function () {
+              expect(_.first(balanceChange.breakdown).amount).toBe(
+                workDayMaxPossibleDeductionFrom);
+            });
+
+            it('leaves "to" deduction as is', function () {
+              expect(_.last(balanceChange.breakdown).amount).toBe(
+                instance.to_date_amount);
+            });
+          });
+
+          describe('when only "to" deduction is out of bounds', function () {
+            beforeEach(function () {
+              instance.from_date_amount = 0.25;
+              instance.to_date_amount = 8888;
+
+              runCalculateBalanceChange();
+            });
+
+            it('leaves "from" deduction as is', function () {
+              expect(_.first(balanceChange.breakdown).amount).toBe(
+                instance.from_date_amount);
+            });
+
+            it('reduces "to" deduction to the allowed value', function () {
+              expect(_.last(balanceChange.breakdown).amount).toBe(
+                workDayMaxPossibleDeductionTo);
+            });
+          });
+
+          describe('when both "from" and "to" deductions are out of bounds', function () {
+            beforeEach(function () {
+              instance.from_date_amount = 8888;
+              instance.to_date_amount = 8888;
+
+              runCalculateBalanceChange();
+            });
+
+            it('reduces "from" deduction to the allowed value', function () {
+              expect(_.first(balanceChange.breakdown).amount).toBe(
+                workDayMaxPossibleDeductionFrom);
+            });
+
+            it('reduces "to" deduction to the allowed value', function () {
+              expect(_.last(balanceChange.breakdown).amount).toBe(
+                workDayMaxPossibleDeductionTo);
+            });
+          });
+
+          /**
+           * Sets maximum possible deductions and runs the balance change calculation
+           */
+          function runCalculateBalanceChange () {
+            var workDayFrom = leaveRequestMockData.workDayForDate().values;
+            var workDayTo = leaveRequestMockData.workDayForDate().values;
+
+            workDayMaxPossibleDeductionFrom =
+              moment.duration(workDayFrom.time_to)
+                .subtract(moment.duration(workDayFrom.time_from)).asHours();
+            workDayMaxPossibleDeductionTo =
+              moment.duration(workDayTo.time_to)
+                .subtract(moment.duration(workDayTo.time_from)).asHours();
+
+            calculateBalanceChange.then(function (_balanceChange_) {
+              balanceChange = _balanceChange_;
+            });
+            $rootScope.$digest();
+          }
+        });
+
+        describe('when days that deduction are set are not working days', function () {
+          beforeEach(function () {
+            var workDay = _.cloneDeep(leaveRequestMockData.workDayForDate());
+
+            workDay.values.time_from = '';
+            workDay.values.time_to = '';
+
+            spyOn(LeaveRequestAPI, 'getWorkDayForDate').and.returnValue(
+              $q.resolve(workDay));
+
+            instance.from_date_amount = 10;
+            instance.to_date_amount = 15;
+            calculateBalanceChange.then(function (_balanceChange_) {
+              balanceChange = _balanceChange_;
+            });
+            $rootScope.$digest();
+          });
+
+          it('sets "from" day amount to 0', function () {
+            expect(_.first(balanceChange.breakdown).amount).toBe(0);
+          });
+
+          it('sets "to" day amount to 0', function () {
+            expect(_.last(balanceChange.breakdown).amount).toBe(0);
           });
         });
       });
@@ -414,6 +519,16 @@ define([
         expect(LeaveRequestAPI.getBalanceChangeBreakdown).toHaveBeenCalledWith(instance.id);
       });
 
+      it('always returns daily amounts as non-negative numbers', function () {
+        expect(_.every(promiseResult.breakdown, function (day) {
+          return day.amount >= 0;
+        })).toBe(true);
+      });
+
+      it('always returns the total amount as a non-positive number', function () {
+        expect(promiseResult.amount <= 0).toBe(true);
+      });
+
       it('returns data with the same structure as LeaveRequestAPI.calculateBalanceChange() endpoint', function () {
         expect(promiseResult).toEqual(jasmine.objectContaining({
           amount: jasmine.any(Number),
@@ -438,6 +553,7 @@ define([
         leaveRequest = helper.createRandomLeaveRequest();
         instance = LeaveRequestInstance.init(leaveRequest);
 
+        spyOn(LeaveRequestAPI, 'getWorkDayForDate').and.callThrough();
         instance.getWorkDayForDate(date).then(function (_promiseResult_) {
           promiseResult = _promiseResult_;
         });

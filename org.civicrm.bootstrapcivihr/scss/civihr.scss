@@ -1,19 +1,19 @@
-@import "overrides/variables";
-@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/mixins/ALL";
-@import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/mixins";
+@import 'overrides/variables';
+@import 'SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/mixins/ALL';
+@import 'SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/mixins';
 
-@import "fonts/*";
-@import "mixins/*";
+@import 'fonts/*';
+@import 'mixins/*';
 
-@import "overrides/crm/*";
-@import "overrides/style/*";
-@import "components/*";
-@import "common/*";
-@import "pages/*";
+@import 'overrides/crm/*';
+@import 'overrides/style/*';
+@import 'components/*';
+@import 'common/*';
+@import 'pages/*';
 
-@import "overrides/style/*";
+@import 'overrides/style/*';
 
 #{$outsideNamespaceMarker} {
-  @import "components/outside-namespace/*";
-  @import "overrides/crm/*";
+  @import 'components/outside-namespace/*';
+  @import 'overrides/crm/*';
 }

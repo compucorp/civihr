@@ -5,6 +5,7 @@ define([
   'common/angularBootstrap',
   'common/text-angular',
   'common/directives/loading',
+  'common/directives/scroll-shadows.directive',
   'common/directives/time-amount-picker.directive',
   'common/directives/timepicker-select.directive',
   'common/filters/angular-date/format-date',
@@ -56,12 +57,12 @@ define([
     'manager-leave.config',
     'manager-leave.components'
   ])
-  .run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
-    $log.debug('app.run');
+    .run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
+      $log.debug('app.run');
 
-    $rootScope.sharedPathTpl = sharedSettings.sharedPathTpl;
-    $rootScope.settings = settings;
-  }]);
+      $rootScope.sharedPathTpl = sharedSettings.sharedPathTpl;
+      $rootScope.settings = settings;
+    }]);
 
   return angular;
 });
