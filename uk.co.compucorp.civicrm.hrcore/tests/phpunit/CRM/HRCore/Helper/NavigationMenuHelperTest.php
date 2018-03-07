@@ -68,7 +68,7 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $this->assertEquals('foo', $item['attributes']['permission']);
   }
 
-  public function testFetchingWillNotReturnAReference() {
+  public function testFindMenuItemByNameWillNotReturnAReference() {
     $menu = $this->getSampleMenu();
     $name = 'Administer/Administration Console/System Status';
     $item = NavigationMenuHelper::findMenuItemByPath($menu, $name);
@@ -81,7 +81,7 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
   public function testMovingTopLevelMenuItemsWillChangeTheirPositions() {
     $menu = $this->getSampleMenu();
     $first = 'Home';
-    $second = 'Search...';
+    $second = 'Contacts';
     NavigationMenuHelper::relocateAfter($menu, $first, $second);
 
     $newFirst = reset($menu);
@@ -254,15 +254,15 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
         FALSE
       ],
       [
-        'Support/About CiviCRM',
+        'Contacts/New Organization/New Health_Insurance_Provider',
         TRUE
       ],
       [
-        'Contacts/New Organization/New Life_Insurance_Provider',
+        'Administer/Administration Console',
         TRUE
       ],
       [
-        'Events/Register Event Participant',
+        'Administer/Customize Data and Screens/Dropdown Options/Gender Options',
         TRUE
       ]
     ];
@@ -274,7 +274,7 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
   public function itemsToMoveProvider() {
     return [
       [
-        'Vacancies/new_vacancy',
+        'Administer/Administration Console',
         'Home'
       ],
       [
@@ -284,6 +284,10 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
       [
         'Administer/Customize Data and Screens/Custom Fields',
         'Contacts/New Organization'
+      ],
+      [
+        'Administer/Customize Data and Screens/Dropdown Options/Gender Options',
+        'Administer/Administration Console',
       ]
     ];
   }
