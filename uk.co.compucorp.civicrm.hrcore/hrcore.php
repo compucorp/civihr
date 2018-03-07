@@ -309,11 +309,13 @@ function hrcore_civicrm_alterMenu(&$items) {
  * Implements hook_civicrm_permission().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_permission/
+ *
+ * @param array $permissions
  */
 function hrcore_civicrm_permission(&$permissions) {
-  $permissions += [
-    'access CiviCRM developer menu and tools' => ts('Access CiviCRM developer menu and tools')
-  ];
+  $prefix = ts('CiviHR') . ': ';
+  $permissions['access CiviCRM developer menu and tools'] = ts('Access CiviCRM developer menu and tools');
+  $permissions['access root menu items and configurations'] = $prefix . ts('Access root menu items and configurations');
 }
 
 /**
@@ -425,7 +427,7 @@ function _hrcore_createHelpMenu(&$menu) {
     'name' => ts('CiviHR website'),
     'url' => 'https://www.civihr.org/',
     'target' => '_blank',
-    'permission' => 'access CiviCRM'
+    'permission' => 'access root menu items and configurations'
   ]);
 
   _hrcore_civix_insert_navigation_menu($menu, 'Help', [

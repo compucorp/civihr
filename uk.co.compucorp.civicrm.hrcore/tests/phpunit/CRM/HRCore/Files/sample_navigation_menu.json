@@ -1,0 +1,182 @@
+{
+  "1": {
+    "attributes": {
+      "label": "Home",
+      "name": "Home",
+      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "icon": null,
+      "permission": null,
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "1",
+      "active": "1"
+    }
+  },
+  "15": {
+    "attributes": {
+      "label": "Contacts",
+      "name": "Contacts",
+      "url": null,
+      "icon": "crm-i fa-users",
+      "permission": null,
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "15",
+      "active": "1"
+    },
+    "child": {
+      "18": {
+        "attributes": {
+          "label": "New Organization",
+          "name": "New Organization",
+          "url": "civicrm/contact/add?reset=1&ct=Organization",
+          "icon": null,
+          "permission": "add contacts",
+          "operator": "",
+          "separator": "1",
+          "parentID": "15",
+          "navID": "18",
+          "active": "1"
+        },
+        "child": {
+          "265": {
+            "attributes": {
+              "label": "New Health Insurance Provider",
+              "name": "New Health_Insurance_Provider",
+              "url": "civicrm/contact/add?ct=Organization&cst=Health_Insurance_Provider&reset=1",
+              "icon": null,
+              "permission": "add contacts",
+              "operator": null,
+              "separator": "0",
+              "parentID": "18",
+              "navID": "265",
+              "active": "1"
+            }
+          }
+        }
+      }
+    }
+  },
+  "110": {
+    "attributes": {
+      "label": "Administer",
+      "name": "Administer",
+      "url": null,
+      "icon": "crm-i fa-cog",
+      "permission": "administer CiviCRM",
+      "operator": "",
+      "separator": null,
+      "parentID": null,
+      "navID": "110",
+      "active": "1"
+    },
+    "child": {
+      "111": {
+        "attributes": {
+          "label": "Administration Console",
+          "name": "Administration Console",
+          "url": "civicrm/admin?reset=1",
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": "",
+          "separator": null,
+          "parentID": "110",
+          "navID": "111",
+          "active": "1"
+        },
+        "child": {
+          "112": {
+            "attributes": {
+              "label": "System Status",
+              "name": "System Status",
+              "url": "civicrm/a/#/status",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "111",
+              "navID": "112",
+              "active": "1"
+            }
+          }
+        }
+      },
+      "114": {
+        "attributes": {
+          "label": "Customize Data and Screens",
+          "name": "Customize Data and Screens",
+          "url": null,
+          "icon": null,
+          "permission": "administer CiviCRM",
+          "operator": "",
+          "separator": null,
+          "parentID": "110",
+          "navID": "114",
+          "active": "1"
+        },
+        "child": {
+          "115": {
+            "attributes": {
+              "label": "Custom Fields",
+              "name": "Custom Fields",
+              "url": "civicrm/admin/custom/group?reset=1",
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "115",
+              "active": "1"
+            }
+          },
+          "127": {
+            "attributes": {
+              "label": "Dropdown Options",
+              "name": "Dropdown Options",
+              "url": null,
+              "icon": null,
+              "permission": "administer CiviCRM",
+              "operator": "",
+              "separator": null,
+              "parentID": "114",
+              "navID": "127",
+              "active": "1"
+            },
+            "child": {
+              "128": {
+                "attributes": {
+                  "label": "Gender Options",
+                  "name": "Gender Options",
+                  "url": "civicrm/admin/options/gender?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": "",
+                  "separator": null,
+                  "parentID": "127",
+                  "navID": "128",
+                  "active": "1"
+                }
+              },
+              "129": {
+                "attributes": {
+                  "label": "Individual Prefixes (Ms, Mr...)",
+                  "name": "Individual Prefixes (Ms, Mr...)",
+                  "url": "civicrm/admin/options/individual_prefix?reset=1",
+                  "icon": null,
+                  "permission": "administer CiviCRM",
+                  "operator": "",
+                  "separator": null,
+                  "parentID": "127",
+                  "navID": "129",
+                  "active": "1"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
