@@ -121,16 +121,14 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
       throw new \Exception($err);
     }
 
-    // we disallow zero offset insertion to make the function clearer,
-    // however this means positive offsets are 1 higher than they should be
-    if ($offset > 0) {
-      $offset--;
-    }
+    $insertionIndex += $offset;
 
-    // array_splice offset should be 1 greater than the target index +/- the
-    // offset, i.e. if we want to insert 2 after 1 in [1,3] the
-    // target index is 0, offset is 0 (right after) so insertion index is 1
-    $insertionIndex += ($offset + 1);
+    // the offset is fine as it is for positive offsets, but we skip 0 when
+    // changing from 'insert after' (offset 1) to 'insert before' (offset -1)
+    // so we need to adjust negative offsets
+    if ($offset < 0) {
+      $insertionIndex++;
+    }
 
     array_splice($siblings, $insertionIndex, 0, [$itemToMove]);
   }
