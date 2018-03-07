@@ -46,6 +46,40 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
   }
 
   /**
+   * Moves a menu item to before another specified menu item
+   *
+   * @param $menu
+   *   The full menu structure
+   * @param $itemToMovePath
+   *   The path to the menu item we want to move
+   * @param $followingItemPath
+   *   The path to the item that the target should be inserted before
+   */
+  public static function relocateBefore(
+    &$menu,
+    $itemToMovePath,
+    $followingItemPath
+  ) {
+    $siblings = &self::getSiblingsReference($menu, $followingItemPath);
+    $itemToMove = self::findMenuItemByPath($menu, $itemToMovePath);
+
+    // remove original from the menu
+    self::remove($menu, $itemToMovePath);
+
+    // re-index and find point to insert the new item
+    $siblings = array_values($siblings);
+    $followingItemName = self::getItemNameFromPath($followingItemPath);
+    $insertionIndex = self::getMenuItemIndex($siblings, $followingItemName);
+
+    if (NULL === $insertionIndex) {
+      $err = sprintf('Could not find menu item "%s"', $followingItemPath);
+      throw new \Exception($err);
+    }
+
+    array_splice($siblings, $insertionIndex, 0, [$itemToMove]);
+  }
+
+  /**
    * Moves a menu item to after another specified menu item
    *
    * @param array $menu
@@ -130,6 +164,10 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
    *   The menu item if found, or NULL if not
    */
   private static function &findMenuItemReferenceByPath(&$menu, $path) {
+    if ($path === '') {
+      return $menu;
+    }
+
     $path = explode('/', $path);
     $submenu = &$menu;
 

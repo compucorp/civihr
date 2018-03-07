@@ -91,38 +91,116 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $this->assertEquals($first, $newSecond['attributes']['name']);
   }
 
-  public function testMovingNestedItemsWillChangeTheirPositions() {
-    $itemName = 'Activity Types';
-    $originalParentPath = 'Administer/Customize Data and Screens';
-    $itemPath = $originalParentPath . '/' . $itemName;
-    $targetParentPath = 'Administer/CiviMember';
-    $precedingItemName = 'Membership Status Rules';
-    $moveAfterPath = $targetParentPath . '/' . $precedingItemName;
-
+  /**
+   * @dataProvider itemsToMoveProvider
+   *
+   * @param string $pathToMove
+   * @param string $pathBefore
+   */
+  public function testInsertingAfterWillPlaceAfterNamedItem(
+    $pathToMove,
+    $pathBefore
+  ) {
     $menu = $this->getSampleMenu();
-    NavigationMenuHelper::relocateAfter($menu, $itemPath, $moveAfterPath);
+    $parts = explode('/', $pathToMove);
+    $itemName = array_pop($parts);
+    $originalParentPath = implode('/', $parts);
+    $newParentParts = explode('/', $pathBefore);
+    $insertBeforeName = array_pop($newParentParts);
+    $newParentPath = implode('/', $newParentParts);
 
-    $origParent = NavigationMenuHelper::findMenuItemByPath($menu, $originalParentPath);
-    $newParent = NavigationMenuHelper::findMenuItemByPath($menu, $targetParentPath);
+    NavigationMenuHelper::relocateAfter($menu, $pathToMove, $pathBefore);
 
-    $origChildren = $origParent['child'];
-    $newChildren = $newParent['child'];
-    $finderFunc = function ($child) use ($itemName) {
+    $matcherFunc = function ($child) use ($itemName) {
       return $child['attributes']['name'] === $itemName;
     };
-    $matchingOriginalChildren = array_filter($origChildren, $finderFunc);
-    $matchingNewChildren = array_filter($newChildren, $finderFunc);
 
-    $this->assertCount(0, $matchingOriginalChildren);
-    $this->assertCount(1, $matchingNewChildren);
+    if ($originalParentPath !== '') {
+      $originalParent = NavigationMenuHelper::findMenuItemByPath($menu, $originalParentPath);
+      $originalChildren = $originalParent['child'];
+    } else {
+      $originalChildren = $menu;
+    }
 
-    $newChildrenNames = array_map(function ($item) {
+    if ($newParentPath !== '') {
+      $newParent = NavigationMenuHelper::findMenuItemByPath($menu, $newParentPath);
+      $newParentChildren = $newParent['child'];
+    } else {
+      $newParentChildren = $menu;
+    }
+
+    // If it was moved to a different menu, check that it doesn't exist in old
+    if ($originalParentPath !== $newParentPath) {
+      $matchingOriginalChildren = array_filter($originalChildren, $matcherFunc);
+      $matchingNewChildren = array_filter($newParentChildren, $matcherFunc);
+
+      $this->assertCount(0, $matchingOriginalChildren);
+      $this->assertCount(1, $matchingNewChildren);
+    }
+
+    $moveTargetMenuNames = array_map(function ($item) {
       return $item['attributes']['name'];
-    }, $newChildren);
+    }, $newParentChildren);
 
-    $moveAfterPosition = array_search($precedingItemName, $newChildrenNames);
-    $movedItemPosition = array_search($itemName, $newChildrenNames);
-    $this->assertEquals($moveAfterPosition + 1, $movedItemPosition);
+    $moveBeforePosition = array_search($insertBeforeName, $moveTargetMenuNames);
+    $movedItemPosition = array_search($itemName, $moveTargetMenuNames);
+    $this->assertEquals($moveBeforePosition + 1, $movedItemPosition);
+  }
+
+  /**
+   * @dataProvider itemsToMoveProvider
+   *
+   * @param string $pathToMove
+   * @param string $pathAfter
+   */
+  public function testInsertingBeforeWillPlaceBeforeNamedItem(
+    $pathToMove,
+    $pathAfter
+  ) {
+    $menu = $this->getSampleMenu();
+    $parts = explode('/', $pathToMove);
+    $itemName = array_pop($parts);
+    $originalParentPath = implode('/', $parts);
+    $newParentParts = explode('/', $pathAfter);
+    $insertBeforeName = array_pop($newParentParts);
+    $newParentPath = implode('/', $newParentParts);
+
+    NavigationMenuHelper::relocateBefore($menu, $pathToMove, $pathAfter);
+
+    $matcherFunc = function ($child) use ($itemName) {
+      return $child['attributes']['name'] === $itemName;
+    };
+
+    if ($originalParentPath !== '') {
+      $originalParent = NavigationMenuHelper::findMenuItemByPath($menu, $originalParentPath);
+      $originalChildren = $originalParent['child'];
+    } else {
+      $originalChildren = $menu;
+    }
+
+    if ($newParentPath !== '') {
+      $newParent = NavigationMenuHelper::findMenuItemByPath($menu, $newParentPath);
+      $newParentChildren = $newParent['child'];
+    } else {
+      $newParentChildren = $menu;
+    }
+
+    // If it was moved to a different menu, check that it doesn't exist in old
+    if ($originalParentPath !== $newParentPath) {
+      $matchingOriginalChildren = array_filter($originalChildren, $matcherFunc);
+      $matchingNewChildren = array_filter($newParentChildren, $matcherFunc);
+
+      $this->assertCount(0, $matchingOriginalChildren);
+      $this->assertCount(1, $matchingNewChildren);
+    }
+
+    $moveTargetMenuNames = array_map(function ($item) {
+      return $item['attributes']['name'];
+    }, $newParentChildren);
+
+    $moveBeforePosition = array_search($insertBeforeName, $moveTargetMenuNames);
+    $movedItemPosition = array_search($itemName, $moveTargetMenuNames);
+    $this->assertEquals($moveBeforePosition - 1, $movedItemPosition);
   }
 
   public function testRemovalWillUnsetElementAndChildren() {
@@ -186,6 +264,26 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
       [
         'Events/Register Event Participant',
         TRUE
+      ]
+    ];
+  }
+
+  /**
+   * @return array
+   */
+  public function itemsToMoveProvider() {
+    return [
+      [
+        'Vacancies/new_vacancy',
+        'Home'
+      ],
+      [
+        'Home',
+        'Administer'
+      ],
+      [
+        'Administer/Customize Data and Screens/Custom Fields',
+        'Contacts/New Organization'
       ]
     ];
   }
