@@ -78,10 +78,13 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
     $itemToMovePath,
     $precedingItemPath
   ) {
-    self::relocateWithOffset($menu, $itemToMovePath, $precedingItemPath);
+    self::relocateWithOffset($menu, $itemToMovePath, $precedingItemPath, 1);
   }
 
   /**
+   * Moves a given item to the same submenu as another target item. Can be
+   * placed before or after the target item using an offset.
+   *
    * @param $menu
    *   The full menu structure
    * @param $itemToMovePath
@@ -90,14 +93,18 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
    *   The path to the sibling the item will be moved next to
    * @param int $offset
    *   How many places the item should be before / after the sibling item. Use
-   *   0 to place it right after it.
+   *   1 to place it right after it, -1 to put before it
    */
   private static function relocateWithOffset(
     &$menu,
     $itemToMovePath,
     $targetSiblingPath,
-    $offset = 0
+    $offset
   ) {
+    if ($offset === 0) {
+      throw new \Exception('Offset cannot be zero');
+    }
+
     $siblings = &self::getSiblingsReference($menu, $targetSiblingPath);
     $itemToMove = self::findMenuItemByPath($menu, $itemToMovePath);
 
@@ -114,8 +121,14 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
       throw new \Exception($err);
     }
 
+    // we disallow zero offset insertion to make the function clearer,
+    // however this means positive offsets are 1 higher than they should be
+    if ($offset > 0) {
+      $offset--;
+    }
+
     // array_splice offset should be 1 greater than the target index +/- the
-    // offset, i.e. if we want to inset 2 after 1 in [1,3] the
+    // offset, i.e. if we want to insert 2 after 1 in [1,3] the
     // target index is 0, offset is 0 (right after) so insertion index is 1
     $insertionIndex += ($offset + 1);
 
