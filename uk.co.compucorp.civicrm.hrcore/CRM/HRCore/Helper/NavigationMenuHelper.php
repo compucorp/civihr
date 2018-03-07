@@ -60,23 +60,7 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
     $itemToMovePath,
     $followingItemPath
   ) {
-    $siblings = &self::getSiblingsReference($menu, $followingItemPath);
-    $itemToMove = self::findMenuItemByPath($menu, $itemToMovePath);
-
-    // remove original from the menu
-    self::remove($menu, $itemToMovePath);
-
-    // re-index and find point to insert the new item
-    $siblings = array_values($siblings);
-    $followingItemName = self::getItemNameFromPath($followingItemPath);
-    $insertionIndex = self::getMenuItemIndex($siblings, $followingItemName);
-
-    if (NULL === $insertionIndex) {
-      $err = sprintf('Could not find menu item "%s"', $followingItemPath);
-      throw new \Exception($err);
-    }
-
-    array_splice($siblings, $insertionIndex, 0, [$itemToMove]);
+    self::relocateWithOffset($menu, $itemToMovePath, $followingItemPath, -1);
   }
 
   /**
@@ -94,7 +78,27 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
     $itemToMovePath,
     $precedingItemPath
   ) {
-    $siblings = &self::getSiblingsReference($menu, $precedingItemPath);
+    self::relocateWithOffset($menu, $itemToMovePath, $precedingItemPath);
+  }
+
+  /**
+   * @param $menu
+   *   The full menu structure
+   * @param $itemToMovePath
+   *   The path to the menu item we want to move
+   * @param $targetSiblingPath
+   *   The path to the sibling the item will be moved next to
+   * @param int $offset
+   *   How many places the item should be before / after the sibling item. Use
+   *   0 to place it right after it.
+   */
+  private static function relocateWithOffset(
+    &$menu,
+    $itemToMovePath,
+    $targetSiblingPath,
+    $offset = 0
+  ) {
+    $siblings = &self::getSiblingsReference($menu, $targetSiblingPath);
     $itemToMove = self::findMenuItemByPath($menu, $itemToMovePath);
 
     // remove original from the menu
@@ -102,15 +106,19 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
 
     // re-index and find point to insert the new item
     $siblings = array_values($siblings);
-    $precedingItemName = self::getItemNameFromPath($precedingItemPath);
+    $precedingItemName = self::getItemNameFromPath($targetSiblingPath);
     $insertionIndex = self::getMenuItemIndex($siblings, $precedingItemName);
 
     if (NULL === $insertionIndex) {
-      $err = sprintf('Could not find menu item "%s"', $precedingItemPath);
+      $err = sprintf('Could not find menu item "%s"', $targetSiblingPath);
       throw new \Exception($err);
     }
 
-    $insertionIndex++; // we want to insert it after
+    // array_splice offset should be 1 greater than the target index +/- the
+    // offset, i.e. if we want to inset 2 after 1 in [1,3] the
+    // target index is 0, offset is 0 (right after) so insertion index is 1
+    $insertionIndex += ($offset + 1);
+
     array_splice($siblings, $insertionIndex, 0, [$itemToMove]);
   }
 
