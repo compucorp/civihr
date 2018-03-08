@@ -291,6 +291,7 @@
                 nonRequiredTab = {
                   onBeforeSubmit: jasmine.createSpy('onBeforeSubmit').and.returnValue($q.resolve())
                 };
+                controller.request.change_balance = true;
 
                 requiredTab.onBeforeSubmit.and.callFake(function () {
                   hasCalledRequestCreateMethod = LeaveRequestAPI.create.calls.count() > 0;
@@ -747,7 +748,11 @@
             });
 
             describe('when cancelling request', function () {
+              var requestOriginalDates = {};
+
               beforeEach(function () {
+                requestOriginalDates.from = controller.request.from_date;
+                requestOriginalDates.to = controller.request.to_date;
                 controller.newStatusOnSave = optionGroupMock.specificObject(
                   'hrleaveandabsences_leave_request_status', 'name', 'cancelled').value;
 
@@ -767,12 +772,26 @@
               it('tells the backend to not recalculate balance change', function () {
                 expect(controller.request.change_balance).toBeUndefined();
               });
+
+              it('reverts original request times', function () {
+                expect(moment(controller.request.from_date).format('HH:mm')).toEqual(
+                  moment(requestOriginalDates.from).format('HH:mm'));
+                expect(moment(controller.request.to_date).format('HH:mm')).toEqual(
+                  moment(requestOriginalDates.to).format('HH:mm'));
+              });
             });
 
             describe('when rejecting request', function () {
+              var requestOriginalDates = {};
+
               beforeEach(function () {
+                requestOriginalDates.from = controller.request.from_date;
+                requestOriginalDates.to = controller.request.to_date;
                 controller.newStatusOnSave = optionGroupMock.specificObject(
                   'hrleaveandabsences_leave_request_status', 'name', 'rejected').value;
+                // testing if time has been adjusted in UI, for example, due to work pattern change
+                controller.request.from_date = controller.request.from_date.split(' ')[0] + ' 01:01';
+                controller.request.to_date = controller.request.to_date.split(' ')[0] + ' 01:02';
 
                 controller.submit();
                 $rootScope.$digest();
@@ -789,6 +808,13 @@
 
               it('tells the backend to not recalculate balance change', function () {
                 expect(controller.request.change_balance).toBeUndefined();
+              });
+
+              it('reverts original request times', function () {
+                expect(moment(controller.request.from_date).format('HH:mm')).toEqual(
+                  moment(requestOriginalDates.from).format('HH:mm'));
+                expect(moment(controller.request.to_date).format('HH:mm')).toEqual(
+                  moment(requestOriginalDates.to).format('HH:mm'));
               });
             });
           });

@@ -998,30 +998,6 @@ define([
                 selectedAbsenceType.calculation_unit_name = 'days';
               });
             }
-
-            describe('when the user changes the from custom deduction', function () {
-              beforeEach(function () {
-                controller.uiOptions.times.from.amount = (+fromDeduction + 1).toString();
-
-                $rootScope.$digest();
-              });
-
-              it('will recalculate the balance on save', function () {
-                expect(controller.request.change_balance).toBe(true);
-              });
-            });
-
-            describe('when the user changes the to custom deduction', function () {
-              beforeEach(function () {
-                controller.uiOptions.times.to.amount = (+toDeduction + 1).toString();
-
-                $rootScope.$digest();
-              });
-
-              it('will recalculate the balance on save', function () {
-                expect(controller.request.change_balance).toBe(true);
-              });
-            });
           });
         });
       });
@@ -1462,6 +1438,18 @@ define([
           controller.uiOptions.multipleDays = true;
 
           spyOn(controller, 'dateChangeHandler').and.callThrough();
+        });
+
+        describe('when balance is recalculated on the front end', function () {
+          beforeEach(function () {
+            spyOn(controller, 'canCalculateChange').and.returnValue(true);
+            controller.performBalanceChangeCalculation();
+            $rootScope.$digest();
+          });
+
+          it('tells the backend to recalculate the balance as well', function () {
+            expect(controller.request.change_balance).toBe(true);
+          });
         });
 
         describe('when from/to deductions values are set but not changed', function () {

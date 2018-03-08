@@ -35,6 +35,7 @@ define([
 
     var absenceTypesAndIds;
     var availableStatusesMatrix = {};
+    var originalRequestTimes = {};
     var childComponentsCount = 0;
     var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
     var listeners = [];
@@ -546,6 +547,8 @@ define([
       leaveType = getLeaveType();
       attributes = vm.initRequestAttributes();
 
+      rememberRequestOriginalTimes();
+
       if (leaveType === 'leave') {
         vm.request = LeaveRequestInstance.init(attributes);
       } else if (leaveType === 'sickness') {
@@ -827,6 +830,27 @@ define([
     }
 
     /**
+     * Stores the request from and to times original values
+     */
+    function rememberRequestOriginalTimes () {
+      ['from', 'to'].forEach(function (dateType) {
+        originalRequestTimes[dateType] =
+          moment(vm.request[dateType + '_date']).format('HH:mm');
+      });
+    }
+
+    /**
+     * Reverts the request from and to times back to the original values
+     */
+    function revertRequestOriginalTimes () {
+      ['from', 'to'].forEach(function (dateType) {
+        vm.request[dateType + '_date'] =
+          vm.request[dateType + '_date'].split(' ')[0] + ' ' +
+          originalRequestTimes[dateType];
+      });
+    }
+
+    /**
      * Sets entitlements and sets the absences type available for the user.
      * It depends on absenceTypesAndIds to be set to list of absence types and ids
      *
@@ -921,6 +945,7 @@ define([
       return vm.request.isValid()
         .then(isBalanceChangeRecalculationNeeded() && checkIfBalanceChangeHasChanged)
         .then(decideIfBalanceChangeNeedsAForceRecalculation)
+        .then(!vm.request.change_balance && revertRequestOriginalTimes)
         .then(submitAllTabs)
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
