@@ -26,21 +26,21 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
 
     $childLinks = [
       'Prefixes' =>
-        $this->up1020_getOptionGroupLink('individual_prefix'),
+        $this->up1012_getOptionGroupLink('individual_prefix'),
       'Genders' =>
-        $this->up1020_getOptionGroupLink('gender'),
+        $this->up1012_getOptionGroupLink('gender'),
       'Emergency Contact Relationships' =>
-        $this->up1020_getOptionGroupLink('relationship_with_employee_20150304120408'),
+        $this->up1012_getOptionGroupLink('relationship_with_employee_20150304120408'),
       'Manager Types' =>
         'civicrm/admin/reltype?reset=1',
       'Career History' =>
-        $this->up1020_getOptionGroupLink('occupation_type_20130617111138'),
+        $this->up1012_getOptionGroupLink('occupation_type_20130617111138'),
       'Disability Types' =>
-        $this->up1020_getOptionGroupLink('type_20130502151940'),
+        $this->up1012_getOptionGroupLink('type_20130502151940'),
       'Qualifications – Skill Categories' =>
-        $this->up1020_getOptionGroupLink('category_of_skill_20130510015438'),
+        $this->up1012_getOptionGroupLink('category_of_skill_20130510015438'),
       'Qualifications – Skill Levels' =>
-        $this->up1020_getOptionGroupLink('level_of_skill_20130510015934'),
+        $this->up1012_getOptionGroupLink('level_of_skill_20130510015934'),
     ];
 
     foreach ($childLinks as $itemName => $link) {
@@ -58,7 +58,7 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
    *
    * @return string
    */
-  private function up1020_getOptionGroupLink($groupName) {
+  private function up1012_getOptionGroupLink($groupName) {
     return 'civicrm/admin/options/' . $groupName . '?reset=1';
   }
 
