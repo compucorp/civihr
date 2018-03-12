@@ -85,6 +85,12 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
       'is_active' => 1,
     ], $params);
 
-    return civicrm_api3('navigation', 'create', $params);
+    $existing = civicrm_api3('Navigation', 'get', $params);
+
+    if ($existing['count'] > 0) {
+      return array_shift($existing['values']);
+    }
+
+    return civicrm_api3('Navigation', 'create', $params);
   }
 }
