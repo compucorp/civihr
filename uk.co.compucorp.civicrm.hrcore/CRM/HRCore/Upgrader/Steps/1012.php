@@ -23,22 +23,42 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
     // If we don't flush it will not recognize newly created parent_id
     CRM_Core_PseudoConstant::flush();
 
-    $optionGroupLinks = [
-      'Prefixes' => 'individual_prefix',
-      'Emergency Contact Relationships' => 'relationship_with_employee_20150304120408',
-      'Career History' => 'occupation_type_20130617111138',
-      'Disability Types' => 'type_20130502151940',
-      'Qualifications – Skill Categories' => 'category_of_skill_20130510015438',
-      'Qualifications – Skill Levels' => 'level_of_skill_20130510015934',
+    $childLinks = [
+      'Prefixes' =>
+        $this->getOptionGroupLink('individual_prefix'),
+      'Genders' =>
+        $this->getOptionGroupLink('gender'),
+      'Emergency Contact Relationships' =>
+        $this->getOptionGroupLink('relationship_with_employee_20150304120408'),
+      'Manager Types' =>
+        'civicrm/admin/reltype?reset=1',
+      'Career History' =>
+        $this->getOptionGroupLink('occupation_type_20130617111138'),
+      'Disability Types' =>
+        $this->getOptionGroupLink('type_20130502151940'),
+      'Qualifications – Skill Categories' =>
+        $this->getOptionGroupLink('category_of_skill_20130510015438'),
+      'Qualifications – Skill Levels' =>
+        $this->getOptionGroupLink('level_of_skill_20130510015934'),
     ];
 
-    foreach ($optionGroupLinks as $itemName => $optionGroup) {
-      $link = 'civicrm/admin/options/' . $optionGroup . '?reset=1';
+    foreach ($childLinks as $itemName => $link) {
       $params = ['url' => $link];
       $this->up1012_createNavItem($itemName, $permission, $parentId, $params);
     }
 
     return TRUE;
+  }
+
+  /**
+   * Gets the link to edit an option group
+   *
+   * @param string $groupName
+   *
+   * @return string
+   */
+  private function getOptionGroupLink($groupName) {
+    return 'civicrm/admin/options/' . $groupName . '?reset=1';
   }
 
   /**

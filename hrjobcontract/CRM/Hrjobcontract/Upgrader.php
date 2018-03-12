@@ -1231,6 +1231,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'Contract Types' => 'hrjc_contract_type',
       'Normal Place of Work' => 'hrjc_location',
       'Contract End Reasons' => 'hrjc_contract_end_reason',
+      'Contract Revision Reasons' => 'hrjc_revision_change_reason',
       'Standard Full Time Hours' => 'hrjc_hours_type',
       'Pay Scales' => 'hrjc_pay_grade',
       'Benefits' => 'hrjc_benefit_type',
