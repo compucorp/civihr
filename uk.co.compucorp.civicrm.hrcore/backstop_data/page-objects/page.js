@@ -1,6 +1,5 @@
 var _ = require('lodash');
 var Promise = require('es6-promise').Promise;
-var customCasperJS = require('../utils/custom-casperjs');
 
 /**
  * Closes any modal currently open
@@ -8,15 +7,12 @@ var customCasperJS = require('../utils/custom-casperjs');
  * @return {object}
  */
 function closeAnyModal () {
-  var casper = this.casper;
   var openModalSelector = '.modal.in';
 
-  casper.then(function () {
-    if (casper.exists(openModalSelector)) {
-      casper.click(openModalSelector + ' .close[ng-click="cancel()"]');
-      casper.wait(300);
-    }
-  });
+  if (this.chromy.exists(openModalSelector)) {
+    this.chromy.click(openModalSelector + ' .close[ng-click="cancel()"]');
+    this.chromy.wait(300);
+  }
 
   return this;
 }
@@ -27,15 +23,12 @@ function closeAnyModal () {
  * @return {object}
  */
 function closeNotifications () {
-  var casper = this.casper;
   var notificationSelector = 'a.ui-notify-cross.ui-notify-close';
 
-  casper.then(function () {
-    if (casper.exists(notificationSelector)) {
-      casper.click(notificationSelector);
-      casper.wait(500);
-    }
-  });
+  if (this.chromy.exists(notificationSelector)) {
+    this.chromy.click(notificationSelector);
+    this.chromy.wait(500);
+  }
 
   return this;
 }
@@ -48,19 +41,15 @@ module.exports = {
    * Stores a customized version of CasperJS and then wait for a
    * until a certain "ready" condition is met, if the page is set up to do so
    *
-   * @param  {object} casper
+   * @param  {object} chromy
    * @param  {boolean} clearDialogs if true it will close modals and notifications
    * @return {object}
    */
-  init: function (casper, clearDialogs) {
+  init: function (chromy, clearDialogs) {
     clearDialogs = typeof clearDialogs !== 'undefined' ? !!clearDialogs : true;
 
-    this.casper = customCasperJS(casper);
-    this.casper.options.waitTimeout = 60000;
-
-    !!this.waitForReady && this.casper.then(function () {
-      this.waitForReady();
-    }.bind(this));
+    this.chromy = chromy;
+    !!this.waitForReady && this.waitForReady();
 
     if (clearDialogs) {
       closeAnyModal.call(this);
@@ -90,31 +79,17 @@ module.exports = {
    * @return {Promise}
    */
   waitForModal: function (modalModule, waitSelector) {
-    var casper = this.casper;
+    var chromy = this.chromy;
 
     return new Promise(function (resolve) {
-      casper.then(function () {
-        casper.waitUntilVisible(waitSelector || '.modal', function () {
-          casper.wait(300);
+      chromy.wait(waitSelector || '.modal');
+      chromy.wait(300);
 
-          if (modalModule) {
-            resolve(require('./modals/' + modalModule).init(casper, false));
-          } else {
-            resolve();
-          }
-        });
-      });
+      if (modalModule) {
+        resolve(require('./modals/' + modalModule).init(chromy, false));
+      } else {
+        resolve();
+      }
     });
-  },
-
-  /**
-   * Waits until element is visible on the browser.
-   *
-   * @return {Promise}
-   */
-  waitUntilVisible: function (elementSelector) {
-    return this.casper.then(function () {
-      return this.casper.waitUntilVisible(elementSelector);
-    }.bind(this));
   }
 };
