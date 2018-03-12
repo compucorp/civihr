@@ -13,6 +13,17 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
     $params = ['return' => 'id', 'name' => 'Administer', 'domain_id' => $domain];
     $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
 
+    $this->up1012_addOtherStaffDetailsSubmenu($administerId);
+    $this->up1012_addCustomFieldsShortcut($administerId);
+
+    return TRUE;
+  }
+
+  /**
+   * @param $administerId
+   * @throws CiviCRM_API3_Exception
+   */
+  private function up1012_addOtherStaffDetailsSubmenu($administerId) {
     $permission = 'Access CiviCRM';
     $parentName = 'Other Staff Details';
     $parent = $this->up1012_createNavItem($parentName, $permission, $administerId);
@@ -47,8 +58,24 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
       $params = ['url' => $link];
       $this->up1012_createNavItem($itemName, $permission, $parentId, $params);
     }
+  }
 
-    return TRUE;
+  /**
+   * Adds a shortcut to the edit custom groups + fields page
+   *
+   * @param int $administerId
+   */
+  private function up1012_addCustomFieldsShortcut($administerId) {
+    $result = $this->up1012_createNavItem(
+      'Custom Fields',
+      'administer CiviCRM',
+      $administerId,
+      ['url' => 'civicrm/admin/custom/group?reset=1']
+    );
+
+    // weight cannot be set when you're creating first time
+    $id = $result['id'];
+    civicrm_api3('Navigation', 'create', ['id' => $id, 'weight' => -95]);
   }
 
   /**
@@ -94,4 +121,5 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
 
     return civicrm_api3('Navigation', 'create', $params);
   }
+
 }
