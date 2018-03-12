@@ -1,0 +1,14 @@
+[
+  {
+    "domain": "localhost",
+    "path": "/",
+    "name": "SESSb0d2aa2a780887ad78e3ed54c39c415d",
+    "value": "OW9Zf08Up3zz_0wM58j3feR7kE7f1QddrmTmHoFu47s",
+    "expirationDate": 1522873084,
+    "hostOnly": false,
+    "httpOnly": true,
+    "secure": false,
+    "session": true,
+    "sameSite": "no_restriction"
+  }
+]
