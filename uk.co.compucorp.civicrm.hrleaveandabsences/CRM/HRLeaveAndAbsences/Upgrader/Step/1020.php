@@ -13,6 +13,8 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
     civicrm_api3('Navigation', 'create', ['id' => $parentId, 'weight' => -96]);
 
     $this->up1020_createNewLinks($parentId);
+    // we need to flush for new items to be recognized
+    CRM_Core_PseudoConstant::flush();
     $this->up1020_relabelExistingLinks($parentId);
     $this->up1020_addSeparators($parentId);
     $this->up1020_updateWeight($parentId);
@@ -72,8 +74,6 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
       'leave_and_absence_general_settings',
       'Work Pattern Day Equivalents',
     ];
-
-    CRM_Core_PseudoConstant::flush();
 
     foreach ($itemsWithSeparators as $name) {
       $params = ['parent_id' => $parentId, 'name' => $name, 'return' => 'id'];
