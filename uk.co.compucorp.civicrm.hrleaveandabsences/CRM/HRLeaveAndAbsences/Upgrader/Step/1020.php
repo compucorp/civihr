@@ -7,15 +7,15 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
    *
    * @return bool
    */
-  public function upgrade_1021() {
+  public function upgrade_1020() {
     $params = ['return' => 'id', 'name' => 'leave_and_absences'];
     $parentId = (int) civicrm_api3('Navigation', 'getvalue', $params);
     civicrm_api3('Navigation', 'create', ['id' => $parentId, 'weight' => -96]);
 
-    $this->createNewLinks($parentId);
-    $this->relabelExistingLinks($parentId);
-    $this->addSeparators($parentId);
-    $this->updateWeight($parentId);
+    $this->up1020_createNewLinks($parentId);
+    $this->up1020_relabelExistingLinks($parentId);
+    $this->up1020_addSeparators($parentId);
+    $this->up1020_updateWeight($parentId);
 
     return TRUE;
   }
@@ -25,7 +25,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
    *
    * @param int $parentId
    */
-  private function createNewLinks($parentId) {
+  private function up1020_createNewLinks($parentId) {
     $permission = 'administer leave and absences';
     $optionGroupLinks = [
       'Sickness Reasons' => 'hrleaveandabsences_sickness_reason',
@@ -46,7 +46,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
    *
    * @param int $parentId
    */
-  private function relabelExistingLinks($parentId) {
+  private function up1020_relabelExistingLinks($parentId) {
     $nameToLabelMapping = [
       'leave_and_absence_types' => ts('Leave Types'),
       'leave_and_absence_periods' => ts('Leave Periods'),
@@ -67,7 +67,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
    *
    * @param int $parentId
    */
-  private function addSeparators($parentId) {
+  private function up1020_addSeparators($parentId) {
     $itemsWithSeparators = [
       'leave_and_absence_general_settings',
       'Work Pattern Day Equivalents',
@@ -87,7 +87,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
    *
    * @param int $parentId
    */
-  private function updateWeight($parentId) {
+  private function up1020_updateWeight($parentId) {
     $name = 'leave_and_absences_import';
     $params = ['parent_id' => $parentId, 'name' => $name, 'return' => 'id'];
     $id = (int) civicrm_api3('Navigation', 'getvalue', $params);
