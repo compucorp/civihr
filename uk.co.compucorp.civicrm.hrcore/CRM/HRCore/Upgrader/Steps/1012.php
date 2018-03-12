@@ -9,7 +9,8 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
    * @return bool
    */
   public function upgrade_1012() {
-    $params = ['return' => 'id', 'name' => 'Administer'];
+    $domain = CRM_Core_Config::domainID();
+    $params = ['return' => 'id', 'name' => 'Administer', 'domain_id' => $domain];
     $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
 
     $permission = 'Access CiviCRM';

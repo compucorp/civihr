@@ -1214,7 +1214,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1036() {
-    $params = ['return' => 'id', 'name' => 'Administer'];
+    $domain = CRM_Core_Config::domainID();
+    $params = ['return' => 'id', 'name' => 'Administer', 'domain_id' => $domain];
     $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
 
     $permission = 'Access CiviCRM';
