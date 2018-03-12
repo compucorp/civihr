@@ -21,28 +21,33 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
   }
 
   /**
-   * Inserts a navigation menu item as a child of the given parent
+   * Inserts a navigation menu item
    *
    * @param array $menu
    *   menu hierarchy
-   * @param string $parentPath
+   * @param string $path
    *   Path to the parent menu item, e.g. "Events/Dashboard"
-   * @param array $itemAttributes
-   *   Attributes of item to insert, e.g. ['name' => 'New Item']
+   * @param array $attributes
+   *   Attributes of item to insert, e.g. ['label' => 'New Item']
    */
-  public static function insertChild(&$menu, $parentPath, $itemAttributes) {
-    $parent = &self::findMenuItemReferenceByPath($menu, $parentPath);
+  public static function insert(&$menu, $path, $attributes = []) {
+    $name = self::getItemNameFromPath($path);
+    $defaults = ['name' => $name, 'label' => $name, 'active' => 1];
+    $newItem = ['attributes' => array_merge($defaults, $attributes)];
 
-    if (!$parent) {
-      $err = sprintf('Cannot find parent item "%s"', $parentPath);
-      throw new \Exception($err);
+    if (self::isRootItem($path)) {
+      $menu[] = $newItem;
+    } else {
+      $parentPath = self::getParentPathFromPath($path);
+      $parent = &self::findMenuItemReferenceByPath($menu, $parentPath);
+
+      if (!$parent) {
+        $err = sprintf('Cannot find parent item "%s"', $parentPath);
+        throw new \Exception($err);
+      }
+
+      $parent['child'][] = $newItem;
     }
-
-    $label = CRM_Utils_Array::value('name', $itemAttributes);
-    $defaults = ['label' => $label, 'active' => 1];
-    $newItem = ['attributes' => array_merge($defaults, $itemAttributes)];
-
-    $parent['child'][] = $newItem;
   }
 
   /**
@@ -246,10 +251,8 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
    * @return array
    */
   private static function &getSiblingsReference(&$menu, $path) {
-    $finalForwardSlashPos = strrpos($path, '/');
-
-    if (FALSE !== $finalForwardSlashPos) {
-      $parentPath = substr($path, 0, $finalForwardSlashPos);
+    if (!self::isRootItem($path)) {
+      $parentPath = self::getParentPathFromPath($path);
       $parent = &self::findMenuItemReferenceByPath($menu, $parentPath);
       $siblings = &$parent['child'];
     }
@@ -258,6 +261,21 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
     }
 
     return $siblings;
+  }
+
+  /**
+   * Gets the parent path from a given path, e.g. "Events" from
+   * "Events/Dashboard"
+   *
+   * @param string $path
+   *
+   * @return string
+   */
+  private static function getParentPathFromPath($path) {
+    $path = explode('/', $path);
+    array_pop($path);
+
+    return implode('/', $path);
   }
 
   /**
@@ -291,6 +309,17 @@ class CRM_HRCore_Helper_NavigationMenuHelper {
     $path = explode('/', $path);
 
     return end($path);
+  }
+
+  /**
+   * Checks whether the given path is a root menu item, i.e. "Home"
+   *
+   * @param string $path
+   *
+   * @return bool
+   */
+  private static function isRootItem($path) {
+    return FALSE === strpos($path, '/');
   }
 
 }
