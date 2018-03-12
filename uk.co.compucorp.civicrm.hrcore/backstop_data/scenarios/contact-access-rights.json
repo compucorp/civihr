@@ -2,13 +2,13 @@
   "scenarios": [
     {
       "label": "Contact Access Rights",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:admin}}",
       "onReadyScript": "contact-access-rights/show",
       "credential": "admin"
     },
     {
       "label": "Contact Access Rights / Open ui select",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
+      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:admin}}",
       "onReadyScript": "contact-access-rights/open-ui-select",
       "credential": "admin"
     }
