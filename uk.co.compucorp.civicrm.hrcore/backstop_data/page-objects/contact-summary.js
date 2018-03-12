@@ -10,19 +10,19 @@ module.exports = (function () {
      * @return {Promise} resolves with the modal page object
      */
     openManageRightsModal: function () {
-      var casper = this.casper;
+      var chromy = this.chromy;
 
       return new Promise(function (resolve) {
-        casper.then(function () {
-          this.showActions();
-        }.bind(this));
+        this.showActions();
 
-        casper.then(function () {
-          casper.click('[data-contact-access-rights]');
-          casper.waitWhileVisible('.spinner');
+        chromy.click('[data-contact-access-rights]');
+        chromy.wait(function () {
+          var dom = document.querySelector('.spinner');
 
-          resolve(this.waitForModal('contact-access-rights'));
-        }.bind(this));
+          return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
+        });
+
+        resolve(this.waitForModal('contact-access-rights'));
       }.bind(this));
     },
 
@@ -51,12 +51,8 @@ module.exports = (function () {
      * Shows the dropdown of the "Actions" button in the contact summary page
      */
     showActions: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('#crm-contact-actions-link');
-        casper.waitUntilVisible('#crm-contact-actions-list');
-      });
+      this.chromy.click('#crm-contact-actions-link');
+      this.chromy.wait('#crm-contact-actions-list');
     }
   });
 })();
