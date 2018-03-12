@@ -512,6 +512,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1030();
     $this->upgrade_1032();
     $this->upgrade_1033();
+    $this->upgrade_1036();
   }
 
   function upgrade_1001() {
@@ -1205,6 +1206,66 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
 
     return TRUE;
+  }
+
+  /**
+   * Adds a submenu containing links to edit job contract option groups
+   *
+   * @return bool
+   */
+  public function upgrade_1036() {
+    $params = ['return' => 'id', 'name' => 'Administer'];
+    $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
+
+    $permission = 'Access CiviCRM';
+    $parent = $this->createNavItem('Job Contract', $permission, $administerId);
+    $parentId = $parent['id'];
+
+    // Weight cannot be set when creating for the first time
+    civicrm_api3('Navigation', 'create', ['id' => $parentId, 'weight' => -100]);
+
+    // If we don't flush it will not recognize newly created parent_id
+    CRM_Core_PseudoConstant::flush();
+
+    $optionGroupLinks = [
+      'Contract Types' => 'hrjc_contract_type',
+      'Normal Place of Work' => 'hrjc_location',
+      'Contract End Reasons' => 'hrjc_contract_end_reason',
+      'Standard Full Time Hours' => 'hrjc_hours_type',
+      'Pay Scales' => 'hrjc_pay_grade',
+      'Benefits' => 'hrjc_benefit_type',
+      'Deductions' => 'hrjc_deduction_type',
+      'Insurance Plan Types' => 'hrjc_insurance_plantype',
+    ];
+
+    foreach ($optionGroupLinks as $itemName => $optionGroup) {
+      $link = 'civicrm/admin/options/' . $optionGroup . '?reset=1';
+      $this->createNavItem($itemName, $permission, $parentId, ['url' => $link]);
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Creates a navigation menu item using the API
+   *
+   * @param string $name
+   * @param string $permission
+   * @param int $parentID
+   * @param array $params
+   *
+   * @return array
+   */
+  private function createNavItem($name, $permission, $parentID, $params = []) {
+    $params = array_merge([
+      'name' => $name,
+      'label' => ts($name),
+      'permission' => $permission,
+      'parent_id' => $parentID,
+      'is_active' => 1,
+    ], $params);
+
+    return civicrm_api3('navigation', 'create', $params);
   }
 
   /**
