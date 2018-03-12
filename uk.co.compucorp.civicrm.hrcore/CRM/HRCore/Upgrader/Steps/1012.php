@@ -24,7 +24,7 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
    * @throws CiviCRM_API3_Exception
    */
   private function up1012_addOtherStaffDetailsSubmenu($administerId) {
-    $permission = 'Access CiviCRM';
+    $permission = 'access CiviCRM';
     $parentName = 'Other Staff Details';
     $parent = $this->up1012_createNavItem($parentName, $permission, $administerId);
     $parentId = $parent['id'];

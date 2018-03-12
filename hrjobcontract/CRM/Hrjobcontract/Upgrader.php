@@ -1218,7 +1218,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $params = ['return' => 'id', 'name' => 'Administer', 'domain_id' => $domain];
     $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
 
-    $permission = 'Access CiviCRM';
+    $permission = 'access CiviCRM';
     $parent = $this->createNavItem('Job Contract', $permission, $administerId);
     $parentId = $parent['id'];
 
