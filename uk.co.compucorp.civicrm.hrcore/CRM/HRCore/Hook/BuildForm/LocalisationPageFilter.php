@@ -1,6 +1,19 @@
 <?php
 
 class CRM_HRCore_Hook_BuildForm_LocalisationPageFilter {
+
+  private $restrictedSettings = [
+    'customTranslateFunction',
+    'contact_default_language',
+    'fieldSeparator',
+    'inheritLocale',
+    'lcMessages',
+    'legacyEncoding',
+    'monetaryThousandSeparator',
+    'monetaryDecimalPoint',
+    'moneyformat',
+    'moneyvalueformat'
+  ];
   /**
    * Hides options on the localisation page
    *
@@ -23,7 +36,7 @@ class CRM_HRCore_Hook_BuildForm_LocalisationPageFilter {
    * @return bool
    */
   private function shouldHandle($formName) {
-    if ($formName == CRM_Admin_Form_Setting_Localization::class) {
+    if ($formName === CRM_Admin_Form_Setting_Localization::class) {
       return TRUE;
     }
     
@@ -37,45 +50,20 @@ class CRM_HRCore_Hook_BuildForm_LocalisationPageFilter {
    */
   private function filterLocalisationOptions($form) {
     $canViewAllFields = CRM_Core_Permission::check('access root menu items and configurations ');
-    $settings = [
-      'customTranslateFunction',
-      'contact_default_language',
-      'fieldSeparator',
-      'inheritLocale',
-      'lcMessages',
-      'legacyEncoding',
-      'monetaryThousandSeparator',
-      'monetaryDecimalPoint',
-      'moneyformat',
-      'moneyvalueformat'
-    ];
     
     if (! $canViewAllFields) {
-      $this->hideOptionLabels();
-      foreach ($settings as $setting) {
+      $hiddenOptionsStyle = "tr.crm-localization-form-contact_default_language";
+      
+      foreach ($this->restrictedSettings as $setting) {
         if ($form->elementExists($setting)) {
+          $hiddenOptionsStyle .= ", tr.crm-localization-form-block-$setting";
           $form->freeze($setting);
         }
       }
-    }
-  }
   
-  /**
-   * Hide labels for frozen elements
-   */
-  private function hideOptionLabels() {
-    CRM_Core_Resources::singleton()->addStyle(
-      'tr.crm-localization-form-block-lcMessages,
-      tr.crm-localization-form-block-inheritLocale,
-      tr.crm-localization-form-contact_default_language,
-      tr.crm-localization-form-block-monetaryThousandSeparator,
-      tr.crm-localization-form-block-monetaryDecimalPoint,
-      tr.crm-localization-form-block-moneyformat,
-      tr.crm-localization-form-block-moneyvalueformat,
-      tr.crm-localization-form-block-customTranslateFunction,
-      tr.crm-localization-form-block-legacyEncoding,
-      tr.crm-localization-form-block-fieldSeparator { display: none; }'
-    );
+      $hiddenOptionsStyle .= ' { display: none; }';
+      CRM_Core_Resources::singleton()->addStyle($hiddenOptionsStyle);
+    }
   }
   
 }
