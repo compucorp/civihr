@@ -13,10 +13,29 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
     $params = ['return' => 'id', 'name' => 'Administer', 'domain_id' => $domain];
     $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
 
+    $this->up1012_addLocalisationShortcut($administerId);
     $this->up1012_addOtherStaffDetailsSubmenu($administerId);
     $this->up1012_addCustomFieldsShortcut($administerId);
 
     return TRUE;
+  }
+
+  /**
+   * Adds a shortcut to the localization page
+   *
+   * @param int $administerId
+   */
+  private function up1012_addLocalisationShortcut($administerId) {
+    $result = $this->up1012_createNavItem(
+      'Localise CiviCRM',
+      'access CiviCRM',
+      $administerId,
+      ['url' => 'civicrm/admin/setting/localization?reset=1']
+    );
+
+    // weight cannot be set when you're creating first time
+    $id = $result['id'];
+    civicrm_api3('Navigation', 'create', ['id' => $id, 'weight' => -101]);
   }
 
   /**
