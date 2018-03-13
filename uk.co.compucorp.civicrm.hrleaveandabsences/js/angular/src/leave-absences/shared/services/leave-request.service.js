@@ -15,7 +15,7 @@ define([
 
     return {
       getBalanceChangeRecalculationPromptOptions: getBalanceChangeRecalculationPromptOptions,
-      promptIfProceedWithBalanceChangeRecalculation: promptIfProceedWithBalanceChangeRecalculation
+      promptBalanceChangeRecalculation: promptBalanceChangeRecalculation
     };
 
     /**
@@ -24,7 +24,7 @@ define([
      *
      * @return {Promise}
      */
-    function promptIfProceedWithBalanceChangeRecalculation () {
+    function promptBalanceChangeRecalculation () {
       var deferred = $q.defer();
 
       dialog.open(_.defaults(getBalanceChangeRecalculationPromptOptions(), {
