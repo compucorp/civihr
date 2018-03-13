@@ -1,12 +1,7 @@
+var path = require('path');
 var page = require('./page');
 
 module.exports = (function () {
-  var stepsUrls = {
-    2: '_qf_MapField_display=true',
-    3: '_qf_Preview_display=true',
-    4: '_qf_Summary_display=true'
-  };
-
   return page.extend({
     /**
      * Displays L&A Import Form Step 2 by uploading a sample import file and
@@ -15,13 +10,11 @@ module.exports = (function () {
      * @return Page instance.
      */
     showStep2: function () {
-      var filePath = 'backstop_data/uploads/leave-and-absences-import-data.csv';
+      var filePath = path.join(__dirname, '..', 'uploads/leave-and-absences-import-data.csv');
 
-      this.casper.page.uploadFile('input[name=uploadFile]', filePath);
-      this.casper.fillSelectors('#DataSource', {
-        '#skipColumnHeader': true
-      }, false);
-      this.submitAndWaitForStep(2);
+      this.chromy.setFile('input[name="uploadFile"]', filePath);
+      this.chromy.check('#skipColumnHeader');
+      this.submitAndWait();
 
       return this;
     },
@@ -34,7 +27,7 @@ module.exports = (function () {
      */
     showStep3: function () {
       this.showStep2();
-      this.submitAndWaitForStep(3);
+      this.submitAndWait();
 
       return this;
     },
@@ -47,31 +40,24 @@ module.exports = (function () {
      */
     showStep4: function () {
       this.showStep3();
-      this.submitAndWaitForStep(4);
+      this.submitAndWait();
 
       return this;
     },
 
     /**
      * Clicks on next button (.validate) and waits for Step URL.
-     *
-     * @param {Number} step - the step to wait for.
      */
-    submitAndWaitForStep: function (step) {
-      var casper = this.casper;
-      var urlRegExp = new RegExp(stepsUrls[step]);
-
-      casper.thenClick('.crm-leave-and-balance-import .validate')
-      .then(function () {
-        return casper.waitForUrl(urlRegExp);
-      });
+    submitAndWait: function () {
+      this.chromy.click('.crm-leave-and-balance-import .validate');
+      this.chromy.waitLoadEvent();
     },
 
     /**
      * Waits until the import form is visible.
      */
     waitForReady: function () {
-      this.waitUntilVisible('.crm-leave-and-balance-import');
+      this.chromy.wait('.crm-leave-and-balance-import');
     }
   });
 })();
