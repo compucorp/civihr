@@ -12,6 +12,9 @@ trait CRM_HRCore_Upgrader_Steps_1013 {
     $params = ['return' => 'id', 'name' => 'Administer', 'domain_id' => $domain];
     $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
 
+    // If running two consecutive upgraders, items from first are not found
+    CRM_Core_PseudoConstant::flush();
+
     $this->up1013_replaceExistingAdministerItemsPermission($administerId);
 
     return TRUE;
