@@ -18,8 +18,10 @@ trait CRM_HRCore_Upgrader_Steps_1013 {
   }
 
   /**
-   * @param $administerId
-   * @throws CiviCRM_API3_Exception
+   * Replaces all existing 'administer CiviCRM' permissions in the
+   * 'Administer' submenu with 'access root menu items and configurations'
+   *
+   * @param int $administerId
    */
   private function up1013_replaceExistingAdministerItemsPermission($administerId) {
     $allChildren = [];
