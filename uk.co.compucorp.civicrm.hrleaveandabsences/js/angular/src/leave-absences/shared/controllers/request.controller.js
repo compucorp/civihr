@@ -35,7 +35,6 @@ define([
 
     var absenceTypesAndIds;
     var availableStatusesMatrix = {};
-    var originalRequestTimes = {};
     var childComponentsCount = 0;
     var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
     var listeners = [];
@@ -547,8 +546,6 @@ define([
       leaveType = getLeaveType();
       attributes = vm.initRequestAttributes();
 
-      rememberRequestOriginalTimes();
-
       if (leaveType === 'leave') {
         vm.request = LeaveRequestInstance.init(attributes);
       } else if (leaveType === 'sickness') {
@@ -830,23 +827,12 @@ define([
     }
 
     /**
-     * Stores the request from and to times original values
+     * Reverts the request from and to dates and times back to the original values
      */
-    function rememberRequestOriginalTimes () {
-      ['from', 'to'].forEach(function (dateType) {
-        originalRequestTimes[dateType] =
-          moment(vm.request[dateType + '_date']).format('HH:mm');
-      });
-    }
-
-    /**
-     * Reverts the request from and to times back to the original values
-     */
-    function revertRequestOriginalTimes () {
+    function revertRequestOriginalDatesAndTimes () {
       ['from', 'to'].forEach(function (dateType) {
         vm.request[dateType + '_date'] =
-          vm.request[dateType + '_date'].split(' ')[0] + ' ' +
-          originalRequestTimes[dateType];
+          initialLeaveRequestAttributes[dateType + '_date'];
       });
     }
 
@@ -945,7 +931,7 @@ define([
       return vm.request.isValid()
         .then(isBalanceChangeRecalculationNeeded() && checkIfBalanceChangeHasChanged)
         .then(decideIfBalanceChangeNeedsAForceRecalculation)
-        .then(!vm.request.change_balance && revertRequestOriginalTimes)
+        .then(!vm.request.change_balance && revertRequestOriginalDatesAndTimes)
         .then(submitAllTabs)
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
