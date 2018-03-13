@@ -11,17 +11,15 @@ module.exports = (function () {
      * @return {object} resolves with the tab page object
      */
     openTab: function (tabId) {
-      var casper = this.casper;
-      var tab = require('./tabs/' + tabId).init(casper, false);
+      var chromy = this.chromy;
+      var tab = require('./tabs/' + tabId).init(chromy, false);
 
       return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click('[ui-sref="' + tab.tabUiSref + '"]');
-          casper.waitFor(tab.ready.bind(tab), function () {
-            casper.wait(500);
-            resolve(tab);
-          });
-        });
+        chromy.click('[ui-sref="' + tab.tabUiSref + '"]');
+        chromy.wait(tab.readySelector);
+        chromy.wait(500);
+
+        resolve(tab);
       });
     }
   });
