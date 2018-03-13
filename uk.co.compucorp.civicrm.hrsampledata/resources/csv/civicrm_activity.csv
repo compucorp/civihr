@@ -1,20 +1,24 @@
-id,source_record_id,activity_type_id,subject,activity_date_time,duration,details,status_id,priority_id,source_contact_id,assignee_id,target_id
-97,,Schedule Exit Interview,,2016-11-07 00:00:00,,"
-                    ",Scheduled,Normal,306,324,257
-98,,"Get ""No Dues"" certification",,2016-11-08 00:00:00,,"
-                    ",Completed,Normal,306,324,257
-99,,Conduct Exit Interview,,2016-11-14 00:00:00,,"
-                    ",Scheduled,Normal,306,306,257
-120,,Government Photo ID,,2016-09-08 00:00:00,,"
-                    ",Scheduled,Normal,306,306,306
-121,,Driving licence,,2016-09-07 00:00:00,,"
-                    ",Scheduled,Normal,306,306,306
-122,,VISA,,2016-09-17 00:00:00,,"
-                    ",Scheduled,Normal,306,324,324
-127,,Probation appraisal (start probation workflow),test,2016-09-07 00:00:00,,<p>test</p>,Completed,Normal,306,288,288
-142,,Program and work induction by program supervisor,,2016-09-06 00:00:00,,"
-                    ",Scheduled,Normal,306,324,235
-143,,Block work email ID,,2016-11-15 00:00:00,,"
-                    ",Scheduled,Normal,306,306,257
-144,,"Get ""No Dues"" certification",,2016-11-10 00:00:00,,"
-                    ",Completed,Normal,306,288,257
+id,source_record_id,activity_type_id,subject,activity_date_time,duration,details,status_id,priority_id,source_contact_id,assignee_id,target_id,is_task,is_document
+20,,"Exiting document 2",,2016-09-02 00:00:00,,,Scheduled,Normal,244,,257,0,1
+98,,"Get ""No Dues"" certification",,2016-11-08 00:00:00,,,Completed,Normal,244,,257,1,0
+120,,"Government Photo ID",,2016-09-08 00:00:00,,,Completed,Normal,244,,244,0,1
+121,,"Driving licence",,2016-09-07 00:00:00,,,Scheduled,Normal,244,,244,0,1
+122,,"VISA",,2016-09-17 00:00:00,,,Scheduled,Normal,244,,324,0,1
+127,,"Probation appraisal (start probation workflow)",,2016-09-07 00:00:00,,,Completed,Normal,244,,288,1,0
+159,,"Joining Document 2",,2016-09-29 00:00:00,,,Scheduled,Normal,244,,324,0,1
+1676,,"Passport",,,,,Scheduled,Normal,244,,365,0,1
+1679,,"P45",,2017-10-06 23:00:00,,,Scheduled,Normal,244,,373,0,1
+1681,,"Passport",,2017-10-06 23:00:00,,,Scheduled,Normal,244,,373,0,1
+1685,,"Enter employee data in CiviHR",,2017-10-10 00:00:00,,,Completed,Normal,244,,373,1,0
+1686,,"Program and work induction by program supervisor",,2017-10-07 00:00:00,,,Completed,Normal,244,,373,1,0
+1687,,"Group Orientation to organization, values, policies",,2017-10-24 00:00:00,,,Scheduled,Normal,244,,373,1,0
+1688,,"Confirm End of Probation Date",,2017-11-16 00:00:00,,,Scheduled,Normal,244,,373,1,0
+1689,,"Start Probation workflow",,2017-11-16 00:00:00,,,Completed,Normal,244,,373,1,0
+1695,,"Schedule Exit Interview",,2017-12-11 00:00:00,,,Completed,Normal,244,,365,1,0
+1696,,"Get ""No Dues"" certification",,2017-12-14 00:00:00,,,Completed,Normal,244,,365,1,0
+1697,,"Conduct Exit interview",,2017-12-18 00:00:00,,,Scheduled,Normal,244,,365,1,0
+1698,,"Revoke Access to Database",,2017-12-21 00:00:00,,,Scheduled,Normal,244,,365,1,0
+1699,,"Block work email ID",,2017-12-21 00:00:00,,,Scheduled,Normal,244,,365,1,0
+1700,,"Group Orientation to organization, values, policies",,2017-11-01 00:00:00,,,Scheduled,Normal,244,,373,1,0
+1702,,"Issue appointment letter","Appointment Letter",2018-02-16 00:00:00,,,Scheduled,Normal,244,,324,1,0
+1703,,"Fill Employee Details Form","Employee Details",2018-02-19 00:00:00,,,Scheduled,Normal,244,,288,1,0
