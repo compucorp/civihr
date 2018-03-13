@@ -27,6 +27,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveRequestStatusMatrixHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
+  use CRM_HRLeaveAndAbsences_PublicHolidayHelpersTrait;
 
 
   private $leaveBalanceChangeService;
@@ -233,6 +234,22 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $leaveRequestRecord->id = $leaveRequest->id;
     $leaveRequestRecord->find(true);
     $this->assertEquals(1, $leaveRequestRecord->is_deleted);
+  }
+
+  public function testDeleteSoftDeletesAPublicHolidayLeaveRequest() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+    ]);
+
+    $publicHoliday = $this->instantiatePublicHoliday('2017-10-10');
+    $publicHolidayLeaveRequest = PublicHolidayLeaveRequestFabricator::fabricate($this->leaveContact, $publicHoliday);
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->delete($publicHolidayLeaveRequest->id);
+
+    $publicHolidayLeaveRequestRecord = new LeaveRequest();
+    $publicHolidayLeaveRequestRecord->id = $publicHolidayLeaveRequest->id;
+    $publicHolidayLeaveRequestRecord->find(true);
+    $this->assertEquals(1, $publicHolidayLeaveRequestRecord->is_deleted);
   }
 
   public function testPublicHolidayLeaveRequestIsDeletedAndBalanceRecalculatedForOverlappingLeaveRequestDate() {

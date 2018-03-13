@@ -25,6 +25,7 @@ require_once 'helpers/LeaveRequestStatusMatrixHelpersTrait.php';
 require_once 'helpers/ApiHelpersTrait.php';
 require_once 'helpers/MailHelpersTrait.php';
 require_once 'helpers/WorkDayHelpersTest.php';
+require_once 'helpers/PublicHolidayHelpersTrait.php';
 
 /**
  * Call the "cv" command.
