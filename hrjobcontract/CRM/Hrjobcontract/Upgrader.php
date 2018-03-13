@@ -1218,7 +1218,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $params = ['return' => 'id', 'name' => 'Administer', 'domain_id' => $domain];
     $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
 
-    $permission = 'Access CiviCRM';
+    $permission = 'access CiviCRM';
     $parent = $this->createNavItem('Job Contract', $permission, $administerId);
     $parentId = $parent['id'];
 
@@ -1228,20 +1228,24 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     // If we don't flush it will not recognize newly created parent_id
     CRM_Core_PseudoConstant::flush();
 
-    $optionGroupLinks = [
-      'Contract Types' => 'hrjc_contract_type',
-      'Normal Place of Work' => 'hrjc_location',
-      'Contract End Reasons' => 'hrjc_contract_end_reason',
-      'Contract Revision Reasons' => 'hrjc_revision_change_reason',
-      'Standard Full Time Hours' => 'hrjc_hours_type',
-      'Pay Scales' => 'hrjc_pay_grade',
-      'Benefits' => 'hrjc_benefit_type',
-      'Deductions' => 'hrjc_deduction_type',
-      'Insurance Plan Types' => 'hrjc_insurance_plantype',
+    // returns the link to an option group edit page
+    $optGroupLinker = function ($groupName) {
+      return 'civicrm/admin/options/' . $groupName . '?reset=1';
+    };
+
+    $childLinks = [
+      'Contract Types' => $optGroupLinker('hrjc_contract_type'),
+      'Normal Place of Work' => $optGroupLinker('hrjc_location'),
+      'Contract End Reasons' => $optGroupLinker('hrjc_contract_end_reason'),
+      'Contract Revision Reasons' => $optGroupLinker('hrjc_revision_change_reason'),
+      'Standard Full Time Hours' => 'civicrm/hours_location',
+      'Pay Scales' => 'civicrm/pay_scale',
+      'Benefits' => $optGroupLinker('hrjc_benefit_name'),
+      'Deductions' => $optGroupLinker('hrjc_deduction_name'),
+      'Insurance Plan Types' => $optGroupLinker('hrjc_insurance_plantype'),
     ];
 
-    foreach ($optionGroupLinks as $itemName => $optionGroup) {
-      $link = 'civicrm/admin/options/' . $optionGroup . '?reset=1';
+    foreach ($childLinks as $itemName => $link) {
       $this->createNavItem($itemName, $permission, $parentId, ['url' => $link]);
     }
 
