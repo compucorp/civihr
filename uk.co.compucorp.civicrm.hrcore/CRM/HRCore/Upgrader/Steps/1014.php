@@ -10,7 +10,7 @@ trait CRM_HRCore_Upgrader_Steps_1014 {
    *
    * @return bool
    */
-  public function upgrade_1011() {
+  public function upgrade_1014() {
     $result = civicrm_api3('CustomGroup', 'get', [
       'return' => ['id'],
       'name' => 'Identify',
