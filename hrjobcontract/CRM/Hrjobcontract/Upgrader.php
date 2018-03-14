@@ -513,6 +513,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1032();
     $this->upgrade_1033();
     $this->upgrade_1036();
+    $this->upgrade_1037();
   }
 
   function upgrade_1001() {
@@ -1252,6 +1253,43 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     return TRUE;
   }
 
+  /**
+   * Create new option group and values
+   */
+  public function upgrade_1037() {
+    $groupValues = [
+      'As per contract',
+      'Change in contractual hours',
+      'Change in contract type'
+    ];
+
+    $result = civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrleaveandabsences_work_pattern_change_reason'
+    ]);
+
+    if ($result['count'] == 0) {
+      $optionParams = [
+        'name' => "hrleaveandabsences_work_pattern_change_reason",
+        'title' => "Leave and Absence Work Pattern Change Reason",
+        'is_active' => 1
+      ];
+
+      civicrm_api3('OptionGroup', 'create', $optionParams);
+
+      foreach ($groupValues as $key => $value) {
+        $opValueParams = [
+          'option_group_id' => 'hrleaveandabsences_work_pattern_change_reason',
+          'name' => $value,
+          'label' => $value,
+          'value' => $key,
+        ];
+        civicrm_api3('OptionValue', 'create', $opValueParams);
+      }
+    }
+
+    return TRUE;
+  }
+  
   /**
    * Creates a navigation menu item using the API
    *
