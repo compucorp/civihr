@@ -512,6 +512,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1030();
     $this->upgrade_1032();
     $this->upgrade_1033();
+    $this->upgrade_1034();
+    $this->upgrade_1035();
     $this->upgrade_1036();
     $this->upgrade_1037();
   }
@@ -1254,37 +1256,42 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Create new option group and values
+   * Create new option group hrleaveandabsences_work_pattern_change_reason
+   * with values As per contract, Change in contractual hours and
+   * Change in contract type.
+   *
+   * @return bool
    */
   public function upgrade_1037() {
+    $result = civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrleaveandabsences_work_pattern_change_reason'
+    ]);
+
+    if ($result['count'] > 0) {
+      return TRUE;
+    }
+    
+    $groupName = 'hrleaveandabsences_work_pattern_change_reason';
     $groupValues = [
       'As per contract',
       'Change in contractual hours',
       'Change in contract type'
     ];
+    $optionParams = [
+      'name' => $groupName,
+      'title' => 'Leave and Absence Work Pattern Change Reason',
+      'is_active' => 1
+    ];
 
-    $result = civicrm_api3('OptionGroup', 'get', [
-      'name' => 'hrleaveandabsences_work_pattern_change_reason'
-    ]);
+    civicrm_api3('OptionGroup', 'create', $optionParams);
 
-    if ($result['count'] == 0) {
-      $optionParams = [
-        'name' => "hrleaveandabsences_work_pattern_change_reason",
-        'title' => "Leave and Absence Work Pattern Change Reason",
-        'is_active' => 1
+    foreach ($groupValues as $value) {
+      $opValueParams = [
+        'option_group_id' => $groupName,
+        'name' => $value,
+        'label' => $value,
       ];
-
-      civicrm_api3('OptionGroup', 'create', $optionParams);
-
-      foreach ($groupValues as $key => $value) {
-        $opValueParams = [
-          'option_group_id' => 'hrleaveandabsences_work_pattern_change_reason',
-          'name' => $value,
-          'label' => $value,
-          'value' => $key,
-        ];
-        civicrm_api3('OptionValue', 'create', $opValueParams);
-      }
+      civicrm_api3('OptionValue', 'create', $opValueParams);
     }
 
     return TRUE;
