@@ -1235,7 +1235,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     $childLinks = [
       'Contract Types' => $optGroupLinker('hrjc_contract_type'),
-      'Normal Place of Work' => $optGroupLinker('hrjc_location'),
+      'Normal Places of Work' => $optGroupLinker('hrjc_location'),
       'Contract End Reasons' => $optGroupLinker('hrjc_contract_end_reason'),
       'Contract Revision Reasons' => $optGroupLinker('hrjc_revision_change_reason'),
       'Standard Full Time Hours' => 'civicrm/hours_location',
