@@ -16,7 +16,7 @@ module.exports = (function () {
 
       return new Promise(function (resolve) {
         chromy.click('[ui-sref="' + tab.tabUiSref + '"]');
-        chromy.wait(tab.readySelector);
+        chromy.waitUntilVisible(tab.readySelector);
         chromy.wait(500);
 
         resolve(tab);

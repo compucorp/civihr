@@ -9,12 +9,8 @@ module.exports = (function () {
      * Shows filters
      */
     showFilters: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.chr_manage_leave_requests__filter');
-        casper.waitUntilVisible('.chr_manage_leave_requests__sub-header');
-      });
+      this.chromy.click('.chr_manage_leave_requests__filter');
+      this.chromy.waitUntilVisible('.chr_manage_leave_requests__sub-header');
     }
   });
 })();
