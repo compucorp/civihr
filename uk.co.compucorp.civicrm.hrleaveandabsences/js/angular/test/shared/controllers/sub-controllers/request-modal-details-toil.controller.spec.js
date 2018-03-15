@@ -27,6 +27,7 @@ define([
     var date2016 = '01/12/2016';
     var date2016To = '02/12/2016'; // Must be greater than `date2016`
     var date2017 = '01/02/2017';
+    var date2017Server = '2017-01-02';
 
     beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
       $provide = _$provide_;
@@ -93,6 +94,11 @@ define([
         expect(controller.uiOptions.multipleDays).toBe(true);
       });
 
+      it('sets times bounaries to 00:00 - 23:45', function () {
+        expect(controller.uiOptions.times.from.min).toBe('00:00');
+        expect(controller.uiOptions.times.from.max).toBe('23:45');
+      });
+
       describe('when multiple/single days mode changes', function () {
         describe('when the balance can but fails to be calculated', function () {
           beforeEach(function () {
@@ -129,18 +135,88 @@ define([
         });
       });
 
+      describe('when both to and from dates and times are set', function () {
+        beforeEach(function () {
+          requestModalHelper.setTestDates(controller, '03/18/2018', '03/20/2018');
+          requestModalHelper.setTestTimes(controller, '11:30', '16:15');
+        });
+
+        it('sets the maximum duration and accrual values as a difference between to and from date/times in hours', function () {
+          expect(controller.uiOptions.max_toil_duration_and_accrual).toBe(12.5 + 24 + 16.25);
+        });
+
+        it('defaults the duration to its maximum', function () {
+          expect(controller.uiOptions.toil_duration_in_hours).toBe(controller.uiOptions.max_toil_duration_and_accrual);
+        });
+
+        it('converts duration into minutes and sets to request', function () {
+          expect(controller.request.toil_duration).toBe(controller.uiOptions.toil_duration_in_hours * 60);
+        });
+
+        describe('when single day mode selected', function () {
+          beforeEach(function () {
+            controller.uiOptions.multipleDays = false;
+
+            controller.daysSelectionModeChangeHandler();
+            $rootScope.$digest();
+          });
+
+          it('updates the maximum duration and accrual value', function () {
+            expect(controller.uiOptions.max_toil_duration_and_accrual).toBe(4.75);
+          });
+        });
+
+        describe('when from time is greater than to time and then single day mode selected', function () {
+          beforeEach(function () {
+            requestModalHelper.setTestTimes(controller, '19:30', '16:15');
+
+            controller.uiOptions.multipleDays = false;
+
+            controller.daysSelectionModeChangeHandler();
+            $rootScope.$digest();
+          });
+
+          it('flushes maximum duration and accrual value', function () {
+            expect(controller.uiOptions.max_toil_duration_and_accrual).toBe(null);
+          });
+
+          it('flushes accrual value', function () {
+            expect(controller.uiOptions.toil_duration_in_hours).toBe(null);
+            expect(controller.request.toil_duration).toBe(null);
+          });
+        });
+
+        describe('when the request is in hours', function () {
+          beforeEach(function () {
+            controller.selectedAbsenceType.calculation_unit_name = 'hours';
+          });
+
+          afterEach(function () {
+            controller.selectedAbsenceType.calculation_unit_name = 'days';
+          });
+
+          describe('when duration value has been customised', function () {
+            beforeEach(function () {
+              controller.uiOptions.toil_duration_in_hours = 10;
+
+              $rootScope.$digest();
+            });
+
+            it('sets the accrual value to the current value of duration', function () {
+              expect(controller.request.toil_to_accrue).toBe(controller.uiOptions.toil_duration_in_hours);
+            });
+          });
+        });
+      });
+
       describe('create', function () {
         describe('with selected duration and dates', function () {
           describe('when multiple days request', function () {
             beforeEach(function () {
-              var toilAccrue = optionGroupMock.specificObject('hrleaveandabsences_toil_amounts', 'name', 'quarter_day');
-
               requestModalHelper.setTestDates(controller, date2016, date2016To);
-              controller.request.toilDurationHours = 1;
-              controller.request.updateDuration();
-              controller.request.toil_to_accrue = toilAccrue.value;
+              requestModalHelper.setTestTimes(controller, '08:00', '10:00');
 
-              $rootScope.$apply();
+              $rootScope.$digest();
             });
 
             it('sets expiry date', function () {
@@ -149,19 +225,7 @@ define([
 
             it('calls calculateToilExpiryDate on AbsenceType', function () {
               expect(AbsenceTypeAPI.calculateToilExpiryDate.calls.mostRecent().args[0]).toEqual(controller.request.type_id);
-              expect(AbsenceTypeAPI.calculateToilExpiryDate.calls.mostRecent().args[1]).toEqual(controller.request.to_date);
-            });
-
-            describe('when user changes number of days selected', function () {
-              beforeEach(function () {
-                controller.daysSelectionModeChangeHandler();
-              });
-
-              it('does not reset toil attributes', function () {
-                expect(controller.request.toilDurationHours).not.toEqual('0');
-                expect(controller.request.toilDurationMinutes).toEqual('0');
-                expect(controller.request.toil_to_accrue).not.toEqual('');
-              });
+              expect(AbsenceTypeAPI.calculateToilExpiryDate.calls.mostRecent().args[1]).toEqual(moment(controller.request.to_date).format('YYYY-MM-DD'));
             });
           });
 
@@ -169,10 +233,11 @@ define([
             beforeEach(function () {
               controller.uiOptions.multipleDays = false;
               requestModalHelper.setTestDates(controller, date2016);
+              requestModalHelper.setTestTimes(controller, '08:00', '10:00');
             });
 
             it('calls calculateToilExpiryDate on AbsenceType', function () {
-              expect(AbsenceTypeAPI.calculateToilExpiryDate.calls.mostRecent().args[1]).toEqual(controller.request.from_date);
+              expect(AbsenceTypeAPI.calculateToilExpiryDate.calls.mostRecent().args[1]).toEqual(moment(controller.request.from_date).format('YYYY-MM-DD'));
             });
           });
         });
@@ -184,6 +249,9 @@ define([
         beforeEach(function () {
           toilRequest = TOILRequestInstance.init(leaveRequestData.findBy('request_type', 'toil'));
           toilRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+          toilRequest.from_date = '2018-03-04 12:00';
+          toilRequest.to_date = '2018-03-06 10:00';
+          toilRequest.toil_duration = 120;
 
           compileComponent({
             leaveType: 'toil',
@@ -214,6 +282,19 @@ define([
 
         it('shows balance', function () {
           expect(controller.uiOptions.showBalance).toBeTruthy();
+        });
+
+        it('sets times', function () {
+          expect(controller.uiOptions.times.from.time).toBe('12:00');
+          expect(controller.uiOptions.times.to.time).toBe('10:00');
+        });
+
+        it('sets maximum duration', function () {
+          expect(controller.uiOptions.max_toil_duration_and_accrual).toBe(12 + 24 + 10);
+        });
+
+        it('sets custom duration', function () {
+          expect(controller.uiOptions.toil_duration_in_hours).toBe(2);
         });
       });
     });
@@ -376,7 +457,7 @@ define([
               role: 'manager',
               request: toilRequest
             });
-            controller.request.to_date = date2017;
+            controller.request.to_date = date2017Server;
             controller.onDateChangeExtended();
             $rootScope.$digest();
           });
@@ -394,7 +475,7 @@ define([
               role: 'staff',
               request: toilRequest
             });
-            controller.request.to_date = date2017;
+            controller.request.to_date = date2017Server;
             controller.onDateChangeExtended();
             $rootScope.$digest();
           });
