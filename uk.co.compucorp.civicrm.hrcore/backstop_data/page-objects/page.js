@@ -4,7 +4,7 @@ var Promise = require('es6-promise').Promise;
 /**
  * Closes any modal currently open
  *
- * @return {object}
+ * @return {Object}
  */
 function closeAnyModal () {
   var openModalSelector = '.modal.in';
@@ -20,7 +20,7 @@ function closeAnyModal () {
 /**
  * Closes any notification currently open
  *
- * @return {object}
+ * @return {Object}
  */
 function closeNotifications () {
   var notificationSelector = 'a.ui-notify-cross.ui-notify-close';
@@ -36,20 +36,36 @@ function closeNotifications () {
 module.exports = {
 
   /**
-   * Initializes the page
+   * Initializes the page and removes any code warnings from the page
    *
-   * Stores a customized version of CasperJS and then wait for a
-   * until a certain "ready" condition is met, if the page is set up to do so
-   *
-   * @param  {object} chromy
-   * @param  {boolean} clearDialogs if true it will close modals and notifications
-   * @return {object}
+   * @param  {Object} chromy
+   * @param  {Boolean} clearDialogs if true it will close modals and notifications
+   * @return {Object}
    */
   init: function (chromy, clearDialogs) {
     clearDialogs = typeof clearDialogs !== 'undefined' ? !!clearDialogs : true;
 
     this.chromy = chromy;
     !!this.waitForReady && this.waitForReady();
+
+    chromy.evaluate(function () {
+      return document.location.href;
+    })
+      .result(function (href) {
+        var isAdmin = href.indexOf('civicrm/') > 1;
+
+        if (isAdmin) {
+          chromy.evaluate(function () {
+            var errorsWrapper = document.querySelector('#content > #console');
+            errorsWrapper && (errorsWrapper.style.display = 'none');
+          });
+        } else {
+          chromy.evaluate(function () {
+            var errorsWrapper = document.querySelector('#messages .alert');
+            errorsWrapper && (errorsWrapper.style.display = 'none');
+          });
+        }
+      });
 
     if (clearDialogs) {
       closeAnyModal.call(this);
@@ -62,9 +78,9 @@ module.exports = {
   /**
    * Used to extend the main page
    *
-   * @param  {object} page
+   * @param  {Object} page
    *   a collection of methods and properties that will extend the main page
-   * @return {object}
+   * @return {Object}
    */
   extend: function (page) {
     return _.assign(Object.create(this), page);
