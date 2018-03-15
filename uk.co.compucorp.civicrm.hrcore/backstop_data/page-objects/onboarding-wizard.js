@@ -1,5 +1,4 @@
 var page = require('./page');
-var data = require('./../data/onboarding-wizard-data');
 
 module.exports = (function () {
   return page.extend({
@@ -9,11 +8,8 @@ module.exports = (function () {
      * @return {*}
      */
     reachAddressPage: function () {
-      var casper = this.casper;
-
-      casper.click('.webform-next');
-
-      return casper.waitForSelector('input[value="Address"]');
+      this.chromy.click('.webform-next');
+      this.chromy.wait('input[value="Address"]');
     },
 
     /**
@@ -22,13 +18,9 @@ module.exports = (function () {
      * @return {*}
      */
     reachContactInfoPage: function () {
-      var casper = this.casper;
-
-      return this.reachAddressPage().then(function () {
-        casper.click('.webform-next');
-
-        return casper.waitForSelector('input[value="Contact Info"]');
-      });
+      this.reachAddressPage();
+      this.chromy.click('.webform-next');
+      this.chromy.wait('input[value="Contact Info"]');
     },
 
     /**
@@ -37,13 +29,9 @@ module.exports = (function () {
      * @return {*}
      */
     reachPayrollPage: function () {
-      var casper = this.casper;
-
-      return this.reachContactInfoPage().then(function () {
-        casper.click('.webform-next');
-
-        return casper.waitForSelector('input[value="Payroll"]');
-      });
+      this.reachContactInfoPage();
+      this.chromy.click('.webform-next');
+      this.chromy.wait('input[value="Payroll"]');
     },
 
     /**
@@ -52,13 +40,9 @@ module.exports = (function () {
      * @return {*}
      */
     reachEmergencyContactPage: function () {
-      var casper = this.casper;
-
-      return this.reachPayrollPage().then(function () {
-        casper.click('.webform-next');
-
-        return casper.waitForSelector('input[value="Emergency Contact"]');
-      });
+      this.reachPayrollPage();
+      this.chromy.click('.webform-next');
+      this.chromy.wait('input[value="Emergency Contact"]');
     },
 
     /**
@@ -67,15 +51,10 @@ module.exports = (function () {
      * @return {*}
      */
     reachDependentPage: function () {
-      var casper = this.casper;
-
-      return this.reachEmergencyContactPage().then(function () {
-        casper.click('.webform-next');
-
-        return casper.waitForSelector('input[value="Dependants"]', function () {
-          casper.click('#edit-submitted-do-you-have-dependants-1');
-        });
-      });
+      this.reachEmergencyContactPage();
+      this.chromy.click('.webform-next');
+      this.chromy.wait('input[value="Dependants"]');
+      this.chromy.click('#edit-submitted-do-you-have-dependants-1');
     },
 
     /**
@@ -84,16 +63,13 @@ module.exports = (function () {
      * @return {*}
      */
     reachProfilePicturePage: function () {
-      var casper = this.casper;
-      return this.reachDependentPage().then(function () {
-        casper.waitUntilVisible('.webform-component-fieldset', function () {
-          casper.fillSelectors('form.webform-client-form', data.dependents, false);
-
-          casper.click('.webform-next');
-
-          return casper.waitForSelector('input[value="Profile Picture"]');
-        });
-      });
+      this.reachDependentPage();
+      this.chromy.waitUntilVisible('.webform-component-fieldset');
+      this.chromy.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100000', 'Duke');
+      this.chromy.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100001', '1234');
+      this.chromy.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100010', 'sibling');
+      this.chromy.click('.webform-next');
+      this.chromy.wait('input[value="Profile Picture"]');
     }
   });
 })();
