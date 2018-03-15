@@ -823,7 +823,8 @@ function _civicrm_api3_leave_request_set_time_for_leave_dates(&$params) {
 
   $absenceType = CRM_HRLeaveAndAbsences_BAO_AbsenceType::findById($params['type_id']);
 
-  if($absenceType->isCalculationUnitInHours()) {
+  if($absenceType->isCalculationUnitInHours() ||
+    $params['request_type'] === CRM_HRLeaveAndAbsences_BAO_LeaveRequest::REQUEST_TYPE_TOIL) {
     return;
   }
 
