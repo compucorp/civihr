@@ -7,7 +7,7 @@ module.exports = (function () {
      * the visibility of a leave calendar item element
      */
     waitForReady: function () {
-      this.waitUntilVisible('leave-calendar-month .chr_leave-calendar__item');
+      this.chromy.waitUntilVisible('leave-calendar-month .chr_leave-calendar__item');
     },
 
     /**
@@ -16,11 +16,7 @@ module.exports = (function () {
      * @return {Promise}
      */
     toggleLegend: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.chr_leave-calendar__legend__title');
-      });
+      this.chromy.click('.chr_leave-calendar__legend__title');
 
       return this;
     },
@@ -31,11 +27,7 @@ module.exports = (function () {
      * @return {Promise}
      */
     toggleContactsWithLeaves: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.chr_leave-calendar__toggle-contacts-with-leaves');
-      });
+      this.chromy.click('.chr_leave-calendar__toggle-contacts-with-leaves');
 
       return this;
     }
