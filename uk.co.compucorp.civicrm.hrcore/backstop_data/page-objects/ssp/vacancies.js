@@ -9,12 +9,8 @@ module.exports = (function () {
      * @return {object}
      */
     showMoreDetails: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.fieldset-title');
-        casper.wait(2000);
-      }.bind(this));
+      this.chromy.click('.fieldset-title');
+      this.chromy.wait(2000);
 
       return this;
     }
