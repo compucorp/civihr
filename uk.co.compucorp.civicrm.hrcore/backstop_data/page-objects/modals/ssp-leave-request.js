@@ -9,11 +9,7 @@ module.exports = (function () {
      * @return {Object} this object
      */
     selectTab: function (tabName) {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('div.chr_leave-request-modal__tab li[heading=\'' + tabName + '\'] a');
-      });
+      this.chromy.click('div.chr_leave-request-modal__tab li[heading=\'' + tabName + '\'] a');
 
       return this;
     }
