@@ -1,4 +1,4 @@
-/* globals jQuery */
+/* globals jQuery, MouseEvent */
 
 var page = require('./page');
 
@@ -11,7 +11,7 @@ module.exports = (function () {
      * @returns {Object} - returns a reference to the page object.
      */
     clearCurrentlySelectedMonth: function () {
-      this.casper.click('.chr_leave-calendar__day-selector .close.ui-select-match-close');
+      this.chromy.click('.chr_leave-calendar__day-selector .close.ui-select-match-close');
 
       return this;
     },
@@ -25,11 +25,11 @@ module.exports = (function () {
      * @returns {Object} - returns a reference to the page object.
      */
     showMonth: function (monthName) {
-      this.casper.click('.chr_leave-calendar__day-selector input');
-      this.casper.evaluate(function (monthName) {
+      this.chromy.click('.chr_leave-calendar__day-selector input');
+      this.chromy.evaluate(function (monthName) {
         jQuery('.ui-select-choices-row:contains(' + monthName + ')').click();
-      }, monthName);
-      this.waitUntilVisible('leave-calendar-month leave-calendar-day');
+      }, [monthName]);
+      this.chromy.waitUntilVisible('leave-calendar-month leave-calendar-day');
 
       return this;
     },
@@ -41,10 +41,13 @@ module.exports = (function () {
      * @returns {Object} - returns a reference to the page object.
      */
     showTooltip: function () {
-      this.casper.then(function () {
-        this.mouse.move('.chr_leave-calendar__item a');
+      var chromy = this.chromy;
+
+      chromy.evaluate(function () {
+        var event = new MouseEvent('mouseover');
+        document.querySelector('.chr_leave-calendar__item a').dispatchEvent(event);
       });
-      this.waitUntilVisible('.tooltip');
+      chromy.waitUntilVisible('.tooltip');
 
       return this;
     },
@@ -56,13 +59,13 @@ module.exports = (function () {
      * @returns {Object} - returns a reference to the page object.
      */
     showYear: function (year) {
-      this.casper.evaluate(function (year) {
+      this.chromy.evaluate(function (year) {
         var select = jQuery('.chr_manager_calendar__sub-header select');
         var yearValue = select.find('option:contains(' + year + ')').attr('value');
 
         select.val(yearValue).change();
-      }, year);
-      this.waitUntilVisible('leave-calendar-month leave-calendar-day');
+      }, [year]);
+      this.chromy.waitUntilVisible('leave-calendar-month leave-calendar-day');
 
       return this;
     },
@@ -72,7 +75,7 @@ module.exports = (function () {
      * the visibility of a leave calendar item element
      */
     waitForReady: function () {
-      this.waitUntilVisible('leave-calendar-month .chr_leave-calendar__item');
+      this.chromy.waitUntilVisible('leave-calendar-month .chr_leave-calendar__item');
     }
   });
 })();
