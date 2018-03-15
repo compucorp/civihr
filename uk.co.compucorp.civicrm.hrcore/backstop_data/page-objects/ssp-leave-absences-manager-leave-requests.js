@@ -11,7 +11,7 @@ module.exports = (function () {
      * @return {Object} this object
      */
     waitForReady: function () {
-      this.waitUntilVisible('tbody tr:nth-child(1) a');
+      this.chromy.waitUntilVisible('tbody tr:nth-child(1) a');
     },
     /**
      * Change the filter by Assignee
@@ -20,16 +20,13 @@ module.exports = (function () {
      * @return {Object} this object
      */
     changeFilterByAssignee: function (type) {
-      var casper = this.casper;
       var filters = ['me', 'unassigned', 'all'];
 
-      casper.then(function () {
-        casper.click(
-          '.chr_manage_leave_requests__assignee_filter button:nth-of-type(' +
-          (filters.indexOf(type) + 1) +
-          ')');
-        casper.waitUntilVisible('tbody tr:nth-child(1) a');
-      });
+      this.chromy.click(
+        '.chr_manage_leave_requests__assignee_filter button:nth-of-type(' +
+        (filters.indexOf(type) + 1) +
+        ')');
+      this.chromy.waitUntilVisible('tbody tr:nth-child(1) a');
 
       return this;
     },
