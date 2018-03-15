@@ -1,4 +1,4 @@
-/* eslint-env amd */
+/* eslint-env amd, jasmine */
 
 define([
   'common/lodash',
@@ -87,7 +87,7 @@ define([
     },
 
     /**
-     * sets from and/or to dates
+     * Sets "from" and/or "to" dates
      *
      * @param {object} controller controller object
      * @param {String} from date set if passed
@@ -105,6 +105,27 @@ define([
       if (to) {
         controller.uiOptions.toDate = helper.getUTCDate(to);
         controller.dateChangeHandler('to');
+        $rootScope.$digest();
+      }
+    },
+
+    /**
+     * Sets "from" and/or "to" times
+     *
+     * @param {Object} controller - controller object
+     * @param {String} from - time in HH:mm format, optional
+     * @param {String} to - time in HH:mm format, optional
+     */
+    setTestTimes: function (controller, from, to) {
+      var $rootScope = getDependency('$rootScope');
+
+      if (from) {
+        controller.uiOptions.times.from.time = from;
+        $rootScope.$digest();
+      }
+
+      if (to) {
+        controller.uiOptions.times.to.time = to;
         $rootScope.$digest();
       }
     }

@@ -19,7 +19,7 @@
             ng-change="detailsTab.dateChangeHandler('from')"/>
         </div>
       </div>
-      <div class="col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
+      <div class="col-sm-4">
         <crm-loading show="!detailsTab.uiOptions.times.from.loading"
           class="chr_leave-request-modal__small_spinner"
           ng-switch="!detailsTab.isNotWorkingDay(detailsTab.requestFromDayTypes[0].name)">
@@ -54,7 +54,7 @@
   <div class="col-xs-12 form-horizontal">
     <div class="form-group">
       <label class="col-sm-4 control-label required-mark">
-        To Date{{!detailsTab.isLeaveType('toil') ? '/Time' : ''}}
+        To Date/Time
       </label>
       <div class="col-sm-4 chr_leave-request-date-picker-container">
         <div class="input-group">
@@ -71,7 +71,7 @@
             ng-change="detailsTab.dateChangeHandler('to')"/>
         </div>
       </div>
-      <div class="col-sm-4" ng-hide="detailsTab.isLeaveType('toil')">
+      <div class="col-sm-4">
         <crm-loading show="!detailsTab.uiOptions.times.to.loading"
           class="chr_leave-request-modal__small_spinner"
           ng-switch="!detailsTab.isNotWorkingDay(detailsTab.requestToDayTypes[0].name)">

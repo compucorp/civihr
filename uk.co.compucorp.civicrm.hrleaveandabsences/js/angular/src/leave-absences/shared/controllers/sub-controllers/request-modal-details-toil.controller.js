@@ -2,8 +2,9 @@
 
 define([
   'common/lodash',
+  'common/moment',
   'leave-absences/shared/modules/controllers'
-], function (_, controllers) {
+], function (_, moment, controllers) {
   controllers.controller('RequestModalDetailsToilController', RequestModalDetailsToilController);
 
   RequestModalDetailsToilController.$inject = ['$log', '$q', '$rootScope', 'api.optionGroup', 'AbsenceType', 'detailsController'];
@@ -12,25 +13,28 @@ define([
     $log.debug('RequestModalDetailsToilController');
 
     var initialRequestAttributes;
+    var skipSettingDefaultDuration = !detailsController.isMode('create');
     var expirationConditions = {
       hasPreviousExpirationDate: null,
       hasExpirationFromAdminSettings: null
     };
 
     detailsController.canDisplayToilExpirationField = false;
-
     detailsController.calculateBalanceChange = calculateBalanceChange;
     detailsController.canCalculateChange = canCalculateChange;
     detailsController.canSubmit = canSubmit;
     detailsController.clearExpiryDate = clearExpiryDate;
     detailsController.initChildController = initChildController;
-    detailsController.onDateChangeExtended = tryToCalculateExpiryDate;
-    detailsController.setDaysSelectionModeExtended = tryToCalculateExpiryDate;
+    detailsController.initTimesExtended = initTimes;
+    detailsController.initWatchersExtended = initWatchers;
+    detailsController.onDateChangeExtended = onDateChangeHandler;
+    detailsController.setDaysSelectionModeExtended = onDaysSelectionModeHandler;
     detailsController.updateExpiryDate = updateExpiryDate;
 
     (function init () {
-      initAccrueValueWatcher();
       setInitialRequestAttributes();
+      setTimeInputsRanges();
+      !detailsController.isMode('create') && initDuration();
     })();
 
     /**
@@ -43,6 +47,21 @@ define([
       detailsController.balance.change.amount = +detailsController.request.toil_to_accrue;
 
       return $q.resolve(detailsController.balance.change);
+    }
+
+    /**
+     * Calculates the TOIL maximum duration and sets its default value
+     */
+    function calculateDuration () {
+      if (!detailsController.request.from_date || !detailsController.request.to_date) {
+        detailsController.uiOptions.max_toil_duration_and_accrual = null;
+        detailsController.uiOptions.toil_duration_in_hours = null;
+
+        return;
+      }
+
+      detailsController.uiOptions.max_toil_duration_and_accrual =
+        moment.duration(moment(detailsController.request.to_date).diff(detailsController.request.from_date)).asHours();
     }
 
     /**
@@ -159,7 +178,7 @@ define([
       if (!field.value) {
         return $q.reject([]);
       } else {
-        return $q.resolve(field.value);
+        return $q.resolve(moment(field.value).format('YYYY-MM-DD'));
       }
     }
 
@@ -179,6 +198,15 @@ define([
         isNewRequestAndRequestsCanExpire ||
         isOldRequestAndHasExpiryDateDefined
       );
+    }
+
+    /**
+     * Initialises duration by converting it from minutes to hours
+     * and setting to a separate variable in UI options
+     */
+    function initDuration () {
+      detailsController.uiOptions.toil_duration_in_hours =
+        detailsController.request.toil_duration / 60;
     }
 
     /**
@@ -229,10 +257,6 @@ define([
      * When accrue value changes it, if possible, calculates the balance change.
      */
     function initAccrueValueWatcher () {
-      if (detailsController.isMode('view')) {
-        return;
-      }
-
       $rootScope.$watch(
         function () {
           return detailsController.request.toil_to_accrue;
@@ -242,6 +266,80 @@ define([
             detailsController.performBalanceChangeCalculation();
           }
         });
+    }
+
+    /**
+     * Initialises watcher for Duration value.
+     * When Duration value changes, it sets this value to the Accrual as well.
+     */
+    function initDurationValueWatcher () {
+      $rootScope.$watch(
+        function () {
+          return detailsController.uiOptions.toil_duration_in_hours;
+        },
+        function (oldValue, newValue) {
+          if (detailsController.isCalculationUnit('hours') && oldValue !== newValue) {
+            detailsController.request.toil_to_accrue =
+              detailsController.uiOptions.toil_duration_in_hours;
+          }
+
+          detailsController.request.toil_duration =
+            detailsController.uiOptions.toil_duration_in_hours
+              ? detailsController.uiOptions.toil_duration_in_hours * 60
+              : null;
+        });
+    }
+
+    /**
+     * Initialises and sets the "from" and "to" times
+     *
+     * @return {Promise}
+     */
+    function initTimes () {
+      var times = detailsController.uiOptions.times;
+
+      times.from.time = moment(detailsController.request.from_date).format('HH:mm');
+      times.to.time = moment(detailsController.request.to_date).format('HH:mm');
+
+      if (!detailsController.uiOptions.multipleDays) {
+        detailsController.updateEndTimeInputMinTime(detailsController.uiOptions.times.from.time);
+      }
+    }
+
+    /**
+     * Initialises watcher for times values.
+     * The values of time fields define the maximum and default Duration values.
+     */
+    function initTimesWatcher () {
+      ['from', 'to'].forEach(function (dateType) {
+        $rootScope.$watch(
+          function () {
+            return detailsController.uiOptions.times[dateType].time;
+          },
+          function (oldValue, newValue) {
+            if (oldValue === newValue) {
+              return;
+            }
+
+            detailsController.setRequestDateTimesAndDateTypes();
+            tryToCalculateExpiryDate();
+            calculateDuration();
+            setDefaultDuration();
+          });
+      });
+    }
+
+    /**
+     * Initialises watchers for Accruals and Duration values
+     */
+    function initWatchers () {
+      if (detailsController.isMode('view')) {
+        return;
+      }
+
+      initAccrueValueWatcher();
+      initDurationValueWatcher();
+      initTimesWatcher();
     }
 
     /**
@@ -257,10 +355,61 @@ define([
     }
 
     /**
+     * Handles the dates change
+     */
+    function onDateChangeHandler () {
+      calculateDuration();
+      setDefaultDuration();
+
+      return tryToCalculateExpiryDate();
+    }
+
+    /**
+     * Handles the days selection mode change
+     */
+    function onDaysSelectionModeHandler () {
+      setTimeInputsRanges();
+
+      if (!detailsController.uiOptions.multipleDays) {
+        detailsController.updateEndTimeInputMinTime(detailsController.uiOptions.times.from.time);
+      }
+
+      calculateDuration();
+      !skipSettingDefaultDuration ? setDefaultDuration() : (skipSettingDefaultDuration = false);
+
+      return tryToCalculateExpiryDate();
+    }
+
+    /**
+     * Sets default duration as a maximum allowed duration value
+     */
+    function setDefaultDuration () {
+      detailsController.uiOptions.toil_duration_in_hours =
+        detailsController.uiOptions.max_toil_duration_and_accrual;
+    }
+
+    /**
      * Stores the initial request attributes to determine if there has been a change.
      */
     function setInitialRequestAttributes () {
-      initialRequestAttributes = angular.copy(detailsController.request.attributes());
+      initialRequestAttributes = _.cloneDeep(detailsController.request.attributes());
+    }
+
+    /**
+     * Sets ranges for both start and end times depending on the day selection mode
+     */
+    function setTimeInputsRanges () {
+      if (detailsController.uiOptions.multipleDays) {
+        ['from', 'to'].forEach(function (dateType) {
+          detailsController.uiOptions.times[dateType].min = '00:00';
+          detailsController.uiOptions.times[dateType].max = '23:45';
+        });
+      } else {
+        detailsController.uiOptions.times.from.min = '00:00';
+        detailsController.uiOptions.times.from.max = '23:30';
+        detailsController.uiOptions.times.to.min = '00:15';
+        detailsController.uiOptions.times.to.max = '23:45';
+      }
     }
 
     /**

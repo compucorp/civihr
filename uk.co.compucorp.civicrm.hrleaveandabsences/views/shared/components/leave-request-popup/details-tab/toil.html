@@ -1,52 +1,36 @@
 <div class="row"
   ng-init="__isNotEditable = !detailsTab.isRole('admin') && (detailsTab.isMode('view') || (detailsTab.isRole('manager') && !detailsTab.isMode('create')))">
-  <div class="col-xs-12 form-horizontal">
-    <div class="row">
-      <label class="col-sm-4 control-label required-mark">Duration</label>
-      <div class="col-sm-4 chr_leave-request-modal__input-shift-left">
-        <div class="crm_custom-select crm_custom-select--full">
-          <select name="hours" ng-model="detailsTab.request.toilDurationHours"
-            class="no-select2"
-            ng-disabled="__isNotEditable"
-            ng-change="detailsTab.request.updateDuration()">
-            <option value="0" selected="selected">Hours</option>
-            <option value="1">1h</option>
-            <option value="2">2h</option>
-            <option value="3">3h</option>
-            <option value="4">4h</option>
-            <option value="5">5h</option>
-            <option value="6">6h</option>
-            <option value="7">7h</option>
-            <option value="8">8h</option>
-            <option value="9">9h</option>
-            <option value="10">10h</option>
-            <option value="11">11h</option>
-            <option value="12">12h</option>
-          </select>
-          <span class="crm_custom-select__arrow"></span>
-        </div>
+  <div class="col-xs-12 form-horizontal"
+    ng-if="detailsTab.uiOptions.max_toil_duration_and_accrual && !__isNotEditable"
+    ng-switch="!!detailsTab.uiOptions.toil_duration_expanded">
+    <div ng-switch-when="false"
+      class="chr_leave-request-modal__small-text chr_leave-request-modal__custom-deduction-toggling-row">
+      <div class="col-sm-8 col-sm-offset-4 col-xs-12">
+        <strong>{{detailsTab.uiOptions.toil_duration_in_hours | timeUnitApplier : 'hours'}}
+          of overtime worked</strong>
+        <a class="pointer"
+          ng-click="detailsTab.uiOptions.toil_duration_expanded = true">
+          Customise this amount</a>
       </div>
-      <div class="col-sm-4">
-        <div class="crm_custom-select crm_custom-select--full">
-          <select name="minutes" ng-model="detailsTab.request.toilDurationMinutes"
-            class="no-select2"
-            ng-change="detailsTab.request.updateDuration()"
-            ng-disabled="__isNotEditable">
-            <option value="0">Mins</option>
-            <option value="5">5m</option>
-            <option value="10">10m</option>
-            <option value="15">15m</option>
-            <option value="20">20m</option>
-            <option value="25">25m</option>
-            <option value="30">30m</option>
-            <option value="35">35m</option>
-            <option value="40">40m</option>
-            <option value="45">45m</option>
-            <option value="50">50m</option>
-            <option value="55">55m</option>
-          </select>
-          <span class="crm_custom-select__arrow"></span>
-        </div>
+    </div>
+    <div ng-switch-when="true">
+      <div class="col-sm-6 chr_leave-request-modal__small-text chr_leave-request-modal__custom-deduction-label">
+        <span>Customise deduction for </span>
+        <strong>{{detailsTab.uiOptions.fromDate | formatDate}}</strong>
+        <br class="hidden-xs"/>
+        <span class="text-muted">(eg. exclude lunch time)</span>
+      </div>
+      <div class="col-sm-6">
+        <a class="btn btn-sm btn-link text-muted pull-right"
+          ng-click="detailsTab.uiOptions.toil_duration_expanded = false">
+          <i class="fa fa-times"></i>
+        </a>
+        <time-amount-picker
+          time-amount-picker-value="detailsTab.uiOptions.toil_duration_in_hours"
+          time-amount-picker-min-amount="0"
+          time-amount-picker-max-amount="detailsTab.uiOptions.max_toil_duration_and_accrual"
+          time-amount-picker-interval="detailsTab.uiOptions.time_interval"
+        ></time-amount-picker>
       </div>
     </div>
   </div>
@@ -77,8 +61,8 @@
           time-amount-picker-disabled="detailsTab.isMode('view')"
           time-amount-picker-value="detailsTab.request.toil_to_accrue"
           time-amount-picker-min-amount="0"
-          time-amount-picker-max-amount="24"
-          time-amount-picker-interval="15"
+          time-amount-picker-max-amount="detailsTab.uiOptions.max_toil_duration_and_accrual"
+          time-amount-picker-interval="detailsTab.uiOptions.time_interval"
         ></time-amount-picker>
       </div>
     </div>
