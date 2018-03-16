@@ -449,8 +449,8 @@ define([
      * @return {Promise}
      */
     function updateFromTimeRangeAndDeductionBoundary () {
-      if (!detailsController.isCalculationUnit('hours')) {
-        return;
+      if (!detailsController.isCalculationUnit('hours') || !detailsController.uiOptions.fromDate) {
+        return $q.resolve();
       }
 
       return loadTimeRangesFromWorkPattern('from')
