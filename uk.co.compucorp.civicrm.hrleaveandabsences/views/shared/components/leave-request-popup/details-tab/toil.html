@@ -14,23 +14,22 @@
       </div>
     </div>
     <div ng-switch-when="true">
-      <div class="col-sm-6 chr_leave-request-modal__small-text chr_leave-request-modal__custom-deduction-label">
-        <span>Customise deduction for </span>
-        <strong>{{detailsTab.uiOptions.fromDate | formatDate}}</strong>
-        <br class="hidden-xs"/>
-        <span class="text-muted">(eg. exclude lunch time)</span>
+      <div class="col-sm-12 chr_leave-request-modal__small-text clearfix">
+        <label class="pull-right">Enter custom amount of overtime worked:</label>
       </div>
-      <div class="col-sm-6">
+      <div class="col-sm-12 clearfix">
         <a class="btn btn-sm btn-link text-muted pull-right"
           ng-click="detailsTab.uiOptions.toil_duration_expanded = false">
           <i class="fa fa-times"></i>
         </a>
-        <time-amount-picker
-          time-amount-picker-value="detailsTab.uiOptions.toil_duration_in_hours"
-          time-amount-picker-min-amount="0"
-          time-amount-picker-max-amount="detailsTab.uiOptions.max_toil_duration_and_accrual"
-          time-amount-picker-interval="detailsTab.uiOptions.time_interval"
-        ></time-amount-picker>
+        <div class="pull-right">
+          <time-amount-picker
+            time-amount-picker-value="detailsTab.uiOptions.toil_duration_in_hours"
+            time-amount-picker-min-amount="0"
+            time-amount-picker-max-amount="detailsTab.uiOptions.max_toil_duration_and_accrual"
+            time-amount-picker-interval="detailsTab.uiOptions.time_interval"
+          ></time-amount-picker>
+        </div>
       </div>
     </div>
   </div>
