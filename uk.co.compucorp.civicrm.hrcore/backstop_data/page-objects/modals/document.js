@@ -9,12 +9,8 @@ module.exports = (function () {
      * @return {object}
      */
     pickDueDate: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="documentModal.document.activity_date_time"]');
-        casper.waitUntilVisible('.uib-datepicker-popup');
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' [ng-model="documentModal.document.activity_date_time"]');
+      this.chromy.waitUntilVisible('.uib-datepicker-popup');
 
       return this;
     },
@@ -26,11 +22,7 @@ module.exports = (function () {
      * @return {object}
      */
     showField: function (fieldName) {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' a[ng-click*="show' + fieldName + 'Field"]');
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' a[ng-click*="show' + fieldName + 'Field"]');
 
       return this;
     },
@@ -41,12 +33,8 @@ module.exports = (function () {
      * @return {object}
      */
     selectAssignee: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="documentModal.document.assignee_contact"] .ui-select-match');
-        casper.waitUntilVisible('.select2-with-searchbox');
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' [ng-model="documentModal.document.assignee_contact"] .ui-select-match');
+      this.chromy.waitUntilVisible('.select2-with-searchbox:not(.select2-display-none)');
 
       return this;
     },
@@ -57,12 +45,8 @@ module.exports = (function () {
      * @return {object}
      */
     selectType: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="documentModal.document.activity_type_id"] .ui-select-match');
-        casper.waitUntilVisible('.select2-with-searchbox');
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' [ng-model="documentModal.document.activity_type_id"] .ui-select-match');
+      this.chromy.waitUntilVisible('.select2-with-searchbox:not(.select2-display-none)');
 
       return this;
     },
@@ -73,12 +57,8 @@ module.exports = (function () {
      * @return {object}
      */
     showTab: function (tabName) {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' a[data-target="#' + tabName.toLowerCase() + 'Tab"]');
-        casper.wait(200);
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' a[data-target="#' + tabName.toLowerCase() + 'Tab"]');
+      this.chromy.wait(200);
 
       return this;
     }

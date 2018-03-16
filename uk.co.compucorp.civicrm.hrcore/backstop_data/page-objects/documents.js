@@ -12,13 +12,9 @@ module.exports = (function () {
      * @return {Promise} resolves with the document modal page object
      */
     addDocument: function () {
-      var casper = this.casper;
-
       return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click('a[ng-click*="itemAdd"]');
-          resolve(this.waitForModal('document'));
-        }.bind(this));
+        this.chromy.click('a[ng-click*="itemAdd"]');
+        resolve(this.waitForModal('document'));
       }.bind(this));
     },
 
@@ -28,12 +24,8 @@ module.exports = (function () {
      * @return {object}
      */
     advancedFilters: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('a[ng-click*="isCollapsed.filterAdvanced"]');
-        casper.wait(500);
-      });
+      this.chromy.click('a[ng-click*="isCollapsed.filterAdvanced"]');
+      this.chromy.wait(500);
 
       return this;
     },
@@ -89,9 +81,7 @@ module.exports = (function () {
      * Waits until the specified select is visible on the page
      */
     waitForReady: function () {
-      var casper = this.casper;
-
-      casper.waitUntilVisible('.ct-filter-date');
+      this.chromy.waitUntilVisible('.ct-filter-date');
     }
   });
 })();
