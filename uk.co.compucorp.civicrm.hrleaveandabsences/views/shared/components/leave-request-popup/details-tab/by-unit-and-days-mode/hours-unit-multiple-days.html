@@ -29,7 +29,7 @@
             <select
               class="no-select2"
               ng-model="detailsTab.uiOptions.times.from.time"
-              ng-disabled="detailsTab.uiOptions.times.from.disabled || __isNotEditable"
+              ng-disabled="!detailsTab.uiOptions.fromDate || __isNotEditable"
               timepicker-select
               timepicker-select-time-from="detailsTab.uiOptions.times.from.min"
               timepicker-select-time-to="detailsTab.uiOptions.times.from.max"
@@ -81,7 +81,7 @@
             <select
               class="no-select2"
               ng-model="detailsTab.uiOptions.times.to.time"
-              ng-disabled="detailsTab.uiOptions.times.to.disabled || __isNotEditable"
+              ng-disabled="!detailsTab.uiOptions.toDate || __isNotEditable"
               timepicker-select
               timepicker-select-time-from="detailsTab.uiOptions.times.to.min"
               timepicker-select-time-to="detailsTab.uiOptions.times.to.max"

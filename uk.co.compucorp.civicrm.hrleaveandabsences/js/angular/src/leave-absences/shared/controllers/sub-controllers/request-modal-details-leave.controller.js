@@ -95,7 +95,6 @@ define([
       timeObject.min = timeMin || '00:00';
       timeObject.max = timeMax || '00:00';
       timeObject.time = type === 'to' ? timeObject.max : timeObject.min;
-      timeObject.disabled = false;
     }
 
     /**

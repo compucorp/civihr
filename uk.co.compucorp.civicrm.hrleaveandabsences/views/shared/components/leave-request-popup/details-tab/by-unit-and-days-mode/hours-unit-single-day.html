@@ -41,7 +41,7 @@
             <select
               class="no-select2"
               ng-model="detailsTab.uiOptions.times.from.time"
-              ng-disabled="detailsTab.isNotWorkingDay(detailsTab.requestFromDayTypes[0].name) || detailsTab.uiOptions.times.from.disabled || __isNotEditable"
+              ng-disabled="detailsTab.isNotWorkingDay(detailsTab.requestFromDayTypes[0].name) || __isNotEditable"
               timepicker-select
               timepicker-select-time-from="detailsTab.uiOptions.times.from.min"
               timepicker-select-time-to="detailsTab.uiOptions.times.from.max"
@@ -69,7 +69,7 @@
             <select
               class="no-select2"
               ng-model="detailsTab.uiOptions.times.to.time"
-              ng-disabled="detailsTab.isNotWorkingDay(detailsTab.requestFromDayTypes[0].name) || detailsTab.uiOptions.times.to.disabled || __isNotEditable"
+              ng-disabled="detailsTab.isNotWorkingDay(detailsTab.requestFromDayTypes[0].name) || __isNotEditable"
               timepicker-select
               timepicker-select-time-from="detailsTab.uiOptions.times.to.min"
               timepicker-select-time-to="detailsTab.uiOptions.times.to.max"
