@@ -4373,10 +4373,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'max_leave_accrual' => 10,
       'allow_accrue_in_the_past' => true
     ]);
-    $expectedFromDate = '2016-01-08 01:23:45';
-    $expectedToDate = '2016-01-10 12:34:56';
-    $fromDate = new DateTime($expectedFromDate);
-    $toDate = new DateTime($expectedToDate);
+    $fromDate = new DateTime('2016-01-08 01:23:45');
+    $toDate = new DateTime('2016-01-10 12:34:56');
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
 
@@ -4403,9 +4401,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('LeaveRequest', 'create', [
       'contact_id' => $contract['contact_id'],
       'type_id' => $absenceType->id,
-      'from_date' => $expectedFromDate,
+      'from_date' => $fromDate->format('Y-m-d H:i:s'),
       'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
-      'to_date' => $expectedToDate,
+      'to_date' => $toDate->format('Y-m-d H:i:s'),
       'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'status_id' => 3,
       'toil_duration' => 10,
@@ -4414,8 +4412,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $leaveRequest = LeaveRequest::findById($result['id']);
-    $this->assertEquals($expectedFromDate, $leaveRequest->from_date);
-    $this->assertEquals($expectedToDate, $leaveRequest->to_date);
+    $this->assertEquals($fromDate->format('Y-m-d H:i:s'), $leaveRequest->from_date);
+    $this->assertEquals($toDate->format('Y-m-d H:i:s'), $leaveRequest->to_date);
   }
 
   public function testCreateReturnsFalseForFromEmailParameterWhenFromEmailIsNotConfigured() {
