@@ -260,14 +260,7 @@ define([
           }
         })
         .catch(handleError)
-        .finally(function () {
-          vm.loading[dateType + 'DayTypes'] = false;
-
-          if (isCalculationUnit('hours')) {
-            vm.uiOptions.times.from.loading = false;
-            vm.uiOptions.times.to.loading = false;
-          }
-        });
+        .finally(finishLoadingTimesAndDateTypes);
     }
 
     /**
@@ -296,6 +289,7 @@ define([
       return $q.resolve()
         .then(setRequestDateTimesAndDateTypes)
         .then(vm.setDaysSelectionModeExtended)
+        .then(finishLoadingTimesAndDateTypes)
         .then(!vm.uiOptions.multipleDays && performBalanceChangeCalculation);
     }
 
@@ -310,6 +304,19 @@ define([
 
       timeObject.loading = true;
       timeObject.disabled = true;
+    }
+
+    /**
+     * Hides loading indicators for times and date types inputs
+     */
+    function finishLoadingTimesAndDateTypes () {
+      ['from', 'to'].forEach(function (dateType) {
+        vm.loading[dateType + 'DayTypes'] = false;
+
+        if (isCalculationUnit('hours')) {
+          vm.uiOptions.times[dateType].loading = false;
+        }
+      });
     }
 
     /**
@@ -746,6 +753,7 @@ define([
           }
         })
         .then(absenceTypeUnitChanged && setRequestDateTimesAndDateTypes)
+        .then(finishLoadingTimesAndDateTypes)
         .then(performBalanceChangeCalculation);
     }
 
