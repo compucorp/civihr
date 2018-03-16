@@ -33,18 +33,12 @@ module.exports = (function () {
      * @return {object} resolves with the tab page object
      */
     openTab: function (tabId) {
-      var casper = this.casper;
-      var tab = require('./tabs/' + tabId).init(casper, false);
-
       return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click('[title="' + tab.tabTitle + '"]');
-          casper.waitFor(tab.ready.bind(tab), function () {
-            casper.wait(500);
-            resolve(tab);
-          });
-        });
-      });
+        var tab = require('./tabs/' + tabId);
+        this.chromy.click('[title="' + tab.tabTitle + '"]');
+
+        resolve(tab.init(this.chromy, false));
+      }.bind(this));
     },
 
     /**
