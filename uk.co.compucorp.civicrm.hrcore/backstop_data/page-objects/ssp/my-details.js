@@ -6,15 +6,11 @@ module.exports = (function () {
     /**
      * Opens Edit My Details Popup
      *
-     * @return {object}
+     * @return {Object}
      */
     showEditMyDetailsPopup: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('[href="/my_details/nojs/view"]');
-        casper.waitUntilVisible('.modal-civihr-custom__section');
-      }.bind(this));
+      this.chromy.click('[href="/my_details/nojs/view"]');
+      this.chromy.waitUntilVisible('.modal-civihr-custom__section');
 
       return this;
     }
