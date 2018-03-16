@@ -4376,11 +4376,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testTheTimeForFromAndToDateOfLeaveRequestStaysUntouchedWhenRequestIsTOIL() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request'   => true,
-      'max_leave_accrual'        => 10,
-      // The calculation unit is in days since otherwise a check for
-      // calculation unit in days will take action and this test will be invalid
-      'calculation_unit'         => 1,
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 10,
       'allow_accrue_in_the_past' => true
     ]);
     $expectedFromDate = '2016-01-08 01:23:45';
@@ -4421,7 +4418,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'toil_duration' => 10,
       'toil_to_accrue' => 2,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
-      'sequential' => 1
     ]);
 
     $leaveRequest = LeaveRequest::findById($result['id']);
