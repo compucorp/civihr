@@ -350,7 +350,7 @@ define([
     function loadToilAmounts () {
       return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts')
         .then(function (amounts) {
-          detailsController.toilAmounts = _.indexBy(amounts, 'value');
+          detailsController.toilAmounts = _.sortBy(amounts, 'value');
         });
     }
 

@@ -90,6 +90,11 @@ define([
         expect(Object.keys(controller.toilAmounts).length).toBeGreaterThan(0);
       });
 
+      fit('sorts toil amounts by value', function () {
+        expect(_.pluck(controller.toilAmounts, 'value')).toEqual(
+          _.pluck(controller.toilAmounts, 'value').sort());
+      });
+
       it('defaults to a multiple day selection', function () {
         expect(controller.uiOptions.multipleDays).toBe(true);
       });
