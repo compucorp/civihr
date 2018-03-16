@@ -8,11 +8,7 @@ module.exports = tab.extend({
    * Shows the Custom Work Pattern modal
    */
   showModal: function () {
-    var casper = this.casper;
-
-    casper.then(function () {
-      casper.click('[ng-click="workpatterns.openModal()"]');
-      casper.waitUntilVisible('absence-tab-custom-work-pattern-modal .modal-body > .row');
-    });
+    this.chromy.click('[ng-click="workpatterns.openModal()"]');
+    this.chromy.waitUntilVisible('absence-tab-custom-work-pattern-modal .modal-body > .row');
   }
 });

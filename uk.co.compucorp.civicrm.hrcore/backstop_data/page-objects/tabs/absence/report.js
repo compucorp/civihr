@@ -7,15 +7,22 @@ module.exports = tab.extend({
   /**
    * Open the report section with the given name
    *
-   * @param  {string} sectionName
-   * @return {object}
+   * @param  {String} sectionName
+   * @return {Object}
    */
   openSection: function (sectionName) {
-    var casper = this.casper;
+    this.chromy.click('[ng-click="report.toggleSection(\'' + sectionName + '\')"]');
 
-    casper.then(function () {
-      casper.click('[ng-click="report.toggleSection(\'' + sectionName + '\')"]');
-      casper.waitUntilVisible('.table-nested');
+    // @NOTE when using chromy.waitUntilVisible(selector), it only considers
+    // the *first* occurrence of the selector, not *any* occurrence
+    // so the "wait for any of occurence of this selector" behaviour had to
+    // be achieved manually
+    this.chromy.wait(function () {
+      var nestedTables = document.querySelectorAll('.table-nested');
+
+      return Array.prototype.some.call(nestedTables, function (table) {
+        return table.offsetWidth > 0 && table.offsetHeight > 0;
+      });
     });
 
     return this;
@@ -24,14 +31,10 @@ module.exports = tab.extend({
   /**
    * Show the actions of the first leave request available
    *
-   * @return {object}
+   * @return {Object}
    */
   showActions: function () {
-    var casper = this.casper;
-
-    casper.then(function () {
-      casper.click('.table-nested .dropdown-toggle');
-    });
+    this.chromy.click('.table-nested .dropdown-toggle');
 
     return this;
   }

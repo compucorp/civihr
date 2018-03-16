@@ -12,17 +12,11 @@ module.exports = tab.extend({
    * @return {object} resolves with the tab page object
    */
   openSubTab: function (tabId) {
-    var casper = this.casper;
-    var tab = require('./absence/' + tabId).init(casper, false);
-
     return new Promise(function (resolve) {
-      casper.then(function () {
-        casper.click('[heading="' + tab.tabTitle + '"] > a');
-        casper.waitFor(tab.ready.bind(tab), function () {
-          casper.wait(500);
-          resolve(tab);
-        });
-      });
-    });
+      var tab = require('./absence/' + tabId);
+
+      this.chromy.click('[heading="' + tab.tabTitle + '"] > a');
+      resolve(tab.init(this.chromy, false));
+    }.bind(this));
   }
 });

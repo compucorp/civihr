@@ -7,8 +7,8 @@ module.exports = (function () {
      * Defines that the tab is ready when the a specific selector is visible
      * @return {boolean}
      */
-    ready: function () {
-      return this.casper.visible(this.readySelector);
+    waitForReady: function () {
+      this.chromy.waitUntilVisible(this.readySelector);
     }
   });
 })();

@@ -2,6 +2,6 @@
 
 var page = require('../../../page-objects/contact-summary');
 
-module.exports = function (casper) {
-  page.init(casper).showActions();
+module.exports = function (chromy) {
+  page.init(chromy).showActions();
 };

@@ -4,21 +4,25 @@ module.exports = tab.extend({
   tabTitle: 'Entitlements',
 
   /**
-   * Overrides the original tab's `ready` method
+   * Overrides the original tab's `waitForReady` method
    * There is no single selector that can be used as `readySelector` (which
-   * would be used by the original `ready` method) to detect when the
+   * would be used by the original `waitForReady` method) to detect when the
    * tab is ready, so as a quick workaround we simply override the method
    * and perform all the needed checks in it
-   *
-   * @return {Boolean} returns `true` for the `casper.waitFor()` caller
    */
-  ready: function () {
-    this.casper.waitUntilVisible('contract-entitlements');
-    this.casper.waitUntilVisible('annual-entitlements');
+  waitForReady: function () {
+    this.chromy.wait('contract-entitlements');
+    this.chromy.wait('annual-entitlements');
     // Waits for spinners to hide which indicates the load of the data
-    this.casper.waitWhileVisible('contract-entitlements .spinner');
-    this.casper.waitWhileVisible('annual-entitlements .spinner');
-
-    return true;
+    this.chromy.wait(function () {
+      // = waitWhileVisible
+      var dom = document.querySelector('contract-entitlements .spinner');
+      return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
+    });
+    this.chromy.wait(function () {
+      // = waitWhileVisible
+      var dom = document.querySelector('annual-entitlements .spinner');
+      return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
+    });
   }
 });
