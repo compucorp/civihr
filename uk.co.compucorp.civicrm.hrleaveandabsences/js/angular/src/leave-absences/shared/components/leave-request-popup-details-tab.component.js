@@ -303,7 +303,6 @@ define([
       var timeObject = vm.uiOptions.times[type];
 
       timeObject.loading = true;
-      timeObject.disabled = true;
     }
 
     /**
