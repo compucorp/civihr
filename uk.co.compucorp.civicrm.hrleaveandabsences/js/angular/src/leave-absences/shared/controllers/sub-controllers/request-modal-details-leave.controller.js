@@ -23,7 +23,7 @@ define([
     detailsController.initWatchersExtended = initWatchers;
     detailsController.onAbsenceTypeUpdateExtended = updateFromTimeRangeAndDeductionBoundary;
     detailsController.onDateChangeExtended = loadDayTypesTimeRangesAndSetDeductionBoundaries;
-    detailsController.resetUIInputsExtended = resetUIInputsExtended;
+    detailsController.resetUIInputsExtended = resetUITimesDayTypesAndDeductions;
     detailsController.setDaysSelectionModeExtended = setDaysSelectionModeExtended;
 
     /**
@@ -359,16 +359,20 @@ define([
         });
     }
 
-    function resetUIInputsExtended (dateType) {
+    /**
+     * Resets time input, day types and deduction for a given date type
+     *
+     * @param {String} dateType (from|to)
+     */
+    function resetUITimesDayTypesAndDeductions (dateType) {
       var timeObject = detailsController.uiOptions.times[dateType];
 
+      detailsController['request' + _.startCase(dateType) + 'DayTypes'] = [];
       timeObject.time = '';
       timeObject.min = '00:00';
       timeObject.max = '00:00';
       timeObject.amount = '0';
       timeObject.maxAmount = '0';
-
-      setRequestHoursDeductions();
     }
 
     /**
