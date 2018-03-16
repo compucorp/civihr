@@ -1,4 +1,4 @@
-var modal = require('./../page');
+var modal = require('../page');
 
 module.exports = (function () {
   return modal.extend({
@@ -7,25 +7,21 @@ module.exports = (function () {
      * Opens Completed tasks modal
      */
     openCompletedTasksModal: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.pane-views-tasks-block a.show-complete-tasks');
-        casper.waitWhileVisible('.loading-spinner');
-        casper.waitUntilVisible('.view-Tasks');
+      this.chromy.click('.pane-views-tasks-block a.show-complete-tasks');
+      this.chromy.wait(function () {
+        // = waitWhileVisible
+        var dom = document.querySelector('.loading-spinner');
+        return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
       });
+      this.chromy.waitUntilVisible('.view-Tasks');
     },
 
     /**
      * Opens Create New Task modal
      */
     openCreateNewTaskModal: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.create-new-task');
-        casper.waitUntilVisible('#civihr-employee-portal-civi-tasks-form');
-      });
+      this.chromy.click('.create-new-task');
+      this.chromy.waitUntilVisible('#civihr-employee-portal-civi-tasks-form');
     }
   });
 })();
