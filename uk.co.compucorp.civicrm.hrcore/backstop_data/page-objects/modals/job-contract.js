@@ -1,3 +1,5 @@
+/* global XPathResult */
+
 var modal = require('./modal');
 
 module.exports = (function () {
@@ -9,11 +11,13 @@ module.exports = (function () {
      * @param  {string} tabTitle
      */
     selectTab: function (tabTitle) {
-      var casper = this.casper;
+      this.chromy.evaluate(function (tabTitle) {
+        // = clickLabel
+        var xPath = './/a[text()="' + tabTitle + '"]';
+        var link = document.evaluate(xPath, document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
-      casper.then(function () {
-        casper.clickLabel(tabTitle, 'a');
-      });
+        link.click();
+      }, [tabTitle]);
     }
   });
 })();
