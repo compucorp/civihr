@@ -561,6 +561,20 @@ define([
               expect(controller.uiOptions.multipleDays).toBeFalsy();
             });
 
+            describe('after changed to multiple days mode', function () {
+              beforeEach(function () {
+                controller.uiOptions.multipleDays = true;
+
+                controller.daysSelectionModeChangeHandler();
+                $rootScope.$digest();
+              });
+
+              it('shows both "from" and "to" times', function () {
+                expect(controller.uiOptions.times.from.loading).toBe(false);
+                expect(controller.uiOptions.times.to.loading).toBe(false);
+              });
+            });
+
             describe('after from date is selected', function () {
               var timeFromObject, request, workDayMock;
 
