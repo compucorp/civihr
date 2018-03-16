@@ -181,8 +181,8 @@ class CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern extends CRM_Core_DAO {
           'bao' => 'CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern',
           'localizable' => 0,
           'pseudoconstant' => array(
-            'optionGroupName' => 'hrleaveandabsences_work_pattern_change_reason',
-            'optionEditPath' => 'civicrm/admin/options/hrleaveandabsences_work_pattern_change_reason',
+            'optionGroupName' => 'hrjc_revision_change_reason',
+            'optionEditPath' => 'civicrm/admin/options/hrjc_revision_change_reason',
           )
         ) ,
       );

@@ -5,7 +5,7 @@
   <OptionGroups>
     <OptionGroup>
       <name>hrleaveandabsences_work_pattern_change_reason</name>
-      <title>Leave and Absence Work Pattern Change Reason</title>
+      <title>Work Pattern Change Reason</title>
       <is_reserved>1</is_reserved>
       <is_active>1</is_active>
     </OptionGroup>
