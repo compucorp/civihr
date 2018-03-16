@@ -745,13 +745,7 @@ define([
 
       return $q.resolve()
         .then(absenceTypeUnitChanged && setDaysSelectionMode)
-        .then(function () {
-          if (absenceTypeUnitChanged) {
-            return vm.onAbsenceTypeUpdateExtended
-              ? vm.onAbsenceTypeUpdateExtended()
-              : $q.resolve();
-          }
-        })
+        .then(absenceTypeUnitChanged && vm.onAbsenceTypeUpdateExtended)
         .then(absenceTypeUnitChanged && setRequestDateTimesAndDateTypes)
         .then(finishLoadingTimesAndDateTypes)
         .then(performBalanceChangeCalculation);
