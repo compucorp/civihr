@@ -173,7 +173,7 @@ class CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern extends CRM_Core_DAO {
           'name' => 'change_reason',
           'type' => CRM_Utils_Type::T_STRING,
           'title' => ts('Change Reason') ,
-          'description' => 'One of the values of the Job Contract Revision Change Reason option group',
+          'description' => 'One of the values of the Work Pattern Change Reasons option group',
           'maxlength' => 512,
           'size' => CRM_Utils_Type::HUGE,
           'table_name' => 'civicrm_hrleaveandabsences_contact_work_pattern',
@@ -181,8 +181,8 @@ class CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern extends CRM_Core_DAO {
           'bao' => 'CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern',
           'localizable' => 0,
           'pseudoconstant' => array(
-            'optionGroupName' => 'hrjc_revision_change_reason',
-            'optionEditPath' => 'civicrm/admin/options/hrjc_revision_change_reason',
+            'optionGroupName' => 'hrleaveandabsences_work_pattern_change_reason',
+            'optionEditPath' => 'civicrm/admin/options/hrleaveandabsences_work_pattern_change_reason',
           )
         ) ,
       );
