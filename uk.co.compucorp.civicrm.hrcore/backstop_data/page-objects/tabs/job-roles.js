@@ -9,26 +9,18 @@ module.exports = (function () {
      * Clicks on the delete button
      */
     attemptDelete: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.job-role [ng-click*="removeRole"]');
-        this.waitForModal();
-      }.bind(this));
+      this.chromy.click('.job-role [ng-click*="removeRole"]');
+      this.waitForModal();
     },
 
     /**
      * Clicks on the edit button of a job role
      *
-     * @return {object}
+     * @return {Object}
      */
     edit: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.tab-pane.active .job-role__actions .btn-link[ng-click$="show()"]');
-        casper.wait(100);
-      });
+      this.chromy.click('.tab-pane.active .job-role__actions .btn-link[ng-click$="show()"]');
+      this.chromy.wait(100);
 
       return this;
     },
@@ -36,18 +28,14 @@ module.exports = (function () {
     /**
      * Opens the ui-select with the given name
      *
-     * @param  {string} name
-     * @return {object}
+     * @param  {String} name
+     * @return {Object}
      */
     openDropdown: function (name) {
-      var casper = this.casper;
+      var common = 'jobroles.editData[job_roles_data.id]';
 
-      casper.then(function () {
-        var common = 'jobroles.edit_data[job_roles_data.id]';
-
-        casper.click('[ng-model="' + common + '[\'' + name + '\']"] > a');
-        casper.wait(100);
-      });
+      this.chromy.click('[ng-model="' + common + '[\'' + name + '\']"] > a');
+      this.chromy.wait(100);
 
       return this;
     },
@@ -56,25 +44,17 @@ module.exports = (function () {
      * Show the form for adding a new job role
      */
     showAddNew: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.btn-primary[ng-click*="jobroles.addNewRole()"]');
-      });
+      this.chromy.click('.btn-primary[ng-click*="jobroles.addNewRole()"]');
     },
 
     /**
      * Changes active tab
      *
-     * @param  {string} tabName
-     * @return {object}
+     * @param  {String} tabName
+     * @return {Object}
      */
     switchToTab: function (tabName) {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.clickLabel(tabName);
-      });
+      this.chromy.click('[heading="' + tabName + '"] > a');
 
       return this;
     }
