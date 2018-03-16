@@ -9,12 +9,8 @@ module.exports = (function () {
      * @return {object}
      */
     pickDate: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="task.activity_date_time"]');
-        casper.waitUntilVisible('.uib-datepicker-popup');
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' [ng-model="task.activity_date_time"]');
+      this.chromy.waitUntilVisible('.uib-datepicker-popup');
 
       return this;
     },
@@ -26,11 +22,7 @@ module.exports = (function () {
      * @return {object}
      */
     showField: function (fieldName) {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' a[ng-click*="showField' + fieldName + '"]');
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' a[ng-click*="showField' + fieldName + '"]');
 
       return this;
     },
@@ -41,12 +33,8 @@ module.exports = (function () {
      * @return {object}
      */
     selectAssignee: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="task.assignee_contact_id[0]"] .ui-select-match');
-        casper.waitUntilVisible('.select2-with-searchbox');
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' [ng-model="task.assignee_contact_id[0]"] .ui-select-match');
+      this.chromy.waitUntilVisible('.select2-with-searchbox:not(.select2-display-none)');
 
       return this;
     },
@@ -57,12 +45,8 @@ module.exports = (function () {
      * @return {object}
      */
     selectType: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="task.activity_type_id"] .ui-select-match');
-        casper.waitUntilVisible('.select2-with-searchbox');
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' [ng-model="task.activity_type_id"] .ui-select-match');
+      this.chromy.waitUntilVisible('.select2-with-searchbox:not(.select2-display-none)');
 
       return this;
     }

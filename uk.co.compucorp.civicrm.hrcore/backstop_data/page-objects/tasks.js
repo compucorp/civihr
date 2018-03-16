@@ -18,13 +18,9 @@ module.exports = (function () {
      * @return {Promise} resolves with the assignment modal page object
      */
     addAssignment: function () {
-      var casper = this.casper;
-
       return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click('a[ng-click*="modalAssignment"]');
-          resolve(this.waitForModal('assignment'));
-        }.bind(this));
+        this.chromy.click('a[ng-click*="modalAssignment"]');
+        resolve(this.waitForModal('assignment'));
       }.bind(this));
     },
 
@@ -34,13 +30,9 @@ module.exports = (function () {
      * @return {Promise} resolves with the task modal page object
      */
     addTask: function () {
-      var casper = this.casper;
-
       return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click('a[ng-click*="itemAdd"]');
-          resolve(this.waitForModal('task'));
-        }.bind(this));
+        this.chromy.click('a[ng-click*="itemAdd"]');
+        resolve(this.waitForModal('task'));
       }.bind(this));
     },
 
@@ -50,12 +42,8 @@ module.exports = (function () {
      * @return {object}
      */
     advancedFilters: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('a[ng-click*="isCollapsed.filterAdvanced"]');
-        casper.wait(500);
-      });
+      this.chromy.click('a[ng-click*="isCollapsed.filterAdvanced"]');
+      this.chromy.wait(500);
 
       return this;
     },
@@ -67,12 +55,8 @@ module.exports = (function () {
      * @return {object}
      */
     inPlaceEdit: function (fieldName) {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(editableSelectors[fieldName]);
-        casper.wait(200);
-      });
+      this.chromy.click(editableSelectors[fieldName]);
+      this.chromy.wait(200);
 
       return this;
     },
@@ -83,15 +67,15 @@ module.exports = (function () {
      * @return {Promise} resolves with the task modal page object
      */
     openTask: function () {
-      var casper = this.casper;
-
       return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click(taskSelector + ' .task-title > a[ng-click*="modalTask"]');
-          casper.waitWhileVisible('.spinner');
+        this.chromy.click(taskSelector + ' .task-title > a[ng-click*="modalTask"]');
+        this.chromy.wait(function () {
+          // = waitWhileVisible
+          var dom = document.querySelector('.spinner');
+          return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
+        });
 
-          resolve(this.waitForModal('task'));
-        }.bind(this));
+        resolve(this.waitForModal('task'));
       }.bind(this));
     },
 
@@ -99,12 +83,8 @@ module.exports = (function () {
      * Shows the "select dates" filter
      */
     selectDates: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.ct-select-dates');
-        casper.wait(500);
-      });
+      this.chromy.click('.ct-select-dates');
+      this.chromy.wait(500);
     },
 
     /**
@@ -113,14 +93,9 @@ module.exports = (function () {
      * @return {object}
      */
     showMore: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(taskSelector + ' a[ng-click*="isCollapsed"]');
-        casper.waitUntilVisible(taskSelector + ' article', function () {
-          casper.wait(500);
-        });
-      });
+      this.chromy.click(taskSelector + ' a[ng-click*="isCollapsed"]');
+      this.chromy.waitUntilVisible(taskSelector + ' article');
+      this.chromy.wait(500);
 
       return this;
     },
@@ -131,11 +106,7 @@ module.exports = (function () {
      * @return {object}
      */
     taskActions: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(taskSelector + ' .ct-context-menu-toggle');
-      });
+      this.chromy.click(taskSelector + ' .ct-context-menu-toggle');
 
       return this;
     },
@@ -144,11 +115,8 @@ module.exports = (function () {
      * Waits until the specified select is visible on the page
      */
     waitForReady: function () {
-      var casper = this.casper;
-
-      casper.waitUntilVisible('.ct-container-inner', function () {
-        casper.wait(300);
-      });
+      this.chromy.waitUntilVisible('.ct-container-inner');
+      this.chromy.wait(300);
     }
   });
 })();

@@ -1,3 +1,5 @@
+/* global jQuery */
+
 var modal = require('./modal');
 
 module.exports = (function () {
@@ -9,11 +11,7 @@ module.exports = (function () {
      * @return {object}
      */
     addDocument: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' a[ng-click="addActivity(documentList)"]');
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' a[ng-click="addActivity(documentList)"]');
 
       return this;
     },
@@ -24,11 +22,7 @@ module.exports = (function () {
      * @return {object}
      */
     addTask: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' a[ng-click="addActivity(taskList)"]');
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' a[ng-click="addActivity(taskList)"]');
 
       return this;
     },
@@ -39,12 +33,8 @@ module.exports = (function () {
      * @return {object}
      */
     pickDate: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="assignment.dueDate"]');
-        casper.waitUntilVisible('.uib-datepicker-popup');
-      }.bind(this));
+      this.chromy.click(this.modalRoot + ' [ng-model="assignment.dueDate"]');
+      this.chromy.waitUntilVisible('.uib-datepicker-popup');
 
       return this;
     },
@@ -55,18 +45,13 @@ module.exports = (function () {
      * @return {object}
      */
     selectType: function () {
-      var casper = this.casper;
+      this.chromy.evaluate(function (modalRoot) {
+        var select = document.querySelector(modalRoot + ' select[name="assignment"]');
 
-      casper.then(function () {
-        casper.evaluate(function (modalRoot) {
-          var select = document.querySelector(modalRoot + ' select[name="assignment"]');
-
-          select.selectedIndex = 2;
-          jQuery(select).change();
-        }, this.modalRoot);
-
-        casper.wait(500);
-      }.bind(this));
+        select.selectedIndex = 2;
+        jQuery(select).change();
+      }, [this.modalRoot]);
+      this.chromy.wait(500);
 
       return this;
     }
