@@ -2,6 +2,6 @@
 
 var page = require('../../../../page-objects/contact-summary');
 
-module.exports = function (casper) {
-  page.init(casper).openTab('tasks');
+module.exports = function (chromy) {
+  page.init(chromy).openTab('tasks');
 };

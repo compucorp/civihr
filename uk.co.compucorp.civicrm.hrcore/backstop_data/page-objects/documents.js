@@ -36,11 +36,7 @@ module.exports = (function () {
      * @return {object}
      */
     documentActions: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(documentSelector + ' .ct-context-menu-toggle');
-      });
+      this.chromy.click(documentSelector + ' .ct-context-menu-toggle');
 
       return this;
     },
@@ -51,17 +47,11 @@ module.exports = (function () {
      * @return {Promise} resolves with the document modal page object
      */
     openDocument: function () {
-      var casper = this.casper;
-
       return new Promise(function (resolve) {
-        casper.then(function () {
-          this.documentActions();
-        }.bind(this));
+        this.documentActions();
 
-        casper.then(function () {
-          casper.click(documentSelector + ' .dropdown-menu a[ng-click*="modalDocument"]');
-          resolve(this.waitForModal('document'));
-        }.bind(this));
+        this.chromy.click(documentSelector + ' .dropdown-menu a[ng-click*="modalDocument"]');
+        resolve(this.waitForModal('document'));
       }.bind(this));
     },
 
@@ -69,12 +59,8 @@ module.exports = (function () {
      * Shows the "select dates" filter
      */
     selectDates: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.ct-select-dates');
-        casper.wait(500);
-      });
+      this.chromy.click('.ct-select-dates');
+      this.chromy.wait(500);
     },
 
     /**
