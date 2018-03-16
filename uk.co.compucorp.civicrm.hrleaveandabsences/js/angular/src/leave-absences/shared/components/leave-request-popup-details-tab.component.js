@@ -595,18 +595,14 @@ define([
     }
 
     /**
-     * Reset day types, times and deductions.
+     * Calls extended resetting function, if any, then sets values from UI to
+     * the request and toggles the balance
      *
      * @param {String} dateType from|to
      */
     function resetUIInputs (dateType) {
-      var time = vm.uiOptions.times[dateType];
-
-      vm['request' + _.startCase(dateType) + 'DayTypes'] = [];
-      time.loading = false;
-
-      setRequestDateTimesAndDateTypes();
       (vm.resetUIInputsExtended) && vm.resetUIInputsExtended(dateType);
+      setRequestDateTimesAndDateTypes();
       toggleBalance();
     }
 

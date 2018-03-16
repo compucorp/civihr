@@ -171,7 +171,7 @@ define([
           });
         });
 
-        describe('when unit changed to hours by changing an absence type', function () {
+        describe('when the unit changes to hours because the absence type changed', function () {
           beforeEach(function () {
             controller.absenceTypes[1].calculation_unit_name = 'hours';
             controller.request.type_id = controller.absenceTypes[1].id;
