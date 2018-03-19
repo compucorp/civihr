@@ -34,7 +34,7 @@
         spyOn($log, 'debug');
         spyOn(WorkPatternAPI, 'get').and.callThrough();
         spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
-          return $q.resolve(optionGroupMock.getCollection('hrjc_revision_change_reason'));
+          return $q.resolve(optionGroupMock.getCollection('hrleaveandabsences_work_pattern_change_reason'));
         });
 
         compileComponent();
@@ -49,8 +49,12 @@
       });
 
       describe('init()', function () {
+        it('calls the valueOf with hrleaveandabsences_work_pattern_change_reason', function () {
+          expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_work_pattern_change_reason');
+        });
+
         it('loads change reasons', function () {
-          expect(controller.changeReasons).toEqual(optionGroupMock.getCollection('hrjc_revision_change_reason'));
+          expect(controller.changeReasons).toEqual(optionGroupMock.getCollection('hrleaveandabsences_work_pattern_change_reason'));
         });
 
         it('loads work patterns', function () {

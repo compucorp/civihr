@@ -17,9 +17,9 @@
       <value>1</value>
       <name>as_per_contract</name>
       <is_default>1</is_default>
-      <weight>0</weight>
+      <weight>1</weight>
       <is_optgroup>0</is_optgroup>
-      <is_reserved>1</is_reserved>
+      <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>hrleaveandabsences_work_pattern_change_reason</option_group_name>
     </OptionValue>
@@ -31,7 +31,7 @@
       <is_default>0</is_default>
       <weight>2</weight>
       <is_optgroup>0</is_optgroup>
-      <is_reserved>1</is_reserved>
+      <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>hrleaveandabsences_work_pattern_change_reason</option_group_name>
     </OptionValue>
@@ -43,7 +43,7 @@
       <is_default>0</is_default>
       <weight>3</weight>
       <is_optgroup>0</is_optgroup>
-      <is_reserved>1</is_reserved>
+      <is_reserved>0</is_reserved>
       <is_active>1</is_active>
       <option_group_name>hrleaveandabsences_work_pattern_change_reason</option_group_name>
     </OptionValue>

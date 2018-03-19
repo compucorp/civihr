@@ -863,6 +863,43 @@ define([
       'is_reserved': '0',
       'is_active': '1'
     }],
+    hrleaveandabsences_work_pattern_change_reason: [{
+      'id': '1314',
+      'option_group_id': '196',
+      'label': 'As per contract',
+      'value': '1',
+      'name': 'as_per_contract',
+      'filter': '0',
+      'is_default': '1',
+      'weight': '1',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '1315',
+      'option_group_id': '196',
+      'label': 'Change in contractual hours',
+      'value': '2',
+      'name': 'change_in_contractual_hours',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '2',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }, {
+      'id': '1316',
+      'option_group_id': '196',
+      'label': 'Change in contractual type',
+      'value': '3',
+      'name': 'change_in_contractual_type',
+      'filter': '0',
+      'is_default': '0',
+      'weight': '3',
+      'is_optgroup': '0',
+      'is_reserved': '0',
+      'is_active': '1'
+    }],
     safe_file_extension: [{
       'id': '296',
       'option_group_id': '30',
