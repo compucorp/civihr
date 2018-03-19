@@ -21,35 +21,12 @@ define([
          */
         defaultCustomData: function () {
           var toilCustomData = {
-            toilDurationHours: '0',
-            toilDurationMinutes: '0',
+            from_date_amount: 0,
+            to_date_amount: 0,
             request_type: 'toil'
           };
 
           return _.assign({}, LeaveRequestInstance.defaultCustomData(), toilCustomData);
-        },
-
-        /**
-         * Sets the duration hours and minutes from toil_duration on instantiation.
-         *
-         * @param {Object} attributes that need to be transformed
-         * @return {Object} updated attributes object
-         */
-        transformAttributes: function (attributes) {
-          var duration = Number(attributes.toil_duration);
-          if (duration) {
-            attributes.toilDurationHours = Math.floor(duration / 60).toString();
-            attributes.toilDurationMinutes = (duration % 60).toString();
-          }
-
-          return attributes;
-        },
-
-        /**
-         * Update duration
-         */
-        updateDuration: function () {
-          this.toil_duration = Number(this.toilDurationHours) * 60 + Number(this.toilDurationMinutes);
         },
 
         /**
@@ -59,7 +36,7 @@ define([
          * @param {string} key - The property name
          */
         toAPIFilter: function (result, __, key) {
-          if (!_.includes(['balance_change', 'dates', 'comments', 'files', 'toilDurationHours', 'toilDurationMinutes'], key)) {
+          if (!_.includes(['balance_change', 'dates', 'comments', 'files'], key)) {
             result[key] = this[key];
           }
         }
