@@ -2,45 +2,38 @@
   "scenarios": [
     {
       "label": "Absence / Report",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-report",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "onReadyScript": "contact-summary/absence/tab-report.js"
     },
     {
       "label": "Absence / Report / Open Section",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-report-open-section",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "onReadyScript": "contact-summary/absence/tab-report-open-section.js"
     },
     {
       "label": "Absence / Report / Actions",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-report-actions",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "onReadyScript": "contact-summary/absence/tab-report-actions.js"
     },
     {
       "label": "Absence / Calendar / Current Month",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-calendar",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "onReadyScript": "contact-summary/absence/tab-calendar.js"
     },
     {
       "label": "Absence / Entitlements",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-entitlements",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "onReadyScript": "contact-summary/absence/tab-entitlements.js"
     },
     {
       "label": "Absence / Work Patterns",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-work-patterns",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "onReadyScript": "contact-summary/absence/tab-work-patterns.js"
     },
     {
       "label": "Absence / Work Patterns / Custom Work Patterns Modal",
-      "url": "civicrm/contact/view?reset=1&cid={{contactId:staff}}&selectedChild=absence",
-      "onReadyScript": "contact-summary/absence/tab-work-patterns-modal",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "onReadyScript": "contact-summary/absence/tab-work-patterns-modal.js"
     }
   ]
 }

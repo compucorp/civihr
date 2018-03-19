@@ -2,15 +2,13 @@
   "scenarios": [
     {
       "label": "Current Month: My Leave Calendar",
-      "url": "my-leave#/my-leave/calendar",
-      "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar_current-month-visible",
-      "credential": "staff"
+      "url": "{{siteUrl}}/my-leave#/my-leave/calendar",
+      "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar_current-month-visible.js"
     },
     {
       "label": "My Leave Calendar tooltip",
-      "url": "my-leave#/my-leave/calendar",
-      "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar_tooltip",
-      "credential": "staff"
+      "url": "{{siteUrl}}/my-leave#/my-leave/calendar",
+      "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar_tooltip.js"
     }
   ]
 }

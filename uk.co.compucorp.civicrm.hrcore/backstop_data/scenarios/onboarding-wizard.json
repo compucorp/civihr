@@ -2,49 +2,49 @@
   "scenarios": [
     {
       "label": "Features",
-      "url": "features-in-civihr"
+      "url": "{{siteUrl}}/features-in-civihr"
     },
     {
       "label": "Customize Onboarding Wizard",
-      "url": "customize-onboarding-wizard"
+      "url": "{{siteUrl}}/customize-onboarding-wizard"
     },
     {
       "label": "Password Page",
-      "url": "user/1/edit"
+      "url": "{{siteUrl}}/user/1/edit"
     },
     {
       "label": "Personal Details Page",
-      "url": "onboarding-form"
+      "url": "{{siteUrl}}/onboarding-form"
     },
     {
       "label": "Address Page",
-      "url": "onboarding-form",
-      "onReadyScript": "onboarding-wizard/address"
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/address.js"
     },
     {
       "label": "Contact Page",
-      "url": "onboarding-form",
-      "onReadyScript": "onboarding-wizard/contact"
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/contact.js"
     },
     {
       "label": "Payroll Page",
-      "url": "onboarding-form",
-      "onReadyScript": "onboarding-wizard/payroll"
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/payroll.js"
     },
     {
       "label": "Emergency Contact Page",
-      "url": "onboarding-form",
-      "onReadyScript": "onboarding-wizard/emergency_contact"
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/emergency_contact.js"
     },
     {
       "label": "Dependents Page",
-      "url": "onboarding-form",
-      "onReadyScript": "onboarding-wizard/dependents"
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/dependents.js"
     },
     {
       "label": "Profile Picture Page",
-      "url": "onboarding-form",
-      "onReadyScript": "onboarding-wizard/profile_picture"
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/profile_picture.js"
     }
   ]
 }

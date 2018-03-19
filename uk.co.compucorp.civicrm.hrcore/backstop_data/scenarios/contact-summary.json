@@ -2,15 +2,12 @@
   "scenarios": [
     {
       "label": "Contact Summary",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "close-any-modal",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}"
     },
     {
       "label": "Contact Summary / Actions",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/show-actions",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "onReadyScript": "contact-summary/show-actions.js"
     }
   ]
 }

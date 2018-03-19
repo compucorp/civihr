@@ -2,20 +2,17 @@
   "scenarios": [
     {
       "label": "SSP - Tasks",
-      "url": "tasks-and-documents",
-      "credential": "admin"
+      "url": "{{siteUrl}}/tasks-and-documents"
     },
     {
       "label": "SSP - Tasks - Show Completed tasks",
-      "url": "tasks-and-documents",
-      "onReadyScript": "ssp/tasks-show-completed-tasks",
-      "credential": "admin"
+      "url": "{{siteUrl}}/tasks-and-documents",
+      "onReadyScript": "ssp/tasks-show-completed-tasks.js"
     },
     {
       "label": "SSP - Tasks - Create new tasks",
-      "url": "tasks-and-documents",
-      "onReadyScript": "ssp/tasks-create-new-task",
-      "credential": "super-admin"
+      "url": "{{siteUrl}}/tasks-and-documents",
+      "onReadyScript": "ssp/tasks-create-new-task.js"
     }
   ]
 }

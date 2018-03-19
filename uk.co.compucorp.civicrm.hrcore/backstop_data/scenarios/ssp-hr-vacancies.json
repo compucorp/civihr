@@ -2,12 +2,12 @@
   "scenarios": [
     {
       "label": "SSP - HR Vacancies",
-      "url": "hr-vacancies"
+      "url": "{{siteUrl}}/hr-vacancies"
     },
     {
       "label": "SSP - HR Vacancies - More Details",
-      "url": "hr-vacancies",
-      "onReadyScript": "ssp/vacancies-more-details"
+      "url": "{{siteUrl}}/hr-vacancies",
+      "onReadyScript": "ssp/vacancies-more-details.js"
     }
   ]
 }

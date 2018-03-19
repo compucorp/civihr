@@ -2,45 +2,37 @@
   "scenarios": [
     {
       "label": "T&A / Documents",
-      "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "close-any-modal",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/documents"
     },
     {
       "label": "T&A / Documents / Advanced Filters",
-      "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/advanced-filters",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/advanced-filters.js"
     },
     {
       "label": "T&A / Documents / Document / Add",
-      "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/add",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/add.js"
     },
     {
       "label": "T&A / Documents / Document / Show All Fields",
-      "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/show-all-fields",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/show-all-fields.js"
     },
     {
       "label": "T&A / Documents / Document / Select Type",
-      "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/select-type",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/select-type.js"
     },
     {
       "label": "T&A / Documents / Document / Select Assignee",
-      "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/select-assignee",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/select-assignee.js"
     },
     {
       "label": "T&A / Documents / Document / Pick Due Date",
-      "url": "civicrm/tasksassignments/dashboard#/documents",
-      "onReadyScript": "documents/document/pick-due-date",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/document/pick-due-date.js"
     }
   ]
 }

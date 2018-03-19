@@ -1,51 +1,44 @@
 {
-  "scenarios": [{
+  "scenarios": [
+    {
       "label": "Leave and Absences: Manager Leave Requests: Show actions",
-      "url": "manager-leave#/manager-leave/requests",
-      "onReadyScript": "ssp-leave-absences/manager/leave-requests-show-actions",
-      "credential": "manager"
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/leave-requests-show-actions.js"
     },
     {
       "label": "Leave and Absences: Manager Leave Requests: Show Without Filters",
-      "url": "manager-leave#/manager-leave/requests",
-      "onReadyScript": "ssp-leave-absences/manager/leave-requests-without-filters",
-      "credential": "manager"
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/leave-requests-without-filters.js"
     },
     {
       "label": "Leave and Absences: Manager Leave Requests: Show With Filters",
-      "url": "manager-leave#/manager-leave/requests",
-      "onReadyScript": "ssp-leave-absences/manager/leave-requests-with-filters",
-      "credential": "manager"
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/leave-requests-with-filters.js"
     },
     {
       "label": "Leave and Absences: Manager Leave Requests: Show staff edit toil request",
-      "url": "manager-leave#/manager-leave/requests",
-      "onReadyScript": "ssp-leave-absences/manager/leave-requests-of-staff-edit-toil",
-      "credential": "manager"
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/leave-requests-of-staff-edit-toil.js"
     },
     {
       "label": "Leave and Absences: Manager Leave Requests: Show staff edit sickness request",
-      "url": "manager-leave#/manager-leave/requests",
-      "onReadyScript": "ssp-leave-absences/manager/leave-requests-of-staff-edit-sickness",
-      "credential": "manager"
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/leave-requests-of-staff-edit-sickness.js"
     },
     {
       "label": "Leave and Absences: Manager Leave Requests: Apply leave on behalf of staff",
-      "url": "manager-leave#/manager-leave/requests",
-      "onReadyScript": "ssp-leave-absences/manager/leave-requests-on-behalf-of-staff",
-      "credential": "manager"
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/leave-requests-on-behalf-of-staff.js"
     },
     {
       "label": "Leave and Absences: Manager Leave Requests: Apply sickness on behalf of staff",
-      "url": "manager-leave#/manager-leave/requests",
-      "onReadyScript": "ssp-leave-absences/manager/sick-requests-on-behalf-of-staff",
-      "credential": "manager"
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/sick-requests-on-behalf-of-staff.js"
     },
     {
       "label": "Leave and Absences: Manager Leave Requests: Apply toil on behalf of staff",
-      "url": "manager-leave#/manager-leave/requests",
-      "onReadyScript": "ssp-leave-absences/manager/toil-requests-on-behalf-of-staff",
-      "credential": "manager"
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp-leave-absences/manager/toil-requests-on-behalf-of-staff.js"
     }
   ]
 }

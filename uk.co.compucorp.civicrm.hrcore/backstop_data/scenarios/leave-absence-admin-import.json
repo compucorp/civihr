@@ -2,26 +2,22 @@
   "scenarios": [
     {
       "label": "Leave & Absences Import - Step 1",
-      "url": "civicrm/admin/leaveandabsences/import",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/admin/leaveandabsences/import"
     },
     {
       "label": "Leave & Absences Import - Step 2",
-      "url": "civicrm/admin/leaveandabsences/import",
-      "onReadyScript": "leave-absence-dashboard/import/step-2",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/admin/leaveandabsences/import",
+      "onReadyScript": "leave-absence-dashboard/import/step-2.js"
     },
     {
       "label": "Leave & Absences Import - Step 3",
-      "url": "civicrm/admin/leaveandabsences/import",
-      "onReadyScript": "leave-absence-dashboard/import/step-3",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/admin/leaveandabsences/import",
+      "onReadyScript": "leave-absence-dashboard/import/step-3.js"
     },
     {
       "label": "Leave & Absences Import - Step 4",
-      "url": "civicrm/admin/leaveandabsences/import",
-      "onReadyScript": "leave-absence-dashboard/import/step-4",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/admin/leaveandabsences/import",
+      "onReadyScript": "leave-absence-dashboard/import/step-4.js"
     }
   ]
 }
