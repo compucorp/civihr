@@ -7,7 +7,6 @@ define([
 ], function (components) {
   components.component('leaveRequestRecordActions', {
     bindings: {
-      btnClass: '@',
       contactId: '<',
       selectedContactId: '<',
       isSelfRecord: '<'
@@ -27,8 +26,7 @@ define([
 
     vm.leaveRequestOptions = [
       { type: 'leave', icon: 'briefcase', label: 'Leave' },
-      { type: 'sickness', icon: 'stethoscope', label: 'Sickness' },
-      { type: 'toil', icon: 'calendar-plus-o', label: 'Overtime' }
+      { type: 'sickness', icon: 'stethoscope', label: 'Sickness' }
     ];
 
     vm.openLeavePopup = openLeavePopup;

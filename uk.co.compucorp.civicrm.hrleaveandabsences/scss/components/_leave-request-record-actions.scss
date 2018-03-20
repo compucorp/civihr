@@ -1,0 +1,34 @@
+leave-request-record-actions {
+  display: block;
+  margin-bottom: $crm-panel-nested-indent;
+
+  .fa,
+  .btn-group {
+    margin-right: $crm-gap-medium;
+  }
+}
+
+leave-request-record-actions .btn-toolbar {
+  margin-left: 0;
+  overflow: inherit;
+
+  .btn-group,
+  .btn {
+    margin-left: 0;
+  }
+}
+
+@media screen and (max-width: $screen-xs-max) {
+  leave-request-record-actions {
+    .btn-group,
+    .btn {
+      display: block;
+      width: 100%;
+    }
+
+    .btn-group {
+      margin-bottom: $crm-gap-medium;
+      margin-right: 0;
+    }
+  }
+}
