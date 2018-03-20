@@ -49,7 +49,7 @@
       });
 
       describe('init()', function () {
-        it('calls the valueOf with hrleaveandabsences_work_pattern_change_reason', function () {
+        it('fetches values of the Work Pattern Change Reason option group', function () {
           expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_work_pattern_change_reason');
         });
 

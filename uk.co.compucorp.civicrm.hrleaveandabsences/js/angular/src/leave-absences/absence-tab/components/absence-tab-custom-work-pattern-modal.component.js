@@ -107,9 +107,9 @@ define([
     }
 
     /**
-     * Loads the Leave and Absences Work Pattern Change Reason and indexes by `value`
+     * Loads the Leave and Absences Work Pattern Change Reasons and indexes by `value`
      *
-     * @return {Promise}
+     * @return {Promise} resolves with {Array}
      */
     function loadJobContractRevisionChangeReasons () {
       return OptionGroup.valuesOf('hrleaveandabsences_work_pattern_change_reason')
