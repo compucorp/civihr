@@ -45,11 +45,11 @@ module.exports = ['reference', 'test', 'openReport', 'approve'].map(function (ac
  * @return {String}
  */
 function constructBackstopJSScenarioUrl (siteUrl, scenarioUrl, contactIdsByRoles) {
-  scenarioUrl = scenarioUrl.replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, contactRole) {
-    return contactIdsByRoles[contactRole];
-  });
-
-  return siteUrl + '/' + scenarioUrl;
+  return scenarioUrl
+    .replace('{{siteUrl}}', siteUrl)
+    .replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, contactRole) {
+      return contactIdsByRoles[contactRole];
+    });
 }
 
 /**
@@ -89,24 +89,6 @@ function getRolesAndIDs () {
       resolve(idsByRoles);
     });
   });
-}
-
-/**
- * Creates the site config file is in the backstopjs folder, if it doesn't exists yet
- *
- * @return {Boolean} Whether the file had to be created or not
- */
-function touchConfigFile () {
-  var created = false;
-
-  try {
-    fs.readFileSync(BACKSTOP_DIR_PATH + FILES.config);
-  } catch (err) {
-    fs.writeFileSync(BACKSTOP_DIR_PATH + FILES.config, JSON.stringify(CONFIG_TPL, null, 2));
-    created = true;
-  }
-
-  return created;
 }
 
 /**
@@ -167,35 +149,13 @@ function runBackstopJS (command) {
 }
 
 /**
- * Creates the content of the config temporary file that will be fed to BackstopJS
- * The content is the mix of the config template and the list of scenarios
- * under the scenarios/ folder
+ * Concatenates all the scenarios (if no specific scenario file is specified)
  *
  * @param  {Object} contactIdsByRoles
- * @return {String}
- */
-function tempFileContent (contactIdsByRoles) {
-  var config = JSON.parse(fs.readFileSync(BACKSTOP_DIR_PATH + FILES.config));
-  var content = JSON.parse(fs.readFileSync(BACKSTOP_DIR_PATH + FILES.tpl));
-
-  content.scenarios = scenariosList().map(function (scenario) {
-    scenario.url = constructBackstopJSScenarioUrl(config.url, scenario.url, contactIdsByRoles);
-
-    return scenario;
-  });
-
-  return JSON.stringify(content);
-}
-
-/**
- * Concatenates all the scenarios, or returns only the scenario passed as
- * an argument to the gulp task
- *
- * The first scenario of the list gets the login script to run
- *
  * @return {Array}
  */
-function scenariosList () {
+function scenariosList (contactIdsByRoles) {
+  var config = JSON.parse(fs.readFileSync(BACKSTOP_DIR_PATH + FILES.config));
   var scenariosPath = BACKSTOP_DIR_PATH + 'scenarios/';
 
   return _(fs.readdirSync(scenariosPath))
@@ -206,29 +166,60 @@ function scenariosList () {
       return JSON.parse(fs.readFileSync(scenariosPath + scenarioFile)).scenarios;
     })
     .flatten()
-    .map(function (scenario) {
-      return _.assign(scenario, { delay: scenario.delay || 6000 });
+    .map(function (scenario, index, scenarios) {
+      return _.assign(scenario, {
+        count: '(' + (index + 1) + ' of ' + scenarios.length + ')',
+        credential: scenario.credential || DEFAULT_CREDENTIAL,
+        delay: scenario.delay || 6000,
+        url: constructBackstopJSScenarioUrl(config.url, scenario.url, contactIdsByRoles)
+      });
     })
     .tap(function (scenarios) {
       var previousCredential;
 
-      scenarios.forEach(function (scenario, index) {
-        scenario.credential = scenario.credential || DEFAULT_CREDENTIAL;
-        scenario.count = '(' + (index + 1) + ' of ' + scenarios.length + ')';
-        scenario.onBeforeScript = 'init';
-
+      return scenarios.map(function (scenario, index) {
         if (index === 0 || previousCredential !== scenario.credential) {
           scenario.performLogin = true;
-
-          if (index !== 0) {
-            scenario.performLogout = true;
-          }
+          scenario.performLogout = index !== 0;
         }
 
         previousCredential = scenario.credential;
-      });
 
-      return scenarios;
+        return scenario;
+      });
     })
     .value();
+}
+
+/**
+ * Creates the content of the config temporary file that will be fed to BackstopJS
+ * The content is the mix of the config template and the list of scenarios
+ * under the scenarios/ folder
+ *
+ * @return {String}
+ */
+function tempFileContent (contactIdsByRoles) {
+  var content = JSON.parse(fs.readFileSync(BACKSTOP_DIR_PATH + FILES.tpl));
+
+  content.scenarios = scenariosList(contactIdsByRoles);
+
+  return JSON.stringify(content);
+}
+
+/**
+ * Creates the site config file is in the backstopjs folder, if it doesn't exists yet
+ *
+ * @return {Boolean} Whether the file had to be created or not
+ */
+function touchConfigFile () {
+  var created = false;
+
+  try {
+    fs.readFileSync(BACKSTOP_DIR_PATH + FILES.config);
+  } catch (err) {
+    fs.writeFileSync(BACKSTOP_DIR_PATH + FILES.config, JSON.stringify(CONFIG_TPL, null, 2));
+    created = true;
+  }
+
+  return created;
 }
