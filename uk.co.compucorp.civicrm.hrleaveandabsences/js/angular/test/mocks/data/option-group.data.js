@@ -826,43 +826,6 @@ define([
       'is_active': '1'
     }
     ],
-    hrjc_revision_change_reason: [{
-      'id': '938',
-      'option_group_id': '110',
-      'label': 'Promotion',
-      'value': '1',
-      'name': 'Promotion',
-      'filter': '0',
-      'is_default': '0',
-      'weight': '1',
-      'is_optgroup': '0',
-      'is_reserved': '0',
-      'is_active': '1'
-    }, {
-      'id': '939',
-      'option_group_id': '110',
-      'label': 'Increment',
-      'value': '2',
-      'name': 'Increment',
-      'filter': '0',
-      'is_default': '0',
-      'weight': '2',
-      'is_optgroup': '0',
-      'is_reserved': '0',
-      'is_active': '1'
-    }, {
-      'id': '940',
-      'option_group_id': '110',
-      'label': 'Disciplinary',
-      'value': '3',
-      'name': 'Disciplinary',
-      'filter': '0',
-      'is_default': '0',
-      'weight': '3',
-      'is_optgroup': '0',
-      'is_reserved': '0',
-      'is_active': '1'
-    }],
     hrleaveandabsences_work_pattern_change_reason: [{
       'id': '1314',
       'option_group_id': '196',

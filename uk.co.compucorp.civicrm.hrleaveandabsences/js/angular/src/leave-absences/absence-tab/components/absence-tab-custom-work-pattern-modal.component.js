@@ -107,7 +107,7 @@ define([
     }
 
     /**
-     * Loads the Leave and Absences Work Pattern Change Reasons and indexes by `value`
+     * Loads the Leave and Absences Work Pattern Change Reasons
      *
      * @return {Promise} resolves with {Array}
      */
