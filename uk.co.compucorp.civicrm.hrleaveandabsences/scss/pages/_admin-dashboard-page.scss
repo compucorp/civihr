@@ -25,7 +25,7 @@ $content-container-margin: 16px;
     }
 
     leave-request-record-actions {
-      margin: 12px 30px 0 0;
+      margin: 12px #{$content-container-margin} 0 0;
     }
 
     .chr_admin-dashboard_side-nav {
