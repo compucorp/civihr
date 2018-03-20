@@ -168,7 +168,6 @@ function scenariosList (contactIdsByRoles) {
       return _.assign(scenario, {
         cookiePath: path.join(BACKSTOP_DIR, 'cookies', user + '.json'),
         count: '(' + (index + 1) + ' of ' + scenarios.length + ')',
-        delay: scenario.delay || 6000,
         url: constructBackstopJSScenarioUrl(config.url, scenario.url, contactIdsByRoles)
       });
     })
