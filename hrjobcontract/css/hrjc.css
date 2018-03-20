@@ -12092,26 +12092,27 @@ fieldset[disabled]
   background: #FFFFFF;
   color: #586277;
   padding: 7px;
+  vertical-align: middle;
 }
-/* line 50, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 51, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 #hrjob-contract .uib-daypicker tbody {
   background: transparent;
   border-top: 0;
   box-shadow: 0;
 }
-/* line 57, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 58, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 #hrjob-contract .uib-day,
 #hrjob-contract .uib-month,
 #hrjob-contract .uib-year {
-  padding: 7px 3px;
+  padding: 7px;
 }
-/* line 62, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 63, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 #hrjob-contract .uib-day .text-muted,
 #hrjob-contract .uib-month .text-muted,
 #hrjob-contract .uib-year .text-muted {
   color: #dcdddd;
 }
-/* line 66, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 67, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 #hrjob-contract .uib-day .text-info,
 #hrjob-contract .uib-month .text-info,
 #hrjob-contract .uib-year .text-info {
@@ -12119,7 +12120,7 @@ fieldset[disabled]
   border-radius: 50%;
   color: #0071BD;
 }
-/* line 72, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 73, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 #hrjob-contract .uib-day .btn-default,
 #hrjob-contract .uib-month .btn-default,
 #hrjob-contract .uib-year .btn-default {
@@ -12130,13 +12131,7 @@ fieldset[disabled]
   min-width: 0;
   padding: 7px;
 }
-/* line 80, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
-#hrjob-contract .uib-day .btn-default span,
-#hrjob-contract .uib-month .btn-default span,
-#hrjob-contract .uib-year .btn-default span {
-  padding: 5px !important;
-}
-/* line 84, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 81, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 #hrjob-contract .uib-day .btn-default.active,
 #hrjob-contract .uib-month .btn-default.active,
 #hrjob-contract .uib-year .btn-default.active {
@@ -12145,28 +12140,28 @@ fieldset[disabled]
   box-shadow: none;
   color: #FFFFFF;
 }
-/* line 90, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 87, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 #hrjob-contract .uib-day .btn-default.active .text-info,
 #hrjob-contract .uib-month .btn-default.active .text-info,
 #hrjob-contract .uib-year .btn-default.active .text-info {
   color: inherit;
 }
-/* line 97, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 94, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 #hrjob-contract .uib-datepicker-popup {
   border: 0;
-  padding: 10px;
+  padding: 10px !important;
 }
-/* line 104, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 101, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 .mobile [type='date'][uib-datepicker-popup] {
   line-height: normal;
 }
-/* line 107, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 104, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 .mobile [type='date'][uib-datepicker-popup]::-webkit-inner-spin-button, .mobile [type='date'][uib-datepicker-popup]::-webkit-clear-button {
   -webkit-appearance: none;
   appearance: none;
   display: none;
 }
-/* line 113, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 110, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 .mobile [type='date'][uib-datepicker-popup]::-webkit-calendar-picker-indicator {
   background: transparent;
   bottom: 0;
@@ -12178,7 +12173,7 @@ fieldset[disabled]
   top: 0;
   width: auto;
 }
-/* line 125, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 122, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 .mobile [type='date'][uib-datepicker-popup] + .input-group-addon {
   border-left: 1px solid #C2CFD8 !important;
   height: 32px !important;
