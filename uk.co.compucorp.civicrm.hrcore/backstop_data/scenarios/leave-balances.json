@@ -3,7 +3,8 @@
     {
       "label": "SSP: Leave Balances",
       "url": "{{siteUrl}}/manager-leave#/manager-leave/leave-balances",
-      "onReadyScript": "ssp-leave-absences/manager/leave-balances.js"
+      "onReadyScript": "ssp-leave-absences/manager/leave-balances.js",
+      "user": "civihr_manager"
     },
     {
       "label": "Admin Portal: Leave Balances",

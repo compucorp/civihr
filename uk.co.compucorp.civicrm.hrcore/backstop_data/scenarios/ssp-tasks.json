@@ -12,7 +12,8 @@
     {
       "label": "SSP - Tasks - Create new tasks",
       "url": "{{siteUrl}}/tasks-and-documents",
-      "onReadyScript": "ssp/tasks-create-new-task.js"
+      "onReadyScript": "ssp/tasks-create-new-task.js",
+      "user": "admin"
     }
   ]
 }

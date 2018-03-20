@@ -3,22 +3,26 @@
     {
       "label": "Leave and Absences: My report: Leave Request Modal: Edit: Show comments",
       "url": "{{siteUrl}}/my-leave#/my-leave/report",
-      "onReadyScript": "ssp-leave-absences/staff/my-report-pending-show-comments.js"
+      "onReadyScript": "ssp-leave-absences/staff/my-report-pending-show-comments.js",
+      "user": "civihr_staff"
     },
     {
       "label": "Leave and Absences: My report: Leave Request Modal: Create: Show absence in hours",
       "url": "{{siteUrl}}/my-leave#/my-leave/report",
-      "onReadyScript": "ssp-leave-absences/staff/my-report-show-absence-in-hours.js"
+      "onReadyScript": "ssp-leave-absences/staff/my-report-show-absence-in-hours.js",
+      "user": "civihr_staff"
     },
     {
       "label": "Leave and Absences: My report: Leave Request Modal: Create: Show deductions fields",
       "url": "{{siteUrl}}/my-leave#/my-leave/report",
-      "onReadyScript": "ssp-leave-absences/staff/my-report-leave-request-modal-show-deduction-fields.js"
+      "onReadyScript": "ssp-leave-absences/staff/my-report-leave-request-modal-show-deduction-fields.js",
+      "user": "civihr_staff"
     },
     {
       "label": "Leave and Absences: My report: Leave Request Modal: Create: Show deductions fields expanded",
       "url": "{{siteUrl}}/my-leave#/my-leave/report",
-      "onReadyScript": "ssp-leave-absences/staff/my-report-leave-request-modal-show-deduction-fields-expanded.js"
+      "onReadyScript": "ssp-leave-absences/staff/my-report-leave-request-modal-show-deduction-fields-expanded.js",
+      "user": "civihr_staff"
     }
   ]
 }

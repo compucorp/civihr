@@ -3,7 +3,8 @@
     {
       "label": "Leave and Absences: My report",
       "url": "{{siteUrl}}/my-leave#/my-leave/report",
-      "onReadyScript": "ssp-leave-absences/staff/my-report.js"
+      "onReadyScript": "ssp-leave-absences/staff/my-report.js",
+      "user": "civihr_staff"
     }
   ]
 }
