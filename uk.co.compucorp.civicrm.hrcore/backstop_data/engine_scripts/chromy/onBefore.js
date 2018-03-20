@@ -1,5 +1,7 @@
 module.exports = function (chromy, scenario, vp) {
-  console.log('SCENARIO > ' + scenario.label);
+  console.log('--------------------------------------------');
+  console.log('Running Scenario "' + scenario.label + '" ' + scenario.count);
+
   require('./loadCookies')(chromy, scenario);
 
   // IGNORE ANY CERT WARNINGS
