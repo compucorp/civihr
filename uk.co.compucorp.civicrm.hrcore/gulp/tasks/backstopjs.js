@@ -15,6 +15,7 @@ var utils = require('../utils');
 
 var BACKSTOP_DIR = 'backstop_data/';
 var BACKSTOP_DIR_PATH = path.join(__dirname, '..', '..', BACKSTOP_DIR);
+var DEFAULT_USER = 'civihr_admin';
 var FILES = { siteConfig: 'site-config.json', tpl: 'backstop.tpl.json' };
 var CONFIG_TPL = {
   'url': 'http://%{site-host}'
@@ -162,8 +163,10 @@ function scenariosList (contactIdsByRoles) {
     })
     .flatten()
     .map(function (scenario, index, scenarios) {
+      var user = scenario.user || DEFAULT_USER;
+
       return _.assign(scenario, {
-        cookiePath: path.join(BACKSTOP_DIR, 'cookies', (scenario.user || 'admin') + '.json'),
+        cookiePath: path.join(BACKSTOP_DIR, 'cookies', user + '.json'),
         count: '(' + (index + 1) + ' of ' + scenarios.length + ')',
         delay: scenario.delay || 6000,
         url: constructBackstopJSScenarioUrl(config.url, scenario.url, contactIdsByRoles)
