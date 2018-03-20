@@ -2,6 +2,7 @@ var _ = require('lodash');
 var argv = require('yargs').argv;
 var backstopjs = require('backstopjs');
 var clean = require('gulp-clean');
+var Chromy = require('chromy');
 var exec = require('child_process').exec;
 var file = require('gulp-file');
 var fs = require('fs');
@@ -14,7 +15,7 @@ var utils = require('../utils');
 
 var BACKSTOP_DIR = 'backstop_data/';
 var BACKSTOP_DIR_PATH = path.join(__dirname, '..', '..', BACKSTOP_DIR);
-var FILES = { config: 'site-config.json', tpl: 'backstop.tpl.json' };
+var FILES = { siteConfig: 'site-config.json', tpl: 'backstop.tpl.json' };
 var CONFIG_TPL = {
   'url': 'http://%{site-host}'
 };
@@ -96,7 +97,7 @@ function getRolesAndIDs () {
 function runBackstopJS (command) {
   var destFile = 'backstop.temp.json';
 
-  if (touchConfigFile()) {
+  if (touchSiteConfigFile()) {
     utils.throwError(
       'No site-config.json file detected!\n' +
       '\tOne has been created for you under ' + BACKSTOP_DIR + '\n' +
@@ -104,7 +105,8 @@ function runBackstopJS (command) {
     );
   }
 
-  return getRolesAndIDs()
+  return writeCookies()
+    .then(getRolesAndIDs)
     .then(function (contactIdsByRoles) {
       return new Promise(function (resolve, reject) {
         var isBackstopJSSuccessful;
@@ -148,7 +150,7 @@ function runBackstopJS (command) {
  * @return {Array}
  */
 function scenariosList (contactIdsByRoles) {
-  var config = JSON.parse(fs.readFileSync(BACKSTOP_DIR_PATH + FILES.config));
+  var config = siteConfig();
   var scenariosPath = BACKSTOP_DIR_PATH + 'scenarios/';
 
   return _(fs.readdirSync(scenariosPath))
@@ -171,6 +173,15 @@ function scenariosList (contactIdsByRoles) {
 }
 
 /**
+ * Returns the content of site config file
+ *
+ * @return {Object}
+ */
+function siteConfig () {
+  return JSON.parse(fs.readFileSync(BACKSTOP_DIR_PATH + FILES.siteConfig));
+}
+
+/**
  * Creates the content of the config temporary file that will be fed to BackstopJS
  * The content is the mix of the config template and the list of scenarios
  * under the scenarios/ folder
@@ -190,15 +201,65 @@ function tempFileContent (contactIdsByRoles) {
  *
  * @return {Boolean} Whether the file had to be created or not
  */
-function touchConfigFile () {
+function touchSiteConfigFile () {
   var created = false;
 
   try {
-    fs.readFileSync(BACKSTOP_DIR_PATH + FILES.config);
+    fs.readFileSync(BACKSTOP_DIR_PATH + FILES.siteConfig);
   } catch (err) {
-    fs.writeFileSync(BACKSTOP_DIR_PATH + FILES.config, JSON.stringify(CONFIG_TPL, null, 2));
+    fs.writeFileSync(BACKSTOP_DIR_PATH + FILES.siteConfig, JSON.stringify(CONFIG_TPL, null, 2));
     created = true;
   }
 
   return created;
+}
+
+/**
+ * Writes the session cookie files that will be used to log in as different users
+ *
+ * It uses the [`drush uli`](https://drushcommands.com/drush-7x/user/user-login/)
+ * command to generate a one-time login url, the browser then go to that url
+ * which then creates the session cookie
+ *
+ * The cookie is then stored in a json file which is used by the BackstopJS scenarios
+ * to log in
+ *
+ * @return {Promise}
+ */
+function writeCookies () {
+  var port = 9222;
+  var config = siteConfig();
+  var users = ['admin', 'civihr_admin', 'civihr_manager', 'civihr_staff'];
+
+  return Promise.all(users.map(function (user) {
+    return new Promise(function (resolve, reject) {
+      var cookieFilePath = path.join(BACKSTOP_DIR_PATH, 'cookies', user + '.json');
+
+      if (fs.existsSync(cookieFilePath)) {
+        fs.unlinkSync(cookieFilePath);
+      }
+
+      exec('drush uli --name=' + user + ' --uri=' + config.url + ' --browser=0', function (err, loginUrl) {
+        var chromy;
+
+        if (err) {
+          return reject(new Error(err));
+        }
+
+        chromy = new Chromy({ port: port++ });
+        chromy.chain()
+          .goto(config.url)
+          .goto(loginUrl)
+          .getCookies()
+          .result(function (cookies) {
+            fs.writeFileSync(cookieFilePath, JSON.stringify(cookies));
+          })
+          .end()
+          .then(function () {
+            chromy.close();
+            resolve();
+          });
+      });
+    });
+  }));
 }
