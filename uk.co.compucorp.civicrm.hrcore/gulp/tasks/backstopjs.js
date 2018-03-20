@@ -14,16 +14,9 @@ var utils = require('../utils');
 
 var BACKSTOP_DIR = 'backstop_data/';
 var BACKSTOP_DIR_PATH = path.join(__dirname, '..', '..', BACKSTOP_DIR);
-var DEFAULT_CREDENTIAL = 'admin';
 var FILES = { config: 'site-config.json', tpl: 'backstop.tpl.json' };
 var CONFIG_TPL = {
-  'url': 'http://%{site-host}',
-  'credentials': {
-    'super-admin': { 'name': '%{admin-name}', 'pass': '%{admin-password}' },
-    'admin': { 'name': '%{admin-name}', 'pass': '%{admin-password}' },
-    'manager': { 'name': '%{manager-name}', 'pass': '%{manager-password}' },
-    'staff': { 'name': '%{staff-name}', 'pass': '%{staff-password}' }
-  }
+  'url': 'http://%{site-host}'
 };
 
 module.exports = ['reference', 'test', 'openReport', 'approve'].map(function (action) {
@@ -168,24 +161,10 @@ function scenariosList (contactIdsByRoles) {
     .flatten()
     .map(function (scenario, index, scenarios) {
       return _.assign(scenario, {
+        cookiePath: path.join(BACKSTOP_DIR, 'cookies', (scenario.user || 'admin') + '.json'),
         count: '(' + (index + 1) + ' of ' + scenarios.length + ')',
-        credential: scenario.credential || DEFAULT_CREDENTIAL,
         delay: scenario.delay || 6000,
         url: constructBackstopJSScenarioUrl(config.url, scenario.url, contactIdsByRoles)
-      });
-    })
-    .tap(function (scenarios) {
-      var previousCredential;
-
-      return scenarios.map(function (scenario, index) {
-        if (index === 0 || previousCredential !== scenario.credential) {
-          scenario.performLogin = true;
-          scenario.performLogout = index !== 0;
-        }
-
-        previousCredential = scenario.credential;
-
-        return scenario;
       });
     })
     .value();
