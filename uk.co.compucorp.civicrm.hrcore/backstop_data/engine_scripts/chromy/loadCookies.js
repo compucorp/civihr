@@ -18,5 +18,4 @@ module.exports = function (chromy, scenario) {
 
   // SET COOKIES VIA CHROMY
   chromy.setCookie(cookies);
-  console.log('Cookie state restored with:', JSON.stringify(cookies, null, 2));
 };
