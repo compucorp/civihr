@@ -902,6 +902,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testNumberOfDaysOfLeaveRequestShouldNotBeGreaterMaxConsecutiveLeaveDaysForAbsenceType() {
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+    $contactID = 1;
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2017-01-01']
+    );
+
     $absenceType = AbsenceTypeFabricator::fabricate([
       'max_consecutive_leave_days' => 2.5
     ]);
@@ -913,11 +920,91 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequest::create([
       'type_id' => $absenceType->id,
-      'contact_id' => 1,
+      'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  public function testLeaveRequestCanBeCreatedWhenNumberOfLeaveWorkingDaysNotGreaterThanMaxConsecutiveDays() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2017-06-14'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+    $contactID = 1;
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2017-01-01']
+    );
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'max_consecutive_leave_days' => 4
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+
+    //The leave days are six days but in reality there are just 4 working days
+    //because 2017-01-07 and 2017-01-08 fall on weekends. So request should be allowed
+    //to be created.
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2017-01-05'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2017-01-10'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  public function testLeaveRequestCanBeCreatedWhenNumberOfLeaveWorkingDaysNotGreaterThanMaxConsecutiveDaysForWorkPatternWithMultipleWeeks() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2017-06-14'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours(['is_default' => 1]);
+    $contactID = 1;
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2017-01-01']
+    );
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'max_consecutive_leave_days' => 5
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+
+    //The leave days are twelve days but in reality there are just 5 working days
+    //Mon(2017-01-02), Wed(2017-01-04) and Fri(2017-01-06) for first week
+    // and Tue((2017-01-10), Thur(2017-01-12) for second week to be created.
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2017-01-02'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2017-01-13'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
