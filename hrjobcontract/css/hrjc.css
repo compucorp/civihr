@@ -10845,6 +10845,7 @@ fieldset[disabled]
 /* line 37, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .form-horizontal .has-feedback {
   /* stylelint-disable selector-max-compound-selectors */
+  /* stylelint-enable selector-max-compound-selectors */
 }
 /* line 39, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .form-horizontal .has-feedback select + .form-control-feedback {
@@ -10863,24 +10864,25 @@ fieldset[disabled]
 #hrjob-contract .form-horizontal .has-feedback .form-inline select + .form-control-feedback {
   right: 10px;
 }
-/* line 58, ../scss/civihr/partials/_forms.scss */
+/* line 59, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .form-horizontal .well .form-group {
   margin-bottom: 0;
 }
-/* line 61, ../scss/civihr/partials/_forms.scss */
+/* line 62, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .form-horizontal .well .form-group + .form-group {
+  /* stylelint-disable-line selector-max-compound-selectors */
   margin-top: 15px;
 }
-/* line 68, ../scss/civihr/partials/_forms.scss */
+/* line 69, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .text-required {
   color: #f00;
 }
-/* line 73, ../scss/civihr/partials/_forms.scss */
+/* line 74, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .form-group.required .control-label::after {
   color: #f00;
   content: '*';
 }
-/* line 79, ../scss/civihr/partials/_forms.scss */
+/* line 80, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .control-label,
 #hrjob-contract .checkbox-inline,
 #hrjob-contract .radio-inline,
@@ -10889,33 +10891,33 @@ fieldset[disabled]
   color: #464354;
   font-weight: 600;
 }
-/* line 88, ../scss/civihr/partials/_forms.scss */
+/* line 89, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .checkbox-label,
 #hrjob-contract .radio-label {
   /* stylelint-disable-line scss/at-extend-no-missing-placeholder */
 }
-/* line 93, ../scss/civihr/partials/_forms.scss */
+/* line 94, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .drop-zone {
   background-color: #F3F6F7;
   border: 1px dashed #C2CFD8;
   color: #464354;
 }
-/* line 99, ../scss/civihr/partials/_forms.scss */
+/* line 100, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .ui-select-placeholder,
 #hrjob-contract .ui-select-match-text {
   font-weight: normal;
   text-transform: none;
 }
-/* line 105, ../scss/civihr/partials/_forms.scss */
+/* line 106, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .ui-select-match-text {
   color: #4D4D69;
 }
-/* line 109, ../scss/civihr/partials/_forms.scss */
+/* line 110, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .ui-select-toggle[disabled] {
   background-color: #F3F6F7;
   opacity: 1;
 }
-/* line 113, ../scss/civihr/partials/_forms.scss */
+/* line 114, ../scss/civihr/partials/_forms.scss */
 #hrjob-contract .ui-select-toggle[disabled]:hover, #hrjob-contract .ui-select-toggle[disabled]:focus, #hrjob-contract .ui-select-toggle[disabled]:active {
   background-color: #F3F6F7;
 }
