@@ -8,8 +8,8 @@ define([
   components.component('leaveRequestRecordActions', {
     bindings: {
       contactId: '<',
-      selectedContactId: '<',
-      isSelfRecord: '<'
+      isSelfRecord: '<',
+      selectedContactId: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
       return sharedSettings.sharedPathTpl + 'components/leave-request-record-actions.html';

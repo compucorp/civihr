@@ -1,11 +1,11 @@
-<div class="btn-toolbar">
-  <div class="btn-group" uib-dropdown>
+<div class="clearfix">
+  <div class="leave-request-record-actions__button btn-group" uib-dropdown>
     <button type="button" class="btn btn-primary btn-lg dropdown-toggle" uib-dropdown-toggle>
       <span class="hidden-xs">
-        <i class="fa fa-plus-circle" aria-hidden="true"></i> Record New Absence
+        <span class="btn-icon"><i class="fa fa-plus-circle"></i></span> Record New Absence
       </span>
       <span class="visible-xs">
-        <i class="fa fa-plus-circle" aria-hidden="true"></i> New Absence
+        <span class="btn-icon"><i class="fa fa-plus-circle"></i></span> New Absence
       </span>
     </button>
     <ul class="dropdown-menu dropdown-menu-right" role="menu" uib-dropdown-menu>
@@ -13,14 +13,16 @@
         <a href
           class="leave-request-record-actions__new-{{option.type}}"
           ng-click="vm.openLeavePopup(null, option.type, vm.selectedContactId, vm.isSelfRecord)">
-          <i class="fa fa-{{option.icon}}" aria-hidden="true"></i> {{option.label}}
+          <span class="btn-icon"><i class="fa fa-{{option.icon}}"></i></span> {{option.label}}
         </a>
       </li>
     </ul>
   </div>
   <button
+    class="leave-request-record-actions__button leave-request-record-actions__new-toil
+      btn btn-secondary btn-lg"
     ng-click="vm.openLeavePopup(null, 'toil', vm.selectedContactId, vm.isSelfRecord)"
-    type="button" class="leave-request-record-actions__new-toil btn btn-secondary btn-lg">
-    <span><i class="fa fa-calendar-plus-o" aria-hidden="true"></i> Submit Overtime</span>
+    type="button">
+    <span class="btn-icon"><i class="fa fa-calendar-plus-o"></i></span> Submit Overtime
   </button>
 </div>

@@ -1,8 +1,6 @@
-<p>
-  <button type="button" class="btn btn-info" ng-click="workpatterns.openModal()">
-    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> ADD CUSTOM WORK PATTERN
-  </button>
-</p>
+<button type="button" class="chr_absence-work-pattern__add-custom btn btn-info" ng-click="workpatterns.openModal()">
+  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> ADD CUSTOM WORK PATTERN
+</button>
 
 <crm-loading show="!workpatterns.loading.workPattern">
   <table ng-show="workpatterns.customWorkPatterns.length === 0" class="table table-transparent">

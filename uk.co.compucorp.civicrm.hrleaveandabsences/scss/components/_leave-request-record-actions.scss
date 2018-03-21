@@ -1,33 +1,30 @@
 leave-request-record-actions {
   display: block;
 
-  .fa,
-  .btn-group {
-    margin-right: $crm-gap-medium;
-  }
-}
-
-leave-request-record-actions .btn-toolbar {
-  margin-left: 0;
-  overflow: inherit;
-
-  .btn-group,
-  .btn {
+  .leave-request-record-actions__button {
+    display: block;
+    float: left;
     margin-left: 0;
+
+    &:first-child {
+      margin-right: $crm-gap-medium;
+    }
   }
 }
 
 @media screen and (max-width: $screen-xs-max) {
   leave-request-record-actions {
-    .btn-group,
-    .btn {
-      display: block;
+    .leave-request-record-actions__button {
       width: 100%;
-    }
 
-    .btn-group {
-      margin-bottom: $crm-gap-medium;
-      margin-right: 0;
+      > .btn {
+        width: 100%;
+      }
+
+      &:first-child {
+        margin-bottom: $crm-gap-medium;
+        margin-right: 0;
+      }
     }
   }
 }
