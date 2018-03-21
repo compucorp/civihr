@@ -1,9 +1,11 @@
-input[type="radio"],
-input[type="checkbox"],
-.radio input[type="radio"],
-.radio-inline input[type="radio"],
-.checkbox input[type="checkbox"],
-.checkbox-inline input[type="checkbox"]  {
+/* stylelint-disable selector-no-qualifying-type */
+
+input[type='radio'],
+input[type='checkbox'],
+.radio input[type='radio'],
+.radio-inline input[type='radio'],
+.checkbox input[type='checkbox'],
+.checkbox-inline input[type='checkbox'] {
   margin-top: 2px;
 }
 
@@ -16,6 +18,7 @@ input[type="checkbox"],
     bottom: 8px;
     top: 6px;
   }
+
   .subfield {
     display: block;
   }
@@ -32,6 +35,7 @@ input[type="checkbox"],
   }
 
   .has-feedback {
+    /* stylelint-disable selector-max-compound-selectors */
     select + .form-control-feedback {
       right: 28px;
     }
@@ -48,13 +52,14 @@ input[type="checkbox"],
         right: 10px;
       }
     }
+    /* stylelint-enable selector-max-compound-selectors */
   }
 
   .well {
     .form-group {
       margin-bottom: 0;
 
-      + .form-group {
+      + .form-group { /* stylelint-disable-line selector-max-compound-selectors */
         margin-top: 15px;
       }
     }
@@ -62,13 +67,13 @@ input[type="checkbox"],
 }
 
 .text-required {
-  color:red;
+  color: #f00;
 }
 
 .form-group.required {
-  .control-label:after {
-    content:"*";
-    color:red;
+  .control-label::after {
+    color: #f00;
+    content: '*';
   }
 }
 
@@ -83,25 +88,7 @@ input[type="checkbox"],
 
 .checkbox-label,
 .radio-label {
-  @extend label;
-}
-
-.ta-editor.ta-html,
-.ta-scroll-window.form-control {
-  min-height: 120px;
-  overflow: visible;
-}
-
-.ta-scroll-window > .ta-bind {
-  min-height: 120px;
-}
-
-.ta-toolbar {
-  background-color: $gray-lighter;
-  padding: 5px;
-  margin: 0;
-  border: 1px solid $input-border;
-  margin-bottom: -1px;
+  @extend label; /* stylelint-disable-line scss/at-extend-no-missing-placeholder */
 }
 
 .drop-zone {
