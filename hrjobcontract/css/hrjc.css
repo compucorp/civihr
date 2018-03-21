@@ -12134,6 +12134,12 @@ fieldset[disabled]
   padding: 7px;
 }
 /* line 81, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+#hrjob-contract .uib-day .btn-default span,
+#hrjob-contract .uib-month .btn-default span,
+#hrjob-contract .uib-year .btn-default span {
+  padding: 0 !important;
+}
+/* line 85, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 #hrjob-contract .uib-day .btn-default.active,
 #hrjob-contract .uib-month .btn-default.active,
 #hrjob-contract .uib-year .btn-default.active {
@@ -12142,28 +12148,28 @@ fieldset[disabled]
   box-shadow: none;
   color: #FFFFFF;
 }
-/* line 87, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 91, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 #hrjob-contract .uib-day .btn-default.active .text-info,
 #hrjob-contract .uib-month .btn-default.active .text-info,
 #hrjob-contract .uib-year .btn-default.active .text-info {
   color: inherit;
 }
-/* line 94, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 98, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 #hrjob-contract .uib-datepicker-popup {
   border: 0;
   padding: 10px !important;
 }
-/* line 101, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 105, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 .mobile [type='date'][uib-datepicker-popup] {
   line-height: normal;
 }
-/* line 104, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 108, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 .mobile [type='date'][uib-datepicker-popup]::-webkit-inner-spin-button, .mobile [type='date'][uib-datepicker-popup]::-webkit-clear-button {
   -webkit-appearance: none;
   appearance: none;
   display: none;
 }
-/* line 110, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 114, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 .mobile [type='date'][uib-datepicker-popup]::-webkit-calendar-picker-indicator {
   background: transparent;
   bottom: 0;
@@ -12175,7 +12181,7 @@ fieldset[disabled]
   top: 0;
   width: auto;
 }
-/* line 122, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
+/* line 126, ../../../org.civicrm.shoreditch/scss/angular/overrides/_uib-datepicker.scss */
 .mobile [type='date'][uib-datepicker-popup] + .input-group-addon {
   border-left: 1px solid #C2CFD8 !important;
   height: 32px !important;
