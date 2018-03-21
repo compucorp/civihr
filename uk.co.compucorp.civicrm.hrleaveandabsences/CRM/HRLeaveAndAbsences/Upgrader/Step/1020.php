@@ -26,7 +26,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
   public function upgrade_1020 () {
     $leaveRequest = new LeaveRequest();
 
-    $leaveRequest->whereAdd('request_type = "toil"');
+    $leaveRequest->whereAdd('request_type = "' . LeaveRequest::REQUEST_TYPE_TOIL . '"');
     $leaveRequest->whereAdd('is_deleted = 0');
     $leaveRequest->find();
 
@@ -36,6 +36,6 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
       $leaveRequest->update();
     }
 
-    return true;
+    return TRUE;
   }
 }
