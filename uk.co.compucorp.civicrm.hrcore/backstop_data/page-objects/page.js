@@ -1,40 +1,7 @@
 var _ = require('lodash');
 var Promise = require('es6-promise').Promise;
 
-/**
- * Closes any modal currently open
- *
- * @return {Object}
- */
-function closeAnyModal () {
-  var openModalSelector = '.modal.in';
-
-  if (this.chromy.exists(openModalSelector)) {
-    this.chromy.click(openModalSelector + ' .close[ng-click="cancel()"]');
-    this.chromy.wait(300);
-  }
-
-  return this;
-}
-
-/**
- * Closes any notification currently open
- *
- * @return {Object}
- */
-function closeNotifications () {
-  var notificationSelector = 'a.ui-notify-cross.ui-notify-close';
-
-  if (this.chromy.exists(notificationSelector)) {
-    this.chromy.click(notificationSelector);
-    this.chromy.wait(500);
-  }
-
-  return this;
-}
-
 module.exports = {
-
   /**
    * Initializes the page and removes any code warnings from the page
    *
@@ -109,3 +76,35 @@ module.exports = {
     });
   }
 };
+
+/**
+ * Closes any modal currently open
+ *
+ * @return {Object}
+ */
+function closeAnyModal () {
+  var openModalSelector = '.modal.in';
+
+  if (this.chromy.exists(openModalSelector)) {
+    this.chromy.click(openModalSelector + ' .close[ng-click="cancel()"]');
+    this.chromy.wait(300);
+  }
+
+  return this;
+}
+
+/**
+ * Closes any notification currently open
+ *
+ * @return {Object}
+ */
+function closeNotifications () {
+  var notificationSelector = 'a.ui-notify-cross.ui-notify-close';
+
+  if (this.chromy.exists(notificationSelector)) {
+    this.chromy.click(notificationSelector);
+    this.chromy.wait(500);
+  }
+
+  return this;
+}

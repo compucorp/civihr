@@ -1,7 +1,5 @@
 var page = require('../page');
 
-module.exports = (function () {
-  return page.extend({
-    modalRoot: '.modal'
-  });
-})();
+module.exports = page.extend({
+  modalRoot: '.modal'
+});

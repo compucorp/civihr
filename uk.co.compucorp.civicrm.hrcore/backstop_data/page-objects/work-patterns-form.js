@@ -1,23 +1,21 @@
 var page = require('./page');
 
-module.exports = (function () {
-  return page.extend({
-    /**
-     * Displays the work pattern calendar form.
-     *
-     * @return The Page instance.
-     */
-    showCalendarForm: function () {
-      this.chromy.click('a[href="#work-pattern-calendar"]');
+module.exports = page.extend({
+  /**
+   * Displays the work pattern calendar form.
+   *
+   * @return The Page instance.
+   */
+  showCalendarForm: function () {
+    this.chromy.click('a[href="#work-pattern-calendar"]');
 
-      return this;
-    },
+    return this;
+  },
 
-    /**
-     * Waits until the work pattern form is visible.
-     */
-    waitForReady: function () {
-      this.chromy.visible('.work-pattern-form');
-    }
-  });
-})();
+  /**
+   * Waits until the work pattern form is visible.
+   */
+  waitForReady: function () {
+    this.chromy.visible('.work-pattern-form');
+  }
+});

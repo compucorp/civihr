@@ -1,8 +1,6 @@
 var tab = require('./tab');
 
-module.exports = (function () {
-  return tab.extend({
-    readySelector: '.ct-page-contact',
-    tabTitle: 'Tasks'
-  });
-})();
+module.exports = tab.extend({
+  readySelector: '.ct-page-contact',
+  tabTitle: 'Tasks'
+});

@@ -1,20 +1,17 @@
 var modal = require('./modal');
 
-module.exports = (function () {
-  return modal.extend({
+module.exports = modal.extend({
+  /**
+   * Opens a ui-select dropdown
+   *
+   * @return {object}
+   */
+  openDropdown: function (name) {
+    var common = '[ng-model="modalCtrl.selectedData.%{name}"] input';
 
-    /**
-     * Opens a ui-select dropdown
-     *
-     * @return {object}
-     */
-    openDropdown: function (name) {
-      var common = '[ng-model="modalCtrl.selectedData.%{name}"] input';
+    this.chromy.click(common.replace('%{name}', name));
+    this.chromy.wait(100);
 
-      this.chromy.click(common.replace('%{name}', name));
-      this.chromy.wait(100);
-
-      return this;
-    }
-  });
-})();
+    return this;
+  }
+});
