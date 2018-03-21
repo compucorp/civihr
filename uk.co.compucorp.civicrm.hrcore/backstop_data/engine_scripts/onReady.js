@@ -1,6 +1,7 @@
-module.exports = function (engine, scenario, vp) {
-  engine.evaluate(function () {
-    // Your web-app is now loaded. Edit here to simulate user interactions or other state changes in the browser window context.
-  });
-  console.log('onReady.js has run for: ', vp.label);
+var page = require('../../page-objects/contact-summary');
+
+module.exports = function (chromy, scenario, vp) {
+  require('./clickAndHoverHelper')(chromy, scenario);
+
+  page.init(chromy);
 };
