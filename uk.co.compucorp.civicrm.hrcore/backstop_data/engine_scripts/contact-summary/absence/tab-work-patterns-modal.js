@@ -1,9 +1,9 @@
 'use strict';
 
-var absenceTab = require('../../../page-objects/tabs/absence');
+var page = require('../../../page-objects/tabs/absence');
 
 module.exports = function (engine) {
-  absenceTab.init(engine).openSubTab('work-patterns')
+  page.init(engine).openSubTab('work-patterns')
     .then(function (workPatternsTab) {
       workPatternsTab.showModal();
     });
