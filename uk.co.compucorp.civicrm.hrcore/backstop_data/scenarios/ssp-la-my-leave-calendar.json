@@ -3,13 +3,13 @@
     {
       "label": "Current Month: My Leave Calendar",
       "url": "{{siteUrl}}/my-leave#/my-leave/calendar",
-      "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar_current-month-visible.js",
+      "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar-current-month-visible.js",
       "user": "civihr_staff"
     },
     {
       "label": "My Leave Calendar tooltip",
       "url": "{{siteUrl}}/my-leave#/my-leave/calendar",
-      "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar_tooltip.js",
+      "onReadyScript": "ssp-leave-absences/staff/my-leave-calendar-tooltip.js",
       "user": "civihr_staff"
     }
   ]
