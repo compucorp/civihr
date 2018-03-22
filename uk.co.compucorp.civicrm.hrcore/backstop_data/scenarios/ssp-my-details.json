@@ -1,11 +1,11 @@
 {
   "scenarios": [
     {
-      "label": "SSP - My Details",
+      "label": "SSP / My Details",
       "url": "{{siteUrl}}/hr-details"
     },
     {
-      "label": "SSP - Edit My Details",
+      "label": "SSP / Edit My Details",
       "url": "{{siteUrl}}/hr-details",
       "onReadyScript": "ssp/edit-my-details.js"
     }

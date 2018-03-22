@@ -1,11 +1,11 @@
 {
   "scenarios": [
     {
-      "label": "Absence Types list",
+      "label": "L&A / Absence Types / List",
       "url": "{{siteUrl}}/civicrm/admin/leaveandabsences/types?action=browse"
     },
     {
-      "label": "Absence Types form",
+      "label": "L&A / Absence Types / Form",
       "url": "{{siteUrl}}/civicrm/admin/leaveandabsences/types?action=add"
     }
   ]

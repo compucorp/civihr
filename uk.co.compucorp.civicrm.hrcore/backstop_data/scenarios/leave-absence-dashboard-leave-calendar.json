@@ -1,9 +1,0 @@
-{
-  "scenarios": [
-    {
-      "label": "Leave Absence Dashboard Leave Calendar",
-      "url": "{{siteUrl}}/civicrm/leaveandabsences/dashboard#/calendar",
-      "onReadyScript": "leave-absence-dashboard/leave-calendar/leave-calendar.js"
-    }
-  ]
-}

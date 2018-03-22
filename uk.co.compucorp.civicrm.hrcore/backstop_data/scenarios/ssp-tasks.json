@@ -1,16 +1,16 @@
 {
   "scenarios": [
     {
-      "label": "SSP - Tasks",
+      "label": "SSP / Tasks",
       "url": "{{siteUrl}}/tasks-and-documents"
     },
     {
-      "label": "SSP - Tasks - Show Completed tasks",
+      "label": "SSP / Tasks / Show Completed tasks",
       "url": "{{siteUrl}}/tasks-and-documents",
       "onReadyScript": "ssp/tasks-show-completed-tasks.js"
     },
     {
-      "label": "SSP - Tasks - Create new tasks",
+      "label": "SSP / Tasks / Create new tasks",
       "url": "{{siteUrl}}/tasks-and-documents",
       "onReadyScript": "ssp/tasks-create-new-task.js",
       "user": "admin"
