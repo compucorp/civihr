@@ -37,9 +37,9 @@
     </OptionValue>
 
     <OptionValue>
-      <label>Change in contractual type</label>
+      <label>Change in contract type</label>
       <value>3</value>
-      <name>change_in_contractual_type</name>
+      <name>change_in_contract_type</name>
       <is_default>0</is_default>
       <weight>3</weight>
       <is_optgroup>0</is_optgroup>
