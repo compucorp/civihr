@@ -3,19 +3,19 @@
     {
       "label": "Current Month: Manager Leave Calendar",
       "url": "{{siteUrl}}/manager-leave#/manager-leave/calendar",
-      "onReadyScript": "ssp-leave-absences/manager/manager-leave-calendar-current-month-visible.js",
+      "onReadyScript": "ssp/manager-leave/calendar-current-month-visible.js",
       "user": "civihr_manager"
     },
     {
       "label": "Legend expanded: Manager Leave Calendar",
       "url": "{{siteUrl}}/manager-leave#/manager-leave/calendar",
-      "onReadyScript": "ssp-leave-absences/manager/manager-leave-calendar-legend-expanded.js",
+      "onReadyScript": "ssp/manager-leave/calendar-legend-expanded.js",
       "user": "civihr_manager"
     },
     {
       "label": "Show all contacts: Manager Leave Calendar",
       "url": "{{siteUrl}}/manager-leave#/manager-leave/calendar",
-      "onReadyScript": "ssp-leave-absences/manager/manager-leave-calendar-all-contacts.js",
+      "onReadyScript": "ssp/manager-leave/calendar-all-contacts.js",
       "user": "civihr_manager"
     }
   ]

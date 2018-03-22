@@ -3,12 +3,12 @@
     {
       "label": "SSP Leave and Absences: Admin: Manager Leave: Leave Requests",
       "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
-      "onReadyScript": "ssp-leave-absences/admin/manager-leave-requests.js"
+      "onReadyScript": "ssp/manager-leave/leave-requests-as-admin.js"
     },
     {
       "label": "SSP Leave and Absences: Admin: Manager Leave: Leave Requests: All Requests",
       "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
-      "onReadyScript": "ssp-leave-absences/admin/manager-leave-requests-all-requests.js"
+      "onReadyScript": "ssp/manager-leave/leave-requests-as-admin-all-requests.js"
     }
   ]
 }
