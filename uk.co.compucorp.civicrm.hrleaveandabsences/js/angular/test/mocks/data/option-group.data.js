@@ -853,9 +853,9 @@ define([
     }, {
       'id': '1316',
       'option_group_id': '196',
-      'label': 'Change in contractual type',
+      'label': 'Change in contract type',
       'value': '3',
-      'name': 'change_in_contractual_type',
+      'name': 'change_in_contract_type',
       'filter': '0',
       'is_default': '0',
       'weight': '3',
