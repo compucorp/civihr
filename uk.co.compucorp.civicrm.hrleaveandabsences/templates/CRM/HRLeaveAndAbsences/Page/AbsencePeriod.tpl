@@ -15,7 +15,7 @@
             </thead>
             {foreach from=$rows item=row}
               <tr id="AbsencePeriod-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}">
-                <td data-field="title">{$row.title}</td>
+                <td data-field="title">{$row.title|escape}</td>
                 <td>{$row.start_date|crmDate}</td>
                 <td>{$row.end_date|crmDate}</td>
                 <td>{$row.weight}</td>

@@ -10,7 +10,7 @@
   <nav class="chr_user-menu__dropdown">
     <ul>
       <li class="chr_user-menu__dropdown__username">
-        <span>Signed in as <strong>{$username}</strong></span>
+        <span>Signed in as <strong>{$username|escape}</strong></span>
       </li>
       <li>
         <a href="{$editLink}">

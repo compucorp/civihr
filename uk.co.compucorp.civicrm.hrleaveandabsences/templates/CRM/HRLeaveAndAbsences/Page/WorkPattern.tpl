@@ -20,8 +20,8 @@
           </thead>
           {foreach from=$rows item=row}
             <tr id="WorkPattern-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}">
-              <td data-field="title">{$row.label}</td>
-              <td>{$row.description}</td>
+              <td data-field="title">{$row.label|escape}</td>
+              <td>{$row.description|escape}</td>
               <td>{$row.number_of_weeks}</td>
               <td>{$row.number_of_hours}</td>
               <td>
