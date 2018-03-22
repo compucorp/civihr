@@ -23,8 +23,8 @@
               <input type="radio" name="overridde" class="override-filter" value="2">
               <span>Not Overridden</span>
             </label>
-            <label class="btn btn-default">
-              <input type="radio" name="overridde" class="override-filter" value="3">
+            <label class="btn btn-default active">
+              <input type="radio" name="overridde" class="override-filter" value="3" checked>
               <span>Both</span>
             </label>
           </div>
