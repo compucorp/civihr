@@ -85,63 +85,104 @@
               <div class="form-group">
                 <label for="newLocation" class="col-xs-4 control-label">Location:</label>
                 <div class="col-xs-6">
-                  <ui-select
-                    prevent-animations
-                    ng-model="jobroles.editData['new_role_id']['location']"
-                    theme="civihr-ui-select"
-                    title="Choose a location"
-                    name="newLocation">
-                    <ui-select-match prevent-animations allow-clear placeholder="Select a location">{{$select.selected.value.title}}</ui-select-match>
-                    <ui-select-choices prevent-animations repeat="location.value.value as (key,location) in jobroles.LocationsData | filter: { value: { title: $select.search }}">
-                      <div ng-bind-html="location.value.title | highlight: $select.search"></div>
-                    </ui-select-choices>
-                  </ui-select>
+                  <div class="form-inline">
+                    <div class="crm_custom-select">
+                      <ui-select
+                        prevent-animations
+                        ng-model="jobroles.editData['new_role_id']['location']"
+                        theme="civihr-ui-select"
+                        title="Choose a location"
+                        name="newLocation">
+                        <ui-select-match prevent-animations allow-clear placeholder="Select a location">{{$select.selected.value.title}}</ui-select-match>
+                        <ui-select-choices prevent-animations repeat="location.value.value as (key,location) in jobroles.LocationsData | filter: { value: { title: $select.search }}">
+                          <div ng-bind-html="location.value.title | highlight: $select.search"></div>
+                        </ui-select-choices>
+                      </ui-select>
+                    </div>
+                    <a href="/civicrm/hours_location"
+                       class="crm-option-edit-link medium-popup crm-hover-button"
+                       target="_blank" title="Edit Locations"
+                       data-option-edit-path="civicrm/hours_location">
+                      <i class="crm-i fa-wrench"></i>
+                    </a>
+                  </div>
                 </div>
               </div>
               <div class="form-group">
                 <label for="newRegion" class="col-xs-4 control-label">Region:</label>
                 <div class="col-xs-6">
-                  <ui-select
-                    prevent-animations
-                    ng-model="jobroles.editData['new_role_id']['region']"
-                    theme="civihr-ui-select"
-                    title="Choose a Region"
-                    name="newRegion">
-                    <ui-select-match prevent-animations allow-clear placeholder="Select a region">{{$select.selected.value.title}}</ui-select-match>
-                    <ui-select-choices prevent-animations repeat="region.value.value as (key,region) in jobroles.RegionsData | filter: { value: { title: $select.search }}">
-                      <div ng-bind-html="region.value.title | highlight: $select.search"></div>
-                    </ui-select-choices>
-                  </ui-select>
+                  <div class="form-inline">
+                    <div class="crm_custom-select">
+                      <ui-select
+                        prevent-animations
+                        ng-model="jobroles.editData['new_role_id']['region']"
+                        theme="civihr-ui-select"
+                        title="Choose a Region"
+                        name="newRegion">
+                        <ui-select-match prevent-animations allow-clear placeholder="Select a region">{{$select.selected.value.title}}</ui-select-match>
+                        <ui-select-choices prevent-animations repeat="region.value.value as (key,region) in jobroles.RegionsData | filter: { value: { title: $select.search }}">
+                          <div ng-bind-html="region.value.title | highlight: $select.search"></div>
+                        </ui-select-choices>
+                      </ui-select>
+                    </div>
+                    <a href="/civicrm/admin/options?gid=117&reset=1"
+                       class="crm-option-edit-link medium-popup crm-hover-button"
+                       target="_blank" title="Edit Task Types"
+                       data-option-edit-path="civicrm/admin/options?gid=117&reset=1">
+                      <i class="crm-i fa-wrench"></i>
+                    </a>
+                  </div>
+
                 </div>
               </div>
               <div class="form-group">
                 <label for="newDepartment" class="col-xs-4 control-label">Department:</label>
                 <div class="col-xs-6">
-                  <ui-select
-                    prevent-animations
-                    ng-model="jobroles.editData['new_role_id']['department']"
-                    theme="civihr-ui-select"
-                    title="Choose a Department">
-                    <ui-select-match prevent-animations allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
-                    <ui-select-choices prevent-animations repeat="department.value.value as (key,department) in jobroles.DepartmentsData | filter: { value: { title: $select.search }}">
-                      <div ng-bind-html="department.value.title | highlight: $select.search"></div>
-                    </ui-select-choices>
-                  </ui-select>
+                  <div class="form-inline">
+                    <div class="crm_custom-select">
+                      <ui-select
+                        prevent-animations
+                        ng-model="jobroles.editData['new_role_id']['department']"
+                        theme="civihr-ui-select"
+                        title="Choose a Department">
+                        <ui-select-match prevent-animations allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
+                        <ui-select-choices prevent-animations repeat="department.value.value as (key,department) in jobroles.DepartmentsData | filter: { value: { title: $select.search }}">
+                          <div ng-bind-html="department.value.title | highlight: $select.search"></div>
+                        </ui-select-choices>
+                      </ui-select>
+                    </div>
+                    <a href="/civicrm/admin/options?gid=112&reset=1"
+                       class="crm-option-edit-link medium-popup crm-hover-button"
+                       target="_blank" title="Edit Task Types"
+                       data-option-edit-path="civicrm/admin/options?gid=112&reset=1">
+                      <i class="crm-i fa-wrench"></i>
+                    </a>
+                  </div>
                 </div>
               </div>
               <div class="form-group">
                 <label for="newLevel" class="col-xs-4 control-label">Level:</label>
                 <div class="col-xs-6">
-                  <ui-select
-                    prevent-animations
-                    ng-model="jobroles.editData['new_role_id']['level']"
-                    theme="civihr-ui-select"
-                    title="Choose a Level">
-                    <ui-select-match prevent-animations allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
-                    <ui-select-choices prevent-animations repeat="level.value.value as (key,level) in jobroles.LevelsData | filter: { value: { title: $select.search }}">
-                      <div ng-bind-html="level.value.title | highlight: $select.search"></div>
-                    </ui-select-choices>
-                  </ui-select>
+                  <div class="form-inline">
+                    <div class="crm_custom-select">
+                      <ui-select
+                        prevent-animations
+                        ng-model="jobroles.editData['new_role_id']['level']"
+                        theme="civihr-ui-select"
+                        title="Choose a Level">
+                        <ui-select-match prevent-animations allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
+                        <ui-select-choices prevent-animations repeat="level.value.value as (key,level) in jobroles.LevelsData | filter: { value: { title: $select.search }}">
+                          <div ng-bind-html="level.value.title | highlight: $select.search"></div>
+                        </ui-select-choices>
+                      </ui-select>
+                    </div>
+                    <a href="/civicrm/admin/options?gid=111&reset=1"
+                       class="crm-option-edit-link medium-popup crm-hover-button"
+                       target="_blank" title="Edit Task Types"
+                       data-option-edit-path="civicrm/admin/options?gid=111&reset=1">
+                      <i class="crm-i fa-wrench"></i>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
