@@ -16,15 +16,15 @@
         <div class="col-sm-4 col-sm-offset-4">
           <div class="btn-group" data-toggle="buttons">
             <button class="btn btn-sm btn-secondary-outline">
-              <input type="radio" name="overridde" class="override-filter" value="1">
+              <input type="radio" name="override-filter" class="override-filter" value="1">
               <span>Overriden</span>
             </button>
             <button class="btn btn-sm btn-secondary-outline">
-              <input type="radio" name="overridde" class="override-filter" value="2">
+              <input type="radio" name="override-filter" class="override-filter" value="2">
               <span>Not Overridden</span>
             </button>
-            <button class="btn btn-sm btn-secondary-outline">
-              <input type="radio" name="overridde" class="override-filter" value="3" checked>
+            <button class="btn btn-sm btn-secondary-outline active">
+              <input type="radio" name="override-filter" class="override-filter" value="3" checked>
               <span>Both</span>
             </button>
           </div>
