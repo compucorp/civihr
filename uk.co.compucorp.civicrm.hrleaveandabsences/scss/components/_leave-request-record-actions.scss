@@ -1,26 +1,35 @@
 leave-request-record-actions {
   display: block;
-  width: 100%;
 
-  .btn-group,
-  .btn {
-    width: 100%;
+  .btn-group {
+    float: left;
   }
 
-  .btn:not(:last-child) {
-    margin-bottom: $crm-gap-medium;
-  }
+  .btn-group:first-child {
+    margin-right: $crm-gap-medium;
 
-  @media screen and (min-width: $screen-xs-max) {
-    .btn-group,
-    .btn {
-      float: left;
-      width: auto;
+    .dropdown-menu {
+      left: auto;
+      right: 0;
+    }
+  }
+}
+
+@media screen and (max-width: $screen-xs-max) {
+  leave-request-record-actions {
+    .btn-group {
+      width: calc((100% - #{$crm-gap-medium}) / 2);
     }
 
-    .btn:not(:last-child) {
-      margin-bottom: 0;
-      margin-right: $crm-gap-medium;
+    .btn {
+      padding-left: 0;
+      padding-right: 0;
+      width: 100%;
+    }
+
+    .btn-group:first-child .dropdown-menu {
+      left: 0;
+      right: auto;
     }
   }
 }
