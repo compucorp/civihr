@@ -35,7 +35,7 @@
             <div class="col-md-9">
               <select name="absence-type-filter" id="absence_type_filter" class="crm-select2 form-control absence-type-filter" multiple="multiple" data-placeholder="{ts}Leave Type{/ts}">
                 {foreach from=$enabledAbsenceTypes item=absenceType}
-                  <option value="{$absenceType->id}">{$absenceType->title}</option>
+                  <option value="{$absenceType->id}">{$absenceType->title|escape}</option>
                 {/foreach}
               </select>
             </div>
@@ -94,10 +94,10 @@
             {/if}
             <tr data-contact="{$contact.id}" data-absence-type="{$absenceTypeID}" data-absence-period="{$absencePeriodID}">
               <td>{$contact.id}</td>
-              <td>{$contact.display_name}</td>
+              <td>{$contact.display_name|escape}</td>
               <td>
                 <span class="absence-type" style="background-color: {$absenceType->color};">
-                  {$absenceType->title}
+                  {$absenceType->title|escape}
                 </span>
               </td>
               <td>{$calculation->getPreviousPeriodProposedEntitlement()|timeUnitApplier:$calculationUnit}</td>
