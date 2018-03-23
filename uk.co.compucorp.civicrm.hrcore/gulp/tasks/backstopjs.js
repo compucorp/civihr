@@ -243,13 +243,18 @@ function touchSiteConfigFile () {
  * @return {Promise}
  */
 function writeCookies () {
+  var cookiesDir = path.join(BACKSTOP_DIR, 'cookies');
   var port = 9222;
   var config = siteConfig();
   var users = ['admin', 'civihr_admin', 'civihr_manager', 'civihr_staff'];
 
+  if (!fs.existsSync(cookiesDir)) {
+    fs.mkdirSync(cookiesDir);
+  }
+
   return Promise.all(users.map(function (user) {
     return new Promise(function (resolve, reject) {
-      var cookieFilePath = path.join(BACKSTOP_DIR, 'cookies', user + '.json');
+      var cookieFilePath = path.join(cookiesDir, user + '.json');
 
       if (fs.existsSync(cookieFilePath)) {
         fs.unlinkSync(cookieFilePath);
