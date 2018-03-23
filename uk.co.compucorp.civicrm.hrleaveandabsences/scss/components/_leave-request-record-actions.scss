@@ -1,27 +1,26 @@
 leave-request-record-actions {
   display: block;
+  width: 100%;
 
-  .btn,
-  .btn-group {
-    float: left;
+  .btn-group,
+  .btn {
+    width: 100%;
   }
 
   .btn:not(:last-child) {
-    margin-right: $crm-gap-medium;
+    margin-bottom: $crm-gap-medium;
   }
-}
 
-@media screen and (max-width: $screen-xs-max) {
-  leave-request-record-actions {
-    &,
+  @media screen and (min-width: $screen-xs-max) {
     .btn-group,
     .btn {
-      width: 100%;
+      float: left;
+      width: auto;
     }
 
     .btn:not(:last-child) {
-      margin-bottom: $crm-gap-medium;
-      margin-right: 0;
+      margin-bottom: 0;
+      margin-right: $crm-gap-medium;
     }
   }
 }
