@@ -13,12 +13,13 @@ var Promise = require('es6-promise').Promise;
 
 var utils = require('../utils');
 
-var BACKSTOP_DIR = 'backstop_data/';
-var BACKSTOP_DIR_PATH = path.join(__dirname, '..', '..', BACKSTOP_DIR);
+var BACKSTOP_DIR = path.join(__dirname, '..', '..', 'backstop_data');
 var DEFAULT_USER = 'civihr_admin';
-var FILES = { siteConfig: 'site-config.json', tpl: 'backstop.tpl.json' };
-var CONFIG_TPL = {
-  'url': 'http://%{site-host}'
+var CONFIG_TPL = { 'url': 'http://%{site-host}' };
+var FILES = {
+  siteConfig: path.join(BACKSTOP_DIR, 'site-config.json'),
+  temp: path.join(BACKSTOP_DIR, 'backstop.temp.json'),
+  tpl: path.join(BACKSTOP_DIR, 'backstop.tpl.json')
 };
 
 module.exports = ['reference', 'test', 'openReport', 'approve'].map(function (action) {
@@ -31,6 +32,55 @@ module.exports = ['reference', 'test', 'openReport', 'approve'].map(function (ac
 });
 
 /**
+ * Concatenates all the scenarios (if no specific scenario file is specified)
+ *
+ * @param  {Object} contactIdsByRoles
+ * @return {Array}
+ */
+function buildScenariosList (contactIdsByRoles) {
+  var config = siteConfig();
+  var dirPath = path.join(BACKSTOP_DIR, 'scenarios');
+
+  return _(fs.readdirSync(dirPath))
+    .filter(function (scenario) {
+      return argv.configFile ? scenario === argv.configFile : true && scenario.endsWith('.json');
+    })
+    .map(function (scenarioFile) {
+      var scenarioPath = path.join(dirPath, scenarioFile);
+
+      return JSON.parse(fs.readFileSync(scenarioPath)).scenarios;
+    })
+    .flatten()
+    .map(function (scenario, index, scenarios) {
+      var user = scenario.user || DEFAULT_USER;
+
+      return _.assign(scenario, {
+        cookiePath: path.join(BACKSTOP_DIR, 'cookies', user + '.json'),
+        count: '(' + (index + 1) + ' of ' + scenarios.length + ')',
+        url: constructScenarioUrl(config.url, scenario.url, contactIdsByRoles)
+      });
+    })
+    .value();
+}
+
+/**
+ * Removes the temp config file and sends a notification
+ * based on the given outcome from BackstopJS
+ *
+ * @param {Boolean} success
+ */
+function cleanUpAndNotify (success) {
+  gulp
+    .src(FILES.temp, { read: false })
+    .pipe(clean())
+    .pipe(notify({
+      message: success ? 'Success' : 'Error',
+      title: 'BackstopJS',
+      sound: 'Beep'
+    }));
+}
+
+/**
  * Constructs URL for BackstopJS scenario based on
  * site URL, scenario config URL and contact "roles" and IDs map
  *
@@ -39,7 +89,7 @@ module.exports = ['reference', 'test', 'openReport', 'approve'].map(function (ac
  * @param  {Object} contactIdsByRoles
  * @return {String}
  */
-function constructBackstopJSScenarioUrl (siteUrl, scenarioUrl, contactIdsByRoles) {
+function constructScenarioUrl (siteUrl, scenarioUrl, contactIdsByRoles) {
   return scenarioUrl
     .replace('{{siteUrl}}', siteUrl)
     .replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, contactRole) {
@@ -48,7 +98,26 @@ function constructBackstopJSScenarioUrl (siteUrl, scenarioUrl, contactIdsByRoles
 }
 
 /**
- * Fetches civicrm contacts who's emails match "civihr_" pattern
+ * Creates the content of the config temporary file that will be fed to BackstopJS
+ * The content is the mix of the config template and the list of scenarios
+ * under the scenarios/ folder
+ *
+ * @return {String}
+ */
+function createTempConfigFile () {
+  var content = JSON.parse(fs.readFileSync(FILES.tpl));
+
+  return getRolesAndIDs()
+    .then(buildScenariosList)
+    .then(function (scenarios) {
+      content.scenarios = scenarios;
+
+      return JSON.stringify(content);
+    });
+}
+
+/**
+ * Fetches civicrm contacts whose emails match "civihr_" pattern
  * and returns a map of their "roles" connected to their IDs.
  * Requires 'civihr_(staff|manager|admin)@...' to be presented in DB,
  * otherwise will throw an error.
@@ -96,45 +165,35 @@ function getRolesAndIDs () {
  * @return {Promise}
  */
 function runBackstopJS (command) {
-  var destFile = 'backstop.temp.json';
-
   if (touchSiteConfigFile()) {
     utils.throwError(
       'No site-config.json file detected!\n' +
-      '\tOne has been created for you under ' + BACKSTOP_DIR + '\n' +
+      '\tOne has been created for you under ' + path.basename(BACKSTOP_DIR) + '/\n' +
       '\tPlease insert the real value for each placeholder and try again'
     );
   }
 
   return writeCookies()
-    .then(getRolesAndIDs)
-    .then(function (contactIdsByRoles) {
+    .then(createTempConfigFile)
+    .then(function (tempConfigFile) {
       return new Promise(function (resolve, reject) {
-        var isBackstopJSSuccessful;
+        var success = false;
 
-        gulp.src(BACKSTOP_DIR_PATH + FILES.tpl)
-          .pipe(file(destFile, tempFileContent(contactIdsByRoles)))
-          .pipe(gulp.dest(BACKSTOP_DIR_PATH))
+        gulp.src(FILES.tpl)
+          .pipe(file(path.basename(FILES.temp), tempConfigFile))
+          .pipe(gulp.dest(BACKSTOP_DIR))
           .on('end', function () {
             backstopjs(command, {
-              configPath: BACKSTOP_DIR_PATH + destFile,
+              configPath: FILES.temp,
               filter: argv.filter
             })
               .then(function () {
-                isBackstopJSSuccessful = true;
+                success = true;
               })
               .catch(_.noop).then(function () { // equivalent to .finally()
-                return gulp
-                  .src(BACKSTOP_DIR_PATH + destFile, { read: false })
-                  .pipe(clean())
-                  .pipe(notify({
-                    message: isBackstopJSSuccessful ? 'Successful' : 'Error',
-                    title: 'BackstopJS',
-                    sound: 'Beep'
-                  }));
-              })
-              .then(function () {
-                isBackstopJSSuccessful ? resolve() : reject(new Error('BackstopJS error'));
+                cleanUpAndNotify(success);
+
+                success ? resolve() : reject(new Error('BackstopJS error'));
               });
           });
       });
@@ -145,57 +204,12 @@ function runBackstopJS (command) {
 }
 
 /**
- * Concatenates all the scenarios (if no specific scenario file is specified)
- *
- * @param  {Object} contactIdsByRoles
- * @return {Array}
- */
-function scenariosList (contactIdsByRoles) {
-  var config = siteConfig();
-  var scenariosPath = BACKSTOP_DIR_PATH + 'scenarios/';
-
-  return _(fs.readdirSync(scenariosPath))
-    .filter(function (scenario) {
-      return argv.configFile ? scenario === argv.configFile : true && scenario.endsWith('.json');
-    })
-    .map(function (scenarioFile) {
-      return JSON.parse(fs.readFileSync(scenariosPath + scenarioFile)).scenarios;
-    })
-    .flatten()
-    .map(function (scenario, index, scenarios) {
-      var user = scenario.user || DEFAULT_USER;
-
-      return _.assign(scenario, {
-        cookiePath: path.join(BACKSTOP_DIR, 'cookies', user + '.json'),
-        count: '(' + (index + 1) + ' of ' + scenarios.length + ')',
-        url: constructBackstopJSScenarioUrl(config.url, scenario.url, contactIdsByRoles)
-      });
-    })
-    .value();
-}
-
-/**
  * Returns the content of site config file
  *
  * @return {Object}
  */
 function siteConfig () {
-  return JSON.parse(fs.readFileSync(BACKSTOP_DIR_PATH + FILES.siteConfig));
-}
-
-/**
- * Creates the content of the config temporary file that will be fed to BackstopJS
- * The content is the mix of the config template and the list of scenarios
- * under the scenarios/ folder
- *
- * @return {String}
- */
-function tempFileContent (contactIdsByRoles) {
-  var content = JSON.parse(fs.readFileSync(BACKSTOP_DIR_PATH + FILES.tpl));
-
-  content.scenarios = scenariosList(contactIdsByRoles);
-
-  return JSON.stringify(content);
+  return JSON.parse(fs.readFileSync(FILES.siteConfig));
 }
 
 /**
@@ -207,9 +221,9 @@ function touchSiteConfigFile () {
   var created = false;
 
   try {
-    fs.readFileSync(BACKSTOP_DIR_PATH + FILES.siteConfig);
+    fs.readFileSync(FILES.siteConfig);
   } catch (err) {
-    fs.writeFileSync(BACKSTOP_DIR_PATH + FILES.siteConfig, JSON.stringify(CONFIG_TPL, null, 2));
+    fs.writeFileSync(FILES.siteConfig, JSON.stringify(CONFIG_TPL, null, 2));
     created = true;
   }
 
@@ -235,7 +249,7 @@ function writeCookies () {
 
   return Promise.all(users.map(function (user) {
     return new Promise(function (resolve, reject) {
-      var cookieFilePath = path.join(BACKSTOP_DIR_PATH, 'cookies', user + '.json');
+      var cookieFilePath = path.join(BACKSTOP_DIR, 'cookies', user + '.json');
 
       if (fs.existsSync(cookieFilePath)) {
         fs.unlinkSync(cookieFilePath);
