@@ -1,4 +1,4 @@
-var modal = require('../page');
+var modal = require('./page');
 
 module.exports = modal.extend({
   /**

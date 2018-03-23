@@ -1,7 +1,7 @@
 {
   "scenarios": [
     {
-      "label": "SSP / Onboarding Wizard / Customize SSP / Onboarding Wizard",
+      "label": "SSP / Onboarding Wizard / Customize SSP",
       "url": "{{siteUrl}}/customize-onboarding-wizard"
     },
     {
