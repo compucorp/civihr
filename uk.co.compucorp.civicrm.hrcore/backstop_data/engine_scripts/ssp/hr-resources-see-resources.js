@@ -1,7 +1,8 @@
 'use strict';
 
-var page = require('../../page-objects/ssp-hr-resources');
+const pageObj = require('../../page-objects/ssp-hr-resources');
 
-module.exports = function (engine) {
-  page.init(engine).seeResources();
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  await page.seeResources();
 };

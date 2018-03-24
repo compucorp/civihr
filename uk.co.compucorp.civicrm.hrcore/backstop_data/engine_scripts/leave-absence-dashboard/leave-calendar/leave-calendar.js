@@ -1,7 +1,8 @@
 'use strict';
 
-var page = require('../../../page-objects/leave-absence-dashboard');
+const pageObj = require('../../../page-objects/leave-absence-dashboard');
 
-module.exports = function (engine) {
-  page.init(engine).openTab('leave-calendar');
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  await page.openTab('leave-calendar');
 };

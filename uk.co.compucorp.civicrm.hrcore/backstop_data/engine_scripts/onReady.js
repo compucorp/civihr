@@ -1,4 +1,4 @@
-var page = require('../page-objects/page');
+const page = require('../page-objects/page');
 
 module.exports = async (puppet, scenario, vp) => {
   await require('./clickAndHoverHelper')(puppet, scenario);

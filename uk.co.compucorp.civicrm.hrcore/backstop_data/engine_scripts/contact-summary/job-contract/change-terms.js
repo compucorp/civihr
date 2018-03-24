@@ -1,13 +1,11 @@
 'use strict';
 
-var page = require('../../../page-objects/contact-summary');
+const pageObj = require('../../../page-objects/contact-summary');
 
-module.exports = function (engine) {
-  page.init(engine).openTab('job-contract')
-    .then(function (tab) {
-      return tab.openContractModal('revision');
-    })
-    .then(function (modal) {
-      modal.selectTab('General');
-    });
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  const tab = await page.openTab('job-contract');
+  const modal = await tab.openContractModal('revision');
+
+  await modal.selectTab('General');
 };

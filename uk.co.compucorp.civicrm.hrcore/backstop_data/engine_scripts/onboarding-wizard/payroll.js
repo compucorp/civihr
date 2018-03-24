@@ -1,7 +1,8 @@
 'use strict';
 
-var page = require('../../page-objects/onboarding-wizard');
+const pageObj = require('../../page-objects/onboarding-wizard');
 
-module.exports = function (engine) {
-  page.init(engine).reachPayrollPage();
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  await page.reachPayrollPage();
 };

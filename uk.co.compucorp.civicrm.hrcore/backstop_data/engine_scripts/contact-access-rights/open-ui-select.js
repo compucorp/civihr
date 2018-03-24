@@ -1,10 +1,10 @@
 'use strict';
 
-var page = require('../../page-objects/contact-summary');
+const pageObj = require('../../page-objects/contact-summary');
 
-module.exports = function (engine) {
-  page.init(engine).openManageRightsModal()
-    .then(function (modal) {
-      modal.openDropdown('locations');
-    });
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  const modal = await page.openManageRightsModal();
+
+  await modal.openDropdown('locations');
 };

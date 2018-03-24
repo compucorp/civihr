@@ -1,9 +1,11 @@
 'use strict';
 
-var page = require('../../../page-objects/documents');
+const pageObj = require('../../../page-objects/documents');
 
-module.exports = function (engine) {
-  page.init(engine).addDocument().then(function (modal) {
-    modal.showTab('Assignments').pickDueDate();
-  });
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  const modal = await page.addDocument();
+
+  await modal.showTab('Assignments');
+  await modal.pickDueDate();
 };

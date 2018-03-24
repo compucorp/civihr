@@ -1,10 +1,11 @@
 'use strict';
 
-var page = require('../../../page-objects/contact-summary');
+const pageObj = require('../../../page-objects/contact-summary');
 
-module.exports = function (engine) {
-  page.init(engine).openTab('job-roles')
-    .then(function (tab) {
-      tab.switchToTab('Basic Details').edit();
-    });
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  const tab = await page.openTab('job-roles');
+
+  await tab.switchToTab('Basic Details');
+  await tab.edit();
 };

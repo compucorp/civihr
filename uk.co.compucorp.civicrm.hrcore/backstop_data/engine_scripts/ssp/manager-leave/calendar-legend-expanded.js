@@ -1,7 +1,8 @@
 'use strict';
 
-var page = require('../../../page-objects/ssp-leave-absences-manager-leave-calendar');
+const pageObj = require('../../../page-objects/ssp-leave-absences-manager-leave-calendar');
 
-module.exports = function (engine) {
-  page.init(engine).toggleLegend();
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  await page.toggleLegend();
 };

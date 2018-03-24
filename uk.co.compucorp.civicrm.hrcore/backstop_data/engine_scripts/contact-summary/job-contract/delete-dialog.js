@@ -1,10 +1,10 @@
 'use strict';
 
-var page = require('../../../page-objects/contact-summary');
+const pageObj = require('../../../page-objects/contact-summary');
 
-module.exports = function (engine) {
-  page.init(engine).openTab('job-contract')
-    .then(function (tab) {
-      tab.attemptDelete();
-    });
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  const tab = await page.openTab('job-contract');
+
+  await tab.attemptDelete();
 };

@@ -1,8 +1,9 @@
 'use strict';
 
-var page = require('../../../page-objects/ssp-leave-absences-my-leave-report');
+const pageObj = require('../../../page-objects/ssp-leave-absences-my-leave-report');
 
 // precondition: need to have at least one pending leave request
-module.exports = function (engine) {
-  page.init(engine).openSection('pending');
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  await page.openSection('pending');
 };
