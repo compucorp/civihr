@@ -1,24 +1,19 @@
-module.exports = function (chromy, scenario) {
+module.exports = async (puppet, scenario) => {
   var hoverSelector = scenario.hoverSelector;
   var clickSelector = scenario.clickSelector;
   var postInteractionWait = scenario.postInteractionWait; // selector [str] | ms [int]
 
   if (hoverSelector) {
-    chromy
-      .wait(hoverSelector)
-      .rect(hoverSelector)
-      .result(function (rect) {
-        chromy.mouseMoved(rect.left, rect.top);
-      });
+    await puppet.waitFor(hoverSelector);
+    await puppet.hover(hoverSelector);
   }
 
   if (clickSelector) {
-    chromy
-      .wait(clickSelector)
-      .click(clickSelector);
+    await puppet.waitFor(clickSelector);
+    await puppet.click(clickSelector);
   }
 
   if (postInteractionWait) {
-    chromy.wait(postInteractionWait);
+    await puppet.waitFor(postInteractionWait);
   }
 };

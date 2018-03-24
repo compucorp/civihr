@@ -1,6 +1,6 @@
 var fs = require('fs');
 
-module.exports = function (chromy, scenario) {
+module.exports = async (puppet, scenario) => {
   var cookies = [];
   var cookiePath = scenario.cookiePath;
 
@@ -9,13 +9,21 @@ module.exports = function (chromy, scenario) {
     cookies = JSON.parse(fs.readFileSync(cookiePath));
   }
 
-  // MUNGE COOKIE DOMAIN FOR CHROMY USAGE
+  // MUNGE COOKIE DOMAIN
   cookies = cookies.map(cookie => {
     cookie.url = 'http://' + cookie.domain;
     delete cookie.domain;
     return cookie;
   });
 
-  // SET COOKIES VIA CHROMY
-  chromy.setCookie(cookies);
+  // SET COOKIES
+  const setCookies = async () => {
+    return Promise.all(
+      cookies.map(async (cookie) => {
+        await puppet.setCookie(cookie);
+      })
+    );
+  };
+
+  await setCookies();
 };
