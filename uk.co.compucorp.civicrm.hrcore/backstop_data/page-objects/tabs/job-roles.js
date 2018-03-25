@@ -1,4 +1,4 @@
-var tab = require('./tab');
+const tab = require('./tab');
 
 module.exports = tab.extend({
   readySelector: '.job-role__tabs',
@@ -7,54 +7,44 @@ module.exports = tab.extend({
   /**
    * Clicks on the delete button
    */
-  attemptDelete: function () {
-    this.chromy.click('.job-role [ng-click*="removeRole"]');
-    this.waitForModal();
+  async attemptDelete () {
+    await this.puppet.click('.job-role [ng-click*="removeRole"]');
+    await this.waitForModal();
   },
 
   /**
    * Clicks on the edit button of a job role
-   *
-   * @return {Object}
    */
-  edit: function () {
-    this.chromy.click('.tab-pane.active .job-role__actions .btn-link[ng-click$="show()"]');
-    this.chromy.wait(100);
-
-    return this;
+  async edit () {
+    await this.puppet.click('.tab-pane.active .job-role__actions .btn-link[ng-click$="show()"]');
+    await this.puppet.waitFor(100);
   },
 
   /**
    * Opens the ui-select with the given name
    *
-   * @param  {String} name
-   * @return {Object}
+   * @param {String} name
    */
-  openDropdown: function (name) {
-    var common = 'jobroles.editData[job_roles_data.id]';
+  async openDropdown (name) {
+    const common = 'jobroles.editData[job_roles_data.id]';
 
-    this.chromy.click('[ng-model="' + common + '[\'' + name + '\']"] > a');
-    this.chromy.wait(100);
-
-    return this;
+    await this.puppet.click('[ng-model="' + common + '[\'' + name + '\']"] > a');
+    await this.puppet.waitFor(100);
   },
 
   /**
    * Show the form for adding a new job role
    */
-  showAddNew: function () {
-    this.chromy.click('.btn-primary[ng-click*="jobroles.addNewRole()"]');
+  async showAddNew () {
+    await this.puppet.click('.btn-primary[ng-click*="jobroles.addNewRole()"]');
   },
 
   /**
    * Changes active tab
    *
-   * @param  {String} tabName
-   * @return {Object}
+   * @param {String} tabName
    */
-  switchToTab: function (tabName) {
-    this.chromy.click('[heading="' + tabName + '"] > a');
-
-    return this;
+  async switchToTab (tabName) {
+    await this.puppet.click('[heading="' + tabName + '"] > a');
   }
 });

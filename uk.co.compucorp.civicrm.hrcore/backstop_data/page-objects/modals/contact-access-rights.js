@@ -1,4 +1,4 @@
-var modal = require('./modal');
+const modal = require('./modal');
 
 module.exports = modal.extend({
   /**
@@ -6,12 +6,10 @@ module.exports = modal.extend({
    *
    * @return {object}
    */
-  openDropdown: function (name) {
-    var common = '[ng-model="modalCtrl.selectedData.%{name}"] input';
+  async openDropdown (name) {
+    const common = '[ng-model="modalCtrl.selectedData.%{name}"] input';
 
-    this.chromy.click(common.replace('%{name}', name));
-    this.chromy.wait(100);
-
-    return this;
+    await this.puppet.click(common.replace('%{name}', name));
+    await this.puppet.waitFor(100);
   }
 });

@@ -1,15 +1,12 @@
-var modal = require('./page');
+const modal = require('./page');
 
 module.exports = modal.extend({
   /**
    * Opens Edit My Details Popup
    *
-   * @return {Object}
    */
-  showEditMyDetailsPopup: function () {
-    this.chromy.click('[href="/my_details/nojs/view"]');
-    this.chromy.waitUntilVisible('.modal-civihr-custom__section');
-
-    return this;
+  async showEditMyDetailsPopup () {
+    await this.puppet.click('[href="/my_details/nojs/view"]');
+    await this.puppet.waitFor('.modal-civihr-custom__section', { visible: true });
   }
 });

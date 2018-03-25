@@ -1,18 +1,13 @@
 /* globals jQuery, MouseEvent */
 
-var page = require('./page');
+const page = require('./page');
 
 module.exports = page.extend({
   /**
-   * Clears the currently selected month from the calendar "Selected Months"
-   * field.
-   *
-   * @returns {Object} - returns a reference to the page object.
+   * Clears the currently selected month from the calendar "Selected Months" field
    */
-  clearCurrentlySelectedMonth: function () {
-    this.chromy.click('.chr_leave-calendar__day-selector .close.ui-select-match-close');
-
-    return this;
+  async clearCurrentlySelectedMonth () {
+    await this.puppet.click('.chr_leave-calendar__day-selector .close.ui-select-match-close');
   },
 
   /**
@@ -21,34 +16,24 @@ module.exports = page.extend({
    *
    * @param {String} monthName - the month of the name as it appear in the
    * "Selected Months" options.
-   * @returns {Object} - returns a reference to the page object.
    */
-  showMonth: function (monthName) {
-    this.chromy.click('.chr_leave-calendar__day-selector input');
-    this.chromy.evaluate(function (monthName) {
+  async showMonth (monthName) {
+    await this.puppet.click('.chr_leave-calendar__day-selector input');
+    await this.puppet.evaluate(monthName => {
       jQuery('.ui-select-choices-row:contains(' + monthName + ')').click();
-    }, [monthName]);
-    this.chromy.waitUntilVisible('leave-calendar-month leave-calendar-day');
-
-    return this;
+    }, monthName);
+    await this.puppet.waitFor('leave-calendar-month leave-calendar-day', { visible: true });
   },
 
   /**
-   * Hovers on top of a leave day visible on the calendar until a tooltip
-   * pops up.
-   *
-   * @returns {Object} - returns a reference to the page object.
+   * Hovers on top of a leave day visible on the calendar until a tooltip pops up
    */
-  showTooltip: function () {
-    var chromy = this.chromy;
-
-    chromy.evaluate(function () {
-      var event = new MouseEvent('mouseover');
+  async showTooltip () {
+    await this.puppet.evaluate(() => {
+      const event = new MouseEvent('mouseover');
       document.querySelector('.chr_leave-calendar__item a').dispatchEvent(event);
     });
-    chromy.waitUntilVisible('.tooltip');
-
-    return this;
+    await this.puppet.waitFor('.tooltip', { visible: true });
   },
 
   /**
@@ -57,23 +42,21 @@ module.exports = page.extend({
    * @param {Number} year - the year to select from the absence period options.
    * @returns {Object} - returns a reference to the page object.
    */
-  showYear: function (year) {
-    this.chromy.evaluate(function (year) {
-      var select = jQuery('.chr_manager_calendar__sub-header select');
-      var yearValue = select.find('option:contains(' + year + ')').attr('value');
+  async showYear (year) {
+    await this.puppet.evaluate(year => {
+      const select = jQuery('.chr_manager_calendar__sub-header select');
+      const yearValue = select.find('option:contains(' + year + ')').attr('value');
 
       select.val(yearValue).change();
-    }, [year]);
-    this.chromy.waitUntilVisible('leave-calendar-month leave-calendar-day');
-
-    return this;
+    }, year);
+    await this.puppet.waitFor('leave-calendar-month leave-calendar-day', { visible: true });
   },
 
   /**
    * Wait for the page to be ready by looking at
    * the visibility of a leave calendar item element
    */
-  waitForReady: function () {
-    this.chromy.waitUntilVisible('leave-calendar-month .chr_leave-calendar__item');
+  async waitForReady () {
+    await this.puppet.waitFor('leave-calendar-month .chr_leave-calendar__item', { visible: true });
   }
 });

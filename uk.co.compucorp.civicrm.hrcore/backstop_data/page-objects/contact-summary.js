@@ -1,49 +1,37 @@
-var Promise = require('es6-promise').Promise;
-var page = require('./page');
+const page = require('./page');
 
 module.exports = page.extend({
   /**
    * Opens the "contact access rights" modal
    *
-   * @return {Promise} resolves with the modal page object
+   * @return {Object} the modal page object
    */
-  openManageRightsModal: function () {
-    var chromy = this.chromy;
+  async openManageRightsModal () {
+    await this.showActions();
+    await this.puppet.click('[data-contact-access-rights]');
+    await this.puppet.waitFor('.spinner', { hidden: true });
 
-    return new Promise(function (resolve) {
-      this.showActions();
-
-      chromy.click('[data-contact-access-rights]');
-      chromy.wait(function () {
-        var dom = document.querySelector('.spinner');
-
-        return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
-      });
-
-      resolve(this.waitForModal('contact-access-rights'));
-    }.bind(this));
+    return this.waitForModal('contact-access-rights');
   },
 
   /**
    * Opens one of the contact summary tabs
    *
-   * @param  {string} tabId
-   * @return {object} resolves with the tab page object
+   * @param  {String} tabId
+   * @return {Pbject} resolves with the tab page object
    */
-  openTab: function (tabId) {
-    return new Promise(function (resolve) {
-      var tab = require('./tabs/' + tabId);
-      this.chromy.click('[title="' + tab.tabTitle + '"]');
+  async openTab (tabId) {
+    const tabObj = require('./tabs/' + tabId);
+    await this.puppet.click('[title="' + tabObj.tabTitle + '"]');
 
-      resolve(tab.init(this.chromy, false));
-    }.bind(this));
+    return tabObj.init(this.puppet, false);
   },
 
   /**
    * Shows the dropdown of the "Actions" button in the contact summary page
    */
-  showActions: function () {
-    this.chromy.click('#crm-contact-actions-link');
-    this.chromy.wait('#crm-contact-actions-list');
+  async showActions () {
+    await this.puppet.click('#crm-contact-actions-link');
+    await this.puppet.waitFor('#crm-contact-actions-list');
   }
 });

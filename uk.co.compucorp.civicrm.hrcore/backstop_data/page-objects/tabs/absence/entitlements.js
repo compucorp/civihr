@@ -1,4 +1,4 @@
-var tab = require('../tab');
+const tab = require('../tab');
 
 module.exports = tab.extend({
   tabTitle: 'Entitlements',
@@ -10,19 +10,11 @@ module.exports = tab.extend({
    * tab is ready, so as a quick workaround we simply override the method
    * and perform all the needed checks in it
    */
-  waitForReady: function () {
-    this.chromy.wait('contract-entitlements');
-    this.chromy.wait('annual-entitlements');
+  async waitForReady () {
+    await this.puppet.waitFor('contract-entitlements');
+    await this.puppet.waitFor('annual-entitlements');
     // Waits for spinners to hide which indicates the load of the data
-    this.chromy.wait(function () {
-      // = waitWhileVisible
-      var dom = document.querySelector('contract-entitlements .spinner');
-      return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
-    });
-    this.chromy.wait(function () {
-      // = waitWhileVisible
-      var dom = document.querySelector('annual-entitlements .spinner');
-      return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
-    });
+    await this.puppet.waitFor('contract-entitlements .spinner', { hidden: true });
+    await this.puppet.waitFor('annual-entitlements .spinner', { hidden: true });
   }
 });

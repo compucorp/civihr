@@ -1,21 +1,17 @@
-var page = require('./page');
+const page = require('./page');
 
 module.exports = page.extend({
   /**
    * Displays the work pattern calendar form.
-   *
-   * @return The Page instance.
    */
-  showCalendarForm: function () {
-    this.chromy.click('a[href="#work-pattern-calendar"]');
-
-    return this;
+  async showCalendarForm () {
+    await this.puppet.click('a[href="#work-pattern-calendar"]');
   },
 
   /**
    * Waits until the work pattern form is visible.
    */
-  waitForReady: function () {
-    this.chromy.visible('.work-pattern-form');
+  async waitForReady () {
+    await this.puppet.waitFor('.work-pattern-form', { visible: true });
   }
 });

@@ -1,4 +1,4 @@
-var tab = require('./tab');
+const tab = require('./tab');
 
 module.exports = tab.extend({
   tabTitle: 'Documents',
@@ -9,12 +9,8 @@ module.exports = tab.extend({
    * tab is ready, so as a quick workaround we simply override the method
    * and perform all the needed checks in it
    */
-  waitForReady: function () {
-    this.chromy.waitUntilVisible('form[name="formDocuments"]');
-    this.chromy.wait(function () {
-      // = waitWhileVisible
-      var dom = document.querySelector('.ct-spinner-cover');
-      return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
-    });
+  async waitForReady () {
+    await this.puppet.waitFor('form[name="formDocuments"]', { visible: true });
+    await this.puppet.waitFor('.ct-spinner-cover', { hidden: true });
   }
 });

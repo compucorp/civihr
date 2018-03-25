@@ -1,5 +1,5 @@
-var path = require('path');
-var page = require('./page');
+const path = require('path');
+const page = require('./page');
 
 module.exports = page.extend({
   /**
@@ -8,14 +8,13 @@ module.exports = page.extend({
    *
    * @return Page instance.
    */
-  showStep2: function () {
-    var filePath = path.join(__dirname, '..', 'uploads/leave-and-absences-import-data.csv');
+  async showStep2 () {
+    const filePath = path.join(__dirname, '..', 'uploads/leave-and-absences-import-data.csv');
+    const fileInput = await this.puppet.$('input[name="uploadFile"]');
 
-    this.chromy.setFile('input[name="uploadFile"]', filePath);
-    this.chromy.check('#skipColumnHeader');
-    this.submitAndWait();
-
-    return this;
+    await fileInput.uploadFile(filePath);
+    await this.puppet.click('[name="skipColumnHeader"]');
+    await this.submitAndWait();
   },
 
   /**
@@ -24,11 +23,9 @@ module.exports = page.extend({
    *
    * @return Page instance.
    */
-  showStep3: function () {
-    this.showStep2();
-    this.submitAndWait();
-
-    return this;
+  async showStep3 () {
+    await this.showStep2();
+    await this.submitAndWait();
   },
 
   /**
@@ -37,25 +34,23 @@ module.exports = page.extend({
    *
    * @return page instance.
    */
-  showStep4: function () {
-    this.showStep3();
-    this.submitAndWait();
-
-    return this;
+  async showStep4 () {
+    await this.showStep3();
+    await this.submitAndWait();
   },
 
   /**
    * Clicks on next button (.validate) and waits for Step URL.
    */
-  submitAndWait: function () {
-    this.chromy.click('.crm-leave-and-balance-import .validate');
-    this.chromy.waitLoadEvent();
+  async submitAndWait () {
+    await this.puppet.click('.crm-leave-and-balance-import .validate');
+    await this.puppet.waitForNavigation({ waitUntil: 'domcontentloaded' });
   },
 
   /**
    * Waits until the import form is visible.
    */
-  waitForReady: function () {
-    this.chromy.wait('.crm-leave-and-balance-import');
+  async waitForReady () {
+    await this.puppet.waitFor('.crm-leave-and-balance-import');
   }
 });

@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const Promise = require('es6-promise').Promise;
 
 module.exports = {
   /**
@@ -9,7 +8,7 @@ module.exports = {
    * @param  {Boolean} clearDialogs if true it will close modals and notifications
    * @return {Object}
    */
-  init: async (puppet, clearDialogs) => {
+  async init (puppet, clearDialogs) {
     clearDialogs = typeof clearDialogs !== 'undefined' ? !!clearDialogs : true;
 
     this.puppet = puppet;
@@ -45,7 +44,7 @@ module.exports = {
    *   a collection of methods and properties that will extend the main page
    * @return {Object}
    */
-  extend: (page) => {
+  extend (page) {
     return _.assign(Object.create(this), page);
   },
 
@@ -53,30 +52,23 @@ module.exports = {
    * Waits for the modal dialog to load. By default it waits for the .modal class
    * in dialog otherwise user can specify a custom waitSelector. Once model is
    * visible it loads the respective modalModule (if any)
+   *
    * @param {String} modalModule
    * @param {String} waitSelector
-   * @return {Promise}
+   * @return {Object} the modal
    */
-  waitForModal: async (modalModule, waitSelector) => {
-    return new Promise(async resolve => {
-      await this.puppet.waitFor(waitSelector || '.modal');
-      await this.puppet.wait(300);
+  async waitForModal (modalModule, waitSelector) {
+    await this.puppet.waitFor(waitSelector || '.modal', { visible: true });
+    await this.puppet.waitFor(300);
 
-      if (modalModule) {
-        let modal = await require('./modals/' + modalModule).init(this.puppet, false);
-
-        resolve(modal);
-      } else {
-        resolve();
-      }
-    });
+    if (modalModule) {
+      return require('./modals/' + modalModule).init(this.puppet, false);
+    }
   }
 };
 
 /**
  * Closes any modal currently open
- *
- * @return {Object}
  */
 async function closeAnyModal () {
   const openModalSelector = '.modal.in';
@@ -85,16 +77,12 @@ async function closeAnyModal () {
 
   if (result) {
     await this.puppet.click(openModalSelector + ' .close[ng-click="cancel()"]');
-    await this.puppet.wait(300);
+    await this.puppet.waitFor(300);
   }
-
-  return this;
 }
 
 /**
  * Closes any notification currently open
- *
- * @return {Object}
  */
 async function closeNotifications () {
   const notificationSelector = 'a.ui-notify-cross.ui-notify-close';
@@ -103,8 +91,6 @@ async function closeNotifications () {
 
   if (result) {
     await this.puppet.click(notificationSelector);
-    await this.puppet.wait(500);
+    await this.puppet.waitFor(500);
   }
-
-  return this;
 }

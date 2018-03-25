@@ -1,63 +1,44 @@
-var modal = require('./modal');
+const modal = require('./modal');
 
 module.exports = modal.extend({
   /**
    * Opens the "due date" datepicker
-   *
-   * @return {object}
    */
-  pickDueDate: function () {
-    this.chromy.click(this.modalRoot + ' [ng-model="documentModal.document.activity_date_time"]');
-    this.chromy.waitUntilVisible('.uib-datepicker-popup');
-
-    return this;
+  async pickDueDate () {
+    await this.puppet.click(this.modalRoot + ' [ng-model="documentModal.document.activity_date_time"]');
+    await this.puppet.waitFor('.uib-datepicker-popup', { visible: true });
   },
 
   /**
    * Shows the given field
    *
-   * @param  {string} fieldName
-   * @return {object}
+   * @param {String} fieldName
    */
-  showField: function (fieldName) {
-    this.chromy.click(this.modalRoot + ' a[ng-click*="show' + fieldName + 'Field"]');
-
-    return this;
+  async showField (fieldName) {
+    await this.puppet.click(this.modalRoot + ' a[ng-click*="show' + fieldName + 'Field"]');
   },
 
   /**
    * Selects an assignee for the document
-   *
-   * @return {object}
    */
-  selectAssignee: function () {
-    this.chromy.click(this.modalRoot + ' [ng-model="documentModal.document.assignee_contact"] .ui-select-match');
-    this.chromy.waitUntilVisible('.select2-with-searchbox:not(.select2-display-none)');
-
-    return this;
+  async selectAssignee () {
+    await this.puppet.click(this.modalRoot + ' [ng-model="documentModal.document.assignee_contact"] .ui-select-match');
+    await this.puppet.waitFor('.select2-with-searchbox:not(.select2-display-none)', { visible: true });
   },
 
   /**
    * Selects the type of document
-   *
-   * @return {object}
    */
-  selectType: function () {
-    this.chromy.click(this.modalRoot + ' [ng-model="documentModal.document.activity_type_id"] .ui-select-match');
-    this.chromy.waitUntilVisible('.select2-with-searchbox:not(.select2-display-none)');
-
-    return this;
+  async selectType () {
+    await this.puppet.click(this.modalRoot + ' [ng-model="documentModal.document.activity_type_id"] .ui-select-match');
+    await this.puppet.waitFor('.select2-with-searchbox:not(.select2-display-none)', { visible: true });
   },
 
   /**
    * Opens the given tab
-   *
-   * @return {object}
    */
-  showTab: function (tabName) {
-    this.chromy.click(this.modalRoot + ' a[data-target="#' + tabName.toLowerCase() + 'Tab"]');
-    this.chromy.wait(200);
-
-    return this;
+  async showTab (tabName) {
+    await this.puppet.click(this.modalRoot + ' a[data-target="#' + tabName.toLowerCase() + 'Tab"]');
+    await this.puppet.waitFor(200);
   }
 });

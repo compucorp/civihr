@@ -1,10 +1,10 @@
-var page = require('./page');
+const page = require('./page');
 
 module.exports = page.extend({
   /**
    * Wait for the page to be ready
    */
-  waitForReady: function () {
-    this.chromy.waitUntilVisible('.chr_leave-balance-tab');
+  async waitForReady () {
+    await this.puppet.waitFor('.chr_leave-balance-tab', { visible: true });
   }
 });

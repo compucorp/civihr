@@ -1,4 +1,4 @@
-var modal = require('./page');
+const modal = require('./page');
 
 module.exports = modal.extend({
   /**
@@ -6,10 +6,8 @@ module.exports = modal.extend({
    *
    * @return {object}
    */
-  seeResources: function () {
-    this.chromy.click('.fieldset-title');
-    this.chromy.wait(2000); // wait for animation to complete
-
-    return this;
+  async seeResources () {
+    await this.puppet.click('.fieldset-title');
+    await this.puppet.waitFor(2000); // wait for animation to complete
   }
 });
