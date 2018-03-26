@@ -2,7 +2,7 @@
 <extension key="org.civicrm.hremergency" type="module">
   <file>hremergency</file>
   <name>Emergency Contacts (CiviHR)</name>
-  <description>Emergency Contacts extensions for CiviHR</description>
+  <description>Emergency Contacts extension for CiviHR</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Compucorp Ltd</author>
