@@ -40,10 +40,10 @@ define([
     vm.LevelsData = {}; // Store the level types
     vm.LocationsData = {}; // Store the location types
     vm.RegionsData = {}; // Store the region types
-      // Define the add new role URL
+    // Define the add new role URL
     vm.addNewRoleUrl = settings.pathBaseUrl + settings.pathIncludeTpl + 'add_new_role.html';
     vm.jobRolePanelUrl = settings.pathBaseUrl + settings.pathIncludeTpl + 'job_role_panel.html';
-      // Select list for Row Types (used for Funders and Cost Centers)
+    // Select list for Row Types (used for Funders and Cost Centers)
     vm.rowTypes = {};
     vm.rowTypes[0] = { id: 0, name: 'Fixed' };
     vm.rowTypes[1] = { id: 1, name: '%' };
@@ -451,8 +451,8 @@ define([
         return _(data.values).map(function (contact) {
           return contact;
         })
-        .indexBy('contact_id')
-        .value();
+          .indexBy('contact_id')
+          .value();
       });
     }
 
@@ -476,12 +476,22 @@ define([
     }
 
     /**
+     * Retrieve a specific option group type value
      *
+     * @param optionGroupType
+     * @returns {*}
      */
-    function getOptionValues () {
-      // Set the option groups for which we want to get the values
-      var optionGroups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
+    function getOptionGroupTypeValues (optionGroupType) {
+      return retrieveOptionGroupValues([optionGroupType]);
+    }
 
+    /**
+     * Retrieve option group values
+     *
+     * @param optionGroups
+     * @returns {*}
+     */
+    function retrieveOptionGroupValues (optionGroups) {
       return jobRoleService.getOptionValues(optionGroups).then(function (data) {
         if (data.is_error === 1) {
           vm.message_type = 'alert-danger';
@@ -596,6 +606,18 @@ define([
       function (errorMessage) {
         vm.error = errorMessage;
       });
+    }
+
+    /**
+     * Get options values for department, region, location, level and cost centres
+     *
+     * @returns {*}
+     */
+    function getOptionValues () {
+      // Set the option groups for which we want to get the values
+      var optionGroups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
+
+      return retrieveOptionGroupValues(optionGroups);
     }
 
     /**
@@ -849,10 +871,10 @@ define([
           start: areDatesCustom ? vm.editData.new_role_id.newStartDate : contract.start_date,
           end: areDatesCustom ? vm.editData.new_role_id.newEndDate : contract.end_date
         },
-          {
-            start: 'newStartDate',
-            end: 'newEndDate'
-          });
+        {
+          start: 'newStartDate',
+          end: 'newEndDate'
+        });
       }
     }
 
@@ -965,10 +987,10 @@ define([
         'contractStart': contract.start_date,
         'contractEnd': contract.end_date
       },
-        {
-          'start': vm.errors.newStartDate,
-          'end': vm.errors.newEndDate
-        });
+      {
+        'start': vm.errors.newStartDate,
+        'end': vm.errors.newEndDate
+      });
 
       if (validateResponse) {
         newRole = angular.copy(vm.editData.new_role_id);
@@ -1255,10 +1277,10 @@ define([
         'contractStart': contract.start_date,
         'contractEnd': contract.end_date
       },
-        {
-          'start': data.start_date.$error.custom,
-          'end': data.end_date.$error.custom
-        });
+      {
+        'start': data.start_date.$error.custom,
+        'end': data.end_date.$error.custom
+      });
 
       return (validateResponse ? true : 'Error');
     }
