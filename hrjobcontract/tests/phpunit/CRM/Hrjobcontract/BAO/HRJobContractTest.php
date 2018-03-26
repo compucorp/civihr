@@ -280,6 +280,41 @@ class CRM_Hrjobcontract_BAO_HRJobContractTest extends CRM_Hrjobcontract_Test_Bas
     $this->assertEquals($this->contacts[1]['display_name'], $contacts[1]['display_name']);
   }
 
+  public function testGetContactsWithContractsInPeriodCanFilterContacts() {
+    $this->createContacts(3);
+    $startDate = date('Y-m-d', strtotime('-2 days'));
+    $endDate = date('Y-m-d', strtotime('+2 days'));
+
+    $this->createJobContract(
+      $this->contacts[0]['id'],
+      $startDate,
+      $endDate
+    );
+
+    $this->createJobContract(
+      $this->contacts[1]['id'],
+      $startDate,
+      $endDate
+    );
+
+    $this->createJobContract(
+      $this->contacts[2]['id'],
+      $startDate,
+      $endDate
+    );
+
+    //We want results only to be returned for the first and last contact.
+    $contactID = [$this->contacts[0]['id'], $this->contacts[2]['id']];
+    $contacts = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithContractsInPeriod($startDate, $endDate, $contactID);
+    $this->assertCount(2, $contacts);
+    // Since the results are ordered by display_name, it's reliable to
+    // assert the order like this
+    $this->assertEquals($this->contacts[0]['id'], $contacts[0]['id']);
+    $this->assertEquals($this->contacts[0]['display_name'], $contacts[0]['display_name']);
+    $this->assertEquals($this->contacts[2]['id'], $contacts[1]['id']);
+    $this->assertEquals($this->contacts[2]['display_name'], $contacts[1]['display_name']);
+  }
+
   public function testGetContactsWithContractsInPeriodShouldNotIncludeContactsWithDeletedContracts() {
     $this->createContacts(1);
 

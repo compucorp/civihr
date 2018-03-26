@@ -263,7 +263,7 @@ define([
       return vm.request.calculateBalanceChange(vm.selectedAbsenceType.calculation_unit_name)
         .then(function (balanceChange) {
           if (+vm.balance.change.amount !== +balanceChange.amount) {
-            LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation()
+            LeaveRequestService.promptBalanceChangeRecalculation()
               .then(function () {
                 $rootScope.$emit('LeaveRequestPopup::recalculateBalanceChange');
               });
@@ -295,10 +295,10 @@ define([
 
     /**
      * Sets the "change_balance" attribute to the leave request
-     * if a force balance change recalculation is needed
+     * if a force balance change recalculation is needed on the backend
      */
     function decideIfBalanceChangeNeedsAForceRecalculation () {
-      if (!vm.isRole('staff')) {
+      if (isBalanceChangeRecalculationNeeded() && !vm.isRole('staff')) {
         vm.request.change_balance = true;
       }
     }
@@ -615,6 +615,16 @@ define([
     }
 
     /**
+     * Checks if balance change verification is needed.
+     * When cancelling or rejecting a request, the balance check is not needed.
+     *
+     * @return {Boolean}
+     */
+    function isBalanceChangeRecalculationNeeded () {
+      return !vm.request.status_id || !_.includes(['cancelled', 'rejected'], getStatusFromValue(vm.request.status_id).name);
+    }
+
+    /**
      * Checks if the leave request has the given status
      *
      * @param {String} leaveStatus
@@ -817,6 +827,16 @@ define([
     }
 
     /**
+     * Reverts the request from and to dates and times back to the original values
+     */
+    function revertRequestOriginalDatesAndTimes () {
+      ['from', 'to'].forEach(function (dateType) {
+        vm.request[dateType + '_date'] =
+          initialLeaveRequestAttributes[dateType + '_date'];
+      });
+    }
+
+    /**
      * Sets entitlements and sets the absences type available for the user.
      * It depends on absenceTypesAndIds to be set to list of absence types and ids
      *
@@ -909,8 +929,9 @@ define([
       amendRequestParamsBeforeSave();
 
       return vm.request.isValid()
-        .then(checkIfBalanceChangeHasChanged)
+        .then(isBalanceChangeRecalculationNeeded() && checkIfBalanceChangeHasChanged)
         .then(decideIfBalanceChangeNeedsAForceRecalculation)
+        .then(!vm.request.change_balance && revertRequestOriginalDatesAndTimes)
         .then(submitAllTabs)
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();

@@ -291,6 +291,7 @@
                 nonRequiredTab = {
                   onBeforeSubmit: jasmine.createSpy('onBeforeSubmit').and.returnValue($q.resolve())
                 };
+                controller.request.change_balance = true;
 
                 requiredTab.onBeforeSubmit.and.callFake(function () {
                   hasCalledRequestCreateMethod = LeaveRequestAPI.create.calls.count() > 0;
@@ -655,8 +656,6 @@
             }
             // set status id manually as manager would set it on UI
             controller.newStatusOnSave = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
-
-            controller.submit();
           });
 
           describe('if balance change has not been updated', function () {
@@ -664,6 +663,7 @@
               spyOn(controller.request,
                 'checkIfBalanceChangeNeedsRecalculation')
                 .and.returnValue($q.resolve(false));
+              controller.submit();
               $scope.$digest();
             });
 
@@ -700,44 +700,121 @@
                 'checkIfBalanceChangeNeedsRecalculation')
                 .and.returnValue($q.resolve(true));
               spyOn(LeaveRequestService,
-                'promptIfProceedWithBalanceChangeRecalculation')
+                'promptBalanceChangeRecalculation')
                 .and.callThrough();
               spyOn(dialog, 'open').and.callFake(function (params) {
                 proceedWithBalanceChangeRecalculation = params.onConfirm;
               });
-              $rootScope.$digest();
             });
 
-            it('does not call update method on instance', function () {
-              expect(controller.request.update).not.toHaveBeenCalled();
-            });
-
-            it('prompts a balance change recalculation', function () {
-              expect(LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation)
-                .toHaveBeenCalled();
-            });
-
-            describe('on confirm the balance change recalculation', function () {
+            describe('basic tests', function () {
               beforeEach(function () {
-                proceedWithBalanceChangeRecalculation();
+                controller.submit();
                 $rootScope.$digest();
               });
 
-              it('initiates the balance change recalculation', function () {
-                expect($rootScope.$emit).toHaveBeenCalledWith(
-                  'LeaveRequestPopup::recalculateBalanceChange');
+              it('does not call update method on instance', function () {
+                expect(controller.request.update).not.toHaveBeenCalled();
               });
 
-              describe('after recalculation on submit attempt', function () {
+              it('prompts a balance change recalculation', function () {
+                expect(LeaveRequestService.promptBalanceChangeRecalculation)
+                  .toHaveBeenCalled();
+              });
+
+              describe('when confirming balance change recalculation', function () {
                 beforeEach(function () {
-                  controller.balance.change.amount = calculatedBalanceChangeAmount;
-                  controller.submit();
+                  proceedWithBalanceChangeRecalculation();
                   $rootScope.$digest();
                 });
 
-                it('updates leave request', function () {
-                  expect(controller.request.update).toHaveBeenCalled();
+                it('initiates the balance change recalculation', function () {
+                  expect($rootScope.$emit).toHaveBeenCalledWith(
+                    'LeaveRequestPopup::recalculateBalanceChange');
                 });
+
+                describe('after recalculation on submit attempt', function () {
+                  beforeEach(function () {
+                    controller.balance.change.amount = calculatedBalanceChangeAmount;
+                    controller.submit();
+                    $rootScope.$digest();
+                  });
+
+                  it('updates leave request', function () {
+                    expect(controller.request.update).toHaveBeenCalled();
+                  });
+                });
+              });
+            });
+
+            describe('when cancelling request', function () {
+              var requestOriginalDates = {};
+
+              beforeEach(function () {
+                requestOriginalDates.from = controller.request.from_date;
+                requestOriginalDates.to = controller.request.to_date;
+                controller.newStatusOnSave = optionGroupMock.specificObject(
+                  'hrleaveandabsences_leave_request_status', 'name', 'cancelled').value;
+
+                controller.submit();
+                $rootScope.$digest();
+              });
+
+              it('does not check the balance change', function () {
+                expect(LeaveRequestService.promptBalanceChangeRecalculation)
+                  .not.toHaveBeenCalled();
+              });
+
+              it('updates request', function () {
+                expect(controller.request.update).toHaveBeenCalled();
+              });
+
+              it('tells the backend to not recalculate balance change', function () {
+                expect(controller.request.change_balance).toBeUndefined();
+              });
+
+              it('reverts original request times', function () {
+                expect(moment(controller.request.from_date).format('HH:mm')).toEqual(
+                  moment(requestOriginalDates.from).format('HH:mm'));
+                expect(moment(controller.request.to_date).format('HH:mm')).toEqual(
+                  moment(requestOriginalDates.to).format('HH:mm'));
+              });
+            });
+
+            describe('when rejecting request', function () {
+              var requestOriginalDates = {};
+
+              beforeEach(function () {
+                requestOriginalDates.from = controller.request.from_date;
+                requestOriginalDates.to = controller.request.to_date;
+                controller.newStatusOnSave = optionGroupMock.specificObject(
+                  'hrleaveandabsences_leave_request_status', 'name', 'rejected').value;
+                // testing if time has been adjusted in UI, for example, due to work pattern change
+                controller.request.from_date = controller.request.from_date.split(' ')[0] + ' 01:01';
+                controller.request.to_date = controller.request.to_date.split(' ')[0] + ' 01:02';
+
+                controller.submit();
+                $rootScope.$digest();
+              });
+
+              it('does not check the balance change', function () {
+                expect(LeaveRequestService.promptBalanceChangeRecalculation)
+                  .not.toHaveBeenCalled();
+              });
+
+              it('updates request', function () {
+                expect(controller.request.update).toHaveBeenCalled();
+              });
+
+              it('tells the backend to not recalculate balance change', function () {
+                expect(controller.request.change_balance).toBeUndefined();
+              });
+
+              it('reverts original request times', function () {
+                expect(moment(controller.request.from_date).format('HH:mm')).toEqual(
+                  moment(requestOriginalDates.from).format('HH:mm'));
+                expect(moment(controller.request.to_date).format('HH:mm')).toEqual(
+                  moment(requestOriginalDates.to).format('HH:mm'));
               });
             });
           });
@@ -747,6 +824,7 @@
               controller.request.request_type = 'toil';
               controller.balance.change.amount--;
 
+              controller.submit();
               spyOn(dialog, 'open');
               $rootScope.$apply();
             });

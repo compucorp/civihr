@@ -33,6 +33,7 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest {
       $leaveBalanceChangeService,
       $leavePeriodEntitlementService
     );
-    $creationLogic->createForContact($contactID, $publicHoliday);
+
+    return $creationLogic->createForContact($contactID, $publicHoliday);
   }
 }

@@ -482,14 +482,22 @@ define([
     },
     /**
      * Generates random work day for date
+     * time_from varies from 06:00 to 09:45 with 15 minutes interval
+     * time_to varies from 17:00 to 20:45 with 15 minutes interval
+     * number_of_hours varies from 1 to 23.75
      *
      * @return {Object} mocking a response from LeaveRequest.getWorkDayForDate API
      */
     workDayForDate: (function () {
       var timeFrom = moment({
-        hours: Math.ceil(Math.random() * 14),
-        minutes: Math.ceil(Math.random() * 2) * 15
+        hours: 6 + Math.floor(Math.random() * 4),
+        minutes: Math.floor(Math.random() * 4) * 15
       });
+      var timeTo = moment({
+        hours: 17 + Math.floor(Math.random() * 4),
+        minutes: Math.floor(Math.random() * 4) * 15
+      });
+      var numberOfHours = 1 + Math.ceil(Math.random() * 19.75 / 0.25) * 0.25;
 
       return {
         is_error: 0,
@@ -497,11 +505,8 @@ define([
         count: 3,
         values: {
           time_from: timeFrom.format('HH:mm'),
-          time_to: timeFrom
-            .add(4 + Math.ceil(Math.random() * 5), 'hours')
-            .add(Math.ceil(Math.random() * 2) * 15, 'minutes')
-            .format('HH:mm'),
-          number_of_hours: '' + (Math.ceil(Math.random() * 24 / 0.25) * 0.25)
+          time_to: timeTo.format('HH:mm'),
+          number_of_hours: numberOfHours.toString()
         }
       };
     })()

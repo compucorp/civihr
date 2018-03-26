@@ -8,7 +8,7 @@ module.exports = function (config) {
     browsers: ['ChromeHeadless'],
     frameworks: ['jasmine'],
     files: [
-            // the global dependencies
+      // the global dependencies
       'bower_components/jquery/dist/jquery.min.js',
       'bower_components/jquery-ui/jquery-ui.js',
       'bower_components/lodash-compat/lodash.min.js',

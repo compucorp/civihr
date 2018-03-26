@@ -26,6 +26,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
 
   use CRM_HRLeaveAndAbsences_LeavePeriodEntitlementHelpersTrait;
   use CRM_HRLeaveAndAbsences_LeaveBalanceChangeHelpersTrait;
+  use CRM_HRLeaveAndAbsences_PublicHolidayHelpersTrait;
 
   /**
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
@@ -89,6 +90,40 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $this->getCreationLogic()->createForContact($periodEntitlement->contact_id, $publicHoliday);
 
     $this->assertEquals(1, $this->countNumberOfLeaveRequests($periodEntitlement->contact_id, $date->format('Ymd')));
+  }
+
+  public function testItDoesNotCreateALeaveRequestIfThereIsAlreadyASoftDeletedLeaveRequestForTheGivenPublicHolidayAndContact() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('first day of this year'),
+      'end_date' => CRM_Utils_Date::processDate('last day of this year')
+    ]);
+
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+    $periodEntitlement->contact_id = 2;
+    $periodEntitlement->type_id = $this->absenceType->id;
+
+    $date = new DateTime('first monday of this year');
+    $publicHoliday = $this->instantiatePublicHoliday($date->format('Ymd'));
+
+    $publicHolidayRequest = $this->getCreationLogic()->createForContact($periodEntitlement->contact_id, $publicHoliday);
+    $this->assertEquals(1, $this->countNumberOfLeaveRequests($periodEntitlement->contact_id, $date->format('Ymd')));
+    //soft delete the public holiday leave request
+    LeaveRequest::softDelete($publicHolidayRequest->id);
+
+    $numberOfDeletedRequests = $this->countNumberOfLeaveRequests($periodEntitlement->contact_id, $date->format('Ymd'), FALSE);
+    $numberOfNonDeletedRequests = $this->countNumberOfLeaveRequests($periodEntitlement->contact_id, $date->format('Ymd'));
+    $this->assertEquals(1, $numberOfDeletedRequests);
+    $this->assertEquals(0, $numberOfNonDeletedRequests);
+
+    //Try to create a public holiday leave request for same date
+    //Null will be returned because a soft deleted request is found for same date.
+    //Also the number of deleted request stays same and no new public holiday request is created.
+    $publicHolidayRequest = $this->getCreationLogic()->createForContact($periodEntitlement->contact_id, $publicHoliday);
+    $this->assertNull($publicHolidayRequest);
+    $numberOfDeletedRequests = $this->countNumberOfLeaveRequests($periodEntitlement->contact_id, $date->format('Ymd'), FALSE);
+    $numberOfNonDeletedRequests = $this->countNumberOfLeaveRequests($periodEntitlement->contact_id, $date->format('Ymd'));
+    $this->assertEquals(1, $numberOfDeletedRequests);
+    $this->assertEquals(0, $numberOfNonDeletedRequests);
   }
 
   public function testItUpdatesTheBalanceChangeForOverlappingLeaveRequestDayToZero() {
@@ -467,10 +502,14 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     return $bao->count();
   }
 
-  private function countNumberOfLeaveRequests($contactID, $date) {
+  private function countNumberOfLeaveRequests($contactID, $date, $nonDeletedOnly = TRUE) {
     $bao = new LeaveRequest();
     $bao->contact_id = $contactID;
     $bao->from_date = $date;
+
+    if($nonDeletedOnly) {
+      $bao->is_deleted = 0;
+    }
 
     return $bao->count();
   }
