@@ -2,7 +2,8 @@
   "scenarios": [
     {
       "label": "Contact Summary",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "onReadyScript": "contact-summary/show.js"
     },
     {
       "label": "Contact Summary / Actions",
