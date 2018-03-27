@@ -45,5 +45,12 @@ module.exports = page.extend({
   showActions: function () {
     this.chromy.click('#crm-contact-actions-link');
     this.chromy.wait('#crm-contact-actions-list');
+  },
+
+  /**
+   * Wait an arbitrary amound of time for the data to load
+   */
+  waitForReady: function () {
+    this.chromy.wait(6000);
   }
 });
