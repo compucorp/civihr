@@ -2,7 +2,8 @@
   "scenarios": [
     {
       "label": "T&A / Documents",
-      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/documents"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/documents",
+      "onReadyScript": "documents/show.js"
     },
     {
       "label": "T&A / Documents / Advanced Filters",
