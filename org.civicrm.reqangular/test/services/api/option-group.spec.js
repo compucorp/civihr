@@ -8,7 +8,7 @@ define([
   'use strict';
 
   describe('api.option-group', function () {
-    var $q, methods, OptionGroupAPI;
+    var $q, OptionGroupAPI;
 
     beforeEach(function () {
       module('common.models', 'common.mocks');
@@ -23,11 +23,10 @@ define([
 
     beforeEach(inject(function (_$q_) {
       $q = _$q_;
-      methods = Object.keys(OptionGroupAPI);
     }));
 
-    it('has expected interface', function () {
-      expect(methods).toContain('valuesOf');
+    it('has the expected api', function () {
+      expect(Object.keys(OptionGroupAPI)).toEqual(['valuesOf']);
     });
 
     describe('valuesOf()', function () {
@@ -38,19 +37,30 @@ define([
       });
 
       describe('when a single option name is passed without any additional parameters', function () {
+        var sendGETCallArgs;
+
         beforeEach(function () {
           OptionGroupAPI.valuesOf(optionGroupName);
+
+          sendGETCallArgs = OptionGroupAPI.sendGET.calls.mostRecent().args;
+        });
+
+        it('calls sendGET with correct API entity and method', function () {
+          expect(sendGETCallArgs[0]).toBe('OptionValue');
+          expect(sendGETCallArgs[1]).toBe('get');
         });
 
         it('calls sendGET with correct parameters', function () {
-          expect(OptionGroupAPI.sendGET).toHaveBeenCalledWith(
-            'OptionValue', 'get',
-            { 'option_group_id.name': { IN: [ optionGroupName ] },
-              is_active: '1',
-              return: [ 'option_group_id.name', 'option_group_id', 'id', 'name',
-                'label', 'value', 'weight', 'is_active', 'is_reserved'] },
-            undefined
-          );
+          expect(sendGETCallArgs[2]).toEqual({
+            'option_group_id.name': { IN: [ optionGroupName ] },
+            is_active: '1',
+            return: [ 'option_group_id.name', 'option_group_id', 'id', 'name',
+              'label', 'value', 'weight', 'is_active', 'is_reserved']
+          });
+        });
+
+        it('does not tell sendGET to disable caching the API results', function () {
+          expect(OptionGroupAPI.sendGET.calls.mostRecent().args[3]).not.toBe(false);
         });
       });
 

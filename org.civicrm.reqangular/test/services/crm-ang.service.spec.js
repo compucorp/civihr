@@ -8,7 +8,7 @@
   ], function () {
     'use strict';
 
-    describe('crmAng', function () {
+    describe('crmAngService', function () {
       var crmAngService;
 
       beforeEach(module('common.services'));

@@ -24,7 +24,8 @@ define([
 
   describe('RequestModalDetailsToilController', function () {
     var $componentController, $provide, $q, $log, $rootScope, crmAngService, controller,
-      AbsenceType, AbsenceTypeAPI, leaveRequest, LeaveRequestInstance, TOILRequestInstance;
+      AbsenceType, AbsenceTypeAPI, leaveRequest, LeaveRequestInstance,
+      OptionGroupAPI, TOILRequestInstance;
 
     var date2016 = '01/12/2016';
     var date2016To = '02/12/2016'; // Must be greater than `date2016`
@@ -47,6 +48,10 @@ define([
       $provide.value('HR_settings', _HRSettingsMock_);
     }]));
 
+    beforeEach(inject(['api.optionGroup', function (_optionGroupAPI_) {
+      OptionGroupAPI = _optionGroupAPI_;
+    }]));
+
     beforeEach(inject(function (
       _$componentController_, _$q_, _$log_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_,
       _crmAngService_, _LeaveRequestInstance_, _TOILRequestInstance_) {
@@ -64,6 +69,7 @@ define([
       spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
       spyOn(AbsenceType, 'canExpire').and.callThrough();
       spyOn(AbsenceType, 'calculateToilExpiryDate').and.callThrough();
+      spyOn(OptionGroupAPI, 'valuesOf').and.callThrough();
 
       crmAngService.loadForm = function () {
         return {
@@ -97,11 +103,15 @@ define([
         expect(controller.isLeaveType('toil')).toBeTruthy();
       });
 
-      it('loads toil amounts', function () {
+      it('loads TOIL accrual options', function () {
         expect(Object.keys(controller.toilAmounts).length).toBeGreaterThan(0);
       });
 
-      it('sorts toil amounts by value', function () {
+      it('caches TOIL accrual options', function () {
+        expect(OptionGroupAPI.valuesOf.calls.mostRecent().args[2]).not.toBe(false);
+      });
+
+      it('sorts TOIL accrual options by value', function () {
         expect(_.pluck(controller.toilAmounts, 'value')).toEqual(
           _.pluck(controller.toilAmounts, 'value').sort());
       });
@@ -314,7 +324,7 @@ define([
         });
       });
 
-      describe('when user opens toil accrual option group editor', function () {
+      describe('when user opens TOIL accrual options group editor', function () {
         beforeEach(function () {
           // flushing TOIL accrual options
           controller.toilAmounts = null;
@@ -332,8 +342,12 @@ define([
             $rootScope.$digest();
           });
 
-          it('reloads TOIL accrual values', function () {
+          it('reloads TOIL accrual options', function () {
             expect(Object.keys(controller.toilAmounts).length).toBeGreaterThan(0);
+          });
+
+          it('does not cache TOIL accrual options', function () {
+            expect(OptionGroupAPI.valuesOf.calls.mostRecent().args[2]).toBe(false);
           });
         });
       });
@@ -408,7 +422,7 @@ define([
               expect(controller.request.toil_expiry_date).toEqual(oldExpiryDate);
             });
 
-            it('has toil amount set by manager', function () {
+            it('has TOIL amount set by manager', function () {
               expect(controller.request.toil_to_accrue).toEqual(originalToilToAccrue.value);
             });
           });
