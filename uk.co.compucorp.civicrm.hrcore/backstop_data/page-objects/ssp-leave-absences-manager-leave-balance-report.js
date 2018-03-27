@@ -6,5 +6,13 @@ module.exports = page.extend({
    */
   waitForReady: function () {
     this.chromy.waitUntilVisible('.chr_leave-balance-tab');
+    this.chromy.wait(function () {
+      // = waitWhileVisible
+      var spinners = document.querySelectorAll('.spinner');
+
+      return Array.prototype.every.call(spinners, function (dom) {
+        return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
+      });
+    });
   }
 });
