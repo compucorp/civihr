@@ -9,9 +9,9 @@
     <author>Compucorp Ltd</author>
     <email>info@compucorp.co.uk</email>
   </maintainer>
-  <releaseDate>2017-12-20</releaseDate>
-  <version>1.7.2</version>
-  <develStage>alpha</develStage>
+  <releaseDate>2018-03-26</releaseDate>
+  <version>1.7.5</version>
+  <develStage>stable</develStage>
   <compatibility>
     <ver>4.7</ver>
   </compatibility>
