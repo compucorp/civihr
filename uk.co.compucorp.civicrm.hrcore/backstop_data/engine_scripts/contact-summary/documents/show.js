@@ -1,7 +1,7 @@
 'use strict';
 
-var page = require('../../../page-objects/contact-summary');
+var page = require('../../../page-objects/tabs/documents');
 
 module.exports = function (engine) {
-  page.init(engine).openTab('documents');
+  page.init(engine);
 };
