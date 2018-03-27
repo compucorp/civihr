@@ -12,7 +12,7 @@ define([
     'crmAngService', 'api.optionGroup', 'AbsenceType', 'detailsController'];
 
   function RequestModalDetailsToilController ($log, $q, $rootScope,
-    crmAngService, OptionGroup, AbsenceType, detailsController) {
+    crmAngService, OptionGroupAPI, AbsenceType, detailsController) {
     $log.debug('RequestModalDetailsToilController');
 
     var initialRequestAttributes;
@@ -349,10 +349,11 @@ define([
     /**
      * Initializes leave request toil amounts
      *
+     * @param  {Boolean} cache if to cache results of the API call, cache by default
      * @return {Promise}
      */
-    function loadToilAmounts () {
-      return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts', {}, false)
+    function loadToilAmounts (cache) {
+      return OptionGroupAPI.valuesOf('hrleaveandabsences_toil_amounts', {}, cache)
         .then(function (amounts) {
           detailsController.toilAmounts = _.sortBy(amounts, 'value');
         });
@@ -423,7 +424,9 @@ define([
      */
     function openToilInDaysAccrualOptionsEditor () {
       crmAngService.loadForm('/civicrm/admin/options/hrleaveandabsences_toil_amounts?reset=1')
-        .on('crmFormSuccess', loadToilAmounts);
+        .on('crmFormSuccess', function () {
+          loadToilAmounts(false);
+        });
     }
 
     /**
