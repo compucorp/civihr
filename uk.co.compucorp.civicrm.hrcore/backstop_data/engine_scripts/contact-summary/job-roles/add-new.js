@@ -1,10 +1,7 @@
 'use strict';
 
-var page = require('../../../page-objects/contact-summary');
+var page = require('../../../page-objects/tabs/job-roles');
 
 module.exports = function (engine) {
-  page.init(engine).openTab('job-roles')
-    .then(function (tab) {
-      tab.showAddNew();
-    });
+  page.init(engine).showAddNew();
 };
