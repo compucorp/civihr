@@ -1,7 +1,7 @@
 <?php
 
 trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
-
+  
   /**
    * Adds links to edit option groups related to leave and absence
    *
@@ -11,17 +11,17 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
     $params = ['return' => 'id', 'name' => 'leave_and_absences'];
     $parentId = (int) civicrm_api3('Navigation', 'getvalue', $params);
     civicrm_api3('Navigation', 'create', ['id' => $parentId, 'weight' => -96]);
-
+    
     $this->up1020_createNewLinks($parentId);
     // we need to flush for new items to be recognized
     CRM_Core_PseudoConstant::flush();
     $this->up1020_relabelExistingLinks($parentId);
     $this->up1020_addSeparators($parentId);
     $this->up1020_updateWeight($parentId);
-
+    
     return TRUE;
   }
-
+  
   /**
    * Creates new entries in the leave submenu
    *
@@ -35,14 +35,14 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
       'Work Pattern Change Reasons' => 'hrleaveandabsences_work_pattern_change_reason',
       'Work Pattern Day Equivalents' => 'hrleaveandabsences_leave_days_amounts'
     ];
-
+    
     foreach ($optionGroupLinks as $itemName => $optionGroup) {
       $link = 'civicrm/admin/options/' . $optionGroup . '?reset=1';
       $params = ['url' => $link];
       $this->up1020_createNavItem($itemName, $permission, $parentId, $params);
     }
   }
-
+  
   /**
    * Relabels some of the existing leave items
    *
@@ -56,14 +56,14 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
       'leave_and_absence_general_settings' => ts('Leave Settings'),
       'leave_and_absences_import' => ts('Import Leave Requests'),
     ];
-
+    
     foreach ($nameToLabelMapping as $name => $label) {
       $params = ['parent_id' => $parentId, 'name' => $name, 'return' => 'id'];
       $id = (int) civicrm_api3('Navigation', 'getvalue', $params);
       civicrm_api3('Navigation', 'create', ['id' => $id, 'label' => $label]);
     }
   }
-
+  
   /**
    * Adds separators after certain items in the leave submenu
    *
@@ -74,14 +74,14 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
       'leave_and_absence_general_settings',
       'Work Pattern Day Equivalents',
     ];
-
+    
     foreach ($itemsWithSeparators as $name) {
       $params = ['parent_id' => $parentId, 'name' => $name, 'return' => 'id'];
       $id = (int) civicrm_api3('Navigation', 'getvalue', $params);
       civicrm_api3('Navigation', 'create', ['id' => $id, 'has_separator' => 1]);
     }
   }
-
+  
   /**
    * Sets the weight for the "Import" item so it will appear last
    *
@@ -94,7 +94,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
     $maxWeight = CRM_Core_BAO_Navigation::calculateWeight($parentId);
     civicrm_api3('Navigation', 'create', ['id' => $id, 'weight' => $maxWeight]);
   }
-
+  
   /**
    * Creates a navigation menu item using the API
    *
@@ -118,13 +118,14 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1020 {
       'parent_id' => $parentID,
       'is_active' => 1,
     ], $params);
-
+    
     $existing = civicrm_api3('Navigation', 'get', $params);
-
+    
     if ($existing['count'] > 0) {
       return array_shift($existing['values']);
     }
-
+    
     return civicrm_api3('Navigation', 'create', $params);
   }
 }
+
