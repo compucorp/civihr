@@ -2,62 +2,62 @@
   "scenarios": [
     {
       "label": "Job Contract",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/summary.js"
     },
     {
       "label": "Job Contract / Full History",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/full-history.js"
     },
     {
       "label": "Job Contract / Delete Dialog",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/delete-dialog.js"
     },
     {
       "label": "Job Contract / Modal / Tab / General",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/tab-general.js"
     },
     {
       "label": "Job Contract / Modal / Tab / Hours",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/tab-hours.js"
     },
     {
       "label": "Job Contract / Modal / Tab / Pay",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/tab-pay.js"
     },
     {
       "label": "Job Contract / Modal / Tab / Leave",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/tab-leave.js"
     },
     {
       "label": "Job Contract / Modal / Tab / Insurance",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/tab-insurance.js"
     },
     {
       "label": "Job Contract / Modal / Tab / Pension",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/tab-pension.js"
     },
     {
       "label": "Job Contract / Modal / Tab / Funding",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/tab-funding.js"
     },
     {
       "label": "Job Contract / Modal / Correct Error ",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/correct-error.js"
     },
     {
       "label": "Job Contract / Modal / Change Terms ",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=hrjobcontract",
       "onReadyScript": "contact-summary/job-contract/change-terms.js"
     }
   ]

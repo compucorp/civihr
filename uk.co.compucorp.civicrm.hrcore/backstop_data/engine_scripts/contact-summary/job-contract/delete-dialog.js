@@ -1,10 +1,7 @@
 'use strict';
 
-var page = require('../../../page-objects/contact-summary');
+var page = require('../../../page-objects/tabs/job-contract');
 
 module.exports = function (engine) {
-  page.init(engine).openTab('job-contract')
-    .then(function (tab) {
-      tab.attemptDelete();
-    });
+  page.init(engine).attemptDelete();
 };

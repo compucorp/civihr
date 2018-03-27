@@ -1,12 +1,9 @@
 'use strict';
 
-var page = require('../../../page-objects/contact-summary');
+var page = require('../../../page-objects/tabs/job-contract');
 
 module.exports = function (engine) {
-  page.init(engine).openTab('job-contract')
-    .then(function (tab) {
-      return tab.openNewContractModal();
-    })
+  page.init(engine).openNewContractModal()
     .then(function (modal) {
       modal.selectTab('Pay');
     });
