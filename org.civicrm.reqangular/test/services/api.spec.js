@@ -8,23 +8,27 @@ define([
   'use strict';
 
   describe('api', function () {
-    var api, $httpBackend, $httpParamSerializer, $rootScope;
+    var api, $cacheFactory, $httpBackend, $httpParamSerializer, $rootScope;
     var entity = 'entity';
     var action = 'action';
 
     beforeEach(module('common.apis'));
 
-    beforeEach(inject(function (_api_, _$httpBackend_, _$httpParamSerializer_, _$rootScope_) {
+    beforeEach(inject(function (_api_, _$cacheFactory_, _$httpBackend_,
+      _$httpParamSerializer_, _$rootScope_) {
       api = _api_;
+      $cacheFactory = _$cacheFactory_;
       $httpBackend = _$httpBackend_;
       $httpParamSerializer = _$httpParamSerializer_;
       $rootScope = _$rootScope_;
     }));
 
-    describe('sendGET', function () {
+    describe('sendGET()', function () {
       var promise;
 
-      afterEach(function () { $httpBackend.flush(); });
+      afterEach(function () {
+        $httpBackend.flush();
+      });
 
       describe('when the API does not return an error', function () {
         var returnValue = {
@@ -99,26 +103,84 @@ define([
         });
       });
 
+      describe('caching', function () {
+        var sampleResult = 'sample result';
+        var sampleParams = {};
+
+        beforeEach(function () {
+          spyOn($cacheFactory.get('$http'), 'remove').and.callThrough();
+        });
+
+        describe('when "returnCachedData" parameter is not passed', function () {
+          beforeEach(function () {
+            expectAndSendGET(sampleResult, sampleParams);
+            $rootScope.$digest();
+          });
+
+          it('does not flush cache before HTTP call', function () {
+            expect($cacheFactory.get('$http').remove).not.toHaveBeenCalled();
+          });
+
+          it('caches data by default', function () {
+            expect($cacheFactory.get('$http').info().size).toBe(1);
+          });
+        });
+
+        describe('when "returnCachedData" parameter passed as TRUE', function () {
+          beforeEach(function () {
+            expectAndSendGET(sampleResult, sampleParams, true);
+            $rootScope.$digest();
+          });
+
+          it('does not flush cache before HTTP call', function () {
+            expect($cacheFactory.get('$http').remove).not.toHaveBeenCalled();
+          });
+
+          it('caches data', function () {
+            expect($cacheFactory.get('$http').info().size).toBe(1);
+          });
+        });
+
+        describe('when "returnCachedData" parameter passed as FALSE', function () {
+          beforeEach(function () {
+            expectAndSendGET(sampleResult, sampleParams, false);
+            $rootScope.$digest();
+          });
+
+          it('flushes cache before HTTP call', function () {
+            expect($cacheFactory.get('$http').remove).toHaveBeenCalledWith(
+              '/civicrm/ajax/rest?action=action&entity=entity&json=%7B%22options%22:%7B%22limit%22:0%7D%7D&sequential=1');
+          });
+
+          it('caches updated data for future requests', function () {
+            expect($cacheFactory.get('$http').info().size).toBe(1);
+          });
+        });
+      });
+
       /**
        * Mocks and sends a fake GET request
        *
        * @param  {any} returnValue - value to be returned by the GET request
        * @param  {Object} params - params to be used in the API call
+       * @param  {Boolean} cache
        * @return {Promise}
        */
-      function expectAndSendGET (returnValue, params) {
+      function expectAndSendGET (returnValue, params, cache) {
         $httpBackend
           .whenGET(new RegExp('action=' + action + '&entity=' + entity))
           .respond(returnValue);
 
-        return api.sendGET(entity, action, params, true);
+        return api.sendGET(entity, action, params, cache);
       }
     });
 
-    describe('sendPOST', function () {
+    describe('sendPOST()', function () {
       var promise;
 
-      afterEach(function () { $httpBackend.flush(); });
+      afterEach(function () {
+        $httpBackend.flush();
+      });
 
       describe('when the API doesnt return an error', function () {
         var returnValue = {
