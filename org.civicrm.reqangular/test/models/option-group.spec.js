@@ -47,7 +47,7 @@ define([
         });
 
         it('caches requests by default', function () {
-          expect(optionGroupAPI.valuesOf.calls.mostRecent().args[1]).toBe(undefined);
+          expect(optionGroupAPI.valuesOf.calls.mostRecent().args[2]).toBe(undefined);
         });
       });
 
@@ -63,15 +63,27 @@ define([
         });
       });
 
+      describe('when extra params are passed', function () {
+        var params = { paramKey: 'paramValue' };
+
+        beforeEach(function () {
+          OptionGroup.valuesOf(optionGroupName, params);
+        });
+
+        it('passed params to API', function () {
+          expect(optionGroupAPI.valuesOf.calls.mostRecent().args[1]).toBe(params);
+        });
+      });
+
       describe('when caching is disabled', function () {
         var cache = false;
 
         beforeEach(function () {
-          OptionGroup.valuesOf(optionGroupName, cache);
+          OptionGroup.valuesOf(optionGroupName, {}, cache);
         });
 
         it('does not cache requests', function () {
-          expect(optionGroupAPI.valuesOf.calls.mostRecent().args[1]).toBe(cache);
+          expect(optionGroupAPI.valuesOf.calls.mostRecent().args[2]).toBe(cache);
         });
       });
     });

@@ -25,7 +25,7 @@ define([
   describe('RequestModalDetailsToilController', function () {
     var $componentController, $provide, $q, $log, $rootScope, crmAngService, controller,
       AbsenceType, AbsenceTypeAPI, leaveRequest, LeaveRequestInstance,
-      OptionGroupAPI, TOILRequestInstance;
+      OptionGroup, TOILRequestInstance;
 
     var date2016 = '01/12/2016';
     var date2016To = '02/12/2016'; // Must be greater than `date2016`
@@ -48,13 +48,9 @@ define([
       $provide.value('HR_settings', _HRSettingsMock_);
     }]));
 
-    beforeEach(inject(['api.optionGroup', function (_optionGroupAPI_) {
-      OptionGroupAPI = _optionGroupAPI_;
-    }]));
-
     beforeEach(inject(function (
       _$componentController_, _$q_, _$log_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_,
-      _crmAngService_, _LeaveRequestInstance_, _TOILRequestInstance_) {
+      _crmAngService_, _LeaveRequestInstance_, _OptionGroup_, _TOILRequestInstance_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -63,13 +59,14 @@ define([
       crmAngService = _crmAngService_;
       AbsenceTypeAPI = _AbsenceTypeAPI_;
       LeaveRequestInstance = _LeaveRequestInstance_;
+      OptionGroup = _OptionGroup_;
       TOILRequestInstance = _TOILRequestInstance_;
 
       spyOn($log, 'debug');
       spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
       spyOn(AbsenceType, 'canExpire').and.callThrough();
       spyOn(AbsenceType, 'calculateToilExpiryDate').and.callThrough();
-      spyOn(OptionGroupAPI, 'valuesOf').and.callThrough();
+      spyOn(OptionGroup, 'valuesOf').and.callThrough();
 
       crmAngService.loadForm = function () {
         return {
@@ -108,7 +105,7 @@ define([
       });
 
       it('caches TOIL accrual options', function () {
-        expect(OptionGroupAPI.valuesOf.calls.mostRecent().args[2]).not.toBe(false);
+        expect(OptionGroup.valuesOf.calls.mostRecent().args[2]).not.toBe(false);
       });
 
       it('sorts TOIL accrual options by value', function () {
@@ -347,7 +344,7 @@ define([
           });
 
           it('does not cache TOIL accrual options', function () {
-            expect(OptionGroupAPI.valuesOf.calls.mostRecent().args[2]).toBe(false);
+            expect(OptionGroup.valuesOf.calls.mostRecent().args[2]).toBe(false);
           });
         });
       });

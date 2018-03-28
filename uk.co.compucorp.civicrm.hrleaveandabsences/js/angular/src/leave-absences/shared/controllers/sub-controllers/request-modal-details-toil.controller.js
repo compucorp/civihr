@@ -9,10 +9,10 @@ define([
   controllers.controller('RequestModalDetailsToilController', RequestModalDetailsToilController);
 
   RequestModalDetailsToilController.$inject = ['$log', '$q', '$rootScope',
-    'crmAngService', 'api.optionGroup', 'AbsenceType', 'detailsController'];
+    'crmAngService', 'OptionGroup', 'AbsenceType', 'detailsController'];
 
   function RequestModalDetailsToilController ($log, $q, $rootScope,
-    crmAngService, OptionGroupAPI, AbsenceType, detailsController) {
+    crmAngService, OptionGroup, AbsenceType, detailsController) {
     $log.debug('RequestModalDetailsToilController');
 
     var initialRequestAttributes;
@@ -353,7 +353,7 @@ define([
      * @return {Promise}
      */
     function loadToilAmounts (cache) {
-      return OptionGroupAPI.valuesOf('hrleaveandabsences_toil_amounts', {}, cache)
+      return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts', {}, cache)
         .then(function (amounts) {
           detailsController.toilAmounts = _.sortBy(amounts, 'value');
         });
