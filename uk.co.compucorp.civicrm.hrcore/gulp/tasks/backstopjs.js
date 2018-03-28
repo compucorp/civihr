@@ -267,7 +267,7 @@ function writeCookies () {
           return reject(new Error(err));
         }
 
-        chromy = new Chromy({ port: port++ });
+        chromy = new Chromy({ port: port++, gotoTimeout: 60000 });
         chromy.chain()
           .goto(config.url)
           .goto(loginUrl)
