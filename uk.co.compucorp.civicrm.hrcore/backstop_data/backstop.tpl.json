@@ -19,7 +19,7 @@
   "engine": "chrome",
   "engineFlags": [],
   "engineOptions": {
-    "waitTimeout": 12000
+    "waitTimeout": 6000
   },
   "asyncCaptureLimit": 1,
   "asyncCompareLimit": 50,

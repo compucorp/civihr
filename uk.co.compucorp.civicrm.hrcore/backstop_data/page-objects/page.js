@@ -11,8 +11,8 @@ module.exports = {
    */
   init: function (chromy, clearDialogs) {
     clearDialogs = typeof clearDialogs !== 'undefined' ? !!clearDialogs : true;
-
     this.chromy = chromy;
+
     !!this.waitForReady && this.waitForReady();
 
     chromy.evaluate(function () {
@@ -21,17 +21,12 @@ module.exports = {
       .result(function (href) {
         var isAdmin = href.indexOf('civicrm/') > 1;
 
-        if (isAdmin) {
-          chromy.evaluate(function () {
-            var errorsWrapper = document.querySelector('#content > #console');
-            errorsWrapper && (errorsWrapper.style.display = 'none');
-          });
-        } else {
-          chromy.evaluate(function () {
-            var errorsWrapper = document.querySelector('#messages .alert');
-            errorsWrapper && (errorsWrapper.style.display = 'none');
-          });
-        }
+        chromy.evaluate(function (isAdmin) {
+          var selector = isAdmin ? '#content > #console' : '#messages .alert';
+          var errorsWrapper = document.querySelector(selector);
+
+          errorsWrapper && (errorsWrapper.style.display = 'none');
+        }, [isAdmin]);
       });
 
     if (clearDialogs) {
@@ -57,6 +52,7 @@ module.exports = {
    * Waits for the modal dialog to load. By default it waits for the .modal class
    * in dialog otherwise user can specify a custom waitSelector. Once model is
    * visible it loads the respective modalModule (if any)
+   *
    * @param {String} modalModule
    * @param {String} waitSelector
    * @return {Promise}

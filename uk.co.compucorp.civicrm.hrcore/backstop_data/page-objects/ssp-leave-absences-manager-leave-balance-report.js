@@ -7,7 +7,7 @@ module.exports = page.extend({
   waitForReady: function () {
     this.chromy.waitUntilVisible('.chr_leave-balance-tab');
     this.chromy.wait(function () {
-      // = waitWhileVisible
+      // = CasperJS.waitWhileVisible()
       var spinners = document.querySelectorAll('.spinner');
 
       return Array.prototype.every.call(spinners, function (dom) {

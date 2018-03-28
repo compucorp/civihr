@@ -7,8 +7,9 @@ module.exports = modal.extend({
   openCompletedTasksModal: function () {
     this.chromy.click('.pane-views-tasks-block a.show-complete-tasks');
     this.chromy.wait(function () {
-      // = waitWhileVisible
+      // = CasperJS.waitWhileVisible()
       var dom = document.querySelector('.loading-spinner');
+
       return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
     });
     this.chromy.waitUntilVisible('.view-Tasks');

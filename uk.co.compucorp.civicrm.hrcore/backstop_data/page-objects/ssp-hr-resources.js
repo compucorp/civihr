@@ -4,7 +4,7 @@ module.exports = modal.extend({
   /**
    * Opens See Resources section
    *
-   * @return {object}
+   * @return {Object}
    */
   seeResources: function () {
     this.chromy.click('.fieldset-title');

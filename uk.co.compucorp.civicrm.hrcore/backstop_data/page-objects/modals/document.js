@@ -4,7 +4,7 @@ module.exports = modal.extend({
   /**
    * Opens the "due date" datepicker
    *
-   * @return {object}
+   * @return {Object}
    */
   pickDueDate: function () {
     this.chromy.click(this.modalRoot + ' [ng-model="documentModal.document.activity_date_time"]');
@@ -16,8 +16,8 @@ module.exports = modal.extend({
   /**
    * Shows the given field
    *
-   * @param  {string} fieldName
-   * @return {object}
+   * @param  {String} fieldName
+   * @return {Object}
    */
   showField: function (fieldName) {
     this.chromy.click(this.modalRoot + ' a[ng-click*="show' + fieldName + 'Field"]');
@@ -28,7 +28,7 @@ module.exports = modal.extend({
   /**
    * Selects an assignee for the document
    *
-   * @return {object}
+   * @return {Object}
    */
   selectAssignee: function () {
     this.chromy.click(this.modalRoot + ' [ng-model="documentModal.document.assignee_contact"] .ui-select-match');
@@ -40,7 +40,7 @@ module.exports = modal.extend({
   /**
    * Selects the type of document
    *
-   * @return {object}
+   * @return {Object}
    */
   selectType: function () {
     this.chromy.click(this.modalRoot + ' [ng-model="documentModal.document.activity_type_id"] .ui-select-match');
@@ -52,7 +52,7 @@ module.exports = modal.extend({
   /**
    * Opens the given tab
    *
-   * @return {object}
+   * @return {Object}
    */
   showTab: function (tabName) {
     this.chromy.click(this.modalRoot + ' a[data-target="#' + tabName.toLowerCase() + 'Tab"]');

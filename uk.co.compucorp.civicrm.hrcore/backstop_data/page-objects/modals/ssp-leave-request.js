@@ -3,6 +3,7 @@ var modal = require('./modal');
 module.exports = modal.extend({
   /**
    * Selects tabs like comments or attachments
+   *
    * @param {String} tabName like comments or attachments
    * @return {Object} this object
    */

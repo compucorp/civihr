@@ -4,7 +4,7 @@ module.exports = modal.extend({
   /**
    * Opens a date picker
    *
-   * @return {object}
+   * @return {Object}
    */
   pickDate: function () {
     this.chromy.click(this.modalRoot + ' [ng-model="task.activity_date_time"]');
@@ -16,8 +16,8 @@ module.exports = modal.extend({
   /**
    * Shows a given field
    *
-   * @param  {string} fieldName
-   * @return {object}
+   * @param  {String} fieldName
+   * @return {Object}
    */
   showField: function (fieldName) {
     this.chromy.click(this.modalRoot + ' a[ng-click*="showField' + fieldName + '"]');
@@ -28,7 +28,7 @@ module.exports = modal.extend({
   /**
    * Selects the task's assignee
    *
-   * @return {object}
+   * @return {Object}
    */
   selectAssignee: function () {
     this.chromy.click(this.modalRoot + ' [ng-model="task.assignee_contact_id[0]"] .ui-select-match');
@@ -40,7 +40,7 @@ module.exports = modal.extend({
   /**
    * Select the task type
    *
-   * @return {object}
+   * @return {Object}
    */
   selectType: function () {
     this.chromy.click(this.modalRoot + ' [ng-model="task.activity_type_id"] .ui-select-match');

@@ -5,13 +5,14 @@ var documentSelector = '.ct-table-documents > tbody > tr:nth-child(1)';
 
 module.exports = page.extend({
   /**
-   * Opens the modal to add a documents
+   * Adds a document by opening the modal
    *
    * @return {Promise} resolves with the document modal page object
    */
   addDocument: function () {
     return new Promise(function (resolve) {
       this.chromy.click('a[ng-click*="itemAdd"]');
+
       resolve(this.waitForModal('document'));
     }.bind(this));
   },
@@ -19,7 +20,7 @@ module.exports = page.extend({
   /**
    * Shows the advanced filters
    *
-   * @return {object}
+   * @return {Object}
    */
   advancedFilters: function () {
     this.chromy.click('a[ng-click*="isCollapsed.filterAdvanced"]');
@@ -31,7 +32,7 @@ module.exports = page.extend({
   /**
    * Shows the dropdown of the actions available on any given document
    *
-   * @return {object}
+   * @return {Object}
    */
   documentActions: function () {
     this.chromy.click(documentSelector + ' .ct-context-menu-toggle');

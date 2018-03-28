@@ -31,13 +31,15 @@ module.exports = page.extend({
     return new Promise(function (resolve) {
       chromy.click('body > ul.dropdown-menu:nth-of-type(' + (row || 1) + ') li:first-child a');
       chromy.wait(function () {
-        // = waitWhileVisible
+        // = CasperJS.waitWhileVisible()
         var dom = document.querySelector('.modal-content .spinner:nth-child(1)');
+
         return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
       });
       chromy.wait(function () {
-        // = waitWhileVisible
+        // = CasperJS.waitWhileVisible()
         var dom = document.querySelector('leave-request-popup-details-tab .spinner');
+
         return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
       });
 
@@ -102,8 +104,9 @@ module.exports = page.extend({
   openSection: function (section) {
     this.chromy.click('td[ng-click="report.toggleSection(\'' + section + '\')"]');
     this.chromy.wait(function () {
-      // = waitWhileVisible
+      // = CasperJS.waitWhileVisible()
       var dom = document.querySelector('.spinner');
+
       return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
     });
 

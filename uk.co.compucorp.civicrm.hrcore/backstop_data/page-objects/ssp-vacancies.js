@@ -4,11 +4,11 @@ module.exports = modal.extend({
   /**
    * Opens More Details section
    *
-   * @return {object}
+   * @return {Object}
    */
   showMoreDetails: function () {
     this.chromy.click('.fieldset-title');
-    this.chromy.wait(2000);
+    this.chromy.wait(2000); // wait for animation to complete
 
     return this;
   }

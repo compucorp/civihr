@@ -7,7 +7,7 @@ module.exports = tab.extend({
   /**
    * Clicks on the delete button
    *
-   * @return {object}
+   * @return {Object}
    */
   attemptDelete: function () {
     this.chromy.click('.hrjc-list-contract-item:nth-child(1) .btn-danger');
@@ -17,7 +17,7 @@ module.exports = tab.extend({
   /**
    * Opens the modal of an already existing contract
    *
-   * @param  {string} mode "correct" or "revision"
+   * @param  {String} mode "correct" or "revision"
    * @return {Promise} resolves with the job contract modal object
    */
   openContractModal: function (mode) {
@@ -25,6 +25,7 @@ module.exports = tab.extend({
 
     return new Promise(function (resolve) {
       this.chromy.click('[ng-click="modalContract(\'' + param + '\')"]');
+
       resolve(this.waitForModal('job-contract'));
     }.bind(this));
   },
@@ -37,6 +38,7 @@ module.exports = tab.extend({
   openNewContractModal: function () {
     return new Promise(function (resolve) {
       this.chromy.click('.hrjc-btn-add-contract > .btn-primary');
+
       resolve(this.waitForModal('job-contract'));
     }.bind(this));
   },
@@ -51,8 +53,9 @@ module.exports = tab.extend({
   waitForReady: function () {
     this.chromy.waitUntilVisible('.hrjc-summary');
     this.chromy.wait(function () {
-      // = waitWhileVisible
+      // = CasperJS.waitWhileVisible()
       var dom = document.querySelector('.hrjc-list-contract .spinner');
+
       return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
     });
 
@@ -62,7 +65,7 @@ module.exports = tab.extend({
   /**
    * Shows the full history of a contract
    *
-   * @return {object}
+   * @return {Object}
    */
   showFullHistory: function () {
     this.chromy.click('[heading="Full History"] > a');

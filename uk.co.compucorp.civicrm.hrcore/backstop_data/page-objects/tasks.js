@@ -37,7 +37,7 @@ module.exports = page.extend({
   /**
    * Opens the advanced filters
    *
-   * @return {object}
+   * @return {Object}
    */
   advancedFilters: function () {
     this.chromy.click('a[ng-click*="isCollapsed.filterAdvanced"]');
@@ -49,8 +49,8 @@ module.exports = page.extend({
   /**
    * Shows the given edit-in-place field
    *
-   * @param {string} fieldName
-   * @return {object}
+   * @param {String} fieldName
+   * @return {Object}
    */
   inPlaceEdit: function (fieldName) {
     this.chromy.click(editableSelectors[fieldName]);
@@ -68,8 +68,9 @@ module.exports = page.extend({
     return new Promise(function (resolve) {
       this.chromy.click(taskSelector + ' .task-title > a[ng-click*="modalTask"]');
       this.chromy.wait(function () {
-        // = waitWhileVisible
+        // = CasperJS.waitWhileVisible()
         var dom = document.querySelector('.spinner');
+
         return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
       });
 
@@ -88,7 +89,7 @@ module.exports = page.extend({
   /**
    * Expands the "show more" area of the first task of the list
    *
-   * @return {object}
+   * @return {Object}
    */
   showMore: function () {
     this.chromy.click(taskSelector + ' a[ng-click*="isCollapsed"]');
@@ -101,7 +102,7 @@ module.exports = page.extend({
   /**
    * Shows the dropdown of the actions available on any given task
    *
-   * @return {object}
+   * @return {Object}
    */
   taskActions: function () {
     this.chromy.click(taskSelector + ' .ct-context-menu-toggle');

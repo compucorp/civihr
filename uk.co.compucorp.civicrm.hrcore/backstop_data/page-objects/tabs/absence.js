@@ -8,14 +8,15 @@ module.exports = tab.extend({
   /**
    * Opens one of the absence sub tabs
    *
-   * @param  {string} tabId
-   * @return {object} resolves with the tab page object
+   * @param  {String} tabId
+   * @return {Object} resolves with the tab page object
    */
   openSubTab: function (tabId) {
     return new Promise(function (resolve) {
       var tab = require('./absence/' + tabId);
 
       this.chromy.click('[heading="' + tab.tabTitle + '"] > a');
+
       resolve(tab.init(this.chromy, false));
     }.bind(this));
   }

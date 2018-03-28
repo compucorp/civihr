@@ -14,6 +14,7 @@ var Promise = require('es6-promise').Promise;
 var utils = require('../utils');
 
 var BACKSTOP_DIR = path.join(__dirname, '..', '..', 'backstop_data');
+var CHROMY_STARTING_PORT = 9222;
 var DEFAULT_USER = 'civihr_admin';
 var CONFIG_TPL = { 'url': 'http://%{site-host}' };
 var FILES = {
@@ -224,6 +225,7 @@ function touchSiteConfigFile () {
     fs.readFileSync(FILES.siteConfig);
   } catch (err) {
     fs.writeFileSync(FILES.siteConfig, JSON.stringify(CONFIG_TPL, null, 2));
+
     created = true;
   }
 
@@ -244,7 +246,6 @@ function touchSiteConfigFile () {
  */
 function writeCookies () {
   var cookiesDir = path.join(BACKSTOP_DIR, 'cookies');
-  var port = 9222;
   var config = siteConfig();
   var users = ['admin', 'civihr_admin', 'civihr_manager', 'civihr_staff'];
 
@@ -252,7 +253,7 @@ function writeCookies () {
     fs.mkdirSync(cookiesDir);
   }
 
-  return Promise.all(users.map(function (user) {
+  return Promise.all(users.map(function (user, index) {
     return new Promise(function (resolve, reject) {
       var cookieFilePath = path.join(cookiesDir, user + '.json');
 
@@ -267,7 +268,7 @@ function writeCookies () {
           return reject(new Error(err));
         }
 
-        chromy = new Chromy({ port: port++, gotoTimeout: 60000 });
+        chromy = new Chromy({ port: CHROMY_STARTING_PORT + index, gotoTimeout: 60000 });
         chromy.chain()
           .goto(config.url)
           .goto(loginUrl)

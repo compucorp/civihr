@@ -8,13 +8,11 @@ module.exports = page.extend({
    * @return {Promise} resolves with the modal page object
    */
   openManageRightsModal: function () {
-    var chromy = this.chromy;
-
     return new Promise(function (resolve) {
       this.showActions();
 
-      chromy.click('[data-contact-access-rights]');
-      chromy.wait(function () {
+      this.chromy.click('[data-contact-access-rights]');
+      this.chromy.wait(function () {
         var dom = document.querySelector('.spinner');
 
         return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
@@ -27,12 +25,13 @@ module.exports = page.extend({
   /**
    * Opens one of the contact summary tabs
    *
-   * @param  {string} tabId
-   * @return {object} resolves with the tab page object
+   * @param  {String} tabId
+   * @return {Object} resolves with the tab page object
    */
   openTab: function (tabId) {
     return new Promise(function (resolve) {
       var tab = require('./tabs/' + tabId);
+
       this.chromy.click('[title="' + tab.tabTitle + '"]');
 
       resolve(tab.init(this.chromy, false));

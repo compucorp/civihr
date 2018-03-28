@@ -15,6 +15,7 @@ module.exports = modal.extend({
   waitForReady: function () {
     this.chromy.evaluate(function () {
       var tempStyle = document.createElement('style');
+
       tempStyle.type = 'text/css';
       tempStyle.innerHTML = '#reportsIframe { height: 1000px !important; }';
 

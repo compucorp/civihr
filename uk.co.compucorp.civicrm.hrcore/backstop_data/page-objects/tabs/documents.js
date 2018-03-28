@@ -12,8 +12,9 @@ module.exports = tab.extend({
   waitForReady: function () {
     this.chromy.waitUntilVisible('form[name="formDocuments"]');
     this.chromy.wait(function () {
-      // = waitWhileVisible
+      // = CasperJS.waitWhileVisible()
       var dom = document.querySelector('.ct-spinner-cover');
+
       return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
     });
   }

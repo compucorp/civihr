@@ -3,8 +3,6 @@ var page = require('./page');
 module.exports = page.extend({
   /**
    * Navigate to Address Page
-   *
-   * @return {*}
    */
   reachAddressPage: function () {
     this.chromy.click('.webform-next');
@@ -13,8 +11,6 @@ module.exports = page.extend({
 
   /**
    * Navigate to Contact Info Page
-   *
-   * @return {*}
    */
   reachContactInfoPage: function () {
     this.reachAddressPage();
@@ -24,8 +20,6 @@ module.exports = page.extend({
 
   /**
    * Navigate to Payroll Page
-   *
-   * @return {*}
    */
   reachPayrollPage: function () {
     this.reachContactInfoPage();
@@ -35,8 +29,6 @@ module.exports = page.extend({
 
   /**
    * Navigate to Emergency Contact Page
-   *
-   * @return {*}
    */
   reachEmergencyContactPage: function () {
     this.reachPayrollPage();
@@ -46,8 +38,6 @@ module.exports = page.extend({
 
   /**
    * Navigate to Dependent Page
-   *
-   * @return {*}
    */
   reachDependentPage: function () {
     this.reachEmergencyContactPage();
@@ -58,8 +48,6 @@ module.exports = page.extend({
 
   /**
    * Navigate to Profile Picture Page
-   *
-   * @return {*}
    */
   reachProfilePicturePage: function () {
     this.reachDependentPage();

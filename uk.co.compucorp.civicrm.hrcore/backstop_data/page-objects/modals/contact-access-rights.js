@@ -4,7 +4,7 @@ module.exports = modal.extend({
   /**
    * Opens a ui-select dropdown
    *
-   * @return {object}
+   * @return {Object}
    */
   openDropdown: function (name) {
     var common = '[ng-model="modalCtrl.selectedData.%{name}"] input';

@@ -5,8 +5,8 @@ module.exports = page.extend({
   /**
    * Opens one of the leave absence dashboard tabs
    *
-   * @param  {string} tabId
-   * @return {object} resolves with the tab page object
+   * @param  {String} tabId
+   * @return {Object} resolves with the tab page object
    */
   openTab: function (tabId) {
     var chromy = this.chromy;
