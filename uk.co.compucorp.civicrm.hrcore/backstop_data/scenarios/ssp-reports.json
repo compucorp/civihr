@@ -6,11 +6,13 @@
     },
     {
       "label": "SSP / Reports / People",
-      "url": "{{siteUrl}}/reports/people/"
+      "url": "{{siteUrl}}/reports/people/",
+      "onReadyScript": "ssp/reports-show.js"
     },
     {
       "label": "SSP / Reports / Leave and Absence",
-      "url": "{{siteUrl}}/reports/leave_and_absence/"
+      "url": "{{siteUrl}}/reports/leave_and_absence/",
+      "onReadyScript": "ssp/reports-show.js"
     },
     {
       "label": "SSP / Reports / Settings / Age groups",
