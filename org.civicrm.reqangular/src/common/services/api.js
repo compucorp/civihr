@@ -7,7 +7,7 @@ define([
 ], function (angular, _, apis) {
   'use strict';
 
-  apis.factory('api', ['$log', '$http', '$httpParamSerializer', '$q', '$timeout', function ($log, $http, $httpParamSerializer, $q, $timeout) {
+  apis.factory('api', ['$cacheFactory', '$log', '$http', '$httpParamSerializer', '$q', '$timeout', function ($cacheFactory, $log, $http, $httpParamSerializer, $q, $timeout) {
     $log.debug('api');
 
     var API_ENDPOINT = '/civicrm/ajax/rest';
@@ -40,6 +40,20 @@ define([
       };
 
       return JSON.stringify(_.merge(defaults, params || {}));
+    }
+
+    /**
+     * Constructs a GET query string exactly the same way as $http service does
+     *
+     * @param  {Object} json that is passed as "params" to $http
+     * @return {String} query string
+     */
+    function jsonToQueryString (json) {
+      return '?' + Object.keys(json).sort().map(function (key) {
+        return (encodeURIComponent(key) + '=' + encodeURIComponent(json[key]))
+          .replace(/%3A/g, ':')
+          .replace(/%2C/g, ',');
+      }).join('&');
     }
 
     return {
@@ -140,24 +154,33 @@ define([
       /**
        * Sends a GET request to the backend endpoint
        *
-       * @param {string} entity - The entity the request is asking for (Contact, Appraisal, etc)
-       * @param {string} action - The action to perform
-       * @param {object} params - Any additional parameters to pass in the request
-       * @param {boolean} cache - If the response should be cached (default = true)
+       * @param  {String} entity - The entity the request is asking for (Contact, Appraisal, etc)
+       * @param  {String} action - The action to perform
+       * @param  {Object} params - Any additional parameters to pass in the request
+       * @param  {Boolean} returnCachedData
+       *   - if passed as TRUE or not passed, returns data from cache (if not the first call)
+       *   - if passed as FALSE, returns updated data from API and caches for future requests
        * @return {Promise}
        */
-      sendGET: function (entity, action, params, cache) {
+      sendGET: function (entity, action, params, returnCachedData) {
+        var queryJSON = {
+          action: action,
+          entity: entity,
+          json: prepareParams(params),
+          sequential: 1
+        };
+
+        if (returnCachedData === false) {
+          $cacheFactory.get('$http').remove(
+            API_ENDPOINT + jsonToQueryString(queryJSON));
+        }
+
         return $http({
           method: 'GET',
           url: API_ENDPOINT,
-          cache: (typeof cache !== 'undefined' ? !!cache : true),
+          cache: true,
           responseType: 'json',
-          params: {
-            sequential: 1,
-            json: prepareParams(params),
-            entity: entity,
-            action: action
-          }
+          params: queryJSON
         }).then(responseHandler);
       },
 
