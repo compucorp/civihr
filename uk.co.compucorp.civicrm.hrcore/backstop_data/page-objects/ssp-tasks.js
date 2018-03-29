@@ -21,5 +21,13 @@ module.exports = modal.extend({
   openCreateNewTaskModal: function () {
     this.chromy.click('.create-new-task');
     this.chromy.waitUntilVisible('#civihr-employee-portal-civi-tasks-form');
+  },
+
+  /**
+   * The page always gives false positives for some reason in Chromy, so we need
+   * to wait a couple of seconds for it to "stabilize" before taking the screenshot
+   */
+  waitForReady: function () {
+    this.chromy.wait(2000);
   }
 });
