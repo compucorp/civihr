@@ -17,6 +17,7 @@ var utils = require('../utils');
 var BACKSTOP_DIR = path.join(__dirname, '..', '..', 'backstop_data');
 var CHROMY_STARTING_PORT = 9222;
 var DEFAULT_USER = 'civihr_admin';
+var USERS = ['admin', 'civihr_admin', 'civihr_manager', 'civihr_staff'];
 var CONFIG_TPL = { 'url': 'http://%{site-host}' };
 var FILES = {
   siteConfig: path.join(BACKSTOP_DIR, 'site-config.json'),
@@ -142,7 +143,7 @@ function findContactByDrupalId (ufMatches, drupalId) {
 function getUsersIds () {
   return new Promise(function (resolve, reject) {
     var usersIds, ufMatches;
-    var userInfoCmd = 'drush user-information admin,civihr_admin,civihr_manager,civihr_staff --format=json';
+    var userInfoCmd = 'drush user-information ' + USERS.join(',') + ' --format=json';
     var ufMatchCmd = 'echo \'{ "uf_id": { "IN":[%{uids}] } }\' | cv api UFMatch.get sequential=1';
 
     usersIds = _.transform(JSON.parse(execSync(userInfoCmd)), function (result, user) {
@@ -252,13 +253,12 @@ function touchSiteConfigFile () {
 function writeCookies () {
   var cookiesDir = path.join(BACKSTOP_DIR, 'cookies');
   var config = siteConfig();
-  var users = ['admin', 'civihr_admin', 'civihr_manager', 'civihr_staff'];
 
   if (!fs.existsSync(cookiesDir)) {
     fs.mkdirSync(cookiesDir);
   }
 
-  return Promise.all(users.map(function (user, index) {
+  return Promise.all(USERS.map(function (user, index) {
     return new Promise(function (resolve, reject) {
       var cookieFilePath = path.join(cookiesDir, user + '.json');
 
