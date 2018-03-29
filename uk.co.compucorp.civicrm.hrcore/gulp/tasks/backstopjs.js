@@ -3,7 +3,6 @@ var argv = require('yargs').argv;
 var backstopjs = require('backstopjs');
 var clean = require('gulp-clean');
 var Chromy = require('chromy');
-var exec = require('child_process').exec;
 var execSync = require('child_process').execSync;
 var file = require('gulp-file');
 var fs = require('fs');
@@ -260,33 +259,28 @@ function writeCookies () {
 
   return Promise.all(USERS.map(function (user, index) {
     return new Promise(function (resolve, reject) {
+      var chromy, loginUrl;
       var cookieFilePath = path.join(cookiesDir, user + '.json');
 
       if (fs.existsSync(cookieFilePath)) {
         fs.unlinkSync(cookieFilePath);
       }
 
-      exec('drush uli --name=' + user + ' --uri=' + config.url + ' --browser=0', function (err, loginUrl) {
-        var chromy;
+      loginUrl = execSync('drush uli --name=' + user + ' --uri=' + config.url + ' --browser=0', { encoding: 'utf8' });
+      chromy = new Chromy({ port: CHROMY_STARTING_PORT + index, gotoTimeout: 60000 });
 
-        if (err) {
-          return reject(new Error(err));
-        }
-
-        chromy = new Chromy({ port: CHROMY_STARTING_PORT + index, gotoTimeout: 60000 });
-        chromy.chain()
-          .goto(config.url)
-          .goto(loginUrl)
-          .getCookies()
-          .result(function (cookies) {
-            fs.writeFileSync(cookieFilePath, JSON.stringify(cookies));
-          })
-          .end()
-          .then(function () {
-            chromy.close();
-            resolve();
-          });
-      });
+      chromy.chain()
+        .goto(config.url)
+        .goto(loginUrl)
+        .getCookies()
+        .result(function (cookies) {
+          fs.writeFileSync(cookieFilePath, JSON.stringify(cookies));
+        })
+        .end()
+        .then(function () {
+          chromy.close();
+          resolve();
+        });
     });
   }));
 }
