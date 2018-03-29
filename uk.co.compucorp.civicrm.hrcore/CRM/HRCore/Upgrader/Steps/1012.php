@@ -18,7 +18,7 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
   /**
    * Returns the Ids of the the relationship types to be disabled.
    *
-   * @return Array[int]
+   * @return int[]
    */
   private function up1012_getRelationshipTypesToBeDisabled() {
     $relationshipsToBeDeleted = [
@@ -38,7 +38,7 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
   /**
    * Disables relationship types.
    *
-   * @param Array[int] $relationshipTypeIds
+   * @param int[] $relationshipTypeIds
    */
   private function up1012_disableRelationshipTypes($relationshipTypeIds) {
     foreach ($relationshipTypeIds as $relationshipTypeId) {
@@ -52,7 +52,7 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
   /**
    * Removes relationships for the given relationship types.
    *
-   * @param Array[int] $relationshipTypeIds
+   * @param int[] $relationshipTypeIds
    */
   private function up1012_removeRelationshipsForTypes($relationshipTypeIds) {
     foreach ($relationshipTypeIds as $relationshipTypeId) {
@@ -64,9 +64,9 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
   /**
    * Returns all the relationships associated with a given type.
    *
-   * @param Array[int] $relationshipTypeIds
+   * @param int $relationshipTypeId
    *
-   * @return Array
+   * @return array
    */
   private function up1012_getRelationshipsForType($relationshipTypeId) {
     $result = civicrm_api3('Relationship', 'get', [
@@ -79,7 +79,7 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
   /**
    * Removes the relationships provided.
    *
-   * @param Array
+   * @param array $relationships
    */
   private function up1012_removeRelationships($relationships) {
     foreach ($relationships as $relationship) {
@@ -88,4 +88,5 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
       ]);
     }
   }
+
 }
