@@ -4,6 +4,7 @@ var backstopjs = require('backstopjs');
 var clean = require('gulp-clean');
 var Chromy = require('chromy');
 var exec = require('child_process').exec;
+var execSync = require('child_process').execSync;
 var file = require('gulp-file');
 var fs = require('fs');
 var gulp = require('gulp');
@@ -35,10 +36,10 @@ module.exports = ['reference', 'test', 'openReport', 'approve'].map(function (ac
 /**
  * Concatenates all the scenarios (if no specific scenario file is specified)
  *
- * @param  {Object} contactIdsByRoles
+ * @param  {Object} usersIds
  * @return {Array}
  */
-function buildScenariosList (contactIdsByRoles) {
+function buildScenariosList (usersIds) {
   var config = siteConfig();
   var dirPath = path.join(BACKSTOP_DIR, 'scenarios');
 
@@ -58,7 +59,7 @@ function buildScenariosList (contactIdsByRoles) {
       return _.assign(scenario, {
         cookiePath: path.join(BACKSTOP_DIR, 'cookies', user + '.json'),
         count: '(' + (index + 1) + ' of ' + scenarios.length + ')',
-        url: constructScenarioUrl(config.url, scenario.url, contactIdsByRoles)
+        url: constructScenarioUrl(config.url, scenario.url, usersIds)
       });
     })
     .value();
@@ -87,14 +88,14 @@ function cleanUpAndNotify (success) {
  *
  * @param  {String} siteUrl
  * @param  {String} scenarioUrl
- * @param  {Object} contactIdsByRoles
+ * @param  {Object} usersIds
  * @return {String}
  */
-function constructScenarioUrl (siteUrl, scenarioUrl, contactIdsByRoles) {
+function constructScenarioUrl (siteUrl, scenarioUrl, usersIds) {
   return scenarioUrl
     .replace('{{siteUrl}}', siteUrl)
-    .replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, contactRole) {
-      return contactIdsByRoles[contactRole];
+    .replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, user) {
+      return usersIds[user].civi;
     });
 }
 
@@ -108,7 +109,7 @@ function constructScenarioUrl (siteUrl, scenarioUrl, contactIdsByRoles) {
 function createTempConfigFile () {
   var content = JSON.parse(fs.readFileSync(FILES.tpl));
 
-  return getRolesAndIDs()
+  return getUsersIds()
     .then(buildScenariosList)
     .then(function (scenarios) {
       content.scenarios = scenarios;
@@ -118,41 +119,45 @@ function createTempConfigFile () {
 }
 
 /**
- * Fetches civicrm contacts whose emails match "civihr_" pattern
- * and returns a map of their "roles" connected to their IDs.
- * Requires 'civihr_(staff|manager|admin)@...' to be presented in DB,
- * otherwise will throw an error.
+ * Given a set of UF matches, it finds the contact with the specified drupal id
  *
- * @return {Promise} resolved with {Object}, ex. { 'staff': 204, ... etc }
+ * @param {Array} ufMatches
+ * @param {Int} drupalId
+ * @return {Object}
  */
-function getRolesAndIDs () {
+function findContactByDrupalId (ufMatches, drupalId) {
+  return _.find(ufMatches, function (match) {
+    return match.uf_id === drupalId;
+  });
+}
+
+/**
+ * Creates and returns a mapping of users to their drupal and civi ids
+ *
+ * To fetch the drupal ids, the `drush user-information` command is used. Those
+ * ids are used to fetch the civi ids by using the UFMatch api
+ *
+ * @return {Promise} resolved with {Object}, ex. { civihr_staff: { drupal: 1, civi: 2 } }
+ */
+function getUsersIds () {
   return new Promise(function (resolve, reject) {
-    exec('cv api contact.get sequential=1 email="civihr_%" contact_type="Individual" return="email,contact_id"', function (err, result) {
-      var idsByRoles, missingRoles;
+    var usersIds, ufMatches;
+    var userInfoCmd = 'drush user-information admin,civihr_admin,civihr_manager,civihr_staff --format=json';
+    var ufMatchCmd = 'echo \'{ "uf_id": { "IN":[%{uids}] } }\' | cv api UFMatch.get sequential=1';
 
-      if (err) {
-        return reject(new Error('Unable to fetch contact roles and IDs: ' + err));
-      }
-
-      idsByRoles = _(JSON.parse(result).values)
-        .map(function (contact) {
-          var role = contact.email.split('@')[0].split('_')[1];
-
-          return [role, contact.contact_id];
-        })
-        .fromPairs()
-        .value();
-
-      missingRoles = _.difference(['staff', 'manager', 'admin'], _.keys(idsByRoles));
-
-      if (missingRoles.length) {
-        return reject(new Error('Required users with emails ' + missingRoles.map(function (role) {
-          return 'civihr_' + role + '@*';
-        }).join(', ') + ' were not found in the database'));
-      }
-
-      resolve(idsByRoles);
+    usersIds = _.transform(JSON.parse(execSync(userInfoCmd)), function (result, user) {
+      result[user.name] = { drupal: user.uid };
     });
+
+    ufMatchCmd = ufMatchCmd.replace('%{uids}', _.map(usersIds, 'drupal').join(','));
+    ufMatches = JSON.parse(execSync(ufMatchCmd)).values;
+
+    usersIds = _.transform(usersIds, function (result, userIds, name) {
+      userIds.civi = findContactByDrupalId(ufMatches, userIds.drupal).contact_id;
+      result[name] = userIds;
+    });
+
+    resolve(usersIds);
   });
 }
 

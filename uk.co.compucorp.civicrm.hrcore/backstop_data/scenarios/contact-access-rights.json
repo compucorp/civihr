@@ -2,12 +2,12 @@
   "scenarios": [
     {
       "label": "Contact Access Rights",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:admin}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_admin}}",
       "onReadyScript": "contact-access-rights/show.js"
     },
     {
       "label": "Contact Access Rights / Open ui select",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:admin}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_admin}}",
       "onReadyScript": "contact-access-rights/open-ui-select.js"
     }
   ]
