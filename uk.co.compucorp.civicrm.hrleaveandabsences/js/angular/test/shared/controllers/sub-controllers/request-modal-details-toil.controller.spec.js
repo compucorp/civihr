@@ -11,18 +11,21 @@ define([
   'leave-absences/mocks/helpers/helper',
   'leave-absences/mocks/helpers/request-modal-helper',
   'common/mocks/services/hr-settings-mock',
+  'common/services/crm-ang.service',
   'leave-absences/mocks/apis/absence-type-api-mock',
   'leave-absences/mocks/apis/leave-request-api-mock',
   'leave-absences/mocks/apis/option-group-api-mock',
   'leave-absences/mocks/apis/public-holiday-api-mock',
   'leave-absences/mocks/apis/work-pattern-api-mock',
   'leave-absences/manager-leave/app'
-], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper, requestModalHelper) {
+], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData,
+  optionGroupMock, helper, requestModalHelper) {
   'use strict';
 
   describe('RequestModalDetailsToilController', function () {
-    var $componentController, $provide, $q, $log, $rootScope, controller, leaveRequest,
-      AbsenceType, AbsenceTypeAPI, LeaveRequestInstance, TOILRequestInstance;
+    var $componentController, $provide, $q, $log, $rootScope, crmAngService, controller,
+      AbsenceType, AbsenceTypeAPI, leaveRequest, LeaveRequestInstance,
+      OptionGroup, TOILRequestInstance;
 
     var date2016 = '01/12/2016';
     var date2016To = '02/12/2016'; // Must be greater than `date2016`
@@ -47,20 +50,31 @@ define([
 
     beforeEach(inject(function (
       _$componentController_, _$q_, _$log_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_,
-      _LeaveRequestInstance_, _TOILRequestInstance_) {
+      _crmAngService_, _LeaveRequestInstance_, _OptionGroup_, _TOILRequestInstance_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
       $rootScope = _$rootScope_;
       AbsenceType = _AbsenceType_;
+      crmAngService = _crmAngService_;
       AbsenceTypeAPI = _AbsenceTypeAPI_;
       LeaveRequestInstance = _LeaveRequestInstance_;
+      OptionGroup = _OptionGroup_;
       TOILRequestInstance = _TOILRequestInstance_;
 
       spyOn($log, 'debug');
       spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
       spyOn(AbsenceType, 'canExpire').and.callThrough();
       spyOn(AbsenceType, 'calculateToilExpiryDate').and.callThrough();
+      spyOn(OptionGroup, 'valuesOf').and.callThrough();
+
+      crmAngService.loadForm = function () {
+        return {
+          on: function (event, callback) {
+            callback();
+          }
+        };
+      };
     }));
 
     describe('on initialize', function () {
@@ -86,11 +100,15 @@ define([
         expect(controller.isLeaveType('toil')).toBeTruthy();
       });
 
-      it('loads toil amounts', function () {
+      it('loads TOIL accrual options', function () {
         expect(Object.keys(controller.toilAmounts).length).toBeGreaterThan(0);
       });
 
-      it('sorts toil amounts by value', function () {
+      it('caches TOIL accrual options', function () {
+        expect(OptionGroup.valuesOf.calls.mostRecent().args[2]).not.toBe(false);
+      });
+
+      it('sorts TOIL accrual options by value', function () {
         expect(_.pluck(controller.toilAmounts, 'value')).toEqual(
           _.pluck(controller.toilAmounts, 'value').sort());
       });
@@ -302,6 +320,34 @@ define([
           expect(controller.uiOptions.toil_duration_in_hours).toBe(2);
         });
       });
+
+      describe('when user opens TOIL accrual options group editor', function () {
+        beforeEach(function () {
+          // flushing TOIL accrual options
+          controller.toilAmounts = null;
+
+          spyOn(crmAngService, 'loadForm').and.callThrough();
+          controller.openToilInDaysAccrualOptionsEditor();
+        });
+
+        it('calls the CRM.loadForm with according URL', function () {
+          expect(crmAngService.loadForm).toHaveBeenCalledWith('/civicrm/admin/options/hrleaveandabsences_toil_amounts?reset=1');
+        });
+
+        describe('when TOIL accruals are edited', function () {
+          beforeEach(function () {
+            $rootScope.$digest();
+          });
+
+          it('reloads TOIL accrual options', function () {
+            expect(Object.keys(controller.toilAmounts).length).toBeGreaterThan(0);
+          });
+
+          it('does not cache TOIL accrual options', function () {
+            expect(OptionGroup.valuesOf.calls.mostRecent().args[2]).toBe(false);
+          });
+        });
+      });
     });
 
     describe('respond', function () {
@@ -373,7 +419,7 @@ define([
               expect(controller.request.toil_expiry_date).toEqual(oldExpiryDate);
             });
 
-            it('has toil amount set by manager', function () {
+            it('has TOIL amount set by manager', function () {
               expect(controller.request.toil_to_accrue).toEqual(originalToilToAccrue.value);
             });
           });

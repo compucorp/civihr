@@ -3,13 +3,16 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/shared/modules/controllers'
+  'leave-absences/shared/modules/controllers',
+  'common/services/crm-ang.service'
 ], function (_, moment, controllers) {
   controllers.controller('RequestModalDetailsToilController', RequestModalDetailsToilController);
 
-  RequestModalDetailsToilController.$inject = ['$log', '$q', '$rootScope', 'api.optionGroup', 'AbsenceType', 'detailsController'];
+  RequestModalDetailsToilController.$inject = ['$log', '$q', '$rootScope',
+    'crmAngService', 'OptionGroup', 'AbsenceType', 'detailsController'];
 
-  function RequestModalDetailsToilController ($log, $q, $rootScope, OptionGroup, AbsenceType, detailsController) {
+  function RequestModalDetailsToilController ($log, $q, $rootScope,
+    crmAngService, OptionGroup, AbsenceType, detailsController) {
     $log.debug('RequestModalDetailsToilController');
 
     var initialRequestAttributes;
@@ -28,6 +31,7 @@ define([
     detailsController.initTimesExtended = initTimes;
     detailsController.initWatchersExtended = initWatchers;
     detailsController.onDateChangeExtended = onDateChangeHandler;
+    detailsController.openToilInDaysAccrualOptionsEditor = openToilInDaysAccrualOptionsEditor;
     detailsController.setDaysSelectionModeExtended = onDaysSelectionModeHandler;
     detailsController.updateExpiryDate = updateExpiryDate;
 
@@ -345,10 +349,11 @@ define([
     /**
      * Initializes leave request toil amounts
      *
+     * @param  {Boolean} cache if to cache results of the API call, cache by default
      * @return {Promise}
      */
-    function loadToilAmounts () {
-      return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts')
+    function loadToilAmounts (cache) {
+      return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts', {}, cache)
         .then(function (amounts) {
           detailsController.toilAmounts = _.sortBy(amounts, 'value');
         });
@@ -410,6 +415,18 @@ define([
         detailsController.uiOptions.times.to.min = '00:15';
         detailsController.uiOptions.times.to.max = '23:45';
       }
+    }
+
+    /**
+     * Opens the CRM modal that allows to edit TOIL in days amounts options
+     * and reloads these options in the Leave Request Modal
+     * if they are changed via the CRM modal
+     */
+    function openToilInDaysAccrualOptionsEditor () {
+      crmAngService.loadForm('/civicrm/admin/options/hrleaveandabsences_toil_amounts?reset=1')
+        .on('crmFormSuccess', function () {
+          loadToilAmounts(false);
+        });
     }
 
     /**
