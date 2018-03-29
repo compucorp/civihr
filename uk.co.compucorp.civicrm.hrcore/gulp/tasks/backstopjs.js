@@ -121,8 +121,8 @@ function createTempConfigFile () {
 /**
  * Given a set of UF matches, it finds the contact with the specified drupal id
  *
- * @param {Array} ufMatches
- * @param {Int} drupalId
+ * @param  {Array} ufMatches
+ * @param  {Number} drupalId
  * @return {Object}
  */
 function findContactByDrupalId (ufMatches, drupalId) {
