@@ -501,6 +501,10 @@ function _hrcore_createDeveloperMenu(&$menu) {
   ]);
 
   // Adds sub menu under Style Guide menu
+  if(!ExtensionHelper::isExtensionEnabled('org.civicrm.styleguide')) {
+    return;
+  }
+
   foreach (Civi::service('style_guides')->getAll() as $styleGuide) {
     _hrcore_civix_insert_navigation_menu($menu, 'Developer/Style Guide', [
       'label' => $styleGuide['label'],
