@@ -8,7 +8,8 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1024 {
    * @return bool
    */
   public function upgrade_1024() {
-    $result = $this->up1024_createLeaveWorkflowOptionGroup();
+    $templateName = 'msg_tpl_workflow_leave';
+    $result = $this->up1024_createLeaveWorkflowOptionGroup($templateName);
     
     if ($result['count'] > 0) {
       $this->up1024_createLeaveWorkflowOptionValue($result['id']);
@@ -20,37 +21,42 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1024 {
   /**
    * Create Leave Message Template Workflow Option Group.
    *
+   * @param $templateName
+   *
    * @return array
    */
-  public function up1024_createLeaveWorkflowOptionGroup() {
+  public function up1024_createLeaveWorkflowOptionGroup($templateName) {
     $workflow = 'Message Template Workflow for Leave';
     
-    return civicrm_api3('OptionGroup', 'create', [
-      'name' => 'msg_tpl_workflow_leave',
+    $result = civicrm_api3('OptionGroup', 'create', [
+      'name' => $templateName,
       'title' => $workflow,
       'description' => $workflow,
     ]);
+    CRM_Core_PseudoConstant::flush();
+    
+    return $result;
   }
   
   /**
    * Create Leave Message Template Workflow Option Values.
    *
-   * @param $id
+   * @param $templateName
    */
-  public function up1024_createLeaveWorkflowOptionValue($id) {
+  public function up1024_createLeaveWorkflowOptionValue($templateName) {
     $optionValues = [
       [
-        'option_group_id' => $id,
+        'option_group_id' => $templateName,
         'label' => 'CiviHR Leave Request Notification',
         'name' => 'civihr_leave_request',
       ],
       [
-        'option_group_id' => $id,
+        'option_group_id' => $templateName,
         'label' => 'CiviHR TOIL Request Notification',
         'name' => 'civihr_toil_request',
       ],
       [
-        'option_group_id' => $id,
+        'option_group_id' => $templateName,
         'label' => 'CiviHR Sickness Record Notification',
         'name' => 'civihr_sickness_record',
       ]
@@ -79,7 +85,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1024 {
       'msg_title' => $msgLabel,
       'api.MessageTemplate.create' => [
         'workflow_id' => $workflowId,
-        'id' => "\$values['id']"
+        'id' => '$value.id'
       ],
     ));
   }
