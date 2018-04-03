@@ -71,17 +71,17 @@ module.exports = (function () {
      */
     newRequest: function (requestType) {
       var casper = this.casper;
-      var requestTypes = ['leave', 'sickness', 'toil']; // must be in the same quantity and order as in UI
-      var requestTypeButtonIndex = requestTypes.indexOf(requestType) + 1;
-      var actionDropdownSelector = 'leave-request-record-actions';
-      var actionButtonSelector = actionDropdownSelector + ' .dropdown-menu a:nth-child(' + requestTypeButtonIndex + ')';
 
       casper.then(function () {
-        casper.click(actionDropdownSelector + ' [uib-dropdown] > button');
-        casper.waitForSelector(actionButtonSelector, function () {
-          casper.click(actionButtonSelector);
-          casper.waitUntilVisible('.chr_leave-request-modal__tab .form-group');
-        });
+        casper.click('leave-request-record-actions .dropdown-toggle');
+      });
+
+      casper.then(function () {
+        casper.click('.leave-request-record-actions__new-' + requestType);
+      });
+
+      casper.then(function () {
+        casper.waitUntilVisible('.chr_leave-request-modal__tab .form-group');
       });
 
       return this;

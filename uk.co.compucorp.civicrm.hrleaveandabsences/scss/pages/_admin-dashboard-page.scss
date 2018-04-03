@@ -3,7 +3,9 @@ $content-container-margin: 16px;
 
 @at-root {
   .page-civicrm-leaveandabsences-dashboard {
-    h1.page-title,
+
+    /* stylelint-disable selector-max-id */
+    .page-title,
     #branding {
       display: none !important;
     }
@@ -12,6 +14,7 @@ $content-container-margin: 16px;
       margin: 0;
       padding: 0;
     }
+    /* stylelint-enable */
   }
 
   .admin-dashboard-page {
@@ -19,33 +22,29 @@ $content-container-margin: 16px;
 
     .crm_page__topbar {
       height: 65px;
+    }
 
-      .dropdown-toggle {
-       margin: 15px 30px 0 0 !important;
-
-        +ul {
-          margin-right: 30px !important;
-        }
-      }
+    leave-request-record-actions {
+      margin: 12px #{$content-container-margin} 0 0;
     }
 
     .chr_admin-dashboard_side-nav {
-      overflow: hidden;
-      width: $navigation-column-width;
-      position: absolute;
-      height: calc(100% - 12px);
       background-color: $crm-white;
+      height: calc(100% - 12px);
+      overflow: hidden;
+      position: absolute;
+      width: $navigation-column-width;
 
-      li.active {
+      .active {
         background: $gray-light;
       }
     }
 
     .chr_admin-dashboard_content {
       float: right;
-      width: calc(100% - #{$navigation-column-width} - #{$content-container-margin} * 2);
       margin: $content-container-margin;
       margin-bottom: 0;
+      width: calc(100% - #{$navigation-column-width} - #{$content-container-margin} * 2);
     }
   }
 }
