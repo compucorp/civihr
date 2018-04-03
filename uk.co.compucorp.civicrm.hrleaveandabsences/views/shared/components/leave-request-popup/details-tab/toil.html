@@ -40,12 +40,10 @@
         <label class="control-label required-mark">TOIL to be Accrued</label>
       </div>
       <div
-        ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'days'"
-        ng-init="showTOILAccrualsOptionEditorIcon = $root.section === 'admin-dashboard' || $root.section === 'absence-tab'">
-        <div ng-class="{ 'col-xs-11': showTOILAccrualsOptionEditorIcon, 'col-xs-12': !showTOILAccrualsOptionEditorIcon }">
+        ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'days'">
+        <div ng-class="{ 'col-xs-11': detailsTab.showTOILAccrualsOptionEditorIcon, 'col-xs-12': !detailsTab.showTOILAccrualsOptionEditorIcon }">
           <div
-            class="crm_custom-select crm_custom-select--full"
-            ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'days'">
+            class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
               name="toilAmount"
@@ -58,13 +56,13 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div ng-if="showTOILAccrualsOptionEditorIcon" class="col-xs-1 control-label">
+        <div ng-if="detailsTab.showTOILAccrualsOptionEditorIcon" class="col-xs-1 control-label">
           <a class="pointer">
             <i class="crm-i fa-wrench" ng-click="detailsTab.openToilInDaysAccrualOptionsEditor()"></i>
           </a>
         </div>
       </div>
-      <div class="col-xs-12" ng-if="detailsTab.selectedAbsenceType.calculation_unit_name === 'hours'">
+      <div class="col-xs-12" ng-if="detailsTab.isCalculationUnit('hours')">
         <time-amount-picker
           class="crm_custom-select crm_custom-select--full"
           time-amount-picker-disabled="detailsTab.isMode('view')"

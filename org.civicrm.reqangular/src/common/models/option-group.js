@@ -18,12 +18,11 @@ define([
          * @param  {String|Array} names
          *   Bases on the type of the parameter, the method will return
          *   either an array of values (string) or an object (array)
-         * @param  {Object} params optional parameters for the query
-         * @param  {Boolean} cache optional parameter to cache the query or not
+         * @param  {Boolean} [cache] parameter to cache the query or not
          * @return {Promise}
          */
-        valuesOf: function (names, params, cache) {
-          return optionGroupAPI.valuesOf(names, params, cache);
+        valuesOf: function (names, cache) {
+          return optionGroupAPI.valuesOf(names, cache);
         }
       });
     }

@@ -3,8 +3,7 @@
 define([
   'common/lodash',
   'common/moment',
-  'leave-absences/shared/modules/controllers',
-  'common/services/crm-ang.service'
+  'leave-absences/shared/modules/controllers'
 ], function (_, moment, controllers) {
   controllers.controller('RequestModalDetailsToilController', RequestModalDetailsToilController);
 
@@ -38,6 +37,7 @@ define([
     (function init () {
       setInitialRequestAttributes();
       setTimeInputsRanges();
+      toggleAccrualOptionsGroupEditorIcon();
       !detailsController.isMode('create') && initDuration();
     })();
 
@@ -353,7 +353,7 @@ define([
      * @return {Promise}
      */
     function loadToilAmounts (cache) {
-      return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts', {}, cache)
+      return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts', cache)
         .then(function (amounts) {
           detailsController.toilAmounts = _.sortBy(amounts, 'value');
         });
@@ -427,6 +427,15 @@ define([
         .on('crmFormSuccess', function () {
           loadToilAmounts(false);
         });
+    }
+
+    /**
+     * Toggles the TOIL accrual options group editor icon
+     * depending on the site section the Leave Request Modal is opened at
+     */
+    function toggleAccrualOptionsGroupEditorIcon () {
+      detailsController.showTOILAccrualsOptionEditorIcon =
+        _.includes(['admin-dashboard', 'absence-tab'], $rootScope.section);
     }
 
     /**
