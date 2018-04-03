@@ -96,8 +96,10 @@ define([
         expect(Object.keys(controller.toilAmounts).length).toBeGreaterThan(0);
       });
 
-      it('caches TOIL accrual options', function () {
-        expect(OptionGroup.valuesOf.calls.mostRecent().args[1]).not.toBe(false);
+      it('retreives cached TOIL accrual options', function () {
+        var retreiveCachedTOILOptions = OptionGroup.valuesOf.calls.mostRecent().args[1];
+
+        expect(retreiveCachedTOILOptions).not.toBe(false);
       });
 
       it('sorts TOIL accrual options by value', function () {
@@ -362,6 +364,20 @@ define([
 
           it('shows the editor icon', function () {
             expect(controller.showTOILAccrualsOptionEditorIcon).toBe(true);
+          });
+        });
+      });
+
+      ['manager-leave', 'my-leave'].forEach(function (siteSection) {
+        describe('when the leave request modal is opened in ' + siteSection + ' section', function () {
+          beforeEach(function () {
+            $rootScope.section = siteSection;
+
+            compileComponent({ request: TOILRequestInstance.init() });
+          });
+
+          it('does not show the editor icon', function () {
+            expect(controller.showTOILAccrualsOptionEditorIcon).toBe(false);
           });
         });
       });
