@@ -23,10 +23,7 @@
         var originalResult = 'jQuery object';
 
         beforeEach(function () {
-          CRM.loadForm = function () {};
-
-          spyOn(CRM, 'loadForm').and.returnValue(originalResult);
-
+          CRM.loadForm = jasmine.createSpy().and.returnValue(originalResult);
           result = crmAngService.loadForm(url, options);
         });
 

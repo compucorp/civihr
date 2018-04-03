@@ -10,9 +10,7 @@ define([
   describe('api.option-group', function () {
     var $q, OptionGroupAPI;
 
-    beforeEach(function () {
-      module('common.models', 'common.mocks');
-    });
+    beforeEach(module('common.models', 'common.mocks'));
 
     beforeEach(inject([
       'api.optionGroup',
@@ -36,7 +34,7 @@ define([
         spyOn(OptionGroupAPI, 'sendGET').and.returnValue($q.resolve());
       });
 
-      describe('when a single option name is passed without any additional parameters', function () {
+      describe('when a single option name is passed', function () {
         var sendGETCallArgs;
 
         beforeEach(function () {
@@ -78,25 +76,11 @@ define([
         });
       });
 
-      describe('when extra params are passed', function () {
-        var params = { paramKey: 'paramValue' };
-
-        beforeEach(function () {
-          OptionGroupAPI.valuesOf(optionGroupName, params);
-        });
-
-        it('passes extra parameters to sendGET', function () {
-          expect(OptionGroupAPI.sendGET.calls.mostRecent().args[2]).toEqual(
-            jasmine.objectContaining(params)
-          );
-        });
-      });
-
       describe('when no caching is needed', function () {
         var cache = false;
 
         beforeEach(function () {
-          OptionGroupAPI.valuesOf(optionGroupName, {}, cache);
+          OptionGroupAPI.valuesOf(optionGroupName, cache);
         });
 
         it('tells sendGET to not cache the API call', function () {

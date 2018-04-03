@@ -42,20 +42,6 @@ define([
       return JSON.stringify(_.merge(defaults, params || {}));
     }
 
-    /**
-     * Constructs a GET query string exactly the same way as $http service does
-     *
-     * @param  {Object} json that is passed as "params" to $http
-     * @return {String} query string
-     */
-    function jsonToQueryString (json) {
-      return '?' + Object.keys(json).sort().map(function (key) {
-        return (encodeURIComponent(key) + '=' + encodeURIComponent(json[key]))
-          .replace(/%3A/g, ':')
-          .replace(/%2C/g, ',');
-      }).join('&');
-    }
-
     return {
 
       /**
@@ -158,8 +144,8 @@ define([
        * @param  {String} action - The action to perform
        * @param  {Object} params - Any additional parameters to pass in the request
        * @param  {Boolean} returnCachedData
-       *   - if passed as TRUE or not passed, returns data from cache (if not the first call)
-       *   - if passed as FALSE, returns updated data from API and caches for future requests
+       *   - if passed as `true` or not passed, returns data from cache (if not the first call)
+       *   - if passed as `false`, returns updated data from API and caches for future requests
        * @return {Promise}
        */
       sendGET: function (entity, action, params, returnCachedData) {
@@ -172,7 +158,7 @@ define([
 
         if (returnCachedData === false) {
           $cacheFactory.get('$http').remove(
-            API_ENDPOINT + jsonToQueryString(queryJSON));
+            API_ENDPOINT + '?' + $httpParamSerializer(queryJSON));
         }
 
         return $http({

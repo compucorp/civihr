@@ -16,11 +16,11 @@
     /**
      * Opens a CRM form with a provided url and options
      * This is simply a wrapper to CRM.loadForm
-     * Reference: https://docs.civicrm.org/dev/en/latest/framework/ajax
+     * @see https://docs.civicrm.org/dev/en/latest/framework/ajax
      *
      * @param  {String} url
      * @param  {Object} options
-     * @return {jQuery}
+     * @return {Object} extended jQuery object
      */
     function loadForm (url, options) {
       return CRM.loadForm(url, options);

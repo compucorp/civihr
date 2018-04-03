@@ -12,6 +12,7 @@ define([
   'common/modules/dialog',
   'common/modules/directives',
   'common/services/check-permissions',
+  'common/services/crm-ang.service',
   'common/services/angular-date/date-format',
   'common/services/notification.service',
   'leave-absences/shared/modules/shared-settings',

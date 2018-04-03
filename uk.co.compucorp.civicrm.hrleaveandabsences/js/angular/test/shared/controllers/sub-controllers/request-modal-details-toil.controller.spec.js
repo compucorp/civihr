@@ -67,14 +67,6 @@ define([
       spyOn(AbsenceType, 'canExpire').and.callThrough();
       spyOn(AbsenceType, 'calculateToilExpiryDate').and.callThrough();
       spyOn(OptionGroup, 'valuesOf').and.callThrough();
-
-      crmAngService.loadForm = function () {
-        return {
-          on: function (event, callback) {
-            callback();
-          }
-        };
-      };
     }));
 
     describe('on initialize', function () {
@@ -105,7 +97,7 @@ define([
       });
 
       it('caches TOIL accrual options', function () {
-        expect(OptionGroup.valuesOf.calls.mostRecent().args[2]).not.toBe(false);
+        expect(OptionGroup.valuesOf.calls.mostRecent().args[1]).not.toBe(false);
       });
 
       it('sorts TOIL accrual options by value', function () {
@@ -325,6 +317,13 @@ define([
         beforeEach(function () {
           // flushing TOIL accrual options
           controller.toilAmounts = null;
+          crmAngService.loadForm = function () {
+            return {
+              on: function (event, callback) {
+                callback();
+              }
+            };
+          };
 
           spyOn(crmAngService, 'loadForm').and.callThrough();
           controller.openToilInDaysAccrualOptionsEditor();
@@ -343,8 +342,26 @@ define([
             expect(Object.keys(controller.toilAmounts).length).toBeGreaterThan(0);
           });
 
-          it('does not cache TOIL accrual options', function () {
-            expect(OptionGroup.valuesOf.calls.mostRecent().args[2]).toBe(false);
+          it('fetches updated TOIL accrual options from the backend', function () {
+            var retreiveCachedTOILOptions = OptionGroup.valuesOf.calls.mostRecent().args[1];
+
+            expect(retreiveCachedTOILOptions).toBe(false);
+          });
+        });
+      });
+    });
+
+    describe('TOIL accrual options group editor icon', function () {
+      ['admin-dashboard', 'absence-tab'].forEach(function (siteSection) {
+        describe('when the leave request modal is opened in ' + siteSection + ' section', function () {
+          beforeEach(function () {
+            $rootScope.section = siteSection;
+
+            compileComponent({ request: TOILRequestInstance.init() });
+          });
+
+          it('shows the editor icon', function () {
+            expect(controller.showTOILAccrualsOptionEditorIcon).toBe(true);
           });
         });
       });
