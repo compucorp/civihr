@@ -28,7 +28,7 @@ define([
     }));
 
     it('has the expected api', function () {
-      expect(Object.keys(RelationshipModel)).toEqual(['all']);
+      expect(Object.keys(RelationshipModel)).toEqual(['all', 'allValid']);
     });
 
     describe('all()', function () {
@@ -65,6 +65,10 @@ define([
           expect(_.functions(result.list[0])).toEqual(_.functions(expectedInstance));
         });
       });
+    });
+
+    describe('allValid()', function () {
+
     });
   });
 });

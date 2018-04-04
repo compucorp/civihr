@@ -2,10 +2,10 @@
 
 define([
   'common/lodash',
-  'common/moment',
+  'common/mocks/data/relationship.data',
   'common/angularMocks',
   'common/models/instances/relationship.instance'
-], function (_, moment) {
+], function (_, relationshipData) {
   'use strict';
 
   describe('RelationshipInstance', function () {
@@ -23,57 +23,34 @@ define([
     });
 
     describe('isValid()', function () {
-      var nextWeek = moment().add(7, 'day').format('YYYY-MM-DD');
-      var previousWeek = moment().subtract(7, 'day').format('YYYY-MM-DD');
-      var relationships = {
-        isNotActive: { id: '1', is_active: '0' },
-        isInThePast: { id: '2', is_active: '1', end_date: previousWeek },
-        isInTheFuture: { id: '3', is_active: '1', start_date: nextWeek },
-        isActive: { id: '4', is_active: '1' },
-        hasStarted: { id: '5', is_active: '1', start_date: previousWeek },
-        hasNotFinished: { id: '6', is_active: '1', end_date: nextWeek }
-      };
-
       beforeEach(function () {
-        _.forEach(relationships, function (relationship, index) {
-          relationships[index] = RelationshipInstance.init(relationship);
+        _.forEach(relationshipData.named, function (relationship, index) {
+          relationshipData.named[index] = RelationshipInstance.init(relationship);
         });
       });
 
-      describe('when the relationship is active', function () {
-        it('returns true', function () {
-          expect(relationships.isActive.isValid()).toBe(true);
-        });
+      it('returns true when the relationship is active', function () {
+        expect(relationshipData.named.isActive.isValid()).toBe(true);
       });
 
-      describe('when the relationship is not active', function () {
-        it('returns false', function () {
-          expect(relationships.isNotActive.isValid()).toBe(false);
-        });
+      it('returns false when the relationship is not active', function () {
+        expect(relationshipData.named.isNotActive.isValid()).toBe(false);
       });
 
-      describe('when the relationship has a start date in the past', function () {
-        it('returns true', function () {
-          expect(relationships.hasStarted.isValid()).toBe(true);
-        });
+      it('returns true when the relationship has a start date in the past', function () {
+        expect(relationshipData.named.hasStarted.isValid()).toBe(true);
       });
 
-      describe('when the relationship has a start date in the future', function () {
-        it('returns false', function () {
-          expect(relationships.isInTheFuture.isValid()).toBe(false);
-        });
+      it('returns false when the relationship has a start date in the future', function () {
+        expect(relationshipData.named.isInTheFuture.isValid()).toBe(false);
       });
 
-      describe('when the relationship end date is in the future', function () {
-        it('returns true', function () {
-          expect(relationships.hasNotFinished.isValid()).toBe(true);
-        });
+      it('returns true when the relationship end date is in the future', function () {
+        expect(relationshipData.named.hasNotFinished.isValid()).toBe(true);
       });
 
-      describe('when the relationship end date is in the past', function () {
-        it('returns false', function () {
-          expect(relationships.isInThePast.isValid()).toBe(false);
-        });
+      it('returns false when the relationship end date is in the past', function () {
+        expect(relationshipData.named.isInThePast.isValid()).toBe(false);
       });
     });
   });
