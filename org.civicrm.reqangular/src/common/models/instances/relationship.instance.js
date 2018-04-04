@@ -6,10 +6,9 @@ define([
 ], function (instances) {
   'use strict';
 
-  RelationshipInstance.__name = 'RelationshipInstance';
-  RelationshipInstance.$inject = ['ModelInstance'];
+  instances.factory('RelationshipInstance', RelationshipInstance);
 
-  instances.factory(RelationshipInstance.__name, RelationshipInstance);
+  RelationshipInstance.$inject = ['ModelInstance'];
 
   function RelationshipInstance (ModelInstance) {
     return ModelInstance.extend({});

@@ -6,7 +6,11 @@ define([
 ], function (apis) {
   'use strict';
 
-  apis.factory('RelationshipAPI', ['$log', 'api', function ($log, api) {
+  apis.factory('RelationshipAPI', RelationshipAPI);
+
+  RelationshipAPI.$inject = ['$log', 'api'];
+
+  function RelationshipAPI ($log, api) {
     $log.debug('RelationshipAPI');
 
     return api.extend({
@@ -25,5 +29,5 @@ define([
         return this.getAll('Relationship', filters, pagination, sort, additionalParams);
       }
     });
-  }]);
+  }
 });

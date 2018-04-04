@@ -9,18 +9,18 @@ define([
 ], function (_) {
   'use strict';
 
-  describe('Relationship', function () {
-    var $q, $rootScope, Relationship, RelationshipAPI, RelationshipInstance;
+  describe('RelationshipModel', function () {
+    var $q, $rootScope, RelationshipModel, RelationshipAPI, RelationshipInstance;
 
     beforeEach(module('common.models', 'common.models.instances'));
 
-    beforeEach(inject(function (_$q_, _$rootScope_, _Relationship_,
-      _RelationshipAPI_, _RelationshipInstance_) {
+    beforeEach(inject(function (_$q_, _$rootScope_,
+      _RelationshipAPI_, _RelationshipInstance_, _RelationshipModel_) {
       $q = _$q_;
       $rootScope = _$rootScope_;
-      Relationship = _Relationship_;
       RelationshipAPI = _RelationshipAPI_;
       RelationshipInstance = _RelationshipInstance_;
+      RelationshipModel = _RelationshipModel_;
 
       spyOn(RelationshipAPI, 'all').and.returnValue($q.resolve({
         list: [ { id: 123 } ]
@@ -28,7 +28,7 @@ define([
     }));
 
     it('has the expected api', function () {
-      expect(Object.keys(Relationship)).toEqual(['all']);
+      expect(Object.keys(RelationshipModel)).toEqual(['all']);
     });
 
     describe('all()', function () {
@@ -37,7 +37,7 @@ define([
       var pagination = { key: 'pagination' };
 
       beforeEach(function () {
-        Relationship.all(filters, pagination)
+        RelationshipModel.all(filters, pagination)
           .then(function (_result_) {
             result = _result_;
           });

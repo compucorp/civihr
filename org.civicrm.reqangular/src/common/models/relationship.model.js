@@ -8,10 +8,9 @@ define([
 ], function (models) {
   'use strict';
 
-  Relationship.__name = 'Relationship';
-  Relationship.$inject = ['Model', 'RelationshipAPI', 'RelationshipInstance'];
+  models.factory('RelationshipModel', Relationship);
 
-  models.factory(Relationship.__name, Relationship);
+  Relationship.$inject = ['Model', 'RelationshipAPI', 'RelationshipInstance'];
 
   function Relationship (Model, RelationshipAPI, RelationshipInstance) {
     return Model.extend({
