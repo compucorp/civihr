@@ -161,7 +161,7 @@ function civicrm_api3_leave_request_get($params) {
  * @throws CiviCRM_API3_Exception
  */
 function civicrm_api3_leave_request_getcount($params) {
-  return civicrm_api3_leave_request_get($params)['count'];
+  return civicrm_api3('LeaveRequest', 'get', $params)['count'];
 }
 
 /**
