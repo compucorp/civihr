@@ -2567,6 +2567,50 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
   }
 
+  public function testLeaveRequestCanBeCancelledWhenRequestTypeIsToilAndDatesAreInThePastAndAbsenceTypeDoesNotAllowPastAccrual() {
+    $leaveRequestStatuses = LeaveRequest::getStatuses();
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2017-06-14'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+    $contactID = 1;
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2017-01-01']
+    );
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => false
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['cancelled'],
+      'from_date' => CRM_Utils_Date::processDate('2017-02-01'),
+      'to_date' => CRM_Utils_Date::processDate('2017-02-05'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_to_accrue' => 3,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ];
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+    $toilRequest = LeaveRequest::create($params);
+    $this->assertNotNull($toilRequest->id);
+  }
+
   public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilToAccrueIsGreaterThanTheMaximumAllowed() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('today'),

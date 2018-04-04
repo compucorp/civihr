@@ -336,8 +336,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $toDate = new DateTime($params['to_date']);
     $todayDate = new DateTime('today');
     $leaveDatesHasPastDates = $fromDate < $todayDate || $toDate < $todayDate;
+    $isACancellationRequest = in_array($params['status_id'], LeaveRequest::getCancelledStatuses());
 
-    if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past) {
+    if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past && !$isACancellationRequest) {
       throw new InvalidLeaveRequestException(
         'You may only request TOIL for overtime to be worked in the future. Please modify the date of this request',
         'leave_request_toil_cannot_be_requested_for_past_days',
