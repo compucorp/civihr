@@ -99,10 +99,32 @@ class CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestDatesTest extends BaseHeadl
     $this->assertEquals($result, $wrappedResult);
   }
 
+  public function testDateRangesAreAdjusted() {
+    $apiRequest = [
+      'entity' => 'LeaveRequest',
+      'action' => 'get',
+      'params' => [
+        'from_date' => ['BETWEEN' => ['2016-02-01', '2016-03-01']],
+        'to_date' => ['NOT IN' => ['2016-04-01', '2016-04-21', '2016-04-30']],
+      ]
+    ];
+
+    $wrappedRequest = $this->wrapper->fromApiInput($apiRequest);
+
+    $fromDate = $wrappedRequest['params']['from_date'];
+    $expectedFromDate = ['2016-02-01 00:00:00', '2016-03-01 00:00:00'];
+    $this->assertEquals($expectedFromDate, $fromDate['BETWEEN']);
+
+    $toDate = $wrappedRequest['params']['to_date'];
+    $expectedToDate = ['2016-04-01 23:59:59', '2016-04-21 23:59:59', '2016-04-30 23:59:59'];
+    $this->assertEquals($expectedToDate, $toDate['NOT IN']);
+  }
+
   public function supportedActions() {
     return [
       ['get'],
       ['getfull']
     ];
   }
+
 }
