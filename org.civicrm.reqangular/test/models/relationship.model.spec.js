@@ -2,15 +2,19 @@
 
 define([
   'common/lodash',
+  'common/mocks/data/relationship.data',
   'common/angularMocks',
   'common/models/relationship.model',
   'common/models/instances/relationship.instance',
   'common/services/api/relationship.api'
-], function (_) {
+], function (_, relationshipData) {
   'use strict';
 
   describe('RelationshipModel', function () {
-    var $q, $rootScope, RelationshipModel, RelationshipAPI, RelationshipInstance;
+    var $q, $rootScope, RelationshipModel, RelationshipAPI, RelationshipInstance,
+      result;
+    var filters = { key: 'filters' };
+    var pagination = { key: 'pagination' };
 
     beforeEach(module('common.models', 'common.models.instances'));
 
@@ -23,7 +27,7 @@ define([
       RelationshipModel = _RelationshipModel_;
 
       spyOn(RelationshipAPI, 'all').and.returnValue($q.resolve({
-        list: [ { id: 123 } ]
+        list: relationshipData.all.values
       }));
     }));
 
@@ -32,10 +36,6 @@ define([
     });
 
     describe('all()', function () {
-      var result;
-      var filters = { key: 'filters' };
-      var pagination = { key: 'pagination' };
-
       beforeEach(function () {
         RelationshipModel.all(filters, pagination)
           .then(function (_result_) {
@@ -51,24 +51,55 @@ define([
       });
 
       describe('when the result is ready', function () {
-        var expectedInstance;
+        var expectedInstances;
 
         beforeEach(function () {
-          expectedInstance = RelationshipInstance.init({ id: 123 });
+          expectedInstances = _.map(relationshipData.all.values, function (relationship) {
+            return RelationshipInstance.init(relationship, true);
+          });
         });
 
         it('returns a list of relationships', function () {
-          expect(result.list).toEqual([expectedInstance]);
+          expect(result.list).toEqual(expectedInstances);
         });
 
         it('initializes each relationship as a model instance', function () {
-          expect(_.functions(result.list[0])).toEqual(_.functions(expectedInstance));
+          expect(_.functions(result.list[0])).toEqual(_.functions(expectedInstances[0]));
         });
       });
     });
 
     describe('allValid()', function () {
+      var allValidRelationships;
 
+      beforeEach(function () {
+        spyOn(RelationshipModel, 'all').and.callThrough();
+
+        allValidRelationships = relationshipData.all.values
+          .filter(function (relationship) {
+            return RelationshipInstance.init(relationship, true).isValid();
+          });
+
+        RelationshipModel.allValid(filters, pagination)
+          .then(function (_result_) {
+            result = _result_;
+          });
+        $rootScope.$digest();
+      });
+
+      it('passes the filters and pagination parameters to the all method', function () {
+        expect(RelationshipModel.all).toHaveBeenCalledWith(filters, pagination);
+      });
+
+      it('only returns relationships where the relationship type is active', function () {
+        expect(RelationshipModel.all.calls.argsFor(0)[0]).toEqual(jasmine.objectContaining({
+          'relationship_type_id.is_active': 1
+        }));
+      });
+
+      it('only returns valid relationships', function () {
+        expect(result.list).toEqual(allValidRelationships);
+      });
     });
   });
 });
