@@ -1122,10 +1122,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['id'] = $toilRequest->id;
 
     $this->setExpectedException('RuntimeException', 'You may only cancel TOIL with dates in the future.');
-    $this->getLeaveRequestService()->create(
-      $params,
-      false
-    );
+    $this->getLeaveRequestService()->create($params, false);
   }
 
   public function testToilRequestWithPastDatesCanBeCancelledWhenUserIsAdminAndAbsenceTypeDoesNotAllowPastAccrual() {
@@ -1151,10 +1148,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['status_id'] = $leaveStatuses['cancelled'];
     $params['id'] = $toilRequest->id;
 
-    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
-      $params,
-      false
-    );
+    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
 
     $this->assertNotNull($toilRequest->id);
     $this->assertEquals($toilRequest->status_id, $leaveStatuses['cancelled']);
