@@ -292,7 +292,7 @@ function _hrcore_civix_insert_navigation_menu(&$menu, $path, $item) {
     $first = array_shift($path);
     foreach ($menu as $key => &$entry) {
       if ($entry['attributes']['name'] == $first) {
-        if (!$entry['child']) $entry['child'] = array();
+        if (!isset($entry['child'])) $entry['child'] = array();
         $found = _hrcore_civix_insert_navigation_menu($entry['child'], implode('/', $path), $item, $key);
       }
     }
