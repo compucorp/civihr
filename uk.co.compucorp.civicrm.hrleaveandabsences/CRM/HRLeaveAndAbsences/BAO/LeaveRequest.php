@@ -332,10 +332,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateTOILPastDays($params, $absenceType) {
-    $fromDate = new DateTime($params['from_date']);
-    $toDate = new DateTime($params['to_date']);
-    $todayDate = new DateTime('today');
-    $leaveDatesHasPastDates = $fromDate < $todayDate || $toDate < $todayDate;
+    $leaveDatesHasPastDates = self::isTOILWithPastDates($params);
     $isACancellationRequest = in_array($params['status_id'], LeaveRequest::getCancelledStatuses());
 
     if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past && !$isACancellationRequest) {
@@ -345,6 +342,26 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         'from_date'
       );
     }
+  }
+
+  /**
+   * Checks whether the leave request is of type TOIL and has dates in the
+   * past.
+   *
+   * @param array $params
+   *
+   * @return bool
+   */
+  public static function isTOILWithPastDates($params) {
+    if($params['request_type'] !== LeaveRequest::REQUEST_TYPE_TOIL) {
+      return false;
+    }
+
+    $fromDate = new DateTime($params['from_date']);
+    $toDate = new DateTime($params['to_date']);
+    $todayDate = new DateTime('today');
+
+    return $fromDate < $todayDate || $toDate < $todayDate;
   }
 
   /**

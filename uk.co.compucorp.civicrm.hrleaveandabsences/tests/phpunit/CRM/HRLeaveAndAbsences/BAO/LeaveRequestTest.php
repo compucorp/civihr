@@ -4598,4 +4598,44 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($leaveRequestParams['from_date_type'], $leaveRequest->from_date_type);
     $this->assertEquals($leaveRequestParams['to_date_type'], $leaveRequest->to_date_type);
   }
+
+  public function testisTOILWithPastDatesReturnsFalseWhenRequestTypeIsNotTOIL() {
+    $params = [
+      'from_date' => '2020-01-01',
+      'to_date' => '2025-01-02',
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ];
+
+    $this->assertFalse(LeaveRequest::isTOILWithPastDates($params));
+  }
+
+  public function testisTOILWithPastDatesReturnsTrueWhenFromDateIsLessThanToday() {
+    $params = [
+      'from_date' => '2017-01-01',
+      'to_date' => '2025-01-02',
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ];
+
+    $this->assertTrue(LeaveRequest::isTOILWithPastDates($params));
+  }
+
+  public function testisTOILWithPastDatesReturnsTrueWhenToDateIsLessThanToday() {
+    $params = [
+      'from_date' => '2025-01-01',
+      'to_date' => '2017-01-02',
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ];
+
+    $this->assertTrue(LeaveRequest::isTOILWithPastDates($params));
+  }
+
+  public function testisTOILWithPastDatesReturnsFalseWhenToDateAndFromDateIsGreaterThanToday() {
+    $params = [
+      'from_date' => '2025-01-01',
+      'to_date' => '2025-01-02',
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ];
+
+    $this->assertFalse(LeaveRequest::isTOILWithPastDates($params));
+  }
 }
