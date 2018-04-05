@@ -354,7 +354,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    */
   public static function isTOILWithPastDates($params) {
     if($params['request_type'] !== LeaveRequest::REQUEST_TYPE_TOIL) {
-      return false;
+      return FALSE;
     }
 
     $fromDate = new DateTime($params['from_date']);
