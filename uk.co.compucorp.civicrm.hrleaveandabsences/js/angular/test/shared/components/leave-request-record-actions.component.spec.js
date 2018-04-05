@@ -37,7 +37,7 @@ define([
           return option.type;
         });
 
-        expect(options).toEqual(['leave', 'sickness', 'toil']);
+        expect(options).toEqual(['leave', 'sickness']);
       });
     });
 
