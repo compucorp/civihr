@@ -7,7 +7,8 @@ trait CRM_HRCore_Upgrader_Steps_1015 {
    *
    * @return bool
    */
-  public function upgrade_1012() {
+  public function upgrade_1015() {
+    // is_active is set here because CiviCRM API defaults the is_active FALSE
     $data = [
       'id' => '$value.id',
       'is_locked' => 1,

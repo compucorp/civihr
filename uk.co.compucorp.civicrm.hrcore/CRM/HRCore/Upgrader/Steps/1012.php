@@ -1,7 +1,7 @@
 <?php
 
 trait CRM_HRCore_Upgrader_Steps_1012 {
-  
+
   /**
    * Adds a submenu containing links to edit contact related option groups,
    * and relationship types
@@ -140,4 +140,5 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
 
     return civicrm_api3('Navigation', 'create', $params);
   }
+
 }
