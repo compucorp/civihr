@@ -223,8 +223,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
 
   public function testCanCancelToilWithPastDatesReturnsTrueWhenCurrentUserIsManagerAndAbsenceTypeDoesNotAllowPastAccrual() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => false
+      'allow_accruals_request' => TRUE,
+      'allow_accrue_in_the_past' => FALSE
     ]);
 
     $leaveRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
@@ -233,8 +233,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
 
   public function testCanCancelToilWithPastDatesReturnsTrueWhenCurrentUserIsAdminAndAbsenceTypeDoesNotAllowPastAccrual() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => false
+      'allow_accruals_request' => TRUE,
+      'allow_accrue_in_the_past' => FALSE
     ]);
 
     $leaveRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
@@ -243,8 +243,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
 
   public function testCanCancelToilWithPastDatesReturnsFalseWhenCurrentUserIsLeaveContactAndAbsenceTypeDoesNotAllowPastAccrual() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => false
+      'allow_accruals_request' => TRUE,
+      'allow_accrue_in_the_past' => FALSE
     ]);
 
     $leaveRightsService = $this->getLeaveRightsService();
@@ -253,8 +253,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
 
   public function testCanCancelToilWithPastDatesReturnsTrueWhenAbsenceTypeAllowsPastAccrualForLeaveContact() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => true
+      'allow_accruals_request' => TRUE,
+      'allow_accrue_in_the_past' => TRUE
     ]);
 
     $leaveRightsService = $this->getLeaveRightsService();
@@ -263,8 +263,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
 
   public function testCanCancelToilWithPastDatesReturnsTrueWhenAbsenceTypeAllowsPastAccrualForAdmin() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => true
+      'allow_accruals_request' => TRUE,
+      'allow_accrue_in_the_past' => TRUE
     ]);
 
     $leaveRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
@@ -273,25 +273,25 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
 
   public function testCanCancelToilWithPastDatesReturnsTrueWhenAbsenceTypeAllowsPastAccrualForManager() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => true
+      'allow_accruals_request' => TRUE,
+      'allow_accrue_in_the_past' => TRUE
     ]);
 
     $leaveRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
     $this->assertTrue($leaveRightsService->canCancelToilWithPastDates($this->leaveContact, $absenceType->id));
   }
 
-  private function getLeaveRightsService($isAdmin = false, $isManager = false) {
+  private function getLeaveRightsService($isAdmin = FALSE, $isManager = FALSE) {
     $leaveManagerService = $this->createLeaveManagerServiceMock($isAdmin, $isManager);
     return new LeaveRequestRightsService($leaveManagerService);
   }
 
   private function getLeaveRequestRightsForAdminAsCurrentUser() {
-    return $this->getLeaveRightsService(true, false);
+    return $this->getLeaveRightsService(TRUE, FALSE);
   }
 
   private function getLeaveRequestRightsForLeaveManagerAsCurrentUser() {
-    return $this->getLeaveRightsService(false, true);
+    return $this->getLeaveRightsService(FALSE, TRUE);
   }
 
   public function leaveRequestStatusesDataProvider() {
