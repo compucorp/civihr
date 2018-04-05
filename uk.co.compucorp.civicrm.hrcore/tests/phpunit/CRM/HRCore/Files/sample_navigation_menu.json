@@ -176,6 +176,36 @@
             }
           }
         }
+      },
+      "292": {
+        "attributes": {
+          "label": "Leave",
+          "name": "leave_and_absences",
+          "url": null,
+          "icon": null,
+          "permission": "administer leave and absences",
+          "operator": null,
+          "separator": null,
+          "parentID": "110",
+          "navID": "292",
+          "active": "1"
+        },
+        "child": {
+          "293": {
+            "attributes": {
+              "label": "Leave/Absence Types",
+              "name": "leave_and_absence_types",
+              "url": "civicrm/admin/leaveandabsences/types?action=browse&reset=1",
+              "icon": null,
+              "permission": "administer leave and absences",
+              "operator": null,
+              "separator": "0",
+              "parentID": "292",
+              "navID": "293",
+              "active": "1"
+            }
+          }
+        }
       }
     }
   }

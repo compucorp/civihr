@@ -240,16 +240,23 @@ function _civicrm_api3_h_r_job_contract_get_contacts_from_params($params) {
  */
 function _civicrm_api3_h_r_job_contract_getcontactswithcontractsinperiod_spec(&$spec) {
   $spec['start_date'] = array(
-    'name'         => 'start_date',
-    'title'        => 'Start Date',
-    'type'         => CRM_Utils_Type::T_DATE,
+    'name' => 'start_date',
+    'title' => 'Start Date',
+    'type' => CRM_Utils_Type::T_DATE,
     'api.required' => 0,
   );
 
   $spec['end_date'] = array(
-    'name'         => 'end_date',
-    'title'        => 'End Date',
-    'type'         => CRM_Utils_Type::T_DATE,
+    'name' => 'end_date',
+    'title' => 'End Date',
+    'type' => CRM_Utils_Type::T_DATE,
+    'api.required' => 0,
+  );
+
+  $spec['contact_id'] = array(
+    'name' => 'contact_id',
+    'title' => 'Contact ID',
+    'type' => CRM_Utils_Type::T_INT,
     'api.required' => 0,
   );
 }
@@ -265,6 +272,7 @@ function _civicrm_api3_h_r_job_contract_getcontactswithcontractsinperiod_spec(&$
 function civicrm_api3_h_r_job_contract_getcontactswithcontractsinperiod($params) {
   $startDate = null;
   $endDate = null;
+  $contactID = null;
 
   if(!empty($params['start_date'])) {
     if(is_array($params['start_date'])) {
@@ -280,7 +288,11 @@ function civicrm_api3_h_r_job_contract_getcontactswithcontractsinperiod($params)
     $endDate = $params['end_date'];
   }
 
-  $result = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithContractsInPeriod($startDate, $endDate);
+  if(!empty($params['contact_id'])) {
+    $contactID = _civicrm_api3_h_r_job_contract_get_contacts_from_params($params);
+  }
+
+  $result = CRM_Hrjobcontract_BAO_HRJobContract::getContactsWithContractsInPeriod($startDate, $endDate, $contactID);
   return civicrm_api3_create_success($result, $params);
 }
 

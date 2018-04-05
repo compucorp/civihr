@@ -2767,6 +2767,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testLeaveRequestIsValidShouldReturnErrorWhenLeaveDaysIsGreaterThanAbsenceTypeMaxConsecutiveLeaveDays() {
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+    $contactID = 1;
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2017-01-01']
+    );
+
     $maxConsecutiveLeaveDays = 2;
     $absenceType = AbsenceTypeFabricator::fabricate([
       'max_consecutive_leave_days' => $maxConsecutiveLeaveDays
@@ -2776,7 +2783,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $toDate = new DateTime('+4 days');
     $result = civicrm_api3('LeaveRequest', 'isvalid', [
       'type_id' => $absenceType->id,
-      'contact_id' => 1,
+      'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
       'from_date_type' => 1,

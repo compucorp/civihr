@@ -1,22 +1,21 @@
 <?php
 
 trait CRM_HRCore_Upgrader_Steps_1011 {
-  
+
   /**
-   * Upgrade CustomGroup, setting Identify is_reserved value to Yes
-   * if it exists. This implementation was made in HRCore instead of
-   * HRIdent extension because HRIdent is currently disabled in some setups.
+   * Sets the 'Work' Location type to reserved if its not
+   * already reserved.
    *
    * @return bool
    */
   public function upgrade_1011() {
-    $result = civicrm_api3('CustomGroup', 'get', [
-      'return' => ['id'],
-      'name' => 'Identify',
+    $result = civicrm_api3('LocationType', 'get', [
+      'name' => 'Work',
+      'is_reserved' => 0,
     ]);
 
-    if ($result['id']) {
-      civicrm_api3('CustomGroup', 'create', [
+    if ($result['count'] > 0) {
+      civicrm_api3('LocationType', 'create', [
         'id' => $result['id'],
         'is_reserved' => 1,
       ]);

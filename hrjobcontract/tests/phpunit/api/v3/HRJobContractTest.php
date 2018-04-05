@@ -62,6 +62,16 @@ class api_v3_HRJobContractTest extends CRM_Hrjobcontract_Test_BaseHeadlessTest {
 
   /**
    * @expectedException CiviCRM_API3_Exception
+   * @expectedExceptionMessage The contact_id parameter only supports the IN operator
+   *
+   * @dataProvider invalidGetContractsWithDetailsInPeriodContactIDOperator
+   */
+  public function testTheContactIDOnlyAcceptsINOperatorForGetContactsWithContractsInPeriod($operator) {
+    civicrm_api3('HRJobContract', 'getcontractswithdetailsinperiod', ['contact_id' => [$operator => [1]]]);
+  }
+
+  /**
+   * @expectedException CiviCRM_API3_Exception
    * @expectedExceptionMessage The end date parameter can only be used with the = operator
    *
    * @dataProvider invalidGetContractsWithDetailsInPeriodDateOperator
@@ -138,6 +148,40 @@ class api_v3_HRJobContractTest extends CRM_Hrjobcontract_Test_BaseHeadlessTest {
     ]);
 
     $this->assertCount(3, $allContracts['values']);
+  }
+
+  public function testGetContactsWithContractsInPeriodCanFilterContacts() {
+    $this->createContacts(3);
+    $startDate = date('Y-m-d', strtotime('-2 days'));
+    $endDate = date('Y-m-d', strtotime('+2 days'));
+
+    $this->createJobContract(
+      $this->contacts[0]['id'],
+      $startDate,
+      $endDate
+    );
+
+    $this->createJobContract(
+      $this->contacts[1]['id'],
+      $startDate,
+      $endDate
+    );
+
+    $this->createJobContract(
+      $this->contacts[2]['id'],
+      $startDate,
+      $endDate
+    );
+
+    $contacts = civicrm_api3('HRJobContract', 'getcontactswithcontractsinperiod', [
+      'start_date' => $startDate,
+      'end_date' => $endDate,
+      'contact_id' => ['IN' => [$this->contacts[0]['id'], $this->contacts[2]['id']]]
+    ]);
+
+    $this->assertCount(2, $contacts['values']);
+    $this->assertEquals($this->contacts[0]['id'], $contacts['values'][0]['id']);
+    $this->assertEquals($this->contacts[2]['id'], $contacts['values'][1]['id']);
   }
 
   /**

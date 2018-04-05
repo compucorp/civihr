@@ -25,6 +25,11 @@ class CRM_HRLeaveAndAbsences_Upgrader extends CRM_HRLeaveAndAbsences_Upgrader_Ba
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1017;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1018;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1019;
+  use CRM_HRLeaveAndAbsences_Upgrader_Step_1020;
+  use CRM_HRLeaveAndAbsences_Upgrader_Step_1021;
+  use CRM_HRLeaveAndAbsences_Upgrader_Step_1022;
+  use CRM_HRLeaveAndAbsences_Upgrader_Step_1023;
+  use CRM_HRLeaveAndAbsences_Upgrader_Step_1024;
 
   /**
    * A list of directories to be scanned for XML installation files

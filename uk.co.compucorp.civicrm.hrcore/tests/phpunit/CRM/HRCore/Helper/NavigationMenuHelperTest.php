@@ -1,11 +1,12 @@
 <?php
 
 use CRM_HRCore_Helper_NavigationMenuHelper as NavigationMenuHelper;
+use CRM_HRCore_Test_BaseHeadlessTest as BaseHeadlessTest;
 
 /**
  * @group headless
  */
-class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
+class CRM_HRCore_Helper_NavigationMenuHelperTest extends BaseHeadlessTest {
 
   /**
    * @dataProvider menuItemNameProvider
@@ -31,11 +32,11 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
   public function testInsertionWillAddChildMenuItem() {
     $menu = $this->getSampleMenu();
     $childName = 'Test Item';
-    $newItem = ['name' => $childName];
+    $attributes = ['foo' => 'bar'];
     $parentName = 'Dropdown Options';
     $parentPath = 'Administer/Customize Data and Screens/' . $parentName;
     $childPath = $parentPath . '/' . $childName;
-    NavigationMenuHelper::insertChild($menu, $parentPath, $newItem);
+    NavigationMenuHelper::insert($menu, $childPath, $attributes);
 
     $added = NavigationMenuHelper::findMenuItemByPath($menu, $childPath);
     $this->assertNotNull($added);
@@ -51,12 +52,31 @@ class NavigationMenuHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $this->assertEquals($childName, $matchingItem['attributes']['name']);
   }
 
+  public function testInsertionWillAddRootMenuItem() {
+    $menu = $this->getSampleMenu();
+    $name = 'Foo';
+    NavigationMenuHelper::insert($menu, $name);
+    $newestEntry = array_pop($menu);
+
+    $this->assertEquals($name, $newestEntry['attributes']['name']);
+  }
+
+  public function testAttributesWillOverrideDefaultsInInsertion() {
+    $menu = $this->getSampleMenu();
+    $name = 'Foo';
+    $label = 'Bar';
+    NavigationMenuHelper::insert($menu, $name, ['label' => $label]);
+    $newestEntry = array_pop($menu);
+
+    $this->assertEquals($label, $newestEntry['attributes']['label']);
+  }
+
   public function testInsertionWillThrowExceptionWithInvalidPath() {
-    $expectedError = 'Cannot find parent item "Bar"';
+    $expectedError = 'Cannot find parent item "Foo"';
     $this->setExpectedException(\Exception::class, $expectedError);
     $menu = [];
-    $parent = 'Bar';
-    NavigationMenuHelper::insertChild($menu, $parent, []);
+    $path = 'Foo/Bar';
+    NavigationMenuHelper::insert($menu, $path, []);
   }
 
   public function testSettingPermissionWillUpdateItInMenu() {

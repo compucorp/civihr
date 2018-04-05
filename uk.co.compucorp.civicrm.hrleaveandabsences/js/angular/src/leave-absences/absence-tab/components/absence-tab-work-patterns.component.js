@@ -104,12 +104,12 @@ define([
     }
 
     /**
-     * Loads the Job Contract Revision Change Reasons and indexes by `value`
+     * Loads the Leave and Absences Work Pattern Change Reasons
      *
-     * @return {Promise}
+     * @return {Promise} resolves with {Array}
      */
     function loadJobContractRevisionChangeReasons () {
-      return OptionGroup.valuesOf('hrjc_revision_change_reason')
+      return OptionGroup.valuesOf('hrleaveandabsences_work_pattern_change_reason')
         .then(function (reasons) {
           changeReasons = _.indexBy(reasons, 'value');
         });
