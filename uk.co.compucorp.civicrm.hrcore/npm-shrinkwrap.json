@@ -646,12 +646,22 @@
       "integrity": "sha1-MasayLEpNjRj41s+u2n038+6eUc=",
       "dev": true
     },
-    "backstopjs": {
-      "version": "3.2.0",
-      "resolved": "https://registry.npmjs.org/backstopjs/-/backstopjs-3.2.0.tgz",
-      "integrity": "sha512-/drgHwUIfZiFLwXmpFVnK9ozxdbLFzcmgwQ3Cn+zqkLO6WwgI/K0TtO61aLXAQPwS2oHIjn46N7HwAFHlWEH0g==",
+    "backstop-twentytwenty": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/backstop-twentytwenty/-/backstop-twentytwenty-1.0.4.tgz",
+      "integrity": "sha512-sENfpossNAbVKZjTzBU6bkbR1vIb7t6brjqH9ZMEIYh/RyCIGFM3BSgERzh+tdwpAVXHSbIV1gQRrtzBYzUrjw==",
       "dev": true,
       "requires": {
+        "react": "15.6.2"
+      }
+    },
+    "backstopjs": {
+      "version": "3.2.3",
+      "resolved": "https://registry.npmjs.org/backstopjs/-/backstopjs-3.2.3.tgz",
+      "integrity": "sha512-YURuEPLq2InkfTW9BRlXRWMDiluYZn7+vQNUpwTRVnKH66Bk/KCXTDBIbcqTZgJcR8DLoywOQYAOJG9RPBLJmA==",
+      "dev": true,
+      "requires": {
+        "backstop-twentytwenty": "1.0.4",
         "casperjs": "1.1.4",
         "chalk": "1.1.3",
         "chromy": "0.5.11",
@@ -674,7 +684,6 @@
         "react-redux": "5.0.7",
         "react-sticky": "6.0.1",
         "react-toggle-button": "2.2.0",
-        "react-twentytwenty": "1.1.0",
         "redux": "3.7.2",
         "sinon": "1.17.7",
         "styled-components": "2.4.0",
@@ -1287,17 +1296,6 @@
         "supports-color": "2.0.0"
       }
     },
-    "child-process-promise": {
-      "version": "2.2.1",
-      "resolved": "https://registry.npmjs.org/child-process-promise/-/child-process-promise-2.2.1.tgz",
-      "integrity": "sha1-RzChHvYQ+tRQuPIjx50x172tgHQ=",
-      "dev": true,
-      "requires": {
-        "cross-spawn": "4.0.2",
-        "node-version": "1.1.3",
-        "promise-polyfill": "6.1.0"
-      }
-    },
     "chokidar": {
       "version": "1.7.0",
       "resolved": "https://registry.npmjs.org/chokidar/-/chokidar-1.7.0.tgz",
@@ -1387,22 +1385,6 @@
       "resolved": "https://registry.npmjs.org/circular-json/-/circular-json-0.5.1.tgz",
       "integrity": "sha512-UjgcRlTAhAkLeXmDe2wK7ktwy/tgAqxiSndTIPiFZuIPLZmzHzWMwUIe9h9m/OokypG7snxCDEuwJshGBdPvaw==",
       "dev": true
-    },
-    "civicrm-cv": {
-      "version": "0.1.2",
-      "resolved": "https://registry.npmjs.org/civicrm-cv/-/civicrm-cv-0.1.2.tgz",
-      "integrity": "sha1-prn+pVahci1Km3ChHGSHVXGmNKg=",
-      "dev": true,
-      "requires": {
-        "child-process-promise": "2.2.1"
-      }
-    },
-    "civicrm-scssroot": {
-      "version": "git://github.com/totten/civicrm-scssroot.git#3fc126e91ea503420daedc82425e9b85085707f6",
-      "dev": true,
-      "requires": {
-        "civicrm-cv": "0.1.2"
-      }
     },
     "class-utils": {
       "version": "0.3.6",
@@ -1828,16 +1810,6 @@
           "integrity": "sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=",
           "dev": true
         }
-      }
-    },
-    "cross-spawn": {
-      "version": "4.0.2",
-      "resolved": "https://registry.npmjs.org/cross-spawn/-/cross-spawn-4.0.2.tgz",
-      "integrity": "sha1-e5JHYhwjrf3ThWAEqCPL45dCTUE=",
-      "dev": true,
-      "requires": {
-        "lru-cache": "4.1.1",
-        "which": "1.3.0"
       }
     },
     "cryptiles": {
@@ -8489,12 +8461,6 @@
       "dev": true,
       "optional": true
     },
-    "node-version": {
-      "version": "1.1.3",
-      "resolved": "https://registry.npmjs.org/node-version/-/node-version-1.1.3.tgz",
-      "integrity": "sha512-rEwE51JWn0yN3Wl5BXeGn5d52OGbSXzWiiXRjAQeuyvcGKyvuSILW2rb3G7Xh+nexzLwhTpek6Ehxd6IjvHePg==",
-      "dev": true
-    },
     "node.extend": {
       "version": "2.0.0",
       "resolved": "https://registry.npmjs.org/node.extend/-/node.extend-2.0.0.tgz",
@@ -9533,12 +9499,6 @@
         "asap": "2.0.6"
       }
     },
-    "promise-polyfill": {
-      "version": "6.1.0",
-      "resolved": "https://registry.npmjs.org/promise-polyfill/-/promise-polyfill-6.1.0.tgz",
-      "integrity": "sha1-36lpQ+qcEh/KTem1hoyznTRy4Fc=",
-      "dev": true
-    },
     "prop-types": {
       "version": "15.6.1",
       "resolved": "https://registry.npmjs.org/prop-types/-/prop-types-15.6.1.tgz",
@@ -9906,15 +9866,6 @@
       "requires": {
         "prop-types": "15.6.1",
         "react-motion": "0.5.2"
-      }
-    },
-    "react-twentytwenty": {
-      "version": "1.1.0",
-      "resolved": "https://registry.npmjs.org/react-twentytwenty/-/react-twentytwenty-1.1.0.tgz",
-      "integrity": "sha512-cSwoNCygg7K68yBmkIvOC0sPstkwCGlDpvbI93bJEyAuan3zwW7WFMY58uIfQMONz9qtqfcdmoS+Wy/FMpmnVA==",
-      "dev": true,
-      "requires": {
-        "prop-types": "15.6.1"
       }
     },
     "read-chunk": {
