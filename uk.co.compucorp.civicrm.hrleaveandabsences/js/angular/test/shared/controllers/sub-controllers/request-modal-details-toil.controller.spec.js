@@ -170,6 +170,17 @@ define([
           expect(controller.request.toil_duration).toBe(controller.uiOptions.toil_duration_in_hours * 60);
         });
 
+        describe('when "to" date selected that is greater than "from" date', function () {
+          beforeEach(function () {
+            requestModalHelper.setTestDates(controller, '03/22/2018');
+            $rootScope.$digest();
+          });
+
+          it('resets "to" time', function () {
+            expect(controller.uiOptions.times.to.time).toBe('');
+          });
+        });
+
         describe('when single day mode selected', function () {
           beforeEach(function () {
             controller.uiOptions.multipleDays = false;
@@ -178,8 +189,12 @@ define([
             $rootScope.$digest();
           });
 
-          it('updates the maximum duration and accrual value', function () {
-            expect(controller.uiOptions.max_toil_duration_and_accrual).toBe(4.75);
+          it('resets "to" time', function () {
+            expect(controller.uiOptions.times.to.time).toBe('');
+          });
+
+          it('resets maximum duration and accrual value', function () {
+            expect(controller.uiOptions.max_toil_duration_and_accrual).toBe(null);
           });
         });
 

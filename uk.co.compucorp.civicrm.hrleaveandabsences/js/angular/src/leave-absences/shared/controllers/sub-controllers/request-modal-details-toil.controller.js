@@ -31,6 +31,7 @@ define([
     detailsController.initWatchersExtended = initWatchers;
     detailsController.onDateChangeExtended = onDateChangeHandler;
     detailsController.openToilInDaysAccrualOptionsEditor = openToilInDaysAccrualOptionsEditor;
+    detailsController.resetUIInputsExtended = resetTime;
     detailsController.setDaysSelectionModeExtended = onDaysSelectionModeHandler;
     detailsController.updateExpiryDate = updateExpiryDate;
 
@@ -383,6 +384,15 @@ define([
       !skipSettingDefaultDuration ? setDefaultDuration() : (skipSettingDefaultDuration = false);
 
       return tryToCalculateExpiryDate();
+    }
+
+    /**
+     * Resets time in UI for a given date type
+     *
+     * @param {String} dateType from|todo
+     */
+    function resetTime (dateType) {
+      detailsController.uiOptions.times[dateType].time = '';
     }
 
     /**
