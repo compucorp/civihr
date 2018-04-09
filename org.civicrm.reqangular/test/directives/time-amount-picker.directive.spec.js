@@ -9,7 +9,7 @@ define([
   'use strict';
 
   describe('timeAmountPicker directive', function () {
-    var vm, $compile, $scope, $rootScope;
+    var element, vm, $compile, $scope, $rootScope;
 
     beforeEach(module('common.directives'));
     beforeEach(inject(function (_$rootScope_, _$compile_) {
@@ -90,6 +90,7 @@ define([
         describe('when hours value is changed and it is same as the maximum specified', function () {
           beforeEach(function () {
             vm.selectedHours = 7;
+
             vm.buildMinutesOptions();
           });
 
@@ -130,6 +131,10 @@ define([
           expect(vm.selectedMinutes).toBe('30');
         });
 
+        it('sets value', function () {
+          expect(element.isolateScope().value).toBe(6.5);
+        });
+
         describe('when selected values are changed', function () {
           beforeEach(function () {
             vm.selectedHours = 8;
@@ -139,7 +144,7 @@ define([
           });
 
           it('sets the result value back', function () {
-            expect($scope.$$childTail.value).toBe(8.75);
+            expect(element.isolateScope().value).toBe(8.75);
           });
         });
 
@@ -147,14 +152,14 @@ define([
           var newValue = '7';
 
           beforeEach(function () {
-            $scope.$$childTail.maxAmount = newValue;
+            element.isolateScope().maxAmount = newValue;
 
             $scope.$digest();
           });
 
           describe('when the maximum possible value is set', function () {
             beforeEach(function () {
-              $scope.$$childTail.value = newValue;
+              element.isolateScope().value = newValue;
 
               $scope.$digest();
             });
@@ -187,8 +192,8 @@ define([
      */
     function buildDirective (options) {
       var attrWrapper = '';
-      var element = angular.element('<time-amount-picker></time-amount-picker>');
 
+      element = angular.element('<time-amount-picker></time-amount-picker>');
       $scope = $rootScope.$new();
       options = options || [];
 

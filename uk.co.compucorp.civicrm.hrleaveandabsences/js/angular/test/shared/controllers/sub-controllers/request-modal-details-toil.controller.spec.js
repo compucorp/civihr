@@ -102,15 +102,6 @@ define([
         expect(retreiveCachedTOILOptions).not.toBe(false);
       });
 
-      it('sorts TOIL accrual options by weight', function () {
-        expect(_.pluck(controller.toilAmounts, function (amount) {
-          return +amount.weight;
-        })).toEqual(
-          _.pluck(controller.toilAmounts, function (amount) {
-            return +amount.weight;
-          }).sort());
-      });
-
       it('defaults to a multiple day selection', function () {
         expect(controller.uiOptions.multipleDays).toBe(true);
       });
@@ -118,6 +109,23 @@ define([
       it('sets times bounaries to 00:00 - 23:45', function () {
         expect(controller.uiOptions.times.from.min).toBe('00:00');
         expect(controller.uiOptions.times.from.max).toBe('23:45');
+      });
+
+      describe('after TOIL accrual options are loaded', function () {
+        var toilAmounts, toilAmountsSortedByWeight;
+
+        beforeEach(function () {
+          toilAmountsSortedByWeight = _.pluck(controller.toilAmounts, function (amount) {
+            return +amount.weight;
+          }).sort();
+          toilAmounts = _.pluck(controller.toilAmounts, function (amount) {
+            return +amount.weight;
+          });
+        });
+
+        it('sorts TOIL accrual options by weight', function () {
+          expect(toilAmounts).toEqual(toilAmountsSortedByWeight);
+        });
       });
 
       describe('when multiple/single days mode changes', function () {
