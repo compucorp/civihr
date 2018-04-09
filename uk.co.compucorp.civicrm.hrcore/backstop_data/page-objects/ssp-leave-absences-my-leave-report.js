@@ -75,7 +75,13 @@ module.exports = page.extend({
    */
   async openSection (section) {
     await this.puppet.click('td[ng-click="report.toggleSection(\'' + section + '\')"]');
-    await this.puppet.waitFor('.spinner', { hidden: true });
+    await this.puppet.waitFor(function () {
+      var spinners = document.querySelectorAll('.spinner');
+
+      return Array.prototype.every.call(spinners, function (dom) {
+        return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
+      });
+    });
   },
 
   /**
@@ -114,6 +120,7 @@ module.exports = page.extend({
    * Wait for the page to be ready
    */
   async waitForReady () {
+    await this.puppet.waitFor('.spinner', { visible: false });
     await this.puppet.waitFor('td[ng-click="report.toggleSection(\'pending\')"]', { visible: true });
   },
 
