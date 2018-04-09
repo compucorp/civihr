@@ -316,18 +316,22 @@ define([
       });
 
       describe('when user opens TOIL accrual options group editor', function () {
+        var onPopupFormSuccess;
+
         beforeEach(function () {
           // flushing TOIL accrual options
           controller.toilAmounts = null;
-          crmAngService.loadForm = function () {
+          // saving the callback on the popup close to imitate its call later
+          spyOn(crmAngService, 'loadForm').and.callFake(function () {
             return {
               on: function (event, callback) {
-                callback();
+                if (event === 'crmFormSuccess') {
+                  onPopupFormSuccess = callback;
+                }
               }
             };
-          };
+          });
 
-          spyOn(crmAngService, 'loadForm').and.callThrough();
           controller.openToilInDaysAccrualOptionsEditor();
         });
 
@@ -335,8 +339,9 @@ define([
           expect(crmAngService.loadForm).toHaveBeenCalledWith('/civicrm/admin/options/hrleaveandabsences_toil_amounts?reset=1');
         });
 
-        describe('when TOIL accruals are edited', function () {
+        describe('when TOIL accruals editor is closed', function () {
           beforeEach(function () {
+            onPopupFormSuccess();
             $rootScope.$digest();
           });
 
