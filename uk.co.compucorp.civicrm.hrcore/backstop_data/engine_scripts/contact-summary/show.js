@@ -1,6 +1,6 @@
 'use strict';
 
-const pageObj = require('../../../page-objects/tabs/job-contract');
+const pageObj = require('../../page-objects/contact-summary');
 
 module.exports = async engine => {
   await pageObj.init(engine);

@@ -18,7 +18,7 @@ module.exports = page.extend({
    * Opens one of the contact summary tabs
    *
    * @param  {String} tabId
-   * @return {Pbject} resolves with the tab page object
+   * @return {Object} the tab page object
    */
   async openTab (tabId) {
     const tabObj = require('./tabs/' + tabId);
@@ -33,5 +33,12 @@ module.exports = page.extend({
   async showActions () {
     await this.puppet.click('#crm-contact-actions-link');
     await this.puppet.waitFor('#crm-contact-actions-list');
+  },
+
+  /**
+   * Wait an arbitrary amount of time for the data to load
+   */
+  async waitForReady () {
+    await this.puppet.waitFor(6000);
   }
 });

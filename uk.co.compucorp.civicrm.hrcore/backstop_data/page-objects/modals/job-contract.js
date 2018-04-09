@@ -5,6 +5,8 @@ const modal = require('./modal');
 module.exports = modal.extend({
   /**
    * Selects the tab with the given title
+   *
+   * @param {String} tabTitle
    */
   async selectTab (tabTitle) {
     await this.puppet.evaluate(function (tabTitle) {

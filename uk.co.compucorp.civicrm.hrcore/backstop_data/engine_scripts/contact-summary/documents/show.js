@@ -1,8 +1,7 @@
 'use strict';
 
-const pageObj = require('../../../page-objects/contact-summary');
+const pageObj = require('../../../page-objects/tabs/documents');
 
 module.exports = async engine => {
-  const page = await pageObj.init(engine);
-  await page.openTab('documents');
+  await pageObj.init(engine);
 };

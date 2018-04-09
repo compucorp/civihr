@@ -4,7 +4,8 @@ const page = require('./page');
 
 module.exports = page.extend({
   /**
-   * Clears the currently selected month from the calendar "Selected Months" field
+   * Clears the currently selected month from the calendar "Selected Months"
+   * field.
    */
   async clearCurrentlySelectedMonth () {
     await this.puppet.click('.chr_leave-calendar__day-selector .close.ui-select-match-close');
@@ -26,7 +27,8 @@ module.exports = page.extend({
   },
 
   /**
-   * Hovers on top of a leave day visible on the calendar until a tooltip pops up
+   * Hovers on top of a leave day visible on the calendar until a tooltip
+   * pops up.
    */
   async showTooltip () {
     await this.puppet.evaluate(() => {
@@ -40,7 +42,6 @@ module.exports = page.extend({
    * Displays the leave information for a particular year in the leave calendar.
    *
    * @param {Number} year - the year to select from the absence period options.
-   * @returns {Object} - returns a reference to the page object.
    */
   async showYear (year) {
     await this.puppet.evaluate(year => {

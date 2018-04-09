@@ -4,7 +4,7 @@ const documentSelector = '.ct-table-documents > tbody > tr:nth-child(1)';
 
 module.exports = page.extend({
   /**
-   * Opens the modal to add a documents
+   * Adds a document by opening the modal
    *
    * @return {Object} the document modal page object
    */

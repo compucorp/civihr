@@ -3,8 +3,6 @@ const modal = require('./page');
 module.exports = modal.extend({
   /**
    * Opens See Resources section
-   *
-   * @return {object}
    */
   async seeResources () {
     await this.puppet.click('.fieldset-title');

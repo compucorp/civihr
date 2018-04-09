@@ -50,8 +50,6 @@ module.exports = tab.extend({
 
   /**
    * Shows the full history of a contract
-   *
-   * @return {object}
    */
   async showFullHistory () {
     await this.puppet.click('[heading="Full History"] > a');

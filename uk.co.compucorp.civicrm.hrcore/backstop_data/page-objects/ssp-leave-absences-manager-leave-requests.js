@@ -55,7 +55,7 @@ module.exports = page.extend({
     await this.puppet.evaluate(function (leaveType) {
       const element = document.querySelector('.chr_manage_leave_requests__header div:nth-child(1) > select');
 
-      element.selectedIndex = leaveType;// for TOIL option
+      element.selectedIndex = leaveType;
       element.dispatchEvent(new Event('change'));
     }, leaveType);
     await this.puppet.waitFor('tbody tr:nth-child(1) a', { visible: true });
@@ -74,7 +74,8 @@ module.exports = page.extend({
 
   /**
    * Apply leave on behalf of staff
-   * @param {String} row number corresponding to leave request in the list like leave, sickness or toil
+   *
+   * @param {String} leaveType row number corresponding to leave request in the list like leave, sickness or toil
    */
   async applyLeaveForStaff (leaveType) {
     const leaveSerialNo = leaveType === 'leave' ? 1 : leaveType === 'sickness' ? 2 : 3;

@@ -16,5 +16,13 @@ module.exports = modal.extend({
   async openCreateNewTaskModal () {
     await this.puppet.click('.create-new-task');
     await this.puppet.waitFor('#civihr-employee-portal-civi-tasks-form', { visible: true });
+  },
+
+  /**
+   * The page always gives false positives for some reason in Chrome, so we need
+   * to wait a couple of seconds for it to "stabilize" before taking the screenshot
+   */
+  async waitForReady () {
+    await this.puppet.waitFor(2000);
   }
 });

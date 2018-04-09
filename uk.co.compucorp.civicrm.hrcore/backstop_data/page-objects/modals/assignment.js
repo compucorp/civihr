@@ -34,6 +34,7 @@ module.exports = modal.extend({
       const select = document.querySelector(modalRoot + ' select[name="assignment"]');
 
       select.selectedIndex = 2;
+
       jQuery(select).change();
     }, this.modalRoot);
     await this.puppet.waitFor(500);

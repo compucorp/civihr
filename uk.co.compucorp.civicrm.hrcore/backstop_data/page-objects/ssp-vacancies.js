@@ -6,6 +6,6 @@ module.exports = modal.extend({
    */
   async showMoreDetails () {
     await this.puppet.click('.fieldset-title');
-    await this.puppet.waitFor(2000);
+    await this.puppet.waitFor(2000); // wait for animation to complete
   }
 });

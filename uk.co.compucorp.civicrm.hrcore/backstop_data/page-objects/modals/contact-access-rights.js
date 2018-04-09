@@ -3,8 +3,6 @@ const modal = require('./modal');
 module.exports = modal.extend({
   /**
    * Opens a ui-select dropdown
-   *
-   * @return {object}
    */
   async openDropdown (name) {
     const common = '[ng-model="modalCtrl.selectedData.%{name}"] input';

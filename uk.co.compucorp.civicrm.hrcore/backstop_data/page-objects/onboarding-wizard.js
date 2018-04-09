@@ -3,8 +3,6 @@ const page = require('./page');
 module.exports = page.extend({
   /**
    * Navigate to Address Page
-   *
-   * @return {*}
    */
   async reachAddressPage () {
     await this.puppet.click('.webform-next');
@@ -13,8 +11,6 @@ module.exports = page.extend({
 
   /**
    * Navigate to Contact Info Page
-   *
-   * @return {*}
    */
   async reachContactInfoPage () {
     await this.reachAddressPage();
@@ -24,8 +20,6 @@ module.exports = page.extend({
 
   /**
    * Navigate to Payroll Page
-   *
-   * @return {*}
    */
   async reachPayrollPage () {
     await this.reachContactInfoPage();
@@ -35,8 +29,6 @@ module.exports = page.extend({
 
   /**
    * Navigate to Emergency Contact Page
-   *
-   * @return {*}
    */
   async reachEmergencyContactPage () {
     await this.reachPayrollPage();
@@ -46,8 +38,6 @@ module.exports = page.extend({
 
   /**
    * Navigate to Dependent Page
-   *
-   * @return {*}
    */
   async reachDependentPage () {
     await this.reachEmergencyContactPage();
@@ -58,8 +48,6 @@ module.exports = page.extend({
 
   /**
    * Navigate to Profile Picture Page
-   *
-   * @return {*}
    */
   async reachProfilePicturePage () {
     await this.reachDependentPage();

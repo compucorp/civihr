@@ -2,7 +2,8 @@
   "scenarios": [
     {
       "label": "SSP / Tasks",
-      "url": "{{siteUrl}}/tasks-and-documents"
+      "url": "{{siteUrl}}/tasks-and-documents",
+      "onReadyScript": "ssp/tasks-show.js"
     },
     {
       "label": "SSP / Tasks / Show Completed tasks",

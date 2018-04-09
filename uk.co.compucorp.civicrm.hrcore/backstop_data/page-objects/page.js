@@ -17,17 +17,12 @@ module.exports = {
     let href = await this.puppet.evaluate(() => document.location.href);
     let isAdmin = href.indexOf('civicrm/') > 1;
 
-    if (isAdmin) {
-      await this.puppet.evaluate(function () {
-        let errorsWrapper = document.querySelector('#content > #console');
-        errorsWrapper && (errorsWrapper.style.display = 'none');
-      });
-    } else {
-      await this.puppet.evaluate(function () {
-        let errorsWrapper = document.querySelector('#messages .alert');
-        errorsWrapper && (errorsWrapper.style.display = 'none');
-      });
-    }
+    await this.puppet.evaluate(function (isAdmin) {
+      let selector = isAdmin ? '#content > #console' : '#messages .alert';
+      let errorsWrapper = document.querySelector(selector);
+
+      errorsWrapper && (errorsWrapper.style.display = 'none');
+    }, isAdmin);
 
     if (clearDialogs) {
       await closeAnyModal.call(this);

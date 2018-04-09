@@ -2,7 +2,7 @@
   "scenarios": [
     {
       "label": "Tasks",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=civitasks",
       "onReadyScript": "contact-summary/tasks/show.js"
     }
   ]

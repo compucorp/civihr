@@ -2,37 +2,37 @@
   "scenarios": [
     {
       "label": "Absence / Report",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=absence",
       "onReadyScript": "contact-summary/absence/tab-report.js"
     },
     {
       "label": "Absence / Report / Open Section",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=absence",
       "onReadyScript": "contact-summary/absence/tab-report-open-section.js"
     },
     {
       "label": "Absence / Report / Actions",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=absence",
       "onReadyScript": "contact-summary/absence/tab-report-actions.js"
     },
     {
       "label": "Absence / Calendar / Current Month",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=absence",
       "onReadyScript": "contact-summary/absence/tab-calendar.js"
     },
     {
       "label": "Absence / Entitlements",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=absence",
       "onReadyScript": "contact-summary/absence/tab-entitlements.js"
     },
     {
       "label": "Absence / Work Patterns",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=absence",
       "onReadyScript": "contact-summary/absence/tab-work-patterns.js"
     },
     {
       "label": "Absence / Work Patterns / Custom Work Patterns Modal",
-      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:staff}}&selectedChild=absence",
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=absence",
       "onReadyScript": "contact-summary/absence/tab-work-patterns-modal.js"
     }
   ]
