@@ -42,14 +42,16 @@ define([
        * @param {Object} filters - filter values to pass to the API.
        * @param {Object} pagination - number of items to return per page and
        * the current page to fetch.
+       * @param {string} sort - The field and direction to order by
+       * @param {object} additionalParams - Additional params to pass to the api
        * @return {Promise}
        */
-      allValid: function (filters, pagination) {
+      allValid: function (filters, pagination, sort, additionalParams) {
         filters = _.defaults(filters || {}, {
           'relationship_type_id.is_active': 1
         });
 
-        return this.all(filters, pagination)
+        return this.all(filters, pagination, sort, additionalParams)
           .then(function (result) {
             result.list = result.list.filter(function (relationship) {
               return relationship.isValid();

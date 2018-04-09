@@ -4,6 +4,7 @@ define([
   'common/lodash',
   'common/mocks/data/relationship.data',
   'common/angularMocks',
+  'common/mocks/services/api/relationship.api.mock',
   'common/models/relationship.model',
   'common/models/instances/relationship.instance',
   'common/services/api/relationship.api'
@@ -11,26 +12,31 @@ define([
   'use strict';
 
   describe('RelationshipModel', function () {
-    var $q, $rootScope, RelationshipModel, RelationshipAPI, RelationshipInstance,
-      result;
+    var $provide, $rootScope, RelationshipModel, RelationshipAPI,
+      RelationshipInstance, result;
     var additionalParams = { key: 'additionalParams' };
-    var filters = { key: 'filters' };
+    var filters = {};
     var pagination = { key: 'pagination' };
     var sort = 'sort ASC';
 
-    beforeEach(module('common.models', 'common.models.instances'));
+    beforeEach(function () {
+      module('common.models', 'common.models.instances', 'common.mocks', function (_$provide_) {
+        $provide = _$provide_;
+      });
 
-    beforeEach(inject(function (_$q_, _$rootScope_,
+      inject(function (RelationshipAPIMock) {
+        $provide.value('RelationshipAPI', RelationshipAPIMock);
+      });
+    });
+
+    beforeEach(inject(function (_$rootScope_,
       _RelationshipAPI_, _RelationshipInstance_, _RelationshipModel_) {
-      $q = _$q_;
       $rootScope = _$rootScope_;
       RelationshipAPI = _RelationshipAPI_;
       RelationshipInstance = _RelationshipInstance_;
       RelationshipModel = _RelationshipModel_;
 
-      spyOn(RelationshipAPI, 'all').and.returnValue($q.resolve({
-        list: relationshipData.all.values
-      }));
+      RelationshipAPI.spyOnMethods();
     }));
 
     it('has the expected api', function () {
@@ -82,7 +88,7 @@ define([
             return RelationshipInstance.init(relationship, true).isValid();
           });
 
-        RelationshipModel.allValid(filters, pagination)
+        RelationshipModel.allValid(filters, pagination, sort, additionalParams)
           .then(function (_result_) {
             result = _result_;
           }).finally(done);
@@ -90,7 +96,7 @@ define([
       });
 
       it('passes the filters and pagination parameters to the all method', function () {
-        expect(RelationshipModel.all).toHaveBeenCalledWith(filters, pagination);
+        expect(RelationshipModel.all).toHaveBeenCalledWith(filters, pagination, sort, additionalParams);
       });
 
       it('only returns relationships where the relationship type is active', function () {
