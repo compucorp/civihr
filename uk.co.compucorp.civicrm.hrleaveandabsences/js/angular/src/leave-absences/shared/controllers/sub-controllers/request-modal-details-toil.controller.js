@@ -356,7 +356,9 @@ define([
     function loadToilAmounts (cache) {
       return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts', cache)
         .then(function (amounts) {
-          detailsController.toilAmounts = _.sortBy(amounts, 'value');
+          detailsController.toilAmounts = _.sortBy(amounts, function (amount) {
+            return +amount.weight;
+          });
         });
     }
 
@@ -434,7 +436,7 @@ define([
      */
     function openToilInDaysAccrualOptionsEditor () {
       crmAngService.loadForm('/civicrm/admin/options/hrleaveandabsences_toil_amounts?reset=1')
-        .on('crmFormSuccess', function () {
+        .on('crmUnload', function () {
           loadToilAmounts(false);
         });
     }

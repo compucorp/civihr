@@ -102,9 +102,13 @@ define([
         expect(retreiveCachedTOILOptions).not.toBe(false);
       });
 
-      it('sorts TOIL accrual options by value', function () {
-        expect(_.pluck(controller.toilAmounts, 'value')).toEqual(
-          _.pluck(controller.toilAmounts, 'value').sort());
+      it('sorts TOIL accrual options by weight', function () {
+        expect(_.pluck(controller.toilAmounts, function (amount) {
+          return +amount.weight;
+        })).toEqual(
+          _.pluck(controller.toilAmounts, function (amount) {
+            return +amount.weight;
+          }).sort());
       });
 
       it('defaults to a multiple day selection', function () {
@@ -340,7 +344,7 @@ define([
           spyOn(crmAngService, 'loadForm').and.callFake(function () {
             return {
               on: function (event, callback) {
-                if (event === 'crmFormSuccess') {
+                if (event === 'crmUnload') {
                   onPopupFormSuccess = callback;
                 }
               }
