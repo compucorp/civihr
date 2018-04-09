@@ -13,8 +13,10 @@ define([
   describe('RelationshipModel', function () {
     var $q, $rootScope, RelationshipModel, RelationshipAPI, RelationshipInstance,
       result;
+    var additionalParams = { key: 'additionalParams' };
     var filters = { key: 'filters' };
     var pagination = { key: 'pagination' };
+    var sort = 'sort ASC';
 
     beforeEach(module('common.models', 'common.models.instances'));
 
@@ -36,17 +38,17 @@ define([
     });
 
     describe('all()', function () {
-      beforeEach(function () {
-        RelationshipModel.all(filters, pagination)
+      beforeEach(function (done) {
+        RelationshipModel.all(filters, pagination, sort, additionalParams)
           .then(function (_result_) {
             result = _result_;
-          });
+          }).finally(done);
         $rootScope.$digest();
       });
 
       describe('when requesting relationships', function () {
         it('passes the filters and paginations parameter to the API', function () {
-          expect(RelationshipAPI.all).toHaveBeenCalledWith(filters, pagination);
+          expect(RelationshipAPI.all).toHaveBeenCalledWith(filters, pagination, sort, additionalParams);
         });
       });
 
@@ -72,7 +74,7 @@ define([
     describe('allValid()', function () {
       var allValidRelationships;
 
-      beforeEach(function () {
+      beforeEach(function (done) {
         spyOn(RelationshipModel, 'all').and.callThrough();
 
         allValidRelationships = relationshipData.all.values
@@ -83,7 +85,7 @@ define([
         RelationshipModel.allValid(filters, pagination)
           .then(function (_result_) {
             result = _result_;
-          });
+          }).finally(done);
         $rootScope.$digest();
       });
 

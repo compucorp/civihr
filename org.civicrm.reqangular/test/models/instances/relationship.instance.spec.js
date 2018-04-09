@@ -23,34 +23,36 @@ define([
     });
 
     describe('isValid()', function () {
+      var instances = {};
+
       beforeEach(function () {
-        _.forEach(relationshipData.named, function (relationship, index) {
-          relationshipData.named[index] = RelationshipInstance.init(relationship);
+        _.forEach(relationshipData.named, function (relationship, relationshipName) {
+          instances[relationshipName] = RelationshipInstance.init(relationship);
         });
       });
 
       it('returns true when the relationship is active', function () {
-        expect(relationshipData.named.isActive.isValid()).toBe(true);
+        expect(instances.isActive.isValid()).toBe(true);
       });
 
       it('returns false when the relationship is not active', function () {
-        expect(relationshipData.named.isNotActive.isValid()).toBe(false);
+        expect(instances.isNotActive.isValid()).toBe(false);
       });
 
       it('returns true when the relationship has a start date in the past', function () {
-        expect(relationshipData.named.hasStarted.isValid()).toBe(true);
+        expect(instances.hasStarted.isValid()).toBe(true);
       });
 
       it('returns false when the relationship has a start date in the future', function () {
-        expect(relationshipData.named.isInTheFuture.isValid()).toBe(false);
+        expect(instances.isInTheFuture.isValid()).toBe(false);
       });
 
       it('returns true when the relationship end date is in the future', function () {
-        expect(relationshipData.named.hasNotFinished.isValid()).toBe(true);
+        expect(instances.hasNotFinished.isValid()).toBe(true);
       });
 
       it('returns false when the relationship end date is in the past', function () {
-        expect(relationshipData.named.isInThePast.isValid()).toBe(false);
+        expect(instances.isInThePast.isValid()).toBe(false);
       });
     });
   });

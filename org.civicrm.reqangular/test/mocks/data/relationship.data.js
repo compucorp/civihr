@@ -20,7 +20,7 @@ define([
     all: {
       'is_error': 0,
       'version': 3,
-      'count': 6,
+      'count': Object.keys(namedRelationships).length,
       'values': _.values(namedRelationships)
     }
   };
