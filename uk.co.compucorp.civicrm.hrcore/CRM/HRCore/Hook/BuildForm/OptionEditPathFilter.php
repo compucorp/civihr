@@ -3,10 +3,10 @@
 class CRM_HRCore_Hook_BuildForm_OptionEditPathFilter {
 
   /**
-   * @var bool[]
-   *   A mapping of option group name to its "is_locked" status
+   * @var string[]
+   *   An array of locked option group names, indexed by group ID
    */
-  private $optionGroupLockedStatuses = [];
+  private $lockedOptionGroups = [];
 
   /**
    * Handle the form. Any form that can contain elements referencing an
@@ -58,15 +58,13 @@ class CRM_HRCore_Hook_BuildForm_OptionEditPathFilter {
    * @return bool
    */
   private function isLockedOptionGroup($optionGroupName) {
-    if (!isset($this->optionGroupLockedStatuses[$optionGroupName])) {
-      $params = ['return' => 'is_locked', 'name' => $optionGroupName];
-      $result = civicrm_api3('OptionGroup', 'get', $params);
-      $result = array_shift($result['values']);
-      $isLocked = CRM_Utils_Array::value('is_locked', $result, FALSE);
-      $this->optionGroupLockedStatuses[$optionGroupName] = (bool) $isLocked;
+    if (empty($this->lockedOptionGroups)) {
+      $params = ['return' => 'name', 'is_locked' => 1];
+      $result = civicrm_api3('OptionGroup', 'get', $params)['values'];
+      $this->lockedOptionGroups = array_column($result, 'name', 'id');
     }
 
-    return $this->optionGroupLockedStatuses[$optionGroupName];
+    return in_array($optionGroupName, $this->lockedOptionGroups);
   }
 
 }
