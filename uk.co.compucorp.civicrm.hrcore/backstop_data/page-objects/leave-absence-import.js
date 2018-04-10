@@ -14,7 +14,7 @@ module.exports = page.extend({
 
     await fileInput.uploadFile(filePath);
     await this.puppet.click('[name="skipColumnHeader"]');
-    await this.submitAndWait();
+    await this.submitAndWaitForStep(2);
   },
 
   /**
@@ -25,7 +25,7 @@ module.exports = page.extend({
    */
   async showStep3 () {
     await this.showStep2();
-    await this.submitAndWait();
+    await this.submitAndWaitForStep(3);
   },
 
   /**
@@ -36,15 +36,18 @@ module.exports = page.extend({
    */
   async showStep4 () {
     await this.showStep3();
-    await this.submitAndWait();
+    await this.submitAndWaitForStep(4);
   },
 
   /**
-   * Clicks on next button (.validate) and waits for Step URL.
+   * Clicks on "next" button and waits for the next step to be ready
+   * (a step is ready when its breadcrumb in the wizard is active)
+   *
+   * @param {Number} step
    */
-  async submitAndWait () {
+  async submitAndWaitForStep (step) {
     await this.puppet.click('.crm-leave-and-balance-import .validate');
-    await this.puppet.waitForNavigation({ waitUntil: 'domcontentloaded' });
+    await this.puppet.waitFor(`.crm_wizard__title .nav-pills li.active:nth-child(${step})`);
   },
 
   /**
