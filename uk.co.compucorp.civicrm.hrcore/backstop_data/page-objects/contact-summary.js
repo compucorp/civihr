@@ -22,6 +22,7 @@ module.exports = page.extend({
    */
   async openTab (tabId) {
     const tabObj = require('./tabs/' + tabId);
+
     await this.puppet.click('[title="' + tabObj.tabTitle + '"]');
 
     return tabObj.init(this.puppet, false);

@@ -21,6 +21,7 @@ module.exports = tab.extend({
     const param = mode === 'correct' ? 'edit' : (mode === 'revision' ? 'change' : '');
 
     await this.puppet.click('[ng-click="modalContract(\'' + param + '\')"]');
+
     return this.waitForModal('job-contract');
   },
 

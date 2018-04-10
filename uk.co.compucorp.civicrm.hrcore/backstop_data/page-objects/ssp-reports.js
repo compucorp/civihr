@@ -1,4 +1,4 @@
-var modal = require('./page');
+const modal = require('./page');
 
 module.exports = modal.extend({
   /**
@@ -14,7 +14,7 @@ module.exports = modal.extend({
    */
   async waitForReady () {
     await this.puppet.evaluate(function () {
-      var tempStyle = document.createElement('style');
+      const tempStyle = document.createElement('style');
 
       tempStyle.type = 'text/css';
       tempStyle.innerHTML = '#reportsIframe { height: 1000px !important; }';
