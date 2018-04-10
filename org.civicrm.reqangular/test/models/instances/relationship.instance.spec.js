@@ -27,11 +27,12 @@ define([
       var instance;
       var nextWeek = moment().add(7, 'day').format('YYYY-MM-DD');
       var previousWeek = moment().subtract(7, 'day').format('YYYY-MM-DD');
+      var today = moment().format('YYYY-MM-DD');
 
-      describe('when the relationship is active', function () {
+      describe('when the relationship is active and neither the start date nor end date are defined', function () {
         beforeEach(function () {
           instance = RelationshipInstance.init({
-            is_active: true
+            is_active: '1'
           });
         });
 
@@ -43,7 +44,7 @@ define([
       describe('when the relationship is not active', function () {
         beforeEach(function () {
           instance = RelationshipInstance.init({
-            is_active: false
+            is_active: '0'
           });
         });
 
@@ -55,8 +56,21 @@ define([
       describe('when the relationship has a start date in the past', function () {
         beforeEach(function () {
           instance = RelationshipInstance.init({
-            is_active: true,
+            is_active: '1',
             start_date: previousWeek
+          });
+        });
+
+        it('returns true', function () {
+          expect(instance.isValid()).toBe(true);
+        });
+      });
+
+      describe('when the relationship start date is today', function () {
+        beforeEach(function () {
+          instance = RelationshipInstance.init({
+            is_active: '1',
+            start_date: today
           });
         });
 
@@ -68,7 +82,7 @@ define([
       describe('when the relationship has a start date in the future', function () {
         beforeEach(function () {
           instance = RelationshipInstance.init({
-            is_active: true,
+            is_active: '1',
             start_date: nextWeek
           });
         });
@@ -81,8 +95,21 @@ define([
       describe('when the relationship end date is in the future', function () {
         beforeEach(function () {
           instance = RelationshipInstance.init({
-            is_active: true,
+            is_active: '1',
             end_date: nextWeek
+          });
+        });
+
+        it('returns true', function () {
+          expect(instance.isValid()).toBe(true);
+        });
+      });
+
+      describe('when the relationship end date is today', function () {
+        beforeEach(function () {
+          instance = RelationshipInstance.init({
+            is_active: '1',
+            end_date: today
           });
         });
 
@@ -94,7 +121,7 @@ define([
       describe('when the relationship end date is in the past', function () {
         beforeEach(function () {
           instance = RelationshipInstance.init({
-            is_active: true,
+            is_active: '1',
             end_date: previousWeek
           });
         });

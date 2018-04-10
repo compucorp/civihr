@@ -25,9 +25,9 @@ define([
      */
     function isValid () {
       var isActive = !!+this.is_active;
-      var startDateIsInThePast = moment().isSameOrAfter(this.start_date);
+      var startDateIsInThePast = moment().isSameOrAfter(this.start_date, 'day');
       var startDateIsNotDefined = !this.start_date;
-      var endDateIsInTheFuture = moment().isSameOrBefore(this.end_date);
+      var endDateIsInTheFuture = moment().isSameOrBefore(this.end_date, 'day');
       var endDateIsNotDefined = !this.end_date;
 
       return isActive && (startDateIsNotDefined || startDateIsInThePast) &&
