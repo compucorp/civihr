@@ -29,14 +29,14 @@ define([
       LeaveRequestService = _LeaveRequestService_;
     }));
 
-    describe('promptIfProceedWithBalanceChangeRecalculation()', function () {
+    describe('promptBalanceChangeRecalculation()', function () {
       var proceedWithBalanceChangeRecalculation, resolved;
 
       beforeEach(function () {
         spyOn(dialog, 'open').and.callFake(function (params) {
           proceedWithBalanceChangeRecalculation = params.onConfirm;
         });
-        LeaveRequestService.promptIfProceedWithBalanceChangeRecalculation()
+        LeaveRequestService.promptBalanceChangeRecalculation()
           .then(function () {
             resolved = true;
           });

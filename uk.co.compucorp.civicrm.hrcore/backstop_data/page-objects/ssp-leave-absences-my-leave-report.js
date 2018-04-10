@@ -47,14 +47,9 @@ module.exports = page.extend({
    * @param {String} requestType leave|sickness|toil
    */
   async newRequest (requestType) {
-    const requestTypes = ['leave', 'sickness', 'toil']; // must be in the same quantity and order as in UI
-    const requestTypeButtonIndex = requestTypes.indexOf(requestType) + 1;
-    const actionDropdownSelector = 'leave-request-record-actions';
-    const actionButtonSelector = actionDropdownSelector + ' .dropdown-menu li:nth-child(' + requestTypeButtonIndex + ') a';
+    await this.puppet.click('leave-request-record-actions .dropdown-toggle');
+    await this.puppet.click(`.leave-request-record-actions__new-${requestType}`);
 
-    await this.puppet.click(actionDropdownSelector + ' [uib-dropdown] > button');
-    await this.puppet.waitFor(actionButtonSelector);
-    await this.puppet.click(actionButtonSelector);
     await this.puppet.waitFor('.chr_leave-request-modal__tab .form-group', { visible: true });
   },
 

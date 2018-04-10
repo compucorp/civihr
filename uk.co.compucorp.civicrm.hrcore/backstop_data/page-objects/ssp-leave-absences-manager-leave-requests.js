@@ -75,13 +75,12 @@ module.exports = page.extend({
   /**
    * Apply leave on behalf of staff
    *
-   * @param {String} leaveType row number corresponding to leave request in the list like leave, sickness or toil
+   * @param {String} leaveType leave, sickness or toil
    */
   async applyLeaveForStaff (leaveType) {
-    const leaveSerialNo = leaveType === 'leave' ? 1 : leaveType === 'sickness' ? 2 : 3;
+    await this.puppet.click('leave-request-record-actions .dropdown-toggle');
+    await this.puppet.click(`.leave-request-record-actions__new-${leaveType}`);
 
-    await this.puppet.click('.button-container leave-request-record-actions .dropdown-toggle');
-    await this.puppet.click('.button-container li:nth-child(' + leaveSerialNo + ') a');
     await this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form');
   }
 });

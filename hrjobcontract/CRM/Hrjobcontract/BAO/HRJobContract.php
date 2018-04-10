@@ -641,10 +641,11 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
    *  A date string in a format supported by strtotime
    * @param string|null $endDate
    *  A date string in a format supported by strtotime
+   * @param null|array $contactID
    *
    * @return array
    */
-  public static function getContactsWithContractsInPeriod($startDate = null, $endDate = null) {
+  public static function getContactsWithContractsInPeriod($startDate = null, $endDate = null, array $contactID = null) {
     if($startDate) {
       $startDate = CRM_Utils_Date::processDate($startDate, null, false, 'Y-m-d');
     } else {
@@ -655,6 +656,12 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
       $endDate = CRM_Utils_Date::processDate($endDate, null, false, 'Y-m-d');
     } else {
       $endDate = $startDate;
+    }
+
+    $whereContactID = '';
+    if (!empty($contactID)) {
+      array_walk($contactID, 'intval');
+      $whereContactID = ' AND contact.id IN('. implode(', ', $contactID) .')';
     }
 
     $query = "
@@ -694,6 +701,7 @@ class CRM_Hrjobcontract_BAO_HRJobContract extends CRM_Hrjobcontract_DAO_HRJobCon
             )
           )
         )
+        {$whereContactID}
       ORDER BY contact.display_name ASC
     ";
 

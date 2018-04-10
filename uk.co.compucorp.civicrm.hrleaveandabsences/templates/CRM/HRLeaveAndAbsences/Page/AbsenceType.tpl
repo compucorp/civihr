@@ -21,7 +21,7 @@
             </thead>
             {foreach from=$rows item=row}
               <tr id="AbsenceType-{$row.id}" class="crm-entity {if NOT $row.is_active} disabled{/if}">
-                <td data-field="title">{$row.title}</td>
+                <td data-field="title">{$row.title|escape}</td>
                 <td>{if $row.allow_accruals_request eq 1} {ts}Yes{/ts} {else} {ts}No{/ts} {/if}</td>
                 <td>{if $row.is_default eq 1}<i class="fa fa-check"></i>{/if}</td>
                 <td>{$row.weight}</td>
