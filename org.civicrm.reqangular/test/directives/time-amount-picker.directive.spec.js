@@ -9,7 +9,7 @@ define([
   'use strict';
 
   describe('timeAmountPicker directive', function () {
-    var vm, $compile, $scope, $rootScope;
+    var element, vm, $compile, $scope, $rootScope;
 
     beforeEach(module('common.directives'));
     beforeEach(inject(function (_$rootScope_, _$compile_) {
@@ -56,6 +56,7 @@ define([
         describe('when hours value is changed and it is less than the minimum specified', function () {
           beforeEach(function () {
             vm.selectedHours = 2;
+
             vm.buildMinutesOptions();
           });
 
@@ -89,6 +90,7 @@ define([
         describe('when hours value is changed and it is same as the maximum specified', function () {
           beforeEach(function () {
             vm.selectedHours = 7;
+
             vm.buildMinutesOptions();
           });
 
@@ -111,12 +113,13 @@ define([
         });
       });
 
-      describe('when "time-amount-picker-value" attribute is passed', function () {
+      describe('when "time-amount-picker-value" attribute is passed along with maximum amount', function () {
         var valueObject = { value: '6.5' };
 
         beforeEach(function () {
           buildDirective([
-            { key: 'time-amount-picker-value', value: valueObject.value, bind: '=' }
+            { key: 'time-amount-picker-value', value: valueObject.value, bind: '=' },
+            { key: 'time-amount-picker-max-amount', value: valueObject.value, bind: '>' }
           ]);
         });
 
@@ -128,6 +131,10 @@ define([
           expect(vm.selectedMinutes).toBe('30');
         });
 
+        it('sets value', function () {
+          expect(element.isolateScope().value).toBe(6.5);
+        });
+
         describe('when selected values are changed', function () {
           beforeEach(function () {
             vm.selectedHours = 8;
@@ -137,7 +144,29 @@ define([
           });
 
           it('sets the result value back', function () {
-            expect($scope.$$childTail.value).toBe(8.75);
+            expect(element.isolateScope().value).toBe(8.75);
+          });
+        });
+
+        describe('when maximum amount is set to greater hours amount but less minutes amount', function () {
+          var newValue = '7';
+
+          beforeEach(function () {
+            element.isolateScope().maxAmount = newValue;
+
+            $scope.$digest();
+          });
+
+          describe('when the maximum possible value is set', function () {
+            beforeEach(function () {
+              element.isolateScope().value = newValue;
+
+              $scope.$digest();
+            });
+
+            it('builds correct minutes options', function () {
+              expect(vm.minutesOptions).toEqual([0]);
+            });
           });
         });
       });
@@ -163,8 +192,8 @@ define([
      */
     function buildDirective (options) {
       var attrWrapper = '';
-      var element = angular.element('<time-amount-picker></time-amount-picker>');
 
+      element = angular.element('<time-amount-picker></time-amount-picker>');
       $scope = $rootScope.$new();
       options = options || [];
 

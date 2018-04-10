@@ -31,6 +31,7 @@ define([
     detailsController.initWatchersExtended = initWatchers;
     detailsController.onDateChangeExtended = onDateChangeHandler;
     detailsController.openToilInDaysAccrualOptionsEditor = openToilInDaysAccrualOptionsEditor;
+    detailsController.resetUIInputsExtended = resetTime;
     detailsController.setDaysSelectionModeExtended = onDaysSelectionModeHandler;
     detailsController.updateExpiryDate = updateExpiryDate;
 
@@ -355,7 +356,9 @@ define([
     function loadToilAmounts (cache) {
       return OptionGroup.valuesOf('hrleaveandabsences_toil_amounts', cache)
         .then(function (amounts) {
-          detailsController.toilAmounts = _.sortBy(amounts, 'value');
+          detailsController.toilAmounts = _.sortBy(amounts, function (amount) {
+            return +amount.weight;
+          });
         });
     }
 
@@ -383,6 +386,15 @@ define([
       !skipSettingDefaultDuration ? setDefaultDuration() : (skipSettingDefaultDuration = false);
 
       return tryToCalculateExpiryDate();
+    }
+
+    /**
+     * Resets time in UI for a given date type
+     *
+     * @param {String} dateType from|todo
+     */
+    function resetTime (dateType) {
+      detailsController.uiOptions.times[dateType].time = '';
     }
 
     /**
@@ -424,7 +436,7 @@ define([
      */
     function openToilInDaysAccrualOptionsEditor () {
       crmAngService.loadForm('/civicrm/admin/options/hrleaveandabsences_toil_amounts?reset=1')
-        .on('crmFormSuccess', function () {
+        .on('crmUnload', function () {
           loadToilAmounts(false);
         });
     }

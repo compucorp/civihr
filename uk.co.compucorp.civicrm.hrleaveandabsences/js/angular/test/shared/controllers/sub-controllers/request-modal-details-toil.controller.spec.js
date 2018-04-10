@@ -102,11 +102,6 @@ define([
         expect(retreiveCachedTOILOptions).not.toBe(false);
       });
 
-      it('sorts TOIL accrual options by value', function () {
-        expect(_.pluck(controller.toilAmounts, 'value')).toEqual(
-          _.pluck(controller.toilAmounts, 'value').sort());
-      });
-
       it('defaults to a multiple day selection', function () {
         expect(controller.uiOptions.multipleDays).toBe(true);
       });
@@ -114,6 +109,23 @@ define([
       it('sets times bounaries to 00:00 - 23:45', function () {
         expect(controller.uiOptions.times.from.min).toBe('00:00');
         expect(controller.uiOptions.times.from.max).toBe('23:45');
+      });
+
+      describe('after TOIL accrual options are loaded', function () {
+        var toilAmounts, toilAmountsSortedByWeight;
+
+        beforeEach(function () {
+          toilAmountsSortedByWeight = _.pluck(controller.toilAmounts, function (amount) {
+            return +amount.weight;
+          }).sort();
+          toilAmounts = _.pluck(controller.toilAmounts, function (amount) {
+            return +amount.weight;
+          });
+        });
+
+        it('sorts TOIL accrual options by weight', function () {
+          expect(toilAmounts).toEqual(toilAmountsSortedByWeight);
+        });
       });
 
       describe('when multiple/single days mode changes', function () {
@@ -170,6 +182,17 @@ define([
           expect(controller.request.toil_duration).toBe(controller.uiOptions.toil_duration_in_hours * 60);
         });
 
+        describe('when "to" date selected that is greater than "from" date', function () {
+          beforeEach(function () {
+            requestModalHelper.setTestDates(controller, '03/22/2018');
+            $rootScope.$digest();
+          });
+
+          it('resets "to" time', function () {
+            expect(controller.uiOptions.times.to.time).toBe('');
+          });
+        });
+
         describe('when single day mode selected', function () {
           beforeEach(function () {
             controller.uiOptions.multipleDays = false;
@@ -178,8 +201,12 @@ define([
             $rootScope.$digest();
           });
 
-          it('updates the maximum duration and accrual value', function () {
-            expect(controller.uiOptions.max_toil_duration_and_accrual).toBe(4.75);
+          it('resets "to" time', function () {
+            expect(controller.uiOptions.times.to.time).toBe('');
+          });
+
+          it('resets maximum duration and accrual value', function () {
+            expect(controller.uiOptions.max_toil_duration_and_accrual).toBe(null);
           });
         });
 
@@ -316,18 +343,22 @@ define([
       });
 
       describe('when user opens TOIL accrual options group editor', function () {
+        var onPopupFormSuccess;
+
         beforeEach(function () {
           // flushing TOIL accrual options
           controller.toilAmounts = null;
-          crmAngService.loadForm = function () {
+          // saving the callback on the popup close to imitate its call later
+          spyOn(crmAngService, 'loadForm').and.callFake(function () {
             return {
               on: function (event, callback) {
-                callback();
+                if (event === 'crmUnload') {
+                  onPopupFormSuccess = callback;
+                }
               }
             };
-          };
+          });
 
-          spyOn(crmAngService, 'loadForm').and.callThrough();
           controller.openToilInDaysAccrualOptionsEditor();
         });
 
@@ -335,8 +366,9 @@ define([
           expect(crmAngService.loadForm).toHaveBeenCalledWith('/civicrm/admin/options/hrleaveandabsences_toil_amounts?reset=1');
         });
 
-        describe('when TOIL accruals are edited', function () {
+        describe('when TOIL accruals editor is closed', function () {
           beforeEach(function () {
+            onPopupFormSuccess();
             $rootScope.$digest();
           });
 
