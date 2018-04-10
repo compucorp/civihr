@@ -1,10 +1,10 @@
 'use strict';
 
-var page = require('../../../page-objects/tabs/job-contract');
+const pageObj = require('../../../page-objects/tabs/job-contract');
 
-module.exports = function (engine) {
-  page.init(engine).openNewContractModal()
-    .then(function (modal) {
-      modal.selectTab('Insurance');
-    });
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  const modal = await page.openNewContractModal();
+
+  await modal.selectTab('Insurance');
 };

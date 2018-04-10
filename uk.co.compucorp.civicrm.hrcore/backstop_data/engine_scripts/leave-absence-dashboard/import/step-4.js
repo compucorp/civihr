@@ -1,7 +1,9 @@
 'use strict';
 
-var page = require('../../../page-objects/leave-absence-import');
+const pageObj = require('../../../page-objects/leave-absence-import');
 
-module.exports = function (engine) {
-  page.init(engine).showStep4();
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+
+  await page.showStep4();
 };

@@ -1,7 +1,9 @@
 'use strict';
 
-var page = require('../../../page-objects/ssp-leave-absences-my-leave-calendar');
+const pageObj = require('../../../page-objects/ssp-leave-absences-my-leave-calendar');
 
-module.exports = function (engine) {
-  page.init(engine).showTooltip();
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+
+  await page.showTooltip();
 };

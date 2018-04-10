@@ -1,33 +1,28 @@
-var modal = require('./page');
+const modal = require('./page');
 
 module.exports = modal.extend({
   /**
    * Opens Completed tasks modal
    */
-  openCompletedTasksModal: function () {
-    this.chromy.click('.pane-views-tasks-block a.show-complete-tasks');
-    this.chromy.wait(function () {
-      // = CasperJS.waitWhileVisible()
-      var dom = document.querySelector('.loading-spinner');
-
-      return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
-    });
-    this.chromy.waitUntilVisible('.view-Tasks');
+  async openCompletedTasksModal () {
+    await this.puppet.click('.pane-views-tasks-block a.show-complete-tasks');
+    await this.puppet.waitFor('.loading-spinner', { hidden: true });
+    await this.puppet.waitFor('.view-Tasks', { visible: true });
   },
 
   /**
    * Opens Create New Task modal
    */
-  openCreateNewTaskModal: function () {
-    this.chromy.click('.create-new-task');
-    this.chromy.waitUntilVisible('#civihr-employee-portal-civi-tasks-form');
+  async openCreateNewTaskModal () {
+    await this.puppet.click('.create-new-task');
+    await this.puppet.waitFor('#civihr-employee-portal-civi-tasks-form', { visible: true });
   },
 
   /**
-   * The page always gives false positives for some reason in Chromy, so we need
+   * The page always gives false positives for some reason in Chrome, so we need
    * to wait a couple of seconds for it to "stabilize" before taking the screenshot
    */
-  waitForReady: function () {
-    this.chromy.wait(2000);
+  async waitForReady () {
+    await this.puppet.waitFor(2000);
   }
 });

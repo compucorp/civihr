@@ -1,7 +1,7 @@
 'use strict';
 
-var page = require('../../../page-objects/tabs/documents');
+const pageObj = require('../../../page-objects/tabs/documents');
 
-module.exports = function (engine) {
-  page.init(engine);
+module.exports = async engine => {
+  await pageObj.init(engine);
 };

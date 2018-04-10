@@ -16,10 +16,10 @@
     "ci_report": "backstop_data/ci_report"
   },
   "report": ["browser"],
-  "engine": "chrome",
+  "engine": "puppet",
   "engineFlags": [],
   "engineOptions": {
-    "waitTimeout": 12000
+    "waitTimeout": 20000
   },
   "asyncCaptureLimit": 1,
   "asyncCompareLimit": 50,

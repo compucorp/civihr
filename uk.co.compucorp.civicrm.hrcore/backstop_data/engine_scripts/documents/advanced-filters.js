@@ -1,7 +1,9 @@
 'use strict';
 
-var page = require('../../page-objects/documents');
+const pageObj = require('../../page-objects/documents');
 
-module.exports = function (engine) {
-  page.init(engine).advancedFilters();
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+
+  await page.advancedFilters();
 };

@@ -1,7 +1,9 @@
 'use strict';
 
-var page = require('../../page-objects/ssp-my-details');
+const pageObj = require('../../page-objects/ssp-my-details');
 
-module.exports = function (engine) {
-  page.init(engine).showEditMyDetailsPopup();
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+
+  await page.showEditMyDetailsPopup();
 };

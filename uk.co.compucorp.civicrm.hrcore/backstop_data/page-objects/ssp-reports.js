@@ -1,4 +1,4 @@
-var modal = require('./page');
+const modal = require('./page');
 
 module.exports = modal.extend({
   /**
@@ -12,9 +12,9 @@ module.exports = modal.extend({
    * by applying a generated-on-the-fly style to it, so that the height can't
    * change when Chrome resizes the viewport.
    */
-  waitForReady: function () {
-    this.chromy.evaluate(function () {
-      var tempStyle = document.createElement('style');
+  async waitForReady () {
+    await this.puppet.evaluate(function () {
+      const tempStyle = document.createElement('style');
 
       tempStyle.type = 'text/css';
       tempStyle.innerHTML = '#reportsIframe { height: 1000px !important; }';

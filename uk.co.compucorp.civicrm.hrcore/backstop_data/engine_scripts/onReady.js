@@ -1,7 +1,6 @@
-var page = require('../page-objects/page');
+const page = require('../page-objects/page');
 
-module.exports = function (chromy, scenario, vp) {
-  require('./clickAndHoverHelper')(chromy, scenario);
-
-  page.init(chromy);
+module.exports = async (puppet, scenario, vp) => {
+  await require('./clickAndHoverHelper')(puppet, scenario);
+  await page.init(puppet);
 };

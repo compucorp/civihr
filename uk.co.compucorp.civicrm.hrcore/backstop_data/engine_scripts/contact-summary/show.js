@@ -1,7 +1,7 @@
 'use strict';
 
-var page = require('../../page-objects/contact-summary');
+const pageObj = require('../../page-objects/contact-summary');
 
-module.exports = function (engine) {
-  page.init(engine);
+module.exports = async engine => {
+  await pageObj.init(engine);
 };

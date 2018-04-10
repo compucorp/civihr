@@ -1,5 +1,4 @@
-var Promise = require('es6-promise').Promise;
-var page = require('./page');
+const page = require('./page');
 
 module.exports = page.extend({
   /**
@@ -8,16 +7,13 @@ module.exports = page.extend({
    * @param  {String} tabId
    * @return {Object} resolves with the tab page object
    */
-  openTab: function (tabId) {
-    var chromy = this.chromy;
-    var tab = require('./tabs/' + tabId).init(chromy, false);
+  async openTab (tabId) {
+    const tab = await require('./tabs/' + tabId).init(this.puppet, false);
 
-    return new Promise(function (resolve) {
-      chromy.click('[ui-sref="' + tab.tabUiSref + '"]');
-      chromy.waitUntilVisible(tab.readySelector);
-      chromy.wait(500);
+    await this.puppet.click('[ui-sref="' + tab.tabUiSref + '"]');
+    await this.puppet.waitFor(tab.readySelector, { visible: true });
+    await this.puppet.waitFor(500);
 
-      resolve(tab);
-    });
+    return tab;
   }
 });

@@ -1,7 +1,9 @@
 'use strict';
 
-var page = require('../../page-objects/ssp-tasks');
+const pageObj = require('../../page-objects/ssp-tasks');
 
-module.exports = function (engine) {
-  page.init(engine).openCompletedTasksModal();
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+
+  await page.openCompletedTasksModal();
 };

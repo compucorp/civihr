@@ -1,46 +1,39 @@
-var Promise = require('es6-promise').Promise;
-var tab = require('./tab');
+const tab = require('./tab');
 
 module.exports = tab.extend({
   tabTitle: 'Job Contract',
 
   /**
    * Clicks on the delete button
-   *
-   * @return {Object}
    */
-  attemptDelete: function () {
-    this.chromy.click('.hrjc-list-contract-item:nth-child(1) .btn-danger');
-    this.waitForModal();
+  async attemptDelete () {
+    await this.puppet.click('.hrjc-list-contract-item:nth-child(1) .btn-danger');
+    await this.waitForModal();
   },
 
   /**
    * Opens the modal of an already existing contract
    *
-   * @param  {String} mode "correct" or "revision"
-   * @return {Promise} resolves with the job contract modal object
+   * @param {String} mode "correct" or "revision"
+   * @return {Object} the job contract modal object
    */
-  openContractModal: function (mode) {
-    var param = mode === 'correct' ? 'edit' : (mode === 'revision' ? 'change' : '');
+  async openContractModal (mode) {
+    const param = mode === 'correct' ? 'edit' : (mode === 'revision' ? 'change' : '');
 
-    return new Promise(function (resolve) {
-      this.chromy.click('[ng-click="modalContract(\'' + param + '\')"]');
+    await this.puppet.click('[ng-click="modalContract(\'' + param + '\')"]');
 
-      resolve(this.waitForModal('job-contract'));
-    }.bind(this));
+    return this.waitForModal('job-contract');
   },
 
   /**
    * Opens the modal for creating a new contract
    *
-   * @return {Promise} resolves with the job contract modal object
+   * @return {Object} the job contract modal object
    */
-  openNewContractModal: function () {
-    return new Promise(function (resolve) {
-      this.chromy.click('.hrjc-btn-add-contract > .btn-primary');
+  async openNewContractModal () {
+    await this.puppet.click('.hrjc-btn-add-contract > .btn-primary');
 
-      resolve(this.waitForModal('job-contract'));
-    }.bind(this));
+    return this.waitForModal('job-contract');
   },
 
   /**
@@ -50,25 +43,17 @@ module.exports = tab.extend({
    * tab is ready, so as a quick workaround we simply override the method
    * and perform all the needed checks in it
    */
-  waitForReady: function () {
-    this.chromy.waitUntilVisible('.hrjc-summary');
-    this.chromy.wait(function () {
-      // = CasperJS.waitWhileVisible()
-      var dom = document.querySelector('.hrjc-list-contract .spinner');
-
-      return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
-    });
-
-    this.chromy.wait(500);
+  async waitForReady () {
+    await this.puppet.waitFor('.hrjc-summary', { visible: true });
+    await this.puppet.waitFor('.hrjc-list-contract .spinner', { hidden: true });
+    await this.puppet.waitFor(500);
   },
 
   /**
    * Shows the full history of a contract
-   *
-   * @return {Object}
    */
-  showFullHistory: function () {
-    this.chromy.click('[heading="Full History"] > a');
-    this.chromy.wait('.hrjc-context-menu-toggle');
+  async showFullHistory () {
+    await this.puppet.click('[heading="Full History"] > a');
+    await this.puppet.waitFor('.hrjc-context-menu-toggle');
   }
 });

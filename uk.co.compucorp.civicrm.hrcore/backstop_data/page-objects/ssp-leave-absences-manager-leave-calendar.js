@@ -1,33 +1,25 @@
-var page = require('./page');
+const page = require('./page');
 
 module.exports = page.extend({
   /**
    * Wait for the page to be ready by looking at
    * the visibility of a leave calendar item element
    */
-  waitForReady: function () {
-    this.chromy.waitUntilVisible('leave-calendar-month .chr_leave-calendar__item');
+  async waitForReady () {
+    await this.puppet.waitFor('leave-calendar-month .chr_leave-calendar__item', { visible: true });
   },
 
   /**
    * Toggle the calendar legend
-   *
-   * @return {Promise}
    */
-  toggleLegend: function () {
-    this.chromy.click('.chr_leave-calendar__legend__title');
-
-    return this;
+  async toggleLegend () {
+    await this.puppet.click('.chr_leave-calendar__legend__title');
   },
 
   /**
    * Toggle contacts with leaves
-   *
-   * @return {Promise}
    */
-  toggleContactsWithLeaves: function () {
-    this.chromy.click('.chr_leave-calendar__toggle-contacts-with-leaves');
-
-    return this;
+  async toggleContactsWithLeaves () {
+    await this.puppet.click('.chr_leave-calendar__toggle-contacts-with-leaves');
   }
 });

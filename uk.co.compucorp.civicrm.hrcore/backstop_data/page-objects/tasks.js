@@ -1,8 +1,7 @@
-var Promise = require('es6-promise').Promise;
-var page = require('./page');
+const page = require('./page');
 
-var taskSelector = '.ct-list-task > li:nth-child(1)';
-var editableSelectors = {
+const taskSelector = '.ct-list-task > li:nth-child(1)';
+const editableSelectors = {
   assigned: '[editable-ui-select="task.assignee_contact_id[0]"]',
   date: '[editable-bsdate="task.activity_date_time"]',
   subject: '[editable-text="task.subject"]',
@@ -13,108 +12,84 @@ module.exports = page.extend({
   /**
    * Shows the assignment modal
    *
-   * @return {Promise} resolves with the assignment modal page object
+   * @return {Object} the assignment modal page object
    */
-  addAssignment: function () {
-    return new Promise(function (resolve) {
-      this.chromy.click('a[ng-click*="modalAssignment"]');
-      resolve(this.waitForModal('assignment'));
-    }.bind(this));
+  async addAssignment () {
+    await this.puppet.click('a[ng-click*="modalAssignment"]');
+
+    return this.waitForModal('assignment');
   },
 
   /**
    * Shows the task modal
    *
-   * @return {Promise} resolves with the task modal page object
+   * @return {Object} the task modal page object
    */
-  addTask: function () {
-    return new Promise(function (resolve) {
-      this.chromy.click('a[ng-click*="itemAdd"]');
-      resolve(this.waitForModal('task'));
-    }.bind(this));
+  async addTask () {
+    await this.puppet.click('a[ng-click*="itemAdd"]');
+
+    return this.waitForModal('task');
   },
 
   /**
    * Opens the advanced filters
-   *
-   * @return {Object}
    */
-  advancedFilters: function () {
-    this.chromy.click('a[ng-click*="isCollapsed.filterAdvanced"]');
-    this.chromy.wait(500);
-
-    return this;
+  async advancedFilters () {
+    await this.puppet.click('a[ng-click*="isCollapsed.filterAdvanced"]');
+    await this.puppet.waitFor(500);
   },
 
   /**
    * Shows the given edit-in-place field
    *
-   * @param {String} fieldName
-   * @return {Object}
+   * @param {string} fieldName
    */
-  inPlaceEdit: function (fieldName) {
-    this.chromy.click(editableSelectors[fieldName]);
-    this.chromy.wait(200);
-
-    return this;
+  async inPlaceEdit (fieldName) {
+    await this.puppet.click(editableSelectors[fieldName]);
+    await this.puppet.waitFor(200);
   },
 
   /**
    * Opens the first task of the list
    *
-   * @return {Promise} resolves with the task modal page object
+   * @return {Object} the task modal page object
    */
-  openTask: function () {
-    return new Promise(function (resolve) {
-      this.chromy.click(taskSelector + ' .task-title > a[ng-click*="modalTask"]');
-      this.chromy.wait(function () {
-        // = CasperJS.waitWhileVisible()
-        var dom = document.querySelector('.spinner');
+  async openTask () {
+    await this.puppet.click(taskSelector + ' .task-title > a[ng-click*="modalTask"]');
+    await this.puppet.waitFor('.spinner', { hidden: true });
 
-        return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
-      });
-
-      resolve(this.waitForModal('task'));
-    }.bind(this));
+    return this.waitForModal('task');
   },
 
   /**
    * Shows the "select dates" filter
    */
-  selectDates: function () {
-    this.chromy.click('.ct-select-dates');
-    this.chromy.wait(500);
+  async selectDates () {
+    await this.puppet.click('.ct-select-dates');
+    await this.puppet.waitFor(500);
   },
 
   /**
    * Expands the "show more" area of the first task of the list
-   *
-   * @return {Object}
    */
-  showMore: function () {
-    this.chromy.click(taskSelector + ' a[ng-click*="isCollapsed"]');
-    this.chromy.waitUntilVisible(taskSelector + ' article');
-    this.chromy.wait(500);
-
-    return this;
+  async showMore () {
+    await this.puppet.click(taskSelector + ' a[ng-click*="isCollapsed"]');
+    await this.puppet.waitFor(taskSelector + ' article', { visible: true });
+    await this.puppet.waitFor(500);
   },
 
   /**
    * Shows the dropdown of the actions available on any given task
-   *
-   * @return {Object}
    */
-  taskActions: function () {
-    this.chromy.click(taskSelector + ' .ct-context-menu-toggle');
-
-    return this;
+  async taskActions () {
+    await this.puppet.click(taskSelector + ' .ct-context-menu-toggle');
   },
 
   /**
    * Waits until the specified select is visible on the page
    */
-  waitForReady: function () {
-    this.chromy.waitUntilVisible('.ct-container-inner');
-    this.chromy.wait(300);
+  async waitForReady () {
+    await this.puppet.waitFor('.ct-container-inner', { visible: true });
+    await this.puppet.waitFor(300);
   }
 });

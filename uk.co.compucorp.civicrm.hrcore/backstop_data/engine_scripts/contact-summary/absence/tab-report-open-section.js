@@ -1,10 +1,10 @@
 'use strict';
 
-var page = require('../../../page-objects/tabs/absence');
+const pageObj = require('../../../page-objects/tabs/absence');
 
-module.exports = function (engine) {
-  page.init(engine).openSubTab('report')
-    .then(function (reportTab) {
-      reportTab.openSection('pending');
-    });
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  const tab = await page.openSubTab('report');
+
+  await tab.openSection('pending');
 };

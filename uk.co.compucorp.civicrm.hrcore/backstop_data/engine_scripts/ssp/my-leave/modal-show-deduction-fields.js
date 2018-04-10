@@ -1,14 +1,15 @@
 'use strict';
 
-var page = require('../../../page-objects/ssp-leave-absences-my-leave-report');
+const pageObj = require('../../../page-objects/ssp-leave-absences-my-leave-report');
 
 // precondition: need to have a current absence period
-module.exports = function (engine) {
-  page.init(engine)
-    .newRequest('leave')
-    .selectRequestAbsenceType('Holiday in Hours')
-    .changeRequestDaysMode('multiple')
-    .selectRequestDate('from', 2, 1)
-    .selectRequestDate('to', 2, 2)
-    .waitUntilRequestBalanceIsCalculated();
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+
+  await page.newRequest('leave');
+  await page.selectRequestAbsenceType('Holiday in Hours');
+  await page.changeRequestDaysMode('multiple');
+  await page.selectRequestDate('from', 2, 1);
+  await page.selectRequestDate('to', 2, 2);
+  await page.waitUntilRequestBalanceIsCalculated();
 };

@@ -1,37 +1,32 @@
-var _ = require('lodash');
-var Promise = require('es6-promise').Promise;
+const _ = require('lodash');
 
 module.exports = {
   /**
    * Initializes the page and removes any code warnings from the page
    *
-   * @param  {Object} chromy
+   * @param  {Object} puppet
    * @param  {Boolean} clearDialogs if true it will close modals and notifications
    * @return {Object}
    */
-  init: function (chromy, clearDialogs) {
+  async init (puppet, clearDialogs) {
     clearDialogs = typeof clearDialogs !== 'undefined' ? !!clearDialogs : true;
-    this.chromy = chromy;
 
-    !!this.waitForReady && this.waitForReady();
+    this.puppet = puppet;
+    !!this.waitForReady && await this.waitForReady();
 
-    chromy.evaluate(function () {
-      return document.location.href;
-    })
-      .result(function (href) {
-        var isAdmin = href.indexOf('civicrm/') > 1;
+    const href = await this.puppet.evaluate(() => document.location.href);
+    const isAdmin = href.indexOf('civicrm/') > 1;
 
-        chromy.evaluate(function (isAdmin) {
-          var selector = isAdmin ? '#content > #console' : '#messages .alert';
-          var errorsWrapper = document.querySelector(selector);
+    await this.puppet.evaluate(function (isAdmin) {
+      const selector = isAdmin ? '#content > #console' : '#messages .alert';
+      const errorsWrapper = document.querySelector(selector);
 
-          errorsWrapper && (errorsWrapper.style.display = 'none');
-        }, [isAdmin]);
-      });
+      errorsWrapper && (errorsWrapper.style.display = 'none');
+    }, isAdmin);
 
     if (clearDialogs) {
-      closeAnyModal.call(this);
-      closeNotifications.call(this);
+      await closeAnyModal.call(this);
+      await closeNotifications.call(this);
     }
 
     return this;
@@ -44,7 +39,7 @@ module.exports = {
    *   a collection of methods and properties that will extend the main page
    * @return {Object}
    */
-  extend: function (page) {
+  extend (page) {
     return _.assign(Object.create(this), page);
   },
 
@@ -55,52 +50,42 @@ module.exports = {
    *
    * @param {String} modalModule
    * @param {String} waitSelector
-   * @return {Promise}
+   * @return {Object} the modal
    */
-  waitForModal: function (modalModule, waitSelector) {
-    var chromy = this.chromy;
+  async waitForModal (modalModule, waitSelector) {
+    await this.puppet.waitFor(waitSelector || '.modal', { visible: true });
+    await this.puppet.waitFor(300);
 
-    return new Promise(function (resolve) {
-      chromy.wait(waitSelector || '.modal');
-      chromy.wait(300);
-
-      if (modalModule) {
-        resolve(require('./modals/' + modalModule).init(chromy, false));
-      } else {
-        resolve();
-      }
-    });
+    if (modalModule) {
+      return require('./modals/' + modalModule).init(this.puppet, false);
+    }
   }
 };
 
 /**
  * Closes any modal currently open
- *
- * @return {Object}
  */
-function closeAnyModal () {
-  var openModalSelector = '.modal.in';
+async function closeAnyModal () {
+  const openModalSelector = '.modal.in';
 
-  if (this.chromy.exists(openModalSelector)) {
-    this.chromy.click(openModalSelector + ' .close[ng-click="cancel()"]');
-    this.chromy.wait(300);
+  const result = await this.puppet.$(openModalSelector);
+
+  if (result) {
+    await this.puppet.click(openModalSelector + ' .close[ng-click="cancel()"]');
+    await this.puppet.waitFor(300);
   }
-
-  return this;
 }
 
 /**
  * Closes any notification currently open
- *
- * @return {Object}
  */
-function closeNotifications () {
-  var notificationSelector = 'a.ui-notify-cross.ui-notify-close';
+async function closeNotifications () {
+  const notificationSelector = 'a.ui-notify-cross.ui-notify-close';
 
-  if (this.chromy.exists(notificationSelector)) {
-    this.chromy.click(notificationSelector);
-    this.chromy.wait(500);
+  const result = await this.puppet.$(notificationSelector);
+
+  if (result) {
+    await this.puppet.click(notificationSelector);
+    await this.puppet.waitFor(500);
   }
-
-  return this;
 }

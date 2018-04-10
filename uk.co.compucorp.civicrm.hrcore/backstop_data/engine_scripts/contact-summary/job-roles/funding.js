@@ -1,7 +1,9 @@
 'use strict';
 
-var page = require('../../../page-objects/tabs/job-roles');
+const pageObj = require('../../../page-objects/tabs/job-roles');
 
-module.exports = function (engine) {
-  page.init(engine).switchToTab('Funding');
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+
+  await page.switchToTab('Funding');
 };

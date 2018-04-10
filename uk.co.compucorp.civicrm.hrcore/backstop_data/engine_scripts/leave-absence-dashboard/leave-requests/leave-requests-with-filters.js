@@ -1,10 +1,10 @@
 'use strict';
 
-var page = require('../../../page-objects/leave-absence-dashboard');
+const pageObj = require('../../../page-objects/leave-absence-dashboard');
 
-module.exports = function (engine) {
-  page.init(engine).openTab('leave-requests')
-    .then(function (requestTab) {
-      requestTab.showFilters();
-    });
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  const tab = await page.openTab('leave-requests');
+
+  await tab.showFilters();
 };

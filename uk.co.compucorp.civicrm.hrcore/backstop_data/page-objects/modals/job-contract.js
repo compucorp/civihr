@@ -1,20 +1,20 @@
 /* global XPathResult */
 
-var modal = require('./modal');
+const modal = require('./modal');
 
 module.exports = modal.extend({
   /**
    * Selects the tab with the given title
    *
-   * @param  {String} tabTitle
+   * @param {String} tabTitle
    */
-  selectTab: function (tabTitle) {
-    this.chromy.evaluate(function (tabTitle) {
-      // = CasperJS.clickLabel()
-      var xPath = './/a[text()="' + tabTitle + '"]';
-      var link = document.evaluate(xPath, document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+  async selectTab (tabTitle) {
+    await this.puppet.evaluate(function (tabTitle) {
+      // = clickLabel
+      const xPath = './/a[text()="' + tabTitle + '"]';
+      const link = document.evaluate(xPath, document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
       link.click();
-    }, [tabTitle]);
+    }, tabTitle);
   }
 });

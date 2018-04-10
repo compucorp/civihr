@@ -1,9 +1,11 @@
 'use strict';
 
-var page = require('../../../page-objects/ssp-leave-absences-manager-leave-requests');
+const pageObj = require('../../../page-objects/ssp-leave-absences-manager-leave-requests');
 
 // precondition: need to have the login of Admin
 // and have at least one leave request *assigned* to the Admin
-module.exports = function (engine) {
-  page.init(engine).changeFilterByAssignee('all');
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+
+  await page.changeFilterByAssignee('all');
 };

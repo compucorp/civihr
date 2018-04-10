@@ -1,4 +1,4 @@
-var page = require('../page');
+const page = require('../page');
 
 module.exports = page.extend({
   modalRoot: '.modal'

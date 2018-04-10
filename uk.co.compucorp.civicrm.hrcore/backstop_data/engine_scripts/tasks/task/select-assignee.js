@@ -1,9 +1,11 @@
 'use strict';
 
-var page = require('../../../page-objects/tasks');
+const pageObj = require('../../../page-objects/tasks');
 
-module.exports = function (engine) {
-  page.init(engine).addTask().then(function (modal) {
-    modal.showField('Assignee').selectAssignee();
-  });
+module.exports = async engine => {
+  const page = await pageObj.init(engine);
+  const modal = await page.addTask();
+
+  await modal.showField('Assignee');
+  await modal.selectAssignee();
 };

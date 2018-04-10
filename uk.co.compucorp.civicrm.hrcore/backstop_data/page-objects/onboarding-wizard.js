@@ -1,61 +1,61 @@
-var page = require('./page');
+const page = require('./page');
 
 module.exports = page.extend({
   /**
    * Navigate to Address Page
    */
-  reachAddressPage: function () {
-    this.chromy.click('.webform-next');
-    this.chromy.wait('input[value="Address"]');
+  async reachAddressPage () {
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Address"]');
   },
 
   /**
    * Navigate to Contact Info Page
    */
-  reachContactInfoPage: function () {
-    this.reachAddressPage();
-    this.chromy.click('.webform-next');
-    this.chromy.wait('input[value="Contact Info"]');
+  async reachContactInfoPage () {
+    await this.reachAddressPage();
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Contact Info"]');
   },
 
   /**
    * Navigate to Payroll Page
    */
-  reachPayrollPage: function () {
-    this.reachContactInfoPage();
-    this.chromy.click('.webform-next');
-    this.chromy.wait('input[value="Payroll"]');
+  async reachPayrollPage () {
+    await this.reachContactInfoPage();
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Payroll"]');
   },
 
   /**
    * Navigate to Emergency Contact Page
    */
-  reachEmergencyContactPage: function () {
-    this.reachPayrollPage();
-    this.chromy.click('.webform-next');
-    this.chromy.wait('input[value="Emergency Contact"]');
+  async reachEmergencyContactPage () {
+    await this.reachPayrollPage();
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Emergency Contact"]');
   },
 
   /**
    * Navigate to Dependent Page
    */
-  reachDependentPage: function () {
-    this.reachEmergencyContactPage();
-    this.chromy.click('.webform-next');
-    this.chromy.wait('input[value="Dependants"]');
-    this.chromy.click('#edit-submitted-do-you-have-dependants-1');
+  async reachDependentPage () {
+    await this.reachEmergencyContactPage();
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Dependants"]');
+    await this.puppet.click('#edit-submitted-do-you-have-dependants-1');
   },
 
   /**
    * Navigate to Profile Picture Page
    */
-  reachProfilePicturePage: function () {
-    this.reachDependentPage();
-    this.chromy.waitUntilVisible('.webform-component-fieldset');
-    this.chromy.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100000', 'Duke');
-    this.chromy.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100001', '1234');
-    this.chromy.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100010', 'sibling');
-    this.chromy.click('.webform-next');
-    this.chromy.wait('input[value="Profile Picture"]');
+  async reachProfilePicturePage () {
+    await this.reachDependentPage();
+    await this.puppet.waitFor('.webform-component-fieldset', { visible: true });
+    await this.puppet.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100000', 'Duke');
+    await this.puppet.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100001', '1234');
+    await this.puppet.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100010', 'sibling');
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Profile Picture"]');
   }
 });
