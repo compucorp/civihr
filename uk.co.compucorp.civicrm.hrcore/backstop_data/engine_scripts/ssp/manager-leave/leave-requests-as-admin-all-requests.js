@@ -6,5 +6,6 @@ const pageObj = require('../../../page-objects/ssp-leave-absences-manager-leave-
 // and have at least one leave request *assigned* to the Admin
 module.exports = async engine => {
   const page = await pageObj.init(engine);
+
   await page.changeFilterByAssignee('all');
 };

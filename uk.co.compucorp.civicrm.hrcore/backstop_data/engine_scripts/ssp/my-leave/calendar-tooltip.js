@@ -4,5 +4,6 @@ const pageObj = require('../../../page-objects/ssp-leave-absences-my-leave-calen
 
 module.exports = async engine => {
   const page = await pageObj.init(engine);
+
   await page.showTooltip();
 };

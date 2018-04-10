@@ -14,12 +14,12 @@ module.exports = {
     this.puppet = puppet;
     !!this.waitForReady && await this.waitForReady();
 
-    let href = await this.puppet.evaluate(() => document.location.href);
-    let isAdmin = href.indexOf('civicrm/') > 1;
+    const href = await this.puppet.evaluate(() => document.location.href);
+    const isAdmin = href.indexOf('civicrm/') > 1;
 
     await this.puppet.evaluate(function (isAdmin) {
-      let selector = isAdmin ? '#content > #console' : '#messages .alert';
-      let errorsWrapper = document.querySelector(selector);
+      const selector = isAdmin ? '#content > #console' : '#messages .alert';
+      const errorsWrapper = document.querySelector(selector);
 
       errorsWrapper && (errorsWrapper.style.display = 'none');
     }, isAdmin);
@@ -68,7 +68,7 @@ module.exports = {
 async function closeAnyModal () {
   const openModalSelector = '.modal.in';
 
-  let result = await this.puppet.$(openModalSelector);
+  const result = await this.puppet.$(openModalSelector);
 
   if (result) {
     await this.puppet.click(openModalSelector + ' .close[ng-click="cancel()"]');
@@ -82,7 +82,7 @@ async function closeAnyModal () {
 async function closeNotifications () {
   const notificationSelector = 'a.ui-notify-cross.ui-notify-close';
 
-  let result = await this.puppet.$(notificationSelector);
+  const result = await this.puppet.$(notificationSelector);
 
   if (result) {
     await this.puppet.click(notificationSelector);
