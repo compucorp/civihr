@@ -3,25 +3,22 @@
 trait CRM_HRLeaveAndAbsences_Upgrader_Step_1023 {
   
   /**
-   * Deletes the 'zero_days' option value of the toil amounts
-   * option group.
+   * Default existing work pattern to As per contract (new default)
    *
    * @return bool
    */
-  public function upgrade_1023() {
-    $result = civicrm_api3('OptionValue', 'get', [
-      'option_group_id' => 'hrleaveandabsences_toil_amounts',
-      'name' => 'zero_days',
-    ]);
-
-    if (empty($result['id'])) {
-      return TRUE;
-    }
-
-    civicrm_api3('OptionValue', 'delete', [
-      'id' => $result['id']
-    ]);
-
+  public function upgrade_1023()
+  {
+    $query = 'UPDATE civicrm_hrleaveandabsences_contact_work_pattern SET change_reason =
+      (
+        SELECT cov.value FROM civicrm_option_value cov LEFT JOIN civicrm_option_group cog
+          ON (cog.id = cov.option_group_id)
+          WHERE cog.name = "hrleaveandabsences_work_pattern_change_reason"
+          AND cov.is_default = 1
+      )';
+    
+    CRM_Core_DAO::executeQuery($query);
+    
     return TRUE;
   }
 }
