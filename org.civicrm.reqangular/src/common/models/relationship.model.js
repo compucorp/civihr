@@ -18,12 +18,15 @@ define([
       /**
        * Returns a list of relationships, each converted to a model instance
        *
-       * @param {Object} filters - Values the full list should be filtered by
-       * @param {Object} pagination
-       *   `page` for the current page, `size` for number of items per page
-       * @param {string} sort - The field and direction to order by
-       * @param {object} additionalParams - Additional params to pass to the api
-       * @return {Promise}
+       * @param  {Object}  filters - Values the full list should be filtered by
+       * @param  {Object}  pagination - number of items to return per page and
+       * the current page to fetch.
+       * @param  {Number}  pagination.page - the current page to display.
+       * @param  {Number}  pagination.size - the number of items per page.
+       * @param  {String}  sort - The field and direction to order by.
+       * @param  {Object}  additionalParams - Additional params to pass to the api.
+       * @return {Promise} resolves to the an object with the relationship's response
+       * count and list of values.
        */
       all: function (filters, pagination, sort, additionalParams) {
         return RelationshipAPI.all(filters, pagination, sort, additionalParams)
@@ -39,12 +42,15 @@ define([
       /**
        * Only returns relationships that are valid.
        *
-       * @param {Object} filters - filter values to pass to the API.
-       * @param {Object} pagination - number of items to return per page and
+       * @param  {Object}  filters - filter values to pass to the API.
+       * @param  {Object}  pagination - number of items to return per page and
        * the current page to fetch.
-       * @param {string} sort - The field and direction to order by
-       * @param {object} additionalParams - Additional params to pass to the api
-       * @return {Promise}
+       * @param  {Number}  pagination.page - the current page to display.
+       * @param  {Number}  pagination.size - the number of items per page.
+       * @param  {String}  sort - The field and direction to order by.
+       * @param  {Object}  additionalParams - Additional params to pass to the api.
+       * @return {Promise} resolves to the an object with the relationship's response
+       * count and list of values.
        */
       allValid: function (filters, pagination, sort, additionalParams) {
         filters = _.defaults(filters || {}, {

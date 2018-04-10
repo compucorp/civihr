@@ -12,23 +12,28 @@ define([
   RelationshipInstance.$inject = ['ModelInstance'];
 
   function RelationshipInstance (ModelInstance) {
-    return ModelInstance.extend({
-      /**
-       * Determines if the relationship is valid by checking if it's active,
-       * the start date is in the past, and the end date is in the future.
-       *
-       * @return {Boolean}
-       */
-      isValid: function () {
-        var isActive = parseInt(this.is_active) === 1;
-        var startDateIsInThePast = moment().isSameOrAfter(this.start_date);
-        var startDateIsNotDefined = !this.start_date;
-        var endDateIsInTheFuture = moment().isSameOrBefore(this.end_date);
-        var endDateIsNotDefined = !this.end_date;
-
-        return isActive && (startDateIsNotDefined || startDateIsInThePast) &&
-          (endDateIsNotDefined || endDateIsInTheFuture);
-      }
+    var extendedModelInstance = ModelInstance.extend({
+      isValid: isValid
     });
+
+    /**
+     * Determines if the relationship is valid by checking if it's active, and
+     * if the dates are defined, verify that the start date is in the past
+     * and the end date is in the future.
+     *
+     * @return {Boolean}
+     */
+    function isValid () {
+      var isActive = !!+this.is_active;
+      var startDateIsInThePast = moment().isSameOrAfter(this.start_date);
+      var startDateIsNotDefined = !this.start_date;
+      var endDateIsInTheFuture = moment().isSameOrBefore(this.end_date);
+      var endDateIsNotDefined = !this.end_date;
+
+      return isActive && (startDateIsNotDefined || startDateIsInThePast) &&
+        (endDateIsNotDefined || endDateIsInTheFuture);
+    }
+
+    return extendedModelInstance;
   }
 });
