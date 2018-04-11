@@ -38,6 +38,7 @@ define([
 
     (function init () {
       parseCurrentValue();
+      buildOptions();
       watchTimeAmountPickerOptions();
     })();
 
@@ -111,6 +112,7 @@ define([
       });
       $scope.$watch('value', function () {
         parseCurrentValue();
+        buildOptions();
       });
       $scope.$watchGroup(['minAmount', 'maxAmount', 'interval'], function () {
         buildOptions();

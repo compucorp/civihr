@@ -10,6 +10,7 @@ define([
   'common/filters/time-unit-applier.filter',
   'common/modules/dialog',
   'common/services/check-permissions',
+  'common/services/crm-ang.service',
   'common/services/angular-date/date-format',
   'leave-absences/shared/ui-router',
   'leave-absences/shared/components/leave-balance-tab.component',

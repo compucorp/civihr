@@ -14,7 +14,7 @@
     "postinstall": "npm run sub-install",
     "sub-install": "for file in `npm run folders-with-dependencies --silent`; do cd `dirname $file`; npm i; cd $OLDPWD >> /dev/null; done",
     "clean-dependencies": "rm -rf node_modules/; for file in `npm run folders-with-dependencies --silent`; do cd `dirname $file`; rm -rf node_modules/; cd $OLDPWD >> /dev/null; done",
-    "folders-with-dependencies": "find ./* -type f -mindepth 1 -name package.json | grep -v 'node_modules\\|bower_components'"
+    "folders-with-dependencies": "find ./* -mindepth 1 -name package.json -type f | grep -v 'node_modules\\|bower_components'"
   },
   "lint-staged": {
     "*.js": [
