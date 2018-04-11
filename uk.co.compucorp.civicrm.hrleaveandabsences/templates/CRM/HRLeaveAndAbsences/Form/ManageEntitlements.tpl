@@ -14,19 +14,19 @@
         {/foreach}
 
         <div class="col-sm-4 col-sm-offset-4">
-          <div class="btn-group btn-group-sm" data-toggle="buttons">
-            <label class="btn btn-default">
-              <input type="radio" name="overridde" class="override-filter" value="1">
+          <div class="btn-group" data-toggle="buttons">
+            <button class="btn btn-sm btn-secondary-outline">
+              <input type="radio" name="override-filter" class="override-filter" value="1">
               <span>Overriden</span>
-            </label>
-            <label class="btn btn-default">
-              <input type="radio" name="overridde" class="override-filter" value="2">
+            </button>
+            <button class="btn btn-sm btn-secondary-outline">
+              <input type="radio" name="override-filter" class="override-filter" value="2">
               <span>Not Overridden</span>
-            </label>
-            <label class="btn btn-default active">
-              <input type="radio" name="overridde" class="override-filter" value="3" checked>
+            </button>
+            <button class="btn btn-sm btn-secondary-outline active">
+              <input type="radio" name="override-filter" class="override-filter" value="3" checked>
               <span>Both</span>
-            </label>
+            </button>
           </div>
         </div>
 

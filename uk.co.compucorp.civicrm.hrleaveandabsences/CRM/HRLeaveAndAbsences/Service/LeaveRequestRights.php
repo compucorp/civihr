@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
 
@@ -150,5 +151,26 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
     }
 
     return self::$leaveStatuses;
+  }
+
+  /**
+   * Checks whether the current user can cancel the TOIL Request with
+   * past dates or not.
+   *
+   * @param int $contactID
+   *   The contactID of the leave request
+   * @param int $absenceTypeID
+   *   The absence Type ID of the leave request
+   *
+   * @return bool
+   */
+  public function canCancelToilWithPastDates($contactID, $absenceTypeID) {
+    $absenceType = AbsenceType::findById($absenceTypeID);
+
+    if(!$absenceType->allow_accrue_in_the_past) {
+      return $this->currentUserIsManagerOrAdmin($contactID);
+    }
+
+    return TRUE;
   }
 }
