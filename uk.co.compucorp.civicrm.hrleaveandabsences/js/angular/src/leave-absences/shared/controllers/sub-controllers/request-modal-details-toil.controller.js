@@ -29,6 +29,7 @@ define([
     detailsController.initChildController = initChildController;
     detailsController.initTimesExtended = initTimes;
     detailsController.initWatchersExtended = initWatchers;
+    detailsController.onAbsenceTypeUpdateExtended = onAbsenceTypeUpdateHandler;
     detailsController.onDateChangeExtended = onDateChangeHandler;
     detailsController.openToilInDaysAccrualOptionsEditor = openToilInDaysAccrualOptionsEditor;
     detailsController.resetUIInputsExtended = resetTime;
@@ -283,9 +284,8 @@ define([
           return detailsController.uiOptions.toil_duration_in_hours;
         },
         function (oldValue, newValue) {
-          if (detailsController.isCalculationUnit('hours') && oldValue !== newValue) {
-            detailsController.request.toil_to_accrue =
-              detailsController.uiOptions.toil_duration_in_hours;
+          if (oldValue !== newValue && detailsController.isCalculationUnit('hours')) {
+            setDefaultAccrualValue();
           }
 
           detailsController.request.toil_duration =
@@ -398,6 +398,14 @@ define([
     }
 
     /**
+     * Sets default accrual value based on the duration.
+     */
+    function setDefaultAccrualValue () {
+      detailsController.request.toil_to_accrue =
+        detailsController.uiOptions.toil_duration_in_hours;
+    }
+
+    /**
      * Sets default duration as a maximum allowed duration value
      */
     function setDefaultDuration () {
@@ -426,6 +434,22 @@ define([
         detailsController.uiOptions.times.from.max = '23:30';
         detailsController.uiOptions.times.to.min = '00:15';
         detailsController.uiOptions.times.to.max = '23:45';
+      }
+    }
+
+    /**
+     * Handles absence type change. Calculates TOIL duration and sets its default value.
+     * Sets accrual value if unit is in hours, otherwise, flushes it.
+     */
+    function onAbsenceTypeUpdateHandler () {
+      detailsController.setRequestDateTimesAndDateTypes();
+      calculateDuration();
+      setDefaultDuration();
+
+      if (detailsController.isCalculationUnit('hours')) {
+        setDefaultAccrualValue();
+      } else {
+        detailsController.request.toil_to_accrue = null;
       }
     }
 
