@@ -230,13 +230,31 @@ define([
           });
         });
 
-        describe('when the request is in hours', function () {
+        describe('when the unit changes to "hours" because the absence type changed', function () {
+          var expectedTOILDurationAndAccrual;
+
           beforeEach(function () {
-            controller.selectedAbsenceType.calculation_unit_name = 'hours';
+            changeSelectedAbsenceTypeUnit('hours');
+
+            expectedTOILDurationAndAccrual =
+              moment.duration(moment(controller.request.to_date)
+                .diff(controller.request.from_date)).asHours();
           });
 
-          afterEach(function () {
-            controller.selectedAbsenceType.calculation_unit_name = 'days';
+          it('recalculates TOIL duration', function () {
+            expect(controller.uiOptions.max_toil_duration_and_accrual).toBe(
+              expectedTOILDurationAndAccrual);
+          });
+
+          it('recalculates TOIL accrual value', function () {
+            expect(controller.request.toil_to_accrue).toBe(
+              expectedTOILDurationAndAccrual);
+          });
+        });
+
+        describe('when the request is in hours', function () {
+          beforeEach(function () {
+            changeSelectedAbsenceTypeUnit('hours');
           });
 
           describe('when duration value has been customised', function () {
@@ -248,6 +266,27 @@ define([
 
             it('sets the accrual value to the current value of duration', function () {
               expect(controller.request.toil_to_accrue).toBe(controller.uiOptions.toil_duration_in_hours);
+            });
+          });
+
+          describe('when the unit changes to "days" because the absence type changed', function () {
+            var expectedTOILDurationAndAccrual;
+
+            beforeEach(function () {
+              changeSelectedAbsenceTypeUnit('days');
+
+              expectedTOILDurationAndAccrual =
+                moment.duration(moment(controller.request.to_date)
+                  .diff(controller.request.from_date)).asHours();
+            });
+
+            it('recalculates TOIL duration', function () {
+              expect(controller.uiOptions.max_toil_duration_and_accrual).toBe(
+                expectedTOILDurationAndAccrual);
+            });
+
+            it('flushes TOIL accrual value', function () {
+              expect(controller.request.toil_to_accrue).toBe(null);
             });
           });
         });
@@ -777,6 +816,18 @@ define([
         expect(controller.canCalculateChange()).toBe(!!controller.request.toil_to_accrue);
       });
     });
+
+    /**
+     * Changes selected absence type unit
+     *
+     * @param {String} unit days|hours
+     */
+    function changeSelectedAbsenceTypeUnit (unit) {
+      controller.selectedAbsenceType.calculation_unit_name = unit;
+
+      controller.onAbsenceTypeUpdateExtended();
+      $rootScope.$digest();
+    }
 
     /**
      * Compiles and initializes the component's controller. It returns the
