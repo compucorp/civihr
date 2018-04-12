@@ -118,6 +118,7 @@ function hrcore_civicrm_buildForm($formName, &$form) {
     new CRM_HRCore_Hook_BuildForm_ActivityLinksFilter(),
     new CRM_HRCore_Hook_BuildForm_LocalisationPageFilter(),
     new CRM_HRCore_Hook_BuildForm_OptionEditPathFilter(),
+    new CRM_HRCore_Hook_BuildForm_MessageTemplatesFormFilter()
   ];
 
   foreach ($listeners as $currentListener) {
