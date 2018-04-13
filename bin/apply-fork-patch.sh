@@ -164,7 +164,11 @@ updateLastCommitPatched () {
 # ---------------
 
 setCivicrmRootPath
-if ! metaFileExists; then exit 0; fi
+
+if ! metaFileExists; then
+  echo "No $META_FILE file found in $civiRoot, skipping compucorp:civicrm-core patch"
+  exit 0
+fi
 
 civiVersion=$(JSONValue "$civiRoot/$META_FILE" "civi-version")
 lastCommitPatched=$(JSONValue "$civiRoot/$META_FILE" "last-fork-commit-patched")
@@ -172,13 +176,21 @@ lastCommitPatched=$(JSONValue "$civiRoot/$META_FILE" "last-fork-commit-patched")
 patchesBranch="$civiVersion-patches"
 [ ! -z "$lastCommitPatched" ] && baseHead=$lastCommitPatched || baseHead=$civiVersion
 
+
+echo "Fetching compucorp:civicrm-core patch..."
 createPatch "$baseHead" "$patchesBranch"
 
-if [ -s $civiRoot/$PATCH_FILE ]; then # if the patch is not empty...
+if [ -s $civiRoot/$PATCH_FILE ]; then
+  echo "Applying compucorp:civicrm-core patch..."
   applyPatch
 
+  echo "Updating reference to SHA of last commit patched..."
   createLastRemoteCommitFile "$patchesBranch"
   updateLastCommitPatched && rm "$civiRoot/$LAST_REMOTE_COMMIT_FILE"
+
+  echo "Patch applied"
+else
+  echo "Patch was empty, no diffs found"
 fi
 
 rm "$civiRoot/$PATCH_FILE"
