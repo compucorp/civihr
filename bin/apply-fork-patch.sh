@@ -1,8 +1,7 @@
 #!/bin/bash
 
 API_URL_BASE="https://api.github.com/repos/compucorp/civicrm-core"
-LAST_REMOTE_COMMIT_FILE="last-remote-commit.json"
-META_FILE="fork-patch-meta.json"
+LAST_COMMIT_PATCHED_FILE="core-fork-last-commit-patched.txt"
 PATCH_FILE="fork-patch.diff"
 
 civiRoot=""
@@ -23,23 +22,6 @@ applyPatch () {
 }
 
 #######################################
-# Creates a temporary file containing the info related to the last
-# commit of the given branch, fetched via the GitHub api
-#
-# Globals:
-#   $API_URL_BASE
-#   $civiRoot
-#   $PATCH_FILE
-# Arguments:
-#   $1 name of the branch
-# Returns:
-#   None
-#######################################
-createLastRemoteCommitFile () {
-  curl "$API_URL_BASE/commits/$1" -s > "$civiRoot/$LAST_REMOTE_COMMIT_FILE"
-}
-
-#######################################
 # Creates a diff patch file by sending a request to the given GitHub API url
 #
 # Globals:
@@ -57,23 +39,17 @@ createPatch () {
 }
 
 #######################################
-# Reads or writes a property's value from a JSON file
+# Programmatically gets the current CiviCRM version
 #
 # Globals:
 #   None
 # Arguments:
-#   $1 JSON file
-#   $2 property name
-#   $3 new value of the property (optional)
+#   None
 # Returns:
-#   None/String
+#   String
 #######################################
-JSONValue () {
-  if ! [ -z "$3" ]; then
-    JSONValueWrite "$1" "$2" "$3"
-  else
-    JSONValueRead "$1" "$2"
-  fi
+getCiviVersion () {
+  drush eval "echo CRM_Utils_System::version();"
 }
 
 #######################################
@@ -86,31 +62,9 @@ JSONValue () {
 #   $2 property name
 # Returns:
 #   String
-##
-JSONValueRead () {
+#######################################
+JSONValue () {
   python -c "import sys, json; print json.load(sys.stdin)['$2']" < "$1"
-}
-
-#######################################
-# Uses Python to update the property's value of a JSON file
-# The resulting JSON then overwrites the old content of the file
-#
-# Globals:
-#   None
-# Arguments:
-#   $1 JSON file
-#   $2 property name
-#   $3 new value of the property
-# Returns:
-#   None
-#######################################
-JSONValueWrite () {
-  updatedJSON=$(python -c "import sys, json; \
-  jsonFile = json.load(sys.stdin); \
-  jsonFile['$2'] = '$3'; \
-  print json.dumps(jsonFile, indent=2);" < "$1")
-
-  echo "$updatedJSON" > "$1"
 }
 
 #######################################
@@ -118,14 +72,14 @@ JSONValueWrite () {
 #
 # Globals:
 #   $civiRoot
-#   $META_FILE
+#   $LAST_COMMIT_PATCHED_FILE
 # Arguments:
 #   None
 # Returns:
 #   Integer
 #######################################
 metaFileExists () {
-  if [ -e "$civiRoot/$META_FILE" ]; then return 0; else return 1; fi
+  if [ -e "$civiRoot/$LAST_COMMIT_PATCHED_FILE" ]; then return 0; else return 1; fi
 }
 
 #######################################
@@ -143,22 +97,23 @@ setCivicrmRootPath () {
 }
 
 #######################################
-# Updates the reference, in the META_FILE, to the last commit patched onto
-# the core files
+# Updates the reference, in the LAST_COMMIT_PATCHED_FILE, to the last commit
+# patched onto the core files
 #
 # Globals:
-#   $LAST_REMOTE_COMMIT_FILE
 #   $civiRoot
-#   $META_FILE
+#   $LAST_COMMIT_PATCHED_FILE
 # Arguments:
 #   None
 # Returns:
 #   None
 #######################################
 updateLastCommitPatched () {
-  sha=$(JSONValue "$civiRoot/$LAST_REMOTE_COMMIT_FILE" "sha")
+  # It uses the same file as temporary recipient of the full commit data
+  curl "$API_URL_BASE/commits/$1" -s > "$civiRoot/$LAST_COMMIT_PATCHED_FILE"
+  sha=$(JSONValue "$civiRoot/$LAST_COMMIT_PATCHED_FILE" "sha")
 
-  JSONValue "$civiRoot/$META_FILE" "last-fork-commit-patched" "$sha"
+  echo "$sha" > "$civiRoot/$LAST_COMMIT_PATCHED_FILE"
 }
 
 # ---------------
@@ -166,12 +121,12 @@ updateLastCommitPatched () {
 setCivicrmRootPath
 
 if ! metaFileExists; then
-  echo "No $META_FILE file found in $civiRoot, skipping compucorp:civicrm-core patch"
+  echo "No $LAST_COMMIT_PATCHED_FILE file found in $civiRoot, skipping compucorp:civicrm-core patch"
   exit 0
 fi
 
-civiVersion=$(JSONValue "$civiRoot/$META_FILE" "civi-version")
-lastCommitPatched=$(JSONValue "$civiRoot/$META_FILE" "last-fork-commit-patched")
+civiVersion=$(getCiviVersion)
+lastCommitPatched=$(cat "$civiRoot/$LAST_COMMIT_PATCHED_FILE")
 
 patchesBranch="$civiVersion-patches"
 [ ! -z "$lastCommitPatched" ] && baseHead=$lastCommitPatched || baseHead=$civiVersion
@@ -185,8 +140,7 @@ if [ -s "$civiRoot/$PATCH_FILE" ]; then
   applyPatch
 
   echo "Updating reference to SHA of last commit patched..."
-  createLastRemoteCommitFile "$patchesBranch"
-  updateLastCommitPatched && rm "$civiRoot/$LAST_REMOTE_COMMIT_FILE"
+  updateLastCommitPatched "$patchesBranch"
 
   echo "Patch applied"
 else
