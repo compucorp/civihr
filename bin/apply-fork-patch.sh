@@ -68,21 +68,6 @@ JSONValue () {
 }
 
 #######################################
-# Checks if the meta file exists or not
-#
-# Globals:
-#   $civiRoot
-#   $LAST_COMMIT_PATCHED_FILE
-# Arguments:
-#   None
-# Returns:
-#   Integer
-#######################################
-metaFileExists () {
-  if [ -e "$LAST_COMMIT_PATCHED_FILE" ]; then return 0; else return 1; fi
-}
-
-#######################################
 # Returns the civicrm root path
 #
 # Globals:
@@ -118,19 +103,13 @@ updateLastCommitPatched () {
 
 # ---------------
 
+touch -a $LAST_COMMIT_PATCHED_FILE
 setCivicrmRootPath
-
-if ! metaFileExists; then
-  echo "No $LAST_COMMIT_PATCHED_FILE file found in $civiRoot, skipping compucorp:civicrm-core patch"
-  exit 0
-fi
 
 civiVersion=$(getCiviVersion)
 lastCommitPatched=$(cat "$LAST_COMMIT_PATCHED_FILE")
-
 patchesBranch="$civiVersion-patches"
 [ ! -z "$lastCommitPatched" ] && baseHead=$lastCommitPatched || baseHead=$civiVersion
-
 
 echo "Fetching compucorp:civicrm-core patch..."
 createPatch "$baseHead" "$patchesBranch"
