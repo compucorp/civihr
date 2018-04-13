@@ -180,7 +180,7 @@ patchesBranch="$civiVersion-patches"
 echo "Fetching compucorp:civicrm-core patch..."
 createPatch "$baseHead" "$patchesBranch"
 
-if [ -s $civiRoot/$PATCH_FILE ]; then
+if [ -s "$civiRoot/$PATCH_FILE" ]; then
   echo "Applying compucorp:civicrm-core patch..."
   applyPatch
 
