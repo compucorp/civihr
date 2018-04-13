@@ -48,9 +48,9 @@ define([
         expect(instance).toBeDefined();
       });
 
-      it('default toil Duration value is set', function () {
-        expect(instance.toilDurationHours).toBe('0');
-        expect(instance.toilDurationMinutes).toBe('0');
+      it('default fields for backend are set', function () {
+        expect(instance.from_date_amount).toBe(0);
+        expect(instance.to_date_amount).toBe(0);
       });
 
       it('initializes request type', function () {
@@ -58,31 +58,10 @@ define([
       });
     });
 
-    describe('updateDuration()', function () {
-      beforeEach(function () {
-        instance = TOILRequestInstance.init({}, false);
-        instance.toilDurationHours = 1;
-        instance.toilDurationMinutes = 1;
-        instance.updateDuration();
-      });
-
-      it('updates durations in minutes', function () {
-        expect(instance.toil_duration).toEqual(61);
-      });
-    });
-
     describe('edit toil', function () {
       beforeEach(function () {
         var toilRequest = requestMockData.findBy('request_type', 'toil');
         instance = TOILRequestInstance.init(toilRequest);
-      });
-
-      it('sets duration hours', function () {
-        expect(instance.toilDurationHours).toEqual('3');
-      });
-
-      it('sets duration minutes', function () {
-        expect(instance.toilDurationMinutes).toEqual('1');
       });
     });
   });

@@ -682,6 +682,18 @@ define([
       'is_active': '1'
     },
     {
+      'id': '1147',
+      'option_group_id': '146',
+      'label': '1 3/4 Days',
+      'value': '1.75',
+      'name': 'one_and_three_quarters_days',
+      'is_default': '0',
+      'weight': '8',
+      'is_optgroup': '0',
+      'is_reserved': '1',
+      'is_active': '1'
+    },
+    {
       'id': '1141',
       'option_group_id': '146',
       'label': '1/4 Days',
@@ -749,18 +761,6 @@ define([
       'name': 'one_and_a_half_days',
       'is_default': '0',
       'weight': '7',
-      'is_optgroup': '0',
-      'is_reserved': '1',
-      'is_active': '1'
-    },
-    {
-      'id': '1147',
-      'option_group_id': '146',
-      'label': '1 3/4 Days',
-      'value': '1.75',
-      'name': 'one_and_three_quarters_days',
-      'is_default': '0',
-      'weight': '8',
       'is_optgroup': '0',
       'is_reserved': '1',
       'is_active': '1'

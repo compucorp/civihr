@@ -9,12 +9,20 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1019 {
    * @return bool
    */
   public function upgrade_1019() {
-    civicrm_api3('RelationshipType', 'get', [
+    $type = civicrm_api3('RelationshipType', 'get', [
       'sequential' => 1,
       'name_a_b' => 'has Leave Approved by',
       'name_b_a' => 'is Leave Approver of',
-      'api.RelationshipType.create' => ['id' => '$value.id', 'is_reserved' => 1],
     ]);
+
+    if ($type['count'] != 1) {
+      return TRUE;
+    }
+
+    $type = array_shift($type['values']);
+    $type['is_reserved'] = 1;
+
+    civicrm_api3('RelationshipType', 'create', $type);
 
     return TRUE;
   }

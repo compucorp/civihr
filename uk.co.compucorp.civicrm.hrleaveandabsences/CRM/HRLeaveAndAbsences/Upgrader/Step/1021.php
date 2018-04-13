@@ -1,131 +1,41 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+
 trait CRM_HRLeaveAndAbsences_Upgrader_Step_1021 {
-  
+
   /**
-   * Adds links to edit option groups related to leave and absence
+   * Sets "end" time for all existing TOIL (overtime) requests to 23:45.
    *
-   * @return bool
+   * As per PCHR-3427 TOIL (overtime) requests have both "from" and "to" times now.
+   * Currently, TOIL requests in days have end time set as 23:59, TOIL requests in hours
+   * have end time set as 00:00. There are two problems that this upgrader solves:
+   *
+   * Problem 1. The interval for TOIL time as per PCHR-3427 is now 15 minutes, which means
+   * 23:59 is not a valid time anymore and must be amended.
+   *
+   * Problem 2. The timeframe of 00:00 - 00:00 does not make sense. If it is a
+   * single day TOIL, then the date will be the same, meaning the request timeframe
+   * duration equals to 0. If a request covers, for example, 2 days, then the
+   * difference between "end" and "start" date/times will be exactly 24 hours,
+   * which also does not make sense.
+   *
+   * @return boolean
    */
-  public function upgrade_1021() {
-    $params = ['return' => 'id', 'name' => 'leave_and_absences'];
-    $parentId = (int) civicrm_api3('Navigation', 'getvalue', $params);
-    civicrm_api3('Navigation', 'create', ['id' => $parentId, 'weight' => -96]);
-    
-    $this->up1021_createNewLinks($parentId);
-    // we need to flush for new items to be recognized
-    CRM_Core_PseudoConstant::flush();
-    $this->up1021_relabelExistingLinks($parentId);
-    $this->up1021_addSeparators($parentId);
-    $this->up1021_updateWeight($parentId);
-    
+
+  public function upgrade_1021 () {
+    $leaveRequest = new LeaveRequest();
+
+    $leaveRequest->whereAdd('request_type = "' . LeaveRequest::REQUEST_TYPE_TOIL . '"');
+    $leaveRequest->whereAdd('is_deleted = 0');
+    $leaveRequest->find();
+
+    while ($leaveRequest->fetch()) {
+      $leaveRequest->to_date = substr($leaveRequest->to_date, 0, 11) . '23:45:00';
+
+      $leaveRequest->update();
+    }
+
     return TRUE;
   }
-  
-  /**
-   * Creates new entries in the leave submenu
-   *
-   * @param int $parentId
-   */
-  private function up1021_createNewLinks($parentId) {
-    $permission = 'administer leave and absences';
-    $optionGroupLinks = [
-      'Sickness Reasons' => 'hrleaveandabsences_sickness_reason',
-      'TOIL to be Accrued' => 'hrleaveandabsences_toil_amounts',
-      'Work Pattern Change Reasons' => 'hrleaveandabsences_work_pattern_change_reason',
-      'Work Pattern Day Equivalents' => 'hrleaveandabsences_leave_days_amounts'
-    ];
-    
-    foreach ($optionGroupLinks as $itemName => $optionGroup) {
-      $link = 'civicrm/admin/options/' . $optionGroup . '?reset=1';
-      $params = ['url' => $link];
-      $this->up1021_createNavItem($itemName, $permission, $parentId, $params);
-    }
-  }
-  
-  /**
-   * Relabels some of the existing leave items
-   *
-   * @param int $parentId
-   */
-  private function up1021_relabelExistingLinks($parentId) {
-    $nameToLabelMapping = [
-      'leave_and_absence_types' => ts('Leave Types'),
-      'leave_and_absence_periods' => ts('Leave Periods'),
-      'leave_and_absence_manage_work_patterns' => ts('Work Patterns'),
-      'leave_and_absence_general_settings' => ts('Leave Settings'),
-      'leave_and_absences_import' => ts('Import Leave Requests'),
-    ];
-    
-    foreach ($nameToLabelMapping as $name => $label) {
-      $params = ['parent_id' => $parentId, 'name' => $name, 'return' => 'id'];
-      $id = (int) civicrm_api3('Navigation', 'getvalue', $params);
-      civicrm_api3('Navigation', 'create', ['id' => $id, 'label' => $label]);
-    }
-  }
-  
-  /**
-   * Adds separators after certain items in the leave submenu
-   *
-   * @param int $parentId
-   */
-  private function up1021_addSeparators($parentId) {
-    $itemsWithSeparators = [
-      'leave_and_absence_general_settings',
-      'Work Pattern Day Equivalents',
-    ];
-    
-    foreach ($itemsWithSeparators as $name) {
-      $params = ['parent_id' => $parentId, 'name' => $name, 'return' => 'id'];
-      $id = (int) civicrm_api3('Navigation', 'getvalue', $params);
-      civicrm_api3('Navigation', 'create', ['id' => $id, 'has_separator' => 1]);
-    }
-  }
-  
-  /**
-   * Sets the weight for the "Import" item so it will appear last
-   *
-   * @param int $parentId
-   */
-  private function up1021_updateWeight($parentId) {
-    $name = 'leave_and_absences_import';
-    $params = ['parent_id' => $parentId, 'name' => $name, 'return' => 'id'];
-    $id = (int) civicrm_api3('Navigation', 'getvalue', $params);
-    $maxWeight = CRM_Core_BAO_Navigation::calculateWeight($parentId);
-    civicrm_api3('Navigation', 'create', ['id' => $id, 'weight' => $maxWeight]);
-  }
-  
-  /**
-   * Creates a navigation menu item using the API
-   *
-   * @param string $name
-   * @param string $permission
-   * @param int $parentID
-   * @param array $params
-   *
-   * @return array
-   */
-  private function up1021_createNavItem(
-    $name,
-    $permission,
-    $parentID,
-    $params = []
-  ) {
-    $params = array_merge([
-      'name' => $name,
-      'label' => ts($name),
-      'permission' => $permission,
-      'parent_id' => $parentID,
-      'is_active' => 1,
-    ], $params);
-    
-    $existing = civicrm_api3('Navigation', 'get', $params);
-    
-    if ($existing['count'] > 0) {
-      return array_shift($existing['values']);
-    }
-    
-    return civicrm_api3('Navigation', 'create', $params);
-  }
 }
-
