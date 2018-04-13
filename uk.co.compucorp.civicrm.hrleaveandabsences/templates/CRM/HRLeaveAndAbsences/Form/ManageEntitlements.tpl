@@ -14,19 +14,19 @@
         {/foreach}
 
         <div class="col-sm-4 col-sm-offset-4">
-          <div class="btn-group btn-group-sm" data-toggle="buttons">
-            <label class="btn btn-default">
-              <input type="radio" class="override-filter" value="1">
+          <div class="btn-group" data-toggle="buttons">
+            <button class="btn btn-sm btn-secondary-outline">
+              <input type="radio" name="override-filter" class="override-filter" value="1">
               <span>Overriden</span>
-            </label>
-            <label class="btn btn-default">
-              <input type="radio" class="override-filter" value="2">
+            </button>
+            <button class="btn btn-sm btn-secondary-outline">
+              <input type="radio" name="override-filter" class="override-filter" value="2">
               <span>Not Overridden</span>
-            </label>
-            <label class="btn btn-default">
-              <input type="radio" class="override-filter" value="3">
+            </button>
+            <button class="btn btn-sm btn-secondary-outline active">
+              <input type="radio" name="override-filter" class="override-filter" value="3" checked>
               <span>Both</span>
-            </label>
+            </button>
           </div>
         </div>
 
@@ -35,7 +35,7 @@
             <div class="col-md-9">
               <select name="absence-type-filter" id="absence_type_filter" class="crm-select2 form-control absence-type-filter" multiple="multiple" data-placeholder="{ts}Leave Type{/ts}">
                 {foreach from=$enabledAbsenceTypes item=absenceType}
-                  <option value="{$absenceType->id}">{$absenceType->title}</option>
+                  <option value="{$absenceType->id}">{$absenceType->title|escape}</option>
                 {/foreach}
               </select>
             </div>
@@ -94,10 +94,10 @@
             {/if}
             <tr data-contact="{$contact.id}" data-absence-type="{$absenceTypeID}" data-absence-period="{$absencePeriodID}">
               <td>{$contact.id}</td>
-              <td>{$contact.display_name}</td>
+              <td>{$contact.display_name|escape}</td>
               <td>
                 <span class="absence-type" style="background-color: {$absenceType->color};">
-                  {$absenceType->title}
+                  {$absenceType->title|escape}
                 </span>
               </td>
               <td>{$calculation->getPreviousPeriodProposedEntitlement()|timeUnitApplier:$calculationUnit}</td>

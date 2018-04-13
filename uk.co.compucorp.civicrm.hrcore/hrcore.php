@@ -107,7 +107,7 @@ function hrcore_civicrm_container($container) {
 }
 
 /**
- * Implements hook_civicrm_buildForm
+ * Implements hook_civicrm_buildForm().
  *
  * @param string $formName
  * @param CRM_Core_Form $form
@@ -117,6 +117,7 @@ function hrcore_civicrm_buildForm($formName, &$form) {
     new CRM_HRCore_Hook_BuildForm_ActivityFilterSelectFieldsModifier(),
     new CRM_HRCore_Hook_BuildForm_ActivityLinksFilter(),
     new CRM_HRCore_Hook_BuildForm_LocalisationPageFilter(),
+    new CRM_HRCore_Hook_BuildForm_OptionEditPathFilter(),
   ];
 
   foreach ($listeners as $currentListener) {

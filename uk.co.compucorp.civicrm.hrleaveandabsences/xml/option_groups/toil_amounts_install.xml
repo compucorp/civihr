@@ -15,18 +15,6 @@
   <OptionValues>
 
     <OptionValue>
-      <label>0 Days</label>
-      <value>0</value>
-      <name>zero_days</name>
-      <is_default>0</is_default>
-      <weight>1</weight>
-      <is_optgroup>0</is_optgroup>
-      <is_reserved>1</is_reserved>
-      <is_active>1</is_active>
-      <option_group_name>hrleaveandabsences_toil_amounts</option_group_name>
-    </OptionValue>
-
-    <OptionValue>
       <label>1/4 Days</label>
       <value>0.25</value>
       <name>quarter_day</name>

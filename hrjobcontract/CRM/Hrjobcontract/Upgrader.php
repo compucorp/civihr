@@ -1192,16 +1192,23 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     ];
     
     $result = civicrm_api3('CustomGroup', 'get', [
-      'return' => ['id'],
+      'return' => ['id', 'name'],
       'name' => ['IN' => $customGroups],
     ]);
 
     if ($result['count'] > 0) {
       foreach ($result['values'] as $value) {
-        civicrm_api3('CustomGroup', 'create', [
-          'id' => $value['id'],
-          'is_reserved' => 1,
-        ]);
+        $params = ['id' => $value['id'], 'is_reserved' => 1];
+
+        /**
+         * 'is_multiple' is added to prevent bug that changes it to false
+         * @see https://issues.civicrm.org/jira/browse/CRM-21853
+         */
+        if ($value['name'] === 'HRJobContract_Dates') {
+          $params['is_multiple'] = 1;
+        }
+
+        civicrm_api3('CustomGroup', 'create', $params);
       }
     }
 
@@ -1235,7 +1242,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     $childLinks = [
       'Contract Types' => $optGroupLinker('hrjc_contract_type'),
-      'Normal Place of Work' => $optGroupLinker('hrjc_location'),
+      'Normal Places of Work' => $optGroupLinker('hrjc_location'),
       'Contract End Reasons' => $optGroupLinker('hrjc_contract_end_reason'),
       'Contract Revision Reasons' => $optGroupLinker('hrjc_revision_change_reason'),
       'Standard Full Time Hours' => 'civicrm/hours_location',

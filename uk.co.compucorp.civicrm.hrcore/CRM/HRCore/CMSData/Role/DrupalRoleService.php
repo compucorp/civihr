@@ -5,7 +5,7 @@ use CRM_HRCore_CMSData_Role_RoleServiceInterface as RoleServiceInterface;
 /**
  * Implementation of RoleServiceInterface to interact with a Drupal 7 system
  */
-class CRM_HRCore_CMSData_Role_DrupalRoleService implements RoleServiceInterface{
+class CRM_HRCore_CMSData_Role_DrupalRoleService implements RoleServiceInterface {
 
   /**
    * @inheritdoc
@@ -26,13 +26,13 @@ class CRM_HRCore_CMSData_Role_DrupalRoleService implements RoleServiceInterface{
 
     $result = $query->execute()->fetchAllKeyed();
 
-    $roleNames = $this->getRoleNames();
+    $roleNames = $this->getRoleMachineNames();
     $rolesToExclude = ['authenticated user', 'anonymous user'];
     $roleNames = array_diff($roleNames, $rolesToExclude);
     $returnArray = array_fill_keys($roleNames, NULL);
 
     foreach ($result as $rid => $loginTimestamp) {
-      if (array_key_exists($rid, $roleNames)) {
+      if (isset($roleNames[$rid])) {
         $roleName = $roleNames[$rid];
         $loginDate = NULL;
         if ($loginTimestamp != 0) {
@@ -60,6 +60,27 @@ class CRM_HRCore_CMSData_Role_DrupalRoleService implements RoleServiceInterface{
     }
 
     return $roleIds;
+  }
+
+  /**
+   * Gets the machine names for roles that have them. Roles without machine
+   * names, such as 'anonymous user' will default to the role name
+   *
+   * @return array
+   *   The array will be in the format 'rid' => 'machine_name'
+   */
+  private function getRoleMachineNames() {
+    $result = db_select('role', 'r')
+      ->fields('r', ['rid', 'name', 'machine_name'])
+      ->execute()
+      ->fetchAllAssoc('rid', PDO::FETCH_BOTH);
+
+    // use name if machine_name is not set
+    array_walk($result, function (&$role) {
+      $role['machine_name'] = $role['machine_name'] ?: $role['name'];
+    });
+
+    return array_column($result, 'machine_name', 'rid');
   }
 
 }

@@ -1,15 +1,15 @@
+/* eslint-env amd, jasmine */
+
 define([
+  'common/lodash',
   'common/angularMocks',
   'common/services/api/contact',
   'common/mocks/services/api/contact-mock'
-], function () {
+], function (_) {
   'use strict';
 
-  describe("api.contact", function () {
-    var ContactAPI,
-      $rootScope,
-      ContactAPIMock,
-      $q;
+  describe('api.contact', function () {
+    var ContactAPI, $rootScope, ContactAPIMock, $q;
 
     beforeEach(module('common.apis', 'common.mocks'));
 
@@ -20,18 +20,18 @@ define([
       $q = _$q_;
     }]));
 
-    it("has expected interface", function () {
-      expect(Object.keys(ContactAPI)).toContain("all");
-      expect(Object.keys(ContactAPI)).toContain("find");
-      expect(Object.keys(ContactAPI)).toContain("leaveManagees");
+    it('has expected interface', function () {
+      expect(Object.keys(ContactAPI)).toContain('all');
+      expect(Object.keys(ContactAPI)).toContain('find');
+      expect(Object.keys(ContactAPI)).toContain('leaveManagees');
     });
 
-    describe("all()", function () {
-      var contactApiPromise,
-        filters = {key: "filters"},
-        pagination = {key: "pagination"},
-        sort = "sort",
-        additionalParams = {key: "additionalParams"};
+    describe('all()', function () {
+      var contactApiPromise;
+      var filters = { key: 'filters' };
+      var pagination = { key: 'pagination' };
+      var sort = 'sort';
+      var additionalParams = { key: 'additionalParams' };
 
       beforeEach(function () {
         spyOn(ContactAPI, 'getAll').and.returnValue($q.resolve(ContactAPIMock.mockedContacts()));
@@ -42,21 +42,20 @@ define([
         $rootScope.$apply();
       });
 
-      it("returns all the contact", function () {
+      it('returns all the contact', function () {
         contactApiPromise.then(function (result) {
           expect(result).toEqual(ContactAPIMock.mockedContacts());
         });
       });
 
-      it("calls getAll method", function () {
+      it('calls getAll method', function () {
         expect(ContactAPI.getAll).toHaveBeenCalledWith('Contact', filters, pagination, sort, additionalParams);
       });
     });
 
-    describe("find()", function () {
-      var contactApiPromise,
-        contactId = '2',
-        contact;
+    describe('find()', function () {
+      var contactApiPromise, contact;
+      var contactId = '2';
 
       beforeEach(function () {
         contact = ContactAPIMock.mockedContacts().list[0];
@@ -70,23 +69,23 @@ define([
         $rootScope.$apply();
       });
 
-      it("returns a contact", function () {
+      it('returns a contact', function () {
         contactApiPromise.then(function (result) {
           expect(result).toEqual(contact);
         });
       });
 
-      it("calls sendGET method", function () {
+      it('calls sendGET method', function () {
         expect(ContactAPI.sendGET).toHaveBeenCalledWith('Contact', 'get', {id: '' + contactId}, false);
       });
     });
 
-    describe("leaveManagees()", function () {
-      var contactApiPromise,
-        managedBy = '101',
-        params = {
-          key: 'value'
-        };
+    describe('leaveManagees()', function () {
+      var contactApiPromise;
+      var managedBy = '101';
+      var params = {
+        key: 'value'
+      };
 
       beforeEach(function () {
         spyOn(ContactAPI, 'sendGET').and.returnValue($q.resolve({
@@ -99,13 +98,13 @@ define([
         $rootScope.$apply();
       });
 
-      it("returns the contacts", function () {
+      it('returns the contacts', function () {
         contactApiPromise.then(function (result) {
           expect(result).toEqual(ContactAPIMock.mockedContacts().list);
         });
       });
 
-      it("calls sendGET method", function () {
+      it('calls sendGET method', function () {
         expect(ContactAPI.sendGET).toHaveBeenCalledWith('Contact', 'getleavemanagees', _.assign(params, {
           managed_by: managedBy
         }));
