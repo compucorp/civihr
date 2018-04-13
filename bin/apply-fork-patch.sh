@@ -156,7 +156,7 @@ setCivicrmRootPath () {
 #   None
 #######################################
 updateLastCommitPatched () {
-  sha=$(JSONValue "$civiRoot/$LAST_REMOTE_COMMIT_FILE" 'sha')
+  sha=$(JSONValue "$civiRoot/$LAST_REMOTE_COMMIT_FILE" "sha")
 
   JSONValue "$civiRoot/$META_FILE" "last-fork-commit-patched" "$sha"
 }
@@ -166,14 +166,19 @@ updateLastCommitPatched () {
 setCivicrmRootPath
 if ! metaFileExists; then exit 0; fi
 
-civiVersion=$(JSONValue "$civiRoot/$META_FILE" 'civi-version')
+civiVersion=$(JSONValue "$civiRoot/$META_FILE" "civi-version")
 lastCommitPatched=$(JSONValue "$civiRoot/$META_FILE" "last-fork-commit-patched")
 
 patchesBranch="$civiVersion-patches"
 [ ! -z "$lastCommitPatched" ] && baseHead=$lastCommitPatched || baseHead=$civiVersion
 
 createPatch "$baseHead" "$patchesBranch"
-applyPatch && rm "$civiRoot/$PATCH_FILE"
 
-createLastRemoteCommitFile "$patchesBranch"
-updateLastCommitPatched && rm "$civiRoot/$LAST_REMOTE_COMMIT_FILE"
+if [ -s $civiRoot/$PATCH_FILE ]; then # if the patch is not empty...
+  applyPatch
+
+  createLastRemoteCommitFile "$patchesBranch"
+  updateLastCommitPatched && rm "$civiRoot/$LAST_REMOTE_COMMIT_FILE"
+fi
+
+rm "$civiRoot/$PATCH_FILE"
