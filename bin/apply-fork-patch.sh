@@ -79,7 +79,7 @@ JSONValue () {
 #   Integer
 #######################################
 metaFileExists () {
-  if [ -e "$civiRoot/$LAST_COMMIT_PATCHED_FILE" ]; then return 0; else return 1; fi
+  if [ -e "$LAST_COMMIT_PATCHED_FILE" ]; then return 0; else return 1; fi
 }
 
 #######################################
@@ -110,10 +110,10 @@ setCivicrmRootPath () {
 #######################################
 updateLastCommitPatched () {
   # It uses the same file as temporary recipient of the full commit data
-  curl "$API_URL_BASE/commits/$1" -s > "$civiRoot/$LAST_COMMIT_PATCHED_FILE"
-  sha=$(JSONValue "$civiRoot/$LAST_COMMIT_PATCHED_FILE" "sha")
+  curl "$API_URL_BASE/commits/$1" -s > "$LAST_COMMIT_PATCHED_FILE"
+  sha=$(JSONValue "$LAST_COMMIT_PATCHED_FILE" "sha")
 
-  echo "$sha" > "$civiRoot/$LAST_COMMIT_PATCHED_FILE"
+  echo "$sha" > "$LAST_COMMIT_PATCHED_FILE"
 }
 
 # ---------------
@@ -126,7 +126,7 @@ if ! metaFileExists; then
 fi
 
 civiVersion=$(getCiviVersion)
-lastCommitPatched=$(cat "$civiRoot/$LAST_COMMIT_PATCHED_FILE")
+lastCommitPatched=$(cat "$LAST_COMMIT_PATCHED_FILE")
 
 patchesBranch="$civiVersion-patches"
 [ ! -z "$lastCommitPatched" ] && baseHead=$lastCommitPatched || baseHead=$civiVersion
