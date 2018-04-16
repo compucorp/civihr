@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>LeaveBalanceChangeExpiryLog</class>
+  <name>civicrm_hrleaveandabsences_leave_balance_change_expiry_log</name>
+  <comment>Leave Balance Change Expiry Log</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique LeaveBalanceChangeExpiryLog ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>balance_change_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>The expired balance change ID</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>amount</name>
+    <type>decimal</type>
+    <required>true</required>
+    <default>0</default>
+    <comment>The expired balance amount</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>source_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Expired Balance change source ID</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>source_type</name>
+    <type>varchar</type>
+    <required>true</required>
+    <length>20</length>
+    <comment>Expired Balance change source type</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>expiry_date</name>
+    <type>date</type>
+    <required>true</required>
+    <comment>The balance change expiry date</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>balance_type_id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>One of the values of the Leave Balance Type option group</comment>
+    <add>4.4</add>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_leave_balance_change_type</optionGroupName>
+    </pseudoconstant>
+  </field>
+
+  <field>
+    <name>leave_date</name>
+    <type>date</type>
+    <comment>The Leave date of the expired balance change(i.e If it is a leave request balance change)</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>leave_request_id</name>
+    <type>int unsigned</type>
+    <comment>The Leave Request ID linked to the expired balance change(i.e If it is a leave request balance change)</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>created_date</name>
+    <type>datetime</type>
+    <comment>The date and time this log was created</comment>
+    <add>4.4</add>
+  </field>
+</table>
