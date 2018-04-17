@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 API_URL_BASE="https://api.github.com/repos/compucorp/civicrm-core"
 LAST_COMMIT_PATCHED_FILE="core-fork-last-commit-patched.txt"
 PATCH_FILE="fork-patch.diff"
@@ -49,7 +51,7 @@ createPatch () {
 #   String
 #######################################
 getCiviVersion () {
-  drush eval "echo CRM_Utils_System::version();"
+  drush eval "civicrm_initialize(); echo CRM_Utils_System::version();"
 }
 
 #######################################
@@ -78,7 +80,7 @@ JSONValue () {
 #   String
 #######################################
 setCivicrmRootPath () {
-  civiRoot=$(drush eval "echo \\Civi::paths()->getPath('[civicrm.root]/.')")
+  civiRoot=$(drush eval "civicrm_initialize(); echo \\Civi::paths()->getPath('[civicrm.root]/.')")
 }
 
 #######################################
