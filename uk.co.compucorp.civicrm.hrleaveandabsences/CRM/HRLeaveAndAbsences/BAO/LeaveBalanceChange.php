@@ -753,7 +753,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       LEFT JOIN {$absencePeriodTable} absence_period
             ON period_entitlement.period_id = absence_period.id
       WHERE balance_to_expire.expiry_date IS NOT NULL AND
-            balance_to_expire.expiry_date < CURDATE() AND
+            balance_to_expire.expiry_date < %3 AND
             balance_to_expire.expired_balance_change_id IS NULL AND
             expired_balance_change.id IS NULL
       ORDER BY balance_to_expire.expiry_date ASC, balance_to_expire.id ASC
@@ -762,6 +762,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
     $params = [
       1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
       2 => [self::SOURCE_ENTITLEMENT, 'String'],
+      3 => [date('Y-m-d'), 'String']
     ];
 
     $result = CRM_Core_DAO::executeQuery($query, $params);
