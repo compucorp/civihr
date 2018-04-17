@@ -432,8 +432,8 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_balance_change_expiry_log` (
      `source_type` varchar(20) NOT NULL   COMMENT 'Expired Balance change source type',
      `expiry_date` date NOT NULL   COMMENT 'The balance change expiry date',
      `balance_type_id` int unsigned NOT NULL   COMMENT 'One of the values of the Leave Balance Type option group',
-     `leave_date` date    COMMENT 'The Leave date of the expired balance change(i.e If it is a leave request balance change)',
-     `leave_request_id` int unsigned    COMMENT 'The Leave Request ID linked to the expired balance change(i.e If it is a leave request balance change)',
+     `leave_date` date    COMMENT 'The Leave date of the expired balance change (i.e If it is a leave request balance change)',
+     `leave_request_id` int unsigned    COMMENT 'The Leave Request ID linked to the expired balance change (i.e If it is a leave request balance change)',
      `created_date` datetime    COMMENT 'The date and time this log was created' ,
     PRIMARY KEY (`id`)
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;

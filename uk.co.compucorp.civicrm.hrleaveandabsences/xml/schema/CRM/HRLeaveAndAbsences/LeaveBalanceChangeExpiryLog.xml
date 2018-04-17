@@ -76,14 +76,14 @@
   <field>
     <name>leave_date</name>
     <type>date</type>
-    <comment>The Leave date of the expired balance change(i.e If it is a leave request balance change)</comment>
+    <comment>The Leave date of the expired balance change (i.e If it is a leave request balance change)</comment>
     <add>4.4</add>
   </field>
 
   <field>
     <name>leave_request_id</name>
     <type>int unsigned</type>
-    <comment>The Leave Request ID linked to the expired balance change(i.e If it is a leave request balance change)</comment>
+    <comment>The Leave Request ID linked to the expired balance change (i.e If it is a leave request balance change)</comment>
     <add>4.4</add>
   </field>
 

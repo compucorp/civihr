@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLog as LeaveBalanceChangeExpiryLog;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLogTest
  *
@@ -13,7 +14,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLogTest extends BaseHea
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveBalanceChangeExpiryLogException
    * @expectedExceptionMessage The balance_change_id field should not be empty
    */
-  public function testCreateLeaveBalanceChangeExpiryLogThrowsExceptionWhenBalanceChangeIdIsAbsent() {
+  public function testCreateThrowsExceptionWhenBalanceChangeIdIsAbsent() {
     LeaveBalanceChangeExpiryLog::create([
       'source_id' => 1,
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
@@ -27,7 +28,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLogTest extends BaseHea
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveBalanceChangeExpiryLogException
    * @expectedExceptionMessage The source_id field should not be empty
    */
-  public function testCreateLeaveBalanceChangeExpiryLogThrowsExceptionWhenSourceIdIsAbsent() {
+  public function testCreateThrowsExceptionWhenSourceIdIsAbsent() {
     LeaveBalanceChangeExpiryLog::create([
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
       'expiry_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -41,7 +42,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLogTest extends BaseHea
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveBalanceChangeExpiryLogException
    * @expectedExceptionMessage The source_type field should not be empty
    */
-  public function testCreateLeaveBalanceChangeExpiryLogThrowsExceptionWhenSourceTypeIsAbsent() {
+  public function testCreateThrowsExceptionWhenSourceTypeIsAbsent() {
     LeaveBalanceChangeExpiryLog::create([
       'source_id' => 1,
       'expiry_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -55,7 +56,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLogTest extends BaseHea
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveBalanceChangeExpiryLogException
    * @expectedExceptionMessage The expiry_date field should not be empty
    */
-  public function testCreateLeaveBalanceChangeExpiryLogThrowsExceptionWhenExpiryDateIsAbsent() {
+  public function testCreateThrowsExceptionWhenExpiryDateIsAbsent() {
     LeaveBalanceChangeExpiryLog::create([
       'source_id' => 1,
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
@@ -69,7 +70,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLogTest extends BaseHea
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveBalanceChangeExpiryLogException
    * @expectedExceptionMessage The amount field should not be empty
    */
-  public function testCreateLeaveBalanceChangeExpiryLogThrowsExceptionWhenAmountIsAbsent() {
+  public function testCreateThrowsExceptionWhenAmountIsAbsent() {
     LeaveBalanceChangeExpiryLog::create([
       'source_id' => 1,
       'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
@@ -79,7 +80,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLogTest extends BaseHea
     ]);
   }
 
-  public function testCreateLeaveBalanceChangeExpiryLogDoesNotThrowExceptionWhenAmountIsZero() {
+  public function testCreateDoesNotThrowExceptionWhenAmountIsZero() {
     $expiryLog = LeaveBalanceChangeExpiryLog::create([
       'balance_change_id' => 1,
       'source_id' => 1,

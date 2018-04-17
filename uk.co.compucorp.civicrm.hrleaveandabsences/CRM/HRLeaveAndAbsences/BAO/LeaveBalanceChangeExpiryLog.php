@@ -26,7 +26,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLog extends CRM_HRLeave
     return $instance;
   }
 
-
   /**
    * A method for validating the params passed to the
    * LeaveBalanceChangeExpiryLog create method

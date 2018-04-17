@@ -93,13 +93,13 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChangeExpiryLog extends CRM_Core_DA
    */
   public $balance_type_id;
   /**
-   * The Leave date of the expired balance change(i.e If it is a leave request balance change)
+   * The Leave date of the expired balance change (i.e If it is a leave request balance change)
    *
    * @var date
    */
   public $leave_date;
   /**
-   * The Leave Request ID linked to the expired balance change(i.e If it is a leave request balance change)
+   * The Leave Request ID linked to the expired balance change (i.e If it is a leave request balance change)
    *
    * @var int unsigned
    */
@@ -212,7 +212,7 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChangeExpiryLog extends CRM_Core_DA
           'name' => 'leave_date',
           'type' => CRM_Utils_Type::T_DATE,
           'title' => ts('Leave Date') ,
-          'description' => 'The Leave date of the expired balance change(i.e If it is a leave request balance change)',
+          'description' => 'The Leave date of the expired balance change (i.e If it is a leave request balance change)',
           'table_name' => 'civicrm_hrleaveandabsences_leave_balance_change_expiry_log',
           'entity' => 'LeaveBalanceChangeExpiryLog',
           'bao' => 'CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChangeExpiryLog',
@@ -221,7 +221,7 @@ class CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChangeExpiryLog extends CRM_Core_DA
         'leave_request_id' => array(
           'name' => 'leave_request_id',
           'type' => CRM_Utils_Type::T_INT,
-          'description' => 'The Leave Request ID linked to the expired balance change(i.e If it is a leave request balance change)',
+          'description' => 'The Leave Request ID linked to the expired balance change (i.e If it is a leave request balance change)',
           'table_name' => 'civicrm_hrleaveandabsences_leave_balance_change_expiry_log',
           'entity' => 'LeaveBalanceChangeExpiryLog',
           'bao' => 'CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChangeExpiryLog',
