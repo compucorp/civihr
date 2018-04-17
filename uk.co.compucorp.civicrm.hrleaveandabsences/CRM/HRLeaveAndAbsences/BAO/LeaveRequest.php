@@ -666,6 +666,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       $params['contact_id'],
       $params['from_date'],
       $params['to_date'],
+      $params['type_id'],
+      $params['request_type'],
       $leaveRequestStatusFilter
     );
 
@@ -861,22 +863,47 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Returns the leave request days already existing for the given contact
-   * within the $fromDate to $todDate period and having the statuses supplied.
+   * Returns existing leave requests considered "overlapping" for the given contact
+   * within the date/time period, absence type, request type and statuses supplied.
    *
    * @param int $contactID
    * @param string $fromDate
    * @param string $toDate
+   * @param int $typeID
+   * @param string $requestType
    * @param array $leaveRequestStatus
    * @param boolean $excludePublicHolidayLeaveRequests
    *   Whether to exclude public holiday leave requests from overlapping leave requests or not
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest[]|null
    */
-  public static function findOverlappingLeaveRequests($contactID, $fromDate, $toDate, $leaveRequestStatus = [], $excludePublicHolidayLeaveRequests = true) {
+  public static function findOverlappingLeaveRequests($contactID, $fromDate, $toDate, $typeID, $requestType, $leaveRequestStatus = [], $excludePublicHolidayLeaveRequests = true) {
     $leaveRequestTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveBalanceChangeTable = LeaveBalanceChange::getTableName();
+    $leaveRequestAbsenceType = AbsenceType::findById($typeID);
+    $isCalculationUnitInHours = $leaveRequestAbsenceType->isCalculationUnitInHours();
+    $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
+    $absenceTypesIDsWithSameUnit = [];
+    $absenceTypesIDsWithDifferentUnit = [];
+
+    foreach ($absenceTypes as $absenceType) {
+      if ($leaveRequestAbsenceType->calculation_unit === $absenceType->calculation_unit) {
+        $absenceTypesIDsWithSameUnit[] = $absenceType->id;
+      } else {
+        $absenceTypesIDsWithDifferentUnit[] = $absenceType->id;
+      }
+    }
+
+    $noOverlappingCondition =
+      $isCalculationUnitInHours
+      ?
+        "(lr.from_date < '{$toDate}' AND lr.to_date > '{$fromDate}' AND lr.type_id IN (" . join(',', $absenceTypesIDsWithSameUnit) . "))" .
+        (count($absenceTypesIDsWithDifferentUnit) ? " OR ((lrd.date BETWEEN %3 AND %4) AND lr.type_id IN (" . join(',', $absenceTypesIDsWithDifferentUnit) . "))" : "")
+      : "lrd.date BETWEEN %3 AND %4 AND lr.type_id IN (" . join(',', array_merge($absenceTypesIDsWithSameUnit, $absenceTypesIDsWithDifferentUnit)) . ")";
+
+    $ignoreRequestTypes =
+      'lr.request_type ' . ($requestType === LeaveRequest::REQUEST_TYPE_TOIL ? '=' : '!=') . "'" . LeaveRequest::REQUEST_TYPE_TOIL . "'";
 
     $query = "
       SELECT DISTINCT lr.* FROM {$leaveRequestTable} lr
@@ -884,9 +911,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         ON lrd.leave_request_id = lr.id
       INNER JOIN {$leaveBalanceChangeTable} lbc
         ON lbc.source_id = lrd.id AND lbc.source_type = %1
-      WHERE lr.contact_id = %2 AND lr.is_deleted = 0
-      AND lrd.date BETWEEN %3 AND %4
-    ";
+      WHERE lr.contact_id = %2 AND lr.is_deleted = 0 AND ({$noOverlappingCondition})
+        AND {$ignoreRequestTypes}";
 
     if (is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
       array_walk($leaveRequestStatus, 'intval');
