@@ -12,16 +12,17 @@ define([
   'use strict';
 
   describe('JobRolesController', function () {
-    var $controller, $filter, $q, $rootScope, dateValidation, jobRoleService, ctrl, pubSub, scope, settingsData;
+    var $controller, $filter, $q, $rootScope, crmAngService, dateValidation, jobRoleService, ctrl, pubSub, scope, settingsData;
     var contactId = '123';
 
     beforeEach(module('hrjobroles'));
-    beforeEach(inject(function (_$controller_, _$filter_, $httpBackend, _$q_, _$rootScope_, _pubSub_, _dateValidation_, _jobRoleService_) {
+    beforeEach(inject(function (_$controller_, _$filter_, $httpBackend, _$q_, _$rootScope_, _crmAngService_, _pubSub_, _dateValidation_, _jobRoleService_) {
       $controller = _$controller_;
       $filter = _$filter_;
       $q = _$q_;
       $rootScope = _$rootScope_;
 
+      crmAngService = _crmAngService_;
       pubSub = _pubSub_;
       dateValidation = _dateValidation_;
       jobRoleService = _jobRoleService_;
@@ -32,6 +33,30 @@ define([
       // Mock data from CiviCRM settings
       dateValidation.dateFormats.push('DD/MM/YYYY');
     }));
+
+    describe('when user opens option editor', function () {
+      var onPopupFormSuccess;
+      var url = '/civicrm/admin/options/hrjc_level_type?reset=1';
+      var optionType = 'hrjc_level_type';
+
+      beforeEach(function () {
+        spyOn(crmAngService, 'loadForm').and.callFake(function () {
+          return {
+            on: function (event, callback) {
+              if (event === 'crmUnload') {
+                onPopupFormSuccess = callback;
+              }
+            }
+          };
+        });
+        initController();
+        ctrl.openOptionsEditor(url, optionType);
+      });
+
+      it('calls the crmAngService with the requested url', function () {
+        expect(crmAngService.loadForm).toHaveBeenCalledWith(url);
+      });
+    });
 
     describe('getOptionValues', function () {
       beforeEach(function () {

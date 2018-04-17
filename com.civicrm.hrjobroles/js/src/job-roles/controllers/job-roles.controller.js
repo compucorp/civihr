@@ -11,12 +11,12 @@ define([
   JobRolesController.$inject = [
     '$filter', '$log', '$q', '$rootElement', '$route', '$routeParams', '$scope',
     '$timeout', '$uibModal', 'DOMEventTrigger', 'settings', 'HR_settings',
-    'dateValidation', 'filtersService', 'jobRoleService', 'pubSub'
+    'dateValidation', 'filtersService', 'jobRoleService', 'pubSub', 'crmAngService'
   ];
 
   function JobRolesController ($filter, $log, $q, $rootElement, $route,
     $routeParams, $scope, $timeout, $modal, DOMEventTrigger, settings,
-    hrSettings, dateValidation, filtersService, jobRoleService, pubSub) {
+    hrSettings, dateValidation, filtersService, jobRoleService, pubSub, crmAngService) {
     $log.debug('Controller: JobRolesController');
 
     var formatDate = $filter('formatDate');
@@ -80,6 +80,7 @@ define([
     vm.updateRole = updateRole;
     vm.validateRole = validateRole;
     vm.validateTitle = validateTitle;
+    vm.openOptionsEditor = openOptionsEditor;
 
     (function init () {
       subcribeToEvents();
@@ -476,6 +477,19 @@ define([
     }
 
     /**
+     * Trigger opening of editor window for editing provided option type
+     *
+     * @param url
+     * @param optionType
+     */
+    function openOptionsEditor (url, optionType) {
+      crmAngService.loadForm(url)
+        .on('crmUnload', function () {
+          getOptionGroupTypeValues(optionType);
+        });
+    }
+
+    /**
      * Retrieve a specific option group type value
      *
      * @param optionGroupType
@@ -524,6 +538,8 @@ define([
                       value: data.values[i]['value'],
                       is_active: data.values[i]['is_active']
                     };
+                    // Store the Department types so we can reuse later
+                    vm.DepartmentsData = getActiveValues(DepartmentList);
                   }
 
                   break;
@@ -536,6 +552,8 @@ define([
                       value: data.values[i]['value'],
                       is_active: data.values[i]['is_active']
                     };
+                    // Store the Region types so we can reuse later
+                    vm.RegionsData = getActiveValues(RegionList);
                   }
 
                   break;
@@ -548,6 +566,8 @@ define([
                       value: data.values[i]['value'],
                       is_active: data.values[i]['is_active']
                     };
+                    // Store the Location types so we can reuse later
+                    vm.LocationsData = getActiveValues(LocationList);
                   }
 
                   break;
@@ -560,6 +580,8 @@ define([
                       value: data.values[i]['value'],
                       is_active: data.values[i]['is_active']
                     };
+                    // Store the Level types so we can reuse later
+                    vm.LevelsData = getActiveValues(LevelList);
                   }
 
                   break;
@@ -572,27 +594,14 @@ define([
                       is_active: data.values[i]['is_active'],
                       weight: data.values[i]['weight']
                     });
+                    // Store the cost center list so we can reuse later
+                    vm.CostCentreList = CostCentreList;
                   }
 
                   break;
               }
             }
           });
-
-          // Store the Department types so we can reuse later
-          vm.DepartmentsData = getActiveValues(DepartmentList);
-
-          // Store the Region types so we can reuse later
-          vm.RegionsData = getActiveValues(RegionList);
-
-          // Store the Location types so we can reuse later
-          vm.LocationsData = getActiveValues(LocationList);
-
-          // Store the Level types so we can reuse later
-          vm.LevelsData = getActiveValues(LevelList);
-
-          // Store the cost center list so we can reuse later
-          vm.CostCentreList = CostCentreList;
 
           vm.message_type = 'alert-success';
           vm.message = null;
