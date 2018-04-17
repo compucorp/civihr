@@ -20,7 +20,7 @@ civiRoot=""
 #   None
 #######################################
 applyPatch () {
-  (cd "$civiRoot" && git apply --whitespace=nowarn "$PATCH_FILE")
+  (cd "$civiRoot" && patch -p1 < "$PATCH_FILE" >> /dev/null)
 }
 
 #######################################
