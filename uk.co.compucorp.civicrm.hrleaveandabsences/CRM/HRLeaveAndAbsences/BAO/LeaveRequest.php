@@ -665,7 +665,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $overlappingLeaveRequests = self::findOverlappingLeaveRequests(
       $params['contact_id'],
       $params['from_date'],
+      isset($params['from_date_type']) ? $params['from_date_type'] : null,
       $params['to_date'],
+      isset($params['to_date_type']) ? $params['to_date_type'] : null,
       $params['type_id'],
       $params['request_type'],
       $leaveRequestStatusFilter
@@ -877,7 +879,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest[]|null
    */
-  public static function findOverlappingLeaveRequests($contactID, $fromDate, $toDate, $typeID, $requestType, $leaveRequestStatus = [], $excludePublicHolidayLeaveRequests = true) {
+  public static function findOverlappingLeaveRequests($contactID, $fromDate, $fromDateType = null, $toDate, $toDateType = null, $typeID, $requestType, $leaveRequestStatus = [], $excludePublicHolidayLeaveRequests = true) {
     $leaveRequestTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveBalanceChangeTable = LeaveBalanceChange::getTableName();
@@ -886,6 +888,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
     $absenceTypesIDsWithSameUnit = [];
     $absenceTypesIDsWithDifferentUnit = [];
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
+    $halfDayAMID = $leaveRequestDayTypes['half_day_am'];
+    $halfDayPMID = $leaveRequestDayTypes['half_day_pm'];
 
     foreach ($absenceTypes as $absenceType) {
       if ($leaveRequestAbsenceType->calculation_unit === $absenceType->calculation_unit) {
@@ -900,7 +905,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       ?
         "(lr.from_date < '{$toDate}' AND lr.to_date > '{$fromDate}' AND lr.type_id IN (" . join(',', $absenceTypesIDsWithSameUnit) . "))" .
         (count($absenceTypesIDsWithDifferentUnit) ? " OR ((lrd.date BETWEEN %3 AND %4) AND lr.type_id IN (" . join(',', $absenceTypesIDsWithDifferentUnit) . "))" : "")
-      : "lrd.date BETWEEN %3 AND %4 AND lr.type_id IN (" . join(',', array_merge($absenceTypesIDsWithSameUnit, $absenceTypesIDsWithDifferentUnit)) . ")";
+      : "lrd.date BETWEEN %3 AND %4 AND lr.type_id IN (" . join(',', array_merge($absenceTypesIDsWithSameUnit, $absenceTypesIDsWithDifferentUnit)) . ")" .
+        ($fromDateType !== null && (int)$fromDateType === (int)$halfDayPMID ? " AND (DATE_FORMAT(lr.to_date, '%y-%m-%d') != DATE_FORMAT('{$fromDate}', '%y-%m-%d') OR lr.to_date_type != {$halfDayAMID})" : "") .
+        ($toDateType !== null && (int)$toDateType === (int)$halfDayAMID ? " AND (DATE_FORMAT(lr.from_date, '%y-%m-%d') != DATE_FORMAT('{$toDate}', '%y-%m-%d') OR lr.from_date_type != {$halfDayPMID})" : "");
 
     $ignoreRequestTypes =
       'lr.request_type ' . ($requestType === LeaveRequest::REQUEST_TYPE_TOIL ? '=' : '!=') . "'" . LeaveRequest::REQUEST_TYPE_TOIL . "'";
