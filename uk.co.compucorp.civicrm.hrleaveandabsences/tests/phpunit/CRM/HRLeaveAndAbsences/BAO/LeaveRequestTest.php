@@ -1259,20 +1259,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $testFromDate = '2018-04-13 10:00:00';
     $testToDate = '2018-04-15 15:00:00';
 
-    $absenceType = AbsenceTypeFabricator::fabricate();
+    $absenceTypes = [
+      'days' => AbsenceTypeFabricator::fabricate([ 'calculation_unit' => 1 ]),
+      'hours' => AbsenceTypeFabricator::fabricate([ 'calculation_unit' => 2 ])
+    ];
 
-    // Test suites: date from, date to, should overlap or not
+    // Test suites: date from, date to, unit, should overlap or not
     $overlappingRequestsTestSuites = [
-      ['2018-04-11 00:00:00', '2018-04-13 10:00:00', FALSE],
-      ['2018-04-11 00:00:00', '2018-04-13 11:00:00', TRUE],
-      ['2018-04-15 14:00:00', '2018-04-18 00:00:00', TRUE],
-      ['2018-04-15 15:00:00', '2018-04-18 00:00:00', FALSE]
+      ['2018-04-11 00:00:00', '2018-04-13 10:00:00', 'days', FALSE],
+      ['2018-04-11 00:00:00', '2018-04-13 11:00:00', 'days', TRUE],
+      ['2018-04-15 14:00:00', '2018-04-18 00:00:00', 'days', TRUE],
+      ['2018-04-15 15:00:00', '2018-04-18 00:00:00', 'days', FALSE],
+      ['2018-04-11 00:00:00', '2018-04-13 10:00:00', 'hours', FALSE],
+      ['2018-04-11 00:00:00', '2018-04-13 11:00:00', 'hours', TRUE],
+      ['2018-04-15 14:00:00', '2018-04-18 00:00:00', 'hours', TRUE],
+      ['2018-04-15 15:00:00', '2018-04-18 00:00:00', 'hours', FALSE]
     ];
 
     foreach ($overlappingRequestsTestSuites as $overlappingRequestsTestSuite) {
       $requestFromDate = new DateTime($overlappingRequestsTestSuite[0]);
       $requestToDate = new DateTime($overlappingRequestsTestSuite[1]);
-      $shouldRequestOverlap = $overlappingRequestsTestSuite[2];
+      $absenceType = $absenceTypes[$overlappingRequestsTestSuite[2]];
+      $shouldRequestOverlap = $overlappingRequestsTestSuite[3];
 
       $leaveRequestToTest = LeaveRequestFabricator::fabricateWithoutValidation([
         'type_id' => $absenceType->id,
@@ -1282,7 +1290,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
         'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
       ], true);
 
-      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $testFromDate, 1, $testToDate, 1, $absenceType->id, LeaveRequest::REQUEST_TYPE_TOIL);
+      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $testFromDate, 1, $testToDate, 1, $absenceTypes['days']->id, LeaveRequest::REQUEST_TYPE_TOIL);
       $leaveRequestToTestID = $leaveRequestToTest->id;
       // Flush leave request from DB to get ready for the next test suite
       $leaveRequestToTest->delete();
