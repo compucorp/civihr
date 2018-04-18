@@ -8,7 +8,7 @@ define([
   'common/angularMocks',
   'common/services/pub-sub',
   'job-roles/modules/job-roles.module'
-], function (angular, _, moment, Mock) {
+], function (angular, _, moment, JobRoleDataMock) {
   'use strict';
 
   describe('JobRolesController', function () {
@@ -50,7 +50,7 @@ define([
           };
         });
         initController();
-        ctrl.openOptionsEditor(url, optionType);
+        ctrl.openOptionsEditor(optionType);
       });
 
       it('calls the crmAngService with the requested url', function () {
@@ -59,88 +59,44 @@ define([
     });
 
     describe('getOptionValues', function () {
+      var expectedDepartmentValue, expectedLocationValue, expectedLevelValue, expectedRegionValue;
+
       beforeEach(function () {
-        spyOn(jobRoleService, 'getOptionValues').and.returnValue($q.resolve({
-          'count': 5,
-          'values': [
-            {
-              'id': '845',
-              'option_group_id': '111',
-              'label': 'Senior Manager',
-              'value': 'Senior Manager',
-              'name': 'Senior_Manager',
-              'is_default': '0',
-              'weight': '1',
-              'is_optgroup': '0',
-              'is_reserved': '0',
-              'is_active': '1'
-            },
-            {
-              'id': '846',
-              'option_group_id': '111',
-              'label': 'Junior Manager',
-              'value': 'Junior Manager',
-              'name': 'Junior_Manager',
-              'is_default': '0',
-              'weight': '2',
-              'is_optgroup': '0',
-              'is_reserved': '0',
-              'is_active': '1'
-            },
-            {
-              'id': '879',
-              'option_group_id': '124',
-              'label': 'Other',
-              'value': 'Other',
-              'name': 'Other',
-              'filter': '0',
-              'is_default': '0',
-              'weight': '3',
-              'is_optgroup': '0',
-              'is_reserved': '0',
-              'is_active': '1'
-            },
-            {
-              'id': '1045',
-              'option_group_id': '124',
-              'label': 'Test A',
-              'value': '1',
-              'name': 'Test A',
-              'filter': '0',
-              'is_default': '0',
-              'weight': '2',
-              'is_optgroup': '0',
-              'is_reserved': '0',
-              'is_active': '1'
-            },
-            {
-              'id': '1046',
-              'option_group_id': '124',
-              'label': 'Test B',
-              'value': '2',
-              'name': 'Test B',
-              'filter': '0',
-              'is_default': '0',
-              'weight': '1',
-              'description': 'Test B',
-              'is_optgroup': '0',
-              'is_reserved': '0',
-              'is_active': '1'
-            }
-          ],
-          'optionGroupData': {
-            'cost_centres': '124'
-          }
-        }));
+        expectedLevelValue = JobRoleDataMock.option_values.values[0].value;
+        expectedDepartmentValue = JobRoleDataMock.option_values.values[4].value;
+        expectedLocationValue = JobRoleDataMock.option_values.values[5].value;
+        expectedRegionValue = JobRoleDataMock.option_values.values[6].value;
+
+        spyOn(jobRoleService, 'getOptionValues').and.returnValue($q.resolve(JobRoleDataMock.option_values));
         initController();
         $rootScope.$digest();
       });
 
-      it('builds the "CostCentreList" array of objects containing the "weight" property', function () {
-        expect(ctrl.CostCentreList.length).toBe(3);
+      it('builds the "CostCentreList" collection containing the "weight" property', function () {
+        expect(Object.keys(ctrl.CostCentreList).length).toBe(3);
         expect(ctrl.CostCentreList[0].weight).not.toBeNull();
         expect(ctrl.CostCentreList[1].weight).not.toBeNull();
         expect(ctrl.CostCentreList[2].weight).not.toBeNull();
+      });
+
+      it('builds the "hrjc_level_type" collection containing the "value" property', function () {
+        expect(Object.keys(ctrl.LevelsData).length).toBe(1);
+        expect(ctrl.LevelsData[Object.keys(ctrl.LevelsData)[0]]['value']).toBe(expectedLevelValue);
+      });
+
+      it('builds the "hrjc_department" collection containing the "value" property', function () {
+        expect(Object.keys(ctrl.DepartmentsData).length).toBe(1);
+        expect(ctrl.DepartmentsData[Object.keys(ctrl.DepartmentsData)[0]]['value']).toBe(expectedDepartmentValue);
+      });
+
+      it('builds the "hrjc_location" collection containing the "value" property', function () {
+        expect(Object.keys(ctrl.LocationsData).length).toBe(1);
+        expect(ctrl.LocationsData[Object.keys(ctrl.LocationsData)[0]]['value']).toBe(expectedLocationValue);
+      });
+
+      it('builds the "hrjc_region" collection containing the "value" property', function () {
+        expect(Object.keys(ctrl.RegionsData).length).toBe(1);
+        expect(ctrl.RegionsData[Object.keys(ctrl.RegionsData)[0]]['value']).toBe(expectedRegionValue);
       });
     });
 
@@ -161,8 +117,8 @@ define([
         var formData;
 
         beforeEach(function () {
-          ctrl.contractsData = angular.copy(Mock.contracts_data);
-          formData = angular.copy(Mock.form_data);
+          ctrl.contractsData = angular.copy(JobRoleDataMock.contracts_data);
+          formData = angular.copy(JobRoleDataMock.form_data);
           formData.contract.$viewValue = '1';
           formData.title.$viewValue = 'test';
         });
@@ -237,7 +193,7 @@ define([
 
       describe('Fetching Dates from contract', function () {
         beforeEach(function () {
-          ctrl.contractsData = angular.copy(Mock.contracts_data);
+          ctrl.contractsData = angular.copy(JobRoleDataMock.contracts_data);
         });
 
         describe('Checking if dates entered in job role are th same as those in contracts', function () {
@@ -246,11 +202,11 @@ define([
           });
 
           it('should omit a time information', function () {
-            expect(ctrl.checkIfDatesAreCustom(Mock.contracts_data[0].start_date + ' 00:00:00', Mock.contracts_data[0].end_date)).toBe(false);
+            expect(ctrl.checkIfDatesAreCustom(JobRoleDataMock.contracts_data[0].start_date + ' 00:00:00', JobRoleDataMock.contracts_data[0].end_date)).toBe(false);
           });
 
           it('should successfully compare dates to contract without end date', function () {
-            expect(ctrl.checkIfDatesAreCustom(Mock.contracts_data[2].start_date, null)).toBe(false);
+            expect(ctrl.checkIfDatesAreCustom(JobRoleDataMock.contracts_data[2].start_date, null)).toBe(false);
           });
 
           it('should successfully compare date object', function () {
@@ -258,21 +214,21 @@ define([
           });
 
           it('should return false only if both dates match the same contract', function () {
-            expect(ctrl.checkIfDatesAreCustom(Mock.contracts_data[0].start_date, Mock.contracts_data[0].end_date)).toBe(false);
-            expect(ctrl.checkIfDatesAreCustom(Mock.contracts_data[1].start_date, Mock.contracts_data[0].end_date)).toBe(true);
+            expect(ctrl.checkIfDatesAreCustom(JobRoleDataMock.contracts_data[0].start_date, JobRoleDataMock.contracts_data[0].end_date)).toBe(false);
+            expect(ctrl.checkIfDatesAreCustom(JobRoleDataMock.contracts_data[1].start_date, JobRoleDataMock.contracts_data[0].end_date)).toBe(true);
           });
         });
 
         describe('New Job Role', function () {
           beforeEach(function () {
-            ctrl.editData['new_role_id'] = angular.copy(Mock.new_role);
+            ctrl.editData['new_role_id'] = angular.copy(JobRoleDataMock.new_role);
           });
 
           it('should set dates', function () {
             ctrl.editData['new_role_id'].job_contract_id = 0;
             ctrl.onContractSelected();
-            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
-            expect(ctrl.editData['new_role_id'].newEndDate).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
+            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].start_date));
+            expect(ctrl.editData['new_role_id'].newEndDate).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].end_date));
           });
 
           it('should not modify if dates were edited manually', function () {
@@ -286,33 +242,33 @@ define([
           it('should set only start date if contract has no end date', function () {
             ctrl.editData['new_role_id'].job_contract_id = 2;
             ctrl.onContractSelected();
-            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[2].start_date));
+            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[2].start_date));
             expect(ctrl.editData['new_role_id'].newEndDate).toBe(null);
           });
 
           it('should change dates whenever contract change', function () {
             ctrl.editData['new_role_id'].job_contract_id = 0;
             ctrl.onContractSelected();
-            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
-            expect(ctrl.editData['new_role_id'].newEndDate).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
+            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].start_date));
+            expect(ctrl.editData['new_role_id'].newEndDate).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].end_date));
 
             // change contract
             ctrl.editData['new_role_id'].job_contract_id = 1;
             ctrl.onContractSelected();
-            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[1].start_date));
-            expect(ctrl.editData['new_role_id'].newEndDate).toEqual(convertToDateObject(Mock.contracts_data[1].end_date));
+            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[1].start_date));
+            expect(ctrl.editData['new_role_id'].newEndDate).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[1].end_date));
 
             // change contract
             ctrl.editData['new_role_id'].job_contract_id = 2;
             ctrl.onContractSelected();
-            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[2].start_date));
+            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[2].start_date));
             expect(ctrl.editData['new_role_id'].newEndDate).toBe(null);
 
             // change contract
             ctrl.editData['new_role_id'].job_contract_id = 0;
             ctrl.onContractSelected();
-            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
-            expect(ctrl.editData['new_role_id'].newEndDate).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
+            expect(ctrl.editData['new_role_id'].newStartDate).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].start_date));
+            expect(ctrl.editData['new_role_id'].newEndDate).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].end_date));
           });
 
           it('form should be validated', function () {
@@ -323,8 +279,8 @@ define([
 
         describe('Existing Job Role', function () {
           beforeEach(function () {
-            ctrl.editData = angular.copy(Mock.roles_data);
-            ctrl.contractsData = angular.copy(Mock.contracts_data);
+            ctrl.editData = angular.copy(JobRoleDataMock.roles_data);
+            ctrl.contractsData = angular.copy(JobRoleDataMock.contracts_data);
           });
 
           it('should set dates', function () {
@@ -333,8 +289,8 @@ define([
             ctrl.editData[0].job_contract_id = 0;
             ctrl.onContractEdited(0, 0);
 
-            expect(ctrl.editData[0].start_date).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
-            expect(ctrl.editData[0].end_date).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
+            expect(ctrl.editData[0].start_date).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].start_date));
+            expect(ctrl.editData[0].end_date).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].end_date));
           });
 
           it('should not modify if dates were edited manually', function () {
@@ -343,51 +299,51 @@ define([
             ctrl.onContractEdited(1, 2);
 
             expect(ctrl.editData[2].start_date).toEqual(convertToDateObject('2005-01-01'));
-            expect(ctrl.editData[2].end_date).toEqual(convertToDateObject(Mock.contracts_data[3].end_date));
+            expect(ctrl.editData[2].end_date).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[3].end_date));
           });
 
           it('should set only start date if contract has no end date', function () {
-            ctrl.editData[2].start_date = Mock.contracts_data[1].start_date;
-            ctrl.editData[2].end_date = Mock.contracts_data[1].end_date;
+            ctrl.editData[2].start_date = JobRoleDataMock.contracts_data[1].start_date;
+            ctrl.editData[2].end_date = JobRoleDataMock.contracts_data[1].end_date;
 
             ctrl.editData[2].job_contract_id = 2;
             ctrl.onContractEdited(2, 2);
-            expect(ctrl.editData[2].start_date).toEqual(convertToDateObject(Mock.contracts_data[2].start_date));
+            expect(ctrl.editData[2].start_date).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[2].start_date));
             expect(ctrl.editData[2].end_date).toBe(null);
           });
 
           it('should change dates whenever contract change', function () {
-            ctrl.editData[2].start_date = Mock.contracts_data[1].start_date;
-            ctrl.editData[2].end_date = Mock.contracts_data[1].end_date;
+            ctrl.editData[2].start_date = JobRoleDataMock.contracts_data[1].start_date;
+            ctrl.editData[2].end_date = JobRoleDataMock.contracts_data[1].end_date;
 
             ctrl.editData[2].job_contract_id = 0;
             ctrl.onContractEdited(0, 2);
-            expect(ctrl.editData[2].start_date).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
-            expect(ctrl.editData[2].end_date).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
+            expect(ctrl.editData[2].start_date).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].start_date));
+            expect(ctrl.editData[2].end_date).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].end_date));
 
             // change contract
             ctrl.editData[2].job_contract_id = 1;
             ctrl.onContractEdited(1, 2);
-            expect(ctrl.editData[2].start_date).toEqual(convertToDateObject(Mock.contracts_data[1].start_date));
-            expect(ctrl.editData[2].end_date).toEqual(convertToDateObject(Mock.contracts_data[1].end_date));
+            expect(ctrl.editData[2].start_date).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[1].start_date));
+            expect(ctrl.editData[2].end_date).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[1].end_date));
 
             // change contract
             ctrl.editData[2].job_contract_id = 2;
             ctrl.onContractEdited(2, 2);
-            expect(ctrl.editData[2].start_date).toEqual(convertToDateObject(Mock.contracts_data[2].start_date));
+            expect(ctrl.editData[2].start_date).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[2].start_date));
             expect(ctrl.editData[2].end_date).toBe(null);
 
             // change contract
             ctrl.editData[2].job_contract_id = 0;
             ctrl.onContractEdited(0, 2);
-            expect(ctrl.editData[2].start_date).toEqual(convertToDateObject(Mock.contracts_data[0].start_date));
-            expect(ctrl.editData[2].end_date).toEqual(convertToDateObject(Mock.contracts_data[0].end_date));
+            expect(ctrl.editData[2].start_date).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].start_date));
+            expect(ctrl.editData[2].end_date).toEqual(convertToDateObject(JobRoleDataMock.contracts_data[0].end_date));
           });
         });
 
         describe('When call onAfterSave', function () {
           beforeEach(function () {
-            ctrl.editData = angular.copy(Mock.roles_data);
+            ctrl.editData = angular.copy(JobRoleDataMock.roles_data);
           });
 
           it('should remove the funders entries which are without funder_id', function () {
@@ -403,7 +359,7 @@ define([
 
         describe('When call onCancel passing', function () {
           beforeEach(function () {
-            ctrl.editData = angular.copy(Mock.roles_data);
+            ctrl.editData = angular.copy(JobRoleDataMock.roles_data);
           });
 
           describe('funders', function () {
@@ -450,8 +406,8 @@ define([
       var contracts, jobRoles;
 
       beforeEach(function () {
-        contracts = _.toArray(angular.copy(Mock.contracts_data));
-        jobRoles = _.toArray(angular.copy(Mock.roles_data));
+        contracts = _.toArray(angular.copy(JobRoleDataMock.contracts_data));
+        jobRoles = _.toArray(angular.copy(JobRoleDataMock.roles_data));
       });
 
       beforeEach(function () {
@@ -500,7 +456,7 @@ define([
         var funderContactIds;
 
         beforeEach(function () {
-          jobRoles = _.toArray(angular.copy(Mock.roles_data_from_api));
+          jobRoles = _.toArray(angular.copy(JobRoleDataMock.roles_data_from_api));
 
           spyOn(jobRoleService, 'getContactList').and.callThrough();
           initController();
@@ -588,7 +544,7 @@ define([
         }));
 
         initController();
-        ctrl.editData = angular.copy(Mock.roles_data);
+        ctrl.editData = angular.copy(JobRoleDataMock.roles_data);
         $rootScope.$digest();
         ctrl.updateRole(1);
       });
