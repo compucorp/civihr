@@ -1253,6 +1253,48 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     }
   }
 
+  public function testFindOverlappingLeaveRequestsTOILinDaysTreatedAsRequestInHours() {
+    $contactID = 1;
+
+    $testFromDate = '2018-04-13 10:00:00';
+    $testToDate = '2018-04-15 15:00:00';
+
+    $absenceType = AbsenceTypeFabricator::fabricate();
+
+    // Test suites: date from, date to, should overlap or not
+    $overlappingRequestsTestSuites = [
+      ['2018-04-11 00:00:00', '2018-04-13 10:00:00', FALSE],
+      ['2018-04-11 00:00:00', '2018-04-13 11:00:00', TRUE],
+      ['2018-04-15 14:00:00', '2018-04-18 00:00:00', TRUE],
+      ['2018-04-15 15:00:00', '2018-04-18 00:00:00', FALSE]
+    ];
+
+    foreach ($overlappingRequestsTestSuites as $overlappingRequestsTestSuite) {
+      $requestFromDate = new DateTime($overlappingRequestsTestSuite[0]);
+      $requestToDate = new DateTime($overlappingRequestsTestSuite[1]);
+      $shouldRequestOverlap = $overlappingRequestsTestSuite[2];
+
+      $leaveRequestToTest = LeaveRequestFabricator::fabricateWithoutValidation([
+        'type_id' => $absenceType->id,
+        'contact_id' => $contactID,
+        'from_date' => $requestFromDate->format('YmdHis'),
+        'to_date' => $requestToDate->format('YmdHis'),
+        'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+      ], true);
+
+      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $testFromDate, 1, $testToDate, 1, $absenceType->id, LeaveRequest::REQUEST_TYPE_TOIL);
+      $leaveRequestToTestID = $leaveRequestToTest->id;
+      // Flush leave request from DB to get ready for the next test suite
+      $leaveRequestToTest->delete();
+
+      $this->assertCount($shouldRequestOverlap ? 1 : 0, $overlappingRequests);
+      if ($shouldRequestOverlap) {
+        $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
+        $this->assertEquals($overlappingRequests[0]->id, $leaveRequestToTestID);
+      }
+    }
+  }
+
   public function testManagerCanCancelOrRejectLeaveRequestEvenIfBalanceIsGreaterThanEntitlementBalanceWhenAllowOveruseFalse() {
     $manager = ContactFabricator::fabricate();
     $staff = ContactFabricator::fabricate();
