@@ -3642,7 +3642,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals($expectedBroughtForwardLog, $balanceExpiryLogs[$broughtForwardExpiryRecord->id]);
   }
 
-  public function testCreateExpiryRecordsDoesTryToExpireBalanceChangesLinkedToSoftDeletedToilRequest() {
+  public function testCreateExpiryRecordsDoesNotExpireBalanceChangesLinkedToSoftDeletedToilRequest() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2017-12-31')
@@ -3663,7 +3663,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'toil_to_accrue' => 1,
       'toil_duration' => 100,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
-    ], true);
+    ], TRUE);
 
     $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $periodEntitlement->contact_id,
@@ -3674,7 +3674,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'toil_to_accrue' => 1,
       'toil_duration' => 100,
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
-    ], true);
+    ], TRUE);
 
     //Delete the first TOIL request
     LeaveRequest::softDelete($toilRequest->id);
