@@ -32,6 +32,6 @@
 </div>
 <ng-include src="$root.sharedPathTpl +
   'components/leave-request-popup/details-tab/by-unit-and-days-mode/' +
-  detailsTab.selectedAbsenceType.calculation_unit_name + '-unit-' +
+  (!detailsTab.isLeaveType('toil') ? detailsTab.selectedAbsenceType.calculation_unit_name : 'hours') + '-unit-' +
   (detailsTab.uiOptions.multipleDays ? 'multiple-days' : 'single-day') +
   '.html'"></ng-include>

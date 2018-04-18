@@ -8,23 +8,22 @@ define([
   'use strict';
 
   describe('api', function () {
-    var api, $httpBackend, $httpParamSerializer, $rootScope;
+    var api, $cacheFactory, $httpBackend, $httpParamSerializer, $rootScope;
     var entity = 'entity';
     var action = 'action';
 
     beforeEach(module('common.apis'));
 
-    beforeEach(inject(function (_api_, _$httpBackend_, _$httpParamSerializer_, _$rootScope_) {
+    beforeEach(inject(function (_api_, _$cacheFactory_, _$httpBackend_, _$httpParamSerializer_, _$rootScope_) {
       api = _api_;
+      $cacheFactory = _$cacheFactory_;
       $httpBackend = _$httpBackend_;
       $httpParamSerializer = _$httpParamSerializer_;
       $rootScope = _$rootScope_;
     }));
 
-    describe('sendGET', function () {
-      var promise;
-
-      afterEach(function () { $httpBackend.flush(); });
+    describe('sendGET()', function () {
+      var expectedResponse;
 
       describe('when the API does not return an error', function () {
         var returnValue = {
@@ -33,13 +32,15 @@ define([
         };
 
         beforeEach(function () {
-          promise = expectAndSendGET(returnValue);
+          expectAndSendGET(returnValue)
+            .then(function (response) {
+              expectedResponse = response;
+            });
+          $httpBackend.flush();
         });
 
         it('returns values sent from API', function () {
-          promise.then(function (response) {
-            expect(response).toEqual(returnValue);
-          });
+          expect(expectedResponse).toEqual(returnValue);
         });
       });
 
@@ -50,13 +51,15 @@ define([
         };
 
         beforeEach(function () {
-          promise = expectAndSendGET(returnValue);
+          expectAndSendGET(returnValue)
+            .catch(function (response) {
+              expectedResponse = response;
+            });
+          $httpBackend.flush();
         });
 
         it('rejects the promise with the error message provided by the API', function () {
-          promise.catch(function (response) {
-            expect(response).toBe(returnValue.error_message);
-          });
+          expect(expectedResponse).toBe(returnValue.error_message);
         });
       });
 
@@ -66,20 +69,20 @@ define([
           somekey: 'someval'
         };
 
+        beforeEach(function () {
+          spyOn(api, 'sendGET').and.callThrough();
+        });
+
         describe('when limit is sent as a parameter', function () {
           var limit = 5;
 
           beforeEach(function () {
-            expectAndSendGET(returnValue, {options: {limit: limit}});
+            expectAndSendGET(returnValue, { options: { limit: limit } });
+            $httpBackend.flush();
           });
 
-          it('send a GET request with original limit value', function () {
-            $httpBackend.expectGET('/civicrm/ajax/rest?' + $httpParamSerializer({
-              json: {options: {limit: limit}},
-              sequential: 1,
-              action: action,
-              entity: entity
-            }));
+          it('sends a GET request with original limit value', function () {
+            expect(api.sendGET.calls.mostRecent().args[2]).toEqual({ options: { limit: limit } });
           });
         });
 
@@ -88,13 +91,80 @@ define([
             expectAndSendGET(returnValue);
           });
 
-          it('send a GET request with 0 set as limit', function () {
-            $httpBackend.expectGET('/civicrm/ajax/rest?' + $httpParamSerializer({
-              json: {options: {limit: 0}},
-              sequential: 1,
+          it('sends a GET request with 0 set as limit', function () {
+            expect(api.sendGET.calls.mostRecent().args[2]).not.toBeDefined();
+          });
+        });
+      });
+
+      describe('caching', function () {
+        var cacheSize;
+        var sampleResult = 'sample result';
+        var sampleParams = {};
+
+        beforeEach(function () {
+          spyOn($cacheFactory.get('$http'), 'remove').and.callThrough();
+        });
+
+        describe('when "returnCachedData" parameter is not passed', function () {
+          beforeEach(function () {
+            expectAndSendGET(sampleResult, sampleParams);
+            $rootScope.$digest();
+
+            cacheSize = $cacheFactory.get('$http').info().size;
+          });
+
+          it('does not flush cache before HTTP call', function () {
+            expect($cacheFactory.get('$http').remove).not.toHaveBeenCalled();
+          });
+
+          it('caches data by default', function () {
+            expect(cacheSize).toBe(1);
+          });
+        });
+
+        describe('when "returnCachedData" parameter passed as `true`', function () {
+          beforeEach(function () {
+            expectAndSendGET(sampleResult, sampleParams, true);
+            $rootScope.$digest();
+
+            cacheSize = $cacheFactory.get('$http').info().size;
+          });
+
+          it('does not flush cache before HTTP call', function () {
+            expect($cacheFactory.get('$http').remove).not.toHaveBeenCalled();
+          });
+
+          it('caches data', function () {
+            expect(cacheSize).toBe(1);
+          });
+        });
+
+        describe('when "returnCachedData" parameter passed as `false`', function () {
+          var cacheResultKey;
+
+          beforeEach(function () {
+            // An URL that is constructed during calling $http method
+            // is used by $cacheFactory to keep the cached results
+            cacheResultKey = '/civicrm/ajax/rest?' + $httpParamSerializer({
               action: action,
-              entity: entity
-            }));
+              entity: entity,
+              json: { options: { limit: 0 } },
+              sequential: 1
+            });
+
+            expectAndSendGET(sampleResult, sampleParams, false);
+            $rootScope.$digest();
+
+            cacheSize = $cacheFactory.get('$http').info().size;
+          });
+
+          it('flushes cache before HTTP call', function () {
+            expect($cacheFactory.get('$http').remove).toHaveBeenCalledWith(cacheResultKey);
+          });
+
+          it('caches updated data for future requests', function () {
+            expect(cacheSize).toBe(1);
           });
         });
       });
@@ -104,21 +174,20 @@ define([
        *
        * @param  {any} returnValue - value to be returned by the GET request
        * @param  {Object} params - params to be used in the API call
+       * @param  {Boolean} cache
        * @return {Promise}
        */
-      function expectAndSendGET (returnValue, params) {
+      function expectAndSendGET (returnValue, params, cache) {
         $httpBackend
           .whenGET(new RegExp('action=' + action + '&entity=' + entity))
           .respond(returnValue);
 
-        return api.sendGET(entity, action, params, true);
+        return api.sendGET(entity, action, params, cache);
       }
     });
 
-    describe('sendPOST', function () {
-      var promise;
-
-      afterEach(function () { $httpBackend.flush(); });
+    describe('sendPOST()', function () {
+      var expectedResponse;
 
       describe('when the API doesnt return an error', function () {
         var returnValue = {
@@ -127,13 +196,15 @@ define([
         };
 
         beforeEach(function () {
-          promise = expectAndSendPOST(returnValue);
+          expectAndSendPOST(returnValue)
+            .then(function (response) {
+              expectedResponse = response;
+            });
+          $httpBackend.flush();
         });
 
         it('returns values sent from API', function () {
-          promise.then(function (response) {
-            expect(response).toEqual(returnValue);
-          });
+          expect(expectedResponse).toEqual(returnValue);
         });
       });
 
@@ -144,13 +215,15 @@ define([
         };
 
         beforeEach(function () {
-          promise = expectAndSendPOST(returnValue);
+          expectAndSendPOST(returnValue)
+            .catch(function (response) {
+              expectedResponse = response;
+            });
+          $httpBackend.flush();
         });
 
         it('rejects the promise with the error message provided by the API', function () {
-          promise.catch(function (response) {
-            expect(response).toBe(returnValue.error_message);
-          });
+          expect(expectedResponse).toBe(returnValue.error_message);
         });
       });
 
@@ -160,20 +233,19 @@ define([
           somekey: 'someval'
         };
 
+        beforeEach(function () {
+          spyOn(api, 'sendPOST').and.callThrough();
+        });
+
         describe('when limit is sent as a parameter', function () {
           var limit = 5;
 
           beforeEach(function () {
-            expectAndSendPOST(returnValue, {options: {limit: limit}});
+            expectAndSendPOST(returnValue, { options: { limit: limit } });
           });
 
           it('send a POST request with original limit value', function () {
-            $httpBackend.expectPOST('/civicrm/ajax/rest', $httpParamSerializer({
-              json: { options: { limit: limit } },
-              sequential: 1,
-              action: action,
-              entity: entity
-            }));
+            expect(api.sendPOST.calls.mostRecent().args[2]).toEqual({ options: { limit: limit } });
           });
         });
 
@@ -183,12 +255,7 @@ define([
           });
 
           it('send a POST request with 0 set as limit', function () {
-            $httpBackend.expectPOST('/civicrm/ajax/rest', $httpParamSerializer({
-              json: { options: { limit: 0 } },
-              sequential: 1,
-              action: action,
-              entity: entity
-            }));
+            expect(api.sendPOST.calls.mostRecent().args[2]).not.toBeDefined();
           });
         });
       });

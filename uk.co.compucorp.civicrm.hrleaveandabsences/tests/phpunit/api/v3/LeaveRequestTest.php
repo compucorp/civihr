@@ -2149,7 +2149,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $fromType,
       'to_date' => $toDate,
       'to_date_type' => $toType,
-      'type_id' => $absenceType->id
+      'type_id' => $absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
     $this->assertEquals($expectedResultsBreakdown, $result['values']);
   }
@@ -4373,6 +4374,55 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($toDate->format('Y-m-d') ." 23:59:00", $leaveRequest->to_date);
   }
 
+  public function testTheTimeForFromAndToDateOfLeaveRequestStaysUntouchedWhenRequestIsTOIL() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'max_leave_accrual' => 10,
+      'allow_accrue_in_the_past' => true
+    ]);
+    $fromDate = new DateTime('2016-01-08 01:23:45');
+    $toDate = new DateTime('2016-01-10 12:34:56');
+    $contactID = 1;
+    $this->registerCurrentLoggedInContactInSession($contactID);
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => $fromDate->format('YmdHis'),
+      'end_date' => $toDate->format('YmdHis'),
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => $fromDate->format('Y-m-d')]
+    );
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $period->id
+    ]);
+
+    $entitlementBalanceChange = 3;
+    $this->createLeaveBalanceChange($periodEntitlement->id, $entitlementBalanceChange);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+
+    $result = civicrm_api3('LeaveRequest', 'create', [
+      'contact_id' => $contract['contact_id'],
+      'type_id' => $absenceType->id,
+      'from_date' => $fromDate->format('Y-m-d H:i:s'),
+      'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'to_date' => $toDate->format('Y-m-d H:i:s'),
+      'to_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
+      'status_id' => 3,
+      'toil_duration' => 10,
+      'toil_to_accrue' => 2,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+    ]);
+
+    $leaveRequest = LeaveRequest::findById($result['id']);
+    $this->assertEquals($fromDate->format('Y-m-d H:i:s'), $leaveRequest->from_date);
+    $this->assertEquals($toDate->format('Y-m-d H:i:s'), $leaveRequest->to_date);
+  }
+
   public function testCreateReturnsFalseForFromEmailParameterWhenFromEmailIsNotConfigured() {
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
@@ -4627,4 +4677,3 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     );
   }
 }
-

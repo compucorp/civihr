@@ -216,6 +216,7 @@ define([
             controller.period = {};
 
             requestModalHelper.setTestDates(controller, date2016);
+
             fromDate = moment(controller.uiOptions.fromDate).format(sharedSettings.serverDateFormat);
           });
 
@@ -558,6 +559,20 @@ define([
 
             it('defaults data selection to a single day', function () {
               expect(controller.uiOptions.multipleDays).toBeFalsy();
+            });
+
+            describe('after changed to multiple days mode', function () {
+              beforeEach(function () {
+                controller.uiOptions.multipleDays = true;
+
+                controller.daysSelectionModeChangeHandler();
+                $rootScope.$digest();
+              });
+
+              it('shows both "from" and "to" times', function () {
+                expect(controller.uiOptions.times.from.loading).toBe(false);
+                expect(controller.uiOptions.times.to.loading).toBe(false);
+              });
             });
 
             describe('after from date is selected', function () {
@@ -1254,9 +1269,9 @@ define([
             expect(controller.request.contact_id).toEqual(CRM.vars.leaveAndAbsences.contactId.toString());
             expect(controller.request.type_id).toEqual(leaveRequestAttributes.type_id);
             expect(controller.request.status_id).toEqual(waitingApprovalStatus.value);
-            expect(controller.request.from_date).toEqual(leaveRequestAttributes.from_date);
+            expect(controller.request.from_date).toEqual(moment(leaveRequestAttributes.from_date).format('YYYY-MM-DD'));
             expect(controller.request.from_date_type).toEqual(leaveRequestAttributes.from_date_type);
-            expect(controller.request.to_date).toEqual(leaveRequestAttributes.to_date);
+            expect(controller.request.to_date).toEqual(moment(leaveRequestAttributes.to_date).format('YYYY-MM-DD'));
             expect(controller.request.to_date_type).toEqual(leaveRequestAttributes.to_date_type);
           });
 

@@ -13,6 +13,7 @@ define([
   'common/modules/dialog',
   'common/services/angular-date/date-format',
   'common/services/check-permissions',
+  'common/services/crm-ang.service',
   'leave-absences/shared/ui-router',
   'leave-absences/shared/models/absence-period.model',
   'leave-absences/shared/models/absence-type.model',
