@@ -193,6 +193,7 @@ def sendBuildStartdNotification() {
   def message = 'Building ' + getBuildTargetLink() + '. ' + getReportLink()
 
   sendHipchatNotification('YELLOW', message)
+  sendSlackNotification('YELLOW', message)
 }
 
 /*
@@ -201,6 +202,7 @@ def sendBuildStartdNotification() {
 def sendBuildSuccessNotification() {
   def message = getBuildTargetLink() + ' built successfully. Time: $BUILD_DURATION. ' + getReportLink()
   sendHipchatNotification('GREEN', message)
+  sendSlackNotification('GREEN', message)
 }
 
 /*
@@ -209,6 +211,7 @@ def sendBuildSuccessNotification() {
 def sendBuildFailureNotification() {
   def message = 'Failed to build ' + getBuildTargetLink() + '. Time: $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink()
   sendHipchatNotification('RED', message)
+  sendSlackNotification('RED', message)
 }
 
 /*
@@ -216,6 +219,10 @@ def sendBuildFailureNotification() {
  */
 def sendHipchatNotification(String color, String message) {
   hipchatSend color: color, message: message, notify: true
+}
+
+def sendSlackNotification(String color, String message) {
+  slackSend color: color, message: message, notifiy: true
 }
 
 /*
