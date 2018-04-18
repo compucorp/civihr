@@ -904,7 +904,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $noOverlappingCondition =
       $isCalculationUnitInHours || $isTOIL
       ?
-        "(lr.from_date < '{$toDate}' AND lr.to_date > '{$fromDate}' AND lr.type_id IN (" . join(',', $absenceTypesIDsWithSameUnit) . "))" .
+        "(lr.from_date < '{$toDate}' AND lr.to_date > '{$fromDate}'" . (!$isTOIL ? " AND lr.type_id IN (" . join(',', $absenceTypesIDsWithSameUnit) . ")" : "") . ")" .
         (count($absenceTypesIDsWithDifferentUnit) && !$isTOIL ? " OR ((lrd.date BETWEEN %3 AND %4) AND lr.type_id IN (" . join(',', $absenceTypesIDsWithDifferentUnit) . "))" : "")
       : "lrd.date BETWEEN %3 AND %4 AND lr.type_id IN (" . join(',', array_merge($absenceTypesIDsWithSameUnit, $absenceTypesIDsWithDifferentUnit)) . ")" .
         ($fromDateType !== null && (int)$fromDateType === (int)$halfDayPMID ? " AND (DATE_FORMAT(lr.to_date, '%y-%m-%d') != DATE_FORMAT('{$fromDate}', '%y-%m-%d') OR lr.to_date_type != {$halfDayAMID})" : "") .
