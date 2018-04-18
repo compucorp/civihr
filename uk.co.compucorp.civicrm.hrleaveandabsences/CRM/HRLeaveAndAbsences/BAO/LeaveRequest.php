@@ -891,6 +891,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
     $halfDayAMID = $leaveRequestDayTypes['half_day_am'];
     $halfDayPMID = $leaveRequestDayTypes['half_day_pm'];
+    $isTOIL = $requestType === LeaveRequest::REQUEST_TYPE_TOIL;
 
     foreach ($absenceTypes as $absenceType) {
       if ($leaveRequestAbsenceType->calculation_unit === $absenceType->calculation_unit) {
@@ -901,16 +902,16 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     $noOverlappingCondition =
-      $isCalculationUnitInHours
+      $isCalculationUnitInHours || $isTOIL
       ?
         "(lr.from_date < '{$toDate}' AND lr.to_date > '{$fromDate}' AND lr.type_id IN (" . join(',', $absenceTypesIDsWithSameUnit) . "))" .
-        (count($absenceTypesIDsWithDifferentUnit) ? " OR ((lrd.date BETWEEN %3 AND %4) AND lr.type_id IN (" . join(',', $absenceTypesIDsWithDifferentUnit) . "))" : "")
+        (count($absenceTypesIDsWithDifferentUnit) && !$isTOIL ? " OR ((lrd.date BETWEEN %3 AND %4) AND lr.type_id IN (" . join(',', $absenceTypesIDsWithDifferentUnit) . "))" : "")
       : "lrd.date BETWEEN %3 AND %4 AND lr.type_id IN (" . join(',', array_merge($absenceTypesIDsWithSameUnit, $absenceTypesIDsWithDifferentUnit)) . ")" .
         ($fromDateType !== null && (int)$fromDateType === (int)$halfDayPMID ? " AND (DATE_FORMAT(lr.to_date, '%y-%m-%d') != DATE_FORMAT('{$fromDate}', '%y-%m-%d') OR lr.to_date_type != {$halfDayAMID})" : "") .
         ($toDateType !== null && (int)$toDateType === (int)$halfDayAMID ? " AND (DATE_FORMAT(lr.from_date, '%y-%m-%d') != DATE_FORMAT('{$toDate}', '%y-%m-%d') OR lr.from_date_type != {$halfDayPMID})" : "");
 
     $ignoreRequestTypes =
-      'lr.request_type ' . ($requestType === LeaveRequest::REQUEST_TYPE_TOIL ? '=' : '!=') . "'" . LeaveRequest::REQUEST_TYPE_TOIL . "'";
+      'lr.request_type ' . ($isTOIL ? '=' : '!=') . "'" . LeaveRequest::REQUEST_TYPE_TOIL . "'";
 
     $query = "
       SELECT DISTINCT lr.* FROM {$leaveRequestTable} lr
