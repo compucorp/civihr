@@ -3642,6 +3642,53 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $this->assertEquals($expectedBroughtForwardLog, $balanceExpiryLogs[$broughtForwardExpiryRecord->id]);
   }
 
+  public function testCreateExpiryRecordsDoesTryToExpireBalanceChangesLinkedToSoftDeletedToilRequest() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 1,
+    ]);
+
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement->contact_id,
+      'type_id' => $periodEntitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('2017-05-17'),
+      'to_date' => CRM_Utils_Date::processDate('2017-05-17'),
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2017-08-01'),
+      'toil_to_accrue' => 1,
+      'toil_duration' => 100,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement->contact_id,
+      'type_id' => $periodEntitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('2017-08-09'),
+      'to_date' => CRM_Utils_Date::processDate('2017-08-09'),
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2017-11-01'),
+      'toil_to_accrue' => 1,
+      'toil_duration' => 100,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    //Delete the first TOIL request
+    LeaveRequest::softDelete($toilRequest->id);
+
+    LeaveBalanceChange::createExpiryRecords();
+    $toilBalanceChange = $this->findToilRequestMainBalanceChange($toilRequest2->id);
+    $toilExpiryRecord = $this->getExpiryRecordForBalanceChange($toilBalanceChange->id);
+
+    //only the expiry record second TOIL request will be created since the first is deleted.
+    $balanceExpiryLogs = $this->getBalanceChangeExpiryLogRecords();
+    $this->assertCount(1, $balanceExpiryLogs);
+    $this->assertNotNull($balanceExpiryLogs[$toilExpiryRecord->id]);
+  }
+
   private function getBalanceChangeExpiryLogRecords() {
     $leaveExpiryLog = new LeaveBalanceChangeExpiryLog();
     $leaveExpiryLog->find();

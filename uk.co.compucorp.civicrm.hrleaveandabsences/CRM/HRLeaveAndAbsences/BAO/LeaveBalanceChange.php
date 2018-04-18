@@ -755,7 +755,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       WHERE balance_to_expire.expiry_date IS NOT NULL AND
             balance_to_expire.expiry_date < %3 AND
             balance_to_expire.expired_balance_change_id IS NULL AND
-            expired_balance_change.id IS NULL
+            expired_balance_change.id IS NULL AND
+            coalesce(leave_request.type_id, period_entitlement.type_id) IS NOT NULL
       ORDER BY balance_to_expire.expiry_date ASC, balance_to_expire.id ASC
     ";
 
