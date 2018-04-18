@@ -663,13 +663,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     ];
 
     $overlappingLeaveRequests = self::findOverlappingLeaveRequests(
-      $params['contact_id'],
-      $params['from_date'],
-      isset($params['from_date_type']) ? $params['from_date_type'] : null,
-      $params['to_date'],
-      isset($params['to_date_type']) ? $params['to_date_type'] : null,
-      $params['type_id'],
-      $params['request_type'],
+      $params,
       $leaveRequestStatusFilter
     );
 
@@ -865,25 +859,26 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Returns existing leave requests considered "overlapping" for the given contact
-   * within the date/time period, absence type, request type and statuses supplied.
+   * Returns existing leave requests considered "overlapping"
+   * for the given leave request parameters and statuses supplied.
    *
-   * @param int $contactID
-   * @param string $fromDate
-   * @param string $toDate
-   * @param int $typeID
-   * @param string $requestType
+   * @param array $leaveRequestParams
    * @param array $leaveRequestStatus
    * @param boolean $excludePublicHolidayLeaveRequests
    *   Whether to exclude public holiday leave requests from overlapping leave requests or not
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest[]|null
    */
-  public static function findOverlappingLeaveRequests($contactID, $fromDate, $fromDateType = null, $toDate, $toDateType = null, $typeID, $requestType, $leaveRequestStatus = [], $excludePublicHolidayLeaveRequests = true) {
+  public static function findOverlappingLeaveRequests($leaveRequestParams, $leaveRequestStatus = [], $excludePublicHolidayLeaveRequests = TRUE) {
+    $fromDate = $leaveRequestParams['from_date'];
+    $fromDateType = isset($leaveRequestParams['from_date_type']) ? $leaveRequestParams['from_date_type'] : NULL;
+    $toDate = $leaveRequestParams['to_date'];
+    $toDateType = isset($leaveRequestParams['to_date_type']) ? $leaveRequestParams['to_date_type'] : NULL;
+
     $leaveRequestTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveBalanceChangeTable = LeaveBalanceChange::getTableName();
-    $leaveRequestAbsenceType = AbsenceType::findById($typeID);
+    $leaveRequestAbsenceType = AbsenceType::findById($leaveRequestParams['type_id']);
     $isCalculationUnitInHours = $leaveRequestAbsenceType->isCalculationUnitInHours();
     $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
     $absenceTypesIDsWithSameUnit = [];
@@ -891,7 +886,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
     $halfDayAMID = $leaveRequestDayTypes['half_day_am'];
     $halfDayPMID = $leaveRequestDayTypes['half_day_pm'];
-    $isTOIL = $requestType === LeaveRequest::REQUEST_TYPE_TOIL;
+    $isTOIL = $leaveRequestParams['request_type'] === LeaveRequest::REQUEST_TYPE_TOIL;
 
     foreach ($absenceTypes as $absenceType) {
       if ($leaveRequestAbsenceType->calculation_unit === $absenceType->calculation_unit) {
@@ -933,7 +928,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $params = [
       1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
-      2 => [$contactID, 'Integer'],
+      2 => [$leaveRequestParams['contact_id'], 'Integer'],
       3 => [CRM_Utils_Date::processDate($fromDate, null, false, 'Y-m-d'), 'String'],
       4 => [CRM_Utils_Date::processDate($toDate, null, false, 'Y-m-d'), 'String'],
       5 => [self::REQUEST_TYPE_PUBLIC_HOLIDAY, 'String']

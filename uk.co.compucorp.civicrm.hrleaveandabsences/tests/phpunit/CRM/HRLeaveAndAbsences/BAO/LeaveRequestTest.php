@@ -1112,7 +1112,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $startDate = '2016-11-01';
     $endDate = '2016-11-03';
 
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, 1, $endDate, 1, $this->absenceType->id, LeaveRequest::REQUEST_TYPE_LEAVE);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
     $this->assertCount(1, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
@@ -1157,8 +1163,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
         'to_date' => $requestToDate->format('YmdHis'),
       ], true);
 
-      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $testFromDate, 1, $testToDate, 1, $absenceTypes['hours']->id, LeaveRequest::REQUEST_TYPE_LEAVE);
+      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+        'contact_id' => $contactID,
+        'from_date' => $testFromDate,
+        'to_date' => $testToDate,
+        'type_id' => $absenceTypes['hours']->id,
+        'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+      ]);
       $leaveRequestToTestID = $leaveRequestToTest->id;
+
       // Flush leave request from DB to get ready for the next test suite
       $leaveRequestToTest->delete();
 
@@ -1184,7 +1197,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     foreach ([
       [LeaveRequest::REQUEST_TYPE_LEAVE, LeaveRequest::REQUEST_TYPE_TOIL],
-      [LeaveRequest::REQUEST_TYPE_TOIL, LeaveRequest::REQUEST_TYPE_LEAVE]
+      [LeaveRequest::REQUEST_TYPE_TOIL, LeaveRequest::REQUEST_TYPE_LEAVE],
+      [LeaveRequest::REQUEST_TYPE_SICKNESS, LeaveRequest::REQUEST_TYPE_TOIL],
+      [LeaveRequest::REQUEST_TYPE_TOIL, LeaveRequest::REQUEST_TYPE_SICKNESS]
     ] as $testSuite) {
       $existingRequestType = $testSuite[0];
       $testingRequestType = $testSuite[1];
@@ -1196,10 +1211,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
         'from_date' => $requestFromDate->format('YmdHis'),
         'to_date' => $requestToDate->format('YmdHis')
       ], true);
+
+      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+        'contact_id' => $contactID,
+        'from_date' => $testFromDate,
+        'to_date' => $testToDate,
+        'type_id' => $absenceTypeForTOILAccrual->id,
+        'request_type' => $testingRequestType
+      ]);
+
       // Flush leave request from DB to get ready for the next test suite
       $leaveRequestToTest->delete();
 
-      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $testFromDate, 1, $testToDate, 1, $absenceTypeForTOILAccrual->id, $testingRequestType);
       $this->assertCount(0, $overlappingRequests);
     }
   }
@@ -1240,8 +1263,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
         'to_date_type' => $requestToDateType
       ], true);
 
-      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $testFromDate, $halfDayPMID, $testToDate, $halfDayAMID, $absenceType->id, LeaveRequest::REQUEST_TYPE_LEAVE);
+      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+        'contact_id' => $contactID,
+        'from_date' => $testFromDate,
+        'from_date_type' => $halfDayPMID,
+        'to_date' => $testToDate,
+        'to_date_type' => $halfDayAMID,
+        'type_id' => $absenceType->id,
+        'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+      ]);
       $leaveRequestToTestID = $leaveRequestToTest->id;
+
       // Flush leave request from DB to get ready for the next test suite
       $leaveRequestToTest->delete();
 
@@ -1290,8 +1322,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
         'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
       ], true);
 
-      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $testFromDate, 1, $testToDate, 1, $absenceTypes['days']->id, LeaveRequest::REQUEST_TYPE_TOIL);
+      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+        'contact_id' => $contactID,
+        'from_date' => $testFromDate,
+        'to_date' => $testToDate,
+        'type_id' => $absenceTypes['days']->id,
+        'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+      ]);
       $leaveRequestToTestID = $leaveRequestToTest->id;
+
       // Flush leave request from DB to get ready for the next test suite
       $leaveRequestToTest->delete();
 
@@ -1448,7 +1487,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $startDate = '2016-11-01';
     $endDate = '2016-11-06';
 
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, 1, $endDate, 1, $this->absenceType->id, LeaveRequest::REQUEST_TYPE_LEAVE);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
     $this->assertCount(2, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
@@ -1478,7 +1523,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $startDate = '2016-11-01';
     $endDate = '2016-11-02';
 
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, 1, $endDate, 1, $this->absenceType->id, LeaveRequest::REQUEST_TYPE_LEAVE);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
     $this->assertCount(0, $overlappingRequests);
   }
 
@@ -1524,7 +1575,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //public holiday is excluded by default
     $startDate = '2016-11-01';
     $endDate = '2016-11-12';
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, 1, $endDate, 1, $this->absenceType->id, LeaveRequest::REQUEST_TYPE_LEAVE);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
     $this->assertCount(2, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
@@ -1576,7 +1633,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //leaveRequest2 and public holiday
     $startDate = '2016-11-01';
     $endDate = '2016-11-12';
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, 1, $endDate, 1, $this->absenceType->id, LeaveRequest::REQUEST_TYPE_LEAVE, [], false);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], [], false);
     $this->assertCount(3, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
@@ -1645,7 +1708,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $startDate = '2016-11-02';
     $endDate = '2016-11-15';
     $filterStatus = [$leaveRequestStatuses['more_information_required']];
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, 1, $endDate, 1, $this->absenceType->id, LeaveRequest::REQUEST_TYPE_LEAVE, $filterStatus);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], $filterStatus);
     $this->assertCount(1, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest2->id, $overlappingRequests[0]->id);
@@ -1657,7 +1726,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $startDate = '2016-11-01';
     $endDate = '2016-11-16';
     $filterStatus = [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['awaiting_approval']];
-    $overlappingRequests2 = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, 1, $endDate, 1, $this->absenceType->id, LeaveRequest::REQUEST_TYPE_LEAVE, $filterStatus, false);
+    $overlappingRequests2 = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], $filterStatus, false);
     $this->assertCount(2, $overlappingRequests2);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest1->id, $overlappingRequests2[0]->id);
