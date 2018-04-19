@@ -11,12 +11,12 @@ define([
   JobRolesController.$inject = [
     '$filter', '$log', '$q', '$rootElement', '$route', '$routeParams', '$scope',
     '$timeout', '$uibModal', 'DOMEventTrigger', 'settings', 'HR_settings',
-    'dateValidation', 'filtersService', 'jobRoleService', 'pubSub'
+    'crmAngService', 'dateValidation', 'filtersService', 'jobRoleService', 'pubSub'
   ];
 
   function JobRolesController ($filter, $log, $q, $rootElement, $route,
     $routeParams, $scope, $timeout, $modal, DOMEventTrigger, settings,
-    hrSettings, dateValidation, filtersService, jobRoleService, pubSub) {
+    hrSettings, crmAngService, dateValidation, filtersService, jobRoleService, pubSub) {
     $log.debug('Controller: JobRolesController');
 
     var formatDate = $filter('formatDate');
@@ -40,10 +40,10 @@ define([
     vm.LevelsData = {}; // Store the level types
     vm.LocationsData = {}; // Store the location types
     vm.RegionsData = {}; // Store the region types
-      // Define the add new role URL
+    // Define the add new role URL
     vm.addNewRoleUrl = settings.pathBaseUrl + settings.pathIncludeTpl + 'add_new_role.html';
     vm.jobRolePanelUrl = settings.pathBaseUrl + settings.pathIncludeTpl + 'job_role_panel.html';
-      // Select list for Row Types (used for Funders and Cost Centers)
+    // Select list for Row Types (used for Funders and Cost Centers)
     vm.rowTypes = {};
     vm.rowTypes[0] = { id: 0, name: 'Fixed' };
     vm.rowTypes[1] = { id: 1, name: '%' };
@@ -80,6 +80,7 @@ define([
     vm.updateRole = updateRole;
     vm.validateRole = validateRole;
     vm.validateTitle = validateTitle;
+    vm.openOptionsEditor = openOptionsEditor;
 
     (function init () {
       subcribeToEvents();
@@ -451,8 +452,8 @@ define([
         return _(data.values).map(function (contact) {
           return contact;
         })
-        .indexBy('contact_id')
-        .value();
+          .indexBy('contact_id')
+          .value();
       });
     }
 
@@ -476,113 +477,72 @@ define([
     }
 
     /**
+     * Opens editor for option editing
      *
+     * @param optionType
      */
-    function getOptionValues () {
-      // Set the option groups for which we want to get the values
-      var optionGroups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
+    function openOptionsEditor (optionType) {
+      var url = '/civicrm/admin/options/' + optionType + '?reset=1';
 
+      crmAngService.loadForm(url)
+        .on('crmUnload', function () {
+          getOptionGroupTypeValues(optionType);
+        });
+    }
+
+    /**
+     * Retrieve a specific option group type value
+     *
+     * @param optionGroupType
+     * @returns {*}
+     */
+    function getOptionGroupTypeValues (optionGroupType) {
+      return retrieveOptionGroupValues([optionGroupType]);
+    }
+
+    /**
+     * Retrieve option group values
+     *
+     * @param optionGroups
+     * @returns {*}
+     */
+    function retrieveOptionGroupValues (optionGroups) {
       return jobRoleService.getOptionValues(optionGroups).then(function (data) {
         if (data.is_error === 1) {
           vm.message_type = 'alert-danger';
           vm.message = 'Cannot get option values!';
         } else {
-          // Pass the department option group list to the scope
-          var DepartmentList = {};
-
-          // Pass the region option group list to the scope
-          var RegionList = {};
-
-          // Pass the location option group list to the scope
-          var LocationList = {};
-
-          // Pass the level option group list to the scope
-          var LevelList = {};
-
-          // Pass the Cost Centers option group list to the scope
-          var CostCentreList = [];
+          var optionsData = {
+            'hrjc_department': { storage: 'DepartmentsData', data: {} },
+            'hrjc_region': { storage: 'RegionsData', data: {} },
+            'hrjc_location': { storage: 'LocationsData', data: {} },
+            'hrjc_level_type': { storage: 'LevelsData', data: {} },
+            'cost_centres': { storage: 'CostCentreList', data: [] }
+          };
 
           angular.forEach(data['optionGroupData'], function (optionGroupId, optionGroupName) {
             for (var i = 0; i < data.count; i++) {
-              switch (optionGroupName) {
-                case 'hrjc_department':
-                  if (optionGroupId === data.values[i]['option_group_id']) {
-                    // Build the department list
-                    DepartmentList[data.values[i]['value']] = {
-                      id: data.values[i]['id'],
-                      title: data.values[i]['label'],
-                      value: data.values[i]['value'],
-                      is_active: data.values[i]['is_active']
-                    };
-                  }
+              if (optionGroupId === data.values[i]['option_group_id']) {
+                if (optionGroupName === 'cost_centres') {
+                  optionsData[optionGroupName].data.push({
+                    id: data.values[i]['id'],
+                    title: data.values[i]['label'],
+                    weight: data.values[i]['weight'],
+                    is_active: data.values[i]['is_active']
+                  });
+                } else {
+                  optionsData[optionGroupName].data[data.values[i]['value']] = {
+                    id: data.values[i]['id'],
+                    title: data.values[i]['label'],
+                    value: data.values[i]['value'],
+                    is_active: data.values[i]['is_active']
+                  };
+                }
 
-                  break;
-                case 'hrjc_region':
-                  if (optionGroupId === data.values[i]['option_group_id']) {
-                    // Build the region list
-                    RegionList[data.values[i]['value']] = {
-                      id: data.values[i]['id'],
-                      title: data.values[i]['label'],
-                      value: data.values[i]['value'],
-                      is_active: data.values[i]['is_active']
-                    };
-                  }
-
-                  break;
-                case 'hrjc_location':
-                  if (optionGroupId === data.values[i]['option_group_id']) {
-                    // Build the contact list
-                    LocationList[data.values[i]['value']] = {
-                      id: data.values[i]['id'],
-                      title: data.values[i]['label'],
-                      value: data.values[i]['value'],
-                      is_active: data.values[i]['is_active']
-                    };
-                  }
-
-                  break;
-                case 'hrjc_level_type':
-                  if (optionGroupId === data.values[i]['option_group_id']) {
-                    // Build the contact list
-                    LevelList[data.values[i]['value']] = {
-                      id: data.values[i]['id'],
-                      title: data.values[i]['label'],
-                      value: data.values[i]['value'],
-                      is_active: data.values[i]['is_active']
-                    };
-                  }
-
-                  break;
-                case 'cost_centres':
-                  if (optionGroupId === data.values[i]['option_group_id']) {
-                    // Build the contact list
-                    CostCentreList.push({
-                      id: data.values[i]['id'],
-                      title: data.values[i]['label'],
-                      is_active: data.values[i]['is_active'],
-                      weight: data.values[i]['weight']
-                    });
-                  }
-
-                  break;
+                vm[optionsData[optionGroupName].storage] = getActiveValues(optionsData[optionGroupName].data);
               }
             }
           });
-
-          // Store the Department types so we can reuse later
-          vm.DepartmentsData = getActiveValues(DepartmentList);
-
-          // Store the Region types so we can reuse later
-          vm.RegionsData = getActiveValues(RegionList);
-
-          // Store the Location types so we can reuse later
-          vm.LocationsData = getActiveValues(LocationList);
-
-          // Store the Level types so we can reuse later
-          vm.LevelsData = getActiveValues(LevelList);
-
-          // Store the cost center list so we can reuse later
-          vm.CostCentreList = CostCentreList;
 
           vm.message_type = 'alert-success';
           vm.message = null;
@@ -596,6 +556,18 @@ define([
       function (errorMessage) {
         vm.error = errorMessage;
       });
+    }
+
+    /**
+     * Get options values for department, region, location, level and cost centres
+     *
+     * @returns {*}
+     */
+    function getOptionValues () {
+      // Set the option groups for which we want to get the values
+      var optionGroups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
+
+      return retrieveOptionGroupValues(optionGroups);
     }
 
     /**
@@ -849,10 +821,10 @@ define([
           start: areDatesCustom ? vm.editData.new_role_id.newStartDate : contract.start_date,
           end: areDatesCustom ? vm.editData.new_role_id.newEndDate : contract.end_date
         },
-          {
-            start: 'newStartDate',
-            end: 'newEndDate'
-          });
+        {
+          start: 'newStartDate',
+          end: 'newEndDate'
+        });
       }
     }
 
@@ -965,10 +937,10 @@ define([
         'contractStart': contract.start_date,
         'contractEnd': contract.end_date
       },
-        {
-          'start': vm.errors.newStartDate,
-          'end': vm.errors.newEndDate
-        });
+      {
+        'start': vm.errors.newStartDate,
+        'end': vm.errors.newEndDate
+      });
 
       if (validateResponse) {
         newRole = angular.copy(vm.editData.new_role_id);
@@ -1255,10 +1227,10 @@ define([
         'contractStart': contract.start_date,
         'contractEnd': contract.end_date
       },
-        {
-          'start': data.start_date.$error.custom,
-          'end': data.end_date.$error.custom
-        });
+      {
+        'start': data.start_date.$error.custom,
+        'end': data.end_date.$error.custom
+      });
 
       return (validateResponse ? true : 'Error');
     }

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+
+  <OptionGroups>
+    <OptionGroup>
+      <name>hrleaveandabsences_work_pattern_change_reason</name>
+      <title>Work Pattern Change Reason</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+
+  <OptionValues>
+    <OptionValue>
+      <label>As per contract</label>
+      <value>1</value>
+      <name>as_per_contract</name>
+      <is_default>1</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_work_pattern_change_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Change in contractual hours</label>
+      <value>2</value>
+      <name>change_in_contractual_hours</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_work_pattern_change_reason</option_group_name>
+    </OptionValue>
+
+    <OptionValue>
+      <label>Change in contract type</label>
+      <value>3</value>
+      <name>change_in_contract_type</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>hrleaveandabsences_work_pattern_change_reason</option_group_name>
+    </OptionValue>
+
+  </OptionValues>
+</CustomData>

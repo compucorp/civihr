@@ -161,4 +161,25 @@ class CRM_HRDemog_Upgrader extends CRM_HRDemog_Upgrader_Base {
     CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_group SET is_reserved = 0, collapse_display = 1 where name = 'Extended_Demographics'");
     return TRUE;
   }
+
+  /**
+   * Upgrade CustomGroup, setting Extended_Demographics is_reserved value to YES
+   *
+   * @return bool
+   */
+  public function upgrade_1401() {
+    $result = civicrm_api3('CustomGroup', 'get', [
+      'sequential' => 1,
+      'return' => ['id'],
+      'name' => 'Extended_Demographics',
+    ]);
+  
+    civicrm_api3('CustomGroup', 'create', [
+      'id' => $result['id'],
+      'is_reserved' => 1,
+    ]);
+
+    return TRUE;
+  }
+
 }
