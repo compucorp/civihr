@@ -512,6 +512,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1030();
     $this->upgrade_1032();
     $this->upgrade_1033();
+    $this->upgrade_1034();
+    $this->upgrade_1035();
     $this->upgrade_1036();
   }
 
