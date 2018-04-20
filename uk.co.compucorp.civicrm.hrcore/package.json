@@ -6,7 +6,7 @@
   },
   "devDependencies": {
     "ansi-colors": "^1.0.1",
-    "backstopjs": "^3.2.3",
+    "backstopjs": "^3.2.15",
     "civicrm-scssroot": "git://github.com/totten/civicrm-scssroot.git#v0.1.1",
     "detect-installed": "^2.0.4",
     "es6-promise": "^4.2.2",
