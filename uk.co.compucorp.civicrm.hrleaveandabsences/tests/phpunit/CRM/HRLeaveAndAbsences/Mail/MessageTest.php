@@ -17,6 +17,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
 
   use CRM_HRLeaveAndAbsences_LeaveManagerHelpersTrait;
   use CRM_HRLeaveAndAbsences_MailHelpersTrait;
+  use CRM_HRLeaveAndAbsences_SessionHelpersTrait;
 
   private $leaveRequestTemplateFactory;
 
@@ -263,6 +264,77 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $this->getManagerService());
     $this->assertNull($message->getTemplateID());
   }
+
+  public function testGetRecipientEmailsWillNotIncludeEmailOfLeaveContactIfLoggedIn() {
+    $manager = ContactFabricator::fabricateWithEmail([
+      'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
+    );
+
+    $managerService = $this->prophesize(LeaveManagerService::class);
+    $returnValue = [
+      $manager['id'] => $manager['first_name'],
+    ];
+    // Set manager to be leave aprover for the leave contact
+    $managerService->getLeaveApproversForContact($this->leaveContact['id'])->willReturn($returnValue);
+
+    //register the leave contact in session
+    $this->registerCurrentLoggedInContactInSession($this->leaveContact['id']);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $this->leaveContact['id'],
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+    ], false);
+
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $managerService->reveal());
+
+    $recipientEmails = array_column($message->getRecipientEmails(), 'email');
+
+    //Since the leave contact is the logged in contact making the change to the leave request.
+    //the leave contact email will not be included.
+    $this->assertCount(1, $recipientEmails);
+
+    $expectedEmails = ['manager1@dummysite.com'];
+    $this->assertEquals($expectedEmails, $recipientEmails);
+    $this->unregisterCurrentLoggedInContactFromSession($this->leaveContact['id']);
+  }
+
+  public function testGetRecipientEmailsWillNotIncludeEmailOfLeaveManagerIfLoggedIn() {
+    $manager = ContactFabricator::fabricateWithEmail([
+      'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
+    );
+
+    $managerService = $this->prophesize(LeaveManagerService::class);
+    $returnValue = [
+      $manager['id'] => $manager['first_name'],
+    ];
+    // Set manager to be leave aprovers for the leave contact
+    $managerService->getLeaveApproversForContact($this->leaveContact['id'])->willReturn($returnValue);
+
+    //register the leave manager in session
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => 1,
+      'contact_id' => $this->leaveContact['id'],
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+    ], false);
+
+    $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $managerService->reveal());
+
+    $recipientEmails = array_column($message->getRecipientEmails($manager['id']), 'email');
+
+    //Since the manager is the logged in contact making the change to the leave request.
+    //the leave manager email will not be included.
+    $this->assertCount(1, $recipientEmails);
+
+    $expectedEmails = ['staffmember@dummysite.com'];
+    $this->assertEquals($expectedEmails, $recipientEmails);
+    $this->unregisterCurrentLoggedInContactFromSession($manager['id']);
+  }
+
 
   private function getManagerService() {
     $managerService = $this->prophesize(LeaveManagerService::class);
