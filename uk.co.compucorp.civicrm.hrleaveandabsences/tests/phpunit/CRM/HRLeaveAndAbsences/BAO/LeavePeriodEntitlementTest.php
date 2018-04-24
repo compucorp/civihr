@@ -305,7 +305,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     $this->createPublicHolidayBalanceChange($periodEntitlement->id, 8);
 
     $this->createLeaveRequestBalanceChange(
-      $periodEntitlement->id,
+      $periodEntitlement->type_id,
       $this->leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+2 days'))
@@ -1723,13 +1723,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
   }
 
   public function testGetBalanceShouldNotIncludeBalanceForExcludedLeaveRequests() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
-      'type_id' => 4,
+      'type_id' => $absenceType->id,
       'contact_id' => 1,
       'period_id' => $period->id
     ]);
