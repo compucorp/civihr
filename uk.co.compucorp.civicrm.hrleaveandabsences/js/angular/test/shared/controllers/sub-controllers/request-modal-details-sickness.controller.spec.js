@@ -11,8 +11,9 @@ define([
   'leave-absences/mocks/helpers/helper',
   'leave-absences/mocks/helpers/request-modal-helper',
   'leave-absences/mocks/apis/option-group-api-mock',
-  'leave-absences/manager-leave/app'
-], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper, requestModalHelper) {
+  'leave-absences/manager-leave/app',
+  'leave-absences/shared/modules/shared-settings'
+], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper, requestModalHelper, crmAngService) {
   'use strict';
 
   describe('RequestModalDetailsSicknessController', function () {
@@ -40,10 +41,11 @@ define([
     }]));
 
     beforeEach(inject(function (
-      _$componentController_, _$log_, _$rootScope_, _SicknessRequestInstance_) {
+      _$componentController_, _$log_, _$rootScope_, _crmAngService_, _SicknessRequestInstance_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
+      crmAngService = _crmAngService_;
       SicknessRequestInstance = _SicknessRequestInstance_;
 
       spyOn($log, 'debug');
@@ -107,6 +109,36 @@ define([
           it('does not reset sickness reason', function () {
             expect(controller.request.sickness_reason).not.toBeNull();
           });
+        });
+      });
+
+      describe('when users click on the sick reason wrench icon', function () {
+        var onPopupFormSuccess;
+        var url;
+        var sicknessReasons;
+
+        beforeEach(function () {
+          url = '/civicrm/admin/options/hrleaveandabsences_sickness_reason?reset=1';
+          sicknessReasons = optionGroupMock.getCollection('hrleaveandabsences_sickness_reason');
+
+          spyOn(crmAngService, 'loadForm').and.callFake(function () {
+            return {
+              on: function (event, callback) {
+                if (event === 'crmUnload') {
+                  onPopupFormSuccess = callback;
+                }
+              }
+            };
+          });
+          controller.openSicknessReasonOptionsEditor();
+        });
+
+        it('calls the crmAngService with the requested url', function () {
+          expect(crmAngService.loadForm).toHaveBeenCalledWith(url);
+        });
+
+        it('loads the sickness reasons', function () {
+          expect(controller.sicknessReasons).toEqual(_.indexBy(sicknessReasons, 'name'));
         });
       });
 

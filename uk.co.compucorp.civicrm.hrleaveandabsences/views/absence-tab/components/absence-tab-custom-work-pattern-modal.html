@@ -46,7 +46,7 @@
           <div class="form-group">
             <label class="col-sm-4 control-label">Reason for change</label>
             <div class="col-sm-8">
-              <div class="crm_custom-select crm_custom-select--full">
+              <div class="crm_custom-select crm_custom-select--medium">
                 <select
                   class="no-select2"
                   ng-options="changeReasons.value as changeReasons.label for changeReasons in workPatternModal.changeReasons"
@@ -56,6 +56,9 @@
                 </select>
                 <span class="crm_custom-select__arrow"></span>
               </div>
+              <a class="pointer">
+                <i class="crm-i fa-wrench" ng-click="workPatternModal.openWorkPatternChangeReason()"></i>
+              </a>
             </div>
           </div>
         </form>

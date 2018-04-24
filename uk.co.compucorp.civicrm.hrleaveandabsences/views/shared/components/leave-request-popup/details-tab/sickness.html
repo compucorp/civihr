@@ -4,7 +4,7 @@
     <div class="form-group">
       <label class="col-sm-4 control-label required-mark">Reason</label>
       <div class="col-sm-8">
-        <div class="crm_custom-select crm_custom-select--full">
+        <div class="crm_custom-select crm_custom-select--medium">
           <select
             class="no-select2"
             name="reason"
@@ -16,6 +16,9 @@
           </select>
           <span class="crm_custom-select__arrow"></span>
         </div>
+        <a class="pointer">
+          <i class="crm-i fa-wrench" ng-click="detailsTab.openSicknessReasonOptionsEditor()"></i>
+        </a>
       </div>
     </div>
     <div class="form-group chr_leave-request-modal__required-documents">
