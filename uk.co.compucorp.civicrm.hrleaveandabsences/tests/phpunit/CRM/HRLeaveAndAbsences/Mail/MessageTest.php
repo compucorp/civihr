@@ -266,8 +266,9 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
   }
 
   public function testGetRecipientEmailsWillNotIncludeEmailOfLeaveContactIfLoggedIn() {
+    $managerEmail = 'manager1@dummysite.com';
     $manager = ContactFabricator::fabricateWithEmail([
-      'first_name' => 'Manager1', 'last_name' => 'Manager1'], 'manager1@dummysite.com'
+      'first_name' => 'Manager1', 'last_name' => 'Manager1'], $managerEmail
     );
 
     $managerService = $this->prophesize(LeaveManagerService::class);
@@ -285,7 +286,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'contact_id' => $this->leaveContact['id'],
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
-    ], false);
+    ], FALSE);
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $managerService->reveal());
 
@@ -295,8 +296,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
     //the leave contact email will not be included.
     $this->assertCount(1, $recipientEmails);
 
-    $expectedEmails = ['manager1@dummysite.com'];
-    $this->assertEquals($expectedEmails, $recipientEmails);
+    $this->assertEquals([$managerEmail], $recipientEmails);
     $this->unregisterCurrentLoggedInContactFromSession($this->leaveContact['id']);
   }
 
@@ -320,7 +320,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'contact_id' => $this->leaveContact['id'],
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
-    ], false);
+    ], FALSE);
 
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $managerService->reveal());
 
