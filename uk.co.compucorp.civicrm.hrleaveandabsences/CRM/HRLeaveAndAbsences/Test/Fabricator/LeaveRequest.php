@@ -1,5 +1,6 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveBalanceChange as LeaveBalanceChangeFabricator;
 
@@ -39,14 +40,30 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest {
   }
 
   private static function mergeDefaultParams($params) {
+    $absenceType = AbsenceType::findById($params['type_id']);
+    $isCalculationUnitInHours = $absenceType->isCalculationUnitInHours();
+    $isTOIL = isset($params['request_type']) && $params['request_type'] === LeaveRequest::REQUEST_TYPE_TOIL;
+
     $defaultParams = [
+      'type_id' => $absenceType->id,
       'status_id' => self::getStatusId('approved'),
-      'from_date_type' => self::getDayTypeId('all_day'),
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
 
-    if(!empty($params['to_date']) && empty($params['to_date_type'])) {
-      $defaultParams['to_date_type'] = self::getDayTypeId('all_day');
+    if (!$isCalculationUnitInHours) {
+      $defaultParams['from_date_type'] = self::getDayTypeId('all_day');
+
+      if (!empty($params['to_date']) && empty($params['to_date_type'])) {
+        $defaultParams['to_date_type'] = self::getDayTypeId('all_day');
+      }
+    } else {
+      $defaultParams['from_date_amount'] = 1;
+      $defaultParams['to_date_amount'] = 1;
+    }
+
+    if ($isTOIL) {
+      $defaultParams['toil_duration'] = 1;
+      $defaultParams['toil_to_accrue'] = 1;
     }
 
     return array_merge($defaultParams, $params);
