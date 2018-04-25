@@ -31,15 +31,14 @@
 
   <div class="crm-footer" id="civicrm-footer">
     {* PCHR-1323 - Display CiviHR version info. *}
-    {ts}Powered by CiviHR version{/ts} {civihrVersion}.
+    {ts}Powered by CiviHR {/ts} {civihrVersion}.
 
     {if !empty($footer_status_severity)}
       <span class="status{if $footer_status_severity gt 3} crm-error{elseif $footer_status_severity gt 2} crm-warning{else} crm-ok{/if}">
       <a target="_blank" href="{crmURL p='civicrm/a/#/status'}">{$footer_status_message}</a>.
     </span>&nbsp;
     {/if}
-    CiviHR is openly available under the <a target="_blank" href="http://www.gnu.org/licenses/agpl-3.0.html">GNU AGPL License</a> and can be downloaded from the
-    <a target="_blank" href="https://civihr.org">Project website</a>&nbsp;.
+    CiviHR is openly available under Version 3 of the <a target="_blank" href="http://www.gnu.org/licenses/agpl-3.0.html">GNU AGPL License</a> and can be downloaded from <a target="_blank" href="https://civihr.org">www.civihr.org</a>.
     <div class="text-center">
       <div class="footer-logo">
         <span class="chr_logo chr_logo--full chr_logo--default-size"><i></i></span>
