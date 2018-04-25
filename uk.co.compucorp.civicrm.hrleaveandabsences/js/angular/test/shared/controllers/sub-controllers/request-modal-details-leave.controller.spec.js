@@ -20,8 +20,8 @@ define([
   'use strict';
 
   describe('RequestModalDetailsLeaveController', function () {
-    var $componentController, $provide, $log, $rootScope, controller, leaveRequest,
-      LeaveRequestInstance, selectedAbsenceType;
+    var $componentController, $provide, $log, $q, $rootScope, controller, leaveRequest,
+      LeaveRequest, LeaveRequestInstance, selectedAbsenceType;
 
     var date2016 = '01/12/2016';
     var date2016InServerFormat = moment(helper.getUTCDate(date2016)).format('YYYY-MM-D'); // Must match the date of `date2016`
@@ -42,10 +42,12 @@ define([
     }]));
 
     beforeEach(inject(function (
-      _$componentController_, _$log_, _$rootScope_, _LeaveRequestInstance_) {
+      _$componentController_, _$log_, _$q_, _$rootScope_, _LeaveRequest_, _LeaveRequestInstance_) {
       $componentController = _$componentController_;
       $log = _$log_;
+      $q = _$q_;
       $rootScope = _$rootScope_;
+      LeaveRequest = _LeaveRequest_;
       LeaveRequestInstance = _LeaveRequestInstance_;
 
       spyOn($log, 'debug');
@@ -255,6 +257,110 @@ define([
           });
         });
       });
+    });
+
+    describe('initDayTypesExtended()', function () {
+      var fromDate, toDate, dayTypeNames;
+
+      beforeEach(function () {
+        fromDate = moment('2018-01-01').toDate();
+        toDate = moment('2018-01-10').toDate();
+      });
+
+      describe('basic tests', function () {
+        beforeEach(function () {
+          initDayTypesWithSelectedDateAs('working_day');
+        });
+
+        it('initializes the day types for both date types (from/to)', function () {
+          expect(controller.loading['fromDayTypes']).toBe(false);
+          expect(controller.loading['toDayTypes']).toBe(false);
+        });
+      });
+
+      describe('when one of the currently selected dates is a standard working day', function () {
+        beforeEach(function () {
+          dayTypeNames = initDayTypesWithSelectedDateAs('working_day');
+        });
+
+        it('sets "all_day", "half_day_am", and "half_day_pm" as the available day types', function () {
+          expect(dayTypeNames).toEqual(['all_day', 'half_day_am', 'half_day_pm']);
+        });
+      });
+
+      describe('when there is a "public holiday" leave request for one of the currently selected date', function () {
+        beforeEach(function () {
+          dayTypeNames = initDayTypesWithSelectedDateAs('public_holiday');
+        });
+
+        it('sets "public_holiday" as the only available day type', function () {
+          expect(dayTypeNames).toEqual(['public_holiday']);
+        });
+      });
+
+      describe('when one of the currently selected date is a non working day', function () {
+        beforeEach(function () {
+          dayTypeNames = initDayTypesWithSelectedDateAs('non_working_day');
+        });
+
+        it('sets "non_working_day" as the only available day type', function () {
+          expect(dayTypeNames).toEqual(['non_working_day']);
+        });
+      });
+
+      describe('when one of the currently selected date is a weekend', function () {
+        beforeEach(function () {
+          dayTypeNames = initDayTypesWithSelectedDateAs('weekend');
+        });
+
+        it('sets "weekend" as the only available day type', function () {
+          expect(dayTypeNames).toEqual(['weekend']);
+        });
+      });
+
+      /**
+       * Initializes the day types list while pretending that the currently selected
+       * date (for the purpose of the test it doesn't matter if it's the "from" or "to" date)
+       * is of the given type (working, non working, etc). It then return the list
+       * of day types for the "from" date
+       *
+       * @param  {String} type
+       * @return {Array}
+       */
+      function initDayTypesWithSelectedDateAs (type) {
+        compileComponent({
+          request: LeaveRequestInstance.init()
+        });
+
+        controller.uiOptions.fromDate = fromDate;
+        controller.uiOptions.toDate = toDate;
+
+        controller.loading['fromDayTypes'] = true;
+        controller.loading['toDayTypes'] = true;
+
+        mockDateType(type);
+
+        controller.initDayTypesExtended();
+        $rootScope.$digest();
+
+        return controller.requestFromDayTypes.map(function (dayType) {
+          return dayType.name;
+        });
+      }
+
+      /**
+       * Mocks the responses of the services that are used to check the type of
+       * a date, so that they match the given type
+       *
+       * @param {String} type
+       */
+      function mockDateType (type) {
+        spyOn(controller.calendar, 'isNonWorkingDay').and.returnValue($q.resolve(type === 'non_working_day'));
+        spyOn(controller.calendar, 'isWeekend').and.returnValue($q.resolve(type === 'weekend'));
+        spyOn(LeaveRequest, 'all').and.returnValue($q.resolve({
+          list: type === 'public_holiday' ? [jasmine.any(Object)] : []
+        }));
+      }
     });
 
     describe('can submit', function () {
