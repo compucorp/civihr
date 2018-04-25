@@ -6,10 +6,10 @@ define([
 ], function (_, controllers) {
   controllers.controller('RequestModalDetailsSicknessController', RequestModalDetailsSicknessController);
 
-  RequestModalDetailsSicknessController.$inject = ['$controller', '$log', '$q', 'crmAngService', 'api.optionGroup',
-    'detailsController'];
+  RequestModalDetailsSicknessController.$inject = ['$controller', '$log', '$q', '$rootScope',
+    'crmAngService', 'api.optionGroup', 'detailsController'];
 
-  function RequestModalDetailsSicknessController ($controller, $log, $q, crmAngService,
+  function RequestModalDetailsSicknessController ($controller, $log, $q, $rootScope, crmAngService,
     OptionGroup, detailsController) {
     $log.debug('RequestModalDetailsSicknessController');
     // Shares basic logic with the the leave controller
@@ -38,6 +38,7 @@ define([
     function initChildController () {
       return $q.all([
         loadDocuments(),
+        toggleSicknessReasonsEditorIcon(),
         loadReasons(true)
       ]);
     }
@@ -102,6 +103,11 @@ define([
         .on('crmUnload', function () {
           loadReasons(false);
         });
+    }
+
+    function toggleSicknessReasonsEditorIcon() {
+      detailsController.showSicknessOptionsEditorIcon =
+        _.includes(['admin-dashboard', 'absence-tab'], $rootScope.section);
     }
   }
 });

@@ -40,7 +40,7 @@ define([
         }
       }
     };
-    vm.openWorkPatternChangeReason = openWorkPatternChangeReason;
+    vm.openWorkPatternChangeReasonEditor = openWorkPatternChangeReasonEditor;
 
     (function init () {
       return $q.all([
@@ -123,7 +123,7 @@ define([
     /**
      * Opens the work pattern change reasons for editing
      */
-    function openWorkPatternChangeReason () {
+    function openWorkPatternChangeReasonEditor () {
       crmAngService.loadForm('/civicrm/admin/options/hrleaveandabsences_work_pattern_change_reason?reset=1')
         .on('crmUnload', function () {
           loadJobContractRevisionChangeReasons(false);

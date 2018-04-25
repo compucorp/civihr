@@ -156,7 +156,7 @@
               }
             };
           });
-          controller.openWorkPatternChangeReason();
+          controller.openWorkPatternChangeReasonEditor();
         });
 
         it('calls the crmAngService with the requested url', function () {

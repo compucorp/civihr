@@ -102,7 +102,6 @@
   {/section}
   {literal}
     <script type="text/javascript">
-
       CRM.$(function($) {
         var form = new CRM.HRLeaveAndAbsencesApp.Form.WorkPattern({/literal}'{$delete_url}'{literal});
         var editPath = 'civicrm/admin/options/hrleaveandabsences_leave_days_amounts';
@@ -113,7 +112,6 @@
             'data-api-field': 'leave_days',
             'data-option-edit-path': editPath
           });
-
       });
     </script>
   {/literal}
