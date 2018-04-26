@@ -16,7 +16,7 @@
       <is_multiple>0</is_multiple>
       <collapse_adv_display>0</collapse_adv_display>
       <created_date>0000-00-00 00:00:00</created_date>
-      <is_reserved>0</is_reserved>
+      <is_reserved>1</is_reserved>
     </CustomGroup>
   </CustomGroups>
   <CustomFields>
@@ -42,7 +42,7 @@
       <label>Ethnicity</label>
       <data_type>String</data_type>
       <html_type>Multi-Select</html_type>
-      <default_value>:;:;:;Not Applicable:;:;:;</default_value>
+      <default_value>Not Applicable</default_value>
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
