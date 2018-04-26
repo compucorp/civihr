@@ -10,6 +10,8 @@ use CRM_HRCore_Service_Manager as ManagerService;
 use CRM_HRContactActionsMenu_Component_Menu as ActionsMenu;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use CRM_HRContactActionsMenu_Helper_Contact as ContactHelper;
+use CRM_HRCore_CMSData_UserRoleFactory as CMSUserRoleFactory;
 
 /**
  * Implements hook_civicrm_config().
@@ -270,12 +272,27 @@ function hrcore_civicrm_pre($op, $objectName, $objectId, &$params) {
 }
 
 /**
- * Implements hrcore_civicrm_pageRun.
+ * Implements hrcore_civicrm_pageRun()
  *
- * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_pageRun/
+ * @param CRM_Core_Page $page
  */
 function hrcore_civicrm_pageRun($page) {
   _hrcore_add_js_session_vars();
+
+  $contactID = CRM_Core_Session::getLoggedInContactID();
+
+  $isRoot = FALSE;
+  if ($contactID) {
+    $framework = CRM_Core_Config::singleton()->userFramework;
+    $userInfo = ContactHelper::getUserInformation($contactID);
+    $roleService = CMSUserRoleFactory::create($framework, $userInfo);
+    $userRoles = $roleService->getRoles();
+    $isRoot = in_array('administrator', $userRoles);
+  }
+
+  // assign these variables for use in all pages (in use in the footer)
+  $page->assign('isRoot', $isRoot);
+  $page->assign('canAccessCiviCRM', CRM_Core_Permission::check('access CiviCRM'));
 }
 
 /**
