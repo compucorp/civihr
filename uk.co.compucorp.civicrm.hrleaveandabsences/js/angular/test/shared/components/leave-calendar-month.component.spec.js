@@ -23,7 +23,7 @@
     describe('leaveCalendarMonth', function () {
       var $componentController, $log, $provide, $q, $rootScope, Calendar,
         LeaveRequest, OptionGroup, controller, daysInFebruary, february, leaveRequestInFebruary,
-        period2016, publicHolidays, pubSub;
+        period2016, publicHolidays, pubSub, contactData, leaveRequestAttributes;
       var currentContactId = CRM.vars.leaveAndAbsences.contactId;
       var contactIdsToReduceTo = null;
 
@@ -396,8 +396,6 @@
       });
 
       describe("day's data specific for each contact", function () {
-        var contactData;
-
         beforeEach(function () {
           sendShowMonthsSignal();
         });
@@ -465,11 +463,11 @@
                 'hrleaveandabsences_leave_request_status', 'name', 'approved'
               ).value;
 
-              contactData = commonSetup();
+              commonSetup();
             });
 
             it('contains a reference to the leave request itself', function () {
-              expect(contactData.leaveRequest).toBe(leaveRequest);
+              expect(contactData.leaveRequests[0]).toBe(leaveRequest);
             });
 
             it('assigns it the colors of its absence type', function () {
@@ -477,7 +475,7 @@
                 return absenceType.id === leaveRequest.type_id;
               }).color;
 
-              expect(contactData.styles).toEqual({
+              expect(leaveRequestAttributes.styles).toEqual({
                 backgroundColor: absenceTypeColor,
                 borderColor: absenceTypeColor
               });
@@ -490,11 +488,11 @@
                 'hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval'
               ).value;
 
-              contactData = commonSetup();
+              commonSetup();
             });
 
             it('marks it as such', function () {
-              expect(contactData.isRequested).toBe(true);
+              expect(leaveRequestAttributes.isRequested).toBe(true);
             });
           });
 
@@ -504,11 +502,11 @@
                 return absenceType.name === 'half_day_am';
               }).value;
 
-              contactData = commonSetup();
+              commonSetup();
             });
 
             it('marks it as such', function () {
-              expect(contactData.isAM).toBe(true);
+              expect(leaveRequestAttributes.isAM).toBe(true);
             });
           });
 
@@ -518,11 +516,11 @@
                 return absenceType.name === 'half_day_pm';
               }).value;
 
-              contactData = commonSetup();
+              commonSetup();
             });
 
             it('marks it as such', function () {
-              expect(contactData.isPM).toBe(true);
+              expect(leaveRequestAttributes.isPM).toBe(true);
             });
           });
 
@@ -530,11 +528,11 @@
             beforeEach(function () {
               leaveRequest.request_type = 'toil';
 
-              contactData = commonSetup();
+              commonSetup();
             });
 
             it('marks it as such', function () {
-              expect(contactData.isAccruedTOIL).toBe(true);
+              expect(leaveRequestAttributes.isAccruedTOIL).toBe(true);
             });
           });
 
@@ -552,6 +550,9 @@
                 day = dayObj;
               }
             });
+
+            contactData = day.contactsData[currentContactId];
+            leaveRequestAttributes = contactData.leaveRequestsAttributes[leaveRequest.id];
 
             return day.contactsData[currentContactId];
           }
@@ -638,28 +639,37 @@
         });
 
         describe('when a leave request is updated and its dates have changed', function () {
-          var leaveRequestToUpdate, oldDays, newDays;
+          var leaveRequestToUpdate;
 
           beforeEach(function () {
             leaveRequestToUpdate = _.clone(leaveRequestInFebruary);
-            oldDays = getLeaveRequestDays(leaveRequestToUpdate);
             leaveRequestToUpdate = modifyLeaveRequestData(leaveRequestToUpdate);
 
             LeaveRequest.all.calls.reset();
           });
 
           describe('leave request edit event', function () {
+            var updatedRequest;
+
             beforeEach(function () {
               pubSub.publish('LeaveRequest::edit', leaveRequestToUpdate);
               $rootScope.$digest();
 
-              newDays = getLeaveRequestDays(leaveRequestToUpdate);
+              updatedRequest = _.find(controller.month.days, function (day) {
+                return _.find(day.contactsData[leaveRequestToUpdate.contact_id].leaveRequests, function (leaveRequest) {
+                  return leaveRequest === leaveRequestToUpdate;
+                });
+              });
             });
 
-            itHandlesLeaveRequestStatusUpdate();
+            it('updates the leaveRequest', function () {
+              expect(updatedRequest).toBeDefined();
+            });
           });
 
           describe('leave request status update event', function () {
+            var updatedRequest;
+
             beforeEach(function () {
               pubSub.publish('LeaveRequest::statusUpdate', {
                 status: 'cancel',
@@ -667,27 +677,28 @@
               });
               $rootScope.$digest();
 
-              newDays = getLeaveRequestDays(leaveRequestToUpdate);
+              updatedRequest = _.find(controller.month.days, function (day) {
+                return _.find(day.contactsData[leaveRequestToUpdate.contact_id].leaveRequests, function (leaveRequest) {
+                  return leaveRequest === leaveRequestToUpdate;
+                });
+              });
+            });
+
+            it('updates the leaveRequest', function () {
+              expect(updatedRequest).toBeDefined();
             });
           });
-
-          function itHandlesLeaveRequestStatusUpdate () {
-            it('does not re-fetch the leave requests from the backend', function () {
-              expect(LeaveRequest.all).not.toHaveBeenCalled();
-            });
-
-            it('resets the properties of the days that the leave request does not span anymore', function () {
-              expect(oldDays.every(isDayContactDataNull)).toBe(true);
-            });
-
-            it('sets the properties of the days that the leave request now spans', function () {
-              expect(newDays.every(isDayContactDataNull)).toBe(false);
-            });
-          }
         });
 
+        /**
+         * Modifies leave request by settings different dates
+         *
+         * @param  {LeaveRequestInstance} leaveRequest
+         * @param  {Boolean} modifyId if to modify id or not
+         * @return {LeaveRequestInstance}
+         */
         function modifyLeaveRequestData (leaveRequest, modifyId) {
-          var modified = _.assign({}, leaveRequest, {
+          var modifiedLeaveRequest = _.assign({}, leaveRequest, {
             from_date: '2016-02-20',
             to_date: '2016-02-21',
             dates: [
@@ -696,13 +707,19 @@
             ]
           });
 
-          if (modifyId === true) {
-            modified.id = '1';
+          if (modifyId) {
+            modifiedLeaveRequest.id = '1';
           }
 
-          return modified;
+          return modifiedLeaveRequest;
         }
 
+        /**
+         * Returns the array of days for the leave request
+         *
+         * @param  {LeaveRequestInstance} leaveRequest
+         * @return {Array}
+         */
         function getLeaveRequestDays (leaveRequest) {
           var days = [];
           var pointerDate = moment(leaveRequest.from_date).clone();
@@ -719,15 +736,17 @@
           return days;
         }
 
+        /**
+         * Checks if day contact data is empty
+         *
+         * @param  {Object} day
+         * @return {Boolean}
+         */
         function isDayContactDataNull (day) {
-          var contactData = day.contactsData[currentContactId];
+          var leaveRequests = day.contactsData[currentContactId].leaveRequests;
+          var leaveRequestsAttributes = day.contactsData[currentContactId].leaveRequestsAttributes;
 
-          return contactData.leaveRequest === null &&
-            contactData.styles === null &&
-            contactData.isAccruedTOIL === null &&
-            contactData.isRequested === null &&
-            contactData.isAM === null &&
-            contactData.isPM === null;
+          return !leaveRequests.length && !Object.keys(leaveRequestsAttributes).length;
         }
       });
 

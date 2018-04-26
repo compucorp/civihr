@@ -24,28 +24,13 @@ define([
     'use strict';
     $log.debug('Component: leave-calendar-day');
 
-    var absenceType, fromDateType, toDateType;
     var vm = this;
-
-    vm.calculationUnit = '';
-    vm.dates = { from: null, to: null };
-    vm.label = '';
-    vm.tooltipTemplate = null;
 
     vm.openLeavePopup = openLeavePopup;
 
     (function init () {
       watchForLeaveRequestReady();
     })();
-
-    /**
-     * Finds and stores the calculation unit for the leave request's
-     * absence type
-     */
-    function findAbsenceTypeCalculationUnit () {
-      vm.calculationUnit = findRecordByIdFieldValue(
-        vm.supportData.calculationUnits, 'value', absenceType.calculation_unit);
-    }
 
     /**
      * Given an array of records, finds and returns the one that matches the
@@ -64,46 +49,11 @@ define([
     }
 
     /**
-     * Returns the template name for Leave Requests tooltips.
-     *
-     * The pattern is `type-[days|hours]-on-[single-date|multiple-dates]-tooltip`
-     *
-     * @return {String}
+     * Gets the absence type for the leave request.
      */
-    function getTooltipTemplateForLeaveRequests () {
-      var dateRangeType, isSameDay;
-
-      isSameDay = moment(vm.contactData.leaveRequest.from_date)
-        .isSame(vm.contactData.leaveRequest.to_date, 'day');
-      dateRangeType = isSameDay ? 'single-date' : 'multiple-dates';
-
-      return 'type-' + vm.calculationUnit.name + '-on-' +
-        dateRangeType + '-tooltip';
-    }
-
-    /**
-     * Maps the absence type title to the leave request.
-     */
-    function mapLeaveRequestAbsenceType () {
-      absenceType = findRecordByIdFieldValue(vm.supportData.absenceTypes,
-        'id', vm.contactData.leaveRequest.type_id);
-
-      vm.contactData.leaveRequest['type_id.title'] = absenceType.title;
-    }
-
-    /**
-     * Maps the from and to date type labels to the leave request.
-     */
-    function mapLeaveRequestDateTypes () {
-      if (vm.calculationUnit.name === 'days') {
-        fromDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
-          'value', vm.contactData.leaveRequest.from_date_type);
-        toDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
-          'value', vm.contactData.leaveRequest.to_date_type);
-
-        vm.contactData.leaveRequest['from_date_type.label'] = fromDateType.label;
-        vm.contactData.leaveRequest['to_date_type.label'] = toDateType.label;
-      }
+    function getLeaveRequestAbsenceType (leaveRequest) {
+      return findRecordByIdFieldValue(vm.supportData.absenceTypes,
+        'id', leaveRequest.type_id);
     }
 
     /**
@@ -125,39 +75,19 @@ define([
     }
 
     /**
-     * Copies dates from Leave Request, converts them from String
-     * to Date type and sets to the component.
-     */
-    function resolveDayDates () {
-      vm.dates.from = new Date(vm.contactData.leaveRequest.from_date);
-      vm.dates.to = new Date(vm.contactData.leaveRequest.to_date);
-    }
-
-    /**
-     * Determines the label for the day depending on the calculation unit or if
-     * it's an accrued TOIL request.
-     */
-    function resolveDayLabel () {
-      if (vm.contactData.isAccruedTOIL) {
-        vm.label = 'AT';
-      } else if (vm.calculationUnit.name === 'days') {
-        resolveDayLabelForDaysCalculationUnit();
-      } else {
-        resolveDayLabelForHoursCalculationUnit();
-      }
-    }
-
-    /**
      * Determines the label for the day when calculation units are set to days.
      *
      * AM: leave requests for half day AM
      * PM: leave requests for half day PM
      * Otherwise leave empty.
+     *
+     * @param  {Object} leaveRequestAttributes
+     * @return {String}
      */
-    function resolveDayLabelForDaysCalculationUnit () {
-      vm.label = vm.contactData.isAM ? 'AM'
-        : vm.contactData.isPM ? 'PM'
-        : '';
+    function resolveDayLabelForDaysCalculationUnit (leaveRequestAttributes) {
+      return leaveRequestAttributes.isAM ? 'AM'
+        : leaveRequestAttributes.isPM ? 'PM'
+          : '';
     }
 
     /**
@@ -168,27 +98,114 @@ define([
      * If the date is the same as the end date of the request, the end time is
      * displayed.
      * Otherwise the label is empty.
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @return {String}
      */
-    function resolveDayLabelForHoursCalculationUnit () {
-      var sameDateAsFromDate = moment(vm.contactData.leaveRequest.from_date)
+    function resolveDayLabelForHoursCalculationUnit (leaveRequest) {
+      var sameDateAsFromDate = moment(leaveRequest.from_date)
         .isSame(vm.date, 'day');
-      var sameDateAsToDate = moment(vm.contactData.leaveRequest.to_date)
+      var sameDateAsToDate = moment(leaveRequest.to_date)
         .isSame(vm.date, 'day');
 
-      vm.label = sameDateAsFromDate
-        ? moment(vm.contactData.leaveRequest.from_date).format('HH:mm')
+      return sameDateAsFromDate
+        ? moment(leaveRequest.from_date).format('HH:mm')
         : sameDateAsToDate
-        ? moment(vm.contactData.leaveRequest.to_date).format('HH:mm')
-        : '';
+          ? moment(leaveRequest.to_date).format('HH:mm')
+          : '';
     }
 
     /**
-     * Selects the tooltip template to use to display the leave request information.
+     * Determines a label for the leave request depending on the calculation unit
+     * or if it's an accrued TOIL request.
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @param  {Object} leaveRequestAttributes
+     * @return {String}
      */
-    function selectTooltipTemplate () {
-      vm.tooltipTemplate = vm.contactData.isAccruedTOIL
-        ? 'accrued-toil-tooltip'
-        : getTooltipTemplateForLeaveRequests();
+    function resolveLeaveRequestLabel (leaveRequest, leaveRequestAttributes) {
+      if (leaveRequestAttributes.isAccruedTOIL) {
+        return 'AT';
+      } else if (leaveRequestAttributes.unit === 'days') {
+        return resolveDayLabelForDaysCalculationUnit(leaveRequestAttributes);
+      } else {
+        return resolveDayLabelForHoursCalculationUnit(leaveRequest);
+      }
+    }
+
+    /**
+     * Sets absence types titles to leave requests attributes
+     */
+    function resolveLeaveRequestsAbsenceTypesTitles () {
+      vm.contactData.leaveRequests.forEach(function (leaveRequest) {
+        vm.contactData.leaveRequestsAttributes[leaveRequest.id].absenceTypeTitle =
+          getLeaveRequestAbsenceType(leaveRequest).title;
+      });
+    }
+
+    /**
+     * Determines labels for each leave request depending on the calculation unit
+     * or if it's an accrued TOIL request and sets them to leave requests attributes.
+     */
+    function resolveLeaveRequestsLabels () {
+      var leaveRequestAttributes;
+
+      vm.contactData.leaveRequests.forEach(function (leaveRequest) {
+        leaveRequestAttributes = vm.contactData.leaveRequestsAttributes[leaveRequest.id];
+        leaveRequestAttributes.label =
+          resolveLeaveRequestLabel(leaveRequest, leaveRequestAttributes);
+      });
+    }
+
+    /**
+     * Sets a unit name to the leave requests attributes
+     */
+    function resolveLeaveRequestsCalculationUnits () {
+      var leaveRequestAttributes, absenceType, calculationUnit;
+
+      vm.contactData.leaveRequests.forEach(function (leaveRequest) {
+        leaveRequestAttributes = vm.contactData.leaveRequestsAttributes[leaveRequest.id];
+        absenceType = _.find(vm.supportData.absenceTypes, { id: leaveRequest.type_id });
+        calculationUnit = _.find(vm.supportData.calculationUnits, { 'value': absenceType.calculation_unit });
+        leaveRequestAttributes.unit = calculationUnit.name;
+      });
+    }
+
+    /**
+     * Sets dates from leave requests to leave requests attributes
+     * by converting them from String to Date type.
+     */
+    function resolveLeaveRequestsDates () {
+      var leaveRequestAttributes;
+
+      vm.contactData.leaveRequests.forEach(function (leaveRequest) {
+        leaveRequestAttributes = vm.contactData.leaveRequestsAttributes[leaveRequest.id];
+        leaveRequestAttributes.from_date =
+          new Date(leaveRequest.from_date);
+        leaveRequestAttributes.to_date =
+          new Date(leaveRequest.to_date);
+      });
+    }
+
+    /**
+     * Sets the from and to date type labels to the leave requests attributes.
+     */
+    function resolveLeaveRequestsTypes () {
+      var leaveRequestAttributes, fromDateType, toDateType;
+
+      vm.contactData.leaveRequests.forEach(function (leaveRequest) {
+        leaveRequestAttributes = vm.contactData.leaveRequestsAttributes[leaveRequest.id];
+
+        if (leaveRequestAttributes.unit === 'days') {
+          fromDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
+            'value', leaveRequest.from_date_type);
+          toDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
+            'value', leaveRequest.to_date_type);
+
+          leaveRequestAttributes['from_date_type'] = fromDateType.label;
+          leaveRequestAttributes['to_date_type'] = toDateType.label;
+        }
+      });
     }
 
     /**
@@ -196,16 +213,15 @@ define([
      * leave request fields to it.
      */
     function watchForLeaveRequestReady () {
-      $scope.$watch('day.contactData.leaveRequest', function () {
-        if (vm.contactData && vm.contactData.leaveRequest) {
-          mapLeaveRequestAbsenceType();
-          findAbsenceTypeCalculationUnit();
-          mapLeaveRequestDateTypes();
-          resolveDayLabel();
-          resolveDayDates();
-          selectTooltipTemplate();
+      $scope.$watch('day.contactData.leaveRequests', function () {
+        if (vm.contactData && vm.contactData.leaveRequests) {
+          resolveLeaveRequestsCalculationUnits();
+          resolveLeaveRequestsTypes();
+          resolveLeaveRequestsLabels();
+          resolveLeaveRequestsDates();
+          resolveLeaveRequestsAbsenceTypesTitles();
         }
-      });
+      }, true);
     }
   }
 });
