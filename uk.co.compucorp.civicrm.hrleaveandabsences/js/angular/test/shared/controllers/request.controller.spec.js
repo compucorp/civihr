@@ -593,9 +593,8 @@
       });
 
       describe('manager opens leave request popup in edit mode', function () {
-        describe('when leave request date has same date as period end date', function () {
+        describe('when leave request "from" date is same as absence period start date *or* "to" date is same as absence period end date', function () {
           beforeEach(function () {
-            var approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
             var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
             var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
@@ -608,8 +607,6 @@
             spyOn(controller.request, 'update').and.callThrough();
             spyOn(LeaveRequestInstance, 'calculateBalanceChange').and.returnValue(
               $q.resolve({ amount: controller.balance.change.amount }));
-            leaveRequest.status_id = approvalStatus;
-            controller.submit();
             $rootScope.$digest();
           });
 
