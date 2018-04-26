@@ -243,6 +243,106 @@ define(function () {
         'start_date': '2015-12-30 00:00:00',
         'title': 'Test filter'
       }
+    },
+    option_values: {
+      'count': 7,
+      'values': [
+        {
+          'id': '845',
+          'option_group_id': '111',
+          'label': 'Senior Manager',
+          'value': 'Senior Manager',
+          'name': 'Senior_Manager',
+          'is_default': '0',
+          'weight': '1',
+          'is_optgroup': '0',
+          'is_reserved': '0',
+          'is_active': '1'
+        },
+        {
+          'id': '879',
+          'option_group_id': '124',
+          'label': 'Other',
+          'value': 'Other',
+          'name': 'Other',
+          'filter': '0',
+          'is_default': '0',
+          'weight': '3',
+          'is_optgroup': '0',
+          'is_reserved': '0',
+          'is_active': '1'
+        },
+        {
+          'id': '1045',
+          'option_group_id': '124',
+          'label': 'Test A',
+          'value': '1',
+          'name': 'Test A',
+          'filter': '0',
+          'is_default': '0',
+          'weight': '2',
+          'is_optgroup': '0',
+          'is_reserved': '0',
+          'is_active': '1'
+        },
+        {
+          'id': '1046',
+          'option_group_id': '124',
+          'label': 'Test B',
+          'value': '2',
+          'name': 'Test B',
+          'filter': '0',
+          'is_default': '0',
+          'weight': '1',
+          'description': 'Test B',
+          'is_optgroup': '0',
+          'is_reserved': '0',
+          'is_active': '1'
+        },
+        {
+          'id': '846',
+          'option_group_id': '231',
+          'label': 'HR',
+          'value': 'HR',
+          'name': 'HR',
+          'is_default': '0',
+          'weight': '2',
+          'is_optgroup': '0',
+          'is_reserved': '0',
+          'is_active': '1'
+        },
+        {
+          'id': '847',
+          'option_group_id': '102',
+          'label': 'Headquarters',
+          'value': 'Headquarters',
+          'name': 'Headquarters',
+          'is_default': '0',
+          'weight': '1',
+          'is_optgroup': '0',
+          'is_reserved': '0',
+          'is_active': '1'
+        },
+        {
+          'id': '1160',
+          'option_group_id': '107',
+          'label': 'East',
+          'value': 'East',
+          'name': 'East',
+          'is_default': '0',
+          'weight': '1',
+          'is_optgroup': '0',
+          'is_reserved': '0',
+          'is_active': '1'
+        }
+      ],
+      'optionGroupData': {
+        'cost_centres': '124',
+        'hrjc_department': '231',
+        'hrjc_level_type': '111',
+        'hrjc_location': '102',
+        'hrjc_region': '107'
+      }
     }
   };
 });

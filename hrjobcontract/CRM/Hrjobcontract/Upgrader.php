@@ -165,7 +165,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
     ");
     CRM_Core_DAO::executeQuery("
-      INSERT INTO `civicrm_hrhours_location` (`id`, `location`, `standard_hours`, `periodicity`, `is_active`) 
+      INSERT INTO `civicrm_hrhours_location` (`id`, `location`, `standard_hours`, `periodicity`, `is_active`)
       VALUES (1, 'Head office', 40, 'Week', 1)
     ");
 
@@ -512,6 +512,9 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1030();
     $this->upgrade_1032();
     $this->upgrade_1033();
+    $this->upgrade_1034();
+    $this->upgrade_1035();
+    $this->upgrade_1036();
   }
 
   function upgrade_1001() {
@@ -925,7 +928,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     if (empty($data)) {
       CRM_Core_DAO::executeQuery("
-        INSERT INTO `civicrm_hrpay_scale` (`pay_scale`, `pay_grade`, `currency`, `amount`, `periodicity`, `is_active`) 
+        INSERT INTO `civicrm_hrpay_scale` (`pay_scale`, `pay_grade`, `currency`, `amount`, `periodicity`, `is_active`)
         VALUES ('Not Applicable', NULL, NULL, NULL, NULL, 1)
     ");
     }
@@ -1007,8 +1010,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    */
   public function upgrade_1026() {
     $query = "
-      ALTER TABLE `civicrm_hrjobcontract_hour` 
-      CHANGE `fte_num` `fte_num` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT '.', 
+      ALTER TABLE `civicrm_hrjobcontract_hour`
+      CHANGE `fte_num` `fte_num` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT '.',
       CHANGE `fte_denom` `fte_denom` INT(10) UNSIGNED NULL DEFAULT '0' COMMENT '.'
     ";
     CRM_Core_DAO::executeQuery($query);
@@ -1155,6 +1158,135 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->updateDropdownMenuItemsLinkToUseOptionGroupName();
 
     return TRUE;
+  }
+
+  /**
+   * Update CustomGroup, setting Contact_Length_Of_Service is_reserved to Yes
+   *
+   * @return bool
+   */
+  public function upgrade_1034() {
+    $result = civicrm_api3('CustomGroup', 'get', [
+      'sequential' => 1,
+      'return' => ['id'],
+      'name' => 'Contact_Length_Of_Service',
+    ]);
+
+    civicrm_api3('CustomGroup', 'create', [
+      'id' => $result['id'],
+      'is_reserved' => 1,
+    ]);
+
+    return TRUE;
+  }
+
+  /**
+   * Upgrade CustomGroup, setting HRJobContract_Dates, HRJob_Summary and
+   * HRJobContract_Summary is_reserved value to Yes if it is existing.
+   *
+   * @return bool
+   */
+  public function upgrade_1035() {
+    $customGroups = [
+      'HRJobContract_Dates',
+      'HRJob_Summary',
+      'HRJobContract_Summary'
+    ];
+    
+    $result = civicrm_api3('CustomGroup', 'get', [
+      'return' => ['id', 'name'],
+      'name' => ['IN' => $customGroups],
+    ]);
+
+    if ($result['count'] > 0) {
+      foreach ($result['values'] as $value) {
+        $params = ['id' => $value['id'], 'is_reserved' => 1];
+
+        /**
+         * 'is_multiple' is added to prevent bug that changes it to false
+         * @see https://issues.civicrm.org/jira/browse/CRM-21853
+         */
+        if ($value['name'] === 'HRJobContract_Dates') {
+          $params['is_multiple'] = 1;
+        }
+
+        civicrm_api3('CustomGroup', 'create', $params);
+      }
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Adds a submenu containing links to edit job contract option groups
+   *
+   * @return bool
+   */
+  public function upgrade_1036() {
+    $domain = CRM_Core_Config::domainID();
+    $params = ['return' => 'id', 'name' => 'Administer', 'domain_id' => $domain];
+    $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
+
+    $permission = 'access CiviCRM';
+    $parent = $this->createNavItem('Job Contract', $permission, $administerId);
+    $parentId = $parent['id'];
+
+    // Weight cannot be set when creating for the first time
+    civicrm_api3('Navigation', 'create', ['id' => $parentId, 'weight' => -100]);
+
+    // If we don't flush it will not recognize newly created parent_id
+    CRM_Core_PseudoConstant::flush();
+
+    // returns the link to an option group edit page
+    $optGroupLinker = function ($groupName) {
+      return 'civicrm/admin/options/' . $groupName . '?reset=1';
+    };
+
+    $childLinks = [
+      'Contract Types' => $optGroupLinker('hrjc_contract_type'),
+      'Normal Places of Work' => $optGroupLinker('hrjc_location'),
+      'Contract End Reasons' => $optGroupLinker('hrjc_contract_end_reason'),
+      'Contract Revision Reasons' => $optGroupLinker('hrjc_revision_change_reason'),
+      'Standard Full Time Hours' => 'civicrm/hours_location',
+      'Pay Scales' => 'civicrm/pay_scale',
+      'Benefits' => $optGroupLinker('hrjc_benefit_name'),
+      'Deductions' => $optGroupLinker('hrjc_deduction_name'),
+      'Insurance Plan Types' => $optGroupLinker('hrjc_insurance_plantype'),
+    ];
+
+    foreach ($childLinks as $itemName => $link) {
+      $this->createNavItem($itemName, $permission, $parentId, ['url' => $link]);
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Creates a navigation menu item using the API
+   *
+   * @param string $name
+   * @param string $permission
+   * @param int $parentID
+   * @param array $params
+   *
+   * @return array
+   */
+  private function createNavItem($name, $permission, $parentID, $params = []) {
+    $params = array_merge([
+      'name' => $name,
+      'label' => ts($name),
+      'permission' => $permission,
+      'parent_id' => $parentID,
+      'is_active' => 1,
+    ], $params);
+
+    $existing = civicrm_api3('Navigation', 'get', $params);
+
+    if ($existing['count'] > 0) {
+      return array_shift($existing['values']);
+    }
+
+    return civicrm_api3('Navigation', 'create', $params);
   }
 
   /**
