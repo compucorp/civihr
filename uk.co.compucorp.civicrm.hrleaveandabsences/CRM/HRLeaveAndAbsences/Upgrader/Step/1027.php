@@ -1,6 +1,6 @@
 <?php
 
-trait CRM_HRLeaveAndAbsences_Upgrader_Step_1022 {
+trait CRM_HRLeaveAndAbsences_Upgrader_Step_1027 {
 
   /**
    * Creates the LeaveBalanceExpiryLog table if
@@ -8,7 +8,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1022 {
    *
    * @return bool
    */
-  public function upgrade_1022() {
+  public function upgrade_1027() {
     CRM_Core_DAO::executeQuery("
       CREATE TABLE IF NOT EXISTS `civicrm_hrleaveandabsences_leave_balance_change_expiry_log` (
            

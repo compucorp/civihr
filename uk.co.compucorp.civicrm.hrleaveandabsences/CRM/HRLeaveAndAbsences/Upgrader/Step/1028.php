@@ -2,7 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 
-trait CRM_HRLeaveAndAbsences_Upgrader_Step_1023 {
+trait CRM_HRLeaveAndAbsences_Upgrader_Step_1028 {
 
   /**
    * Deletes Expired balance changes records that were wrongly expired by the
@@ -10,7 +10,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1023 {
    *
    * @return bool
    */
-  public function upgrade_1023() {
+  public function upgrade_1028() {
     $today = date('Y-m-d');
     $leaveBalanceChangeTable  =  LeaveBalanceChange::getTableName();
 
