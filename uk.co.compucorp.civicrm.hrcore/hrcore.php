@@ -179,6 +179,14 @@ function hrcore_civicrm_postInstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function hrcore_civicrm_uninstall() {
+  $listeners = [
+    new CRM_HRCore_Hook_Uninstall_CustomGroupRemover()
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->handle();
+  }
+
   _hrcore_civix_civicrm_uninstall();
 }
 
@@ -188,6 +196,17 @@ function hrcore_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function hrcore_civicrm_enable() {
+  // required for PEAR style autoloading in this extension
+  _hrcore_civix_civicrm_config();
+
+  $listeners = [
+    new CRM_HRCore_Hook_Enable_CustomGroupEnabler()
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->handle();
+  }
+
   _hrcore_civix_civicrm_enable();
 }
 
@@ -197,6 +216,14 @@ function hrcore_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function hrcore_civicrm_disable() {
+  $listeners = [
+    new CRM_HRCore_Hook_Disable_CustomGroupDisabler()
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->handle();
+  }
+
   _hrcore_civix_civicrm_disable();
 }
 
