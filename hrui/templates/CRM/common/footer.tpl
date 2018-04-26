@@ -23,7 +23,8 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-{if call_user_func(array('CRM_Core_Permission','check'), 'access CiviCRM')}
+
+{if $canAccessCiviCRM }
   {include file="CRM/common/accesskeys.tpl"}
   {if !empty($contactId)}
     {include file="CRM/common/contactFooter.tpl"}
