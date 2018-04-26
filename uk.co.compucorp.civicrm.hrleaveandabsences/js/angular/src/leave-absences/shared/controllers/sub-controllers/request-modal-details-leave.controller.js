@@ -7,9 +7,9 @@ define([
 ], function (_, moment, controllers) {
   controllers.controller('RequestModalDetailsLeaveController', RequestModalDetailsLeaveController);
 
-  RequestModalDetailsLeaveController.$inject = ['$controller', '$log', '$q', '$rootScope', 'detailsController', 'PublicHoliday'];
+  RequestModalDetailsLeaveController.$inject = ['$controller', '$log', '$q', '$rootScope', 'detailsController', 'PublicHoliday', 'LeaveRequest'];
 
-  function RequestModalDetailsLeaveController ($controller, $log, $q, $rootScope, detailsController, PublicHoliday) {
+  function RequestModalDetailsLeaveController ($controller, $log, $q, $rootScope, detailsController, PublicHoliday, LeaveRequest) {
     var workDays = {};
 
     $log.debug('RequestModalDetailsLeaveController');
@@ -116,7 +116,7 @@ define([
 
       date = detailsController.convertDateToServerFormat(date);
 
-      return PublicHoliday.isPublicHoliday(date)
+      return hasDatePublicHolidayRequest(date)
         .then(function (result) {
           if (result) {
             return detailsController.requestDayTypes.filter(function (publicHoliday) {
@@ -172,6 +172,23 @@ define([
     function getTimeDifferenceInHours (timeFrom, timeTo) {
       return moment.duration(timeTo)
         .subtract(moment.duration(timeFrom)).asHours();
+    }
+
+    /**
+     * Checks if a "public holiday" request exists for the given date
+     *
+     * @param  {String} date
+     * @return {Promise} resolves to {Boolean}
+     */
+    function hasDatePublicHolidayRequest (date) {
+      return LeaveRequest.all({
+        public_holiday: 1,
+        from_date: { from: date },
+        to_date: { to: date }
+      })
+        .then(function (result) {
+          return !!result.list.length;
+        });
     }
 
     /**

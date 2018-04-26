@@ -1707,7 +1707,7 @@ define([
     }
 
     /**
-     * Toggles whether there is a "public_holiday" leave requests
+     * Toggles whether there is a "public_holiday" leave request
      * for the current date (for the purpose of the test it doesn't matter if
      * the current date is the "from" or "to" date)
      *
