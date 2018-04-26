@@ -8,6 +8,7 @@ use CRM_Hrjobcontract_BAO_HRJobContract as HRJobContract;
 use CRM_Hrjobcontract_BAO_HRJobContractRevision as HRJobContractRevision;
 use CRM_Hrjobcontract_BAO_HRJobDetails as HRJobDetails;
 use CRM_HRLeaveAndAbsences_Service_LeaveDateAmountDeduction as LeaveDateAmountDeduction;
+use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLog as LeaveBalanceChangeExpiryLog;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange {
 
@@ -752,15 +753,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
       LEFT JOIN {$absencePeriodTable} absence_period
             ON period_entitlement.period_id = absence_period.id
       WHERE balance_to_expire.expiry_date IS NOT NULL AND
-            balance_to_expire.expiry_date < CURDATE() AND
+            balance_to_expire.expiry_date < %3 AND
             balance_to_expire.expired_balance_change_id IS NULL AND
-            expired_balance_change.id IS NULL
+            expired_balance_change.id IS NULL AND
+            coalesce(leave_request.type_id, period_entitlement.type_id) IS NOT NULL
       ORDER BY balance_to_expire.expiry_date ASC, balance_to_expire.id ASC
     ";
 
     $params = [
       1 => [self::SOURCE_LEAVE_REQUEST_DAY, 'String'],
       2 => [self::SOURCE_ENTITLEMENT, 'String'],
+      3 => [date('Y-m-d'), 'String']
     ];
 
     $result = CRM_Core_DAO::executeQuery($query, $params);
@@ -1029,12 +1032,37 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
         $params['id'] = $expiryBalanceChange->id;
       }
 
-      self::create($params);
+      $balanceChange = self::create($params);
+      self::logExpiredBalanceChange($balanceChange);
 
       $numberOfRecords++;
     }
 
     return $numberOfRecords;
+  }
+
+  /**
+   * Logs the expired balance change using the LeaveBalanceChangeExpiryLog entity.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange $expiredBalanceChange
+   */
+  private static function logExpiredBalanceChange($expiredBalanceChange) {
+    $logData = [
+      'balance_change_id' => $expiredBalanceChange->id,
+      'source_id' => $expiredBalanceChange->source_id,
+      'source_type' => $expiredBalanceChange->source_type,
+      'expiry_date' => CRM_Utils_Date::processDate($expiredBalanceChange->expiry_date),
+      'balance_type_id' => $expiredBalanceChange->type_id,
+      'amount' => $expiredBalanceChange->amount,
+    ];
+
+    if ($expiredBalanceChange->source_type == self::SOURCE_LEAVE_REQUEST_DAY) {
+      $leaveDate = LeaveRequestDate::findById($expiredBalanceChange->source_id);
+      $logData['leave_date'] = CRM_Utils_Date::processDate($leaveDate->date);
+      $logData['leave_request_id'] = $leaveDate->leave_request_id;
+    }
+
+    LeaveBalanceChangeExpiryLog::create($logData);
   }
 
   /**
