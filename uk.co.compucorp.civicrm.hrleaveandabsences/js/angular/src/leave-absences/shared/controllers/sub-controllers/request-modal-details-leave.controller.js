@@ -175,7 +175,8 @@ define([
     }
 
     /**
-     * Checks if a "public holiday" request exists for the given date
+     * Checks if a "public holiday" request exists for the given date, for the
+     * currently selected contact
      *
      * @param  {String} date
      * @return {Promise} resolves to {Boolean}
@@ -183,6 +184,7 @@ define([
     function hasDatePublicHolidayRequest (date) {
       return LeaveRequest.all({
         public_holiday: 1,
+        contact_id: detailsController.request.contact_id,
         from_date: { from: date },
         to_date: { to: date }
       })

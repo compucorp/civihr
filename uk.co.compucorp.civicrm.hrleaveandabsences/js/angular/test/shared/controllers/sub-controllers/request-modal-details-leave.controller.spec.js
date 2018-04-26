@@ -276,6 +276,13 @@ define([
           expect(controller.loading['fromDayTypes']).toBe(false);
           expect(controller.loading['toDayTypes']).toBe(false);
         });
+
+        it('checks for public holiday requests only for the currently selected contact', function () {
+          var args = LeaveRequest.all.calls.mostRecent().args[0];
+
+          expect(args.contact_id).toBeDefined();
+          expect(args.contact_id).toBe(controller.request.contact_id);
+        });
       });
 
       describe('when one of the currently selected dates is a standard working day', function () {
@@ -329,7 +336,9 @@ define([
        */
       function initDayTypesWithSelectedDateAs (type) {
         compileComponent({
-          request: LeaveRequestInstance.init()
+          request: LeaveRequestInstance.init({
+            contact_id: CRM.vars.leaveAndAbsences.contactId.toString()
+          })
         });
 
         controller.uiOptions.fromDate = fromDate;
