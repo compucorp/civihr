@@ -18,15 +18,16 @@ define([
       /**
        * Returns the list of relationships
        *
-       * @param {object} filters
-       * @param {object} pagination
-       * @param {string} sort
+       * @param  {Object}  filters
+       * @param  {Object}  pagination
+       * @param  {String}  sort
+       * @param  {Boolean} cache
        * @return {Promise}
        */
-      all: function (filters, pagination, sort, additionalParams) {
+      all: function (filters, pagination, sort, cache) {
         $log.debug('Relationship.all()');
 
-        return this.getAll('Relationship', filters, pagination, sort, additionalParams);
+        return this.getAll('Relationship', filters, pagination, sort, null, null, cache);
       }
     });
   }

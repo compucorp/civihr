@@ -14,7 +14,7 @@ define([
   describe('RelationshipModel', function () {
     var $provide, $rootScope, RelationshipModel, RelationshipAPI,
       RelationshipInstance, result;
-    var additionalParams = { key: 'additionalParams' };
+    var cache = false;
     var filters = {};
     var pagination = { key: 'pagination' };
     var sort = 'sort ASC';
@@ -45,7 +45,7 @@ define([
 
     describe('all()', function () {
       beforeEach(function (done) {
-        RelationshipModel.all(filters, pagination, sort, additionalParams)
+        RelationshipModel.all(filters, pagination, sort, cache)
           .then(function (_result_) {
             result = _result_;
           }).finally(done);
@@ -54,7 +54,7 @@ define([
 
       describe('when requesting relationships', function () {
         it('passes the filters and paginations parameter to the API', function () {
-          expect(RelationshipAPI.all).toHaveBeenCalledWith(filters, pagination, sort, additionalParams);
+          expect(RelationshipAPI.all).toHaveBeenCalledWith(filters, pagination, sort, cache);
         });
       });
 
@@ -88,7 +88,7 @@ define([
             return RelationshipInstance.init(relationship, true).isValid();
           });
 
-        RelationshipModel.allValid(filters, pagination, sort, additionalParams)
+        RelationshipModel.allValid(filters, pagination, sort, cache)
           .then(function (_result_) {
             result = _result_;
           }).finally(done);
@@ -96,7 +96,7 @@ define([
       });
 
       it('passes the filters and pagination parameters to the all method', function () {
-        expect(RelationshipModel.all).toHaveBeenCalledWith(filters, pagination, sort, additionalParams);
+        expect(RelationshipModel.all).toHaveBeenCalledWith(filters, pagination, sort, cache);
       });
 
       it('only returns relationships where the relationship type is active', function () {
