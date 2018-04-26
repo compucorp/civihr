@@ -45,6 +45,7 @@
       <argument id="civihr_stats_gatherer" type="service"/>
       <argument id="civihr.file_cache" type="service"/>
     </service>
+    <service id="custom_group.status_switcher" class="CRM_HRCore_Service_CustomGroupStatusSwitcher"/>
   </services>
 
 </container>
