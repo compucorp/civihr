@@ -593,6 +593,31 @@
       });
 
       describe('manager opens leave request popup in edit mode', function () {
+        describe('when leave request date has same date as period end date', function () {
+          beforeEach(function () {
+            var approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
+            var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
+            var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
+
+            leaveRequest.from_date = '2017-12-31 00:00:00';
+            leaveRequest.to_date = '2017-12-31 23:59:00';
+            leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+            role = 'manager';
+
+            initTestController({ leaveRequest: leaveRequest });
+            spyOn(controller.request, 'update').and.callThrough();
+            spyOn(LeaveRequestInstance, 'calculateBalanceChange').and.returnValue(
+              $q.resolve({ amount: controller.balance.change.amount }));
+            leaveRequest.status_id = approvalStatus;
+            controller.submit();
+            $rootScope.$digest();
+          });
+
+          it('matches leave request with according absence period', function () {
+            expect(controller.period).toBeDefined();
+          });
+        });
+
         describe('basic tests for when manager opens leave request popup in edit mode', function () {
           beforeEach(function () {
             var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
