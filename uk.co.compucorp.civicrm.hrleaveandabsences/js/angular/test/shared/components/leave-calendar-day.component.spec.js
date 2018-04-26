@@ -14,15 +14,21 @@ define([
   describe('leaveCalendarDay', function () {
     var $componentController, $log, $rootScope, absenceType, absenceTypes,
       calculationUnits, calculationUnitInDays, calculationUnitInHours,
-      contactData, controller, dayTypes, LeavePopup, leaveRequest;
+      contactData, controller, dayTypes, LeavePopup, leaveRequest, leaveRequestAttributes;
 
     beforeEach(module('manager-leave'));
     beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _LeavePopup_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
-      absenceTypes = absenceTypeData.all().values;
+      absenceTypes = _.cloneDeep(absenceTypeData.all().values);
       contactData = {};
+      leaveRequest = _.cloneDeep(leaveRequestData.all().values[0]);
+      contactData.leaveRequests = [leaveRequest];
+      contactData.leaveRequestsToShowInCell = [leaveRequest];
+      contactData.leaveRequestsAttributes = {};
+      contactData.leaveRequestsAttributes[leaveRequest.id] = {};
+      leaveRequestAttributes = contactData.leaveRequestsAttributes[leaveRequest.id];
       calculationUnits = optionGroupData.getCollection(
         'hrleaveandabsences_absence_type_calculation_unit');
       dayTypes = optionGroupData.getCollection(
@@ -48,34 +54,30 @@ define([
     });
 
     describe('mapping leave request fields', function () {
-      var absenceType;
-
       beforeEach(function () {
         compileComponent();
 
-        leaveRequest = _.cloneDeep(leaveRequestData.all().values[0]);
-        contactData.leaveRequest = leaveRequest;
         absenceType = _.find(absenceTypes, function (type) {
           return +type.id === +leaveRequest.type_id;
         });
       });
 
-      describe('for any calculation unit', function () {
+      describe('basic tests', function () {
         beforeEach(function () {
           $rootScope.$digest();
         });
 
-        it('maps the absence type title', function () {
-          expect(leaveRequest['type_id.title']).toEqual(absenceType.title);
+        it('sets the absence type title', function () {
+          expect(leaveRequestAttributes['absenceTypeTitle']).toEqual(absenceType.title);
         });
 
         it('sets dates ready for formatting', function () {
-          expect(controller.dates.from).toEqual(new Date(leaveRequest.from_date));
-          expect(controller.dates.to).toEqual(new Date(leaveRequest.to_date));
+          expect(leaveRequestAttributes.from_date).toEqual(new Date(leaveRequest.from_date));
+          expect(leaveRequestAttributes.to_date).toEqual(new Date(leaveRequest.to_date));
         });
 
         it('sets the calculation unit', function () {
-          expect(controller.calculationUnit).toEqual(jasmine.any(Object));
+          expect(leaveRequestAttributes.unit).toEqual(jasmine.any(String));
         });
       });
 
@@ -95,15 +97,15 @@ define([
         });
 
         it('sets the "days" calculation unit', function () {
-          expect(controller.calculationUnit.name).toEqual('days');
+          expect(leaveRequestAttributes.unit).toEqual('days');
         });
 
         it('maps the from date type label', function () {
-          expect(leaveRequest['from_date_type.label']).toEqual(fromDateType.label);
+          expect(leaveRequestAttributes.from_date_type).toEqual(fromDateType.label);
         });
 
         it('maps the to date type label', function () {
-          expect(leaveRequest['from_date_type.label']).toEqual(toDateType.label);
+          expect(leaveRequestAttributes.from_date_type).toEqual(toDateType.label);
         });
       });
 
@@ -115,12 +117,12 @@ define([
         });
 
         it('sets the "hours" calculation unit', function () {
-          expect(controller.calculationUnit.name).toEqual('hours');
+          expect(leaveRequestAttributes.unit).toEqual('hours');
         });
 
         it('does not map neither "from" nor "to" date type label', function () {
-          expect(leaveRequest['from_date_type.label']).not.toBeDefined();
-          expect(leaveRequest['to_date_type.label']).not.toBeDefined();
+          expect(leaveRequestAttributes.from_date_type).not.toBeDefined();
+          expect(leaveRequestAttributes.to_date_type).not.toBeDefined();
         });
       });
     });
@@ -137,47 +139,50 @@ define([
 
       describe('Accrued TOIL', function () {
         beforeEach(function () {
-          contactData.isAccruedTOIL = true;
+          leaveRequestAttributes.isAccruedTOIL = true;
+
           $rootScope.$digest();
         });
 
         it('sets day label equal to AT', function () {
-          expect(controller.label).toBe('AT');
+          expect(leaveRequestAttributes.label).toBe('AT');
         });
       });
 
       describe('half day AM', function () {
         beforeEach(function () {
           absenceType.calculation_unit = calculationUnitInDays;
-          contactData.isAM = true;
+          leaveRequestAttributes.isAM = true;
           $rootScope.$digest();
         });
 
         it('sets day label equal to AM', function () {
-          expect(controller.label).toBe('AM');
+          expect(leaveRequestAttributes.label).toBe('AM');
         });
       });
 
       describe('half day PM', function () {
         beforeEach(function () {
           absenceType.calculation_unit = calculationUnitInDays;
-          contactData.isPM = true;
+          leaveRequestAttributes.isPM = true;
+
           $rootScope.$digest();
         });
 
         it('sets day label equal to PM', function () {
-          expect(controller.label).toBe('PM');
+          expect(leaveRequestAttributes.label).toBe('PM');
         });
       });
 
       describe('full day', function () {
         beforeEach(function () {
           absenceType.calculation_unit = calculationUnitInDays;
+
           $rootScope.$digest();
         });
 
         it('sets day label equal to empty string', function () {
-          expect(controller.label).toBe('');
+          expect(leaveRequestAttributes.label).toBe('');
         });
       });
 
@@ -188,11 +193,12 @@ define([
           absenceType.calculation_unit = calculationUnitInHours;
           controller.date = leaveRequest.from_date;
           time = moment(leaveRequest.from_date).format('HH:mm');
+
           $rootScope.$digest();
         });
 
         it('sets day label equal the start time of the request', function () {
-          expect(controller.label).toBe(time);
+          expect(leaveRequestAttributes.label).toBe(time);
         });
       });
 
@@ -203,11 +209,12 @@ define([
           absenceType.calculation_unit = calculationUnitInHours;
           controller.date = leaveRequest.to_date;
           time = moment(leaveRequest.to_date).format('HH:mm');
+
           $rootScope.$digest();
         });
 
         it('sets day label equal the end time of the request', function () {
-          expect(controller.label).toBe(time);
+          expect(leaveRequestAttributes.label).toBe(time);
         });
       });
 
@@ -218,86 +225,13 @@ define([
 
           absenceType.calculation_unit = calculationUnitInHours;
           controller.date = startDate.add(1, 'days').format(dateFormat);
-          leaveRequest.to_date = startDate.add(2, 'days').format(dateFormat);
+          controller.contactData.leaveRequests[0].to_date = startDate.add(2, 'days').format(dateFormat);
+
           $rootScope.$digest();
         });
 
         it('sets day label equal to empty string', function () {
-          expect(controller.label).toBe('');
-        });
-      });
-    });
-
-    describe('selecting a tooltip template', function () {
-      var nextWeek;
-
-      beforeEach(function () {
-        nextWeek = moment(leaveRequest.from_date).add(7, 'days')
-          .format('YYYY-MM-DD HH:ii');
-        contactData.leaveRequest = leaveRequest;
-      });
-
-      describe('when the request is for Accrued TOIL', function () {
-        beforeEach(function () {
-          controller.contactData.isAccruedTOIL = true;
-
-          $rootScope.$digest();
-        });
-
-        it('selects the tooltip template for accrued toil', function () {
-          expect(controller.tooltipTemplate).toBe('accrued-toil-tooltip');
-        });
-      });
-
-      describe('when the request is for a single day and the calculation unit is in hours', function () {
-        beforeEach(function () {
-          absenceType.calculation_unit = calculationUnitInHours;
-          leaveRequest.to_date = leaveRequest.from_date;
-
-          $rootScope.$digest();
-        });
-
-        it('selects the tooltip template for unit type hours on single date', function () {
-          expect(controller.tooltipTemplate).toBe('type-hours-on-single-date-tooltip');
-        });
-      });
-
-      describe('when the request is for multiple days and the calculation unit is in hours', function () {
-        beforeEach(function () {
-          absenceType.calculation_unit = calculationUnitInHours;
-          leaveRequest.to_date = nextWeek;
-
-          $rootScope.$digest();
-        });
-
-        it('selects the tooltip template for unit type hours on multiple dates', function () {
-          expect(controller.tooltipTemplate).toBe('type-hours-on-multiple-dates-tooltip');
-        });
-      });
-
-      describe('when the request is for a single day and the calculation unit is in days', function () {
-        beforeEach(function () {
-          absenceType.calculation_unit = calculationUnitInDays;
-          leaveRequest.to_date = leaveRequest.from_date;
-
-          $rootScope.$digest();
-        });
-
-        it('selects the tooltip template for unit type days on single date', function () {
-          expect(controller.tooltipTemplate).toBe('type-days-on-single-date-tooltip');
-        });
-      });
-
-      describe('when the request is for multiple days and the calculation unit is in days', function () {
-        beforeEach(function () {
-          absenceType.calculation_unit = calculationUnitInDays;
-          leaveRequest.to_date = nextWeek;
-
-          $rootScope.$digest();
-        });
-
-        it('selects the tooltip template for unit type days on multiple dates', function () {
-          expect(controller.tooltipTemplate).toBe('type-days-on-multiple-dates-tooltip');
+          expect(leaveRequestAttributes.label).toBe('');
         });
       });
     });
