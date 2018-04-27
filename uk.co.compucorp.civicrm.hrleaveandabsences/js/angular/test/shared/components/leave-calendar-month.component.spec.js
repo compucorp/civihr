@@ -23,7 +23,7 @@
     describe('leaveCalendarMonth', function () {
       var $componentController, $log, $provide, $q, $rootScope, Calendar,
         LeaveRequest, OptionGroup, controller, daysInFebruary, february, leaveRequestInFebruary,
-        period2016, publicHolidays, pubSub, contactData, leaveRequestAttributes;
+        period2016, publicHolidays, pubSub, contactData, leaveRequest, leaveRequestAttributes;
       var currentContactId = CRM.vars.leaveAndAbsences.contactId;
       var contactIdsToReduceTo = null;
 
@@ -445,8 +445,52 @@
           });
         });
 
+        describe('when the contact has multiple leave requests on the same day', function () {
+          var leaveRequest1, leaveRequest2;
+
+          describe('basic tests', function () {
+            beforeEach(function () {
+              leaveRequest1 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest2 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+
+              commonSetup([leaveRequest1, leaveRequest2]);
+            });
+
+            it('has leave requests references in the contact data', function () {
+              expect(contactData.leaveRequests.length).toBe(2);
+              expect(contactData.leaveRequests[0]).toBe(leaveRequest1);
+              expect(contactData.leaveRequests[1]).toBe(leaveRequest2);
+            });
+
+            it('keeps references to leave requests to show in day cell', function () {
+              expect(contactData.leaveRequestsToShowInCell.length).toBe(2);
+              expect(contactData.leaveRequestsToShowInCell[0]).toBe(leaveRequest1);
+              expect(contactData.leaveRequestsToShowInCell[1]).toBe(leaveRequest2);
+            });
+          });
+
+          describe('when day contains a mix of TOIL and non-TOIL requests', function () {
+            beforeEach(function () {
+              leaveRequest1 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest2 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest2.request_type = 'toil';
+
+              commonSetup([leaveRequest1, leaveRequest2]);
+            });
+
+            it('only shows toil requests in the day cell', function () {
+              expect(contactData.leaveRequestsToShowInCell.length).toBe(1);
+              expect(contactData.leaveRequestsToShowInCell[0]).toBe(leaveRequest2);
+            });
+
+            it('still has all leave request references', function () {
+              expect(contactData.leaveRequests.length).toBe(2);
+            });
+          });
+        });
+
         describe('when the contact has recorded a leave request on the day', function () {
-          var leaveRequest, workPattern;
+          var workPattern;
 
           beforeEach(function () {
             leaveRequest = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
@@ -468,6 +512,10 @@
 
             it('contains a reference to the leave request itself', function () {
               expect(contactData.leaveRequests[0]).toBe(leaveRequest);
+            });
+
+            it('adds a reference to the leave request to show it in the day cell', function () {
+              expect(contactData.leaveRequestsToShowInCell[0]).toBe(leaveRequest);
             });
 
             it('assigns it the colors of its absence type', function () {
@@ -535,27 +583,6 @@
               expect(leaveRequestAttributes.isAccruedTOIL).toBe(true);
             });
           });
-
-          function commonSetup () {
-            var day;
-
-            LeaveRequest.all.and.callFake(function () {
-              return $q.resolve({ list: [leaveRequest] });
-            });
-
-            compileComponent(true);
-
-            controller.month.days.forEach(function (dayObj) {
-              if (moment(dayObj.date).isSame(leaveRequest.from_date, 'day')) {
-                day = dayObj;
-              }
-            });
-
-            contactData = day.contactsData[currentContactId];
-            leaveRequestAttributes = contactData.leaveRequestsAttributes[leaveRequest.id];
-
-            return day.contactsData[currentContactId];
-          }
         });
 
         function getDayWithType (dayType, returnContactData) {
@@ -822,6 +849,38 @@
         });
       });
 
+      /**
+       * Initializes controller with default or given leave requests
+       * and caches day, contact data and leave request attributes
+       * for the first leave request in the list for testing convenience
+       *
+       * @param {Array} leaveRequests - optional array of {LeaveRequestInstance}
+       */
+      function commonSetup (leaveRequests) {
+        var day;
+        var leaveRequestsToUse = leaveRequests || [leaveRequest];
+
+        LeaveRequest.all.and.callFake(function () {
+          return $q.resolve({ list: leaveRequestsToUse });
+        });
+
+        compileComponent(true);
+
+        controller.month.days.forEach(function (dayObj) {
+          if (moment(dayObj.date).isSame(leaveRequestsToUse[0].from_date, 'day')) {
+            day = dayObj;
+          }
+        });
+
+        contactData = day.contactsData[currentContactId];
+        leaveRequestAttributes = contactData.leaveRequestsAttributes[leaveRequestsToUse[0].id];
+      }
+
+      /**
+       * Compiles component
+       *
+       * @param {Boolean} sendSignal - if to send a month signal or not
+       */
       function compileComponent (sendSignal) {
         controller = $componentController('leaveCalendarMonth', null, {
           contacts: ContactData.all.values,
