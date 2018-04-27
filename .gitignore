@@ -8,6 +8,7 @@ hrjob/build
 bin/setup.conf
 hrabsence/build
 /nbproject/private/
+core-fork-last-commit-patched.txt
 
 # Exclude sass cache from all extension directories
 */.sass-cache/

@@ -6,6 +6,7 @@
   @import './components/*';
 }
 
+/* stylelint-disable selector-max-id */
 #contactsummary {
   .panel--key-dates {
     > .panel-body {
@@ -18,3 +19,4 @@
     margin-bottom: 0 !important;
   }
 }
+/* stylelint-enable */

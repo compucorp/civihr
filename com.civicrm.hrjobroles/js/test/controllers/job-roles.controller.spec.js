@@ -35,18 +35,12 @@ define([
     }));
 
     describe('when user opens option editor', function () {
-      var onPopupFormSuccess;
       var url = '/civicrm/admin/options/hrjc_level_type?reset=1';
       var optionType = 'hrjc_level_type';
-
       beforeEach(function () {
         spyOn(crmAngService, 'loadForm').and.callFake(function () {
           return {
-            on: function (event, callback) {
-              if (event === 'crmUnload') {
-                onPopupFormSuccess = callback;
-              }
-            }
+            on: function () {}
           };
         });
         initController();
