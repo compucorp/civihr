@@ -362,8 +362,6 @@ define([
         .then(setMonthDaysContactData)
         .then(function () {
           dataLoaded = true;
-        })
-        .then(function () {
           vm.month.loading = false;
         });
     }
