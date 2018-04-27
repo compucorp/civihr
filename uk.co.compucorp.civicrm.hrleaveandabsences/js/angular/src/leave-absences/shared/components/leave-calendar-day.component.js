@@ -18,15 +18,22 @@ define([
     controller: LeaveCalendarDayController
   });
 
-  LeaveCalendarDayController.$inject = ['$log', '$scope', 'LeavePopup'];
+  LeaveCalendarDayController.$inject = ['$log', '$scope', '$timeout', 'LeavePopup'];
 
-  function LeaveCalendarDayController ($log, $scope, LeavePopup) {
+  function LeaveCalendarDayController ($log, $scope, $timeout, LeavePopup) {
     'use strict';
     $log.debug('Component: leave-calendar-day');
 
     var vm = this;
 
+    vm.tooltip = {
+      show: false,
+      day_cell_hovered: false,
+      tooltip_hovered: false
+    };
+
     vm.openLeavePopup = openLeavePopup;
+    vm.toggleTooltip = toggleTooltip;
 
     (function init () {
       watchLeaveRequests();
@@ -186,6 +193,26 @@ define([
       resolvingFunctions.forEach(function (resolvingFunction) {
         resolvingFunction.call(this, leaveRequest, leaveRequestAttributes);
       });
+    }
+
+    /**
+     * Toggles tooltip for the day.
+     * It reacts to entering/leaving either day cell or the tooltip itself,
+     * if either of the elements are hovered, it remains the tooltip open.
+     * It instantly shows a tooltip, but has a 100ms timeout to hide it once unhovered.
+     *
+     * @TODO this should be moved to a decorator to uib-tooltip
+     *
+     * @param {String} sourceElement day_cell|tooltip
+     * @param {Boolean} isHovered
+     */
+    function toggleTooltip (sourceElement, isHovered) {
+      $timeout(function () {
+        vm.tooltip[sourceElement + '_hovered'] = isHovered;
+
+        vm.tooltip.show =
+          vm.tooltip.day_cell_hovered || vm.tooltip.tooltip_hovered;
+      }, isHovered ? 0 : 100);
     }
 
     /**
