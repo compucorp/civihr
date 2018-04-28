@@ -146,8 +146,14 @@ define([
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function deleteLeaveRequest (leaveRequest) {
-      removeLeaveRequestFromIndexedList(leaveRequest);
-      updateLeaveRequestDaysContactData(leaveRequest);
+      var indexedLeaveRequest = findIndexedLeaveRequest(leaveRequest);
+
+      if (!indexedLeaveRequest) {
+        return;
+      }
+
+      removeLeaveRequestFromIndexedList(indexedLeaveRequest);
+      updateLeaveRequestDaysContactData(indexedLeaveRequest);
     }
 
     /**
@@ -167,6 +173,24 @@ define([
       return bothTOILAndNonTOILRequestsExist
         ? _.filter(leaveRequests, filterTOILCondition)
         : leaveRequests;
+    }
+
+    /**
+     * Finds indexed leave request by a leave request given
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @return {LeaveRequestInstance} indexed leave request
+     */
+    function findIndexedLeaveRequest (leaveRequest) {
+      var indexedLeaveRequest;
+
+      _.forEach(leaveRequests[leaveRequest.contact_id], function (day) {
+        indexedLeaveRequest = _.find(day, function (leaveRequestObj) {
+          return +leaveRequestObj.id === +leaveRequest.id;
+        }) || indexedLeaveRequest;
+      });
+
+      return indexedLeaveRequest;
     }
 
     /**

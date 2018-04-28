@@ -623,9 +623,13 @@
 
           describe('leave request status update event', function () {
             beforeEach(function () {
+              var shrinkedLeaveRequest = _.cloneDeep(leaveRequestToDelete);
+              // Srinking the leave in terms of dates to ensure later that all dates are flushed
+              shrinkedLeaveRequest.to_date = shrinkedLeaveRequest.from_date;
+
               pubSub.publish('LeaveRequest::statusUpdate', {
                 status: 'delete',
-                leaveRequest: leaveRequestToDelete
+                leaveRequest: shrinkedLeaveRequest
               });
               $rootScope.$digest();
             });
@@ -633,12 +637,15 @@
             itHandlesLeaveRequestDeleteEvent();
           });
 
+          /**
+           * Checks that the leave request is deleted
+           */
           function itHandlesLeaveRequestDeleteEvent () {
             it('does not re-fetch the leave requests from the backend', function () {
               expect(LeaveRequest.all).not.toHaveBeenCalled();
             });
 
-            it('resets the properties of each day that the leave request spans', function () {
+            it('resets the properties of each day that the original leave request spans', function () {
               expect(getLeaveRequestDays(leaveRequestToDelete).every(isDayContactDataNull)).toBe(true);
             });
           }
