@@ -10,7 +10,7 @@ define([
   'use strict';
 
   describe('$uibModal.open', function () {
-    var $uibModal, $document;
+    var $document, $rootScope, $uibModal;
 
     beforeEach(module('ui.bootstrap'));
 
@@ -18,61 +18,103 @@ define([
       $provide.decorator('$uibModal', $uibModalDecorator);
     }));
 
-    beforeEach(inject(function (_$document_, _$uibModal_) {
+    beforeEach(inject(function (_$document_, _$rootScope_, _$uibModal_) {
       $document = _$document_;
+      $rootScope = _$rootScope_;
       $uibModal = _$uibModal_;
     }));
 
     describe('init', function () {
-      var originalStyles;
       var arg1 = { template: '<component></component>' };
       var arg2 = 'another_argument';
       var elements = {};
 
       beforeEach(function () {
-        elements.body = $document[0].body;
-        elements.html = $document[0].getElementsByTagName('html')[0];
-
-        if (!originalStyles) {
-          originalStyles = {
-            body: _.clone(elements.body.style),
-            html: _.clone(elements.html.style)
-          };
-        }
+        elements.body = $document.find('body');
+        elements.html = $document.find('html');
       });
 
       describe('when modal is opened', function () {
-        var modalInstance;
+        var modalInstance1;
 
         beforeEach(function () {
-          modalInstance = $uibModal.open(arg1, arg2);
+          modalInstance1 = $uibModal.open(arg1, arg2);
+          $rootScope.$digest();
         });
 
-        ['body', 'html'].forEach(function (element) {
-          _.forOwn({ overflow: 'hidden', height: '100%', width: '100%' }, function (value, style) {
-            it('sets ' + style + ' to ' + value + ' for <' + element + '>', function () {
-              expect(elements[element].style[style]).toBe(value);
-            });
-          });
+        afterEach(function () {
+          $document.find('.modal-dialog').remove();
+        });
+
+        it('locks document scroll', function () {
+          expect($document.find('.modal-dialog').length).toBe(1);
+          expect(checkLockingClassForAllElements()).toBe(true);
         });
 
         describe('when modal is closed', function () {
           beforeEach(function () {
-            // @TODO The solution to simply close the modal was not found and
-            // the test cannot be run at the moment. If you have any idea
-            // on how to make this test work, please amend it and turn on.
-            modalInstance.close();
+            // Closes the modal and executes the listener
+            $document.find('.modal-dialog').remove();
+            modalInstance1.closed.$$state.pending[0][1]();
           });
 
-          ['body', 'html'].forEach(function (element) {
-            ['width', 'height', 'overflow'].forEach(function (style) {
-              xit('sets original ' + style + ' for <' + element + '>', function () {
-                expect(elements[element].style[style]).toBe(originalStyles[element][style]);
+          it('unlocks document scroll', function () {
+            expect($document.find('.modal-dialog').length).toBe(0);
+            expect(checkLockingClassForAllElements()).toBe(false);
+          });
+        });
+
+        describe('when second modal is opened on top of the first modal', function () {
+          var modalInstance2;
+
+          beforeEach(function () {
+            modalInstance2 = $uibModal.open(arg1, arg2);
+            $rootScope.$digest();
+          });
+
+          it('remains document scroll locked', function () {
+            expect($document.find('.modal-dialog').length).toBe(2);
+            expect(checkLockingClassForAllElements()).toBe(true);
+          });
+
+          describe('when second modal is closed', function () {
+            beforeEach(function () {
+              // Closes second modal and executes the listener
+              $document.find('.modal-dialog').last().remove();
+              modalInstance2.closed.$$state.pending[0][1]();
+            });
+
+            it('remains document scroll locked', function () {
+              expect($document.find('.modal-dialog').length).toBe(1);
+              expect(checkLockingClassForAllElements()).toBe(true);
+            });
+
+            describe('and when the first modal is closed', function () {
+              beforeEach(function () {
+                // Closes the first modal and executes the listener
+                $document.find('.modal-dialog').first().remove();
+                modalInstance1.closed.$$state.pending[0][1]();
+              });
+
+              it('unlocks document scroll', function () {
+                expect($document.find('.modal-dialog').length).toBe(0);
+                expect(checkLockingClassForAllElements()).toBe(false);
               });
             });
           });
         });
       });
+
+      /**
+       * Checks for the state of document scroll locking
+       *
+       * @return {Boolean}
+       */
+      function checkLockingClassForAllElements () {
+        return _.every(elements, function (element) {
+          return element.hasClass('chr_scroll-lock');
+        });
+      }
     });
   });
 });
