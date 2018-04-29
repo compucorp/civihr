@@ -1,11 +1,13 @@
 <div class="chr_leave-calendar__day-container"
   uib-tooltip-template="'chr_leave-calendar__day-tooltip'"
   tooltip-animation="false"
+  tooltip-class="chr_leave-calendar__day-tooltip"
   tooltip-is-open="day.tooltip.show"
-  tooltip-append-to-body="false"
+  tooltip-append-to-body="true"
   tooltip-trigger="none"
   tooltip-enable="day.contactData.leaveRequests.length"
   ng-mouseenter="day.toggleTooltip('day_cell', true)"
+  ng-mouseleave="day.toggleTooltip('day_cell', false)"
   ng-class="{
     'chr_leave-calendar__day-container--type--weekend': day.contactData.isWeekend,
     'chr_leave-calendar__day-container--non-working': day.contactData.isNonWorkingDay,
@@ -41,7 +43,8 @@
   <script type="text/ng-template"
     id="chr_leave-calendar__day-tooltip">
     <div
-      ng-mouseenter="day.toggleTooltip('tooltip', true)">
+      ng-mouseenter="day.toggleTooltip('tooltip', true)"
+      ng-mouseleave="day.toggleTooltip('tooltip', false)">
       <div class="chr_leave-calendar__day-tooltip_item pointer"
         ng-repeat="leaveRequest in day.contactData.leaveRequests"
         ng-click="day.tooltip.show = false;

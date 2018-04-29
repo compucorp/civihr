@@ -3,8 +3,6 @@ $chr-leave-calendar-cell-font-size:               10px;
 $chr-leave-calendar-item-requested-border-color:  #c7cbd0;
 $chr-leave-calendar-item-requested-border-height: 0.5em;
 $chr-leave-calendar-legend-size:                  20px;
-$chr-leave-calendar-tooltip-shadow:               0 3px 8px 0 rgba(49, 40, 40, 0.25);
-$chr-leave-calendar-tooltip-item-min-width:       154px;
 
 
 .chr_leave-calendar__dates-container {
@@ -31,34 +29,6 @@ $chr-leave-calendar-tooltip-item-min-width:       154px;
 
   @media (min-width: $screen-lg-min) {
     padding: 10px 0 !important;
-  }
-}
-
-// @TODO the tooltip style should be moved to the global styling
-leave-calendar-day {
-  .tooltip.in {
-    opacity: 1;
-  }
-
-  .tooltip-arrow {
-    border-top-color: $crm-white !important;
-  }
-
-  .tooltip-inner {
-    background-color: $crm-white;
-    border-radius: 0;
-    box-shadow: $chr-leave-calendar-tooltip-shadow;
-    color: $gray-darker;
-    padding: 0;
-  }
-}
-
-.chr_leave-calendar__day-tooltip_item {
-  min-width: $chr-leave-calendar-tooltip-item-min-width;
-  padding: $crm-gap-medium;
-
-  &:hover {
-    background-color: $gray-light;
   }
 }
 
