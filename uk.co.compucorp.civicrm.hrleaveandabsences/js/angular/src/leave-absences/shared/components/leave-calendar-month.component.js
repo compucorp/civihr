@@ -533,6 +533,8 @@ define([
         return leaveRequests[contactId] && leaveRequests[contactId][day.date] ? leaveRequests[contactId][day.date] : [];
       })
         .then(function (leaveRequests) {
+          leaveRequests = sortLeaveRequests(leaveRequests);
+
           _.assign(day.contactsData[contactId], {
             leaveRequests: leaveRequests,
             leaveRequestsToShowInCell: filterLeaveRequestsToShowInCell(leaveRequests),
@@ -573,6 +575,13 @@ define([
       } else {
         vm.visible = false;
       }
+    }
+
+    function sortLeaveRequests (leaveRequests) {
+      return _.sortBy(leaveRequests, function (leaveRequest) {
+        return +moment(leaveRequest.from_date).format('X') +
+          (isDayType('half_day_pm', leaveRequest, leaveRequest.from_date) ? 1 : 0);
+      });
     }
 
     /**

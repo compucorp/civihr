@@ -388,6 +388,11 @@
             jasmine.clock().uninstall();
           });
 
+          /**
+           * Mocks current day
+           *
+           * @param {String} date
+           */
           function setCurrentDay (date) {
             jasmine.clock().mockDate(date);
             compileComponent();
@@ -469,6 +474,38 @@
             });
           });
 
+          describe('when day contains unsorted requests in hours', function () {
+            beforeEach(function () {
+              leaveRequest1 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest1.from_date = leaveRequest1.from_date.split(' ')[0] + ' 23:00';
+              leaveRequest2 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest2.from_date = leaveRequest2.from_date.split(' ')[0] + ' 11:00';
+
+              commonSetup([leaveRequest1, leaveRequest2]);
+            });
+
+            it('sorts leave requests', function () {
+              expect(contactData.leaveRequests[0]).toBe(leaveRequest2);
+              expect(contactData.leaveRequests[1]).toBe(leaveRequest1);
+            });
+          });
+
+          describe('when day contains unsorted requests in days', function () {
+            beforeEach(function () {
+              leaveRequest1 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest1.from_date_type = getDayTypeId('half_day_pm');
+              leaveRequest2 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest2.from_date_type = getDayTypeId('half_day_am');
+
+              commonSetup([leaveRequest1, leaveRequest2]);
+            });
+
+            it('sorts leave requests', function () {
+              expect(contactData.leaveRequests[0]).toBe(leaveRequest2);
+              expect(contactData.leaveRequests[1]).toBe(leaveRequest1);
+            });
+          });
+
           describe('when day contains a mix of TOIL and non-TOIL requests', function () {
             beforeEach(function () {
               leaveRequest1 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
@@ -546,9 +583,7 @@
 
           describe('when the leave request is for half day am', function () {
             beforeEach(function () {
-              leaveRequest.from_date_type = _.find(OptionGroupData.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
-                return absenceType.name === 'half_day_am';
-              }).value;
+              leaveRequest.from_date_type = getDayTypeId('half_day_am');
 
               commonSetup();
             });
@@ -560,9 +595,7 @@
 
           describe('when leave request is for half day pm', function () {
             beforeEach(function () {
-              leaveRequest.from_date_type = _.find(OptionGroupData.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
-                return absenceType.name === 'half_day_pm';
-              }).value;
+              leaveRequest.from_date_type = getDayTypeId('half_day_pm');
 
               commonSetup();
             });
@@ -597,6 +630,13 @@
           });
         });
 
+        /**
+         * Returns a day by a given day type
+         *
+         * @param  {String} dayType
+         * @param  {Boolean} returnContactData
+         * @return {Object}
+         */
         function getDayWithType (dayType, returnContactData) {
           var day;
 
@@ -915,6 +955,19 @@
         });
 
         !!sendSignal && sendShowMonthsSignal();
+      }
+
+      /**
+       * Gets day type ID by its name
+       *
+       * @param  {String} dayTypeName
+       * @return {String}
+       */
+      function getDayTypeId (dayTypeName) {
+        return _.find(OptionGroupData.getCollection(
+          'hrleaveandabsences_leave_request_day_type'), function (dayType) {
+          return dayType.name === dayTypeName;
+        }).value;
       }
 
       /**
