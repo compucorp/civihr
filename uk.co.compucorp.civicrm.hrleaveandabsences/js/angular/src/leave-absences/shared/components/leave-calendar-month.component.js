@@ -203,6 +203,31 @@ define([
     }
 
     /**
+     * Returns leave requests additional attributes for UI
+     *
+     * @param  {Object} day
+     * @param  {Array} leaveRequests [{LeaveRequestInstance}]
+     * @return {Object} collection of leave requests attributes
+     *   indexed by leave requests IDs
+     */
+    function getLeaveRequestsAttributes (day, leaveRequests) {
+      var attributes = {};
+
+      leaveRequests.forEach(function (leaveRequest) {
+        attributes[leaveRequest.id] = {
+          styles: styles(leaveRequest),
+          isAccruedTOIL: isLeaveType(leaveRequest, 'toil'),
+          isRequested: isRequested(leaveRequest),
+          isAM: isDayType('half_day_am', leaveRequest, day.date),
+          isPM: isDayType('half_day_pm', leaveRequest, day.date),
+          isSingleDay: moment(leaveRequest.from_date).isSame(leaveRequest.to_date, 'day')
+        };
+      });
+
+      return attributes;
+    }
+
+    /**
      * Indexes for easy access the data that the component needs
      */
     function indexData () {
@@ -514,22 +539,6 @@ define([
             leaveRequestsAttributes: getLeaveRequestsAttributes(day, leaveRequests)
           });
         });
-    }
-
-    function getLeaveRequestsAttributes (day, leaveRequests) {
-      var attributes = {};
-
-      leaveRequests.forEach(function (leaveRequest) {
-        attributes[leaveRequest.id] = {
-          styles: styles(leaveRequest),
-          isAccruedTOIL: leaveRequest ? isLeaveType(leaveRequest, 'toil') : null,
-          isRequested: leaveRequest ? isRequested(leaveRequest) : null,
-          isAM: leaveRequest ? isDayType('half_day_am', leaveRequest, day.date) : null,
-          isPM: leaveRequest ? isDayType('half_day_pm', leaveRequest, day.date) : null
-        };
-      });
-
-      return attributes;
     }
 
     /**

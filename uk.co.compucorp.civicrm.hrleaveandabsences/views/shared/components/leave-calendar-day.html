@@ -50,31 +50,35 @@
           day.openLeavePopup($event, leaveRequest, null, null, $root.section === 'my-leave')">
         <strong>{{day.contactData.leaveRequestsAttributes[leaveRequest.id].absenceTypeTitle}}</strong>
         <div ng-if="!day.contactData.leaveRequestsAttributes[leaveRequest.id].isAccruedTOIL">
-          <div ng-if="leaveRequest.dates.length === 1 && day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'days'">
-            <p>
-              {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date_type}}
-            </p>
+          <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].isSingleDay">
+            <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'days'">
+              <p>
+                {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date_type}}
+              </p>
+            </div>
+            <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'hours'">
+              <p>
+                From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'HH:mm'}}<br/>
+                To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'HH:mm'}}<br/>
+                For: {{ leaveRequest.from_date_amount | timeUnitApplier :day.contactData.leaveRequestsAttributes[leaveRequest.id].unit }}
+              </p>
+            </div>
           </div>
-          <div ng-if="leaveRequest.dates.length > 1 && day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'days'">
-            <p>
-              From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'dd MMM yyyy'}},
-              {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date_type}}<br />
-              To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'dd MMM yyyy'}},
-              {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date_type}}
-            </p>
-          </div>
-          <div ng-if="leaveRequest.dates.length === 1 && day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'hours'">
-            <p>
-              From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'HH:mm'}}<br/>
-              To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'HH:mm'}}<br/>
-              For: {{ leaveRequest.from_date_amount | timeUnitApplier :day.contactData.leaveRequestsAttributes[leaveRequest.id].unit }}
-            </p>
-          </div>
-          <div ng-if="leaveRequest.dates.length > 1 && day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'hours'">
-            <p>
-              From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'dd MMM yyyy HH:mm'}}<br />
-              To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'dd MMM yyyy HH:mm'}}
-            </p>
+          <div ng-if="!day.contactData.leaveRequestsAttributes[leaveRequest.id].isSingleDay">
+            <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'days'">
+              <p>
+                From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'dd MMM yyyy'}},
+                {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date_type}}<br />
+                To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'dd MMM yyyy'}},
+                {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date_type}}
+              </p>
+            </div>
+            <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'hours'">
+              <p>
+                From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'dd MMM yyyy HH:mm'}}<br />
+                To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'dd MMM yyyy HH:mm'}}
+              </p>
+            </div>
           </div>
         </div>
         <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].isAccruedTOIL">

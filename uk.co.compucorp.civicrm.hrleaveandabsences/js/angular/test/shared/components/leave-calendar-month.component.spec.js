@@ -583,6 +583,18 @@
               expect(leaveRequestAttributes.isAccruedTOIL).toBe(true);
             });
           });
+
+          describe('when the leave request is a single day request', function () {
+            beforeEach(function () {
+              leaveRequest.from_date = leaveRequest.to_date;
+
+              commonSetup();
+            });
+
+            it('marks it as such', function () {
+              expect(leaveRequestAttributes.isSingleDay).toBe(true);
+            });
+          });
         });
 
         function getDayWithType (dayType, returnContactData) {
