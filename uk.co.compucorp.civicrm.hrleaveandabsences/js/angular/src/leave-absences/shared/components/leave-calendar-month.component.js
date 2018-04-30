@@ -184,10 +184,12 @@ define([
     function findIndexedLeaveRequest (leaveRequest) {
       var indexedLeaveRequest;
 
-      _.forEach(leaveRequests[leaveRequest.contact_id], function (day) {
+      _.find(leaveRequests[leaveRequest.contact_id], function (day) {
         indexedLeaveRequest = _.find(day, function (leaveRequestObj) {
           return +leaveRequestObj.id === +leaveRequest.id;
-        }) || indexedLeaveRequest;
+        });
+
+        return indexedLeaveRequest;
       });
 
       return indexedLeaveRequest;

@@ -25,13 +25,12 @@ define([
     }));
 
     describe('init', function () {
+      var $elements;
       var arg1 = { template: '<component></component>' };
       var arg2 = 'another_argument';
-      var elements = {};
 
       beforeEach(function () {
-        elements.body = $document.find('body');
-        elements.html = $document.find('html');
+        $elements = $document.find('body, html');
       });
 
       describe('when modal is opened', function () {
@@ -48,7 +47,7 @@ define([
 
         it('locks document scroll', function () {
           expect($document.find('.modal-dialog').length).toBe(1);
-          expect(checkLockingClassForAllElements()).toBe(true);
+          expect($elements.hasClass('chr_scroll-lock')).toBe(true);
         });
 
         describe('when modal is closed', function () {
@@ -60,7 +59,7 @@ define([
 
           it('unlocks document scroll', function () {
             expect($document.find('.modal-dialog').length).toBe(0);
-            expect(checkLockingClassForAllElements()).toBe(false);
+            expect($elements.hasClass('chr_scroll-lock')).toBe(false);
           });
         });
 
@@ -74,7 +73,7 @@ define([
 
           it('remains document scroll locked', function () {
             expect($document.find('.modal-dialog').length).toBe(2);
-            expect(checkLockingClassForAllElements()).toBe(true);
+            expect($elements.hasClass('chr_scroll-lock')).toBe(true);
           });
 
           describe('when second modal is closed', function () {
@@ -86,7 +85,7 @@ define([
 
             it('remains document scroll locked', function () {
               expect($document.find('.modal-dialog').length).toBe(1);
-              expect(checkLockingClassForAllElements()).toBe(true);
+              expect($elements.hasClass('chr_scroll-lock')).toBe(true);
             });
 
             describe('and when the first modal is closed', function () {
@@ -98,23 +97,12 @@ define([
 
               it('unlocks document scroll', function () {
                 expect($document.find('.modal-dialog').length).toBe(0);
-                expect(checkLockingClassForAllElements()).toBe(false);
+                expect($elements.hasClass('chr_scroll-lock')).toBe(false);
               });
             });
           });
         });
       });
-
-      /**
-       * Checks for the state of document scroll locking
-       *
-       * @return {Boolean}
-       */
-      function checkLockingClassForAllElements () {
-        return _.every(elements, function (element) {
-          return element.hasClass('chr_scroll-lock');
-        });
-      }
     });
   });
 });

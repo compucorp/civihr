@@ -19,14 +19,9 @@ define([
      */
     function open () {
       var modalInstance;
-      var elements = [
-        $document.find('body'),
-        $document.find('html')
-      ];
+      var $elements = $document.find('body, html');
 
-      elements.forEach(function (element) {
-        element.addClass('chr_scroll-lock');
-      });
+      $elements.addClass('chr_scroll-lock');
 
       modalInstance = originalOpenFunction.apply(this, arguments);
 
@@ -35,9 +30,7 @@ define([
           return;
         }
 
-        elements.forEach(function (element) {
-          element.removeClass('chr_scroll-lock');
-        });
+        $elements.removeClass('chr_scroll-lock');
       });
 
       return modalInstance;
