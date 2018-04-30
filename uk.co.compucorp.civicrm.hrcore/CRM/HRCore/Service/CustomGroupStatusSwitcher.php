@@ -30,7 +30,8 @@ class CRM_HRCore_Service_CustomGroupStatusSwitcher {
     $customGroup = $this->getCustomGroup($customGroupName);
 
     if (!$customGroup) {
-      return;
+      $err = sprintf('Could not find group with name "%s"', $customGroupName);
+      throw new \Exception($err);
     }
 
     $customGroupId = (int) $customGroup['id'];
