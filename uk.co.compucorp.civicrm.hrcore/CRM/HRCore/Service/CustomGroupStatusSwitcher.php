@@ -61,6 +61,8 @@ class CRM_HRCore_Service_CustomGroupStatusSwitcher {
 
     foreach ($fields as $field) {
       $params = ['id' => $field['id'], 'is_active' => $status];
+      // Custom field endpoint freaks out if custom_group_id is missing
+      $params['custom_group_id'] = $field['custom_group_id'];
       civicrm_api3('CustomField', 'create', $params);
     }
   }
