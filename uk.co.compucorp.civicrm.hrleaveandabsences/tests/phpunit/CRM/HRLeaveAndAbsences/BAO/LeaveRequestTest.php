@@ -1818,7 +1818,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
-      'end_date'   => CRM_Utils_Date::processDate('2018-12-31')
+      'end_date' => CRM_Utils_Date::processDate('2018-12-31')
     ]);
 
     $periodEntitlemenInHours = LeavePeriodEntitlementFabricator::fabricate([
@@ -1874,7 +1874,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
-      'end_date'   => CRM_Utils_Date::processDate('2018-12-31')
+      'end_date' => CRM_Utils_Date::processDate('2018-12-31')
     ]);
 
     $periodEntitlemenInHours = LeavePeriodEntitlementFabricator::fabricate([

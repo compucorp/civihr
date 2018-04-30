@@ -906,6 +906,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $isCalculationUnitInHoursOrTOIL = $isCalculationUnitInHours || $isTOIL;
     $absenceTypesSelector = '';
     $considerRequestsInDifferentUnit = '';
+    $ignoreHalfDayRequests = '';
 
     foreach ($absenceTypes as $absenceType) {
       $absenceTypesIDs[] = $absenceType->id;
@@ -916,13 +917,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       }
     }
 
+    $sameUnitSelector = 'lr.type_id IN (' . implode(',', $absenceTypesIDsWithSameUnit) . ')';
+
     $dateTimeSelector = $isCalculationUnitInHoursOrTOIL
       ? "lr.from_date < '{$toDateTime}' AND lr.to_date > '{$fromDateTime}'"
       : "lrd.date BETWEEN '{$fromDate}' AND '{$toDate}'";
 
     if (!$isTOIL) {
       if ($isCalculationUnitInHours) {
-        $absenceTypesSelector = 'AND lr.type_id IN (' . implode(',', $absenceTypesIDsWithSameUnit) . ')';
+        $absenceTypesSelector = 'AND ' . $sameUnitSelector;
 
         if (count($absenceTypesIDsWithDifferentUnit)) {
           $considerRequestsInDifferentUnit =
@@ -934,22 +937,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       }
     }
 
-    $ignoreRequestsWithDifferentUnit = count($absenceTypesIDsWithDifferentUnit)
-      ? 'OR lr.type_id IN (' . implode(',', $absenceTypesIDsWithDifferentUnit) . ')'
-      : '';
-    $considerHalfDayRequests =
-      ($fromDateType === $halfDayPMID
-        ? "AND (DATE_FORMAT(lr.to_date, '%Y-%m-%d') != '{$fromDate}' " .
-          "OR lr.to_date_type != {$halfDayAMID} {$ignoreRequestsWithDifferentUnit})"
-        : "") .
-      ($toDateType === $halfDayAMID
-        ? "AND (DATE_FORMAT(lr.from_date, '%Y-%m-%d') != '{$toDate}' " .
-          "OR lr.from_date_type != {$halfDayPMID} {$ignoreRequestsWithDifferentUnit})"
-        : "");
+    if (!$isCalculationUnitInHoursOrTOIL && count($absenceTypesIDsWithSameUnit)) {
+      $ignoreHalfDayRequests =
+        ($fromDateType === $halfDayPMID
+          ? "AND NOT(DATE_FORMAT(lr.to_date, '%Y-%m-%d') = '{$fromDate}' " .
+            "AND lr.to_date_type = {$halfDayAMID} AND {$sameUnitSelector})"
+          : "") .
+        ($toDateType === $halfDayAMID
+          ? "AND NOT(DATE_FORMAT(lr.from_date, '%Y-%m-%d') = '{$toDate}' " .
+            "AND lr.from_date_type = {$halfDayPMID} AND {$sameUnitSelector})"
+          : "");
+    }
 
     $overlapSelector =
-      "($dateTimeSelector $absenceTypesSelector $considerRequestsInDifferentUnit) " .
-      (!$isCalculationUnitInHoursOrTOIL ? $considerHalfDayRequests : '');
+      "($dateTimeSelector $absenceTypesSelector $considerRequestsInDifferentUnit) $ignoreHalfDayRequests";
 
     $ignoreRequestTypes =
       'lr.request_type ' . ($isTOIL ? '=' : '!=') . "'" . $toilType . "'";
