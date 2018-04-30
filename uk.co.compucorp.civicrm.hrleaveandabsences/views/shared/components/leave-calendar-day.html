@@ -45,7 +45,7 @@
     <div
       ng-mouseenter="day.toggleTooltip('tooltip', true)"
       ng-mouseleave="day.toggleTooltip('tooltip', false)">
-      <div class="chr_leave-calendar__day-tooltip_item pointer"
+      <div class="chr_leave-calendar__day-tooltip_item"
         ng-repeat="leaveRequest in day.contactData.leaveRequests"
         ng-click="day.tooltip.show = false;
           day.openLeavePopup($event, leaveRequest, null, null, $root.section === 'my-leave')">

@@ -21,6 +21,7 @@ $chr-leave-calendar-tooltip-item-min-width: 154px;
 }
 
 .chr_leave-calendar__day-tooltip_item {
+  cursor: pointer;
   min-width: $chr-leave-calendar-tooltip-item-min-width;
   padding: $crm-gap-medium;
 
