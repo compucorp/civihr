@@ -3313,9 +3313,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testToilCanBeAccruedWhenTheToilRequestHasNoWorkingDay() {
+    $dateSaturday = CRM_Utils_Date::processDate('2018-05-05');
+    $dateSunday = CRM_Utils_Date::processDate('2018-05-06');
+
     $period = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('-1 day'),
-      'end_date' => CRM_Utils_Date::processDate('+10 days'),
+      'start_date' => $dateSaturday,
+      'end_date' => $dateSunday,
     ]);
 
     $absenceType = AbsenceTypeFabricator::fabricate([
@@ -3348,9 +3351,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
       'contact_id' => $periodEntitlement->contact_id,
       'status_id' => 1,
-      'from_date' => CRM_Utils_Date::processDate('saturday'),
+      'from_date' => $dateSaturday,
       'from_date_type' => 1,
-      'to_date' => CRM_Utils_Date::processDate('sunday'),
+      'to_date' => $dateSunday,
       'to_date_type' => 1,
       'toil_to_accrue' => 2.5,
       'toil_duration' => 120,

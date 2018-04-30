@@ -146,8 +146,14 @@ define([
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function deleteLeaveRequest (leaveRequest) {
-      removeLeaveRequestFromIndexedList(leaveRequest);
-      updateLeaveRequestDaysContactData(leaveRequest);
+      var indexedLeaveRequest = findIndexedLeaveRequest(leaveRequest);
+
+      if (!indexedLeaveRequest) {
+        return;
+      }
+
+      removeLeaveRequestFromIndexedList(indexedLeaveRequest);
+      updateLeaveRequestDaysContactData(indexedLeaveRequest);
     }
 
     /**
@@ -170,12 +176,57 @@ define([
     }
 
     /**
+     * Finds indexed leave request by a leave request given
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @return {LeaveRequestInstance} indexed leave request
+     */
+    function findIndexedLeaveRequest (leaveRequest) {
+      var indexedLeaveRequest;
+
+      _.find(leaveRequests[leaveRequest.contact_id], function (day) {
+        indexedLeaveRequest = _.find(day, function (leaveRequestObj) {
+          return +leaveRequestObj.id === +leaveRequest.id;
+        });
+
+        return indexedLeaveRequest;
+      });
+
+      return indexedLeaveRequest;
+    }
+
+    /**
      * Get profile URL for the given contact id
      *
      * @param {String|Integer} contactId
      */
     function getContactUrl (contactId) {
       return CRM.url('civicrm/contact/view', { cid: contactId });
+    }
+
+    /**
+     * Returns leave requests additional attributes for UI
+     *
+     * @param  {Object} day
+     * @param  {Array} leaveRequests [{LeaveRequestInstance}]
+     * @return {Object} collection of leave requests attributes
+     *   indexed by leave requests IDs
+     */
+    function getLeaveRequestsAttributes (day, leaveRequests) {
+      var attributes = {};
+
+      leaveRequests.forEach(function (leaveRequest) {
+        attributes[leaveRequest.id] = {
+          styles: styles(leaveRequest),
+          isAccruedTOIL: isLeaveType(leaveRequest, 'toil'),
+          isRequested: isRequested(leaveRequest),
+          isAM: isDayType('half_day_am', leaveRequest, day.date),
+          isPM: isDayType('half_day_pm', leaveRequest, day.date),
+          isSingleDay: moment(leaveRequest.from_date).isSame(leaveRequest.to_date, 'day')
+        };
+      });
+
+      return attributes;
     }
 
     /**
@@ -484,28 +535,14 @@ define([
         return leaveRequests[contactId] && leaveRequests[contactId][day.date] ? leaveRequests[contactId][day.date] : [];
       })
         .then(function (leaveRequests) {
+          leaveRequests = sortLeaveRequests(leaveRequests);
+
           _.assign(day.contactsData[contactId], {
             leaveRequests: leaveRequests,
             leaveRequestsToShowInCell: filterLeaveRequestsToShowInCell(leaveRequests),
             leaveRequestsAttributes: getLeaveRequestsAttributes(day, leaveRequests)
           });
         });
-    }
-
-    function getLeaveRequestsAttributes (day, leaveRequests) {
-      var attributes = {};
-
-      leaveRequests.forEach(function (leaveRequest) {
-        attributes[leaveRequest.id] = {
-          styles: styles(leaveRequest),
-          isAccruedTOIL: leaveRequest ? isLeaveType(leaveRequest, 'toil') : null,
-          isRequested: leaveRequest ? isRequested(leaveRequest) : null,
-          isAM: leaveRequest ? isDayType('half_day_am', leaveRequest, day.date) : null,
-          isPM: leaveRequest ? isDayType('half_day_pm', leaveRequest, day.date) : null
-        };
-      });
-
-      return attributes;
     }
 
     /**
@@ -540,6 +577,13 @@ define([
       } else {
         vm.visible = false;
       }
+    }
+
+    function sortLeaveRequests (leaveRequests) {
+      return _.sortBy(leaveRequests, function (leaveRequest) {
+        return +moment(leaveRequest.from_date).format('X') +
+          (isDayType('half_day_pm', leaveRequest, leaveRequest.from_date) ? 1 : 0);
+      });
     }
 
     /**
