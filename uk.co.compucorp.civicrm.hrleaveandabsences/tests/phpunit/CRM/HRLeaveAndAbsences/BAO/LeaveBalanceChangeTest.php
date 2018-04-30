@@ -545,7 +545,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // This will deduct 11 days, but the respective balance changes
     // won't be returned as part of the breakdown
     $this->createLeaveRequestBalanceChange(
-      $entitlement->id,
+      $entitlement->type_id,
       $leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))

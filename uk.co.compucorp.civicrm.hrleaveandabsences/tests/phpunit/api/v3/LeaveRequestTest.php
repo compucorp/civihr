@@ -194,7 +194,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
       'contact_id' => 1,
       'period_id' => $absencePeriod->id,
-      'type_id' => 1
+      'type_id' => $this->absenceType->id
     ]);
 
     HRJobContractFabricator::fabricate(
@@ -656,7 +656,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //This leave request is before the contract start date and will not be returned
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
       'to_date' => CRM_Utils_Date::processDate('2015-12-31'),
       'status_id' => $leaveRequestStatuses['awaiting_approval']
@@ -665,7 +665,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //This will be returned as it is after the contract start date
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
       'to_date' => CRM_Utils_Date::processDate('2017-12-31'),
       'status_id' => $leaveRequestStatuses['awaiting_approval']
@@ -690,7 +690,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //This leave request is before the contract start date and will not be returned
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
       'to_date' => CRM_Utils_Date::processDate('2015-12-31'),
       'status_id' => $leaveRequestStatuses['awaiting_approval']
@@ -699,7 +699,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // This will be returned
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-03'),
       'status_id' => $leaveRequestStatuses['approved']
@@ -708,7 +708,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // This will be returned
     $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-09-07'),
       'to_date' => CRM_Utils_Date::processDate('2016-09-08'),
       'status_id' => $leaveRequestStatuses['approved']
@@ -717,7 +717,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //This will not be returned as it is after the contract start date
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
       'to_date' => CRM_Utils_Date::processDate('2017-12-31'),
       'status_id' => $leaveRequestStatuses['awaiting_approval']
@@ -737,7 +737,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //This leave request is before the contract start date and will not be returned
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
       'to_date' => CRM_Utils_Date::processDate('2015-12-30'),
       'from_date_type' => 1,
@@ -748,7 +748,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // This will be returned as it's after the contract start date
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2017-09-02'),
       'to_date' => CRM_Utils_Date::processDate('2017-09-02'),
       'from_date_type' => 1,
@@ -759,7 +759,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // This will be returned as it's after the contract start date as well
     $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2018-01-02'),
       'to_date' => CRM_Utils_Date::processDate('2018-01-02'),
       'from_date_type' => 1,
@@ -787,7 +787,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //This leave request is before the contract start date and will not be returned
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
       'to_date' => CRM_Utils_Date::processDate('2015-12-30'),
       'from_date_type' => 1,
@@ -798,7 +798,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // This will be returned
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -809,7 +809,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // This will be returned
     $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'from_date_type' => 1,
@@ -820,7 +820,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //This will not be returned as it is after the contract start date
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2017-12-30'),
       'to_date' => CRM_Utils_Date::processDate('2017-12-30'),
       'from_date_type' => 1,
@@ -848,7 +848,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // This will be returned. The balance change will be -1
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -859,7 +859,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // This will be returned. The balance change will be -4
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
       'from_date_type' => 1,
@@ -895,7 +895,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -905,7 +905,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
       'from_date_type' => 1,
@@ -945,7 +945,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -955,7 +955,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
       'from_date_type' => 1,
@@ -995,7 +995,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -1005,7 +1005,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
       'from_date_type' => 1,
@@ -1014,7 +1014,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-02-21'),
@@ -1066,7 +1066,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -1076,7 +1076,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'),
       'from_date_type' => 1,
@@ -1092,11 +1092,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $expectedValues = [
       [
         'id' => $leaveRequest1->id,
-        'type_id' => 1
+        'type_id' => $this->absenceType->id
       ],
       [
         'id' => $leaveRequest2->id,
-        'type_id' => 1
+        'type_id' => $this->absenceType->id
       ]
     ];
 
@@ -1118,7 +1118,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //so it will not be returned
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2015-12-30'),
       'to_date' =>  CRM_Utils_Date::processDate('2015-12-30'),
       'from_date_type' => 1,
@@ -1138,7 +1138,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract['contact_id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+1 days'),
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
@@ -1146,7 +1146,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract['contact_id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+3 days'),
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
@@ -1154,7 +1154,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract['contact_id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('+5 days'),
       'to_date' => CRM_Utils_Date::processDate('+6 days'),
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
@@ -1426,7 +1426,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -1435,7 +1435,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'from_date_type' => 1,
@@ -1444,7 +1444,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember3['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-13'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-13'),
       'from_date_type' => 1,
@@ -1492,7 +1492,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -1524,7 +1524,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -1533,7 +1533,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-05-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-05-02'),
       'from_date_type' => 1,
@@ -1573,7 +1573,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -1582,7 +1582,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-05-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-05-02'),
       'from_date_type' => 1,
@@ -1642,7 +1642,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -1651,7 +1651,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'from_date_type' => 1,
@@ -1660,7 +1660,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember3['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-13'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-13'),
       'from_date_type' => 1,
@@ -1709,7 +1709,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -1718,7 +1718,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'from_date_type' => 1,
@@ -1767,7 +1767,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -1776,7 +1776,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'from_date_type' => 1,
@@ -1818,7 +1818,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'from_date_type' => 1,
@@ -1872,7 +1872,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -1881,7 +1881,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'from_date_type' => 1,
@@ -1890,7 +1890,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember3['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-13'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-13'),
       'from_date_type' => 1,
@@ -1899,7 +1899,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest4 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember4['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-15'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-17'),
       'from_date_type' => 1,
@@ -1954,7 +1954,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
       'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
-      'type_id' => 1
+      'type_id' => $this->absenceType->id
     ]);
   }
 
@@ -1968,7 +1968,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
       'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
-      'type_id' => 1
+      'type_id' => $this->absenceType->id
     ]);
   }
 
@@ -2014,7 +2014,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => '2016-11-05',
       'from_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
-      'type_id' => 1
+      'type_id' => $this->absenceType->id
     ]);
   }
 
@@ -2061,7 +2061,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => $this->leaveRequestDayTypes['half_day_am']['value'],
       'to_date' => '2016-11-10',
       'to_date_type' => $this->leaveRequestDayTypes['half_day_pm']['value'],
-      'type_id' => 1
+      'type_id' => $this->absenceType->id
     ]);
   }
 
@@ -3209,7 +3209,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => $startDate->format('Ymd'),
       'from_date_type' => $this->leaveRequestDayTypes['all_day']['value'],
       'to_date' => $endDate->format('Ymd'),
@@ -3279,7 +3279,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -3288,7 +3288,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-02-01'),
       'from_date_type' => 1,
@@ -3297,7 +3297,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'from_date_type' => 1,
@@ -3306,7 +3306,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest4 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember3['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-13'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-13'),
       'from_date_type' => 1,
@@ -3315,7 +3315,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest5 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember4['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-10-23'),
       'to_date' => CRM_Utils_Date::processDate('2016-10-23'),
       'from_date_type' => 1,
@@ -3366,7 +3366,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -3411,7 +3411,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -3464,7 +3464,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -3494,7 +3494,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -3615,7 +3615,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -3625,7 +3625,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
       'from_date_type' => 1,
@@ -3670,7 +3670,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -3680,7 +3680,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
       'from_date_type' => 1,
@@ -3739,7 +3739,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequestContact1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -3749,7 +3749,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
       'from_date_type' => 1,
@@ -3759,7 +3759,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequestContact3 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact3['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'from_date_type' => 1,
@@ -3822,7 +3822,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -3832,7 +3832,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
       'from_date_type' => 1,
@@ -3877,7 +3877,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact1['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -3887,7 +3887,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact2['id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
       'from_date_type' => 1,
@@ -3919,14 +3919,14 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract1['contact_id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'), //Hour will be automatically set to 00:00:00
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'), //Hour will be automatically set to 23:59:59
     ], true);
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract2['contact_id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-23 10:00:00'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23 16:00:00'),
     ], true);
@@ -3961,14 +3961,14 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract1['contact_id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'), //Hour will be automatically set to 00:00:00
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-20'), //Hour will be automatically set to 23:59:59
     ], true);
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract2['contact_id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20 23:59:59'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23 16:00:00'),
     ], true);
@@ -3998,28 +3998,28 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract['contact_id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-17 08:00'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-03-17 09:00:00')
     ], true);
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract['contact_id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-17 11:00'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-03-18 11:00:00')
     ], true);
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract['contact_id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-25 17:00:00'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-03-25 18:00:00'),
     ], true);
 
     LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract['contact_id'],
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-25 19:00:00'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-03-25 20:00:00'),
     ], true);
@@ -4143,7 +4143,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     );
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => $contact2['id'],
       'from_date' => CRM_Utils_Date::processDate('+5 days'),
       'to_date' =>  CRM_Utils_Date::processDate('+7 days'),
@@ -4180,7 +4180,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     );
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => $contact2['id'],
       'from_date' => CRM_Utils_Date::processDate('+5 days'),
       'to_date' =>  CRM_Utils_Date::processDate('+7 days'),
@@ -4210,7 +4210,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     );
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => $contact2['id'],
       'from_date' => CRM_Utils_Date::processDate('+5 days'),
       'to_date' =>  CRM_Utils_Date::processDate('+7 days'),
@@ -4243,14 +4243,14 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     );
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => $contact1['id'],
       'from_date' => CRM_Utils_Date::processDate('+5 days'),
       'to_date' =>  CRM_Utils_Date::processDate('+7 days'),
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => $contact2['id'],
       'from_date' => CRM_Utils_Date::processDate('+8 days'),
       'to_date' =>  CRM_Utils_Date::processDate('+8 days'),
@@ -4286,7 +4286,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
   private function mergeWithDefaultLeaveRequestParams($params) {
     return array_merge([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date_type' => 1,

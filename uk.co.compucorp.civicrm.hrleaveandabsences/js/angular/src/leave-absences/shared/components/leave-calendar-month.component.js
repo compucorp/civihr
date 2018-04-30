@@ -146,36 +146,87 @@ define([
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function deleteLeaveRequest (leaveRequest) {
-      removeLeaveRequestFromIndexedList(leaveRequest);
-      updateLeaveRequestDaysContactData(leaveRequest);
+      var indexedLeaveRequest = findIndexedLeaveRequest(leaveRequest);
+
+      if (!indexedLeaveRequest) {
+        return;
+      }
+
+      removeLeaveRequestFromIndexedList(indexedLeaveRequest);
+      updateLeaveRequestDaysContactData(indexedLeaveRequest);
+    }
+
+    /**
+     * Filters leave requests out by following rule:
+     *   If both TOIL and Non-TOIL (Leave/Sickness) requests exist
+     *   for the same day, remove Non-TOIL requests from the collection
+     *
+     * @param  {Array} leaveRequests collection of leave requests
+     * @return {Array} collection of references to filtered leave requests
+     */
+    function filterLeaveRequestsToShowInCell (leaveRequests) {
+      var filterTOILCondition = { 'request_type': 'toil' };
+      var bothTOILAndNonTOILRequestsExist =
+        _.some(leaveRequests, filterTOILCondition) &&
+        !_.every(leaveRequests, filterTOILCondition);
+
+      return bothTOILAndNonTOILRequestsExist
+        ? _.filter(leaveRequests, filterTOILCondition)
+        : leaveRequests;
+    }
+
+    /**
+     * Finds indexed leave request by a leave request given
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @return {LeaveRequestInstance} indexed leave request
+     */
+    function findIndexedLeaveRequest (leaveRequest) {
+      var indexedLeaveRequest;
+
+      _.find(leaveRequests[leaveRequest.contact_id], function (day) {
+        indexedLeaveRequest = _.find(day, function (leaveRequestObj) {
+          return +leaveRequestObj.id === +leaveRequest.id;
+        });
+
+        return indexedLeaveRequest;
+      });
+
+      return indexedLeaveRequest;
     }
 
     /**
      * Get profile URL for the given contact id
      *
-     * @param {string/int} contactId
+     * @param {String|Integer} contactId
      */
     function getContactUrl (contactId) {
       return CRM.url('civicrm/contact/view', { cid: contactId });
     }
 
     /**
-     * If there are contacts to reduce to, reduces contacts to the list provided,
-     * plus leaves those who have leave requests at the given month period
+     * Returns leave requests additional attributes for UI
      *
-     * @return {Promise}
+     * @param  {Object} day
+     * @param  {Array} leaveRequests [{LeaveRequestInstance}]
+     * @return {Object} collection of leave requests attributes
+     *   indexed by leave requests IDs
      */
-    function reduceContacts () {
-      if (vm.contactIdsToReduceTo) {
-        vm.contacts = vm.contacts.filter(function (contact) {
-          return (_.includes(vm.contactIdsToReduceTo, contact.contact_id) ||
-            _.find(leaveRequests, function (leaveRequest) {
-              return leaveRequest.contact_id === contact.contact_id;
-            }));
-        });
-      }
+    function getLeaveRequestsAttributes (day, leaveRequests) {
+      var attributes = {};
 
-      return $q.resolve();
+      leaveRequests.forEach(function (leaveRequest) {
+        attributes[leaveRequest.id] = {
+          styles: styles(leaveRequest),
+          isAccruedTOIL: isLeaveType(leaveRequest, 'toil'),
+          isRequested: isRequested(leaveRequest),
+          isAM: isDayType('half_day_am', leaveRequest, day.date),
+          isPM: isDayType('half_day_pm', leaveRequest, day.date),
+          isSingleDay: moment(leaveRequest.from_date).isSame(leaveRequest.to_date, 'day')
+        };
+      });
+
+      return attributes;
     }
 
     /**
@@ -203,7 +254,11 @@ define([
         leaveRequests[leaveRequest.contact_id] = leaveRequests[leaveRequest.contact_id] || {};
 
         days.forEach(function (day) {
-          leaveRequests[leaveRequest.contact_id][day.date] = leaveRequest;
+          if (!leaveRequests[leaveRequest.contact_id][day.date]) {
+            leaveRequests[leaveRequest.contact_id][day.date] = [];
+          }
+
+          leaveRequests[leaveRequest.contact_id][day.date].push(leaveRequest);
         });
       });
 
@@ -313,18 +368,6 @@ define([
     }
 
     /**
-     * Finds the given leave request in the internal indexed list
-     *
-     * @param  {LeaveRequestInstance} leaveRequest
-     * @return {LeaveRequestInstance}
-     */
-    function leaveRequestFromIndexedList (leaveRequest) {
-      return _.find(leaveRequests[leaveRequest.contact_id], function (leaveRequestObj) {
-        return leaveRequest.id === leaveRequestObj.id;
-      });
-    }
-
-    /**
      * Returns leave status value from name
      *
      * @param {String} name - name of the leave status
@@ -366,14 +409,12 @@ define([
         loadMonthWorkPatternCalendars(),
         loadMonthLeaveRequests()
       ])
-      .then(reduceContacts)
-      .then(setMonthDaysContactData)
-      .then(function () {
-        dataLoaded = true;
-      })
-      .then(function () {
-        vm.month.loading = false;
-      });
+        .then(reduceContacts)
+        .then(setMonthDaysContactData)
+        .then(function () {
+          dataLoaded = true;
+          vm.month.loading = false;
+        });
     }
 
     /**
@@ -392,9 +433,9 @@ define([
         })},
         type_id: { IN: _.pluck(vm.supportData.absenceTypes, 'id') }
       }, null, null, null, false)
-      .then(function (leaveRequestsData) {
-        return indexLeaveRequests(leaveRequestsData.list);
-      });
+        .then(function (leaveRequestsData) {
+          return indexLeaveRequests(leaveRequestsData.list);
+        });
     }
 
     /**
@@ -409,9 +450,28 @@ define([
       return Calendar.get(vm.contacts.map(function (contact) {
         return contact.id;
       }), monthStartDate, monthEndDate)
-      .then(function (monthCalendars) {
-        calendars = _.indexBy(monthCalendars, 'contact_id');
-      });
+        .then(function (monthCalendars) {
+          calendars = _.indexBy(monthCalendars, 'contact_id');
+        });
+    }
+
+    /**
+     * If there are contacts to reduce to, reduces contacts to the list provided,
+     * plus leaves those who have leave requests at the given month period
+     *
+     * @return {Promise}
+     */
+    function reduceContacts () {
+      if (vm.contactIdsToReduceTo) {
+        vm.contacts = vm.contacts.filter(function (contact) {
+          return (_.includes(vm.contactIdsToReduceTo, contact.contact_id) ||
+            _.find(leaveRequests, function (leaveRequest) {
+              return leaveRequest.contact_id === contact.contact_id;
+            }));
+        });
+      }
+
+      return $q.resolve();
     }
 
     /**
@@ -420,12 +480,15 @@ define([
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function removeLeaveRequestFromIndexedList (leaveRequest) {
-      leaveRequests[leaveRequest.contact_id] = _.omit(
-        leaveRequests[leaveRequest.contact_id],
-        function (leaveRequestObj) {
+      var days = leaveRequestDays(leaveRequest);
+
+      leaveRequests[leaveRequest.contact_id] = leaveRequests[leaveRequest.contact_id] || {};
+
+      days.forEach(function (day) {
+        _.remove(leaveRequests[leaveRequest.contact_id][day.date], function (leaveRequestObj) {
           return leaveRequestObj.id === leaveRequest.id;
-        }
-      );
+        });
+      });
     }
 
     /**
@@ -460,27 +523,26 @@ define([
         workPatternCalendar.isWeekend(dateObjectWithFormat(day.date)),
         workPatternCalendar.isNonWorkingDay(dateObjectWithFormat(day.date))
       ])
-      .then(function (results) {
-        _.assign(day.contactsData[contactId], {
-          isWeekend: results[0],
-          isNonWorkingDay: results[1],
-          isPublicHoliday: isPublicHoliday(day.date)
+        .then(function (results) {
+          _.assign(day.contactsData[contactId], {
+            isWeekend: results[0],
+            isNonWorkingDay: results[1],
+            isPublicHoliday: isPublicHoliday(day.date)
+          });
         });
-      });
 
       return promise.then(function () {
-        return leaveRequests[contactId] ? leaveRequests[contactId][day.date] : null;
+        return leaveRequests[contactId] && leaveRequests[contactId][day.date] ? leaveRequests[contactId][day.date] : [];
       })
-      .then(function (leaveRequest) {
-        _.assign(day.contactsData[contactId], {
-          leaveRequest: leaveRequest || null,
-          styles: leaveRequest ? styles(leaveRequest) : null,
-          isAccruedTOIL: leaveRequest ? isLeaveType(leaveRequest, 'toil') : null,
-          isRequested: leaveRequest ? isRequested(leaveRequest) : null,
-          isAM: leaveRequest ? isDayType('half_day_am', leaveRequest, day.date) : null,
-          isPM: leaveRequest ? isDayType('half_day_pm', leaveRequest, day.date) : null
+        .then(function (leaveRequests) {
+          leaveRequests = sortLeaveRequests(leaveRequests);
+
+          _.assign(day.contactsData[contactId], {
+            leaveRequests: leaveRequests,
+            leaveRequestsToShowInCell: filterLeaveRequestsToShowInCell(leaveRequests),
+            leaveRequestsAttributes: getLeaveRequestsAttributes(day, leaveRequests)
+          });
         });
-      });
     }
 
     /**
@@ -517,6 +579,13 @@ define([
       }
     }
 
+    function sortLeaveRequests (leaveRequests) {
+      return _.sortBy(leaveRequests, function (leaveRequest) {
+        return +moment(leaveRequest.from_date).format('X') +
+          (isDayType('half_day_pm', leaveRequest, leaveRequest.from_date) ? 1 : 0);
+      });
+    }
+
     /**
      * Returns the styles for a specific leaveRequest
      * which will be used in the view for each date
@@ -535,19 +604,13 @@ define([
     }
 
     /**
-     * Updates the given leave request in the calendar
-     * For simplicity's sake, it directly deletes it and re-adds it
+     * Updates the given leave request in the calendar.
+     * For simplicity, it directly deletes it and re-adds it.
      *
      * @param  {LeaveRequestInstance} leaveRequest
      */
     function updateLeaveRequest (leaveRequest) {
-      var oldLeaveRequest = leaveRequestFromIndexedList(leaveRequest);
-
-      if (!oldLeaveRequest) {
-        return;
-      }
-
-      deleteLeaveRequest(oldLeaveRequest);
+      deleteLeaveRequest(leaveRequest);
 
       if (leaveStatusesToBeDisplayed().indexOf(leaveRequest.status_id) !== -1) {
         addLeaveRequest(leaveRequest);
