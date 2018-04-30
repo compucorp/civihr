@@ -20,7 +20,6 @@ class CRM_HRSampleData_BaseCSVProcessorTest extends \PHPUnit_Framework_TestCase 
       ->install('com.civicrm.hrjobroles')
       ->install('org.civicrm.hrrecruitment')
       ->install('org.civicrm.hremergency')
-      ->install('org.civicrm.hrdemog')
       ->install('org.civicrm.hrbank')
       ->install('uk.co.compucorp.civicrm.tasksassignments')
       ->install('org.civicrm.hrcase')
