@@ -920,18 +920,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       ? "lr.from_date < '{$toDateTime}' AND lr.to_date > '{$fromDateTime}'"
       : "lrd.date BETWEEN '{$fromDate}' AND '{$toDate}'";
 
-    if ($isCalculationUnitInHours) {
-      $absenceTypesSelector = 'AND lr.type_id IN (' . implode(',', $absenceTypesIDsWithSameUnit) . ')';
+    if (!$isTOIL) {
+      if ($isCalculationUnitInHours) {
+        $absenceTypesSelector = 'AND lr.type_id IN (' . implode(',', $absenceTypesIDsWithSameUnit) . ')';
 
-      if (count($absenceTypesIDsWithDifferentUnit)) {
-        $considerRequestsInDifferentUnit =
-          "OR ((lrd.date BETWEEN '{$fromDate}' AND '{$toDate}') AND lr.type_id IN (" .
-          implode(',', $absenceTypesIDsWithDifferentUnit) . "))";
+        if (count($absenceTypesIDsWithDifferentUnit)) {
+          $considerRequestsInDifferentUnit =
+            "OR ((lrd.date BETWEEN '{$fromDate}' AND '{$toDate}') AND lr.type_id IN (" .
+            implode(',', $absenceTypesIDsWithDifferentUnit) . "))";
+        }
+      } else {
+        $absenceTypesSelector = 'AND lr.type_id IN (' . implode(',', $absenceTypesIDs) . ')';
       }
-    }
-
-    if (!$isCalculationUnitInHours && !$isTOIL) {
-      $absenceTypesSelector = 'AND lr.type_id IN (' . implode(',', $absenceTypesIDs) . ')';
     }
 
     $ignoreRequestsWithDifferentUnit = count($absenceTypesIDsWithDifferentUnit)

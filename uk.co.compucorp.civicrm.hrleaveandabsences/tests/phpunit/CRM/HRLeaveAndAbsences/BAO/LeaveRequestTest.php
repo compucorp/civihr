@@ -1858,6 +1858,58 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
   }
 
+  public function testTOILRequestInHoursCanBeCreatedAfterTOILRequestInDaysWasCreatedForTheSameDay() {
+    $contactId = 1;
+    $date = '2018-05-07';
+    $absenceTypeInDays = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => true
+    ]);
+    $absenceTypeInHours = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => true,
+      'calculation_unit' => 2
+    ]);
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2018-12-31')
+    ]);
+
+    $periodEntitlemenInHours = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeInHours->id,
+      'contact_id' => $contactId,
+      'period_id' => $period->id
+    ]);
+
+    $periodEntitlemenInDays = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeInDays->id,
+      'contact_id' => $contactId,
+      'period_id' => $period->id
+    ]);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'type_id' => $absenceTypeInDays->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date . ' 09:00:00'),
+      'to_date' => CRM_Utils_Date::processDate($date. ' 10:00:00'),
+      'toil_duration' => 1,
+      'toil_to_accrue' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'type_id' => $absenceTypeInHours->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date . ' 11:00:00'),
+      'to_date' => CRM_Utils_Date::processDate($date. ' 12:00:00'),
+      'toil_duration' => 1,
+      'toil_to_accrue' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+  }
+
   public function testLeaveRequestCanBeCreatedWhenThereIsAnOverlappingPublicHolidayLeaveRequest() {
     $contactID = 1;
     $publicHoliday = new PublicHoliday();
