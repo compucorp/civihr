@@ -1808,6 +1808,56 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
   }
 
+  public function testLeaveRequestInDaysPMCannotNotBeCreatedAfterLeaveRequestInHoursWasCreatedForTheSameDay() {
+    $contactId = 1;
+    $date = '2018-05-07';
+    $absenceTypeInDays = AbsenceTypeFabricator::fabricate();
+    $absenceTypeInHours = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $halfDayPMId = $this->leaveRequestDayTypes['half_day_pm']['value'];
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2018-12-31')
+    ]);
+
+    $periodEntitlemenInHours = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeInHours->id,
+      'contact_id' => $contactId,
+      'period_id' => $period->id
+    ]);
+
+    $periodEntitlemenInDays = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeInDays->id,
+      'contact_id' => $contactId,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlemenInHours->id, 100);
+    $this->createLeaveBalanceChange($periodEntitlemenInDays->id, 100);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'type_id' => $absenceTypeInHours->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date . ' 09:00:00'),
+      'to_date' => CRM_Utils_Date::processDate($date. ' 10:00:00')
+    ], true);
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'This leave request overlaps with another request. Please modify dates of this request'
+    );
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'type_id' => $absenceTypeInDays->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date),
+      'to_date' => CRM_Utils_Date::processDate($date),
+      'from_date_type' => $halfDayPMId,
+      'to_date_type' => $halfDayPMId
+    ], true);
+  }
+
   public function testLeaveRequestCanBeCreatedWhenThereIsAnOverlappingPublicHolidayLeaveRequest() {
     $contactID = 1;
     $publicHoliday = new PublicHoliday();

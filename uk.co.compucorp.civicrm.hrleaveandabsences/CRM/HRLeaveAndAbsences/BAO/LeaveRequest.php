@@ -934,14 +934,17 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       $absenceTypesSelector = 'AND lr.type_id IN (' . implode(',', $absenceTypesIDs) . ')';
     }
 
+    $ignoreRequestsWithDifferentUnit = count($absenceTypesIDsWithDifferentUnit)
+      ? 'OR lr.type_id IN (' . implode(',', $absenceTypesIDsWithDifferentUnit) . ')'
+      : '';
     $considerHalfDayRequests =
       ($fromDateType === $halfDayPMID
         ? "AND (DATE_FORMAT(lr.to_date, '%Y-%m-%d') != '{$fromDate}' " .
-          "OR lr.to_date_type != {$halfDayAMID})"
+          "OR lr.to_date_type != {$halfDayAMID} {$ignoreRequestsWithDifferentUnit})"
         : "") .
       ($toDateType === $halfDayAMID
         ? "AND (DATE_FORMAT(lr.from_date, '%Y-%m-%d') != '{$toDate}' " .
-          "OR lr.from_date_type != {$halfDayPMID})"
+          "OR lr.from_date_type != {$halfDayPMID} {$ignoreRequestsWithDifferentUnit})"
         : "");
 
     $overlapSelector =
