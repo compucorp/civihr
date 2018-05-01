@@ -1185,8 +1185,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    // This request has 3 days expired, but will not included on
-    // the response since the "expired" flag is not set/false
+    // This request has 3 days expired, but will not be included on
+    // the response since the "expired" flag is FALSE.
     $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract['contact_id'],
       'type_id' => $type->id,
@@ -1239,8 +1239,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    // This request has 3 days expired, but will not included on
-    // the response since the "expired" flag is not set/false
+    // This request has 3 days expired, but will not be included on
+    // the response since the "expired" flag is FALSE
     $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract['contact_id'],
       'type_id' => $type->id,
