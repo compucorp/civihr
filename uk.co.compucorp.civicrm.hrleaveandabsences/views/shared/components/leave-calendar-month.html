@@ -50,7 +50,7 @@
               </thead>
               <tbody>
               <tr class="chr_leave-calendar__items" ng-repeat="contact in month.contactsList() | limitTo: month.pageSize: month.currentPage * month.pageSize">
-                <td ng-repeat="day in month.month.days track by day.date">
+                <td class="chr_leave-calendar__items_day-cell" ng-repeat="day in month.month.days track by day.date">
                   <leave-calendar-day
                     contact-data="day.contactsData[contact.id]"
                     date="day.date"
