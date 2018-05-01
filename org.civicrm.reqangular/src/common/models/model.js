@@ -8,14 +8,46 @@ define([
   'use strict';
 
   models.factory('Model', function () {
+    return {
+      compactFilters: compactFilters,
+      extend: extend,
+      processFilters: processFilters
+    };
+
     /**
-     * Uses the date format the API expects
+     * Returns the date in the format the API expects
      *
-     * @param {string} date
-     * @return {string}
+     * @param  {String} date
+     * @return {String}
      */
     function apiDateFormat (date) {
       return isStandardDateFormat(date) ? date : moment(date, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    }
+
+    /**
+     * Removes falsy values from the filters (except 0 or false)
+     *
+     * @param  {Object} filters
+     * @return {Object|null}
+     */
+    function compactFilters (filters) {
+      if (!filters) {
+        return null;
+      }
+
+      return _.pick(filters, function (value) {
+        return value === 0 || value === false || !!value;
+      });
+    }
+
+    /**
+     * Extends the basic Model with the given ChildModel
+     *
+     * @param  {Object} ChildModel
+     * @return {Object}
+     */
+    function extend (ChildModel) {
+      return _.assign(Object.create(this), ChildModel);
     }
 
     /**
@@ -35,8 +67,8 @@ define([
     /**
      * Transforms date range filters to values the API can use
      *
-     * @param {object} value
-     * @return {object}
+     * @param  {Object} value
+     * @return {Object}
      */
     function processDateRangeFilter (value) {
       if (value.from && value.to) {
@@ -49,10 +81,35 @@ define([
     }
 
     /**
+     * Processes the filters provided, removing falsy values (except 0 or false)
+     * And applies filter-specific transformations if needed
+     *
+     * @param  {Object} rawFilters - unprocessed filters
+     * @return {Object|null}
+     */
+    function processFilters (rawFilters) {
+      if (!rawFilters) {
+        return null;
+      }
+
+      rawFilters = this.compactFilters(rawFilters);
+
+      return _.transform(rawFilters, function (filters, value, key) {
+        if (value.from || value.to) {
+          filters[key] = processDateRangeFilter(value);
+        } else if (value.in || value.nin) {
+          filters[key] = processMultipleValuesFilter(value);
+        } else {
+          filters[key] = value;
+        }
+      }, {});
+    }
+
+    /**
      * Transforms multiple values filters to values the API can use
      *
-     * @param {object} value
-     * @return {object}
+     * @param  {Object} value
+     * @return {Object}
      */
     function processMultipleValuesFilter (value) {
       if (value.in) {
@@ -61,59 +118,5 @@ define([
         return { 'NOT IN': value.nin };
       }
     }
-
-    return {
-
-      /**
-       * Extends the basic Model with the given ChildModel
-       *
-       * @param {object} ChildModel
-       * @return {object}
-       */
-      extend: function (ChildModel) {
-        return _.assign(Object.create(this), ChildModel);
-      },
-
-      /**
-       * Removes falsey values from the filters (except 0 or false)
-       *
-       * @param {object} filters
-       * @return {object|null}
-       */
-      compactFilters: function (filters) {
-        if (!filters) {
-          return null;
-        }
-
-        return _.pick(filters, function (value) {
-          return value === 0 || value === false || !!value;
-        });
-      },
-
-      /**
-       * Processes the filters provided, removing falsey values (except 0 or false)
-       * And applying filter-specific transformations if needed
-       *
-       * @param {object} rawFilters - The unprocessed filters
-       * @return {object|null}
-       */
-      processFilters: function (rawFilters) {
-        if (!rawFilters) {
-          return null;
-        }
-
-        rawFilters = this.compactFilters(rawFilters);
-
-        return _.transform(rawFilters, function (filters, value, key) {
-          if (value.from || value.to) {
-            filters[key] = processDateRangeFilter(value);
-          } else if (value.in || value.nin) {
-            filters[key] = processMultipleValuesFilter(value);
-          } else {
-            filters[key] = value;
-          }
-        }, {});
-      }
-    };
   });
 });

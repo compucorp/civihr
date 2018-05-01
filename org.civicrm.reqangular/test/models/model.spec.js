@@ -9,7 +9,7 @@ define([
 
   describe('Model', function () {
     var Model;
-    var modelInterface = ['extend', 'compactFilters', 'processFilters'];
+    var modelInterface = ['compactFilters', 'extend', 'processFilters'];
 
     beforeEach(module('common.models'));
     beforeEach(inject(['Model', function (_Model_) {
