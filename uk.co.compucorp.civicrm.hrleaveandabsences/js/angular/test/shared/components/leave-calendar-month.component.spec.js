@@ -173,8 +173,8 @@
 
               expect(requestRecentCallFirstArg).toEqual(
                 jasmine.objectContaining({
-                  from_date: { to: month.days[month.days.length - 1].date },
-                  to_date: { from: month.days[0].date }
+                  from_date: { to: month.days[month.days.length - 1].date + ' 23:59:59' },
+                  to_date: { from: month.days[0].date + ' 00:00:00' }
                 })
               );
             });
