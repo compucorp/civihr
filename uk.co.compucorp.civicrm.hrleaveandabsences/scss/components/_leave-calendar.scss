@@ -127,6 +127,9 @@ $chr-leave-calendar-legend-size:                  20px;
   > td {
     height: $chr-leave-calendar-cell-height;
     overflow: hidden;
+  }
+
+  .chr_leave-calendar__items_day-cell {
     padding: 0 !important;
   }
 
@@ -205,6 +208,9 @@ $chr-leave-calendar-legend-size:                  20px;
 
 .chr_leave-calendar__name_header {
   padding-bottom: 10px !important;
+}
+
+.chr_leave-calendar__name_cell {
   vertical-align: middle !important;
 }
 
