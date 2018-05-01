@@ -6,9 +6,11 @@ define([
 ], function (_, controllers) {
   controllers.controller('RequestModalDetailsSicknessController', RequestModalDetailsSicknessController);
 
-  RequestModalDetailsSicknessController.$inject = ['$controller', '$log', '$q', 'api.optionGroup', 'detailsController'];
+  RequestModalDetailsSicknessController.$inject = ['$controller', '$log', '$q', '$rootScope',
+    'crmAngService', 'api.optionGroup', 'detailsController'];
 
-  function RequestModalDetailsSicknessController ($controller, $log, $q, OptionGroup, detailsController) {
+  function RequestModalDetailsSicknessController ($controller, $log, $q, $rootScope, crmAngService,
+    OptionGroup, detailsController) {
     $log.debug('RequestModalDetailsSicknessController');
     // Shares basic logic with the the leave controller
     $controller('RequestModalDetailsLeaveController', { detailsController: detailsController });
@@ -17,6 +19,7 @@ define([
     detailsController.initChildController = initChildController;
     detailsController.isChecked = isChecked;
     detailsController.isDocumentInRequest = isDocumentInRequest;
+    detailsController.openSicknessReasonOptionsEditor = openSicknessReasonOptionsEditor;
 
     /**
      * Checks if submit button can be enabled for user and returns true if successful
@@ -35,7 +38,8 @@ define([
     function initChildController () {
       return $q.all([
         loadDocuments(),
-        loadReasons()
+        toggleSicknessReasonsEditorIcon(),
+        loadReasons(true)
       ]);
     }
 
@@ -84,11 +88,26 @@ define([
      *
      * @return {Promise}
      */
-    function loadReasons () {
-      return OptionGroup.valuesOf('hrleaveandabsences_sickness_reason')
+    function loadReasons (cache) {
+      return OptionGroup.valuesOf('hrleaveandabsences_sickness_reason', cache)
         .then(function (reasons) {
           detailsController.sicknessReasons = _.indexBy(reasons, 'name');
         });
+    }
+
+    /**
+     * Opens editor for sickness reason options editing
+     */
+    function openSicknessReasonOptionsEditor () {
+      crmAngService.loadForm('/civicrm/admin/options/hrleaveandabsences_sickness_reason?reset=1')
+        .on('crmUnload', function () {
+          loadReasons(false);
+        });
+    }
+
+    function toggleSicknessReasonsEditorIcon() {
+      detailsController.showSicknessOptionsEditorIcon =
+        _.includes(['admin-dashboard', 'absence-tab'], $rootScope.section);
     }
   }
 });

@@ -1,0 +1,35 @@
+leave-request-record-actions {
+  display: block;
+
+  .btn-group {
+    float: left;
+  }
+
+  .btn-group:first-child {
+    margin-right: $crm-gap-medium;
+
+    .dropdown-menu {
+      left: auto;
+      right: 0;
+    }
+  }
+}
+
+@media screen and (max-width: $screen-xs-max) {
+  leave-request-record-actions {
+    .btn-group {
+      width: calc((100% - #{$crm-gap-medium}) / 2);
+    }
+
+    .btn {
+      padding-left: 0;
+      padding-right: 0;
+      width: 100%;
+    }
+
+    .btn-group:first-child .dropdown-menu {
+      left: 0;
+      right: auto;
+    }
+  }
+}

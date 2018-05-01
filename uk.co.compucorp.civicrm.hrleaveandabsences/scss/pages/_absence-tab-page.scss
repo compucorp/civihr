@@ -1,17 +1,13 @@
 .absence-tab-page {
-  .btn-group {
-    margin-bottom: 20px;
-
-    > .btn {
-      border-color: transparent !important;
-    }
-  }
-
   .tab-pane {
     padding: 0 !important;
   }
 
   .tab-content {
     background-color: transparent !important;
+  }
+
+  leave-request-record-actions {
+    margin-bottom: 20px;
   }
 }

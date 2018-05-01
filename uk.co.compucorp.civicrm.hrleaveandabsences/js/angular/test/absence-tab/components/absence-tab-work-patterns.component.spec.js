@@ -34,7 +34,7 @@
         WorkPattern = _WorkPattern_;
 
         spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
-          return $q.resolve(optionGroupMock.getCollection('hrjc_revision_change_reason'));
+          return $q.resolve(optionGroupMock.getCollection('hrleaveandabsences_work_pattern_change_reason'));
         });
         spyOn($log, 'debug');
 
@@ -47,13 +47,17 @@
 
       describe('init()', function () {
         describe('when custom Work patterns are present', function () {
+          it('fetches values of the Work Pattern Change Reason option group', function () {
+            expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_work_pattern_change_reason');
+          });
+
           it('Loads custom Work patterns', function () {
             expect(controller.customWorkPatterns.length).toEqual(workPatternData.workPatternsOf.values.length);
           });
 
           it('Assign correct change reason label', function () {
             _.each(controller.customWorkPatterns, function (customWorkpattern) {
-              var changeReasonLabel = optionGroupMock.getCollection('hrjc_revision_change_reason').find(function (reason) {
+              var changeReasonLabel = optionGroupMock.getCollection('hrleaveandabsences_work_pattern_change_reason').find(function (reason) {
                 return customWorkpattern.change_reason === reason.value;
               }).label;
 

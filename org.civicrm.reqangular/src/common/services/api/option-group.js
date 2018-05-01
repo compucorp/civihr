@@ -52,30 +52,30 @@ define([
       /**
        * Returns the values of the option groups with the given names
        *
-       * @param {string/array} groupNames
+       * @param  {String|Array} groupNames
        *   If the value is an array of names, the method will group
        *   the values by option group names
-       * @param {object} params optional parameters for the query
+       * @param  {Boolean} cache optional parameter to cache the query or not
        * @return {Promise}
        *   Resolves to an array with the values (if `groupNames` is a string)
        *   or an object with keys as the group names and values as the
        *   array of their option values (if `groupNames` is an array)
        */
-      valuesOf: function (groupNames, params) {
+      valuesOf: function (groupNames, cache) {
         var multiple = _.isArray(groupNames);
 
-        return this.sendGET('OptionValue', 'get', _.assign({
+        return this.sendGET('OptionValue', 'get', {
           'option_group_id.name': { 'IN': multiple ? groupNames : [groupNames] },
           'is_active': '1',
           'return': [
             'option_group_id.name', 'option_group_id', 'id', 'name', 'label',
             'value', 'weight', 'is_active', 'is_reserved'
           ]
-        }, params))
-        .then(normalizeResponse)
-        .then(function (optionValues) {
-          return multiple ? valuesByGroup(optionValues) : optionValues;
-        });
+        }, cache)
+          .then(normalizeResponse)
+          .then(function (optionValues) {
+            return multiple ? valuesByGroup(optionValues) : optionValues;
+          });
       }
     });
   }]);

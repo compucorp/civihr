@@ -22,7 +22,7 @@ define([
 
   describe('leaveRequestPopupDetailsTab', function () {
     var $componentController, $controllerProvider, $provide, $q, $log, $rootScope, $scope, controller,
-      sharedSettings, LeaveRequestAPI, AbsenceType, AbsenceTypeAPI, LeaveRequestInstance,
+      sharedSettings, LeaveRequestAPI, AbsenceType, AbsenceTypeAPI, LeaveRequest, LeaveRequestInstance,
       OptionGroup, OptionGroupAPIMock, selectedAbsenceType, WorkPatternAPI, EntitlementAPI;
 
     var date2013 = '02/02/2013';
@@ -53,14 +53,15 @@ define([
     }]));
 
     beforeEach(inject(function (
-      _$componentController_, _$q_, _$log_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_, _LeaveRequestInstance_,
-      _OptionGroup_, _OptionGroupAPIMock_, _LeaveRequestAPI_, _WorkPatternAPI_, _EntitlementAPI_) {
+      _$componentController_, _$q_, _$log_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_, _LeaveRequest_,
+      _LeaveRequestInstance_, _OptionGroup_, _OptionGroupAPIMock_, _LeaveRequestAPI_, _WorkPatternAPI_, _EntitlementAPI_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
       $rootScope = _$rootScope_;
       AbsenceType = _AbsenceType_;
       AbsenceTypeAPI = _AbsenceTypeAPI_;
+      LeaveRequest = _LeaveRequest_;
       LeaveRequestInstance = _LeaveRequestInstance_;
       LeaveRequestAPI = _LeaveRequestAPI_;
       WorkPatternAPI = _WorkPatternAPI_;
@@ -215,7 +216,9 @@ define([
           beforeEach(function () {
             controller.period = {};
 
+            togglePublicHolidayRequestForCurrentDate(false);
             requestModalHelper.setTestDates(controller, date2016);
+
             fromDate = moment(controller.uiOptions.fromDate).format(sharedSettings.serverDateFormat);
           });
 
@@ -293,13 +296,26 @@ define([
               expect(controller.requestFromDayTypes.length).toEqual(3);
             });
           });
+
+          describe('and from date is a public holiday', function () {
+            beforeEach(function () {
+              togglePublicHolidayRequestForCurrentDate(true);
+              requestModalHelper.setTestDates(controller, date2016);
+            });
+
+            it('sets public_holiday day type', function () {
+              expect(controller.requestFromDayTypes[0].label).toEqual('Public Holiday');
+            });
+          });
         });
 
         describe('after to date is selected', function () {
           var toDate;
 
           beforeEach(function () {
+            togglePublicHolidayRequestForCurrentDate(false);
             requestModalHelper.setTestDates(controller, date2016, date2016To);
+
             toDate = moment(controller.uiOptions.toDate).format(sharedSettings.serverDateFormat);
           });
 
@@ -434,6 +450,8 @@ define([
 
             beforeEach(function () {
               expectedDayType = optionGroupMock.specificValue('hrleaveandabsences_leave_request_day_type', 'value', '1');
+
+              togglePublicHolidayRequestForCurrentDate(false);
               requestModalHelper.setTestDates(controller, null, date2016);
             });
 
@@ -558,6 +576,20 @@ define([
 
             it('defaults data selection to a single day', function () {
               expect(controller.uiOptions.multipleDays).toBeFalsy();
+            });
+
+            describe('after changed to multiple days mode', function () {
+              beforeEach(function () {
+                controller.uiOptions.multipleDays = true;
+
+                controller.daysSelectionModeChangeHandler();
+                $rootScope.$digest();
+              });
+
+              it('shows both "from" and "to" times', function () {
+                expect(controller.uiOptions.times.from.loading).toBe(false);
+                expect(controller.uiOptions.times.to.loading).toBe(false);
+              });
             });
 
             describe('after from date is selected', function () {
@@ -1254,9 +1286,9 @@ define([
             expect(controller.request.contact_id).toEqual(CRM.vars.leaveAndAbsences.contactId.toString());
             expect(controller.request.type_id).toEqual(leaveRequestAttributes.type_id);
             expect(controller.request.status_id).toEqual(waitingApprovalStatus.value);
-            expect(controller.request.from_date).toEqual(leaveRequestAttributes.from_date);
+            expect(controller.request.from_date).toEqual(moment(leaveRequestAttributes.from_date).format('YYYY-MM-DD'));
             expect(controller.request.from_date_type).toEqual(leaveRequestAttributes.from_date_type);
-            expect(controller.request.to_date).toEqual(leaveRequestAttributes.to_date);
+            expect(controller.request.to_date).toEqual(moment(leaveRequestAttributes.to_date).format('YYYY-MM-DD'));
             expect(controller.request.to_date_type).toEqual(leaveRequestAttributes.to_date_type);
           });
 
@@ -1672,6 +1704,27 @@ define([
     function getTimeDifferenceInHours (timeFrom, timeTo) {
       return moment.duration(timeTo)
         .subtract(moment.duration(timeFrom)).asHours().toString();
+    }
+
+    /**
+     * Toggles whether there is a "public_holiday" leave request
+     * for the current date (for the purpose of the test it doesn't matter if
+     * the current date is the "from" or "to" date)
+     *
+     * @param {Boolean} addPublicHolidayRequest
+     */
+    function togglePublicHolidayRequestForCurrentDate (addPublicHolidayRequest) {
+      var spy;
+
+      if (typeof LeaveRequest.all.calls !== 'undefined') {
+        spy = LeaveRequest.all;
+      } else {
+        spy = spyOn(LeaveRequest, 'all');
+      }
+
+      spy.and.returnValue($q.resolve({
+        list: addPublicHolidayRequest ? [jasmine.any(Object)] : []
+      }));
     }
   });
 });

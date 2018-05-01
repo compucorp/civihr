@@ -13,6 +13,7 @@ define([
   'common/models/option-group',
   'common/modules/dialog',
   'common/services/check-permissions',
+  'common/services/crm-ang.service',
   'common/services/angular-date/date-format',
   'leave-absences/shared/ui-router',
   'leave-absences/shared/modules/shared-settings',
