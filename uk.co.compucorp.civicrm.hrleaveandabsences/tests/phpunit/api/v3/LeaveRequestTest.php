@@ -1174,7 +1174,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertNotEmpty($resultGetFull['values'][$leaveRequest3->id]);
   }
 
-  public function testGetAndGetFullReturnAllLeaveRequestsWhenTheExpiredParamIsNotPresent() {
+  public function testGetAndGetFullReturnAllNonExpiredLeaveRequestsWhenTheExpiredParamIsNotPresent() {
     $type = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => TRUE,
       'max_leave_accrual'      => 10
@@ -1185,8 +1185,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    // This request has 3 days expired, but will be included on
-    // the response anyway, since the "expired" flag is not set
+    // This request has 3 days expired, but will not included on
+    // the response since the "expired" flag is not set/false
     $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract['contact_id'],
       'type_id' => $type->id,
@@ -1222,9 +1222,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $resultGet = civicrm_api3('LeaveRequest', 'get');
     $resultGetFull = civicrm_api3('LeaveRequest', 'getFull');
 
-    $this->assertEquals(3, $resultGet['count']);
-    $this->assertEquals(3, $resultGetFull['count']);
-    $this->assertNotEmpty($resultGet['values'][$toilRequest1->id]);
+    $this->assertEquals(2, $resultGet['count']);
+    $this->assertEquals(2, $resultGetFull['count']);
     $this->assertNotEmpty($resultGet['values'][$toilRequest2->id]);
     $this->assertNotEmpty($resultGet['values'][$leaveRequest->id]);
   }
@@ -1529,7 +1528,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
       'to_date_type' => 1
-    ]);
+    ], TRUE);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
@@ -1538,7 +1537,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-05-02'),
       'from_date_type' => 1,
       'to_date_type' => 1
-    ]);
+    ], TRUE);
 
     $result = civicrm_api3('LeaveRequest', 'get',
       ['unassigned' => true,
@@ -1578,7 +1577,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
       'to_date_type' => 1
-    ]);
+    ], TRUE);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
@@ -1587,7 +1586,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-05-02'),
       'from_date_type' => 1,
       'to_date_type' => 1
-    ]);
+    ], TRUE);
 
     $result = civicrm_api3('LeaveRequest', 'get',
       ['unassigned' => true,
