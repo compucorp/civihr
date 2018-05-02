@@ -536,7 +536,10 @@ define([
           return dataEntry.id === leaveRequest.id;
         });
         delete section.dataIndex[leaveRequest.id];
-        updateSectionNumbersWithLeaveRequestBalanceChange(leaveRequest, sectionName);
+
+        if (sectionName !== 'other') {
+          updateSectionNumbersWithLeaveRequestBalanceChange(leaveRequest, sectionName);
+        }
       });
     }
 
@@ -548,11 +551,15 @@ define([
      * @param {string} section
      */
     function updateSectionNumbersWithLeaveRequestBalanceChange (leaveRequest, section) {
+      var remaindersToUpdate = ['future', 'current'];
       var absenceType = vm.absenceTypesIndexed[leaveRequest.type_id];
-      var remainderType = (section === 'pending') ? 'future' : 'current';
+
+      (section === 'pending') && _.pull(remaindersToUpdate, 'current');
 
       absenceType.balanceChanges[section] -= leaveRequest.balance_change;
-      absenceType.remainder[remainderType] -= leaveRequest.balance_change;
+      remaindersToUpdate.forEach(function (remainder) {
+        absenceType.remainder[remainder] -= leaveRequest.balance_change;
+      });
     }
 
     /**

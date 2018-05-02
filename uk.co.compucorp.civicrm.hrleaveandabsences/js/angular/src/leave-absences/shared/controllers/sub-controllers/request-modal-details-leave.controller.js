@@ -374,6 +374,8 @@ define([
           return detailsController.handleError(err);
         })
         .finally(function () {
+          detailsController.uiOptions.times[dateType].loading = false;
+
           isSingleDayRequest && (detailsController.uiOptions.times['to'].loading = false);
         });
     }

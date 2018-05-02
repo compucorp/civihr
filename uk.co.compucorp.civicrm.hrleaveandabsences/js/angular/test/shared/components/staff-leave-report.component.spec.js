@@ -793,23 +793,33 @@
           });
 
           describe('when the leave request was already approved', function () {
-            var oldRemainder, newRemainder;
+            var oldRemainders, newRemainders;
 
             beforeEach(function () {
               controller.sections.approved.data = [leaveRequest1, leaveRequest2, leaveRequest3];
               controller.sections.approved.dataIndex = _.indexBy(controller.sections.approved.data, 'id');
-              oldRemainder = controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.current;
+
+              oldRemainders = {
+                current: controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.current,
+                future: controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.future
+              };
 
               leaveRequest1.delete();
               pubSub.publish('LeaveRequest::delete', leaveRequest1);
               $rootScope.$digest();
 
-              newRemainder = controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.current;
+              newRemainders = {
+                current: controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.current,
+                future: controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.future
+              };
             });
 
-            it('updates the current remainder of the entitlement of the absence type the leave request was for', function () {
-              expect(newRemainder).not.toBe(oldRemainder);
-              expect(newRemainder).toBe(oldRemainder - leaveRequest1.balance_change);
+            it('updates both the current and future remainders of the entitlement of the absence type the leave request was for', function () {
+              expect(newRemainders.current).not.toBe(oldRemainders.current);
+              expect(newRemainders.future).not.toBe(oldRemainders.future);
+
+              expect(newRemainders.current).toBe(oldRemainders.current - leaveRequest1.balance_change);
+              expect(newRemainders.future).toBe(oldRemainders.future - leaveRequest1.balance_change);
             });
           });
 
