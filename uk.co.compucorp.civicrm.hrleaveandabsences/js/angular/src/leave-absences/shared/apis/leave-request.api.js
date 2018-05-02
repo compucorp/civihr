@@ -45,32 +45,23 @@ define([
          * This method returns all the total change in balance that is caused by the
          * leave requests of a given absence type, or of all the absence types of a given contact and period.
          *
-         * @param {string} contactId The ID of the Contact to get the balance change for
-         * @param {string} periodId The ID of the Absence Period to get the balance change for
-         * @param {array} [statuses = null] An array of OptionValue values which the list will be filtered by
-         * @param {boolean} [isPublicHoliday=false] Based on the value of this param,
-         * the calculation will include only the leave requests that aren't/are public holidays
+         * @param {string} params
          * @return {Promise} Resolved with {Object} Balance Change data or Error data
          */
-        balanceChangeByAbsenceType: function (contactId, periodId, statuses, isPublicHoliday) {
+        balanceChangeByAbsenceType: function (params) {
           $log.debug('LeaveRequestAPI.balanceChangeByAbsenceType');
           var deferred = $q.defer();
 
-          if (!contactId || !periodId) {
+          if (!params.contact_id || !params.period_id) {
             deferred.reject('contact_id and period_id are mandatory');
           }
 
-          var params = {
-            contact_id: contactId,
-            period_id: periodId,
-            statuses: statuses ? {'IN': statuses} : null,
-            public_holiday: isPublicHoliday || false
-          };
+          params = _.defaults(params, { statuses: null, public_holiday: false });
 
           this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params, false)
-          .then(function (data) {
-            deferred.resolve(data.values);
-          });
+            .then(function (data) {
+              deferred.resolve(data.values);
+            });
 
           return deferred.promise;
         },
@@ -171,9 +162,9 @@ define([
           });
 
           return this.sendPOST('LeaveRequest', 'deleteattachment', params)
-          .then(function (result) {
-            return result.values;
-          });
+            .then(function (result) {
+              return result.values;
+            });
         },
 
         /**
@@ -190,9 +181,9 @@ define([
           });
 
           return this.sendPOST('LeaveRequest', 'deletecomment', params)
-          .then(function (commentsData) {
-            return commentsData.values;
-          });
+            .then(function (commentsData) {
+              return commentsData.values;
+            });
         },
 
         /**
@@ -206,13 +197,13 @@ define([
           $log.debug('LeaveRequestAPI.find');
 
           return this.sendGET('LeaveRequest', 'getFull', { id: id })
-          .then(function (response) {
-            if (response.values.length === 0) {
-              return $q.reject('LeaveRequest not found with this ID');
-            }
+            .then(function (response) {
+              if (response.values.length === 0) {
+                return $q.reject('LeaveRequest not found with this ID');
+              }
 
-            return response.values[0];
-          });
+              return response.values[0];
+            });
         },
 
         /**
@@ -229,9 +220,9 @@ define([
           });
 
           return this.sendGET('LeaveRequest', 'getattachments', params, false)
-          .then(function (attachments) {
-            return attachments.values;
-          });
+            .then(function (attachments) {
+              return attachments.values;
+            });
         },
 
         /**
@@ -248,9 +239,9 @@ define([
           });
 
           return this.sendGET('LeaveRequest', 'getcomment', params, false)
-          .then(function (commentsData) {
-            return commentsData.values;
-          });
+            .then(function (commentsData) {
+              return commentsData.values;
+            });
         },
 
         /**
@@ -267,9 +258,9 @@ define([
             leave_request_id: leaveRequestID,
             contact_id: contactID
           })
-          .then(function (response) {
-            return response.values;
-          });
+            .then(function (response) {
+              return response.values;
+            });
         },
 
         /**
@@ -285,13 +276,13 @@ define([
           var deferred = $q.defer();
 
           this.sendPOST('LeaveRequest', 'isValid', params)
-          .then(function (data) {
-            if (data.count > 0) {
-              deferred.reject(_(data.values).map().flatten().value());
-            } else {
-              deferred.resolve(data.values);
-            }
-          });
+            .then(function (data) {
+              if (data.count > 0) {
+                deferred.reject(_(data.values).map().flatten().value());
+              } else {
+                deferred.resolve(data.values);
+              }
+            });
 
           return deferred.promise;
         },
@@ -313,9 +304,9 @@ define([
           });
 
           return this.sendPOST('LeaveRequest', 'addcomment', params)
-          .then(function (commentsData) {
-            return commentsData.values;
-          });
+            .then(function (commentsData) {
+              return commentsData.values;
+            });
         },
 
         /**
@@ -333,9 +324,9 @@ define([
           }
 
           return this.sendPOST('LeaveRequest', 'create', params)
-          .then(function (data) {
-            return data.values[0];
-          });
+            .then(function (data) {
+              return data.values[0];
+            });
         }
       });
     }]);
