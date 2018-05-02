@@ -72,6 +72,7 @@ define([
             loadBalanceChanges()
           ]);
         })
+        .then(processAbsenceTypes)
         .then(function () {
           vm.loading.content = false;
         });
@@ -90,6 +91,25 @@ define([
     function addLeaveRequestToSection (leaveRequest, section) {
       section.data.push(leaveRequest);
       section.dataIndex[leaveRequest.id] = leaveRequest;
+    }
+
+    /**
+     * Attaches the entitlement information to the absence type it belongs to
+     * If there is no entitlement for a given absence type, a default
+     * entitlement object is assigned instead
+     */
+    function attachEntitlementsToAbsenceTypes () {
+      vm.absenceTypes = vm.absenceTypes.map(function (absenceType) {
+        var entitlement = _.find(vm.entitlements, function (entitlement) {
+          return entitlement.type_id === absenceType.id;
+        });
+
+        // set entitlement to 0 if no entitlement is present
+        absenceType.entitlement = entitlement ? entitlement.value : 0;
+        absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
+
+        return absenceType;
+      });
     }
 
     /**
@@ -114,6 +134,18 @@ define([
         .forEach(function (section) {
           section.data = [];
         });
+    }
+
+    /**
+     * Filters the absence types, keeping only the ones that either have
+     * an entitlement greater than 0 or that allow overuse or accrual requests
+     */
+    function filterAbsenceTypes () {
+      vm.absenceTypesFiltered = vm.absenceTypes.filter(function (absenceType) {
+        return !((absenceType.entitlement === 0) &&
+          (absenceType.allow_overuse !== '1') &&
+          (absenceType.allow_accruals_request !== '1'));
+      });
     }
 
     /**
@@ -236,10 +268,7 @@ define([
     }
 
     /**
-     * Loads the entitlements, including current and future balance,
-     * and groups the entitlements value and remainder by absence type
-     * Also Filters the absence types which allows overuse or allows
-     * accrual request or has entitlement more than 0
+     * Loads the entitlements, including current and future balance
      *
      * @return {Promise}
      */
@@ -250,21 +279,6 @@ define([
       }, true)
         .then(function (entitlements) {
           vm.entitlements = entitlements;
-        })
-        .then(function () {
-          vm.absenceTypesFiltered = vm.absenceTypes.filter(function (absenceType) {
-            var entitlement = _.find(vm.entitlements, function (entitlement) {
-              return entitlement.type_id === absenceType.id;
-            });
-
-            // set entitlement to 0 if no entitlement is present
-            absenceType.entitlement = entitlement ? entitlement.value : 0;
-            absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
-
-            return !((absenceType.entitlement === 0) &&
-            (absenceType.allow_overuse !== '1') &&
-            (absenceType.allow_accruals_request !== '1'));
-          });
         });
     }
 
@@ -432,6 +446,14 @@ define([
     }
 
     /**
+     * Process the list of absence types objects by augmenting and filter them
+     */
+    function processAbsenceTypes () {
+      attachEntitlementsToAbsenceTypes();
+      filterAbsenceTypes();
+    }
+
+    /**
      * For each breakdowns, it sets the absence type id to
      * each list entry (based on the entitlement they belong to)
      * and flattens the result in the end to get one single list
@@ -544,6 +566,7 @@ define([
         loadEntitlements(),
         loadBalanceChanges()
       ])
+        .then(processAbsenceTypes)
         .then(function () {
           vm.loading.content = false;
         })
