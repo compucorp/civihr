@@ -461,23 +461,24 @@ define([
     }
 
     /**
-     * Process each expired TOIL requests
+     * Process each expired TOIL request, so that they have the same
+     * key properties that an entitlement breakdown object has, given that
+     * they need to be listed in the same section
      *
-     * @param  {Array} list of expired TOIL request
-     * @return {Promise} resolves to the flatten list
+     * @param  {Array} toils
+     * @return {Promise} resolves to {Array}
      */
-    function processExpiredTOILS (list) {
+    function processExpiredTOILS (toils) {
       return $q.resolve()
         .then(function () {
-          return list.map(function (listEntry) {
-            return {
-              'type_id': listEntry.type_id,
-              'expiry_date': listEntry.toil_expiry_date,
-              'amount': listEntry.toil_to_accrue,
-              'type': {
+          return toils.map(function (toil) {
+            return _.assign({}, toil, {
+              expiry_date: toil.toil_expiry_date,
+              amount: toil.toil_to_accrue,
+              type: {
                 'label': 'Accrued TOIL'
               }
-            };
+            });
           });
         });
     }
