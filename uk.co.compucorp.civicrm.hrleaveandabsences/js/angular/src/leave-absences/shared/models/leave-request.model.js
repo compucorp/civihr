@@ -45,11 +45,11 @@ define([
          * Get all the total change in balance that is caused by the
          * leave requests of a given absence type, or of all the absence types of a given contact and period.
          *
-         * @param  {Object} params
+         * @param  {Object} filters
          * @return {Promise} Resolves with {Object} Balance Change data
          */
-        balanceChangeByAbsenceType: function (params) {
-          return leaveRequestAPI.balanceChangeByAbsenceType(params);
+        balanceChangeByAbsenceType: function (filters) {
+          return leaveRequestAPI.balanceChangeByAbsenceType(this.processFilters(filters));
         },
 
         /**
