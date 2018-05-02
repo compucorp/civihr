@@ -207,6 +207,9 @@ define([
           public_holiday: true
         })),
         LeaveRequest.balanceChangeByAbsenceType(_.assign({}, basicParams, {
+          expired: true
+        })),
+        LeaveRequest.balanceChangeByAbsenceType(_.assign({}, basicParams, {
           statuses: {
             in: [ valueOfRequestStatus(sharedSettings.statusNames.approved) ]
           }
@@ -224,8 +227,9 @@ define([
           vm.absenceTypes.forEach(function (absenceType) {
             absenceType.balanceChanges = {
               holidays: results[0][absenceType.id],
-              approved: results[1][absenceType.id],
-              pending: results[2][absenceType.id]
+              expired: results[1][absenceType.id],
+              approved: results[2][absenceType.id],
+              pending: results[3][absenceType.id]
             };
           });
         });

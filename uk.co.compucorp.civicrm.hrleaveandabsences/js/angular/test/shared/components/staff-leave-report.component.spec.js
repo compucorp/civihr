@@ -265,9 +265,26 @@
                 });
               });
 
+              describe('expired requests', function () {
+                it('has fetched the balance changes for the expired requests', function () {
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(1)[0];
+
+                  expect(args.expired).toEqual(true);
+                });
+
+                it('has stored them in each absence type', function () {
+                  _.forEach(controller.absenceTypes, function (absenceType) {
+                    var balanceChanges = absenceType.balanceChanges.expired;
+
+                    expect(balanceChanges).toBeDefined();
+                    expect(balanceChanges).toBe(mockData[absenceType.id]);
+                  });
+                });
+              });
+
               describe('approved requests', function () {
                 it('has fetched the balance changes for the approved requests', function () {
-                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(1)[0];
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2)[0];
 
                   expect(args.statuses.in).toEqual([
                     valueOfRequestStatus(sharedSettings.statusNames.approved)
@@ -286,7 +303,7 @@
 
               describe('open requests', function () {
                 it('has fetched the balance changes for the open requests', function () {
-                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2)[0];
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(3)[0];
 
                   expect(args.statuses.in).toEqual([
                     valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
@@ -370,7 +387,7 @@
             it('reloads all the balance changes', function () {
               var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(_.random(0, 2))[0];
 
-              expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledTimes(3);
+              expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledTimes(4);
               expect(args.period_id).toEqual(newPeriod.id);
             });
           });
