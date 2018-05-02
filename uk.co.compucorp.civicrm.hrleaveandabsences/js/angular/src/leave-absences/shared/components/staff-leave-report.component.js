@@ -22,8 +22,8 @@ define([
   });
 
   function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod,
-  AbsenceType, Entitlement, LeaveRequest, OptionGroup, pubSub,
-  HRSettings, sharedSettings) {
+    AbsenceType, Entitlement, LeaveRequest, OptionGroup, pubSub,
+    HRSettings, sharedSettings) {
     $log.debug('Component: staff-leave-report');
 
     var statusUpdateHandlers = {
@@ -63,18 +63,18 @@ define([
         loadAbsenceTypes(),
         loadAbsencePeriods()
       ])
-      .then(function () {
-        vm.loading.page = false;
-      })
-      .then(function () {
-        return $q.all([
-          loadEntitlements(),
-          loadBalanceChanges()
-        ]);
-      })
-      .then(function () {
-        vm.loading.content = false;
-      });
+        .then(function () {
+          vm.loading.page = false;
+        })
+        .then(function () {
+          return $q.all([
+            loadEntitlements(),
+            loadBalanceChanges()
+          ]);
+        })
+        .then(function () {
+          vm.loading.content = false;
+        });
 
       registerEvents();
     })();
@@ -200,25 +200,35 @@ define([
      * @return {Promise}
      */
     function loadBalanceChanges () {
+      var basicParams = { contact_id: vm.contactId, period_id: vm.selectedPeriod.id };
+
       return $q.all([
-        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, null, true),
-        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, [
-          valueOfRequestStatus(sharedSettings.statusNames.approved)
-        ]),
-        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, [
-          valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
-          valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
-        ])
+        LeaveRequest.balanceChangeByAbsenceType(_.assign({}, basicParams, {
+          public_holiday: true
+        })),
+        LeaveRequest.balanceChangeByAbsenceType(_.assign({}, basicParams, {
+          statuses: {
+            in: [ valueOfRequestStatus(sharedSettings.statusNames.approved) ]
+          }
+        })),
+        LeaveRequest.balanceChangeByAbsenceType(_.assign({}, basicParams, {
+          statuses: {
+            in: [
+              valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
+              valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
+            ]
+          }
+        }))
       ])
-      .then(function (results) {
-        vm.absenceTypes.forEach(function (absenceType) {
-          absenceType.balanceChanges = {
-            holidays: results[0][absenceType.id],
-            approved: results[1][absenceType.id],
-            pending: results[2][absenceType.id]
-          };
+        .then(function (results) {
+          vm.absenceTypes.forEach(function (absenceType) {
+            absenceType.balanceChanges = {
+              holidays: results[0][absenceType.id],
+              approved: results[1][absenceType.id],
+              pending: results[2][absenceType.id]
+            };
+          });
         });
-      });
     }
 
     /**
@@ -234,24 +244,24 @@ define([
         contact_id: vm.contactId,
         period_id: vm.selectedPeriod.id
       }, true)
-      .then(function (entitlements) {
-        vm.entitlements = entitlements;
-      })
-      .then(function () {
-        vm.absenceTypesFiltered = vm.absenceTypes.filter(function (absenceType) {
-          var entitlement = _.find(vm.entitlements, function (entitlement) {
-            return entitlement.type_id === absenceType.id;
-          });
+        .then(function (entitlements) {
+          vm.entitlements = entitlements;
+        })
+        .then(function () {
+          vm.absenceTypesFiltered = vm.absenceTypes.filter(function (absenceType) {
+            var entitlement = _.find(vm.entitlements, function (entitlement) {
+              return entitlement.type_id === absenceType.id;
+            });
 
-          // set entitlement to 0 if no entitlement is present
-          absenceType.entitlement = entitlement ? entitlement.value : 0;
-          absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
+            // set entitlement to 0 if no entitlement is present
+            absenceType.entitlement = entitlement ? entitlement.value : 0;
+            absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
 
-          return !((absenceType.entitlement === 0) &&
+            return !((absenceType.entitlement === 0) &&
             (absenceType.allow_overuse !== '1') &&
             (absenceType.allow_accruals_request !== '1'));
+          });
         });
-      });
     }
 
     /**
@@ -264,12 +274,12 @@ define([
         contact_id: vm.contactId,
         period_id: vm.selectedPeriod.id
       }, vm.entitlements)
-      .then(function () {
-        return processBreakdownsList(vm.entitlements);
-      })
-      .then(function (breakdownListFlatten) {
-        vm.sections.entitlements.data = breakdownListFlatten;
-      });
+        .then(function () {
+          return processBreakdownsList(vm.entitlements);
+        })
+        .then(function (breakdownListFlatten) {
+          vm.sections.entitlements.data = breakdownListFlatten;
+        });
     }
 
     /**
@@ -372,7 +382,7 @@ define([
         status_id: { in: [
           valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
           valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
-        ] },
+        ] }
       });
     }
 
@@ -527,15 +537,15 @@ define([
         loadEntitlements(),
         loadBalanceChanges()
       ])
-      .then(function () {
-        vm.loading.content = false;
-      })
-      .then(function () {
-        return $q.all([
-          loadOpenSectionsData(),
-          clearSectionsData()
-        ]);
-      });
+        .then(function () {
+          vm.loading.content = false;
+        })
+        .then(function () {
+          return $q.all([
+            loadOpenSectionsData(),
+            clearSectionsData()
+          ]);
+        });
     }
 
     /**
