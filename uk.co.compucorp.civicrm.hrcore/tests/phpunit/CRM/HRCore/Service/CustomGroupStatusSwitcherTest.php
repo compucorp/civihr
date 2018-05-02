@@ -26,14 +26,14 @@ class CRM_HRCore_Service_CustomGroupStatusSwitcherTest extends BaseHeadlessTest 
     $switcher = new CustomGroupStatusSwitcher();
     $switcher->disable(self::$customGroup['name']);
 
-    // check that all custom fields were enabled
+    // check that all custom fields were disabled
     foreach (self::$customFields as $customField) {
       $id = $customField['id'];
       $updatedField = civicrm_api3('CustomField', 'getsingle', ['id' => $id]);
       $this->assertEquals(0, $updatedField['is_active']);
     }
 
-    // check custom group was enabled
+    // check custom group was disabled
     $updatedGroup = civicrm_api3('CustomGroup', 'getsingle', ['id' => $groupId]);
     $this->assertEquals(0, $updatedGroup['is_active']);
 
