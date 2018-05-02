@@ -85,7 +85,7 @@ define([
       var leaveRequestPromise;
 
       beforeEach(function () {
-        leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String));
+        leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType(jasmine.any(Object));
       });
 
       afterEach(function () {

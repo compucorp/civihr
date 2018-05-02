@@ -22,10 +22,10 @@ define([
          * Get all the Leave Requests.
          * It supports filters, pagination, sort and extra params
          *
-         * @param {object} filters - Values the full list should be filtered by
-         * @param {object} pagination
+         * @param  {Object} filters Values the full list should be filtered by
+         * @param  {Object} pagination
          *   `page` for the current page, `size` for number of items per page
-         * @param {string} sort - The field and direction to order by
+         * @param  {String} sort The field and direction to order by
          * @param  {Object} params
          * @param  {Boolean} cache
          * @return {Promise} resolves with {Object}
@@ -45,23 +45,18 @@ define([
          * Get all the total change in balance that is caused by the
          * leave requests of a given absence type, or of all the absence types of a given contact and period.
          *
-         * @param {string} contactId The ID of the Contact to get the balance change for
-         * @param {string} periodId The ID of the Absence Period to get the balance change for
-         * @param statuses {array} An array of OptionValue values which the list will be filtered by
-         * @param isPublicHoliday {boolean} Based on the value of this param,
-         * the calculation will include only the leave requests that aren't/are public holidays
-         * @return {Promise} Resolved with {Object} Balance Change data
+         * @param  {Object} params
+         * @return {Promise} Resolves with {Object} Balance Change data
          */
-        balanceChangeByAbsenceType: function (contactId, periodId, statuses, isPublicHoliday) {
-          return leaveRequestAPI.balanceChangeByAbsenceType(contactId, periodId, statuses, isPublicHoliday);
+        balanceChangeByAbsenceType: function (params) {
+          return leaveRequestAPI.balanceChangeByAbsenceType(params);
         },
 
         /**
          * Get leave request for the given id
          *
-         * @param {object} id - leave request id
-         *
-         * @return {Promise} resolves with {Object}
+         * @param {Object} id leave request id
+         * @return {Promise} Resolves with {Object}
          */
         find: function (id) {
           return leaveRequestAPI.find(id)
