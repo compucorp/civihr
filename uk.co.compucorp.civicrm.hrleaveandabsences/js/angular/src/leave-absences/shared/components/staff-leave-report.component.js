@@ -471,7 +471,9 @@ define([
         .then(function () {
           return list.map(function (listEntry) {
             return {
+              'type_id': listEntry.type_id,
               'expiry_date': listEntry.toil_expiry_date,
+              'amount': listEntry.toil_to_accrue,
               'type': {
                 'label': 'Accrued TOIL'
               }
