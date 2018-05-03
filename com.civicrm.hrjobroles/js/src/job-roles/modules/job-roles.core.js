@@ -8,6 +8,7 @@ define([
   'common/modules/routers/compu-ng-route',
   'common/filters/angular-date/format-date',
   'common/services/angular-date/date-format',
+  'common/services/crm-ang.service',
   'common/services/dom-event-trigger',
   'common/services/pub-sub',
   'job-roles/vendor/angular-editable',

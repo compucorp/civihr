@@ -160,6 +160,12 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
 
     $leaveContact = [$this->leaveRequest->contact_id];
     $allRecipients = array_merge($leaveApprovers, $leaveContact);
+    $loggedInContactID = CRM_Core_Session::getLoggedInContactID();
+    $currentContactKey = array_search($loggedInContactID, $allRecipients);
+
+    if ($currentContactKey !== FALSE) {
+      unset($allRecipients[$currentContactKey]);
+    }
 
     $result = civicrm_api3('Email', 'get', [
       'contact_id' => ['IN' => $allRecipients],
@@ -179,7 +185,7 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
    */
   private function getLeaveApprovers() {
     $leaveApprovers = $this->leaveManagerService->getLeaveApproversForContact($this->leaveRequest->contact_id);
-    
+
     return array_keys($leaveApprovers);
   }
 

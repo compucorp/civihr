@@ -49,7 +49,7 @@
 
         {* CRM-12735 - Conditionally include the Actions and Edit buttons if contact is NOT in trash.*}
         {if !$isDeleted}
-          {if call_user_func(array('CRM_Core_Permission','check'), 'access CiviCRM')}
+          {if $canAccessCiviCRM }
             <li class="crm-contact-activity crm-summary-block">
               {include file="CRM/Contact/Page/Inline/Actions.tpl"}
             </li>

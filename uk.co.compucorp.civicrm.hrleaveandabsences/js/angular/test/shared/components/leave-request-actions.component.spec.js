@@ -192,8 +192,8 @@ define([
           compileComponent();
         });
 
-        it('shows actions "View"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
+        it('shows actions "View" and "Cancel"', function () {
+          expect(flattenActions(controller.allowedActions)).toEqual(['view', 'cancel']);
         });
       });
     });
@@ -234,8 +234,8 @@ define([
           compileComponent();
         });
 
-        it('shows actions "View"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
+        it('shows actions "View" and "Cancel"', function () {
+          expect(flattenActions(controller.allowedActions)).toEqual(['view', 'cancel']);
         });
       });
     });

@@ -1,0 +1,9 @@
+{{request.from_date | formatDate : null : (request.request_type === 'toil' ? 'hours' : unit)}}
+<span ng-if="request.dates.length > 1">
+  -
+  {{request.to_date | formatDate : null : (request.request_type === 'toil' ? 'hours' : unit)}}
+</span>
+<span ng-if="request.dates.length === 1 && (unit === 'hours' || request.request_type === 'toil')">
+  -
+  {{request.to_date.slice(11, 16)}}
+</span>

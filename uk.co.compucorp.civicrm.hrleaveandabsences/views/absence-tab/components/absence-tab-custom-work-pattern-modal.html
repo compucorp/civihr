@@ -46,15 +46,24 @@
           <div class="form-group">
             <label class="col-sm-4 control-label">Reason for change</label>
             <div class="col-sm-8">
-              <div class="crm_custom-select crm_custom-select--full">
-                <select
-                  class="no-select2"
-                  ng-options="changeReasons.value as changeReasons.label for changeReasons in workPatternModal.changeReasons"
-                  ng-model="workPatternModal.selected.changeReason"
-                  ng-change="workPatternModal.refresh()">
-                  <option value="">- select -</option>
-                </select>
-                <span class="crm_custom-select__arrow"></span>
+              <div class="row">
+                <div class="col-xs-11">
+                  <div class="crm_custom-select crm_custom-select--full">
+                    <select
+                      class="no-select2"
+                      ng-options="changeReasons.value as changeReasons.label for changeReasons in workPatternModal.changeReasons"
+                      ng-model="workPatternModal.selected.changeReason"
+                      ng-change="workPatternModal.refresh()">
+                      <option value="">- select -</option>
+                    </select>
+                    <span class="crm_custom-select__arrow"></span>
+                  </div>
+                </div>
+                <div class="col-xs-1">
+                  <a class="pointer">
+                    <i class="crm-i fa-wrench" ng-click="workPatternModal.openWorkPatternChangeReasonEditor()"></i>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

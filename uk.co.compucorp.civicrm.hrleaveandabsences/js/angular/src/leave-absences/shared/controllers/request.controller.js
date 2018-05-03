@@ -667,8 +667,8 @@ define([
       var requestFromDate = moment(request.from_date);
       var requestToDate = moment(request.to_date);
 
-      return (requestFromDate.isSameOrAfter(period.start_date) &&
-        requestToDate.isSameOrBefore(period.end_date));
+      return (requestFromDate.isSameOrAfter(period.start_date, 'day') &&
+        requestToDate.isSameOrBefore(period.end_date, 'day'));
     }
 
     /**

@@ -18,93 +18,26 @@ define([
     controller: LeaveCalendarDayController
   });
 
-  LeaveCalendarDayController.$inject = ['$log', '$scope', 'LeavePopup'];
+  LeaveCalendarDayController.$inject = ['$log', '$scope', '$timeout', 'LeavePopup'];
 
-  function LeaveCalendarDayController ($log, $scope, LeavePopup) {
+  function LeaveCalendarDayController ($log, $scope, $timeout, LeavePopup) {
     'use strict';
     $log.debug('Component: leave-calendar-day');
 
-    var absenceType, fromDateType, toDateType;
     var vm = this;
 
-    vm.calculationUnit = '';
-    vm.dates = { from: null, to: null };
-    vm.label = '';
-    vm.tooltipTemplate = null;
+    vm.tooltip = {
+      show: false,
+      day_cell_hovered: false,
+      tooltip_hovered: false
+    };
 
     vm.openLeavePopup = openLeavePopup;
+    vm.toggleTooltip = toggleTooltip;
 
     (function init () {
-      watchForLeaveRequestReady();
+      watchLeaveRequests();
     })();
-
-    /**
-     * Finds and stores the calculation unit for the leave request's
-     * absence type
-     */
-    function findAbsenceTypeCalculationUnit () {
-      vm.calculationUnit = findRecordByIdFieldValue(
-        vm.supportData.calculationUnits, 'value', absenceType.calculation_unit);
-    }
-
-    /**
-     * Given an array of records, finds and returns the one that matches the
-     * id field with the comparison value.
-     *
-     * @param {Array} records - An array of objects to filter.
-     * @param {String} idFieldName - the name for the ID field.
-     * @param {any} value - The comparison value to match against the ID.
-     *
-     * @return {Object}
-     */
-    function findRecordByIdFieldValue (records, idFieldName, value) {
-      return _.find(records, function (record) {
-        return +record[idFieldName] === +value;
-      });
-    }
-
-    /**
-     * Returns the template name for Leave Requests tooltips.
-     *
-     * The pattern is `type-[days|hours]-on-[single-date|multiple-dates]-tooltip`
-     *
-     * @return {String}
-     */
-    function getTooltipTemplateForLeaveRequests () {
-      var dateRangeType, isSameDay;
-
-      isSameDay = moment(vm.contactData.leaveRequest.from_date)
-        .isSame(vm.contactData.leaveRequest.to_date, 'day');
-      dateRangeType = isSameDay ? 'single-date' : 'multiple-dates';
-
-      return 'type-' + vm.calculationUnit.name + '-on-' +
-        dateRangeType + '-tooltip';
-    }
-
-    /**
-     * Maps the absence type title to the leave request.
-     */
-    function mapLeaveRequestAbsenceType () {
-      absenceType = findRecordByIdFieldValue(vm.supportData.absenceTypes,
-        'id', vm.contactData.leaveRequest.type_id);
-
-      vm.contactData.leaveRequest['type_id.title'] = absenceType.title;
-    }
-
-    /**
-     * Maps the from and to date type labels to the leave request.
-     */
-    function mapLeaveRequestDateTypes () {
-      if (vm.calculationUnit.name === 'days') {
-        fromDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
-          'value', vm.contactData.leaveRequest.from_date_type);
-        toDateType = findRecordByIdFieldValue(vm.supportData.dayTypes,
-          'value', vm.contactData.leaveRequest.to_date_type);
-
-        vm.contactData.leaveRequest['from_date_type.label'] = fromDateType.label;
-        vm.contactData.leaveRequest['to_date_type.label'] = toDateType.label;
-      }
-    }
 
     /**
      * Opens the leave request popup
@@ -125,39 +58,21 @@ define([
     }
 
     /**
-     * Copies dates from Leave Request, converts them from String
-     * to Date type and sets to the component.
-     */
-    function resolveDayDates () {
-      vm.dates.from = new Date(vm.contactData.leaveRequest.from_date);
-      vm.dates.to = new Date(vm.contactData.leaveRequest.to_date);
-    }
-
-    /**
-     * Determines the label for the day depending on the calculation unit or if
-     * it's an accrued TOIL request.
-     */
-    function resolveDayLabel () {
-      if (vm.contactData.isAccruedTOIL) {
-        vm.label = 'AT';
-      } else if (vm.calculationUnit.name === 'days') {
-        resolveDayLabelForDaysCalculationUnit();
-      } else {
-        resolveDayLabelForHoursCalculationUnit();
-      }
-    }
-
-    /**
      * Determines the label for the day when calculation units are set to days.
      *
      * AM: leave requests for half day AM
      * PM: leave requests for half day PM
      * Otherwise leave empty.
+     *
+     * @param  {Object} leaveRequestAttributes
+     * @return {String}
      */
-    function resolveDayLabelForDaysCalculationUnit () {
-      vm.label = vm.contactData.isAM ? 'AM'
-        : vm.contactData.isPM ? 'PM'
-        : '';
+    function resolveDayLabelForDaysCalculationUnit (leaveRequestAttributes) {
+      return leaveRequestAttributes.isAM
+        ? 'AM'
+        : leaveRequestAttributes.isPM
+          ? 'PM'
+          : '';
     }
 
     /**
@@ -168,44 +83,148 @@ define([
      * If the date is the same as the end date of the request, the end time is
      * displayed.
      * Otherwise the label is empty.
+     *
+     * @param  {LeaveRequestInstance} leaveRequest
+     * @return {String}
      */
-    function resolveDayLabelForHoursCalculationUnit () {
-      var sameDateAsFromDate = moment(vm.contactData.leaveRequest.from_date)
+    function resolveDayLabelForHoursCalculationUnit (leaveRequest) {
+      var sameDateAsFromDate = moment(leaveRequest.from_date)
         .isSame(vm.date, 'day');
-      var sameDateAsToDate = moment(vm.contactData.leaveRequest.to_date)
+      var sameDateAsToDate = moment(leaveRequest.to_date)
         .isSame(vm.date, 'day');
 
-      vm.label = sameDateAsFromDate
-        ? moment(vm.contactData.leaveRequest.from_date).format('HH:mm')
+      return sameDateAsFromDate
+        ? moment(leaveRequest.from_date).format('HH:mm')
         : sameDateAsToDate
-        ? moment(vm.contactData.leaveRequest.to_date).format('HH:mm')
-        : '';
+          ? moment(leaveRequest.to_date).format('HH:mm')
+          : '';
     }
 
     /**
-     * Selects the tooltip template to use to display the leave request information.
+     * Sets absence types titles to leave requests attributes
+     *
+     * @param {LeaveRequestInstance} leaveRequest
+     * @param {Object} leaveRequestAttributes
      */
-    function selectTooltipTemplate () {
-      vm.tooltipTemplate = vm.contactData.isAccruedTOIL
-        ? 'accrued-toil-tooltip'
-        : getTooltipTemplateForLeaveRequests();
+    function resolveLeaveRequestAbsenceTypeTitle (leaveRequest, leaveRequestAttributes) {
+      vm.contactData.leaveRequestsAttributes[leaveRequest.id].absenceTypeTitle =
+        _.find(vm.supportData.absenceTypes, { id: leaveRequest.type_id }).title;
+    }
+
+    /**
+     * Sets a unit name to the leave requests attributes
+     *
+     * @param {LeaveRequestInstance} leaveRequest
+     * @param {Object} leaveRequestAttributes
+     */
+    function resolveLeaveRequestCalculationUnit (leaveRequest, leaveRequestAttributes) {
+      var absenceType = _.find(vm.supportData.absenceTypes, { id: leaveRequest.type_id });
+      var calculationUnit = _.find(vm.supportData.calculationUnits, { 'value': absenceType.calculation_unit });
+
+      leaveRequestAttributes.unit = calculationUnit.name;
+    }
+
+    /**
+     * Sets dates from leave requests to leave requests attributes
+     * by converting them from String to Date type.
+     *
+     * @param {LeaveRequestInstance} leaveRequest
+     * @param {Object} leaveRequestAttributes
+     */
+    function resolveLeaveRequestDates (leaveRequest, leaveRequestAttributes) {
+      leaveRequestAttributes.from_date = new Date(leaveRequest.from_date);
+      leaveRequestAttributes.to_date = new Date(leaveRequest.to_date);
+    }
+
+    /**
+     * Sets the from and to date type labels to the leave requests attributes.
+     *
+     * @param {LeaveRequestInstance} leaveRequest
+     * @param {Object} leaveRequestAttributes
+     */
+    function resolveLeaveRequestDateTypes (leaveRequest, leaveRequestAttributes) {
+      if (leaveRequestAttributes.unit !== 'days') {
+        return;
+      }
+
+      leaveRequestAttributes['from_date_type'] =
+        _.find(vm.supportData.dayTypes, { value: leaveRequest.from_date_type }).label;
+      leaveRequestAttributes['to_date_type'] =
+        _.find(vm.supportData.dayTypes, { value: leaveRequest.to_date_type }).label;
+    }
+
+    /**
+     * Determines a label for the leave request depending on the calculation unit
+     * or if it's an accrued TOIL request.
+     *
+     * @param {LeaveRequestInstance} leaveRequest
+     * @param {Object} leaveRequestAttributes
+     */
+    function resolveLeaveRequestLabel (leaveRequest, leaveRequestAttributes) {
+      var label = '';
+
+      if (leaveRequestAttributes.isAccruedTOIL) {
+        label = 'AT';
+      } else if (leaveRequestAttributes.unit === 'days') {
+        label = resolveDayLabelForDaysCalculationUnit(leaveRequestAttributes);
+      } else {
+        label = resolveDayLabelForHoursCalculationUnit(leaveRequest);
+      }
+
+      leaveRequestAttributes.label = label;
+    }
+
+    /**
+     * Sets additional data needed for UI to leave requests attributes
+     *
+     * @param {LeaveRequestInstance} leaveRequest
+     */
+    function resolveLeaveRequestsAdditionalUIData (leaveRequest) {
+      var leaveRequestAttributes =
+        vm.contactData.leaveRequestsAttributes[leaveRequest.id];
+      var resolvingFunctions = [
+        resolveLeaveRequestCalculationUnit,
+        resolveLeaveRequestDateTypes,
+        resolveLeaveRequestLabel,
+        resolveLeaveRequestDates,
+        resolveLeaveRequestAbsenceTypeTitle
+      ];
+
+      resolvingFunctions.forEach(function (resolvingFunction) {
+        resolvingFunction.call(this, leaveRequest, leaveRequestAttributes);
+      });
+    }
+
+    /**
+     * Toggles tooltip for the day.
+     * It reacts to entering/leaving either day cell or the tooltip itself,
+     * if either of the elements are hovered, it remains the tooltip open.
+     * It instantly shows a tooltip, but has a 100ms timeout to hide it once unhovered.
+     *
+     * @TODO this should be moved to a decorator to uib-tooltip
+     *
+     * @param {String} sourceElement day_cell|tooltip
+     * @param {Boolean} isHovered
+     */
+    function toggleTooltip (sourceElement, isHovered) {
+      $timeout(function () {
+        vm.tooltip[sourceElement + '_hovered'] = isHovered;
+
+        vm.tooltip.show =
+          vm.tooltip.day_cell_hovered || vm.tooltip.tooltip_hovered;
+      }, isHovered ? 0 : 100);
     }
 
     /**
      * Waits for the leave request to be accesible before mapping the necessary
      * leave request fields to it.
      */
-    function watchForLeaveRequestReady () {
-      $scope.$watch('day.contactData.leaveRequest', function () {
-        if (vm.contactData && vm.contactData.leaveRequest) {
-          mapLeaveRequestAbsenceType();
-          findAbsenceTypeCalculationUnit();
-          mapLeaveRequestDateTypes();
-          resolveDayLabel();
-          resolveDayDates();
-          selectTooltipTemplate();
+    function watchLeaveRequests () {
+      $scope.$watch('day.contactData.leaveRequests', function () {
+        if (vm.contactData && vm.contactData.leaveRequests) {
+          vm.contactData.leaveRequests.forEach(resolveLeaveRequestsAdditionalUIData);
         }
-      });
+      }, true);
     }
   }
 });

@@ -73,7 +73,7 @@
     <comment>One of the values of the Job Contract Revision Change Reason option group</comment>
     <add>4.4</add>
     <pseudoconstant>
-      <optionGroupName>hrjc_revision_change_reason</optionGroupName>
+      <optionGroupName>hrleaveandabsences_work_pattern_change_reason</optionGroupName>
     </pseudoconstant>
   </field>
 

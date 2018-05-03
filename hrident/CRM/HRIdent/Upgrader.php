@@ -135,4 +135,5 @@ class CRM_HRIdent_Upgrader extends CRM_HRIdent_Upgrader_Base {
 
     return true;
   }
+  
 }

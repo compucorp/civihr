@@ -1,0 +1,31 @@
+$chr-leave-calendar-tooltip-shadow:         0 3px 8px 0 rgba(49, 40, 40, 0.25);
+$chr-leave-calendar-tooltip-item-min-width: 154px;
+
+// @TODO the tooltip style should be moved to the global styling
+.chr_leave-calendar__day-tooltip {
+  &.tooltip.in {
+    opacity: 1;
+  }
+
+  .tooltip-arrow {
+    border-top-color: $crm-white !important;
+  }
+
+  .tooltip-inner {
+    background-color: $crm-white;
+    border-radius: 0;
+    box-shadow: $chr-leave-calendar-tooltip-shadow;
+    color: $gray-darker;
+    padding: 0;
+  }
+}
+
+.chr_leave-calendar__day-tooltip_item {
+  cursor: pointer;
+  min-width: $chr-leave-calendar-tooltip-item-min-width;
+  padding: $crm-gap-medium;
+
+  &:hover {
+    background-color: $gray-light;
+  }
+}
