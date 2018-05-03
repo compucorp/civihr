@@ -242,16 +242,17 @@
               });
 
               it('has fetched the balance changes for the current contact and selected period', function () {
-                var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0);
+                var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0)[0];
 
-                expect(args[0]).toEqual(contactId);
-                expect(args[1]).toEqual(controller.selectedPeriod.id);
+                expect(args.contact_id).toEqual(contactId);
+                expect(args.period_id).toEqual(controller.selectedPeriod.id);
               });
 
               describe('public holidays', function () {
                 it('has fetched the balance changes for the public holidays', function () {
-                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0);
-                  expect(args[3]).toEqual(true);
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(0)[0];
+
+                  expect(args.public_holiday).toEqual(true);
                 });
 
                 it('has stored them in each absence type', function () {
@@ -264,10 +265,30 @@
                 });
               });
 
+              describe('expired requests', function () {
+                it('has fetched the balance changes for the expired requests', function () {
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(1)[0];
+
+                  expect(args.expired).toEqual(true);
+                });
+
+                it('has stored them in each absence type', function () {
+                  _.forEach(controller.absenceTypes, function (absenceType) {
+                    var balanceChanges = absenceType.balanceChanges.expired;
+
+                    expect(balanceChanges).toBeDefined();
+                    expect(balanceChanges).toBe(mockData[absenceType.id]);
+                  });
+                });
+              });
+
               describe('approved requests', function () {
                 it('has fetched the balance changes for the approved requests', function () {
-                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(1);
-                  expect(args[2]).toEqual([ valueOfRequestStatus(sharedSettings.statusNames.approved) ]);
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2)[0];
+
+                  expect(args.statuses.in).toEqual([
+                    valueOfRequestStatus(sharedSettings.statusNames.approved)
+                  ]);
                 });
 
                 it('has stored them in each absence type', function () {
@@ -282,9 +303,9 @@
 
               describe('open requests', function () {
                 it('has fetched the balance changes for the open requests', function () {
-                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(2);
+                  var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(3)[0];
 
-                  expect(args[2]).toEqual([
+                  expect(args.statuses.in).toEqual([
                     valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
                     valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
                   ]);
@@ -364,10 +385,10 @@
             });
 
             it('reloads all the balance changes', function () {
-              var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(_.random(0, 2));
+              var args = LeaveRequest.balanceChangeByAbsenceType.calls.argsFor(_.random(0, 2))[0];
 
-              expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledTimes(3);
-              expect(args[1]).toEqual(newPeriod.id);
+              expect(LeaveRequest.balanceChangeByAbsenceType).toHaveBeenCalledTimes(4);
+              expect(args.period_id).toEqual(newPeriod.id);
             });
           });
 

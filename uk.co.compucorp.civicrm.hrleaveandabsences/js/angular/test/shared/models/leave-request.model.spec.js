@@ -2,7 +2,8 @@
 
 define([
   'leave-absences/shared/models/leave-request.model',
-  'leave-absences/mocks/apis/leave-request-api-mock'
+  'leave-absences/mocks/apis/leave-request-api-mock',
+  'leave-absences/mocks/apis/option-group-api-mock'
 ], function () {
   'use strict';
 
@@ -85,7 +86,7 @@ define([
       var leaveRequestPromise;
 
       beforeEach(function () {
-        leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String));
+        leaveRequestPromise = LeaveRequest.balanceChangeByAbsenceType(jasmine.any(Object));
       });
 
       afterEach(function () {
