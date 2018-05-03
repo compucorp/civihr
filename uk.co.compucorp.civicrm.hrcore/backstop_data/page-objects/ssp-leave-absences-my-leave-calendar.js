@@ -1,4 +1,4 @@
-/* globals jQuery, MouseEvent */
+/* globals jQuery */
 
 const page = require('./page');
 
@@ -31,10 +31,7 @@ module.exports = page.extend({
    * pops up.
    */
   async showTooltip () {
-    await this.puppet.evaluate(() => {
-      const event = new MouseEvent('mouseover');
-      document.querySelector('.chr_leave-calendar__item a').dispatchEvent(event);
-    });
+    await this.puppet.hover('.chr_leave-calendar__item a');
     await this.puppet.waitFor('.tooltip', { visible: true });
   },
 
