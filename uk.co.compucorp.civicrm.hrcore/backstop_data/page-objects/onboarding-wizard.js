@@ -41,9 +41,11 @@ module.exports = page.extend({
    */
   async reachDependentPage () {
     await this.reachEmergencyContactPage();
+    await this.puppet.waitFor('.webform-component-fieldset', { visible: true });
+    await this.puppet.type('#edit-submitted-civicrm-1-contact-1-cg99999-fieldset-civicrm-1-contact-1-cg99999-custom-100000', 'Duke');
+    await this.puppet.type('#edit-submitted-civicrm-1-contact-1-cg99999-fieldset-civicrm-1-contact-1-cg99999-custom-100001', '1234');
     await this.puppet.click('.webform-next');
     await this.puppet.waitFor('input[value="Dependants"]');
-    await this.puppet.click('#edit-submitted-do-you-have-dependants-1');
   },
 
   /**
@@ -52,9 +54,7 @@ module.exports = page.extend({
   async reachProfilePicturePage () {
     await this.reachDependentPage();
     await this.puppet.waitFor('.webform-component-fieldset', { visible: true });
-    await this.puppet.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100000', 'Duke');
-    await this.puppet.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100001', '1234');
-    await this.puppet.type('#edit-submitted-first-dependant-civicrm-1-contact-3-cg99999-custom-100010', 'sibling');
+    await this.puppet.type('#edit-submitted-civicrm-1-contact-3-cg99999-fieldset-civicrm-1-contact-3-cg99999-custom-100000', 'Duke');
     await this.puppet.click('.webform-next');
     await this.puppet.waitFor('input[value="Profile Picture"]');
   }

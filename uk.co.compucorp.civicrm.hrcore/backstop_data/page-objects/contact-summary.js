@@ -37,9 +37,18 @@ module.exports = page.extend({
   },
 
   /**
-   * Wait an arbitrary amount of time for the data to load
+   * Wait an arbitrary amount of time for the data to load, then waits
+   * for all the spinners to disappear
    */
   async waitForReady () {
+    await this.puppet.waitFor('#contactsummary', { visible: true });
     await this.puppet.waitFor(6000);
+    await this.puppet.waitFor(function () {
+      const spinners = document.querySelectorAll('.spinner');
+
+      return Array.prototype.every.call(spinners, function (dom) {
+        return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
+      });
+    });
   }
 });
