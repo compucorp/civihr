@@ -68,7 +68,7 @@ module.exports = page.extend({
    */
   async editRequest (row) {
     await this.puppet.click('body > ul.dropdown-menu:nth-of-type(' + (row || 1) + ') li:first-child a');
-    await this.puppet.waitFor('.modal-content .spinner:nth-child(1)', { hidden: true });
+    await this.puppet.waitFor('leave-request-popup-details-tab', { visible: true });
     await this.puppet.waitFor('leave-request-popup-details-tab .spinner', { hidden: true });
   },
 
