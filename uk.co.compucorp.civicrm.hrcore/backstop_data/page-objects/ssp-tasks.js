@@ -23,6 +23,6 @@ module.exports = modal.extend({
    * to wait a couple of seconds for it to "stabilize" before taking the screenshot
    */
   async waitForReady () {
-    await this.puppet.waitFor(2000);
+    await this.puppet.waitFor(4000);
   }
 });
