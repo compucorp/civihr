@@ -35,7 +35,8 @@
     {
       "label": "SSP / Onboarding Wizard / Dependants",
       "url": "{{siteUrl}}/onboarding-form",
-      "onReadyScript": "onboarding-wizard/dependents.js"
+      "onReadyScript": "onboarding-wizard/dependents.js",
+      "requireSameDimensions": false
     },
     {
       "label": "SSP / Onboarding Wizard / Profile Picture",

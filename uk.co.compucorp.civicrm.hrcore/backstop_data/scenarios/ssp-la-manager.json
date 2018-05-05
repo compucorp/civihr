@@ -10,7 +10,8 @@
       "label": "SSP / Manager Leave / Legend expanded",
       "url": "{{siteUrl}}/manager-leave#/manager-leave/calendar",
       "onReadyScript": "ssp/manager-leave/calendar-legend-expanded.js",
-      "user": "civihr_manager"
+      "user": "civihr_manager",
+      "requireSameDimensions": false
     },
     {
       "label": "SSP / Manager Leave / Show all contacts",
