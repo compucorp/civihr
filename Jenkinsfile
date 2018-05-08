@@ -23,7 +23,7 @@ pipeline {
   stages {
     stage('Pre-tasks execution') {
       steps {
-        sendBuildStartdNotification()
+        sendBuildStartNotification()
 
         // Print all Environment variables
         sh 'printenv | sort'
@@ -189,26 +189,34 @@ pipeline {
 /*
  * Sends a notification when the build starts
  */
-def sendBuildStartdNotification() {
-  def message = 'Building ' + getBuildTargetLink() + '. ' + getReportLink()
+def sendBuildStartNotification() {
+  def msgHipChat = 'Building ' + getBuildTargetLink('hipchat') + '. ' + getReportLink('hipchat')
+  def msgSlack = 'Building ' + getBuildTargetLink('slack') + '. ' + getReportLink('slack')
 
-  sendHipchatNotification('YELLOW', message)
+  sendHipchatNotification('YELLOW', msgHipChat)
+  sendSlackNotification('warning', msgSlack)
 }
 
 /*
  * Sends a notification when the build is completed successfully
  */
 def sendBuildSuccessNotification() {
-  def message = getBuildTargetLink() + ' built successfully. Time: $BUILD_DURATION. ' + getReportLink()
-  sendHipchatNotification('GREEN', message)
+  def msgHipChat = getBuildTargetLink('hipchat') + ' built successfully. Time: $BUILD_DURATION. ' + getReportLink('hipchat')
+  def msgSlack = getBuildTargetLink('slack') + ' built successfully. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink('slack')
+
+  sendHipchatNotification('GREEN', msgHipChat)
+  sendSlackNotification('good', msgSlack)
 }
 
 /*
  * Sends a notification when the build fails
  */
 def sendBuildFailureNotification() {
-  def message = 'Failed to build ' + getBuildTargetLink() + '. Time: $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink()
-  sendHipchatNotification('RED', message)
+  def msgHipChat = 'Failed to build ' + getBuildTargetLink('hipchat') + '. Time: $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink('hipchat')
+  def msgSlack = 'Failed to build ' + getBuildTargetLink('slack') + '. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink('slack')
+
+  sendHipchatNotification('RED', msgHipChat)
+  sendSlackNotification('danger', msgSlack)
 }
 
 /*
@@ -219,15 +227,37 @@ def sendHipchatNotification(String color, String message) {
 }
 
 /*
+ * Sends a notification to Slack
+ */
+def sendSlackNotification(String color, String message) {
+  slackSend color: color, message: message, notify: true
+}
+
+/*
+ * Returns the build duration without the "and counting" suffix
+ */
+def getBuildDuration(build) {
+  return build.durationString.replace(' and counting', '')
+}
+
+/*
  * Returns a link to what is being built. If it's a PR, then it's a link to the pull request itself.
  * If it's a branch, then it's a link in the format http://github.com/org/repo/tree/branch
  */
-def getBuildTargetLink() {
-  if(buildIsForAPullRequest()) {
-    return "<a href=\"${env.CHANGE_URL}\">\"${env.CHANGE_TITLE}\"</a>"
+def getBuildTargetLink(String client) {
+  def link = ''
+  def forPR = buildIsForAPullRequest()
+
+  switch (client) {
+    case 'hipchat':
+      link = forPR ? "<a href=\"${env.CHANGE_URL}\">\"${env.CHANGE_TITLE}\"</a>" : '<a href="' + getRepositoryUrlForBuildBranch() + '">"' + env.BRANCH_NAME + '"</a>'
+      break;
+    case 'slack':
+      link = forPR ? "<${env.CHANGE_URL}|${env.CHANGE_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
+      break;
   }
 
-  return '<a href="' + getRepositoryUrlForBuildBranch() + '">"' + env.BRANCH_NAME + '"</a>'
+  return link
 }
 
 /*
@@ -250,8 +280,19 @@ def getRepositoryUrlForBuildBranch() {
 /*
  * Returns the Blue Ocean build report URL for the current job
  */
-def getReportLink() {
- return 'Click <a href="$BLUE_OCEAN_URL">here</a> to see the build report'
+def getReportLink(String client) {
+  def link = ''
+
+  switch (client) {
+    case 'hipchat':
+      link = 'Click <a href="$BLUE_OCEAN_URL">here</a> to see the build report'
+      break
+    case 'slack':
+      link = "Click <${env.RUN_DISPLAY_URL}|here> to see the build report"
+      break
+  }
+
+  return link
 }
 
 def cloneCiviHRRepositories(String envBranch) {

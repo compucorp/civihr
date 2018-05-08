@@ -26,7 +26,8 @@ org.civicrm.reqangular \
 uk.co.compucorp.civicrm.hrcore \
 uk.co.compucorp.civicrm.hremails \
 uk.co.compucorp.civicrm.hrleaveandabsences \
-uk.co.compucorp.civicrm.hrcomments
+uk.co.compucorp.civicrm.hrcomments \
+uk.co.compucorp.civicrm.hrcontactactionsmenu
 )
 
 set -e

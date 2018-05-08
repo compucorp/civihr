@@ -28,7 +28,9 @@ define(function () {
       Hour: 2080
     };
 
-    $scope.collapseBenDed = !entityPay.annual_benefits.length && !entityPay.annual_deductions.length;
+    $scope.collapseBenDed =
+      (!entityPay.annual_benefits || !entityPay.annual_benefits.length) &&
+      (!entityPay.annual_deductions || !entityPay.annual_deductions.length);
     $scope.benefits_per_cycle = (0).toFixed(2);
     $scope.benefits_per_cycle_net = 0;
     $scope.deductions_per_cycle = (0).toFixed(2);

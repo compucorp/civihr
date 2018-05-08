@@ -14,7 +14,7 @@
     "postinstall": "npm run sub-install",
     "sub-install": "for file in `npm run folders-with-dependencies --silent`; do cd `dirname $file`; npm i; cd $OLDPWD >> /dev/null; done",
     "clean-dependencies": "rm -rf node_modules/; for file in `npm run folders-with-dependencies --silent`; do cd `dirname $file`; rm -rf node_modules/; cd $OLDPWD >> /dev/null; done",
-    "folders-with-dependencies": "find ./* -type f -mindepth 1 -name package.json | grep -v 'node_modules\\|bower_components'"
+    "folders-with-dependencies": "find ./* -mindepth 1 -name package.json -type f | grep -v 'node_modules\\|bower_components'"
   },
   "lint-staged": {
     "*.js": [
@@ -45,7 +45,8 @@
       "selector-class-pattern": null,
       "max-nesting-depth": 3,
       "no-extra-semicolons": true,
-      "no-duplicate-selectors": true
+      "no-duplicate-selectors": true,
+      "scss/dollar-variable-colon-space-after": "at-least-one-space"
     }
   },
   "devDependencies": {
@@ -55,6 +56,6 @@
     "stylelint": "^8.4.0",
     "stylelint-config-sass-guidelines": "^4.1.0",
     "stylelint-order": "^0.8.0",
-    "stylelint-scss": "^2.3.0"
+    "stylelint-scss": "^2.5.0"
   }
 }

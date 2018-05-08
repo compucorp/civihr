@@ -10,7 +10,7 @@ define([
   'use strict';
 
   describe('AbsenceType', function () {
-    var $provide, AbsenceType, AbsenceTypeAPI, OptionGroupAPI, $rootScope, $q;
+    var $provide, $q, $rootScope, AbsenceType, AbsenceTypeAPI, OptionGroup;
 
     beforeEach(module('leave-absences.models', 'leave-absences.mocks', function (_$provide_) {
       $provide = _$provide_;
@@ -20,21 +20,20 @@ define([
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
     }));
 
-    beforeEach(inject(['api.optionGroup.mock', 'api.optionGroup.mock', function (_OptionGroupAPI_, _OptionGroupAPIMock_) {
-      OptionGroupAPI = _OptionGroupAPI_;
-
+    beforeEach(inject(['api.optionGroup.mock', function (_OptionGroupAPIMock_) {
       $provide.value('api.optionGroup', _OptionGroupAPIMock_);
     }]));
 
-    beforeEach(inject(function (_AbsenceType_, _AbsenceTypeAPI_, _$rootScope_, _$q_) {
-      AbsenceType = _AbsenceType_;
-      AbsenceTypeAPI = _AbsenceTypeAPI_;
+    beforeEach(inject(function (_$q_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_, _OptionGroup_) {
       $q = _$q_;
       $rootScope = _$rootScope_;
+      AbsenceType = _AbsenceType_;
+      AbsenceTypeAPI = _AbsenceTypeAPI_;
+      OptionGroup = _OptionGroup_;
 
       spyOn(AbsenceTypeAPI, 'all').and.callThrough();
       spyOn(AbsenceTypeAPI, 'calculateToilExpiryDate').and.callThrough();
-      spyOn(OptionGroupAPI, 'valuesOf').and.callThrough();
+      spyOn(OptionGroup, 'valuesOf').and.callThrough();
     }));
 
     it('has expected interface', function () {
@@ -156,7 +155,7 @@ define([
       });
 
       it('retrieves calculation unit option group', function () {
-        expect(OptionGroupAPI.valuesOf).toHaveBeenCalledWith(
+        expect(OptionGroup.valuesOf).toHaveBeenCalledWith(
           'hrleaveandabsences_absence_type_calculation_unit');
       });
 

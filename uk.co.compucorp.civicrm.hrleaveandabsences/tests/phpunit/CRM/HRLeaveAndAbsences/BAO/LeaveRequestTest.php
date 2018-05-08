@@ -65,13 +65,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = new DateTime();
     $date = $fromDate->format('YmdHis');
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1, //The status is not important here. We just need a value to be stored in the DB
       'from_date' => $date,
-      'from_date_type' => 1,
-      'to_date' => $date,
-      'to_date_type' => 1,
+      'to_date' => $date
     ]);
 
     $dates = $leaveRequest->getDates();
@@ -83,13 +81,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = new DateTime();
     $toDate = new DateTime('+3 days');
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
-      'status_id' => 1, //The status is not important here. We just need a value to be stored in the DB
       'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1, //The type is not important here. We just need a value to be stored in the DB
-      'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1 //The type is not important here. We just need a value to be stored in the DB
+      'to_date' => $toDate->format('YmdHis')
     ]);
 
     $dates = $leaveRequest->getDates();
@@ -108,9 +103,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $date,
-      'from_date_type' => 1,
-      'to_date' => $date,
-      'to_date_type' => 1
+      'to_date' => $date
     ]);
 
     $dates = $leaveRequest->getDates();
@@ -122,13 +115,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $toDate->modify('+1 day');
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $this->absenceType->id,
       'id' => $leaveRequest->id,
       'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1,
+      'to_date' => $toDate->format('YmdHis')
     ]);
 
     $dates = $leaveRequest->getDates();
@@ -168,9 +160,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('2016-11-02'),
-      'from_date_type' => 1,
-      'to_date' => CRM_Utils_Date::processDate('2016-11-04'),
-      'to_date_type' => 1
+      'to_date' => CRM_Utils_Date::processDate('2016-11-04')
     ], true);
 
     //updating leave request
@@ -902,6 +892,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testNumberOfDaysOfLeaveRequestShouldNotBeGreaterMaxConsecutiveLeaveDaysForAbsenceType() {
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+    $contactID = 1;
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2017-01-01']
+    );
+
     $absenceType = AbsenceTypeFabricator::fabricate([
       'max_consecutive_leave_days' => 2.5
     ]);
@@ -913,11 +910,91 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     LeaveRequest::create([
       'type_id' => $absenceType->id,
-      'contact_id' => 1,
+      'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('now'),
       'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('+4 days'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  public function testLeaveRequestCanBeCreatedWhenNumberOfLeaveWorkingDaysNotGreaterThanMaxConsecutiveDays() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2017-06-14'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+    $contactID = 1;
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2017-01-01']
+    );
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'max_consecutive_leave_days' => 4
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+
+    //The leave days are six days but in reality there are just 4 working days
+    //because 2017-01-07 and 2017-01-08 fall on weekends. So request should be allowed
+    //to be created.
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2017-01-05'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2017-01-10'),
+      'to_date_type' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
+  }
+
+  public function testLeaveRequestCanBeCreatedWhenNumberOfLeaveWorkingDaysNotGreaterThanMaxConsecutiveDaysForWorkPatternWithMultipleWeeks() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2017-06-14'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours(['is_default' => 1]);
+    $contactID = 1;
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2017-01-01']
+    );
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'max_consecutive_leave_days' => 5
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+
+    //The leave days are twelve days but in reality there are just 5 working days
+    //Mon(2017-01-02), Wed(2017-01-04) and Fri(2017-01-06) for first week
+    // and Tue((2017-01-10), Thur(2017-01-12) for second week to be created.
+    LeaveRequest::create([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => 1,
+      'from_date' => CRM_Utils_Date::processDate('2017-01-02'),
+      'from_date_type' => 1,
+      'to_date' => CRM_Utils_Date::processDate('2017-01-13'),
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
@@ -938,9 +1015,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('now'),
-      'from_date_type' => 1,
-      'to_date' => CRM_Utils_Date::processDate('+4 days'),
-      'to_date_type' => 1
+      'to_date' => CRM_Utils_Date::processDate('+4 days')
     ]);
 
     $this->setExpectedException('CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException', 'Absence Type does not allow leave request cancellation');
@@ -973,9 +1048,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => CRM_Utils_Date::processDate('-1 day'),
-      'from_date_type' => 1,
-      'to_date' => CRM_Utils_Date::processDate('+4 days'),
-      'to_date_type' => 1
+      'to_date' => CRM_Utils_Date::processDate('+4 days')
     ]);
 
     $this->setExpectedException('CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException', 'Leave Request with past days cannot be cancelled');
@@ -1006,9 +1079,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate1->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate1->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $toDate1->format('YmdHis')
     ], true);
 
     LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1016,19 +1087,296 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate2->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate2->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $toDate2->format('YmdHis')
     ], true);
 
     //The start date and end date has dates in only leaveRequest1
     $startDate = '2016-11-01';
     $endDate = '2016-11-03';
 
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
     $this->assertCount(1, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
+  }
+
+  public function testFindOverlappingLeaveRequestsForHoursUnitRequests() {
+    $contactID = 1;
+
+    $testFromDate = '2018-04-13 12:00:00';
+    $testToDate = '2018-04-15 15:00:00';
+
+    $absenceTypes = [
+      'days' => AbsenceTypeFabricator::fabricate([ 'calculation_unit' => 1 ]),
+      'hours' => AbsenceTypeFabricator::fabricate([ 'calculation_unit' => 2 ])
+    ];
+
+    // Test suites: date from, date to, unit, should overlap or not
+    $overlappingRequestsTestSuites = [
+      ['2018-04-11 00:00:00', '2018-04-12 00:00:00', 'days', FALSE],
+      ['2018-04-12 00:00:00', '2018-04-13 00:00:00', 'days', TRUE],
+      ['2018-04-14 00:00:00', '2018-04-14 23:59:00', 'days', TRUE],
+      ['2018-04-15 23:59:00', '2018-04-16 00:00:00', 'days', TRUE],
+      ['2018-04-16 00:00:00', '2018-04-17 00:00:00', 'days', FALSE],
+      ['2018-04-12 00:00:00', '2018-04-13 12:00:00', 'hours', FALSE],
+      ['2018-04-12 00:00:00', '2018-04-13 14:00:00', 'hours', TRUE],
+      ['2018-04-12 00:00:00', '2018-04-13 15:00:00', 'hours', TRUE],
+      ['2018-04-14 00:00:00', '2018-04-15 15:00:00', 'hours', TRUE],
+      ['2018-04-15 15:00:00', '2018-04-16 00:00:00', 'hours', FALSE]
+    ];
+
+    foreach ($overlappingRequestsTestSuites as $overlappingRequestsTestSuite) {
+      $requestFromDate = new DateTime($overlappingRequestsTestSuite[0]);
+      $requestToDate = new DateTime($overlappingRequestsTestSuite[1]);
+      $requestUnit = $overlappingRequestsTestSuite[2];
+      $shouldRequestOverlap = $overlappingRequestsTestSuite[3];
+      $absenceType = $absenceTypes[$requestUnit];
+
+      $leaveRequestToTest = LeaveRequestFabricator::fabricateWithoutValidation([
+        'type_id' => $absenceType->id,
+        'contact_id' => $contactID,
+        'from_date' => $requestFromDate->format('YmdHis'),
+        'to_date' => $requestToDate->format('YmdHis'),
+      ], true);
+
+      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+        'contact_id' => $contactID,
+        'from_date' => $testFromDate,
+        'to_date' => $testToDate,
+        'type_id' => $absenceTypes['hours']->id,
+        'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+      ]);
+      $leaveRequestToTestID = $leaveRequestToTest->id;
+
+      // Flush leave request from DB to get ready for the next test suite
+      $leaveRequestToTest->delete();
+
+      $this->assertCount($shouldRequestOverlap ? 1 : 0, $overlappingRequests);
+      if ($shouldRequestOverlap) {
+        $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
+        $this->assertEquals($overlappingRequests[0]->id, $leaveRequestToTestID);
+      }
+    }
+  }
+
+  public function testFindOverlappingLeaveRequestsBetweenTOILAndNonTOILRequests() {
+    $contactID = 1;
+
+    $testFromDate = '2018-04-13 00:00:00';
+    $testToDate = '2018-04-15 23:59:00';
+
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $absenceTypeForTOILAccrual = AbsenceTypeFabricator::fabricate(['allow_accruals_request' => true]);
+
+    $requestFromDate = new DateTime($testFromDate);
+    $requestToDate = new DateTime($testToDate);
+
+    foreach ([
+      [LeaveRequest::REQUEST_TYPE_LEAVE, LeaveRequest::REQUEST_TYPE_TOIL],
+      [LeaveRequest::REQUEST_TYPE_TOIL, LeaveRequest::REQUEST_TYPE_LEAVE],
+      [LeaveRequest::REQUEST_TYPE_SICKNESS, LeaveRequest::REQUEST_TYPE_TOIL],
+      [LeaveRequest::REQUEST_TYPE_TOIL, LeaveRequest::REQUEST_TYPE_SICKNESS]
+    ] as $testSuite) {
+      $existingRequestType = $testSuite[0];
+      $testingRequestType = $testSuite[1];
+
+      $leaveRequestToTest = LeaveRequestFabricator::fabricateWithoutValidation([
+        'request_type' => $existingRequestType,
+        'type_id' => $absenceType->id,
+        'contact_id' => $contactID,
+        'from_date' => $requestFromDate->format('YmdHis'),
+        'to_date' => $requestToDate->format('YmdHis')
+      ]);
+
+      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+        'contact_id' => $contactID,
+        'from_date' => $testFromDate,
+        'to_date' => $testToDate,
+        'type_id' => $absenceTypeForTOILAccrual->id,
+        'request_type' => $testingRequestType
+      ]);
+
+      // Flush leave request from DB to get ready for the next test suite
+      $leaveRequestToTest->delete();
+
+      $this->assertCount(0, $overlappingRequests);
+    }
+  }
+
+  public function testFindOverlappingLeaveRequestsForHalfDayMultipleDayRequests() {
+    $contactID = 1;
+
+    $testFromDate = '2018-04-13';
+    $testToDate = '2018-04-15';
+    $halfDayAMID = $this->leaveRequestDayTypes['half_day_am']['value'];
+    $halfDayPMID = $this->leaveRequestDayTypes['half_day_pm']['value'];
+
+    $absenceType = AbsenceTypeFabricator::fabricate([ 'calculation_unit' => 1 ]);
+
+    // Test suites: date from, date from type, date to, date to type, should overlap or not
+    $overlappingRequestsTestSuites = [
+      ['2018-04-11', 1, '2018-04-13', $halfDayAMID, FALSE],
+      ['2018-04-11', 1, '2018-04-13', $halfDayPMID, TRUE],
+      ['2018-04-11', 1, '2018-04-13', 1, TRUE],
+      ['2018-04-15', 1, '2018-04-17', 1, TRUE],
+      ['2018-04-15', $halfDayAMID, '2018-04-17', 1, TRUE],
+      ['2018-04-15', $halfDayPMID, '2018-04-17', 1, FALSE]
+    ];
+
+    foreach ($overlappingRequestsTestSuites as $overlappingRequestsTestSuite) {
+      $requestFromDate = new DateTime($overlappingRequestsTestSuite[0]);
+      $requestFromDateType = $overlappingRequestsTestSuite[1];
+      $requestToDate = new DateTime($overlappingRequestsTestSuite[2]);
+      $requestToDateType = $overlappingRequestsTestSuite[3];
+      $shouldRequestOverlap = $overlappingRequestsTestSuite[4];
+
+      $leaveRequestToTest = LeaveRequestFabricator::fabricateWithoutValidation([
+        'type_id' => $absenceType->id,
+        'contact_id' => $contactID,
+        'from_date' => $requestFromDate->format('YmdHis'),
+        'from_date_type' => $requestFromDateType,
+        'to_date' => $requestToDate->format('YmdHis'),
+        'to_date_type' => $requestToDateType
+      ], true);
+
+      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+        'contact_id' => $contactID,
+        'from_date' => $testFromDate,
+        'from_date_type' => $halfDayPMID,
+        'to_date' => $testToDate,
+        'to_date_type' => $halfDayAMID,
+        'type_id' => $absenceType->id,
+        'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+      ]);
+      $leaveRequestToTestID = $leaveRequestToTest->id;
+
+      // Flush leave request from DB to get ready for the next test suite
+      $leaveRequestToTest->delete();
+
+      $this->assertCount($shouldRequestOverlap ? 1 : 0, $overlappingRequests);
+      if ($shouldRequestOverlap) {
+        $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
+        $this->assertEquals($overlappingRequests[0]->id, $leaveRequestToTestID);
+      }
+    }
+  }
+
+  public function testFindOverlappingLeaveRequestsForHalfDaySingleDayRequests() {
+    $contactID = 1;
+    $testFromDate = '2018-04-13 00:00:00';
+    $testToDate = '2018-04-13 23:59:00';
+    $halfDayAMID = $this->leaveRequestDayTypes['half_day_am']['value'];
+    $halfDayPMID = $this->leaveRequestDayTypes['half_day_pm']['value'];
+
+    $absenceType = AbsenceTypeFabricator::fabricate([ 'calculation_unit' => 1 ]);
+
+    // Test suites: existing request date type, tested request date type, should overlap or not
+    $overlappingRequestsTestSuites = [
+      [$halfDayAMID, $halfDayPMID, FALSE],
+      [$halfDayAMID, $halfDayAMID, TRUE],
+      [$halfDayPMID, $halfDayPMID, TRUE],
+      [$halfDayPMID, $halfDayAMID, FALSE]
+    ];
+
+    foreach ($overlappingRequestsTestSuites as $overlappingRequestsTestSuite) {
+      $requestFromDate = new DateTime($testFromDate);
+      $requestDateType = $overlappingRequestsTestSuite[0];
+      $requestToDate = new DateTime($testToDate);
+      $testDateType = $overlappingRequestsTestSuite[1];
+      $shouldRequestOverlap = $overlappingRequestsTestSuite[2];
+
+      $leaveRequestToTest = LeaveRequestFabricator::fabricateWithoutValidation([
+        'type_id' => $absenceType->id,
+        'contact_id' => $contactID,
+        'from_date' => $requestFromDate->format('YmdHis'),
+        'from_date_type' => $requestDateType,
+        'to_date' => $requestToDate->format('YmdHis'),
+        'to_date_type' => $requestDateType
+      ], true);
+
+      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+        'contact_id' => $contactID,
+        'from_date' => $testFromDate,
+        'from_date_type' => $testDateType,
+        'to_date' => $testToDate,
+        'to_date_type' => $testDateType,
+        'type_id' => $absenceType->id,
+        'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+      ]);
+      $leaveRequestToTestID = $leaveRequestToTest->id;
+
+      // Flush leave request from DB to get ready for the next test suite
+      $leaveRequestToTest->delete();
+
+      $this->assertCount($shouldRequestOverlap ? 1 : 0, $overlappingRequests);
+      if ($shouldRequestOverlap) {
+        $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
+        $this->assertEquals($overlappingRequests[0]->id, $leaveRequestToTestID);
+      }
+    }
+  }
+
+  public function testFindOverlappingLeaveRequestsBetweenTOILRequests() {
+    $contactID = 1;
+
+    $testFromDate = '2018-04-13 10:00:00';
+    $testToDate = '2018-04-15 15:00:00';
+
+    $absenceTypes = [
+      'days' => AbsenceTypeFabricator::fabricate([ 'calculation_unit' => 1 ]),
+      'hours' => AbsenceTypeFabricator::fabricate([ 'calculation_unit' => 2 ])
+    ];
+
+    // Test suites: date from, date to, unit, should overlap or not
+    $overlappingRequestsTestSuites = [
+      ['2018-04-11 00:00:00', '2018-04-13 10:00:00', 'days', FALSE],
+      ['2018-04-11 00:00:00', '2018-04-13 11:00:00', 'days', TRUE],
+      ['2018-04-15 14:00:00', '2018-04-18 00:00:00', 'days', TRUE],
+      ['2018-04-15 15:00:00', '2018-04-18 00:00:00', 'days', FALSE],
+      ['2018-04-11 00:00:00', '2018-04-13 10:00:00', 'hours', FALSE],
+      ['2018-04-11 00:00:00', '2018-04-13 11:00:00', 'hours', TRUE],
+      ['2018-04-15 14:00:00', '2018-04-18 00:00:00', 'hours', TRUE],
+      ['2018-04-15 15:00:00', '2018-04-18 00:00:00', 'hours', FALSE]
+    ];
+
+    foreach ($overlappingRequestsTestSuites as $overlappingRequestsTestSuite) {
+      $requestFromDate = new DateTime($overlappingRequestsTestSuite[0]);
+      $requestToDate = new DateTime($overlappingRequestsTestSuite[1]);
+      $absenceType = $absenceTypes[$overlappingRequestsTestSuite[2]];
+      $shouldRequestOverlap = $overlappingRequestsTestSuite[3];
+
+      $leaveRequestToTest = LeaveRequestFabricator::fabricateWithoutValidation([
+        'type_id' => $absenceType->id,
+        'contact_id' => $contactID,
+        'from_date' => $requestFromDate->format('YmdHis'),
+        'to_date' => $requestToDate->format('YmdHis'),
+        'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+      ], TRUE);
+
+      $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+        'contact_id' => $contactID,
+        'from_date' => $testFromDate,
+        'to_date' => $testToDate,
+        'type_id' => $absenceTypes['days']->id,
+        'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+      ]);
+      $leaveRequestToTestID = $leaveRequestToTest->id;
+
+      // Flush leave request from DB to get ready for the next test suite
+      $leaveRequestToTest->delete();
+
+      $this->assertCount($shouldRequestOverlap ? 1 : 0, $overlappingRequests);
+      if ($shouldRequestOverlap) {
+        $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
+        $this->assertEquals($overlappingRequests[0]->id, $leaveRequestToTestID);
+      }
+    }
   }
 
   public function testManagerCanCancelOrRejectLeaveRequestEvenIfBalanceIsGreaterThanEntitlementBalanceWhenAllowOveruseFalse() {
@@ -1157,9 +1505,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate1->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate1->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $toDate1->format('YmdHis')
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1167,16 +1513,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate2->format('YmdHis'),
-      'from_date_type' => 1,
       'to_date' => $toDate2->format('YmdHis'),
-      'to_date_type' => 1
     ], true);
 
     //The start date and end date has dates in both leave request dates in both leaveRequest1 and leaveRequest2
     $startDate = '2016-11-01';
     $endDate = '2016-11-06';
 
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
     $this->assertCount(2, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
@@ -1194,9 +1544,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $fromDate->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $fromDate->format('YmdHis')
     ], true);
 
     LeaveRequest::softDelete($leaveRequest->id);
@@ -1206,7 +1554,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $startDate = '2016-11-01';
     $endDate = '2016-11-02';
 
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
     $this->assertCount(0, $overlappingRequests);
   }
 
@@ -1233,9 +1587,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate1->format('YmdHis'),
-      'from_date_type' => 1,
       'to_date' => $toDate1->format('YmdHis'),
-      'to_date_type' => 1
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1243,16 +1595,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate2->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate2->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $toDate2->format('YmdHis')
     ], true);
 
     //The start date and end date has dates in both leave request dates in both leaveRequest1 and leaveRequest2
     //public holiday is excluded by default
     $startDate = '2016-11-01';
     $endDate = '2016-11-12';
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ]);
     $this->assertCount(2, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
@@ -1282,9 +1638,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate1->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate1->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $toDate1->format('YmdHis')
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1292,9 +1646,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => 1,
       'from_date' => $fromDate2->format('YmdHis'),
-      'from_date_type' => 1,
       'to_date' => $toDate2->format('YmdHis'),
-      'to_date_type' => 1
     ], true);
 
     PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
@@ -1304,7 +1656,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     //leaveRequest2 and public holiday
     $startDate = '2016-11-01';
     $endDate = '2016-11-12';
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, [], false);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], [], false);
     $this->assertCount(3, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest1->id, $overlappingRequests[0]->id);
@@ -1340,9 +1698,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => $fromDate1->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate1->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $toDate1->format('YmdHis')
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1350,9 +1706,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['more_information_required'],
       'from_date' => $fromDate2->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate2->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $toDate2->format('YmdHis')
     ], true);
 
     LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1360,9 +1714,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate3->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate3->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $toDate3->format('YmdHis')
     ], true);
 
     PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
@@ -1373,7 +1725,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $startDate = '2016-11-02';
     $endDate = '2016-11-15';
     $filterStatus = [$leaveRequestStatuses['more_information_required']];
-    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, $filterStatus);
+    $overlappingRequests = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], $filterStatus);
     $this->assertCount(1, $overlappingRequests);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest2->id, $overlappingRequests[0]->id);
@@ -1385,7 +1743,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $startDate = '2016-11-01';
     $endDate = '2016-11-16';
     $filterStatus = [$leaveRequestStatuses['more_information_required'], $leaveRequestStatuses['awaiting_approval']];
-    $overlappingRequests2 = LeaveRequest::findOverlappingLeaveRequests($contactID, $startDate, $endDate, $filterStatus, false);
+    $overlappingRequests2 = LeaveRequest::findOverlappingLeaveRequests([
+      'contact_id' => $contactID,
+      'from_date' => $startDate,
+      'to_date' => $endDate,
+      'type_id' => $this->absenceType->id,
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ], $filterStatus, false);
     $this->assertCount(2, $overlappingRequests2);
     $this->assertInstanceOf(LeaveRequest::class, $overlappingRequests[0]);
     $this->assertEquals($leaveRequest1->id, $overlappingRequests2[0]->id);
@@ -1417,9 +1781,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['awaiting_approval'],
       'from_date' => $fromDate1->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate1->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $toDate1->format('YmdHis')
     ], true);
 
     LeaveRequestFabricator::fabricateWithoutValidation([
@@ -1427,9 +1789,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate2->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate2->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $toDate2->format('YmdHis')
     ], true);
 
     //from date and to date have date in both leave request
@@ -1446,6 +1806,108 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ]);
+  }
+
+  public function testLeaveRequestInDaysPMCannotNotBeCreatedAfterLeaveRequestInHoursWasCreatedForTheSameDay() {
+    $contactId = 1;
+    $date = '2018-05-07';
+    $absenceTypeInDays = AbsenceTypeFabricator::fabricate();
+    $absenceTypeInHours = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+    $halfDayPMId = $this->leaveRequestDayTypes['half_day_pm']['value'];
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2018-12-31')
+    ]);
+
+    $periodEntitlemenInHours = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeInHours->id,
+      'contact_id' => $contactId,
+      'period_id' => $period->id
+    ]);
+
+    $periodEntitlemenInDays = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeInDays->id,
+      'contact_id' => $contactId,
+      'period_id' => $period->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlemenInHours->id, 100);
+    $this->createLeaveBalanceChange($periodEntitlemenInDays->id, 100);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'type_id' => $absenceTypeInHours->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date . ' 09:00:00'),
+      'to_date' => CRM_Utils_Date::processDate($date. ' 10:00:00')
+    ], true);
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'This leave request overlaps with another request. Please modify dates of this request'
+    );
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'type_id' => $absenceTypeInDays->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date),
+      'to_date' => CRM_Utils_Date::processDate($date),
+      'from_date_type' => $halfDayPMId,
+      'to_date_type' => $halfDayPMId
+    ], true);
+  }
+
+  public function testTOILRequestInHoursCanBeCreatedAfterTOILRequestInDaysWasCreatedForTheSameDay() {
+    $contactId = 1;
+    $date = '2018-05-07';
+    $absenceTypeInDays = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => true
+    ]);
+    $absenceTypeInHours = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => true,
+      'calculation_unit' => 2
+    ]);
+    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
+
+    $period = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2018-12-31')
+    ]);
+
+    $periodEntitlemenInHours = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeInHours->id,
+      'contact_id' => $contactId,
+      'period_id' => $period->id
+    ]);
+
+    $periodEntitlemenInDays = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeInDays->id,
+      'contact_id' => $contactId,
+      'period_id' => $period->id
+    ]);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate([
+      'type_id' => $absenceTypeInDays->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date . ' 09:00:00'),
+      'to_date' => CRM_Utils_Date::processDate($date. ' 10:00:00'),
+      'toil_duration' => 1,
+      'toil_to_accrue' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate([
+      'type_id' => $absenceTypeInHours->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date . ' 11:00:00'),
+      'to_date' => CRM_Utils_Date::processDate($date. ' 12:00:00'),
+      'toil_duration' => 1,
+      'toil_to_accrue' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
   }
 
   public function testLeaveRequestCanBeCreatedWhenThereIsAnOverlappingPublicHolidayLeaveRequest() {
@@ -1533,9 +1995,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $contactID,
       'status_id' => $leaveRequestStatuses['rejected'],
       'from_date' => $fromDate2->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate2->format('YmdHis'),
-      'to_date_type' => 1
+      'to_date' => $toDate2->format('YmdHis')
     ], true);
 
     //this date overlaps with a Rejected status leave request
@@ -2480,6 +2940,50 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ]);
   }
 
+  public function testLeaveRequestCanBeCancelledWhenRequestTypeIsToilAndDatesAreInThePastAndAbsenceTypeDoesNotAllowPastAccrual() {
+    $leaveRequestStatuses = LeaveRequest::getStatuses();
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2017-06-14'),
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+    $contactID = 1;
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactID],
+      ['period_start_date' => '2017-01-01']
+    );
+
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => false
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactID,
+      'status_id' => $leaveRequestStatuses['cancelled'],
+      'from_date' => CRM_Utils_Date::processDate('2017-02-01'),
+      'to_date' => CRM_Utils_Date::processDate('2017-02-05'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'toil_to_accrue' => 3,
+      'toil_duration' => 120,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ];
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 10);
+    $toilRequest = LeaveRequest::create($params);
+    $this->assertNotNull($toilRequest->id);
+  }
+
   public function testLeaveRequestCanNotBeCreatedWhenRequestTypeIsToilAndToilToAccrueIsGreaterThanTheMaximumAllowed() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('today'),
@@ -2716,8 +3220,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testFindByIdThrowsAnExceptionWhenFindingASoftDeletedLeaveRequest() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
-      'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
       'status_id' => 1
@@ -2731,8 +3235,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testFindByIdThrowsAnExceptionWhenFindingADeletedLeaveRequest() {
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
-      'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
       'status_id' => 1
@@ -2767,11 +3271,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testLeaveRequestIsDeletedValueCanNotBeSetWhenCreatingALeaveRequest() {
     $params = [
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
-      'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
-      'from_date_type' => 1,
-      'to_date_type' => 1,
       'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
       'status_id' => 1,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE,
@@ -2803,9 +3305,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => $leaveContact['id'],
       'status_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'from_date_type' => 1,
       'to_date' => CRM_Utils_Date::processDate('tomorrow'),
-      'to_date_type' => 1,
       'toil_to_accrue' => 2,
       'toil_duration' => 120,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
@@ -2915,9 +3415,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testToilCanBeAccruedWhenTheToilRequestHasNoWorkingDay() {
+    $dateSaturday = CRM_Utils_Date::processDate('2018-05-05');
+    $dateSunday = CRM_Utils_Date::processDate('2018-05-06');
+
     $period = AbsencePeriodFabricator::fabricate([
-      'start_date' => CRM_Utils_Date::processDate('-1 day'),
-      'end_date' => CRM_Utils_Date::processDate('+10 days'),
+      'start_date' => $dateSaturday,
+      'end_date' => $dateSunday,
     ]);
 
     $absenceType = AbsenceTypeFabricator::fabricate([
@@ -2950,9 +3453,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => $absenceType->id,
       'contact_id' => $periodEntitlement->contact_id,
       'status_id' => 1,
-      'from_date' => CRM_Utils_Date::processDate('saturday'),
+      'from_date' => $dateSaturday,
       'from_date_type' => 1,
-      'to_date' => CRM_Utils_Date::processDate('sunday'),
+      'to_date' => $dateSunday,
       'to_date_type' => 1,
       'toil_to_accrue' => 2.5,
       'toil_duration' => 120,
@@ -3008,8 +3511,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $toilToAccrueAmounts = [1.5, 1.8, 2.5];
     foreach ($toilToAccrueAmounts as $toilToAccrueAmount) {
       LeaveRequestFabricator::fabricateWithoutValidation([
+      'type_id' => $this->absenceType->id,
         'contact_id' => 1,
-        'type_id' => 1,
         'toil_to_accrue'=> $toilToAccrueAmount,
         'from_date' => CRM_Utils_Date::processDate('yesterday'),
         'to_date' => CRM_Utils_Date::processDate('today'),
@@ -3063,8 +3566,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => CRM_Utils_Date::processDate('monday'),
       'to_date' => CRM_Utils_Date::processDate('monday'),
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
-      'from_date_type' => 1,
-      'to_date_type' => 1,
       'toil_duration' => 60
     ];
 
@@ -3122,8 +3623,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => CRM_Utils_Date::processDate('monday'),
       'to_date' => CRM_Utils_Date::processDate('monday'),
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
-      'from_date_type' => 1,
-      'to_date_type' => 1,
       'toil_duration' => 60
     ];
 
@@ -3179,8 +3678,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => CRM_Utils_Date::processDate('monday'),
       'to_date' => CRM_Utils_Date::processDate('monday'),
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
-      'from_date_type' => 1,
-      'to_date_type' => 1,
       'toil_duration' => 60
     ];
 
@@ -3236,8 +3733,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => CRM_Utils_Date::processDate('monday'),
       'to_date' => CRM_Utils_Date::processDate('monday'),
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
-      'from_date_type' => 1,
-      'to_date_type' => 1,
       'toil_duration' => 60
     ];
 
@@ -3306,8 +3801,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => CRM_Utils_Date::processDate('2016-01-06'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-06'),
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
-      'from_date_type' => 1,
-      'to_date_type' => 1,
       'toil_duration' => 60
     ];
 
@@ -3359,9 +3852,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate,
-      'from_date_type' => 1,
-      'to_date' => $toDate,
-      'to_date_type' => 1,
+      'to_date' => $toDate
     ];
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
 
@@ -3388,13 +3879,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = CRM_Utils_Date::processDate('2016-01-08');
     $toDate = CRM_Utils_Date::processDate('2016-01-10');
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate,
-      'from_date_type' => 1,
-      'to_date' => $toDate,
-      'to_date_type' => 1,
+      'to_date' => $toDate
     ];
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
@@ -3410,13 +3899,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = CRM_Utils_Date::processDate('2016-01-08');
     $toDate = CRM_Utils_Date::processDate('2016-01-10');
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate,
-      'from_date_type' => 1,
-      'to_date' => $toDate,
-      'to_date_type' => 1,
+      'to_date' => $toDate
     ];
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
@@ -3432,13 +3919,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = CRM_Utils_Date::processDate('2016-01-08');
     $toDate = CRM_Utils_Date::processDate('2016-01-10');
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate,
-      'from_date_type' => 1,
-      'to_date' => $toDate,
-      'to_date_type' => 1,
+      'to_date' => $toDate
     ];
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
@@ -3454,13 +3939,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = CRM_Utils_Date::processDate('2016-01-08');
     $toDate = CRM_Utils_Date::processDate('2016-01-10');
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate,
-      'from_date_type' => 1,
-      'to_date' => $toDate,
-      'to_date_type' => 1,
+      'to_date' => $toDate
     ];
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
@@ -3476,13 +3959,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = CRM_Utils_Date::processDate('2016-01-08');
     $toDate = CRM_Utils_Date::processDate('2016-01-10');
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate,
-      'from_date_type' => 1,
-      'to_date' => $toDate,
-      'to_date_type' => 1,
+      'to_date' => $toDate
     ];
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
@@ -3501,13 +3982,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = CRM_Utils_Date::processDate('2016-01-08');
     $toDate = CRM_Utils_Date::processDate('2016-01-10');
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate,
-      'from_date_type' => 1,
-      'to_date' => $toDate,
-      'to_date_type' => 1,
+      'to_date' => $toDate
     ];
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
@@ -3524,13 +4003,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = CRM_Utils_Date::processDate('2016-01-08');
     $toDate = CRM_Utils_Date::processDate('2016-01-10');
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate,
-      'from_date_type' => 1,
-      'to_date' => $toDate,
-      'to_date_type' => 1,
+      'to_date' => $toDate
     ];
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
@@ -3547,7 +4024,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $fromDate = CRM_Utils_Date::processDate('2016-01-08');
     $toDate = CRM_Utils_Date::processDate('2016-01-10');
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'status_id' => 1,
       'from_date' => $fromDate,
@@ -3656,7 +4133,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
       'period_id' => $period->id
     ]);
 
-    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
+    $this->createLeaveBalanceChange($periodEntitlement->id, 100);
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $periodEntitlement->contact_id],
@@ -3678,6 +4155,363 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ], LeaveRequest::IMPORT_VALIDATION);
 
     $this->assertNotNull($leaveRequest->id);
+  }
+
+  public function testMultipleLeaveRequestsInHoursCanNotBeCreatedForTheSameDayIfTheirTimeIntersect() {
+    $date = '2018-04-13';
+    $contactId = 1;
+    $absenceType = AbsenceTypeFabricator::fabricate([ 'calculation_unit' => 2 ]);
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2018-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 100);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date . ' 01:00:00'),
+      'to_date' => CRM_Utils_Date::processDate($date . ' 03:00:00')
+    ];
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate($date . ' 02:00:00');
+    $params['to_date'] = CRM_Utils_Date::processDate($date . ' 04:00:00');
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'This leave request overlaps with another request. Please modify dates of this request'
+    );
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate($params, true);
+  }
+
+  public function testMultipleLeaveRequestsInHoursCanBeCreatedForTheSameDayIfTheirTimeDoNotIntersect() {
+    $date = '2018-04-13';
+    $contactId = 1;
+    $absenceType = AbsenceTypeFabricator::fabricate([ 'calculation_unit' => 2 ]);
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2018-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date . ' 01:00:00'),
+      'to_date' => CRM_Utils_Date::processDate($date . ' 03:00:00')
+    ];
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate($date . ' 03:00:00');
+    $params['to_date'] = CRM_Utils_Date::processDate($date . ' 05:00:00');
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate($params, true);
+
+    $this->assertNotNull($leaveRequest1->id);
+    $this->assertNotNull($leaveRequest2->id);
+  }
+
+  public function testTOILAccrualAndLeaveRequestCanBeCreatedForTheSameDay() {
+    $date = '2018-04-13';
+    $contactId = 1;
+    $absenceTypeLeave = AbsenceTypeFabricator::fabricate();
+    $absenceTypeTOIL = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => true
+    ]);
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2018-12-31'),
+    ]);
+
+    $periodEntitlementLeave = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeLeave->id,
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    $periodEntitlementTOIL = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeTOIL->id,
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactId],
+      ['period_start_date' => CRM_Utils_Date::processDate('2018-01-01')]
+    );
+
+    $this->createLeaveBalanceChange($periodEntitlementLeave->id, 3);
+    $this->createLeaveBalanceChange($periodEntitlementTOIL->id, 3);
+
+    $params = [
+      'type_id' => $absenceTypeLeave->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date),
+      'to_date' => CRM_Utils_Date::processDate($date)
+    ];
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate($params, true);
+
+    $params['request_type'] = LeaveRequest::REQUEST_TYPE_TOIL;
+    $params['type_id'] = $absenceTypeTOIL->id;
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate($params, true);
+
+    $this->assertNotNull($leaveRequest1->id);
+    $this->assertNotNull($leaveRequest2->id);
+  }
+
+  public function testTwoLeaveRequestsOneAMAndAnotherPMCanBeCreatedForTheSameDay() {
+    $date = '2018-04-13';
+    $contactId = 1;
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $halfDayAMID = $this->leaveRequestDayTypes['half_day_am']['value'];
+    $halfDayPMID = $this->leaveRequestDayTypes['half_day_pm']['value'];
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2018-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactId],
+      ['period_start_date' => CRM_Utils_Date::processDate('2018-01-01')]
+    );
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 3);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date),
+      'to_date' => CRM_Utils_Date::processDate($date),
+      'from_date_type' => $halfDayAMID,
+      'to_date_type' => $halfDayAMID
+    ];
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate($params, true);
+
+    $params['from_date_type'] = $halfDayPMID;
+    $params['to_date_type'] = $halfDayPMID;
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate($params, true);
+
+    $this->assertNotNull($leaveRequest1->id);
+    $this->assertNotNull($leaveRequest2->id);
+  }
+
+  public function testTwoTOILRequestsCanBeCreatedForTheSameDay() {
+    $date = '2018-04-13';
+    $contactId = 1;
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => true,
+      'calculation_unit' => 2
+    ]);
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2018-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactId],
+      ['period_start_date' => CRM_Utils_Date::processDate('2018-01-01')]
+    );
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 100);
+
+    $params = [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date . ' 10:00:00'),
+      'to_date' => CRM_Utils_Date::processDate($date . ' 10:15:00'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => 2
+    ];
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricate($params, true);
+
+    $params['from_date'] = CRM_Utils_Date::processDate($date . ' 11:00:00');
+    $params['to_date'] = CRM_Utils_Date::processDate($date . ' 11:15:00');
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricate($params, true);
+
+    $this->assertNotNull($leaveRequest1->id);
+    $this->assertNotNull($leaveRequest2->id);
+  }
+
+  public function testTwoLeaveRequestsBothForAMCannotBeCreatedForTheSameDay() {
+    $date = '2018-04-13';
+    $contactId = 1;
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $halfDayAMID = $this->leaveRequestDayTypes['half_day_am']['value'];
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2018-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactId],
+      ['period_start_date' => CRM_Utils_Date::processDate('2018-01-01')]
+    );
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 100);
+
+    $leaveRequestParams = [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date),
+      'to_date' => CRM_Utils_Date::processDate($date),
+      'from_date_type' => $halfDayAMID,
+      'to_date_type' => $halfDayAMID
+    ];
+
+    LeaveRequestFabricator::fabricate($leaveRequestParams, true);
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'This leave request overlaps with another request. Please modify dates of this request'
+    );
+
+    LeaveRequestFabricator::fabricate($leaveRequestParams, true);
+  }
+
+  public function testTwoLeaveRequestsBothForPMCannotBeCreatedForTheSameDay() {
+    $date = '2018-04-13';
+    $contactId = 1;
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $halfDayPMID = $this->leaveRequestDayTypes['half_day_pm']['value'];
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2018-12-31'),
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactId],
+      ['period_start_date' => CRM_Utils_Date::processDate('2018-01-01')]
+    );
+
+    $this->createLeaveBalanceChange($periodEntitlement->id, 100);
+
+    $leaveRequestParams = [
+      'type_id' => $absenceType->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date),
+      'to_date' => CRM_Utils_Date::processDate($date),
+      'from_date_type' => $halfDayPMID,
+      'to_date_type' => $halfDayPMID
+    ];
+
+    LeaveRequestFabricator::fabricate($leaveRequestParams, true);
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'This leave request overlaps with another request. Please modify dates of this request'
+    );
+
+    LeaveRequestFabricator::fabricate($leaveRequestParams, true);
+  }
+
+  public function testTwoLeaveRequestsOneInDaysAndAnotherInHoursCannotBeCreatedForTheSameDay() {
+    $date = '2018-04-13';
+    $contactId = 1;
+    $absenceTypeInDays = AbsenceTypeFabricator::fabricate();
+    $absenceTypeInHours = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
+    $halfDayAMID = $this->leaveRequestDayTypes['half_day_am']['value'];
+
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2018-01-01'),
+      'end_date'   => CRM_Utils_Date::processDate('2018-12-31'),
+    ]);
+
+    $periodEntitlementInDays = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeInDays->id,
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+    $periodEntitlementInHours = LeavePeriodEntitlementFabricator::fabricate([
+      'type_id' => $absenceTypeInHours->id,
+      'contact_id' => $contactId,
+      'period_id' => $absencePeriod->id
+    ]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contactId],
+      ['period_start_date' => CRM_Utils_Date::processDate('2018-01-01')]
+    );
+
+    $this->createLeaveBalanceChange($periodEntitlementInDays->id, 100);
+    $this->createLeaveBalanceChange($periodEntitlementInHours->id, 100);
+
+    LeaveRequestFabricator::fabricate([
+      'type_id' => $absenceTypeInDays->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date),
+      'to_date' => CRM_Utils_Date::processDate($date),
+      'from_date_type' => $halfDayAMID,
+      'to_date_type' => $halfDayAMID
+    ], true);
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException',
+      'This leave request overlaps with another request. Please modify dates of this request'
+    );
+
+    LeaveRequestFabricator::fabricate([
+      'type_id' => $absenceTypeInHours->id,
+      'contact_id' => $contactId,
+      'from_date' => CRM_Utils_Date::processDate($date . ' 23:00:00'),
+      'to_date' => CRM_Utils_Date::processDate($date . ' 23:15:00')
+    ], true);
   }
 
   public function testAnAlreadyApprovedLeaveRequestCanBeUpdatedWhenEntitlementBalanceIsZero() {
@@ -4150,7 +4984,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   public function testToilToAccrueChangedReturnsTrueWhenToilToAccrueChanges(){
     $date = CRM_Utils_Date::processDate('2016-01-10');
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'from_date' => $date,
       'to_date' => $date,
@@ -4170,7 +5004,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   public function testToilToAccrueChangedReturnsFalseWhenToilToAccrueDoesNotChange(){
     $date = CRM_Utils_Date::processDate('2016-01-08');
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'from_date' => $date,
       'to_date' => $date,
@@ -4189,7 +5023,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   public function testToilToAccrueChangedReturnsNullWhenRequestTypeIsNotToil(){
     $date = CRM_Utils_Date::processDate('2016-01-08');
     $params = [
-      'type_id' => 1,
+      'type_id' => $this->absenceType->id,
       'contact_id' => 1,
       'from_date' => $date,
       'to_date' => $date,
@@ -4207,7 +5041,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
   public function testToilToAccrueChangedReturnsNullWhenCreatingANewRequest(){
     $date = CRM_Utils_Date::processDate('2016-01-08');
     $params = [
-      'type_id' => 1,
       'contact_id' => 1,
       'from_date' => $date,
       'to_date' => $date,
@@ -4466,5 +5299,45 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals('null', $leaveRequest->to_date_amount);
     $this->assertEquals($leaveRequestParams['from_date_type'], $leaveRequest->from_date_type);
     $this->assertEquals($leaveRequestParams['to_date_type'], $leaveRequest->to_date_type);
+  }
+
+  public function testisTOILWithPastDatesReturnsFalseWhenRequestTypeIsNotTOIL() {
+    $params = [
+      'from_date' => '2020-01-01',
+      'to_date' => '2025-01-02',
+      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
+    ];
+
+    $this->assertFalse(LeaveRequest::isTOILWithPastDates($params));
+  }
+
+  public function testisTOILWithPastDatesReturnsTrueWhenFromDateIsLessThanToday() {
+    $params = [
+      'from_date' => '2017-01-01',
+      'to_date' => '2025-01-02',
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ];
+
+    $this->assertTrue(LeaveRequest::isTOILWithPastDates($params));
+  }
+
+  public function testisTOILWithPastDatesReturnsTrueWhenToDateIsLessThanToday() {
+    $params = [
+      'from_date' => '2025-01-01',
+      'to_date' => '2017-01-02',
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ];
+
+    $this->assertTrue(LeaveRequest::isTOILWithPastDates($params));
+  }
+
+  public function testisTOILWithPastDatesReturnsFalseWhenToDateAndFromDateIsGreaterThanToday() {
+    $params = [
+      'from_date' => '2025-01-01',
+      'to_date' => '2025-01-02',
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ];
+
+    $this->assertFalse(LeaveRequest::isTOILWithPastDates($params));
   }
 }

@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/angularMocks',
   'common/services/api/job-role',
@@ -5,11 +7,8 @@ define([
 ], function () {
   'use strict';
 
-  describe("api.job-role", function () {
-    var JobRoleAPI,
-      $rootScope,
-      JobRoleAPIMock,
-      $q;
+  describe('api.job-role', function () {
+    var JobRoleAPI, $rootScope, JobRoleAPIMock, $q;
 
     beforeEach(module('common.apis', 'common.mocks'));
 
@@ -20,17 +19,17 @@ define([
       $q = _$q_;
     }]));
 
-    it("has expected interface", function () {
-      expect(Object.keys(JobRoleAPI)).toContain("all");
-      expect(Object.keys(JobRoleAPI)).toContain("find");
+    it('has expected interface', function () {
+      expect(Object.keys(JobRoleAPI)).toContain('all');
+      expect(Object.keys(JobRoleAPI)).toContain('find');
     });
 
-    describe("all()", function () {
-      var jobRoleApiPromise,
-        filters = {key: "filters"},
-        pagination = {key: "pagination"},
-        sort = "sort",
-        additionalParams = {key: "additionalParams"};
+    describe('all()', function () {
+      var jobRoleApiPromise;
+      var filters = { key: 'filters' };
+      var pagination = { key: 'pagination' };
+      var sort = 'sort';
+      var additionalParams = { key: 'additionalParams' };
 
       beforeEach(function () {
         spyOn(JobRoleAPI, 'getAll').and.returnValue($q.resolve(JobRoleAPIMock.mockedJobRoles));
@@ -41,20 +40,20 @@ define([
         $rootScope.$apply();
       });
 
-      it("returns all the job roles", function () {
+      it('returns all the job roles', function () {
         jobRoleApiPromise.then(function (result) {
           expect(result).toEqual(JobRoleAPIMock.mockedJobRoles);
         });
       });
 
-      it("calls getAll method", function () {
+      it('calls getAll method', function () {
         expect(JobRoleAPI.getAll).toHaveBeenCalledWith('HrJobRoles', filters, pagination, sort, additionalParams);
       });
     });
 
-    describe("find()", function () {
-      var jobRoleApiPromise,
-        jobRoleID = '2';
+    describe('find()', function () {
+      var jobRoleApiPromise;
+      var jobRoleID = '2';
 
       beforeEach(function () {
         spyOn(JobRoleAPI, 'sendGET').and.returnValue($q.resolve({
@@ -67,13 +66,13 @@ define([
         $rootScope.$apply();
       });
 
-      it("returns a job role", function () {
+      it('returns a job role', function () {
         jobRoleApiPromise.then(function (result) {
           expect(result).toEqual(JobRoleAPIMock.mockedJobRoles.list[0]);
         });
       });
 
-      it("calls sendGET method", function () {
+      it('calls sendGET method', function () {
         expect(JobRoleAPI.sendGET).toHaveBeenCalledWith('HRJobRole', 'get', {id: '' + jobRoleID}, false);
       });
     });

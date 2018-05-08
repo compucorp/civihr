@@ -2,19 +2,19 @@
 <extension key="org.civicrm.hremergency" type="module">
   <file>hremergency</file>
   <name>Emergency Contacts (CiviHR)</name>
-  <description></description>
+  <description>Emergency Contacts extension for CiviHR</description>
   <license>AGPL-3.0</license>
   <maintainer>
-    <author>gregmeszaros</author>
-    <email>meszaros275@gmail.com</email>
+    <author>Compucorp Ltd</author>
+    <email>info@compucorp.co.uk</email>
   </maintainer>
-  <releaseDate>2018-02-26</releaseDate>
-  <version>1.7.4</version>
-  <develStage>alpha</develStage>
+  <releaseDate>2018-04-30</releaseDate>
+  <version>1.7.6</version>
+  <develStage>stable</develStage>
   <compatibility>
     <ver>4.7</ver>
   </compatibility>
-  <comments>Emergency Contacts extensions for CiviHR</comments>
+  <comments></comments>
   <civix>
     <namespace>CRM/Hremergency</namespace>
   </civix>

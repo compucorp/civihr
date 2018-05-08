@@ -1098,6 +1098,126 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedBreakdown, $breakdown);
   }
 
+  public function testToilRequestWithPastDatesCanNotBeCancelledWhenUserIsLeaveContactAndAbsenceTypeDoesNotAllowPastAccrual() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => false
+    ]);
+
+    $leaveStatuses = LeaveRequest::getStatuses();
+    $toilParams = [
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => 1,
+      'type_id' => $absenceType->id,
+      'status_id' => $leaveStatuses['approved']
+    ];
+
+    $params = $this->getDefaultParams($toilParams);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //Update the toil status to cancelled.
+    $params['status_id'] = $leaveStatuses['cancelled'];
+    $params['id'] = $toilRequest->id;
+
+    $this->setExpectedException('RuntimeException', 'You may only cancel TOIL with dates in the future.');
+    $this->getLeaveRequestService()->create($params, false);
+  }
+
+  public function testToilRequestWithPastDatesCanBeCancelledWhenUserIsAdminAndAbsenceTypeDoesNotAllowPastAccrual() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => false
+    ]);
+
+    $leaveStatuses = LeaveRequest::getStatuses();
+    $toilParams = [
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => 1,
+      'type_id' => $absenceType->id,
+      'status_id' => $leaveStatuses['approved']
+    ];
+
+    $params = $this->getDefaultParams($toilParams);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //Update the toil status to cancelled.
+    $params['status_id'] = $leaveStatuses['cancelled'];
+    $params['id'] = $toilRequest->id;
+
+    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+
+    $this->assertNotNull($toilRequest->id);
+    $this->assertEquals($toilRequest->status_id, $leaveStatuses['cancelled']);
+  }
+
+  public function testToilRequestWithPastDatesCanBeCancelledWhenUserIsManagerAndAbsenceTypeDoesNotAllowPastAccrual() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => false
+    ]);
+
+    $leaveStatuses = LeaveRequest::getStatuses();
+    $toilParams = [
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => 1,
+      'type_id' => $absenceType->id,
+      'status_id' => $leaveStatuses['approved']
+    ];
+
+    $params = $this->getDefaultParams($toilParams);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //Update the toil status to cancelled.
+    $params['status_id'] = $leaveStatuses['cancelled'];
+    $params['id'] = $toilRequest->id;
+
+    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create(
+      $params,
+      false
+    );
+
+    $this->assertNotNull($toilRequest->id);
+    $this->assertEquals($toilRequest->status_id, $leaveStatuses['cancelled']);
+  }
+
+  public function testToilRequestWithPastDatesCanBeCancelledWhenAbsenceTypeAllowsPastAccrual() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => true,
+      'allow_accrue_in_the_past' => true
+    ]);
+
+    $leaveStatuses = LeaveRequest::getStatuses();
+    $toilParams = [
+      'from_date' => CRM_Utils_Date::processDate('2016-01-04'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-07'),
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
+      'toil_to_accrue' => 1,
+      'type_id' => $absenceType->id,
+      'status_id' => $leaveStatuses['approved']
+    ];
+
+    $params = $this->getDefaultParams($toilParams);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    //Update the toil status to cancelled.
+    $params['status_id'] = $leaveStatuses['cancelled'];
+    $params['id'] = $toilRequest->id;
+
+    $toilRequest = $this->getLeaveRequestService()->create(
+      $params,
+      false
+    );
+
+    $this->assertNotNull($toilRequest->id);
+    $this->assertEquals($toilRequest->status_id, $leaveStatuses['cancelled']);
+  }
+
   private function getExpectedBreakdownForLeaveRequest(LeaveRequest $leaveRequest, $amount = false) {
     $leaveRequestDayTypes = LeaveRequest::buildOptions('from_date_type');
 

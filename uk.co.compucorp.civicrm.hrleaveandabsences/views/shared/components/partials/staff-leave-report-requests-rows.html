@@ -7,17 +7,8 @@
       (expires {{request.toil_expiry_date | formatDate}})
     </span>
   </td>
-  <td ng-init="unit = absenceType.calculation_unit_name">
-    {{request.from_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
-    <span ng-if="request.dates.length > 1">
-      -
-      {{request.to_date | formatDate : null : request.request_type !== 'toil' ? unit : null}}
-    </span>
-    <span ng-if="request.dates.length === 1 && unit === 'hours' && request_type !== 'toil'">
-      -
-      {{request.to_date.slice(11, 16)}}
-    </span>
-  </td>
+  <td ng-init="unit = absenceType.calculation_unit_name"
+    ng-include="$root.sharedPathTpl + 'components/partials/leave-request-dates.html'"></td>
   <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
   <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
     title="({{ absenceType.calculation_unit_label | lowercase }})">

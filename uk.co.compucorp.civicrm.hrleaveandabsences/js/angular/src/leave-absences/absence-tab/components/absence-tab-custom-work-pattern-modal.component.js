@@ -13,10 +13,10 @@ define([
       return settings.pathTpl + 'components/absence-tab-custom-work-pattern-modal.html';
     }],
     controllerAs: 'workPatternModal',
-    controller: ['$log', '$q', '$rootScope', 'OptionGroup', 'shared-settings', 'WorkPatternAPI', controller]
+    controller: ['$log', '$q', '$rootScope', 'crmAngService', 'OptionGroup', 'shared-settings', 'WorkPatternAPI', controller]
   });
 
-  function controller ($log, $q, $rootScope, OptionGroup, sharedSettings, WorkPatternAPI) {
+  function controller ($log, $q, $rootScope, crmAngService, OptionGroup, sharedSettings, WorkPatternAPI) {
     $log.debug('Component: absence-tab-custom-work-pattern-modal');
 
     var vm = Object.create(this);
@@ -40,15 +40,16 @@ define([
         }
       }
     };
+    vm.openWorkPatternChangeReasonEditor = openWorkPatternChangeReasonEditor;
 
     (function init () {
       return $q.all([
         loadWorkPatterns(),
-        loadJobContractRevisionChangeReasons()
+        loadJobContractRevisionChangeReasons(true)
       ])
-      .finally(function () {
-        vm.loading.content = false;
-      });
+        .finally(function () {
+          vm.loading.content = false;
+        });
     })();
 
     /**
@@ -107,14 +108,25 @@ define([
     }
 
     /**
-     * Loads the Job Contract Revision Change Reasons and indexes by `value`
+     * Loads the Leave and Absences Work Pattern Change Reasons
      *
-     * @return {Promise}
+     * @param  {Boolean} cache if to cache results of the API call, cache by default
+     * @return {Promise} resolves with {Array}
      */
-    function loadJobContractRevisionChangeReasons () {
-      return OptionGroup.valuesOf('hrjc_revision_change_reason')
+    function loadJobContractRevisionChangeReasons (cache) {
+      return OptionGroup.valuesOf('hrleaveandabsences_work_pattern_change_reason', cache)
         .then(function (reasons) {
           vm.changeReasons = reasons;
+        });
+    }
+
+    /**
+     * Opens the work pattern change reasons for editing
+     */
+    function openWorkPatternChangeReasonEditor () {
+      crmAngService.loadForm('/civicrm/admin/options/hrleaveandabsences_work_pattern_change_reason?reset=1')
+        .on('crmUnload', function () {
+          loadJobContractRevisionChangeReasons(false);
         });
     }
 

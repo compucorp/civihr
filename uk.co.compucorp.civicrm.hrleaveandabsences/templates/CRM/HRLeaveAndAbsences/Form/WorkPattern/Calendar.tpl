@@ -78,7 +78,16 @@
             <td>{$form.weeks[$smarty.section.i.index].days.6.number_of_hours.html}</td>
           </tr>
           <tr>
-            <td>{ts}Leave days{/ts} {help id="id-leave-days"}</td>
+            <td>
+              {ts}Leave days{/ts} {help id="id-leave-days"}
+              <a
+                href="/civicrm/admin/options/hrleaveandabsences_leave_days_amounts?reset=1"
+                data-option-edit-path="civicrm/admin/options/hrleaveandabsences_leave_days_amounts"
+                class="crm-option-edit-link" title="{ts}Edit Leave days options{/ts}"
+              >
+                <i class="crm-i fa-wrench"></i>
+              </a>
+            </td>
             <td>{$form.weeks[$smarty.section.i.index].days.0.leave_days.html}</td>
             <td>{$form.weeks[$smarty.section.i.index].days.1.leave_days.html}</td>
             <td>{$form.weeks[$smarty.section.i.index].days.2.leave_days.html}</td>
@@ -95,6 +104,14 @@
     <script type="text/javascript">
       CRM.$(function($) {
         var form = new CRM.HRLeaveAndAbsencesApp.Form.WorkPattern({/literal}'{$delete_url}'{literal});
+        var editPath = 'civicrm/admin/options/hrleaveandabsences_leave_days_amounts';
+
+        $("select.leave-days")
+          .attr({
+            'data-api-entity': 'WorkDay',
+            'data-api-field': 'leave_days',
+            'data-option-edit-path': editPath
+          });
       });
     </script>
   {/literal}

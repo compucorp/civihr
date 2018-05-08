@@ -63,20 +63,48 @@ class CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestDates implements API_Wrappe
    */
   private function prepareDates(&$apiRequest) {
     $params = &$apiRequest['params'];
+    $this->adjustTimeOnDates($params, 'from_date', '00:00:00');
+    $this->adjustTimeOnDates($params, 'to_date', '23:59:59');
+  }
 
-    $fromDate = $this->getValueFromParams($params, 'from_date');
+  /**
+   * Sets the time on date(s) of a certain parameter value to the provided
+   * time if they do not already have the time specified
+   *
+   * @param array $params
+   * @param string $paramKey
+   * @param string $time
+   */
+  private function adjustTimeOnDates(&$params, $paramKey, $time) {
+    $dates = $this->getValueFromParams($params, $paramKey);
 
-    if ($this->dateIsValid($fromDate) && $this->dateIsMissingHours($fromDate)) {
-      $fromDate = (new DateTime($fromDate))->format('Y-m-d 00:00:00');
-      $this->setValueOfParam($params, 'from_date', $fromDate);
+    if (is_array($dates)) {
+      foreach ($dates as $key => $date) {
+        $dates[$key] = $this->setTimeForDate($date, $time);
+      }
+      $this->setValueOfParam($params, $paramKey, $dates);
+    }
+    else {
+      $date = $this->setTimeForDate($dates, $time);
+      $this->setValueOfParam($params, $paramKey, $date);
+    }
+  }
+
+  /**
+   * Returns the date with the time set to the value provided, but only if it
+   * doesn't already have time set and it is a valid date
+   *
+   * @param string $date
+   * @param string $time
+   *
+   * @return string
+   */
+  private function setTimeForDate($date, $time) {
+    if ($this->dateIsValid($date) && $this->dateIsMissingHours($date)) {
+      return (new DateTime($date))->format('Y-m-d ' . $time);
     }
 
-    $toDate = $this->getValueFromParams($params, 'to_date');
-
-    if ($this->dateIsValid($toDate) && $this->dateIsMissingHours($toDate)) {
-      $toDate = (new DateTime($toDate))->format('Y-m-d 23:59:59');
-      $this->setValueOfParam($params, 'to_date', $toDate);
-    }
+    return $date;
   }
 
   /**

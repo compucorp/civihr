@@ -332,18 +332,36 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateTOILPastDays($params, $absenceType) {
-    $fromDate = new DateTime($params['from_date']);
-    $toDate = new DateTime($params['to_date']);
-    $todayDate = new DateTime('today');
-    $leaveDatesHasPastDates = $fromDate < $todayDate || $toDate < $todayDate;
+    $leaveDatesHasPastDates = self::isTOILWithPastDates($params);
+    $isACancellationRequest = in_array($params['status_id'], LeaveRequest::getCancelledStatuses());
 
-    if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past) {
+    if ($leaveDatesHasPastDates && !$absenceType->allow_accrue_in_the_past && !$isACancellationRequest) {
       throw new InvalidLeaveRequestException(
         'You may only request TOIL for overtime to be worked in the future. Please modify the date of this request',
         'leave_request_toil_cannot_be_requested_for_past_days',
         'from_date'
       );
     }
+  }
+
+  /**
+   * Checks whether the leave request is of type TOIL and has dates in the
+   * past.
+   *
+   * @param array $params
+   *
+   * @return bool
+   */
+  public static function isTOILWithPastDates($params) {
+    if($params['request_type'] !== LeaveRequest::REQUEST_TYPE_TOIL) {
+      return FALSE;
+    }
+
+    $fromDate = new DateTime($params['from_date']);
+    $toDate = new DateTime($params['to_date']);
+    $todayDate = new DateTime('today');
+
+    return $fromDate < $todayDate || $toDate < $todayDate;
   }
 
   /**
@@ -645,9 +663,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     ];
 
     $overlappingLeaveRequests = self::findOverlappingLeaveRequests(
-      $params['contact_id'],
-      $params['from_date'],
-      $params['to_date'],
+      $params,
       $leaveRequestStatusFilter
     );
 
@@ -691,7 +707,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * This method checks that the number of days for the Leave Request
+   * This method checks that the number of working days for the Leave Request
    * is not greater than the max_consecutive_leave_days for the absence type
    *
    * @param array $params
@@ -701,14 +717,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
    */
   private static function validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params, $absenceType) {
-    $fromDate = new DateTime($params['from_date']);
-    $toDate = new DateTime($params['to_date']);
-
-    $interval = $toDate->diff($fromDate);
-    $intervalInDays = $interval->format("%a");
+    $leaveDays = self::getNumberOfWorkingDaysForLeaveRequest($params);
     $maxConsecutiveLeaveDays = $absenceType->max_consecutive_leave_days;
 
-    if (!empty($maxConsecutiveLeaveDays) && $intervalInDays > $maxConsecutiveLeaveDays) {
+    if (!empty($maxConsecutiveLeaveDays) && $leaveDays > $maxConsecutiveLeaveDays) {
       throw new InvalidLeaveRequestException(
         'Only a maximum '. round($maxConsecutiveLeaveDays, 1) .' days leave can be taken in one request. Please modify days of this request',
         'leave_request_days_greater_than_max_consecutive_days',
@@ -847,22 +859,101 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   * Returns the leave request days already existing for the given contact
-   * within the $fromDate to $todDate period and having the statuses supplied.
+   * Returns existing leave requests considered "overlapping"
+   * for the given leave request parameters and statuses supplied.
    *
-   * @param int $contactID
-   * @param string $fromDate
-   * @param string $toDate
+   * @param array $leaveRequestParams
+   *   List of parameters to use to create the Case.
+   *   [
+   *     'contact_id' => int,
+   *     'type_id' => int,
+   *     'request_type' => int,
+   *     'from_date' => string,
+   *     'from_date_type' => string|int optional,
+   *     'to_date' => string,
+   *     'to_date_type' => string|int optional
+   *   ]
    * @param array $leaveRequestStatus
    * @param boolean $excludePublicHolidayLeaveRequests
    *   Whether to exclude public holiday leave requests from overlapping leave requests or not
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest[]|null
    */
-  public static function findOverlappingLeaveRequests($contactID, $fromDate, $toDate, $leaveRequestStatus = [], $excludePublicHolidayLeaveRequests = true) {
+  public static function findOverlappingLeaveRequests($leaveRequestParams, $leaveRequestStatus = [], $excludePublicHolidayLeaveRequests = TRUE) {
+    $fromDateObj = new DateTime($leaveRequestParams['from_date']);
+    $fromDate = $fromDateObj->format('Y-m-d');
+    $fromDateTime = $fromDateObj->format('Y-m-d H:i:s');
+    $fromDateType = isset($leaveRequestParams['from_date_type']) ? (int)$leaveRequestParams['from_date_type'] : NULL;
+    $toDateObj = new DateTime($leaveRequestParams['to_date']);
+    $toDate = $toDateObj->format('Y-m-d');
+    $toDateTime = $toDateObj->format('Y-m-d H:i:s');
+    $toDateType = isset($leaveRequestParams['to_date_type']) ? (int)$leaveRequestParams['to_date_type'] : NULL;
+
     $leaveRequestTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveBalanceChangeTable = LeaveBalanceChange::getTableName();
+    $leaveRequestAbsenceType = AbsenceType::findById($leaveRequestParams['type_id']);
+    $isCalculationUnitInHours = $leaveRequestAbsenceType->isCalculationUnitInHours();
+    $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
+    $absenceTypesIDs = [];
+    $absenceTypesIDsWithSameUnit = [];
+    $absenceTypesIDsWithDifferentUnit = [];
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
+    $halfDayAMID = $leaveRequestDayTypes['half_day_am'];
+    $halfDayPMID = $leaveRequestDayTypes['half_day_pm'];
+    $toilType = LeaveRequest::REQUEST_TYPE_TOIL;
+    $isTOIL = $leaveRequestParams['request_type'] === $toilType;
+    $isCalculationUnitInHoursOrTOIL = $isCalculationUnitInHours || $isTOIL;
+    $absenceTypesSelector = '';
+    $considerRequestsInDifferentUnit = '';
+    $ignoreHalfDayRequests = '';
+
+    foreach ($absenceTypes as $absenceType) {
+      $absenceTypesIDs[] = $absenceType->id;
+      if ($leaveRequestAbsenceType->calculation_unit === $absenceType->calculation_unit) {
+        $absenceTypesIDsWithSameUnit[] = $absenceType->id;
+      } else {
+        $absenceTypesIDsWithDifferentUnit[] = $absenceType->id;
+      }
+    }
+
+    $sameUnitSelector = 'lr.type_id IN (' . implode(',', $absenceTypesIDsWithSameUnit) . ')';
+
+    $dateTimeSelector = $isCalculationUnitInHoursOrTOIL
+      ? "lr.from_date < '{$toDateTime}' AND lr.to_date > '{$fromDateTime}'"
+      : "lrd.date BETWEEN '{$fromDate}' AND '{$toDate}'";
+
+    if (!$isTOIL) {
+      if ($isCalculationUnitInHours) {
+        $absenceTypesSelector = 'AND ' . $sameUnitSelector;
+
+        if (count($absenceTypesIDsWithDifferentUnit)) {
+          $considerRequestsInDifferentUnit =
+            "OR ((lrd.date BETWEEN '{$fromDate}' AND '{$toDate}') AND lr.type_id IN (" .
+            implode(',', $absenceTypesIDsWithDifferentUnit) . "))";
+        }
+      } else {
+        $absenceTypesSelector = 'AND lr.type_id IN (' . implode(',', $absenceTypesIDs) . ')';
+      }
+    }
+
+    if (!$isCalculationUnitInHoursOrTOIL && count($absenceTypesIDsWithSameUnit)) {
+      $ignoreHalfDayRequests =
+        ($fromDateType === $halfDayPMID
+          ? "AND NOT(DATE_FORMAT(lr.to_date, '%Y-%m-%d') = '{$fromDate}' " .
+            "AND lr.to_date_type = {$halfDayAMID} AND {$sameUnitSelector})"
+          : "") .
+        ($toDateType === $halfDayAMID
+          ? "AND NOT(DATE_FORMAT(lr.from_date, '%Y-%m-%d') = '{$toDate}' " .
+            "AND lr.from_date_type = {$halfDayPMID} AND {$sameUnitSelector})"
+          : "");
+    }
+
+    $overlapSelector =
+      "($dateTimeSelector $absenceTypesSelector $considerRequestsInDifferentUnit) $ignoreHalfDayRequests";
+
+    $ignoreRequestTypes =
+      'lr.request_type ' . ($isTOIL ? '=' : '!=') . "'" . $toilType . "'";
 
     $query = "
       SELECT DISTINCT lr.* FROM {$leaveRequestTable} lr
@@ -870,9 +961,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         ON lrd.leave_request_id = lr.id
       INNER JOIN {$leaveBalanceChangeTable} lbc
         ON lbc.source_id = lrd.id AND lbc.source_type = %1
-      WHERE lr.contact_id = %2 AND lr.is_deleted = 0
-      AND lrd.date BETWEEN %3 AND %4
-    ";
+      WHERE lr.contact_id = %2 AND lr.is_deleted = 0 AND ({$overlapSelector})
+        AND {$ignoreRequestTypes}";
 
     if (is_array($leaveRequestStatus) && !empty($leaveRequestStatus)) {
       array_walk($leaveRequestStatus, 'intval');
@@ -880,15 +970,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     if ($excludePublicHolidayLeaveRequests) {
-      $query .= " AND lr.request_type != %5";
+      $query .= " AND lr.request_type != %3";
     }
 
     $params = [
       1 => [LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY, 'String'],
-      2 => [$contactID, 'Integer'],
-      3 => [CRM_Utils_Date::processDate($fromDate, null, false, 'Y-m-d'), 'String'],
-      4 => [CRM_Utils_Date::processDate($toDate, null, false, 'Y-m-d'), 'String'],
-      5 => [self::REQUEST_TYPE_PUBLIC_HOLIDAY, 'String']
+      2 => [$leaveRequestParams['contact_id'], 'Integer'],
+      3 => [self::REQUEST_TYPE_PUBLIC_HOLIDAY, 'String']
     ];
 
     $leaveRequest = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
@@ -992,9 +1080,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     $leaveRequest = new self();
     $leaveRequest->copyValues($params);
-
     $datePeriod = new BasicDatePeriod($fromDate, $toDate);
-    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
 
     $resultsBreakdown = [
       'amount' => 0,
@@ -1007,6 +1093,8 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $isCalculationUnitInHours = $absenceType->isCalculationUnitInHours();
     $dateDeductionService = LeaveDateAmountDeductionFactory::createForAbsenceType($leaveRequest->type_id);
     $contactWorkPatternService = new ContactWorkPatternService();
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
+    $leaveDateDayTypes = self::getLeaveDayTypesForLeaveRequestDates($fromDate, $toDate, $contactId);
 
     foreach ($datePeriod as $date) {
       if($excludeStartAndEndDates) {
@@ -1014,16 +1102,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
           continue;
         }
       }
-      $publicHolidayLeaveRequestExists = self::publicHolidayLeaveRequestExists($contactId, $date);
 
-      if ($publicHolidayLeaveRequestExists) {
+      $dayType = $leaveDateDayTypes[$date->format('Y-m-d')];
+
+      if ($dayType == $leaveRequestDayTypes['public_holiday']) {
         $amount = 0.0;
-        $dayType = $leaveRequestDayTypes['public_holiday'];
       }
-
-      if(!$publicHolidayLeaveRequestExists){
-        $type = ContactWorkPattern::getWorkDayType($contactId, $date);
-        $dayType = self::getLeaveRequestDayTypeFromWorkDayType($type);
+      else {
         $amount = LeaveBalanceChange::calculateAmountForDate(
           $leaveRequest,
           $date,
@@ -1054,6 +1139,37 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     return $resultsBreakdown;
+  }
+
+  /**
+   * Gets the Leave Day type for each of the date in the the leave request date range
+   * for the contact.
+   *
+   * @param \DateTime $fromDate
+   * @param \DateTime $toDate
+   * @param int $contactID
+   *
+   * @return array
+   */
+  private static function getLeaveDayTypesForLeaveRequestDates(DateTime $fromDate, DateTime $toDate, $contactID) {
+    $datePeriod = new BasicDatePeriod($fromDate, $toDate);
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
+    $leaveDateDayTypes = [];
+    foreach ($datePeriod as $date) {
+      $publicHolidayLeaveRequestExists = self::publicHolidayLeaveRequestExists($contactID, $date);
+
+      if ($publicHolidayLeaveRequestExists) {
+        $dayType = $leaveRequestDayTypes['public_holiday'];
+      }
+      else {
+        $type = ContactWorkPattern::getWorkDayType($contactID, $date);
+        $dayType = self::getLeaveRequestDayTypeFromWorkDayType($type);
+      }
+
+      $leaveDateDayTypes[$date->format('Y-m-d')] = $dayType;
+    }
+
+    return $leaveDateDayTypes;
   }
 
   /**
@@ -1462,5 +1578,33 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $currentLeaveRequest = LeaveRequest::findById($leaveRequestID);
 
     return AbsenceType::findById($currentLeaveRequest->type_id);
+  }
+
+  /**
+   * Get the number of working days for a leave request, Leave dates
+   * with day types that are non working days(public holiday, weekend and
+   * non working day) are excluded from the results.
+   *
+   * @param array $params
+   *
+   * @return int
+   */
+  private static function getNumberOfWorkingDaysForLeaveRequest($params) {
+    $fromDate = new DateTime($params['from_date']);
+    $toDate = new DateTime($params['to_date']);
+    $leaveDatesDayTypes = self::getLeaveDayTypesForLeaveRequestDates($fromDate, $toDate, $params['contact_id']);
+    $leaveRequestDayTypes = array_flip(self::buildOptions('from_date_type', 'validate'));
+
+    $nonWorkingDayTypes = [
+      $leaveRequestDayTypes['non_working_day'],
+      $leaveRequestDayTypes['weekend'],
+      $leaveRequestDayTypes['public_holiday']
+    ];
+
+    $leaveDatesDayTypes = array_filter($leaveDatesDayTypes, function($item) use ($nonWorkingDayTypes) {
+      return !in_array($item, $nonWorkingDayTypes);
+    });
+
+    return count($leaveDatesDayTypes);
   }
 }

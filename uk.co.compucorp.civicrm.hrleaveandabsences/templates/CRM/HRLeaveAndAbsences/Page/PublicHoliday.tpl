@@ -16,7 +16,7 @@
           </thead>
           {foreach from=$rows item=row}
             <tr id="PublicHoliday-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}">
-              <td data-field="title">{$row.title}</td>
+              <td data-field="title">{$row.title|escape}</td>
               <td>{$row.date|crmDate}</td>
               <td>{if $row.is_active eq 1} {ts}Enabled{/ts} {else} {ts}Disabled{/ts} {/if}</td>
               <td>{$row.action|replace:'xx':$row.id}</td>

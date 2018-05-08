@@ -22,8 +22,8 @@ define([
   });
 
   function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod,
-  AbsenceType, Entitlement, LeaveRequest, OptionGroup, pubSub,
-  HRSettings, sharedSettings) {
+    AbsenceType, Entitlement, LeaveRequest, OptionGroup, pubSub,
+    HRSettings, sharedSettings) {
     $log.debug('Component: staff-leave-report');
 
     var statusUpdateHandlers = {
@@ -63,18 +63,19 @@ define([
         loadAbsenceTypes(),
         loadAbsencePeriods()
       ])
-      .then(function () {
-        vm.loading.page = false;
-      })
-      .then(function () {
-        return $q.all([
-          loadEntitlements(),
-          loadBalanceChanges()
-        ]);
-      })
-      .then(function () {
-        vm.loading.content = false;
-      });
+        .then(function () {
+          vm.loading.page = false;
+        })
+        .then(function () {
+          return $q.all([
+            loadEntitlements(),
+            loadBalanceChanges()
+          ]);
+        })
+        .then(processAbsenceTypes)
+        .then(function () {
+          vm.loading.content = false;
+        });
 
       registerEvents();
     })();
@@ -90,6 +91,25 @@ define([
     function addLeaveRequestToSection (leaveRequest, section) {
       section.data.push(leaveRequest);
       section.dataIndex[leaveRequest.id] = leaveRequest;
+    }
+
+    /**
+     * Attaches the entitlement information to the absence type it belongs to
+     * If there is no entitlement for a given absence type, a default
+     * entitlement object is assigned instead
+     */
+    function attachEntitlementsToAbsenceTypes () {
+      vm.absenceTypes = vm.absenceTypes.map(function (absenceType) {
+        var entitlement = _.find(vm.entitlements, function (entitlement) {
+          return entitlement.type_id === absenceType.id;
+        });
+
+        // set entitlement to 0 if no entitlement is present
+        absenceType.entitlement = entitlement ? entitlement.value : 0;
+        absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
+
+        return absenceType;
+      });
     }
 
     /**
@@ -114,6 +134,18 @@ define([
         .forEach(function (section) {
           section.data = [];
         });
+    }
+
+    /**
+     * Filters the absence types, keeping only the ones that either have
+     * an entitlement greater than 0 or that allow overuse or accrual requests
+     */
+    function filterAbsenceTypes () {
+      vm.absenceTypesFiltered = vm.absenceTypes.filter(function (absenceType) {
+        return !((absenceType.entitlement === 0) &&
+          (absenceType.allow_overuse !== '1') &&
+          (absenceType.allow_accruals_request !== '1'));
+      });
     }
 
     /**
@@ -200,32 +232,43 @@ define([
      * @return {Promise}
      */
     function loadBalanceChanges () {
+      var basicParams = { contact_id: vm.contactId, period_id: vm.selectedPeriod.id };
+
       return $q.all([
-        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, null, true),
-        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, [
-          valueOfRequestStatus(sharedSettings.statusNames.approved)
-        ]),
-        LeaveRequest.balanceChangeByAbsenceType(vm.contactId, vm.selectedPeriod.id, [
-          valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
-          valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
-        ])
+        LeaveRequest.balanceChangeByAbsenceType(_.assign({}, basicParams, {
+          public_holiday: true
+        })),
+        LeaveRequest.balanceChangeByAbsenceType(_.assign({}, basicParams, {
+          expired: true
+        })),
+        LeaveRequest.balanceChangeByAbsenceType(_.assign({}, basicParams, {
+          statuses: {
+            in: [ valueOfRequestStatus(sharedSettings.statusNames.approved) ]
+          }
+        })),
+        LeaveRequest.balanceChangeByAbsenceType(_.assign({}, basicParams, {
+          statuses: {
+            in: [
+              valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
+              valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
+            ]
+          }
+        }))
       ])
-      .then(function (results) {
-        vm.absenceTypes.forEach(function (absenceType) {
-          absenceType.balanceChanges = {
-            holidays: results[0][absenceType.id],
-            approved: results[1][absenceType.id],
-            pending: results[2][absenceType.id]
-          };
+        .then(function (results) {
+          vm.absenceTypes.forEach(function (absenceType) {
+            absenceType.balanceChanges = {
+              holidays: results[0][absenceType.id],
+              expired: results[1][absenceType.id],
+              approved: results[2][absenceType.id],
+              pending: results[3][absenceType.id]
+            };
+          });
         });
-      });
     }
 
     /**
-     * Loads the entitlements, including current and future balance,
-     * and groups the entitlements value and remainder by absence type
-     * Also Filters the absence types which allows overuse or allows
-     * accrual request or has entitlement more than 0
+     * Loads the entitlements, including current and future balance
      *
      * @return {Promise}
      */
@@ -234,24 +277,9 @@ define([
         contact_id: vm.contactId,
         period_id: vm.selectedPeriod.id
       }, true)
-      .then(function (entitlements) {
-        vm.entitlements = entitlements;
-      })
-      .then(function () {
-        vm.absenceTypesFiltered = vm.absenceTypes.filter(function (absenceType) {
-          var entitlement = _.find(vm.entitlements, function (entitlement) {
-            return entitlement.type_id === absenceType.id;
-          });
-
-          // set entitlement to 0 if no entitlement is present
-          absenceType.entitlement = entitlement ? entitlement.value : 0;
-          absenceType.remainder = entitlement ? entitlement.remainder : { current: 0, future: 0 };
-
-          return !((absenceType.entitlement === 0) &&
-            (absenceType.allow_overuse !== '1') &&
-            (absenceType.allow_accruals_request !== '1'));
+        .then(function (entitlements) {
+          vm.entitlements = entitlements;
         });
-      });
     }
 
     /**
@@ -264,12 +292,12 @@ define([
         contact_id: vm.contactId,
         period_id: vm.selectedPeriod.id
       }, vm.entitlements)
-      .then(function () {
-        return processBreakdownsList(vm.entitlements);
-      })
-      .then(function (breakdownListFlatten) {
-        vm.sections.entitlements.data = breakdownListFlatten;
-      });
+        .then(function () {
+          return processBreakdownsList(vm.entitlements);
+        })
+        .then(function (breakdownListFlatten) {
+          vm.sections.entitlements.data = breakdownListFlatten;
+        });
     }
 
     /**
@@ -372,7 +400,7 @@ define([
         status_id: { in: [
           valueOfRequestStatus(sharedSettings.statusNames.awaitingApproval),
           valueOfRequestStatus(sharedSettings.statusNames.moreInformationRequired)
-        ] },
+        ] }
       });
     }
 
@@ -418,6 +446,14 @@ define([
     }
 
     /**
+     * Process the list of absence types objects by augmenting and filter them
+     */
+    function processAbsenceTypes () {
+      attachEntitlementsToAbsenceTypes();
+      filterAbsenceTypes();
+    }
+
+    /**
      * For each breakdowns, it sets the absence type id to
      * each list entry (based on the entitlement they belong to)
      * and flattens the result in the end to get one single list
@@ -447,21 +483,24 @@ define([
     }
 
     /**
-     * Process each expired TOIL requests
+     * Process each expired TOIL request, so that they have the same
+     * key properties that an entitlement breakdown object has, given that
+     * they need to be listed in the same section
      *
-     * @param  {Array} list of expired TOIL request
-     * @return {Promise} resolves to the flatten list
+     * @param  {Array} toils
+     * @return {Promise} resolves to {Array}
      */
-    function processExpiredTOILS (list) {
+    function processExpiredTOILS (toils) {
       return $q.resolve()
         .then(function () {
-          return list.map(function (listEntry) {
-            return {
-              'expiry_date': listEntry.toil_expiry_date,
-              'type': {
+          return toils.map(function (toil) {
+            return _.assign({}, toil, {
+              expiry_date: toil.toil_expiry_date,
+              amount: toil.toil_to_accrue,
+              type: {
                 'label': 'Accrued TOIL'
               }
-            };
+            });
           });
         });
     }
@@ -497,7 +536,10 @@ define([
           return dataEntry.id === leaveRequest.id;
         });
         delete section.dataIndex[leaveRequest.id];
-        updateSectionNumbersWithLeaveRequestBalanceChange(leaveRequest, sectionName);
+
+        if (sectionName !== 'other') {
+          updateSectionNumbersWithLeaveRequestBalanceChange(leaveRequest, sectionName);
+        }
       });
     }
 
@@ -509,11 +551,15 @@ define([
      * @param {string} section
      */
     function updateSectionNumbersWithLeaveRequestBalanceChange (leaveRequest, section) {
+      var remaindersToUpdate = ['future', 'current'];
       var absenceType = vm.absenceTypesIndexed[leaveRequest.type_id];
-      var remainderType = (section === 'pending') ? 'future' : 'current';
+
+      (section === 'pending') && _.pull(remaindersToUpdate, 'current');
 
       absenceType.balanceChanges[section] -= leaveRequest.balance_change;
-      absenceType.remainder[remainderType] -= leaveRequest.balance_change;
+      remaindersToUpdate.forEach(function (remainder) {
+        absenceType.remainder[remainder] -= leaveRequest.balance_change;
+      });
     }
 
     /**
@@ -527,15 +573,16 @@ define([
         loadEntitlements(),
         loadBalanceChanges()
       ])
-      .then(function () {
-        vm.loading.content = false;
-      })
-      .then(function () {
-        return $q.all([
-          loadOpenSectionsData(),
-          clearSectionsData()
-        ]);
-      });
+        .then(processAbsenceTypes)
+        .then(function () {
+          vm.loading.content = false;
+        })
+        .then(function () {
+          return $q.all([
+            loadOpenSectionsData(),
+            clearSectionsData()
+          ]);
+        });
     }
 
     /**

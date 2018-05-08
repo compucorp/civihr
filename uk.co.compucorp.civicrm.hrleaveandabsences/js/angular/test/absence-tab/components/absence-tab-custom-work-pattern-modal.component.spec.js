@@ -8,7 +8,7 @@
     'leave-absences/mocks/data/work-pattern.data',
     'leave-absences/mocks/apis/work-pattern-api-mock',
     'leave-absences/absence-tab/app'
-  ], function (angular, _, optionGroupMock, workPatternData) {
+  ], function (angular, _, optionGroupMock, workPatternData, crmAngService) {
     'use strict';
 
     describe('absenceTabWorkPatterns', function () {
@@ -22,19 +22,20 @@
       beforeEach(inject(function (WorkPatternAPIMock) {
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
-      beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_, _OptionGroup_, _WorkPatternAPI_) {
+      beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_, _OptionGroup_, _WorkPatternAPI_, _crmAngService_) {
         $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         OptionGroup = _OptionGroup_;
+        crmAngService = _crmAngService_;
 
         WorkPatternAPI = _WorkPatternAPI_;
 
         spyOn($log, 'debug');
         spyOn(WorkPatternAPI, 'get').and.callThrough();
         spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
-          return $q.resolve(optionGroupMock.getCollection('hrjc_revision_change_reason'));
+          return $q.resolve(optionGroupMock.getCollection('hrleaveandabsences_work_pattern_change_reason'));
         });
 
         compileComponent();
@@ -49,8 +50,12 @@
       });
 
       describe('init()', function () {
+        it('fetches values of the Work Pattern Change Reason option group', function () {
+          expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_work_pattern_change_reason', true);
+        });
+
         it('loads change reasons', function () {
-          expect(controller.changeReasons).toEqual(optionGroupMock.getCollection('hrjc_revision_change_reason'));
+          expect(controller.changeReasons).toEqual(optionGroupMock.getCollection('hrleaveandabsences_work_pattern_change_reason'));
         });
 
         it('loads work patterns', function () {
@@ -134,6 +139,28 @@
               expect(controller.errorMessage).toBe(errorMessage);
             });
           });
+        });
+      });
+
+      describe('when users click on the reason for change wrench icon', function () {
+        var onPopupFormSuccess;
+        var url = '/civicrm/admin/options/hrleaveandabsences_work_pattern_change_reason?reset=1';
+
+        beforeEach(function () {
+          spyOn(crmAngService, 'loadForm').and.callFake(function () {
+            return {
+              on: function (event, callback) {
+                if (event === 'crmUnload') {
+                  onPopupFormSuccess = callback;
+                }
+              }
+            };
+          });
+          controller.openWorkPatternChangeReasonEditor();
+        });
+
+        it('calls the crmAngService with the requested url', function () {
+          expect(crmAngService.loadForm).toHaveBeenCalledWith(url);
         });
       });
 

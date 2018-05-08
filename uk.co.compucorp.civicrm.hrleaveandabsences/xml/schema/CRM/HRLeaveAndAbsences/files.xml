@@ -14,4 +14,5 @@
     <xi:include href="LeaveRequestDate.xml" parse="xml" />
     <xi:include href="ContactWorkPattern.xml" parse="xml" />
     <xi:include href="LeavePeriodEntitlementLog.xml" parse="xml" />
+    <xi:include href="LeaveBalanceChangeExpiryLog.xml" parse="xml" />
 </tables>

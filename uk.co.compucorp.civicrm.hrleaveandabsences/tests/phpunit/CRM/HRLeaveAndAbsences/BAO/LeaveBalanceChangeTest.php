@@ -12,6 +12,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricato
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_Factory_LeaveDateAmountDeduction as LeaveDateAmountDeductionFactory;
+use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLog as LeaveBalanceChangeExpiryLog;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest
@@ -544,7 +545,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // This will deduct 11 days, but the respective balance changes
     // won't be returned as part of the breakdown
     $this->createLeaveRequestBalanceChange(
-      $entitlement->id,
+      $entitlement->type_id,
       $leaveRequestStatuses['approved'],
       date('Y-m-d'),
       date('Y-m-d', strtotime('+10 days'))
@@ -3558,6 +3559,148 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $amount = $this->calculateAmountForDateWhenWorkDayIsNull($leaveRequest, new DateTime('2016-07-28'), $amountToReturn);
     $this->assertEquals(0, $amount);
   }
+
+  public function testCreateExpiryRecordsLogsExpiredBalanceChanges() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 1,
+    ]);
+
+    $broughtForwardAmount = 5;
+    $broughtForwardExpiryDate = new DateTime('2017-04-01');
+    $broughtForwardBalance = $this->createBroughtForwardBalanceChange(
+      $periodEntitlement->id,
+      $broughtForwardAmount,
+      $broughtForwardExpiryDate->format('YmdHis')
+    );
+
+    $toilLeaveDate = new DateTime('2017-05-17');
+    $toilExpiryDate = new DateTime('2017-08-01');
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement->contact_id,
+      'type_id' => $periodEntitlement->type_id,
+      'from_date' => $toilLeaveDate->format('YmdHis'),
+      'to_date' => $toilLeaveDate->format('YmdHis'),
+      'toil_expiry_date' => $toilExpiryDate->format('YmdHis'),
+      'toil_to_accrue' => 1,
+      'toil_duration' => 100,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], true);
+
+    LeaveBalanceChange::createExpiryRecords();
+
+    $balanceExpiryLogs = $this->getBalanceChangeExpiryLogRecords();
+    $this->assertCount(2, $balanceExpiryLogs);
+
+    //Get the expiry balance record for the TOIL balance change
+    $toilBalanceChange = $this->findToilRequestMainBalanceChange($toilRequest->id);
+    $toilExpiryRecord = $this->getExpiryRecordForBalanceChange($toilBalanceChange->id);
+    $toilDate = $toilRequest->getDates()[0];
+
+    //Get expiry balance record for the brought forward balance change
+    $broughtForwardExpiryRecord = $this->getExpiryRecordForBalanceChange($broughtForwardBalance->id);
+
+    $expectedToilLog = [
+      'id' => $balanceExpiryLogs[$toilExpiryRecord->id]['id'],
+      'balance_change_id' => $toilExpiryRecord->id,
+      'amount' => -1 * $toilRequest->toil_to_accrue,
+      'source_id' => $toilDate->id,
+      'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
+      'expiry_date' => $toilExpiryDate->format('Y-m-d'),
+      'balance_type_id' => $toilExpiryRecord->type_id,
+      'leave_date' => $toilLeaveDate->format('Y-m-d'),
+      'leave_request_id' => $toilRequest->id
+    ];
+
+    $expectedBroughtForwardLog = [
+      'id' => $balanceExpiryLogs[$broughtForwardExpiryRecord->id]['id'],
+      'balance_change_id' => $broughtForwardExpiryRecord->id,
+      'amount' => -1 * $broughtForwardAmount,
+      'source_id' => $periodEntitlement->id,
+      'source_type' => LeaveBalanceChange::SOURCE_ENTITLEMENT,
+      'expiry_date' => $broughtForwardExpiryDate->format('Y-m-d'),
+      'balance_type_id' => $broughtForwardExpiryRecord->type_id,
+      'leave_date' => NULL,
+      'leave_request_id' => NULL
+    ];
+
+    $dateNow = new DateTime();
+    $this->assertEquals($dateNow, new DateTime($balanceExpiryLogs[$toilExpiryRecord->id]['created_date']), 10);
+    $this->assertEquals($dateNow, new DateTime($balanceExpiryLogs[$broughtForwardExpiryRecord->id]['created_date']), 10);
+
+    //we need to remove the created dates from the array as its not possible to assert the exact value.
+    unset($balanceExpiryLogs[$toilExpiryRecord->id]['created_date']);
+    unset($balanceExpiryLogs[$broughtForwardExpiryRecord->id]['created_date']);
+
+    $this->assertEquals($expectedToilLog, $balanceExpiryLogs[$toilExpiryRecord->id]);
+    $this->assertEquals($expectedBroughtForwardLog, $balanceExpiryLogs[$broughtForwardExpiryRecord->id]);
+  }
+
+  public function testCreateExpiryRecordsDoesNotExpireBalanceChangesLinkedToSoftDeletedToilRequest() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+    ]);
+
+    $periodEntitlement = LeavePeriodEntitlementFabricator::fabricate([
+      'contact_id' => 1,
+      'period_id' => $absencePeriod->id,
+      'type_id' => 1,
+    ]);
+
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement->contact_id,
+      'type_id' => $periodEntitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('2017-05-17'),
+      'to_date' => CRM_Utils_Date::processDate('2017-05-17'),
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2017-08-01'),
+      'toil_to_accrue' => 1,
+      'toil_duration' => 100,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], TRUE);
+
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $periodEntitlement->contact_id,
+      'type_id' => $periodEntitlement->type_id,
+      'from_date' => CRM_Utils_Date::processDate('2017-08-09'),
+      'to_date' => CRM_Utils_Date::processDate('2017-08-09'),
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2017-11-01'),
+      'toil_to_accrue' => 1,
+      'toil_duration' => 100,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], TRUE);
+
+    //Delete the first TOIL request
+    LeaveRequest::softDelete($toilRequest->id);
+
+    LeaveBalanceChange::createExpiryRecords();
+    $toilBalanceChange = $this->findToilRequestMainBalanceChange($toilRequest2->id);
+    $toilExpiryRecord = $this->getExpiryRecordForBalanceChange($toilBalanceChange->id);
+
+    //only the expiry record second TOIL request will be created since the first is deleted.
+    $balanceExpiryLogs = $this->getBalanceChangeExpiryLogRecords();
+    $this->assertCount(1, $balanceExpiryLogs);
+    $this->assertNotNull($balanceExpiryLogs[$toilExpiryRecord->id]);
+  }
+
+  private function getBalanceChangeExpiryLogRecords() {
+    $leaveExpiryLog = new LeaveBalanceChangeExpiryLog();
+    $leaveExpiryLog->find();
+
+    $records = [];
+    while($leaveExpiryLog->fetch()) {
+      $records[$leaveExpiryLog->balance_change_id] = $leaveExpiryLog->toArray() ;
+    }
+
+    return $records;
+  }
+
 
   private function getBalanceChangesForPeriodEntitlement($leavePeriodEntitlement) {
     $record = new LeaveBalanceChange();

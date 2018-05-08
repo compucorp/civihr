@@ -117,6 +117,16 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
       );
     }
 
+    $isTOILWithPastDates = LeaveRequest::isTOILWithPastDates($params);
+    $isCancelledStatus = $this->isCancelledStatus($params);
+    $canCanCancelTOILWithPastDates = $this->canCanCancelTOILWithPastDates($params);
+
+    if ($isTOILWithPastDates && $isCancelledStatus && !$canCanCancelTOILWithPastDates) {
+      throw new RuntimeException(
+        'You may only cancel TOIL with dates in the future.'
+      );
+    }
+
     return $this->createRequestWithBalanceChanges($params);
   }
 
@@ -374,5 +384,30 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     $updateBalanceChange = !empty($params['change_balance']);
 
     return ($leaveRequestDatesNotChanged || $toilDatesAndToAccrueNotChanged) && !$updateBalanceChange;
+  }
+
+  /**
+   * Checks If the current user can cancel a TOIL request type that has past dates.
+   *
+   * @param array $params
+   *
+   * @return bool
+   */
+  private function canCanCancelTOILWithPastDates($params) {
+    return $this->leaveRequestRightsService->canCancelToilWithPastDates(
+      $params['contact_id'],
+      $params['type_id']
+    );
+  }
+
+  /**
+   * Checks whether the Leave is to be updated to cancelled.
+   *
+   * @param array $params
+   *
+   * @return bool
+   */
+  private function isCancelledStatus($params) {
+    return in_array($params['status_id'], LeaveRequest::getCancelledStatuses());
   }
 }

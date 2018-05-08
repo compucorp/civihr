@@ -101,7 +101,8 @@ module.exports = (function () {
     },
     /**
      * Apply leave on behalf of staff
-     * @param {String} row number corresponding to leave request in the list like leave, sickness or toil
+     *
+     * @param {String} leaveType leave, sickness or toil
      * @return {Promise}
      */
     applyLeaveForStaff: function (leaveType) {
@@ -109,15 +110,11 @@ module.exports = (function () {
 
       return new Promise(function (resolve) {
         casper.then(function () {
-          var selector = '.button-container leave-request-record-actions .dropdown-toggle';
-
-          casper.click(selector);
+          casper.click('leave-request-record-actions .dropdown-toggle');
         });
 
         casper.then(function () {
-          var leaveSerialNo = leaveType === 'leave' ? 1 : leaveType === 'sickness' ? 2 : 3;
-
-          casper.click('.button-container li:nth-child(' + leaveSerialNo + ') a');
+          casper.click('.leave-request-record-actions__new-' + leaveType);
         });
 
         casper.then(function () {

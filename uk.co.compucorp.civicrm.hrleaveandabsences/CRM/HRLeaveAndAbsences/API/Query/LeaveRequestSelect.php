@@ -132,10 +132,12 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       }
     }
 
-    if(!empty($this->params['expired'])) {
-      $conditions[] = "lbc.expiry_date < '" . date('Y-m-d') . "'";
-      $conditions[] = 'lbc.expired_balance_change_id IS NOT NULL';
-      $conditions[] = 'lbc.amount < 0';
+    if (isset($this->params['expired']) && $this->params['expired']) {
+      $conditions[] =  $this->getExpiredCondition();
+    }
+
+    if (isset($this->params['expired']) && !$this->params['expired']) {
+      $conditions[] = $this->getNonExpiredCondition();
     }
 
     if(!empty($this->params['public_holiday'])) {
@@ -145,6 +147,33 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
     }
 
     $customQuery->where($conditions);
+  }
+
+  /**
+   * Returns the conditions for leave request with expired balance changes.
+   *
+   * @return string
+   */
+  private function getExpiredCondition() {
+    $conditions = [];
+    $conditions[] = "lbc.expiry_date < '" . date('Y-m-d') . "'";
+    $conditions[] = 'lbc.expired_balance_change_id IS NOT NULL';
+    $conditions[] = 'lbc.amount < 0';
+
+    return implode(' AND ', $conditions);
+  }
+
+  /**
+   * Returns the condition for leave requests with non-expired balance changes.
+   *
+   * @return string
+   */
+  private function getNonExpiredCondition() {
+    $conditions = "
+      ((lbc.expiry_date >= '" . date('Y-m-d') . "' OR lbc.expiry_date IS NULL) AND lbc.expired_balance_change_id IS NULL)
+      OR (lbc.expiry_date < '" . date('Y-m-d') . "' AND ebc.amount = 0)";
+
+    return $conditions;
   }
 
   /**
@@ -179,10 +208,11 @@ class CRM_HRLeaveAndAbsences_API_Query_LeaveRequestSelect {
       $joins[] = 'LEFT JOIN ' . RelationshipType::getTableName() . ' rt ON rt.id = r.relationship_type_id';
     }
 
-    if(!empty($this->params['expired'])) {
+    if (isset($this->params['expired'])) {
       $innerJoin = 'INNER JOIN ' . LeaveBalanceChange::getTableName() . ' lbc';
       $innerJoin .= " ON lbc.source_id = lrd.id AND lbc.source_type = '" . LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY . "'";
       $joins[] =  $innerJoin;
+      $joins[] = 'LEFT JOIN ' . LeaveBalanceChange::getTableName() . ' ebc ON lbc.id = ebc.expired_balance_change_id';
     }
 
     $query->join(null, $joins);
