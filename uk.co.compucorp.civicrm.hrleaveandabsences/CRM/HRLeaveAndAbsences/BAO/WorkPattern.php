@@ -135,14 +135,23 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
       );
     }
 
-    if($isUpdate && $isToBeDisabled) {
-      $isDefaultWorkPattern = self::isDefault($params['id']);
+    if(!$isUpdate) {
+      return;
+    }
 
-      if ($isDefaultWorkPattern) {
-        throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException(
-          'You cannot disable the default Work Pattern'
-        );
-      }
+    $isDefaultWorkPattern = self::isDefault($params['id']);
+
+    if($isToBeDisabled && $isDefaultWorkPattern) {
+      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException(
+        'You cannot disable the default Work Pattern'
+      );
+    }
+
+    $isToBeUncheckedAsDefault = isset($params['is_default']) && !$params['is_default'];
+    if($isToBeUncheckedAsDefault && $isDefaultWorkPattern) {
+      throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException(
+        'It is not possible to have no default Work Pattern'
+      );
     }
   }
 

@@ -692,6 +692,18 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     WorkPattern::create($params);
   }
 
+  public function testCannotMakeTheDefaultWorkPatternNonDefault() {
+    $workPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
+
+    $this->setExpectedException(
+      CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException::class,
+      'It is not possible to have no default Work Pattern'
+    );
+
+    $params = ['id' => $workPattern->id, 'is_default' => 0];
+    WorkPattern::create($params);
+  }
+
   public function testWorkPatternLabelsShouldBeUnique() {
     WorkPatternFabricator::fabricate(['label' => 'WorkPattern 1']);
 
