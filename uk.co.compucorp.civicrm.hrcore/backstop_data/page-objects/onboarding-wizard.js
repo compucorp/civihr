@@ -1,99 +1,61 @@
-var page = require('./page');
-var data = require('./../data/onboarding-wizard-data');
+const page = require('./page');
 
-module.exports = (function () {
-  return page.extend({
-    /**
-     * Navigate to Address Page
-     *
-     * @return {*}
-     */
-    reachAddressPage: function () {
-      var casper = this.casper;
+module.exports = page.extend({
+  /**
+   * Navigate to Address Page
+   */
+  async reachAddressPage () {
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Address"]');
+  },
 
-      casper.click('.webform-next');
+  /**
+   * Navigate to Contact Info Page
+   */
+  async reachContactInfoPage () {
+    await this.reachAddressPage();
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Contact Info"]');
+  },
 
-      return casper.waitForSelector('input[value="Address"]');
-    },
+  /**
+   * Navigate to Payroll Page
+   */
+  async reachPayrollPage () {
+    await this.reachContactInfoPage();
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Payroll"]');
+  },
 
-    /**
-     * Navigate to Contact Info Page
-     *
-     * @return {*}
-     */
-    reachContactInfoPage: function () {
-      var casper = this.casper;
+  /**
+   * Navigate to Emergency Contact Page
+   */
+  async reachEmergencyContactPage () {
+    await this.reachPayrollPage();
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Emergency Contact"]');
+  },
 
-      return this.reachAddressPage().then(function () {
-        casper.click('.webform-next');
+  /**
+   * Navigate to Dependent Page
+   */
+  async reachDependentPage () {
+    await this.reachEmergencyContactPage();
+    await this.puppet.waitFor('.webform-component-fieldset', { visible: true });
+    await this.puppet.type('#edit-submitted-civicrm-1-contact-1-cg99999-fieldset-civicrm-1-contact-1-cg99999-custom-100000', 'Duke');
+    await this.puppet.type('#edit-submitted-civicrm-1-contact-1-cg99999-fieldset-civicrm-1-contact-1-cg99999-custom-100001', '1234');
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Dependants"]');
+  },
 
-        return casper.waitForSelector('input[value="Contact Info"]');
-      });
-    },
-
-    /**
-     * Navigate to Payroll Page
-     *
-     * @return {*}
-     */
-    reachPayrollPage: function () {
-      var casper = this.casper;
-
-      return this.reachContactInfoPage().then(function () {
-        casper.click('.webform-next');
-
-        return casper.waitForSelector('input[value="Payroll"]');
-      });
-    },
-
-    /**
-     * Navigate to Emergency Contact Page
-     *
-     * @return {*}
-     */
-    reachEmergencyContactPage: function () {
-      var casper = this.casper;
-
-      return this.reachPayrollPage().then(function () {
-        casper.click('.webform-next');
-
-        return casper.waitForSelector('input[value="Emergency Contact"]');
-      });
-    },
-
-    /**
-     * Navigate to Dependent Page
-     *
-     * @return {*}
-     */
-    reachDependentPage: function () {
-      var casper = this.casper;
-
-      return this.reachEmergencyContactPage().then(function () {
-        casper.click('.webform-next');
-
-        return casper.waitForSelector('input[value="Dependants"]', function () {
-          casper.click('#edit-submitted-do-you-have-dependants-1');
-        });
-      });
-    },
-
-    /**
-     * Navigate to Profile Picture Page
-     *
-     * @return {*}
-     */
-    reachProfilePicturePage: function () {
-      var casper = this.casper;
-      return this.reachDependentPage().then(function () {
-        casper.waitUntilVisible('.webform-component-fieldset', function () {
-          casper.fillSelectors('form.webform-client-form', data.dependents, false);
-
-          casper.click('.webform-next');
-
-          return casper.waitForSelector('input[value="Profile Picture"]');
-        });
-      });
-    }
-  });
-})();
+  /**
+   * Navigate to Profile Picture Page
+   */
+  async reachProfilePicturePage () {
+    await this.reachDependentPage();
+    await this.puppet.waitFor('.webform-component-fieldset', { visible: true });
+    await this.puppet.type('#edit-submitted-civicrm-1-contact-3-cg99999-fieldset-civicrm-1-contact-3-cg99999-custom-100000', 'Duke');
+    await this.puppet.click('.webform-next');
+    await this.puppet.waitFor('input[value="Profile Picture"]');
+  }
+});

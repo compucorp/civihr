@@ -1,82 +1,50 @@
-var tab = require('./tab');
+const tab = require('./tab');
 
-module.exports = (function () {
-  return tab.extend({
-    readySelector: '.job-role__tabs',
-    tabTitle: 'Job Roles',
+module.exports = tab.extend({
+  readySelector: '.job-role__tabs',
+  tabTitle: 'Job Roles',
 
-    /**
-     * Clicks on the delete button
-     */
-    attemptDelete: function () {
-      var casper = this.casper;
+  /**
+   * Clicks on the delete button
+   */
+  async attemptDelete () {
+    await this.puppet.click('.job-role [ng-click*="removeRole"]');
+    await this.waitForModal();
+  },
 
-      casper.then(function () {
-        casper.click('.job-role [ng-click*="removeRole"]');
-        this.waitForModal();
-      }.bind(this));
-    },
+  /**
+   * Clicks on the edit button of a job role
+   */
+  async edit () {
+    await this.puppet.click('.tab-pane.active .job-role__actions .btn-link[ng-click$="show()"]');
+    await this.puppet.waitFor(100);
+  },
 
-    /**
-     * Clicks on the edit button of a job role
-     *
-     * @return {object}
-     */
-    edit: function () {
-      var casper = this.casper;
+  /**
+   * Opens the ui-select with the given name
+   *
+   * @param {String} name
+   */
+  async openDropdown (name) {
+    const common = 'jobroles.editData[job_roles_data.id]';
 
-      casper.then(function () {
-        casper.click('.tab-pane.active .job-role__actions .btn-link[ng-click$="show()"]');
-        casper.wait(100);
-      });
+    await this.puppet.click('[ng-model="' + common + '[\'' + name + '\']"] > a');
+    await this.puppet.waitFor(100);
+  },
 
-      return this;
-    },
+  /**
+   * Show the form for adding a new job role
+   */
+  async showAddNew () {
+    await this.puppet.click('.btn-primary[ng-click*="jobroles.addNewRole()"]');
+  },
 
-    /**
-     * Opens the ui-select with the given name
-     *
-     * @param  {string} name
-     * @return {object}
-     */
-    openDropdown: function (name) {
-      var casper = this.casper;
-
-      casper.then(function () {
-        var common = 'jobroles.edit_data[job_roles_data.id]';
-
-        casper.click('[ng-model="' + common + '[\'' + name + '\']"] > a');
-        casper.wait(100);
-      });
-
-      return this;
-    },
-
-    /**
-     * Show the form for adding a new job role
-     */
-    showAddNew: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.btn-primary[ng-click*="jobroles.addNewRole()"]');
-      });
-    },
-
-    /**
-     * Changes active tab
-     *
-     * @param  {string} tabName
-     * @return {object}
-     */
-    switchToTab: function (tabName) {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.clickLabel(tabName);
-      });
-
-      return this;
-    }
-  });
-})();
+  /**
+   * Changes active tab
+   *
+   * @param {String} tabName
+   */
+  async switchToTab (tabName) {
+    await this.puppet.click('[heading="' + tabName + '"] > a');
+  }
+});

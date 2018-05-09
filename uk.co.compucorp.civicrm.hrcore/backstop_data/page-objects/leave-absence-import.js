@@ -1,77 +1,59 @@
-var page = require('./page');
+const path = require('path');
+const page = require('./page');
 
-module.exports = (function () {
-  var stepsUrls = {
-    2: '_qf_MapField_display=true',
-    3: '_qf_Preview_display=true',
-    4: '_qf_Summary_display=true'
-  };
+module.exports = page.extend({
+  /**
+   * Displays L&A Import Form Step 2 by uploading a sample import file and
+   * clicking on next.
+   *
+   * @return Page instance.
+   */
+  async showStep2 () {
+    const filePath = path.join(__dirname, '..', 'uploads/leave-and-absences-import-data.csv');
+    const fileInput = await this.puppet.$('input[name="uploadFile"]');
 
-  return page.extend({
-    /**
-     * Displays L&A Import Form Step 2 by uploading a sample import file and
-     * clicking on next.
-     *
-     * @return Page instance.
-     */
-    showStep2: function () {
-      var filePath = 'backstop_data/uploads/leave-and-absences-import-data.csv';
+    await fileInput.uploadFile(filePath);
+    await this.puppet.click('[name="skipColumnHeader"]');
+    await this.submitAndWaitForStep(2);
+  },
 
-      this.casper.page.uploadFile('input[name=uploadFile]', filePath);
-      this.casper.fillSelectors('#DataSource', {
-        '#skipColumnHeader': true
-      }, false);
-      this.submitAndWaitForStep(2);
+  /**
+   * Displays L&A Import Form Step 3 by displaying step 2 and then clicking
+   * on next.
+   *
+   * @return Page instance.
+   */
+  async showStep3 () {
+    await this.showStep2();
+    await this.submitAndWaitForStep(3);
+  },
 
-      return this;
-    },
+  /**
+   * Displays L&A Import Form Step 4 by displaying step 3 and then clicking
+   * on next.
+   *
+   * @return page instance.
+   */
+  async showStep4 () {
+    await this.showStep3();
+    await this.submitAndWaitForStep(4);
+  },
 
-    /**
-     * Displays L&A Import Form Step 3 by displaying step 2 and then clicking
-     * on next.
-     *
-     * @return Page instance.
-     */
-    showStep3: function () {
-      this.showStep2();
-      this.submitAndWaitForStep(3);
+  /**
+   * Clicks on "next" button and waits for the next step to be ready
+   * (a step is ready when its breadcrumb in the wizard is active)
+   *
+   * @param {Number} step
+   */
+  async submitAndWaitForStep (step) {
+    await this.puppet.click('.crm-leave-and-balance-import .validate');
+    await this.puppet.waitFor(`.crm_wizard__title .nav-pills li.active:nth-child(${step})`);
+  },
 
-      return this;
-    },
-
-    /**
-     * Displays L&A Import Form Step 4 by displaying step 3 and then clicking
-     * on next.
-     *
-     * @return page instance.
-     */
-    showStep4: function () {
-      this.showStep3();
-      this.submitAndWaitForStep(4);
-
-      return this;
-    },
-
-    /**
-     * Clicks on next button (.validate) and waits for Step URL.
-     *
-     * @param {Number} step - the step to wait for.
-     */
-    submitAndWaitForStep: function (step) {
-      var casper = this.casper;
-      var urlRegExp = new RegExp(stepsUrls[step]);
-
-      casper.thenClick('.crm-leave-and-balance-import .validate')
-      .then(function () {
-        return casper.waitForUrl(urlRegExp);
-      });
-    },
-
-    /**
-     * Waits until the import form is visible.
-     */
-    waitForReady: function () {
-      this.waitUntilVisible('.crm-leave-and-balance-import');
-    }
-  });
-})();
+  /**
+   * Waits until the import form is visible.
+   */
+  async waitForReady () {
+    await this.puppet.waitFor('.crm-leave-and-balance-import');
+  }
+});

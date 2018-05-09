@@ -1,0 +1,87 @@
+{
+  "scenarios": [
+    {
+      "label": "SSP / Manager Leave / Current month",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/calendar",
+      "onReadyScript": "ssp/manager-leave/calendar-current-month-visible.js",
+      "user": "civihr_manager"
+    },
+    {
+      "label": "SSP / Manager Leave / Legend expanded",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/calendar",
+      "onReadyScript": "ssp/manager-leave/calendar-legend-expanded.js",
+      "user": "civihr_manager",
+      "requireSameDimensions": false
+    },
+    {
+      "label": "SSP / Manager Leave / Show all contacts",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/calendar",
+      "onReadyScript": "ssp/manager-leave/calendar-all-contacts.js",
+      "user": "civihr_manager"
+    },
+    {
+      "label": "SSP / Manager Leave / Show actions",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp/manager-leave/leave-requests-show-actions.js",
+      "user": "civihr_manager"
+    },
+    {
+      "label": "SSP / Manager Leave / Show without filters",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp/manager-leave/leave-requests-without-filters.js",
+      "user": "civihr_manager"
+    },
+    {
+      "label": "SSP / Manager Leave / Show with filters",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp/manager-leave/leave-requests-with-filters.js",
+      "user": "civihr_manager"
+    },
+    {
+      "label": "SSP / Manager Leave / Show staff edit toil request",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp/manager-leave/modal-toil-edit.js",
+      "user": "civihr_manager"
+    },
+    {
+      "label": "SSP / Manager Leave / Show staff edit sickness request",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp/manager-leave/modal-sick-edit.js",
+      "user": "civihr_manager"
+    },
+    {
+      "label": "SSP / Manager Leave / Apply leave on behalf of staff",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp/manager-leave/modal-leave-on-behalf-of-staff.js",
+      "user": "civihr_manager"
+    },
+    {
+      "label": "SSP / Manager Leave / Apply sickness on behalf of staff",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp/manager-leave/modal-sick-on-behalf-of-staff.js",
+      "user": "civihr_manager"
+    },
+    {
+      "label": "SSP / Manager Leave / Apply toil on behalf of staff",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp/manager-leave/modal-toil-on-behalf-of-staff.js",
+      "user": "civihr_manager"
+    },
+    {
+      "label": "SSP / Manager Leave / Leave Balances",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/leave-balances",
+      "onReadyScript": "ssp/manager-leave/leave-balances.js",
+      "user": "civihr_manager"
+    },
+    {
+      "label": "SSP / Manager Leave (as admin) / Leave Requests",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp/manager-leave/leave-requests-as-admin.js"
+    },
+    {
+      "label": "SSP / Manager Leave (as admin) / Leave Requests / All Requests",
+      "url": "{{siteUrl}}/manager-leave#/manager-leave/requests",
+      "onReadyScript": "ssp/manager-leave/leave-requests-as-admin-all-requests.js"
+    }
+  ]
+}

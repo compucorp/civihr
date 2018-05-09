@@ -2,57 +2,48 @@
   "scenarios": [
     {
       "label": "Job Roles / Basic Details",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/job-roles/basic-details",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=hrjobroles",
+      "onReadyScript": "contact-summary/job-roles/basic-details.js"
     },
     {
       "label": "Job Roles / Funding",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/job-roles/funding",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=hrjobroles",
+      "onReadyScript": "contact-summary/job-roles/funding.js"
     },
     {
       "label": "Job Roles / Cost Centres",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/job-roles/cost-centres",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=hrjobroles",
+      "onReadyScript": "contact-summary/job-roles/cost-centres.js"
     },
     {
       "label": "Job Roles / Delete Dialog",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/job-roles/delete-dialog",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=hrjobroles",
+      "onReadyScript": "contact-summary/job-roles/delete-dialog.js"
     },
     {
       "label": "Job Roles / Add New",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/job-roles/add-new",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=hrjobroles",
+      "onReadyScript": "contact-summary/job-roles/add-new.js"
     },
     {
       "label": "Job Roles / Basic Details / Edit",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/job-roles/basic-details-edit",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=hrjobroles",
+      "onReadyScript": "contact-summary/job-roles/basic-details-edit.js"
     },
     {
       "label": "Job Roles / Basic Details / Open ui select",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/job-roles/open-ui-select",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=hrjobroles",
+      "onReadyScript": "contact-summary/job-roles/open-ui-select.js"
     },
     {
       "label": "Job Roles / Funding / Edit",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/job-roles/funding-edit",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=hrjobroles",
+      "onReadyScript": "contact-summary/job-roles/funding-edit.js"
     },
     {
       "label": "Job Roles / Cost Centres / Edit",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/job-roles/cost-centres-edit",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=hrjobroles",
+      "onReadyScript": "contact-summary/job-roles/cost-centres-edit.js"
     }
   ]
 }

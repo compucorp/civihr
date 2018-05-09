@@ -1,0 +1,24 @@
+{
+  "scenarios": [
+    {
+      "label": "L&A / Dashboard / Calendar",
+      "url": "{{siteUrl}}/civicrm/leaveandabsences/dashboard#/calendar",
+      "onReadyScript": "leave-absence-dashboard/leave-calendar/leave-calendar.js"
+    },
+    {
+      "label": "L&A / Dashboard / Leave Requests",
+      "url": "{{siteUrl}}/civicrm/leaveandabsences/dashboard#/requests",
+      "onReadyScript": "leave-absence-dashboard/leave-requests/leave-requests.js"
+    },
+    {
+      "label": "L&A / Dashboard / Leave Requests / Show Filters",
+      "url": "{{siteUrl}}/civicrm/leaveandabsences/dashboard#/requests",
+      "onReadyScript": "leave-absence-dashboard/leave-requests/leave-requests-with-filters.js"
+    },
+    {
+      "label": "L&A / Dashboard / Leave Balances",
+      "url": "{{siteUrl}}/civicrm/leaveandabsences/dashboard#/leave-balances",
+      "onReadyScript": "leave-absence-dashboard/leave-balances/leave-balances.js"
+    }
+  ]
+}

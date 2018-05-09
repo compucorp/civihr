@@ -1,74 +1,42 @@
-var modal = require('./modal');
+/* global jQuery */
 
-module.exports = (function () {
-  return modal.extend({
+const modal = require('./modal');
 
-    /**
-     * Clicks the "add document" button
-     *
-     * @return {object}
-     */
-    addDocument: function () {
-      var casper = this.casper;
+module.exports = modal.extend({
 
-      casper.then(function () {
-        casper.click(this.modalRoot + ' a[ng-click="addActivity(documentList)"]');
-      }.bind(this));
+  /**
+   * Clicks the "add document" button
+   */
+  async addDocument () {
+    await this.puppet.click(this.modalRoot + ' a[ng-click="addActivity(documentList)"]');
+  },
 
-      return this;
-    },
+  /**
+   * Clicks the "add task" button
+   */
+  async addTask () {
+    await this.puppet.click(this.modalRoot + ' a[ng-click="addActivity(taskList)"]');
+  },
 
-    /**
-     * Clicks the "add task" button
-     *
-     * @return {object}
-     */
-    addTask: function () {
-      var casper = this.casper;
+  /**
+   * Opens a date picker
+   */
+  async pickDate () {
+    await this.puppet.click(this.modalRoot + ' [ng-model="assignment.dueDate"]');
+    await this.puppet.waitFor('.uib-datepicker-popup', { visible: true });
+  },
 
-      casper.then(function () {
-        casper.click(this.modalRoot + ' a[ng-click="addActivity(taskList)"]');
-      }.bind(this));
+  /**
+   * Selects an assignment type, so that the rest of the modal is shown
+   */
+  async selectType () {
+    await this.puppet.evaluate(function (modalRoot) {
+      const select = document.querySelector(modalRoot + ' select[name="assignment"]');
 
-      return this;
-    },
+      select.selectedIndex = 2;
 
-    /**
-     * Opens a date picker
-     *
-     * @return {object}
-     */
-    pickDate: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="assignment.dueDate"]');
-        casper.waitUntilVisible('.uib-datepicker-popup');
-      }.bind(this));
-
-      return this;
-    },
-
-    /**
-     * Selects an assignment type, so that the rest of the modal is shown
-     *
-     * @return {object}
-     */
-    selectType: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.evaluate(function (modalRoot) {
-          var select = document.querySelector(modalRoot + ' select[name="assignment"]');
-
-          select.selectedIndex = 2;
-          jQuery(select).change();
-        }, this.modalRoot);
-
-        casper.wait(500);
-      }.bind(this));
-
-      return this;
-    }
-  });
-})();
+      jQuery(select).change();
+    }, this.modalRoot);
+    await this.puppet.waitFor(500);
+  }
+});

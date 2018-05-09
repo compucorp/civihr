@@ -1,70 +1,32 @@
-var _ = require('lodash');
-var Promise = require('es6-promise').Promise;
-var customCasperJS = require('../utils/custom-casperjs');
-
-/**
- * Closes any modal currently open
- *
- * @return {object}
- */
-function closeAnyModal () {
-  var casper = this.casper;
-  var openModalSelector = '.modal.in';
-
-  casper.then(function () {
-    if (casper.exists(openModalSelector)) {
-      casper.click(openModalSelector + ' .close[ng-click="cancel()"]');
-      casper.wait(300);
-    }
-  });
-
-  return this;
-}
-
-/**
- * Closes any notification currently open
- *
- * @return {object}
- */
-function closeNotifications () {
-  var casper = this.casper;
-  var notificationSelector = 'a.ui-notify-cross.ui-notify-close';
-
-  casper.then(function () {
-    if (casper.exists(notificationSelector)) {
-      casper.click(notificationSelector);
-      casper.wait(500);
-    }
-  });
-
-  return this;
-}
+const _ = require('lodash');
 
 module.exports = {
-
   /**
-   * Initializes the page
+   * Initializes the page and removes any code warnings from the page
    *
-   * Stores a customized version of CasperJS and then wait for a
-   * until a certain "ready" condition is met, if the page is set up to do so
-   *
-   * @param  {object} casper
-   * @param  {boolean} clearDialogs if true it will close modals and notifications
-   * @return {object}
+   * @param  {Object} puppet
+   * @param  {Boolean} clearDialogs if true it will close modals and notifications
+   * @return {Object}
    */
-  init: function (casper, clearDialogs) {
+  async init (puppet, clearDialogs) {
     clearDialogs = typeof clearDialogs !== 'undefined' ? !!clearDialogs : true;
 
-    this.casper = customCasperJS(casper);
-    this.casper.options.waitTimeout = 60000;
+    this.puppet = puppet;
+    !!this.waitForReady && await this.waitForReady();
 
-    !!this.waitForReady && this.casper.then(function () {
-      this.waitForReady();
-    }.bind(this));
+    const href = await this.puppet.evaluate(() => document.location.href);
+    const isAdmin = href.indexOf('civicrm/') > 1;
+
+    await this.puppet.evaluate(function (isAdmin) {
+      const selector = isAdmin ? '#content > #console' : '#messages .alert';
+      const errorsWrapper = document.querySelector(selector);
+
+      errorsWrapper && (errorsWrapper.style.display = 'none');
+    }, isAdmin);
 
     if (clearDialogs) {
-      closeAnyModal.call(this);
-      closeNotifications.call(this);
+      await closeAnyModal.call(this);
+      await closeNotifications.call(this);
     }
 
     return this;
@@ -73,11 +35,11 @@ module.exports = {
   /**
    * Used to extend the main page
    *
-   * @param  {object} page
+   * @param  {Object} page
    *   a collection of methods and properties that will extend the main page
-   * @return {object}
+   * @return {Object}
    */
-  extend: function (page) {
+  extend (page) {
     return _.assign(Object.create(this), page);
   },
 
@@ -85,36 +47,45 @@ module.exports = {
    * Waits for the modal dialog to load. By default it waits for the .modal class
    * in dialog otherwise user can specify a custom waitSelector. Once model is
    * visible it loads the respective modalModule (if any)
+   *
    * @param {String} modalModule
    * @param {String} waitSelector
-   * @return {Promise}
+   * @return {Object} the modal
    */
-  waitForModal: function (modalModule, waitSelector) {
-    var casper = this.casper;
+  async waitForModal (modalModule, waitSelector) {
+    await this.puppet.waitFor(waitSelector || '.modal', { visible: true });
+    await this.puppet.waitFor(300);
 
-    return new Promise(function (resolve) {
-      casper.then(function () {
-        casper.waitUntilVisible(waitSelector || '.modal', function () {
-          casper.wait(300);
-
-          if (modalModule) {
-            resolve(require('./modals/' + modalModule).init(casper, false));
-          } else {
-            resolve();
-          }
-        });
-      });
-    });
-  },
-
-  /**
-   * Waits until element is visible on the browser.
-   *
-   * @return {Promise}
-   */
-  waitUntilVisible: function (elementSelector) {
-    return this.casper.then(function () {
-      return this.casper.waitUntilVisible(elementSelector);
-    }.bind(this));
+    if (modalModule) {
+      return require('./modals/' + modalModule).init(this.puppet, false);
+    }
   }
 };
+
+/**
+ * Closes any modal currently open
+ */
+async function closeAnyModal () {
+  const openModalSelector = '.modal.in';
+
+  const result = await this.puppet.$(openModalSelector);
+
+  if (result) {
+    await this.puppet.click(openModalSelector + ' .close[ng-click="cancel()"]');
+    await this.puppet.waitFor(300);
+  }
+}
+
+/**
+ * Closes any notification currently open
+ */
+async function closeNotifications () {
+  const notificationSelector = 'a.ui-notify-cross.ui-notify-close';
+
+  const result = await this.puppet.$(notificationSelector);
+
+  if (result) {
+    await this.puppet.click(notificationSelector);
+    await this.puppet.waitFor(500);
+  }
+}

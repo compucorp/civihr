@@ -2,9 +2,7 @@
   "scenarios": [
     {
       "label": "T&A / Calendar",
-      "url": "civicrm/tasksassignments/dashboard#/calendar",
-      "onReadyScript": "close-any-modal",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/calendar"
     }
   ]
 }

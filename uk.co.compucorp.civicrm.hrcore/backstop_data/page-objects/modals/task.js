@@ -1,70 +1,36 @@
-var modal = require('./modal');
+const modal = require('./modal');
 
-module.exports = (function () {
-  return modal.extend({
+module.exports = modal.extend({
+  /**
+   * Opens a date picker
+   */
+  async pickDate () {
+    await this.puppet.click(this.modalRoot + ' [ng-model="task.activity_date_time"]');
+    await this.puppet.waitFor('.uib-datepicker-popup', { visible: true });
+  },
 
-    /**
-     * Opens a date picker
-     *
-     * @return {object}
-     */
-    pickDate: function () {
-      var casper = this.casper;
+  /**
+   * Shows a given field
+   *
+   * @param {String} fieldName
+   */
+  async showField (fieldName) {
+    await this.puppet.click(this.modalRoot + ' a[ng-click*="showField' + fieldName + '"]');
+  },
 
-      casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="task.activity_date_time"]');
-        casper.waitUntilVisible('.uib-datepicker-popup');
-      }.bind(this));
+  /**
+   * Selects the task's assignee
+   */
+  async selectAssignee () {
+    await this.puppet.click(this.modalRoot + ' [ng-model="task.assignee_contact_id[0]"] .ui-select-match');
+    await this.puppet.waitFor('.select2-with-searchbox:not(.select2-display-none)', { visible: true });
+  },
 
-      return this;
-    },
-
-    /**
-     * Shows a given field
-     *
-     * @param  {string} fieldName
-     * @return {object}
-     */
-    showField: function (fieldName) {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' a[ng-click*="showField' + fieldName + '"]');
-      }.bind(this));
-
-      return this;
-    },
-
-    /**
-     * Selects the task's assignee
-     *
-     * @return {object}
-     */
-    selectAssignee: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="task.assignee_contact_id[0]"] .ui-select-match');
-        casper.waitUntilVisible('.select2-with-searchbox');
-      }.bind(this));
-
-      return this;
-    },
-
-    /**
-     * Select the task type
-     *
-     * @return {object}
-     */
-    selectType: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(this.modalRoot + ' [ng-model="task.activity_type_id"] .ui-select-match');
-        casper.waitUntilVisible('.select2-with-searchbox');
-      }.bind(this));
-
-      return this;
-    }
-  });
-})();
+  /**
+   * Select the task type
+   */
+  async selectType () {
+    await this.puppet.click(this.modalRoot + ' [ng-model="task.activity_type_id"] .ui-select-match');
+    await this.puppet.waitFor('.select2-with-searchbox:not(.select2-display-none)', { visible: true });
+  }
+});

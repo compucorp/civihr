@@ -1,127 +1,86 @@
 /* global Event */
 
-var Promise = require('es6-promise').Promise;
-var page = require('./page');
+const page = require('./page');
 
-module.exports = (function () {
-  return page.extend({
-    /**
-     * Wait for the page to be ready as it waits for the actions of the first
-     * row of leave requests to be visible
-     * @return {Object} this object
-     */
-    waitForReady: function () {
-      this.waitUntilVisible('tbody tr:nth-child(1) a');
-    },
-    /**
-     * Change the filter by Assignee
-     *
-     * @param {String} type (me|unassigned|all)
-     * @return {Object} this object
-     */
-    changeFilterByAssignee: function (type) {
-      var casper = this.casper;
-      var filters = ['me', 'unassigned', 'all'];
+module.exports = page.extend({
+  /**
+   * Wait for the page to be ready as it waits for the actions of the first
+   * row of leave requests to be visible
+   */
+  async waitForReady () {
+    await this.puppet.waitFor('tbody tr:nth-child(1) a', { visible: true });
+  },
 
-      casper.then(function () {
-        casper.click(
-          '.chr_manage_leave_requests__assignee_filter button:nth-of-type(' +
-          (filters.indexOf(type) + 1) +
-          ')');
-        casper.waitUntilVisible('tbody tr:nth-child(1) a');
-      });
+  /**
+   * Change the filter by Assignee
+   *
+   * @param {String} type (me|unassigned|all)
+   */
+  async changeFilterByAssignee (type) {
+    const filters = ['me', 'unassigned', 'all'];
 
-      return this;
-    },
-    /**
-     * Opens the dropdown for manager actions like edit/respond, cancel.
-     * @param {Number} row number corresponding to leave request in the list
-     * @return {Object} this object
-     */
-    openActionsForRow: function (row) {
-      var casper = this.casper;
+    await this.puppet.click(
+      '.chr_manage_leave_requests__assignee_filter button:nth-of-type(' +
+      (filters.indexOf(type) + 1) +
+      ')');
+    await this.puppet.waitFor('tbody tr:nth-child(1) a', { visible: true });
+  },
 
-      casper.then(function () {
-        casper.click('.chr_manage_leave_requests__panel_body tr:nth-child(' + (row || 1) + ') .dropdown-toggle');
-      });
+  /**
+   * Opens the dropdown for manager actions like edit/respond, cancel.
+   *
+   * @param {Number} row number corresponding to leave request in the list
+   */
+  async openActionsForRow (row) {
+    await this.puppet.click('.chr_manage_leave_requests__panel_body tr:nth-child(' + (row || 1) + ') .dropdown-toggle');
+  },
 
-      return this;
-    },
-    /**
-     * Expands filters on screen
-     * @return {Object} this object
-     */
-    expandFilter: function () {
-      var casper = this.casper;
+  /**
+   * Expands filters on screen
+   *
+   */
+  async expandFilter () {
+    await this.puppet.click('.chr_manage_leave_requests__filter');
+    await this.puppet.waitFor('.chr_manage_leave_requests__sub-header div:nth-child(1)', { visible: true });
 
-      casper.then(function () {
-        casper.click('.chr_manage_leave_requests__filter');
-        casper.waitUntilVisible('.chr_manage_leave_requests__sub-header div:nth-child(1)');
-      });
+    return this;
+  },
 
-      return this;
-    },
-    /**
-     * Opens leave type filter
-     * @param {Number} leaveType index like 1 for Holiday/Vacation, 2 for TOIL, 3 for Sickness
-     * @return {Object} this object
-     */
-    openLeaveTypeFor: function (leaveType) {
-      var casper = this.casper;
+  /**
+   * Opens leave type filter
+   *
+   * @param {Number} leaveType index like 1 for Holiday/Vacation, 2 for TOIL, 3 for Sickness
+   */
+  async openLeaveTypeFor (leaveType) {
+    await this.puppet.evaluate(function (leaveType) {
+      const element = document.querySelector('.chr_manage_leave_requests__header div:nth-child(1) > select');
 
-      casper.then(function () {
-        casper.evaluate(function (leaveType) {
-          var element = document.querySelector('.chr_manage_leave_requests__header div:nth-child(1) > select');
-          element.selectedIndex = leaveType;// for TOIL option
-          element.dispatchEvent(new Event('change'));
-        }, leaveType);
+      element.selectedIndex = leaveType;
+      element.dispatchEvent(new Event('change'));
+    }, leaveType);
+    await this.puppet.waitFor('tbody tr:nth-child(1) a', { visible: true });
+  },
 
-        return casper.waitUntilVisible('tbody tr:nth-child(1) a');
-      });
+  /**
+   * User clicks on the edit/respond action
+   *
+   * @param {Number} row number corresponding to leave request in the list
+   */
+  async editRequest (row) {
+    await this.puppet.click('body > ul.dropdown-menu:nth-of-type(' + (row || 1) + ') li:first-child a');
+    await this.puppet.waitFor('leave-request-popup-details-tab', { visible: true });
+    await this.puppet.waitFor('leave-request-popup-details-tab .spinner', { hidden: true });
+  },
 
-      return this;
-    },
-    /**
-     * User clicks on the edit/respond action
-     * @param {Number} row number corresponding to leave request in the list
-     * @return {Promise}
-     */
-    editRequest: function (row) {
-      var casper = this.casper;
+  /**
+   * Apply leave on behalf of staff
+   *
+   * @param {String} leaveType leave, sickness or toil
+   */
+  async applyLeaveForStaff (leaveType) {
+    await this.puppet.click('leave-request-record-actions .dropdown-toggle');
+    await this.puppet.click(`.leave-request-record-actions__new-${leaveType}`);
 
-      return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click('body > ul.dropdown-menu:nth-of-type(' + (row || 1) + ') li:first-child a');
-          // as there are multiple spinners it takes more time to load up
-          casper.waitWhileVisible('.modal-content .spinner:nth-child(1)');
-
-          return casper.waitWhileVisible('leave-request-popup-details-tab .spinner');
-        });
-      });
-    },
-    /**
-     * Apply leave on behalf of staff
-     *
-     * @param {String} leaveType leave, sickness or toil
-     * @return {Promise}
-     */
-    applyLeaveForStaff: function (leaveType) {
-      var casper = this.casper;
-
-      return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click('leave-request-record-actions .dropdown-toggle');
-        });
-
-        casper.then(function () {
-          casper.click('.leave-request-record-actions__new-' + leaveType);
-        });
-
-        casper.then(function () {
-          // as there are multiple spinners it takes more time to load up
-          resolve(this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form'));
-        }.bind(this));
-      }.bind(this));
-    }
-  });
-})();
+    await this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form');
+  }
+});

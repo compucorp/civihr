@@ -1,24 +1,16 @@
-var tab = require('./tab');
+const tab = require('./tab');
 
-module.exports = (function () {
-  return tab.extend({
-    tabTitle: 'Documents',
-    /**
-     * Overrides the original tab's `ready` method
-     * There is no single selector that can be used as `readySelector` (which
-     * would be used by the original `ready` method) to detect when the
-     * tab is ready, so as a quick workaround we simply override the method
-     * and perform all the needed checks in it
-     *
-     * @return {Boolean} returns `true` for the `casper.waitFor()` caller
-     */
-    ready: function () {
-      var casper = this.casper;
-
-      casper.waitUntilVisible('form[name="formDocuments"]');
-      casper.waitWhileVisible('.ct-spinner-cover');
-
-      return true;
-    }
-  });
-})();
+module.exports = tab.extend({
+  tabTitle: 'Documents',
+  /**
+   * Overrides the original tab's `waitForReady` method
+   * There is no single selector that can be used as `readySelector` (which
+   * would be used by the original `waitForReady` method) to detect when the
+   * tab is ready, so as a quick workaround we simply override the method
+   * and perform all the needed checks in it
+   */
+  async waitForReady () {
+    await this.puppet.waitFor('form[name="formDocuments"]', { visible: true });
+    await this.puppet.waitFor('.ct-spinner-cover', { hidden: true });
+  }
+});

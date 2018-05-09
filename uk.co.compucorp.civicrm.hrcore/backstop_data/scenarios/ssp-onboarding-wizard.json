@@ -1,0 +1,47 @@
+{
+  "scenarios": [
+    {
+      "label": "SSP / Onboarding Wizard / Customize SSP",
+      "url": "{{siteUrl}}/customize-onboarding-wizard"
+    },
+    {
+      "label": "SSP / Onboarding Wizard / Password",
+      "url": "{{siteUrl}}/user/1/edit"
+    },
+    {
+      "label": "SSP / Onboarding Wizard / Personal Details",
+      "url": "{{siteUrl}}/onboarding-form"
+    },
+    {
+      "label": "SSP / Onboarding Wizard / Address",
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/address.js"
+    },
+    {
+      "label": "SSP / Onboarding Wizard / Contact Info",
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/contact.js"
+    },
+    {
+      "label": "SSP / Onboarding Wizard / Payroll",
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/payroll.js"
+    },
+    {
+      "label": "SSP / Onboarding Wizard / Emergency Contact",
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/emergency_contact.js"
+    },
+    {
+      "label": "SSP / Onboarding Wizard / Dependants",
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/dependents.js",
+      "requireSameDimensions": false
+    },
+    {
+      "label": "SSP / Onboarding Wizard / Profile Picture",
+      "url": "{{siteUrl}}/onboarding-form",
+      "onReadyScript": "onboarding-wizard/profile_picture.js"
+    }
+  ]
+}

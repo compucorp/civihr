@@ -1,5 +1,4 @@
-var Promise = require('es6-promise').Promise;
-var tab = require('./tab');
+const tab = require('./tab');
 
 module.exports = tab.extend({
   readySelector: '.absence-tab-page',
@@ -8,21 +7,12 @@ module.exports = tab.extend({
   /**
    * Opens one of the absence sub tabs
    *
-   * @param  {string} tabId
-   * @return {object} resolves with the tab page object
+   * @param {String} tabId
    */
-  openSubTab: function (tabId) {
-    var casper = this.casper;
-    var tab = require('./absence/' + tabId).init(casper, false);
+  async openSubTab (tabId) {
+    const tab = require('./absence/' + tabId);
 
-    return new Promise(function (resolve) {
-      casper.then(function () {
-        casper.click('[heading="' + tab.tabTitle + '"] > a');
-        casper.waitFor(tab.ready.bind(tab), function () {
-          casper.wait(500);
-          resolve(tab);
-        });
-      });
-    });
+    await this.puppet.click('[heading="' + tab.tabTitle + '"] > a');
+    return tab.init(this.puppet, false);
   }
 });
