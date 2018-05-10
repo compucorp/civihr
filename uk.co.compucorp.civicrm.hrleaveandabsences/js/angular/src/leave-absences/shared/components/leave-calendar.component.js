@@ -61,9 +61,9 @@ define([
         .then(initWatchers)
         .then(injectSubController)
         .then(makeSureMonthsAreNotInjected)
-        .then(loadAbsencePeriods)
         .then(function () {
           return $q.all([
+            loadAbsencePeriods(),
             loadContacts(),
             loadSupportData()
           ]);
