@@ -83,16 +83,16 @@ define([
               vm.lookupContacts = contacts;
             })
             .then(function () {
-              return (filterByAssignee !== 'me'
-                ? loadContactIdsToReduceTo() : $q.resolve(null));
+              return $q.all([
+                filterByAssignee !== 'me'
+                  ? loadContactIdsToReduceTo() : $q.resolve(null),
+                loadContacts()
+              ]);
             })
-            .then(function (contactIdsToReduceTo) {
-              vm.contactIdsToReduceTo = contactIdsToReduceTo;
+            .then(function (results) {
+              vm.contactIdsToReduceTo = results[0];
 
-              return loadContacts();
-            })
-            .then(function (contacts) {
-              return contacts;
+              return results[1];
             });
         }
       };
