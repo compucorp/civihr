@@ -140,23 +140,21 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
     }
 
     $workPattern = self::findById($params['id']);
-    $isDefaultWorkPattern = self::isDefault($workPattern);
-    $isDisabledWorkPattern = !self::isActive($workPattern);
 
-    if($isDisabledWorkPattern && $isToBeSetAsDefault) {
+    if(!$workPattern->isActive() && $isToBeSetAsDefault) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException(
         'You cannot set a disabled work pattern as the default'
       );
     }
 
-    if($isToBeDisabled && $isDefaultWorkPattern) {
+    if($isToBeDisabled && $workPattern->isDefault()) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException(
         'You cannot disable the default Work Pattern'
       );
     }
 
     $isToBeUncheckedAsDefault = isset($params['is_default']) && !$params['is_default'];
-    if($isToBeUncheckedAsDefault && $isDefaultWorkPattern) {
+    if($isToBeUncheckedAsDefault && $workPattern->isDefault()) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException(
         'It is not possible to have no default Work Pattern'
       );
@@ -197,24 +195,20 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
   /**
    * Checks whether the Work Pattern is the default Work Pattern or not.
    *
-   * @param WorkPattern $workPattern
-   *
    * @return boolean
    */
-  private static function isDefault(WorkPattern $workPattern) {
-    return $workPattern->is_default;
+  public function isDefault() {
+    return (bool)$this->is_default;
   }
 
   /**
    *
    * Checks whether the Work Pattern is enabled.
    *
-   * @param WorkPattern $workPattern
-   *
    * @return boolean
    */
-  private static function isActive(WorkPattern $workPattern) {
-    return $workPattern->is_active;
+  public function isActive() {
+    return (bool)$this->is_active;
   }
 
   /**
