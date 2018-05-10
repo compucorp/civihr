@@ -692,6 +692,30 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     WorkPattern::create($params);
   }
 
+  public function testisActiveReturnsTrueWhenWorkPatternIsActive() {
+    $workPattern = WorkPatternFabricator::fabricate(['is_active' => 1]);
+
+    $this->assertTrue($workPattern->isActive());
+  }
+
+  public function testisActiveReturnsFalseWhenWorkPatternIsNotActive() {
+    $workPattern = WorkPatternFabricator::fabricate(['is_active' => 0]);
+
+    $this->assertFalse($workPattern->isActive());
+  }
+
+  public function testisDefaultReturnsTrueWhenWorkPatternIsTheDefault() {
+    $workPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
+
+    $this->assertTrue($workPattern->isDefault());
+  }
+
+  public function testisDefaultReturnsFalseWhenWorkPatternIsNotTheDefault() {
+    $workPattern = WorkPatternFabricator::fabricate(['is_default' => 0]);
+
+    $this->assertFalse($workPattern->isDefault());
+  }
+
   public function testCannotMakeTheDefaultWorkPatternNonDefault() {
     $workPattern = WorkPatternFabricator::fabricate(['is_default' => 1]);
 
@@ -701,6 +725,18 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     );
 
     $params = ['id' => $workPattern->id, 'is_default' => 0];
+    WorkPattern::create($params);
+  }
+
+  public function testCannotMakeADisabledWorkPatternAsDefault() {
+    $workPattern = WorkPatternFabricator::fabricate(['is_active' => 0]);
+
+    $this->setExpectedException(
+      CRM_HRLeaveAndAbsences_Exception_InvalidWorkPatternException::class,
+      'You cannot set a disabled work pattern as the default'
+    );
+
+    $params = ['id' => $workPattern->id, 'is_default' => 1];
     WorkPattern::create($params);
   }
 
