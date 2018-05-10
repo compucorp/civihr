@@ -65,11 +65,9 @@ define([
           return $q.all([
             loadAbsencePeriods(),
             loadContacts(),
-            loadSupportData()
+            loadSupportData(),
+            vm.showFilters ? loadFiltersOptionValues() : _.noop
           ]);
-        })
-        .then(function () {
-          return vm.showFilters ? loadFiltersOptionValues() : _.noop;
         })
         .then(function () {
           injectAndShowMonths();
