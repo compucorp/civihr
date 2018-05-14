@@ -141,6 +141,15 @@ $chr-leave-calendar-legend-size:                  20px;
 
 .chr_leave-calendar__day-container {
   height: 100%;
+  position: relative;
+}
+
+.chr_leave-calendar__day-mobile-overlay {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+  background-color: rgba(0, 0, 0, .4)
 }
 
 .chr_leave-calendar__legend__title {

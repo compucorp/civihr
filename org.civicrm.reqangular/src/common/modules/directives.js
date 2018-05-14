@@ -7,6 +7,7 @@ define([
   'common/decorators/xeditable-disable-calendar-icon.decorator',
   'common/decorators/ui-bootstrap/uib-tabset',
   'common/decorators/ui-bootstrap/uib-modal.decorator',
+  'common/decorators/uib-tooltip.decorator',
   'common/angularBootstrap',
   'common/angularXeditable',
   'common/ui-select',
@@ -14,7 +15,7 @@ define([
   'common/modules/controllers',
   'common/modules/services',
   'common/modules/apis'
-], function (angular, uiSelectFocusDecorator, uibCalendarIconDecorator, uibCalendarMobileVersion, xeditableDisableCalendarIcon, uibTabset, uibModalDecorator) {
+], function (angular, uiSelectFocusDecorator, uibCalendarIconDecorator, uibCalendarMobileVersion, xeditableDisableCalendarIcon, uibTabset, uibModalDecorator, uibTooltipDecorator) {
   'use strict';
   return angular.module('common.directives', ['common.templates', 'common.controllers',
     'ui.select', 'ui.bootstrap', 'xeditable'])
@@ -25,6 +26,7 @@ define([
       $provide.decorator('$uibModal', uibModalDecorator);
       $provide.decorator('editableBsdateDirective', xeditableDisableCalendarIcon);
       $provide.decorator('uiSelectDirective', uiSelectFocusDecorator);
+      $provide.decorator('$uibTooltip', uibTooltipDecorator);
     }])
     .run(['$templateCache', function ($templateCache) {
       // Update uib-tabset HTML with header class
