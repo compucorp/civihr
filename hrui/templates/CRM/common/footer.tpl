@@ -23,8 +23,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
 *}
-
-{if $canAccessCiviCRM }
+{if call_user_func(array('CRM_Core_Permission','check'), 'access CiviCRM')}
   {include file="CRM/common/accesskeys.tpl"}
   {if !empty($contactId)}
     {include file="CRM/common/contactFooter.tpl"}
@@ -34,7 +33,7 @@
     {* PCHR-1323 - Display CiviHR version info. *}
     {ts}Powered by CiviHR {/ts} {civihrVersion}.
 
-    {if $isRoot && !empty ($footer_status_severity)}
+    {if !empty($footer_status_severity)}
       <span class="status{if $footer_status_severity gt 3} crm-error{elseif $footer_status_severity gt 2} crm-warning{else} crm-ok{/if}">
       <a target="_blank" href="{crmURL p='civicrm/a/#/status'}">{$footer_status_message}</a>.
     </span>&nbsp;
