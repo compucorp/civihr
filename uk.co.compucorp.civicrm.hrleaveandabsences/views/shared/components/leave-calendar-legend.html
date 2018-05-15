@@ -19,12 +19,12 @@
       </div>
       <div class="chr_leave-calendar__legend__header">Other</div>
       <div class="clearfix">
-        <div ng-repeat="otherBadge in legend.other_badges"
+        <div ng-repeat="otherBadge in legend.otherBadges"
           class="chr_leave-calendar__legend__other-badge-wrapper">
           <div class="chr_leave-calendar__legend__other-badge
-            {{otherBadge.type ? 'chr_leave-calendar__legend__other-badge-' + otherBadge.type : ''}}">
+            {{otherBadge.cssClassSuffix ? 'chr_leave-calendar__legend__other-badge-' + otherBadge.cssClassSuffix : ''}}">
             {{otherBadge.label}}</div>
-          {{otherBadge.hint}}
+          {{otherBadge.description}}
         </div>
       </div>
     </div>
