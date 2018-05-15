@@ -2,14 +2,8 @@
 
 class CRM_HRCore_Test_Fabricator_CustomGroup {
 
-  private static $defaultParams = [
-    'name' => 'test_custom_group',
-    'title' => 'Test Custom Group',
-    'extends' => 'Individual'
-  ];
-
   public static function fabricate($params = []) {
-    $params = array_merge(self::$defaultParams, $params);
+    $params = array_merge(self::getDefaultParams(), $params);
 
     $result = civicrm_api3(
       'CustomGroup',
@@ -18,6 +12,17 @@ class CRM_HRCore_Test_Fabricator_CustomGroup {
     );
 
     return array_shift($result['values']);
+  }
+
+  private static function getDefaultParams() {
+    static $count = 0;
+    $count++;
+
+    return [
+      'name' => 'test_custom_group_' . $count,
+      'title' => 'Test Custom Group ' . $count,
+      'extends' => 'Individual'
+    ];
   }
 
 }
