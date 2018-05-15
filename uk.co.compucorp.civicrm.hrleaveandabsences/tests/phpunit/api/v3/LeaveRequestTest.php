@@ -1174,7 +1174,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertNotEmpty($resultGetFull['values'][$leaveRequest3->id]);
   }
 
-  public function testGetAndGetFullReturnAllLeaveRequestsWhenTheExpiredParamIsNotPresent() {
+  public function testGetAndGetFullReturnAllNonExpiredLeaveRequestsWhenTheExpiredParamFalse() {
     $type = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => TRUE,
       'max_leave_accrual'      => 10
@@ -1185,8 +1185,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    // This request has 3 days expired, but will be included on
-    // the response anyway, since the "expired" flag is not set
+    // This request has 3 days expired, but will not be included on
+    // the response since the "expired" flag is FALSE.
     $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contract['contact_id'],
       'type_id' => $type->id,
@@ -1219,14 +1219,61 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ], TRUE);
 
-    $resultGet = civicrm_api3('LeaveRequest', 'get');
-    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull');
+    $resultGet = civicrm_api3('LeaveRequest', 'get', ['expired' => FALSE]);
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull', ['expired' => FALSE]);
 
-    $this->assertEquals(3, $resultGet['count']);
-    $this->assertEquals(3, $resultGetFull['count']);
-    $this->assertNotEmpty($resultGet['values'][$toilRequest1->id]);
+    $this->assertEquals(2, $resultGet['count']);
+    $this->assertEquals(2, $resultGetFull['count']);
     $this->assertNotEmpty($resultGet['values'][$toilRequest2->id]);
     $this->assertNotEmpty($resultGet['values'][$leaveRequest->id]);
+  }
+
+  public function testGetAndGetFullWillIncludeLeaveRequestWithExpiredBalanceOfZeroWhenTheExpiredParamIsFalse() {
+    $type = AbsenceTypeFabricator::fabricate([
+      'allow_accruals_request' => TRUE,
+      'max_leave_accrual'      => 10
+    ]);
+
+    $contract = HRJobContractFabricator::fabricate(
+      ['contact_id' => 1],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    // This request has 3 days expired, but will not be included on
+    // the response since the "expired" flag is FALSE
+    $toilRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => $type->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'toil_duration' => 10,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('2016-01-10'),
+      'toil_to_accrue' => 5,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], TRUE);
+    //expire balance change but with an amount of zero which means the TOIl was used up before
+    //the expiry date.
+    $this->createExpiryBalanceChangeForTOILRequest($toilRequest1->id, 0);
+
+    // this one is not expired yet
+    $toilRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contract['contact_id'],
+      'type_id' => $type->id,
+      'from_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'to_date' => CRM_Utils_Date::processDate('tomorrow'),
+      'toil_duration' => 10,
+      'toil_expiry_date' => CRM_Utils_Date::processDate('+30 days'),
+      'toil_to_accrue' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ], TRUE);
+
+    $resultGet = civicrm_api3('LeaveRequest', 'get', ['expired' => FALSE]);
+    $resultGetFull = civicrm_api3('LeaveRequest', 'getFull', ['expired' => FALSE]);
+
+    $this->assertEquals(2, $resultGet['count']);
+    $this->assertEquals(2, $resultGetFull['count']);
+    $this->assertNotEmpty($resultGet['values'][$toilRequest1->id]);
+    $this->assertNotEmpty($resultGet['values'][$toilRequest2->id]);
   }
 
   public function testGetAndGetFullReturnOnlyLeaveRequestsWithExpiredBalanceChangesWhenTheExpiredParamIsPresent() {

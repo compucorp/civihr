@@ -425,8 +425,8 @@ define([
      */
     function loadMonthLeaveRequests () {
       return LeaveRequest.all({
-        from_date: { to: vm.month.days[vm.month.days.length - 1].date },
-        to_date: { from: vm.month.days[0].date },
+        from_date: { to: vm.month.days[vm.month.days.length - 1].date + ' 23:59:59' },
+        to_date: { from: vm.month.days[0].date + ' 00:00:00' },
         status_id: { 'IN': leaveStatusesToBeDisplayed() },
         contact_id: { 'IN': vm.contacts.map(function (contact) {
           return contact.id;
