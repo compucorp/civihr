@@ -19,13 +19,17 @@ define([
     }
 
     /**
-     * Checks if the given date is in the standard YYYY-MM-DD format
+     * Checks if the given date is in the standard YYYY-MM-DD[ HH:mm[:ss]] format
      *
-     * @param {string} date
-     * @return {boolean}
+     * @param  {String} date
+     * @return {Boolean}
      */
     function isStandardDateFormat (date) {
-      return moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD') === date;
+      var standardFormats = ['YYYY-MM-DD', 'YYYY-MM-DD HH:mm', 'YYYY-MM-DD HH:mm:ss'];
+
+      return _.some(standardFormats, function (standardFormat) {
+        return moment(date, standardFormat).format(standardFormat) === date;
+      });
     }
 
     /**
