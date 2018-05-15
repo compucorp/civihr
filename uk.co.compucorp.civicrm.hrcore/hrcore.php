@@ -197,7 +197,9 @@ function hrcore_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function hrcore_civicrm_enable() {
-  // required for PEAR style autoloading in this extension
+  // _hrcore_civix_civicrm_config() will add this extension to the include path.
+  // We need to do this here because before extension is enabled the config
+  // hook is not called for it
   _hrcore_civix_civicrm_config();
 
   $listeners = [
