@@ -45,32 +45,36 @@
     <div
       ng-mouseenter="day.toggleTooltip('tooltip', true)"
       ng-mouseleave="day.toggleTooltip('tooltip', false)">
-      <div class="chr_leave-calendar__day-tooltip_item"
+      <div class="chr_leave-calendar__day-tooltip__item"
         ng-repeat="leaveRequest in day.contactData.leaveRequests"
         ng-click="day.tooltip.show = false;
           day.openLeavePopup($event, leaveRequest, null, null, $root.section === 'my-leave')">
-        <strong>{{day.contactData.leaveRequestsAttributes[leaveRequest.id].absenceTypeTitle}}</strong>
+        <div class="chr_leave-calendar__day-tooltip__item_absence-type">
+          <strong>{{day.contactData.leaveRequestsAttributes[leaveRequest.id].absenceTypeTitle}}</strong>
+        </div>
+        <div class="chr_leave-calendar__day-tooltip__item_request-status">
+          {{day.supportData.leaveRequestStatuses[leaveRequest.status_id].label}}</div>
         <div ng-if="!day.contactData.leaveRequestsAttributes[leaveRequest.id].isAccruedTOIL">
           <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].isSingleDay">
             <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'days'">
               {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date_type}}
             </div>
             <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'hours'">
-              From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'HH:mm'}}<br/>
-              To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'HH:mm'}}<br/>
-              For: {{ leaveRequest.from_date_amount | timeUnitApplier :day.contactData.leaveRequestsAttributes[leaveRequest.id].unit }}
+              <div>From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'HH:mm'}}</div>
+              <div>To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'HH:mm'}}</div>
+              <div>For: {{ leaveRequest.from_date_amount | timeUnitApplier :day.contactData.leaveRequestsAttributes[leaveRequest.id].unit }}</div>
             </div>
           </div>
           <div ng-if="!day.contactData.leaveRequestsAttributes[leaveRequest.id].isSingleDay">
             <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'days'">
-              From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'dd MMM yyyy'}},
-              {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date_type}}<br />
-              To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'dd MMM yyyy'}},
-              {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date_type}}
+              <div>From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'dd MMM yyyy'}},
+                {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date_type}}</div>
+              <div>To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'dd MMM yyyy'}},
+                {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date_type}}</div>
             </div>
             <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'hours'">
-              From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'dd MMM yyyy HH:mm'}}<br />
-              To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'dd MMM yyyy HH:mm'}}
+              <div>From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'dd MMM yyyy HH:mm'}}</div>
+              <div>To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'dd MMM yyyy HH:mm'}}</div>
             </div>
           </div>
         </div>
