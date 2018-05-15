@@ -18,7 +18,15 @@ define([
     $log.debug('Component: leave-calendar-legend');
 
     var vm = this;
+
     vm.legendCollapsed = true;
+    vm.other_badges = [
+      { label: 'AM', hint: 'AM Only' },
+      { label: 'PM', hint: 'PM Only' },
+      { label: 'HH:MM', hint: 'Time', type: 'hours' },
+      { label: '', hint: 'Requested', type: 'requested' },
+      { label: 'AT', hint: 'Accrued TOIL' }
+    ];
 
     vm.getAbsenceTypeStyle = getAbsenceTypeStyle;
 
