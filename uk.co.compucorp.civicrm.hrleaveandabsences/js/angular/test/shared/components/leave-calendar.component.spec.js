@@ -11,6 +11,7 @@
     'leave-absences/mocks/data/option-group.data',
     'leave-absences/mocks/data/public-holiday.data',
     'common/mocks/services/api/contact-mock',
+    'common/mocks/services/api/contract-mock',
     'leave-absences/mocks/apis/absence-period-api-mock',
     'leave-absences/mocks/apis/absence-type-api-mock',
     'leave-absences/mocks/apis/public-holiday-api-mock',
