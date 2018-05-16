@@ -70,6 +70,7 @@
           sharedSettings = _sharedSettings_;
           notification = _notificationService_;
 
+          spyOn(window, 'alert');
           spyOn($log, 'debug');
           spyOn($rootScope, '$emit').and.callThrough();
           spyOn(AbsencePeriod, 'all');
@@ -410,14 +411,15 @@
             var periodStartDate = moment(controller.selectedPeriod.start_date);
             var periodEndDate = moment(controller.selectedPeriod.end_date);
 
-            expect(months[0].index).toEqual(periodStartDate.month());
+            expect(months[0].month).toEqual(periodStartDate.month());
             expect(months[0].year).toEqual(periodStartDate.year());
-            expect(months[months.length - 1].index).toEqual(periodEndDate.month());
+            expect(months[months.length - 1].month).toEqual(periodEndDate.month());
             expect(months[months.length - 1].year).toEqual(periodEndDate.year());
           });
 
           it('selects the current month', function () {
-            expect(controller.selectedMonths).toEqual([moment().month()]);
+            expect(controller.selectedMonth).toEqual(_.find(controller.months,
+              { index: moment().year() + '-' + moment().month() }));
           });
         });
 
@@ -471,30 +473,13 @@
             controller.injectMonths = true;
           });
 
-          describe('when it has not yet received the "month injected" event from all the months', function () {
+          describe('when it has received the "month injected" event from the month', function () {
             beforeEach(function () {
-              simulateMonthsWithSignal('injected', 2);
-            });
-
-            it('does not send the event', function () {
-              expect($rootScope.$emit).not.toHaveBeenCalled();
-            });
-          });
-
-          describe('when it has received the "month injected" event from all the months', function () {
-            beforeEach(function () {
-              simulateMonthsWithSignal('injected', controller.months.length);
+              simulateMonthWithSignal('injected');
             });
 
             it('sends the event', function () {
-              expect($rootScope.$emit).toHaveBeenCalled();
-              expect($rootScope.$emit.calls.mostRecent().args[0]).toBe('LeaveCalendar::showMonths');
-            });
-
-            it('attaches to the event only the currently selected months', function () {
-              expect($rootScope.$emit.calls.mostRecent().args[1]).toEqual(controller.months.filter(function (month) {
-                return _.includes(controller.selectedMonths, month.index);
-              }));
+              expect($rootScope.$emit.calls.mostRecent().args[0]).toBe('LeaveCalendar::showMonth');
             });
           });
         });
@@ -511,41 +496,8 @@
           controller.refresh('contacts');
           $rootScope.$digest();
 
-          simulateMonthsWithSignal('destroyed', controller.months.length);
+          simulateMonthWithSignal('destroyed', controller.months.length);
         }
-      });
-
-      describe('selected months watcher', function () {
-        describe('when some other months are selected', function () {
-          beforeEach(function () {
-            controller.selectedMonths = [1, 2, 3];
-            $rootScope.$digest();
-          });
-
-          it('sends the "show months" event with the newly selected months', function () {
-            expect($rootScope.$emit).toHaveBeenCalledWith(
-              'LeaveCalendar::showMonths',
-              controller.months.filter(function (month) {
-                return _.includes([1, 2, 3], month.index);
-              }),
-              jasmine.any(Boolean)
-            );
-          });
-        });
-
-        describe('when none of the months are selected', function () {
-          beforeEach(function () {
-            controller.selectedMonths = [];
-            $rootScope.$digest();
-          });
-
-          it('sends the "show months" event with the all the months', function () {
-            expect($rootScope.$emit).toHaveBeenCalledWith(
-              'LeaveCalendar::showMonths',
-              controller.months,
-              jasmine.any(Boolean));
-          });
-        });
       });
 
       describe('labelPeriod()', function () {
@@ -611,8 +563,8 @@
               controller.refresh('period');
               $rootScope.$digest();
 
-              simulateMonthsWithSignal('destroyed', controller.months.length);
-              simulateMonthsWithSignal('injected', controller.months.length);
+              simulateMonthWithSignal('destroyed', controller.months.length);
+              simulateMonthWithSignal('injected', controller.months.length);
             });
 
             it('rebuilds the months structure', function () {
@@ -625,10 +577,7 @@
 
             it('sends the "show months" signal without forcing data reload', function () {
               expect($rootScope.$emit).toHaveBeenCalledWith(
-                'LeaveCalendar::showMonths',
-                jasmine.any(Array),
-                false
-              );
+                'LeaveCalendar::showMonth', false);
             });
           });
 
@@ -637,8 +586,8 @@
               controller.refresh('contacts');
               $rootScope.$digest();
 
-              simulateMonthsWithSignal('destroyed', controller.months.length);
-              simulateMonthsWithSignal('injected', controller.months.length);
+              simulateMonthWithSignal('destroyed', controller.months.length);
+              simulateMonthWithSignal('injected', controller.months.length);
             });
 
             it('does not rebuild the months structure', function () {
@@ -651,10 +600,7 @@
 
             it('sends the "show months" signal with forcing data reload', function () {
               expect($rootScope.$emit).toHaveBeenCalledWith(
-                'LeaveCalendar::showMonths',
-                jasmine.any(Array),
-                true
-              );
+                'LeaveCalendar::showMonth', true);
             });
           });
         });
@@ -707,13 +653,10 @@
        * Simulates that the given number of months sends the given
        * signal to the component
        *
-       * @param {string} signal
-       * @param {int} numberOfMonths
+       * @param {String} signal
        */
-      function simulateMonthsWithSignal (signal, numberOfMonths) {
-        _.times(numberOfMonths, function () {
-          $rootScope.$emit('LeaveCalendar::month' + _.capitalize(signal));
-        });
+      function simulateMonthWithSignal (signal) {
+        $rootScope.$emit('LeaveCalendar::month' + _.capitalize(signal));
 
         $rootScope.$emit.calls.reset();
         $rootScope.$digest();

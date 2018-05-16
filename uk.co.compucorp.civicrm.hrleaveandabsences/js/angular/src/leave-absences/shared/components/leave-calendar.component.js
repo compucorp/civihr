@@ -1,14 +1,13 @@
 /* eslint-env amd */
 
 define([
-  'common/angular',
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/components',
   'leave-absences/shared/controllers/sub-controllers/leave-calendar-admin.controller',
   'leave-absences/shared/controllers/sub-controllers/leave-calendar-manager.controller',
   'leave-absences/shared/controllers/sub-controllers/leave-calendar-staff.controller'
-], function (angular, _, moment, components) {
+], function (_, moment, components) {
   components.component('leaveCalendar', {
     bindings: {
       contactId: '<',
@@ -33,9 +32,10 @@ define([
     vm.absencePeriods = [];
     vm.contacts = [];
     vm.contactIdsToReduceTo = null;
-    vm.injectMonths = false;
+    vm.injectMonth = false;
     vm.months = [];
-    vm.selectedMonths = null;
+    vm.selectedMonth = {};
+    vm.selectedMonthIndex = '';
     vm.selectedPeriod = null;
     vm.showContactName = false;
     vm.showFilters = false;
@@ -60,7 +60,7 @@ define([
       setUserRole()
         .then(initWatchers)
         .then(injectSubController)
-        .then(makeSureMonthsAreNotInjected)
+        .then(makeSureMonthIsNotInjected)
         .then(loadAbsencePeriods)
         .then(function () {
           return $q.all([
@@ -72,7 +72,7 @@ define([
           return vm.showFilters ? loadFiltersOptionValues() : _.noop;
         })
         .then(function () {
-          injectAndShowMonths();
+          injectAndShowMonth();
         })
         .then(function () {
           vm.loading.page = false;
@@ -100,25 +100,25 @@ define([
      */
     function initWatchers () {
       $rootScope.$new().$watch(function () {
-        return vm.selectedMonths;
+        return vm.selectedMonthIndex;
       }, function (newValue, oldValue) {
-        if (oldValue !== null && !angular.equals(newValue, oldValue)) {
-          sendShowMonthsSignal();
+        if (oldValue !== null && newValue !== oldValue) {
+          setSelectedMonth();
+          sendShowMonthSignal();
         }
       });
     }
 
     /**
-     * Injects the leave-calendar-month components
-     * and sends the "show months" signal
+     * Injects the leave-calendar-month component and sends the "show month" signal
      *
-     * @param {Boolean} forceDataReload whether the months need to force data reload
+     * @param {Boolean} forceDataReload whether the month needs a force data reload
      */
-    function injectAndShowMonths (forceDataReload) {
-      vm.injectMonths = true;
+    function injectAndShowMonth (forceDataReload) {
+      vm.injectMonth = true;
 
-      waitUntilMonthsAre('injected').then(function () {
-        sendShowMonthsSignal(forceDataReload);
+      waitUntilMonthIs('injected').then(function () {
+        sendShowMonthSignal(forceDataReload);
       }).then(function () {
         vm.loading.calendar = false;
       });
@@ -155,7 +155,7 @@ define([
           });
         })
         .then(buildPeriodMonthsList)
-        .then(setDefaultMonths);
+        .then(setDefaultMonth);
     }
 
     /**
@@ -242,17 +242,17 @@ define([
     }
 
     /**
-     * If the months are already injected, it removes then and then wait
-     * for their components to confirme that they are destroyed
+     * If a month is already injected, it removes it and then waits
+     * for its component to confirm that it is destroyed
      *
      * @return {Promise}
      */
-    function makeSureMonthsAreNotInjected () {
+    function makeSureMonthIsNotInjected () {
       var promise = $q.resolve();
 
-      if (vm.injectMonths) {
-        promise = waitUntilMonthsAre('destroyed');
-        vm.injectMonths = false;
+      if (vm.injectMonth) {
+        promise = waitUntilMonthIs('destroyed');
+        vm.injectMonth = false;
       }
 
       return promise;
@@ -266,15 +266,15 @@ define([
      */
     function monthStructure (dateMoment) {
       return {
-        index: dateMoment.month(),
+        index: dateMoment.year() + '-' + dateMoment.month(),
+        month: dateMoment.month(),
         year: dateMoment.year(),
-        name: dateMoment.format('MMMM'),
-        shortName: dateMoment.format('MMM')
+        name: dateMoment.format('MMMM')
       };
     }
 
     /**
-     * Reloads the selected months data
+     * Reloads the selected month's data
      *
      * If the source of the refresh is a period change, then
      * it rebuilds the months list as well
@@ -290,11 +290,11 @@ define([
         .then(function () {
           vm.loading.calendar = true;
         })
-        .then(makeSureMonthsAreNotInjected)
+        .then(makeSureMonthIsNotInjected)
         .then(source === 'period' ? buildPeriodMonthsList : _.noop)
         .then(source === 'contacts' ? loadContacts : _.noop)
         .then(function () {
-          injectAndShowMonths((source === 'contacts'));
+          injectAndShowMonth((source === 'contacts'));
         });
     }
 
@@ -304,21 +304,24 @@ define([
      * @param {Boolean} forceDataReload if true, then a month will load its data
      *   regardless if it had already loaded it
      */
-    function sendShowMonthsSignal (forceDataReload) {
-      var monthsToShow = !vm.selectedMonths.length
-        ? vm.months
-        : vm.months.filter(function (month) {
-          return _.includes(vm.selectedMonths, month.index);
-        });
-
-      $rootScope.$emit('LeaveCalendar::showMonths', monthsToShow, !!forceDataReload);
+    function sendShowMonthSignal (forceDataReload) {
+      $rootScope.$emit('LeaveCalendar::showMonth', !!forceDataReload);
     }
 
     /**
-     * Sets the months that are to be selected by default
+     * Sets the month that is to be selected by default
      */
-    function setDefaultMonths () {
-      vm.selectedMonths = [moment().month()];
+    function setDefaultMonth () {
+      vm.selectedMonthIndex = moment().year() + '-' + moment().month();
+
+      setSelectedMonth();
+    }
+
+    /**
+     * Sets the month that is was selected
+     */
+    function setSelectedMonth () {
+      vm.selectedMonth = _.find(vm.months, { index: vm.selectedMonthIndex });
     }
 
     /**
@@ -346,14 +349,11 @@ define([
      *
      * @return {Promise}
      */
-    function waitUntilMonthsAre (status) {
+    function waitUntilMonthIs (status) {
       return $q(function (resolve) {
-        var monthLoadedCounter = 0;
         var removeListener = $rootScope.$on('LeaveCalendar::month' + _.capitalize(status), function () {
-          if (++monthLoadedCounter === vm.months.length) {
-            removeListener();
-            resolve();
-          }
+          removeListener();
+          resolve();
         });
       });
     }
