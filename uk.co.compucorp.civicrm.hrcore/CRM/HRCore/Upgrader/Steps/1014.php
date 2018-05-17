@@ -20,7 +20,7 @@ trait CRM_HRCore_Upgrader_Steps_1014 {
      * 'is_multiple' is added to prevent bug that changes it to false
      * @see https://issues.civicrm.org/jira/browse/CRM-21853
      */
-    if ($result['id']) {
+    if (!empty($result['id'])) {
       civicrm_api3('CustomGroup', 'create', [
         'id' => $result['id'],
         'is_reserved' => 1,
