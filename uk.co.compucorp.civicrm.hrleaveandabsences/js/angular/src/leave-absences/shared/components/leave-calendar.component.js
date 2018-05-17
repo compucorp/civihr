@@ -61,15 +61,13 @@ define([
         .then(initWatchers)
         .then(injectSubController)
         .then(makeSureMonthsAreNotInjected)
-        .then(loadAbsencePeriods)
         .then(function () {
           return $q.all([
+            loadAbsencePeriods(),
             loadContacts(),
-            loadSupportData()
+            loadSupportData(),
+            vm.showFilters ? loadFiltersOptionValues() : _.noop
           ]);
-        })
-        .then(function () {
-          return vm.showFilters ? loadFiltersOptionValues() : _.noop;
         })
         .then(function () {
           injectAndShowMonths();

@@ -30,7 +30,7 @@ define([
           { type: 'unassigned', label: 'People without approver' },
           { type: 'all', label: 'All' }
         ];
-        vm.filters.userSettings.assignedTo = vm.filtersByAssignee[0];
+        vm.filters.userSettings.assignedTo = vm.filtersByAssignee[2];
 
         vm.showAdminFilteringHint = showAdminFilteringHint;
 
@@ -46,21 +46,21 @@ define([
      */
     function loadContactIdsToReduceTo () {
       return loadContracts()
-      .then(function (contracts) {
-        var contractsInAbsencePeriod = contracts.filter(function (contract) {
-          var details = contract.info.details;
+        .then(function (contracts) {
+          var contractsInAbsencePeriod = contracts.filter(function (contract) {
+            var details = contract.info.details;
 
-          return (
-            moment(details.period_start_date).isSameOrBefore(vm.selectedPeriod.end_date) &&
+            return (
+              moment(details.period_start_date).isSameOrBefore(vm.selectedPeriod.end_date) &&
             (moment(details.period_end_date).isSameOrAfter(vm.selectedPeriod.start_date) ||
               !details.period_end_date)
-          );
-        });
+            );
+          });
 
-        return _.uniq(contractsInAbsencePeriod.map(function (contract) {
-          return contract.contact_id;
-        }));
-      });
+          return _.uniq(contractsInAbsencePeriod.map(function (contract) {
+            return contract.contact_id;
+          }));
+        });
     }
 
     /**
@@ -83,16 +83,16 @@ define([
               vm.lookupContacts = contacts;
             })
             .then(function () {
-              return (filterByAssignee !== 'me'
-                ? loadContactIdsToReduceTo() : $q.resolve(null));
+              return $q.all([
+                filterByAssignee !== 'me'
+                  ? loadContactIdsToReduceTo() : $q.resolve(null),
+                loadContacts()
+              ]);
             })
-            .then(function (contactIdsToReduceTo) {
-              vm.contactIdsToReduceTo = contactIdsToReduceTo;
+            .then(function (results) {
+              vm.contactIdsToReduceTo = results[0];
 
-              return loadContacts();
-            })
-            .then(function (contacts) {
-              return contacts;
+              return results[1];
             });
         }
       };

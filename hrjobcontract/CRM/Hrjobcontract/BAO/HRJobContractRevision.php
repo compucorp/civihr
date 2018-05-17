@@ -62,18 +62,12 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * @return array
    */
   public static function fullDetails($revision) {
-    $query1 = self::buildFullDetailsQuery(['details', 'hour', 'pay', 'health', 'pension'], $revision);
-    $query2 = self::buildFullDetailsQuery(['leave'], $revision);
+    $query1 = self::buildFullDetailsQuery(['details'], $revision);
 
     $result1 = CRM_Core_DAO::executeQuery($query1);
-    $result2 = CRM_Core_DAO::executeQuery($query2);
 
     $result1->fetch();
     $fullDetails = self::normalizeFullDetailsResult($result1);
-
-    while ($result2->fetch()) {
-      $fullDetails['leave'][] = self::normalizeFullDetailsResult($result2)['leave'];
-    }
 
     return $fullDetails;
   }
@@ -266,7 +260,7 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
   /**
    * Adds clauses to given query array, required to obtain information for the
    * given entity.
-   * 
+   *
    * @param sting $entity
    *   Name of entity being processed
    * @param string $table
@@ -274,9 +268,9 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
    * @param array $revision
    *   Data for contract revision for which information needs to be gathered
    * @param array $query
-   *   Array from which the query will be built.  Each part of the array is an 
+   *   Array from which the query will be built.  Each part of the array is an
    *   array of SQL clauses.
-   * 
+   *
    * @return array
    *   The array to be used to build the query.
    */
