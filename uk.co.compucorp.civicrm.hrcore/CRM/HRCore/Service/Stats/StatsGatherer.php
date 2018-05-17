@@ -85,6 +85,7 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
     $entityCounts += $this->getRecruitmentEntityCounts();
     $entityCounts += $this->getJobRoleEntityCounts();
     $entityCounts += $this->getCustomDataCounts();
+    $entityCounts += $this->getCaseEntityCounts();
 
     return $entityCounts;
   }
@@ -311,6 +312,18 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
     $counts = [];
     $counts['customGroup'] = $this->getEntityCount('CustomGroup');
     $counts['customField'] = $this->getEntityCount('CustomField');
+
+    return $counts;
+  }
+
+  /**
+   * Gets counts for the case entities
+   *
+   * @return array
+   */
+  private function getCaseEntityCounts() {
+    $counts = [];
+    $counts['caseType'] = $this->getEntityCount('CaseType');
 
     return $counts;
   }
