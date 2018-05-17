@@ -83,6 +83,7 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
     $entityCounts += $this->getTaskAndAssignmentEntityCounts();
     $entityCounts += $this->getLeaveAndAbsenceEntityCounts();
     $entityCounts += $this->getRecruitmentEntityCounts();
+    $entityCounts += $this->getJobRoleEntityCounts();
 
     return $entityCounts;
   }
@@ -261,6 +262,43 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
     $userSystem = CRM_Core_Config::singleton()->userSystem;
 
     return $userSystem instanceof CRM_Utils_System_Drupal;
+  }
+
+  /**
+   * Fetches entity counts for the job role entities
+   *
+   * @return array
+   */
+  private function getJobRoleEntityCounts() {
+    $recruitmentKey = 'com.civicrm.hrjobroles';
+    $counts = [];
+
+    if (!ExtensionHelper::isExtensionEnabled($recruitmentKey)) {
+      return $counts;
+    }
+
+    $counts['jobRole'] = $this->getEntityCount('HrJobRoles');
+    $params = ['option_group_id' => 'cost_centres'];
+    $counts['costCenter'] = $this->getEntityCount('OptionValue', $params);
+    $counts['funder'] = $this->getFunderCount();
+
+    return $counts;
+  }
+
+  /**
+   * Gets a count of all contacts in the system that have been marked as a
+   * funder
+   *
+   * @return int
+   */
+  private function getFunderCount() {
+    $result = civicrm_api3('HrJobRoles', 'get', ['return' => ['funder']]);
+    $result = array_column($result['values'], 'funder');
+    $funderIds = implode('', $result);
+    $funderIds = explode('|', $funderIds);
+    $funderIds = array_unique(array_filter($funderIds));
+
+    return count($funderIds);
   }
 
 }
