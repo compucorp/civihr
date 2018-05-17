@@ -30,6 +30,8 @@
         id: CRM.vars.leaveAndAbsences.contactId,
         role: 'staff'
       };
+      var currentYear = 2016;
+      var currentMonth = 1;
 
       beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_, _$controllerProvider_) {
         $provide = _$provide_;
@@ -95,7 +97,7 @@
       // The mocked "work pattern calendar" and "leave request" data is made for
       // the month of February, so we pretend we are in February
       beforeAll(function () {
-        jasmine.clock().mockDate(new Date(2016, 1, 1));
+        jasmine.clock().mockDate(new Date(currentYear, currentMonth, 1));
       });
 
       afterAll(function () {
@@ -242,6 +244,45 @@
 
           it('loads the contacts to display on the calendar', function () {
             expect(controller.contacts.length).not.toBe(0);
+          });
+        });
+
+        describe('month paginators', function () {
+          describe('when current month is the first month of the current absence period', function () {
+            beforeEach(function () {
+              controller.selectedMonthIndex = _.first(controller.months).index;
+
+              $rootScope.$digest();
+            });
+
+            it('it does not allow to paginate to the previous month', function () {
+              expect(controller.monthPaginatorsAvailability.previous).toBe(false);
+            });
+          });
+
+          describe('when current month is the last month of the current absence period', function () {
+            beforeEach(function () {
+              controller.selectedMonthIndex = _.last(controller.months).index;
+
+              $rootScope.$digest();
+            });
+
+            it('it does not allow to paginate to the previous month', function () {
+              expect(controller.monthPaginatorsAvailability.next).toBe(false);
+            });
+          });
+
+          describe('when current month is neither the first nor the last month of the current absence period', function () {
+            beforeEach(function () {
+              controller.selectedMonthIndex = controller.months[1].index;
+
+              $rootScope.$digest();
+            });
+
+            it('it allows to paginate the month in both directions', function () {
+              expect(controller.monthPaginatorsAvailability.previous).toBe(true);
+              expect(controller.monthPaginatorsAvailability.next).toBe(true);
+            });
           });
         });
 
@@ -403,6 +444,20 @@
           it('selects the current period', function () {
             expect(controller.selectedPeriod.current).toBe(true);
           });
+
+          describe('when absence period has been changed', function () {
+            beforeEach(function () {
+              controller.injectMonth = false;
+              controller.selectedPeriod = controller.absencePeriods[1];
+
+              controller.refresh('period');
+              $rootScope.$digest();
+            });
+
+            it('it sets the first month from the period as the selected month', function () {
+              expect(controller.selectedMonth).toEqual(controller.months[0]);
+            });
+          });
         });
 
         describe('months', function () {
@@ -415,6 +470,15 @@
             expect(months[0].year).toEqual(periodStartDate.year());
             expect(months[months.length - 1].month).toEqual(periodEndDate.month());
             expect(months[months.length - 1].year).toEqual(periodEndDate.year());
+          });
+
+          it('sorts the list of the months', function () {
+            var months = controller.months;
+            var monthsSorted = _.sortBy(months, function (month) {
+              return new Date(month.moment);
+            });
+
+            expect(months).toEqual(monthsSorted);
           });
 
           it('selects the current month', function () {
@@ -498,6 +562,70 @@
 
           simulateMonthWithSignal('destroyed', controller.months.length);
         }
+      });
+
+      describe('selectCurrentMonth()', function () {
+        var currentAbsencePeriod;
+
+        beforeEach(function () {
+          currentAbsencePeriod = _.find(controller.absencePeriods,
+            { current: true });
+          controller.injectMonth = false;
+          controller.selectedPeriod = controller.absencePeriods[1];
+          $rootScope.$digest();
+          controller.selectedMonthIndex = currentYear + '-' + (currentMonth + 1);
+          $rootScope.$digest();
+          controller.selectCurrentMonth();
+          $rootScope.$digest();
+        });
+
+        it('sets the selected month as the current month', function () {
+          expect(controller.selectedMonth.year).toBe(currentYear);
+          expect(controller.selectedMonth.month).toBe(currentMonth);
+        });
+
+        it('sets the current absence period', function () {
+          expect(controller.selectedPeriod).toEqual(currentAbsencePeriod);
+        });
+      });
+
+      describe('paginateMonth()', function () {
+        var currentlySelectedMonth;
+        var tests = [
+          { direction: 'previous', monthDifference: -1 },
+          { direction: 'next', monthDifference: 1 }
+        ];
+
+        beforeEach(function () {
+          currentlySelectedMonth = controller.selectedMonth.month;
+          // This is needed to test the paginators availability
+          controller.months = _.slice(controller.months, 0, 3);
+        });
+
+        tests.forEach(function (test) {
+          describe('when user paginates to the ' + test.direction + ' month', function () {
+            beforeEach(function () {
+              controller.injectMonth = false;
+              controller.paginateMonth(test.direction);
+              $rootScope.$digest();
+              simulateMonthWithSignal('injected', controller.months.length);
+              $rootScope.$digest();
+            });
+
+            it('sets the selected month as a ' + test.direction + ' month', function () {
+              expect(controller.selectedMonth.moment
+                .diff(currentlySelectedMonth.moment, 'month')).toBe(test.monthDifference);
+            });
+
+            it('does not allow to paginate further because the are no more months in that direction', function () {
+              expect(controller.monthPaginatorsAvailability[test.direction]).toBe(false);
+            });
+
+            it('refreshes the month component without force data reload', function () {
+              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveCalendar::showMonth', false);
+            });
+          });
+        });
       });
 
       describe('labelPeriod()', function () {
