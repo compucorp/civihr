@@ -41,7 +41,7 @@
       <label>Ethnicity</label>
       <data_type>String</data_type>
       <html_type>Multi-Select</html_type>
-      <default_value>Not Applicable</default_value>
+      <default_value>:;:;:;Not Applicable:;:;:;</default_value>
       <is_required>0</is_required>
       <is_searchable>1</is_searchable>
       <is_search_range>0</is_search_range>
