@@ -7,7 +7,7 @@ class CRM_HRCore_Hook_Disable_CustomGroupDisabler {
    */
   public function handle() {
     $customGroups = ['Extended_Demographics'];
-    $switcher = Civi::container()->get('custom_group.status_switcher');
+    $switcher = Civi::container()->get('civihr.custom_group_status_switcher');
 
     foreach ($customGroups as $groupName) {
       $switcher->disable($groupName);

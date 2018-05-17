@@ -26,7 +26,7 @@ abstract class CRM_HRCore_Form_AbstractDrupalInteractionTaskForm extends CRM_Con
     $method = 'post',
     $name = NULL
   ) {
-    $this->drupalUserService = Civi::container()->get('drupal_user_service');
+    $this->drupalUserService = Civi::container()->get('civihr.cms.drupal_user_service');
     parent::__construct($state, $action, $method, $name);
   }
 
