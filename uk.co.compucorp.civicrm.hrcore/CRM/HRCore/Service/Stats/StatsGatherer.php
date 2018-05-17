@@ -84,6 +84,7 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
     $entityCounts += $this->getLeaveAndAbsenceEntityCounts();
     $entityCounts += $this->getRecruitmentEntityCounts();
     $entityCounts += $this->getJobRoleEntityCounts();
+    $entityCounts += $this->getCustomDataCounts();
 
     return $entityCounts;
   }
@@ -299,6 +300,19 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
     $funderIds = array_unique(array_filter($funderIds));
 
     return count($funderIds);
+  }
+
+  /**
+   * Gets the count of custom groups and fields
+   *
+   * @return array
+   */
+  private function getCustomDataCounts() {
+    $counts = [];
+    $counts['customGroup'] = $this->getEntityCount('CustomGroup');
+    $counts['customField'] = $this->getEntityCount('CustomField');
+
+    return $counts;
   }
 
 }
