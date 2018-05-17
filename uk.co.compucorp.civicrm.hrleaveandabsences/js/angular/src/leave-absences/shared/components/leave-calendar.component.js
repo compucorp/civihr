@@ -52,9 +52,15 @@ define([
         region: null
       }
     };
+    vm.monthPaginatorsAvailability = {
+      previous: true,
+      next: true
+    };
 
     vm.labelPeriod = labelPeriod;
+    vm.paginateMonth = paginateMonth;
     vm.refresh = refresh;
+    vm.selectCurrentMonth = selectCurrentMonth;
 
     (function init () {
       setUserRole()
@@ -73,6 +79,7 @@ define([
         })
         .then(function () {
           injectAndShowMonth();
+          setMonthPaginatorsAvailability();
         })
         .then(function () {
           vm.loading.page = false;
@@ -96,6 +103,16 @@ define([
     }
 
     /**
+     * Returns a month index in the format "YYYY-<month_number>"
+     *
+     * @param  {Moment} dateMoment
+     * @return {String}
+     */
+    function getMonthIndex (dateMoment) {
+      return dateMoment.year() + '-' + dateMoment.month();
+    }
+
+    /**
      * Initializes the scope properties' watchers
      */
     function initWatchers () {
@@ -104,6 +121,7 @@ define([
       }, function (newValue, oldValue) {
         if (oldValue !== null && newValue !== oldValue) {
           setSelectedMonth();
+          setMonthPaginatorsAvailability();
           sendShowMonthSignal();
         }
       });
@@ -155,7 +173,7 @@ define([
           });
         })
         .then(buildPeriodMonthsList)
-        .then(setDefaultMonth);
+        .then(setCurrentMonth);
     }
 
     /**
@@ -266,11 +284,28 @@ define([
      */
     function monthStructure (dateMoment) {
       return {
-        index: dateMoment.year() + '-' + dateMoment.month(),
+        index: getMonthIndex(dateMoment),
         month: dateMoment.month(),
         year: dateMoment.year(),
-        name: dateMoment.format('MMMM')
+        name: dateMoment.format('MMMM'),
+        moment: moment().year(dateMoment.year()).month(dateMoment.month())
       };
+    }
+
+    /**
+     * Paginates the currently selected month in a specified direction
+     *
+     * @param {String} direction previous|next
+     */
+    function paginateMonth (direction) {
+      var monthAction = direction === 'previous' ? 'subtract' : 'add';
+      var dateFromMonth = vm.selectedMonth.moment[monthAction](1, 'month');
+
+      vm.selectedMonthIndex = getMonthIndex(dateFromMonth);
+
+      setSelectedMonth();
+      setMonthPaginatorsAvailability();
+      refresh('month');
     }
 
     /**
@@ -281,21 +316,33 @@ define([
      * If the source of the refresh is a change in contacts filters, then
      * it reloads the contacts as well
      *
-     * @param {string} source The source of the refresh (period or contacts change)
+     * @param {String} source The source of the refresh (period or contacts change)
      */
     function refresh (source) {
-      source = _.includes(['contacts', 'period'], source) ? source : 'period';
+      source = _.includes(['contacts', 'period', 'month'], source) ? source : 'period';
 
       $q.resolve()
-        .then(function () {
-          vm.loading.calendar = true;
-        })
         .then(makeSureMonthIsNotInjected)
         .then(source === 'period' ? buildPeriodMonthsList : _.noop)
+        .then(source === 'period' ? setFirstPeriodMonth : _.noop)
         .then(source === 'contacts' ? loadContacts : _.noop)
+        .then(source === 'month' ? setMonthPaginatorsAvailability : _.noop)
         .then(function () {
           injectAndShowMonth((source === 'contacts'));
         });
+    }
+
+    function selectCurrentMonth () {
+      var selectedPeriodId = vm.selectedPeriod.id;
+
+      vm.selectedPeriod = _.find(vm.absencePeriods, function (period) {
+        return !!period.current;
+      });
+
+      (selectedPeriodId !== vm.selectedPeriod.id) && buildPeriodMonthsList();
+      setCurrentMonth();
+      setMonthPaginatorsAvailability();
+      refresh('month');
     }
 
     /**
@@ -311,10 +358,42 @@ define([
     /**
      * Sets the month that is to be selected by default
      */
-    function setDefaultMonth () {
+    function setCurrentMonth () {
       vm.selectedMonthIndex = moment().year() + '-' + moment().month();
 
       setSelectedMonth();
+    }
+
+    /**
+     * Sets the first month from the currently selected period as the selected month
+     */
+    function setFirstPeriodMonth () {
+      vm.selectedMonthIndex = vm.months[0].index;
+
+      setSelectedMonth();
+    }
+
+    /**
+     * Enables or disables the month paginator of a specified direction.
+     * It disables the paginator if there are no months to paginate to.
+     *
+     * @param {String} direction previous|next
+     */
+    function setMonthPaginatorAvailability (direction) {
+      var edgeMonthSelector = direction === 'previous' ? 'first' : 'last';
+      var edgeMonth = _[edgeMonthSelector](vm.months);
+      var edgeMonthMoment = moment().year(edgeMonth.year).month(edgeMonth.month);
+
+      vm.monthPaginatorsAvailability[direction] =
+        !vm.selectedMonth.moment.isSame(edgeMonthMoment, 'month');
+    }
+
+    /**
+     * Enables or disables the month paginators
+     */
+    function setMonthPaginatorsAvailability () {
+      setMonthPaginatorAvailability('previous');
+      setMonthPaginatorAvailability('next');
     }
 
     /**
