@@ -1326,9 +1326,14 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
       return;
     }
 
-    $clauses['contact_id'] = $this->getLeaveInformationACLClauses();
+    $leaveTable =  CRM_HRLeaveAndAbsences_BAO_LeaveRequest::getTableName();
+
+    $query = "IN (SELECT DISTINCT contact_id FROM {$leaveTable})";
+
+    $clauses['contact_id'] = $query;
 
     CRM_Utils_Hook::selectWhereClause($this, $clauses);
+
     return $clauses;
   }
 
