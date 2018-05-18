@@ -1726,7 +1726,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertNotEmpty($resultGetFull['values'][$leaveRequest1->id]);
   }
 
-  public function testGetAndGetFullShouldReturnEmptyResponseForALoggedInLeaveManagerWhenUnassignedIsTrue() {
+  public function testGetAndGetFullReturnResultsForUnAssignedContactForLoggedInLeaveManagerWhenUnassignedIsTrue() {
     $manager1 = ContactFabricator::fabricate();
     $this->registerCurrentLoggedInContactInSession($manager1['id']);
     CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
@@ -1772,16 +1772,18 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date_type' => 1
     ], true);
 
-
-    // No results will be returned because the unassigned parameter has a true value
-    // and a manager can only see contacts assigned to him that he manages, the unassigned parameter negates that.
+    // The manager will see results for the contact with the inactive leave manager relationship.
     // We need to set check permissions to true here so that civi can add
     // the appropriate ACL clause to the LeaveRequest queries
     $result = civicrm_api3('LeaveRequest', 'get', ['unassigned' => true, 'check_permissions' => true]);
     $resultGetFull = civicrm_api3('LeaveRequest', 'getFull', ['unassigned' => true, 'check_permissions' => true]);
 
-    $this->assertEquals(0, $result['count']);
-    $this->assertEquals(0, $resultGetFull['count']);
+    $this->assertEquals(1, $result['count']);
+    $contactData = array_shift($result['values']);
+    $this->assertEquals($staffMember2['id'], $contactData['contact_id']);
+    $this->assertEquals(1, $resultGetFull['count']);
+    $contactData = array_shift($resultGetFull['values']);
+    $this->assertEquals($staffMember2['id'], $contactData['contact_id']);
   }
 
   public function testGetAndGetFullShouldReturnResultsForContactsManagedByLoggedInLeaveManagerWhenUnassignedIsFalse() {
@@ -3637,7 +3639,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     civicrm_api3('LeaveRequest', 'deletecomment', []);
   }
 
-  public function testGetAndGetFullReturnsOnlyDataLinkedToLoggedInUserWhenUserIsNotALeaveApproverOrAdmin() {
+  public function testGetAndGetFulShouldReturnResultsContactsOtherThanLoggedInUserWhenUserIsNotALeaveApproverOrAdmin() {
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
 
@@ -3680,16 +3682,20 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => 1
     ], true);
 
+    //The logged in contact would be able to see results for the other contact too since the Leave ACL
+    //allows it.
     $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true, 'sequential' => 1]);
-    $this->assertEquals(1, $result['count']);
+    $this->assertEquals(2, $result['count']);
     $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
 
     $result = civicrm_api3('LeaveRequest', 'getfull', ['check_permissions' => true, 'sequential' => 1]);
-    $this->assertEquals(1, $result['count']);
+    $this->assertEquals(2, $result['count']);
     $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
   }
 
-  public function testGetAndGetFullReturnsOnlyDataLinkedToContactsThatLoggedInUserManagesWhenLoggedInUserIsALeaveApprover() {
+  public function testGetAndGetFullReturnsDataForManageesAndNonManageesWhenLoggedInUserIsALeaveApprover() {
     $manager = ContactFabricator::fabricate();
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
@@ -3735,112 +3741,17 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'status_id' => 1
     ], true);
 
+    //Results will be returned for both leave contacts even though contact1 is not being managed by
+    //the logged in manager.
     $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true, 'sequential' => 1]);
-    $this->assertEquals(1, $result['count']);
-    $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
 
     $result = civicrm_api3('LeaveRequest', 'getfull', ['check_permissions' => true, 'sequential' => 1]);
-    $this->assertEquals(1, $result['count']);
-    $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
-  }
-
-  public function testGetAndGetFullReturnsOnlyDataLinkedToContactsThatLoggedInUserManagesWhenLoggedInUserIsALeaveApproverWithOneOfTheAvailableRelationships() {
-    $this->setLeaveApproverRelationshipTypes([
-      'has leaves approved by',
-      'has things managed by',
-    ]);
-
-    $manager1 = ContactFabricator::fabricate();
-    $manager2 = ContactFabricator::fabricate();
-    $contact1 = ContactFabricator::fabricate();
-    $contact2 = ContactFabricator::fabricate();
-    $contact3 = ContactFabricator::fabricate();
-
-    $this->setContactAsLeaveApproverOf($manager1, $contact2, null, null, true, 'has things managed by');
-    $this->setContactAsLeaveApproverOf($manager2, $contact1, null, null, true, 'has leaves approved by');
-    $this->setContactAsLeaveApproverOf($manager2, $contact3, null, null, true, 'has leaves managed by');
-
-    HRJobContractFabricator::fabricate(
-      [ 'contact_id' => $contact2['id'] ],
-      [
-        'period_start_date' => '2016-01-01',
-        'period_end_date' => '2016-10-01'
-      ]
-    );
-
-    HRJobContractFabricator::fabricate(
-      [ 'contact_id' => $contact1['id'] ],
-      [
-        'period_start_date' => '2016-01-01',
-        'period_end_date' => '2016-10-01'
-      ]
-    );
-
-    HRJobContractFabricator::fabricate(
-      [ 'contact_id' => $contact3['id'] ],
-      [
-        'period_start_date' => '2016-01-01',
-        'period_end_date' => '2016-10-01'
-      ]
-    );
-
-    $leaveRequestContact1 = LeaveRequestFabricator::fabricateWithoutValidation([
-      'contact_id' => $contact1['id'],
-      'type_id' => $this->absenceType->id,
-      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
-      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
-      'from_date_type' => 1,
-      'to_date_type' => 1,
-      'status_id' => 1
-    ], true);
-
-    LeaveRequestFabricator::fabricateWithoutValidation([
-      'contact_id' => $contact2['id'],
-      'type_id' => $this->absenceType->id,
-      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
-      'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
-      'from_date_type' => 1,
-      'to_date_type' => 1,
-      'status_id' => 1
-    ], true);
-
-    $leaveRequestContact3 = LeaveRequestFabricator::fabricateWithoutValidation([
-      'contact_id' => $contact3['id'],
-      'type_id' => $this->absenceType->id,
-      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
-      'to_date' => CRM_Utils_Date::processDate('2016-02-20'),
-      'from_date_type' => 1,
-      'to_date_type' => 1,
-      'status_id' => 1
-    ], true);
-
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
-
-    // Manager1 only manages contact2 (though the 'has things managed by' relationship),
-    // so only contact2 leave requests will be returned
-    $this->registerCurrentLoggedInContactInSession($manager1['id']);
-    $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true, 'sequential' => 1]);
-    $this->assertEquals(1, $result['count']);
-    $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
-
-    $result = civicrm_api3('LeaveRequest', 'getfull', ['check_permissions' => true, 'sequential' => 1]);
-    $this->assertEquals(1, $result['count']);
-    $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
-
-    // Manager2 manages contact1 (through the 'has leaves approved by' relationship),
-    // and contact3 (through the 'manage things for' relationship), so leave
-    // requests from both should be returned
-    $this->registerCurrentLoggedInContactInSession($manager2['id']);
-    $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true]);
     $this->assertEquals(2, $result['count']);
-    $this->assertEquals($contact1['id'], $result['values'][$leaveRequestContact1->id]['contact_id']);
-    $this->assertEquals($contact3['id'], $result['values'][$leaveRequestContact3->id]['contact_id']);
-
-    $result = civicrm_api3('LeaveRequest', 'getfull', ['check_permissions' => true]);
-    $this->assertEquals(2, $result['count']);
-    $this->assertEquals($contact1['id'], $result['values'][$leaveRequestContact1->id]['contact_id']);
-    $this->assertEquals($contact3['id'], $result['values'][$leaveRequestContact3->id]['contact_id']);
-    $this->assertEquals($contact3['id'], $result['values'][$leaveRequestContact3->id]['contact_id']);
+    $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
   }
 
   public function testGetAndGetFullReturnsAllDataWhenLoggedInUserHasViewAllContactsPermission() {
@@ -4178,7 +4089,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEmpty($result['values']);
   }
 
-  public function testGetBreakdownShouldReturnEmptyIfAStaffMemberTriesToGetTheBreakdownOfAnotherStaffMember() {
+  public function testGetBreakdownAlsoReturnsTheBreakdownOfAnotherStaffMemberWhenAStaffMemberTriesAccessingIt() {
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
 
@@ -4198,13 +4109,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->registerCurrentLoggedInContactInSession($contact1['id']);
 
-    // Contact1 should not be able to get the breakdown for a leave request of
+    // Contact1 should also be able to get the breakdown for a leave request of
     // Contact2
     $result = civicrm_api3('LeaveRequest', 'getBreakdown', [
       'leave_request_id' => $leaveRequest->id,
       'check_permissions' => true,
     ]);
-    $this->assertEmpty($result['values']);
+    $this->assertCount(3, $result['values']);
 
     $this->registerCurrentLoggedInContactInSession($contact2['id']);
 
@@ -4216,47 +4127,29 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertCount(3, $result['values']);
   }
 
-  public function testGetBreakdownShouldReturnEmptyIfAManagerTriesToGetTheBreakdownOfSomeoneWhoTheyDontManage() {
+  public function testGetBreakdownShouldReturnsResultsForManageesAndNonManageesOfALeaveManager() {
     $manager = ContactFabricator::fabricate();
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
+    );
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $contact2['id']],
       ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
     );
 
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
-      'contact_id' => $contact2['id'],
+      'contact_id' => $contact1['id'],
       'from_date' => CRM_Utils_Date::processDate('+5 days'),
       'to_date' =>  CRM_Utils_Date::processDate('+7 days'),
     ], true);
 
-    $this->registerCurrentLoggedInContactInSession($manager['id']);
-    $this->setContactAsLeaveApproverOf($manager, $contact1);
-    $this->setPermissions(['access AJAX API']);
-
-    // Manager only manages Contact 1, so they should not be able to get the
-    // breakdown for a leave request of Contact2
-    $result = civicrm_api3('LeaveRequest', 'getBreakdown', [
-      'leave_request_id' => $leaveRequest->id,
-      'check_permissions' => true,
-    ]);
-    $this->assertEmpty($result['values']);
-  }
-
-  public function testGetBreakdownShouldNotReturnEmptyIfAManagerTriesToGetTheBreakdownOfSomeoneTheyManage() {
-    $manager = ContactFabricator::fabricate();
-    $contact1 = ContactFabricator::fabricate();
-    $contact2 = ContactFabricator::fabricate();
-
-    HRJobContractFabricator::fabricate(
-      ['contact_id' => $contact2['id']],
-      ['period_start_date' => CRM_Utils_Date::processDate('+5 days')]
-    );
-
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => $this->absenceType->id,
       'contact_id' => $contact2['id'],
       'from_date' => CRM_Utils_Date::processDate('+5 days'),
@@ -4268,7 +4161,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->setPermissions(['access AJAX API']);
 
     $result = civicrm_api3('LeaveRequest', 'getBreakdown', [
-      'leave_request_id' => $leaveRequest->id,
+      'leave_request_id' => $leaveRequest1->id,
+      'check_permissions' => true,
+    ]);
+    $this->assertCount(3, $result['values']);
+
+    $result = civicrm_api3('LeaveRequest', 'getBreakdown', [
+      'leave_request_id' => $leaveRequest2->id,
       'check_permissions' => true,
     ]);
     $this->assertCount(3, $result['values']);
