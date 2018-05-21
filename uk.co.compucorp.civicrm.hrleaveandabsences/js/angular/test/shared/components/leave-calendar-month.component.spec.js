@@ -47,7 +47,7 @@
         LeaveRequest = _LeaveRequest_;
         OptionGroup = _OptionGroup_;
 
-        february = { index: '2016-1', month: 1, year: 2016 };
+        february = { index: '2016-02', month: 1, year: 2016 };
         daysInFebruary = moment().month(february.month).year(february.year).daysInMonth();
         period2016 = _.clone(AbsencePeriodData.all().values[0]);
         publicHolidays = PublicHolidayData.all().values;

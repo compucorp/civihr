@@ -255,7 +255,7 @@
               $rootScope.$digest();
             });
 
-            it('it does not allow to paginate to the previous month', function () {
+            it('does not allow to paginate to the previous month', function () {
               expect(controller.monthPaginatorsAvailability.previous).toBe(false);
             });
           });
@@ -267,7 +267,7 @@
               $rootScope.$digest();
             });
 
-            it('it does not allow to paginate to the previous month', function () {
+            it('does not allow to paginate to the previous month', function () {
               expect(controller.monthPaginatorsAvailability.next).toBe(false);
             });
           });
@@ -279,7 +279,7 @@
               $rootScope.$digest();
             });
 
-            it('it allows to paginate the month in both directions', function () {
+            it('allows to paginate the month in both directions', function () {
               expect(controller.monthPaginatorsAvailability.previous).toBe(true);
               expect(controller.monthPaginatorsAvailability.next).toBe(true);
             });
@@ -454,7 +454,7 @@
               $rootScope.$digest();
             });
 
-            it('it sets the first month from the period as the selected month', function () {
+            it('sets the first month from the period as the selected month', function () {
               expect(controller.selectedMonth).toEqual(controller.months[0]);
             });
           });
@@ -483,7 +483,7 @@
 
           it('selects the current month', function () {
             expect(controller.selectedMonth).toEqual(_.find(controller.months,
-              { index: moment().year() + '-' + moment().month() }));
+              { index: moment().format('YYYY-MM') }));
           });
         });
 
@@ -564,7 +564,7 @@
         }
       });
 
-      describe('selectCurrentMonth()', function () {
+      describe('navigateToCurrentMonth()', function () {
         var currentAbsencePeriod;
 
         beforeEach(function () {
@@ -573,9 +573,10 @@
           controller.injectMonth = false;
           controller.selectedPeriod = controller.absencePeriods[1];
           $rootScope.$digest();
-          controller.selectedMonthIndex = currentYear + '-' + (currentMonth + 1);
+          controller.selectedMonthIndex =
+            moment().year(currentYear).month(currentMonth).format('YYYY-MM');
           $rootScope.$digest();
-          controller.selectCurrentMonth();
+          controller.navigateToCurrentMonth();
           $rootScope.$digest();
         });
 

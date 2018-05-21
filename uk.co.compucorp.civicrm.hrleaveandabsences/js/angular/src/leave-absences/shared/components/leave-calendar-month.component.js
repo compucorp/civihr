@@ -74,7 +74,7 @@ define([
      */
     function buildMonthStructure (dateMoment) {
       return {
-        index: dateMoment.year() + '-' + dateMoment.month(),
+        index: dateMoment.format('YYYY-MM'),
         month: dateMoment.month(),
         year: dateMoment.year(),
         name: dateMoment.format('MMMM'),
