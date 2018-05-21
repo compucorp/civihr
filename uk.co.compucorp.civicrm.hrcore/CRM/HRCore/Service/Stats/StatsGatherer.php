@@ -86,6 +86,7 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
     $entityCounts += $this->getJobRoleEntityCounts();
     $entityCounts += $this->getCustomDataCounts();
     $entityCounts += $this->getCaseEntityCounts();
+    $entityCounts += $this->getHrResourceCounts();
 
     return $entityCounts;
   }
@@ -324,6 +325,41 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
   private function getCaseEntityCounts() {
     $counts = [];
     $counts['caseType'] = $this->getEntityCount('CaseType');
+
+    return $counts;
+  }
+
+  /**
+   * Gets a count of all HR Resource related entities
+   *
+   * @return array
+   */
+  private function getHrResourceCounts() {
+    $counts['hrResourceType'] = 0;
+    $counts['hrResource'] = 0;
+
+    if (!$this->isDrupal()) {
+      return $counts;
+    }
+
+    $hrResourceTypeIds = db_select('node', 'n')
+      ->fields('n', ['nid'])
+      ->condition('n.type', 'hr_documents')
+      ->condition('n.status', NODE_PUBLISHED)
+      ->execute()
+      ->fetchCol();
+
+    $resourceTypeCount = count($hrResourceTypeIds);
+    $counts['hrResourceType'] = $resourceTypeCount;
+
+    if ($resourceTypeCount > 0) {
+      $hrResourceCount = (int) db_select('file_usage')
+        ->condition('id', $hrResourceTypeIds, 'IN')
+        ->countQuery()
+        ->execute()
+        ->fetchField();
+      $counts['hrResource'] = $hrResourceCount;
+    }
 
     return $counts;
   }
