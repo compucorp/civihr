@@ -1,15 +1,15 @@
 /* eslint-env amd */
 
 define([
-  'leave-absences/shared/modules/components'
+  'common/modules/components'
 ], function (components) {
   components.component('leaveNotificationBadge', {
     bindings: {
       filters: '<',
       refreshCountEventName: '<'
     },
-    templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sharedPathTpl + 'components/leave-notification-badge.html';
+    template: ['$templateCache', function ($templateCache) {
+      return $templateCache.get('components/leave-notification-badge.html');
     }],
     controllerAs: 'badge',
     controller: LeaveNotificationBadgeController
@@ -35,9 +35,9 @@ define([
      */
     function fetchCount () {
       return LeaveRequest.all(vm.filters, null, null, null, false)
-        .then(function (leaveRequests) {
-          vm.count = leaveRequests.list.length;
-        });
+      .then(function (leaveRequests) {
+        vm.count = leaveRequests.list.length;
+      });
     }
 
     /**

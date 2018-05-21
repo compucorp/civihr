@@ -1,11 +1,12 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'leave-absences/shared/components/leave-notification-badge.component'
+  'common/angularMocks',
+  'common/components/leave-notification-badge.component'
 ], function () {
   'use strict';
 
-  describe('leaveNotificationBadge', function () {
+  fdescribe('leaveNotificationBadge', function () {
     var $componentController, $log, $rootScope, $q, controller, LeaveRequest, pubSub;
     var apiReturnValue = { list: [1, 2, 3] };
     var eventName = 'some-event';
