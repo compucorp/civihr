@@ -46,7 +46,7 @@ define([
     vm.getContactUrl = getContactUrl;
 
     (function init () {
-      var dateFromMonth = moment().month(vm.month.index).year(vm.month.year);
+      var dateFromMonth = moment().month(vm.month.month).year(vm.month.year);
 
       indexData();
       initListeners();
@@ -74,7 +74,8 @@ define([
      */
     function buildMonthStructure (dateMoment) {
       return {
-        index: dateMoment.month(),
+        index: dateMoment.format('YYYY-MM'),
+        month: dateMoment.month(),
         year: dateMoment.year(),
         name: dateMoment.format('MMMM'),
         loading: true,
@@ -269,7 +270,7 @@ define([
      * Initializes the event listeners
      */
     function initListeners () {
-      eventListeners.push($rootScope.$on('LeaveCalendar::showMonths', showMonthIfInList));
+      eventListeners.push($rootScope.$on('LeaveCalendar::showMonth', showMonth));
       eventListeners.push(pubSub.subscribe('LeaveRequest::new', addLeaveRequest));
       eventListeners.push(pubSub.subscribe('LeaveRequest::edit', updateLeaveRequest));
       eventListeners.push(pubSub.subscribe('LeaveRequest::updatedByManager', updateLeaveRequest));
@@ -355,7 +356,7 @@ define([
 
       while (pointerDate.isSameOrBefore(toDate)) {
         // Ensure that pointerDate is in same month/year that component represents
-        if (pointerDate.month() === vm.month.index && pointerDate.year() === vm.month.year) {
+        if (pointerDate.month() === vm.month.month && pointerDate.year() === vm.month.year) {
           days.push(_.find(vm.month.days, function (day) {
             return day.date === pointerDate.format('YYYY-MM-DD');
           }));
@@ -561,22 +562,13 @@ define([
     /**
      * Show the month and its data if it's included in the given list
      *
-     * @param  {Array} monthsToShow
-     * @param  {Boolean} forceReload If true it forces the reload of the data
+     * @param {Boolean} forceReload If true it forces the reload of the data
      */
-    function showMonthIfInList (__, monthsToShow, forceReload) {
-      var isIncluded = !!_.find(monthsToShow, function (month) {
-        return month.index === vm.month.index;
-      });
+    function showMonth (__, forceReload) {
+      vm.currentPage = 0;
+      vm.visible = true;
 
-      if (isIncluded) {
-        vm.currentPage = 0;
-        vm.visible = true;
-
-        (forceReload || !dataLoaded) && loadMonthData();
-      } else {
-        vm.visible = false;
-      }
+      (forceReload || !dataLoaded) && loadMonthData();
     }
 
     function sortLeaveRequests (leaveRequests) {

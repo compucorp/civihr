@@ -227,6 +227,21 @@ $chr-leave-calendar-legend-badge-square-hours-font-size: 6px;
   }
 }
 
+.chr_leave-calendar__month-header__go-to-current-month {
+  text-transform: uppercase;
+}
+
+.chr_leave-calendar__month-header__go-to-current-month,
+.chr_leave-calendar__month-header__month-paginator {
+  margin-right: 10px;
+}
+
+.chr_leave-calendar__month-header__month-paginator {
+  color: $gray-darker;
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .chr_leave-calendar__name {
   font-size: $font-size-small !important;
   line-height: 100%;
