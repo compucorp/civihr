@@ -118,7 +118,7 @@
       <header class="panel-heading chr_leave-calendar__month-header">
         <h2 class="panel-title">
           <button class="btn btn-secondary-outline chr_leave-calendar__month-header__go-to-current-month"
-            ng-click="calendar.selectCurrentMonth()">Today</button>
+            ng-click="calendar.navigateToCurrentMonth()">Today</button>
           <button class="btn btn-link chr_leave-calendar__month-header__month-paginator"
             ng-class="{ disabled: !calendar.monthPaginatorsAvailability.previous }"
             ng-click="calendar.paginateMonth('previous')"
@@ -126,7 +126,6 @@
             <i class="fa fa-chevron-left"></i>
           </button>
           <button class="btn btn-link chr_leave-calendar__month-header__month-paginator"
-            ng-class="{ disabled: !calendar.monthPaginatorsAvailability.next }"
             ng-click="calendar.paginateMonth('next')"
             ng-disabled="!calendar.monthPaginatorsAvailability.next">
             <i class="fa fa-chevron-right"></i>

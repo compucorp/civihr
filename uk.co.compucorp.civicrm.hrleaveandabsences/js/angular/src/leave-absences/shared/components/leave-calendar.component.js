@@ -58,9 +58,9 @@ define([
     };
 
     vm.labelPeriod = labelPeriod;
+    vm.navigateToCurrentMonth = navigateToCurrentMonth;
     vm.paginateMonth = paginateMonth;
     vm.refresh = refresh;
-    vm.selectCurrentMonth = selectCurrentMonth;
 
     (function init () {
       setUserRole()
@@ -101,13 +101,13 @@ define([
     }
 
     /**
-     * Returns a month index in the format "YYYY-<month_number>"
+     * Returns a month index in the format "YYYY-MM"
      *
      * @param  {Moment} dateMoment
      * @return {String}
      */
     function getMonthIndex (dateMoment) {
-      return dateMoment.year() + '-' + dateMoment.month();
+      return dateMoment.format('YYYY-MM');
     }
 
     /**
@@ -291,6 +291,24 @@ define([
     }
 
     /**
+     * Navigates to the current month by setting the current month,
+     * absence period, building months list, updating months paginators
+     * availability and finally refreshing the month component
+     */
+    function navigateToCurrentMonth () {
+      var previousSelectedPeriodId = vm.selectedPeriod.id;
+
+      vm.selectedPeriod = _.find(vm.absencePeriods, function (period) {
+        return !!period.current;
+      });
+
+      (previousSelectedPeriodId !== vm.selectedPeriod.id) && buildPeriodMonthsList();
+      setCurrentMonth();
+      setMonthPaginatorsAvailability();
+      refresh('month');
+    }
+
+    /**
      * Paginates the currently selected month in a specified direction
      *
      * @param {String} direction previous|next
@@ -299,9 +317,7 @@ define([
       var monthAction = direction === 'previous' ? 'subtract' : 'add';
       var dateFromMonth = vm.selectedMonth.moment[monthAction](1, 'month');
 
-      vm.selectedMonthIndex = getMonthIndex(dateFromMonth);
-
-      setSelectedMonth();
+      setSelectedMonth(dateFromMonth);
       setMonthPaginatorsAvailability();
       refresh('month');
     }
@@ -321,26 +337,13 @@ define([
 
       $q.resolve()
         .then(makeSureMonthIsNotInjected)
-        .then(source === 'period' ? buildPeriodMonthsList : _.noop)
-        .then(source === 'period' ? setFirstPeriodMonth : _.noop)
-        .then(source === 'contacts' ? loadContacts : _.noop)
-        .then(source === 'month' ? setMonthPaginatorsAvailability : _.noop)
+        .then(source === 'period' && buildPeriodMonthsList)
+        .then(source === 'period' && setFirstPeriodMonth)
+        .then(source === 'contacts' && loadContacts)
+        .then(source === 'month' && setMonthPaginatorsAvailability)
         .then(function () {
           injectAndShowMonth((source === 'contacts'));
         });
-    }
-
-    function selectCurrentMonth () {
-      var selectedPeriodId = vm.selectedPeriod.id;
-
-      vm.selectedPeriod = _.find(vm.absencePeriods, function (period) {
-        return !!period.current;
-      });
-
-      (selectedPeriodId !== vm.selectedPeriod.id) && buildPeriodMonthsList();
-      setCurrentMonth();
-      setMonthPaginatorsAvailability();
-      refresh('month');
     }
 
     /**
@@ -357,18 +360,14 @@ define([
      * Sets the month that is to be selected by default
      */
     function setCurrentMonth () {
-      vm.selectedMonthIndex = moment().year() + '-' + moment().month();
-
-      setSelectedMonth();
+      setSelectedMonth(moment());
     }
 
     /**
      * Sets the first month from the currently selected period as the selected month
      */
     function setFirstPeriodMonth () {
-      vm.selectedMonthIndex = vm.months[0].index;
-
-      setSelectedMonth();
+      setSelectedMonth(vm.months[0].moment);
     }
 
     /**
@@ -395,9 +394,17 @@ define([
     }
 
     /**
-     * Sets the month that is was selected
+     * Sets the selected month
+     *
+     * @param {Moment} [momentMonth]
+     *   If momentMonth parameter is ommited, the month index will not be set
+     *   and the selected month will be set from the current set month index value
      */
-    function setSelectedMonth () {
+    function setSelectedMonth (momentMonth) {
+      if (momentMonth) {
+        vm.selectedMonthIndex = getMonthIndex(momentMonth);
+      }
+
       vm.selectedMonth = _.find(vm.months, { index: vm.selectedMonthIndex });
     }
 
@@ -424,6 +431,7 @@ define([
     /**
      * Waits until all leave-calendar-month components are <some status>
      *
+     * @param  {String} status
      * @return {Promise}
      */
     function waitUntilMonthIs (status) {
