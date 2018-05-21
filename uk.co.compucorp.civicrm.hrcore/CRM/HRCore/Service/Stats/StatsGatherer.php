@@ -102,7 +102,7 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
    * @return int
    */
   private function getEntityCount($entity, $params = []) {
-    $params += ['is_deleted' => FALSE];
+    $params += ['is_deleted' => FALSE, 'is_active' => TRUE];
 
     return (int) civicrm_api3($entity, 'getcount', $params);
   }
@@ -273,10 +273,10 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
    * @return array
    */
   private function getJobRoleEntityCounts() {
-    $recruitmentKey = 'com.civicrm.hrjobroles';
+    $jobRoleExtKey = 'com.civicrm.hrjobroles';
     $counts = [];
 
-    if (!ExtensionHelper::isExtensionEnabled($recruitmentKey)) {
+    if (!ExtensionHelper::isExtensionEnabled($jobRoleExtKey)) {
       return $counts;
     }
 
@@ -297,7 +297,8 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
   private function getFunderCount() {
     $result = civicrm_api3('HrJobRoles', 'get', ['return' => ['funder']]);
     $result = array_column($result['values'], 'funder');
-    $funderIds = implode('', $result);
+    // some funder data may not include the delimiter so make sure to add it
+    $funderIds = implode('|', $result);
     $funderIds = explode('|', $funderIds);
     $funderIds = array_unique(array_filter($funderIds));
 
