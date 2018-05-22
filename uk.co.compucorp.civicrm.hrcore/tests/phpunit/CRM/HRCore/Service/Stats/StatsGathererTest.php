@@ -98,6 +98,7 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
   }
 
   public function testTaskCountWillMatchExpectedCounts() {
+    $this->setDomainFromAddress('test@test.com', 'Test');
     $contactID = ContactFabricator::fabricateWithEmail()['id'];
     $params = ['component_id' => 'CiviTask', 'option_group_id' => 'activity_type'];
     $taskType = OptionValueFabricator::fabricate($params);
@@ -164,7 +165,7 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $contactID = ContactFabricator::fabricateWithEmail()['id'];
 
     $params = ['contact_id' => $contactID];
-    $contract = CRM_Hrjobcontract_Test_Fabricator_HRJobContract::fabricate($params);
+    $contract = HRJobContractFabricator::fabricate($params);
     $params = ['job_contract_id' => $contract['id']];
     HrJobRolesFabricator::fabricate($params);
     HrJobRolesFabricator::fabricate($params);
