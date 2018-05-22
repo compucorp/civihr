@@ -29,6 +29,17 @@ define([
       expect(controller.legendCollapsed).toBe(true);
     });
 
+    it('has a list of "other" badges', function () {
+      expect(controller.otherBadges).toEqual(jasmine.objectContaining([{
+        label: jasmine.any(String),
+        description: jasmine.any(String)
+      }]));
+    });
+
+    it('has a total of 5 "other" badges', function () {
+      expect(controller.otherBadges.length).toBe(5);
+    });
+
     describe('getAbsenceTypeStyle()', function () {
       var style, absenceType;
 

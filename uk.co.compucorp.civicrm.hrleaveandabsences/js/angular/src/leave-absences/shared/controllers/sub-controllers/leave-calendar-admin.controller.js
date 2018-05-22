@@ -46,21 +46,21 @@ define([
      */
     function loadContactIdsToReduceTo () {
       return loadContracts()
-      .then(function (contracts) {
-        var contractsInAbsencePeriod = contracts.filter(function (contract) {
-          var details = contract.info.details;
+        .then(function (contracts) {
+          var contractsInAbsencePeriod = contracts.filter(function (contract) {
+            var details = contract.info.details;
 
-          return (
-            moment(details.period_start_date).isSameOrBefore(vm.selectedPeriod.end_date) &&
+            return (
+              moment(details.period_start_date).isSameOrBefore(vm.selectedPeriod.end_date) &&
             (moment(details.period_end_date).isSameOrAfter(vm.selectedPeriod.start_date) ||
               !details.period_end_date)
-          );
-        });
+            );
+          });
 
-        return _.uniq(contractsInAbsencePeriod.map(function (contract) {
-          return contract.contact_id;
-        }));
-      });
+          return _.uniq(contractsInAbsencePeriod.map(function (contract) {
+            return contract.contact_id;
+          }));
+        });
     }
 
     /**
@@ -81,17 +81,18 @@ define([
           return lookupContacts(filterByAssignee)
             .then(function (contacts) {
               vm.lookupContacts = contacts;
-            })
-            .then(function () {
-              return (filterByAssignee !== 'me'
-                ? loadContactIdsToReduceTo() : $q.resolve(null));
-            })
-            .then(function (contactIdsToReduceTo) {
-              vm.contactIdsToReduceTo = contactIdsToReduceTo;
 
-              return loadContacts();
+              return $q.all([
+                loadContacts(),
+                filterByAssignee !== 'me'
+                  ? loadContactIdsToReduceTo() : $q.resolve(null)
+              ]);
             })
-            .then(function (contacts) {
+            .then(function (results) {
+              var contacts = results[0];
+
+              vm.contactIdsToReduceTo = results[1];
+
               return contacts;
             });
         }
