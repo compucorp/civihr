@@ -79,7 +79,7 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
   private function getEntityCounts() {
     $entityCounts = [];
     $entityCounts['contact'] = $this->getEntityCount('Contact');
-    $entityCounts['cmsUser'] = $this->getEntityCount('UFMatch');
+    $entityCounts['cmsUser'] = $this->siteInformation->getActiveUserCount();
     $entityCounts += $this->getTaskAndAssignmentEntityCounts();
     $entityCounts += $this->getLeaveAndAbsenceEntityCounts();
     $entityCounts += $this->getRecruitmentEntityCounts();
@@ -121,7 +121,8 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
 
       if (!empty($contactType['parent_id'])) {
         $params = ['contact_sub_type' => $name];
-      } else {
+      }
+      else {
         $params = ['contact_type' => $name];
       }
 
@@ -146,7 +147,6 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
 
     $query = db_select('reports_configuration', 'rc')->fields('rc');
     $result = $query->execute();
-
 
     while ($row = $result->fetchAssoc()) {
       $config = new ReportConfiguration();

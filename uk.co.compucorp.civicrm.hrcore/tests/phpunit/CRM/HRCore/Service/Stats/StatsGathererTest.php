@@ -73,20 +73,8 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
   }
 
   public function testCMSUserCountWillMatchExpectedCount() {
-    $this->setDomainFromAddress('test@test.com', 'Test');
-    $contactA = ContactFabricator::fabricateWithEmail([], 'a@test.com');
-    $contactB = ContactFabricator::fabricateWithEmail([], 'b@test.com');
-    UFMatchFabricator::fabricate([
-      'uf_name' => 'a@test.com',
-      'contact_id' => $contactA['id']
-    ]);
-    UFMatchFabricator::fabricate([
-      'uf_name' => 'b@test.com',
-      'contact_id' => $contactB['id']
-    ]);
-
     $stats = $this->getGatherer()->gather();
-    $this->assertEquals(2, $stats->getEntityCount('cmsUser'));
+    $this->assertEquals(20, $stats->getEntityCount('cmsUser'));
   }
 
   public function testVacancyCountWillMatchExpectedCount() {
@@ -348,6 +336,7 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
   private function getGatherer() {
     $siteInformation = $this->prophesize(SiteInformationInterface::class);
     $siteInformation->getSiteName()->willReturn('foo');
+    $siteInformation->getActiveUserCount()->willReturn(20);
 
     $roleService = $this->prophesize(RoleServiceInterface::class);
     $roleService->getRoleNames()->willReturn([1 => 'fake_role']);
