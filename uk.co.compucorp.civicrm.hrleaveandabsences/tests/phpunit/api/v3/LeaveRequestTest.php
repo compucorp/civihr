@@ -4601,6 +4601,50 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($toDate->format('Y-m-d') ." 23:59:00", $leaveRequest->to_date);
   }
 
+  public function testGetAndGetFullReturnsDataForContactIdEvenWhenItsExcludedFromReturnParameters() {
+    $contact1 = ContactFabricator::fabricate();
+    $this->registerCurrentLoggedInContactInSession($contact1['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contact1['id'] ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact1['id'],
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => 1
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'get', [
+      'check_permissions' => true,
+      'sequential' => 1,
+      'return' => ['status_id', 'type_id']
+    ]);
+
+    $this->assertEquals(1, $result['count']);
+    $this->assertEquals($leaveRequest->contact_id, $result['values'][0]['contact_id']);
+    $this->assertEquals($leaveRequest->type_id, $result['values'][0]['type_id']);
+    $this->assertEquals($leaveRequest->status_id, $result['values'][0]['status_id']);
+
+    $result = civicrm_api3('LeaveRequest', 'getfull', [
+      'check_permissions' => true,
+      'sequential' => 1
+    ]);
+    $this->assertEquals(1, $result['count']);
+    $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($leaveRequest->type_id, $result['values'][0]['type_id']);
+    $this->assertEquals($leaveRequest->status_id, $result['values'][0]['status_id']);
+  }
+
   /**
    * @expectedException CiviCRM_API3_Exception
    * @expectedExceptionMessage Mandatory key(s) missing from params array: contact_id, leave_date
