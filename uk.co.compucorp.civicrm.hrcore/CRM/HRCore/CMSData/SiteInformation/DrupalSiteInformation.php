@@ -14,4 +14,15 @@ class CRM_HRCore_CMSData_SiteInformation_DrupalSiteInformation implements SiteIn
     return variable_get('site_name');
   }
 
+  /**
+   * @inheritdoc
+   */
+  public function getActiveUserCount() {
+    return (int) db_select('users')
+      ->condition('status', 1, '=')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+  }
+
 }
