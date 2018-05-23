@@ -4,7 +4,7 @@ define([
   'common/angular',
   'common/models/session.model',
   'common/services/pub-sub',
-  'common/components/leave-notification-badge.component',
+  'common/components/notification-badge.component',
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/models/leave-request.model',
   'leave-absences/manager-notification-badge/modules/config',
@@ -19,9 +19,9 @@ define([
     'manager-notification-badge.components',
     'manager-notification-badge.config'
   ])
-  .run(['$log', function ($log) {
-    $log.debug('app.run');
-  }]);
+    .run(['$log', function ($log) {
+      $log.debug('app.run');
+    }]);
 
   return angular;
 });

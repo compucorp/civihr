@@ -2,7 +2,7 @@
 
 define([
   'common/components/heatmap.component',
-  'common/components/leave-notification-badge.component'
+  'common/components/notification-badge.component'
 ], function () {
 
 });
