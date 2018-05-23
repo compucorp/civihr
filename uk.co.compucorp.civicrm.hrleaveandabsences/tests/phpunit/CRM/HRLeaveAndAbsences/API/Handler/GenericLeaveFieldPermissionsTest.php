@@ -251,6 +251,7 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
     $genericFieldHandler->process($results);
 
     $this->assertEquals($expectedParams, $results);
+    $this->setPermissions();
   }
 
 
@@ -264,6 +265,45 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
 
     $results = $this->sampleData;
     $expectedParams = $this->sampleData;
+    $genericFieldHandler->process($results);
+
+    $this->assertEquals($expectedParams, $results);
+    $this->setPermissions();
+  }
+
+  public function testProcessWillHideAccessibleFieldsWhenRowIdentifierIsAbsentEvenIfUserHasAccess() {
+    //User is Staff with ID of 204 and has full access to only his data
+    $this->setPermissions();
+    $leaveRequestRights = $this->prophesize(LeaveRequestRightsService::class);
+    $leaveRequestRights->getLeaveContactsCurrentUserHasAccessTo()->willReturn([204]);
+    $apiRequest = [];
+    $genericFieldHandler = new GenericLeaveFieldPermissions($apiRequest, $leaveRequestRights->reveal());
+
+    $sampleData = $this->sampleData;
+    unset($sampleData['values'][0], $sampleData['values'][3], $sampleData['values'][5]);
+    unset($sampleData['values'][1]['contact_id']);
+    unset($sampleData['values'][2]['contact_id']);
+    unset($sampleData['values'][4]['contact_id']);
+
+    $results = $sampleData;
+    $expectedParams = $sampleData;
+
+    //Staff will not be able to access all restricted fields for his
+    //records since the row identifier is absent
+    $expectedParams['values'][1]['from_date_amount'] = '';
+    $expectedParams['values'][1]['to_date_amount'] = '';
+    $expectedParams['values'][1]['balance_change'] = '';
+    $expectedParams['values'][2]['from_date_amount'] = '';
+    $expectedParams['values'][2]['to_date_amount'] = '';
+    $expectedParams['values'][2]['balance_change'] = '';
+    $expectedParams['values'][2]['toil_duration'] = '';
+    $expectedParams['values'][2]['toil_to_accrue'] = '';
+    $expectedParams['values'][2]['toil_expiry_date'] = '';
+    $expectedParams['values'][4]['sickness_reason'] = '';
+    $expectedParams['values'][4]['from_date_amount'] = '';
+    $expectedParams['values'][4]['to_date_amount'] = '';
+    $expectedParams['values'][4]['balance_change'] = '';
+
     $genericFieldHandler->process($results);
 
     $this->assertEquals($expectedParams, $results);
