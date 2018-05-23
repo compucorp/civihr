@@ -209,16 +209,19 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
     $expectedParams['values'][0]['from_date_amount'] = '';
     $expectedParams['values'][0]['to_date_amount'] = '';
     $expectedParams['values'][0]['balance_change'] = '';
+    $expectedParams['values'][0]['type_id'] = '';
     $expectedParams['values'][3]['from_date_amount'] = '';
     $expectedParams['values'][3]['to_date_amount'] = '';
     $expectedParams['values'][3]['balance_change'] = '';
     $expectedParams['values'][3]['toil_duration'] = '';
     $expectedParams['values'][3]['toil_to_accrue'] = '';
     $expectedParams['values'][3]['toil_expiry_date'] = '';
+    $expectedParams['values'][3]['type_id'] = '';
     $expectedParams['values'][5]['sickness_reason'] = '';
     $expectedParams['values'][5]['from_date_amount'] = '';
     $expectedParams['values'][5]['to_date_amount'] = '';
     $expectedParams['values'][5]['balance_change'] = '';
+    $expectedParams['values'][5]['type_id'] = '';
     $genericFieldHandler->process($results);
 
     $this->assertEquals($expectedParams, $results);
@@ -238,16 +241,19 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
     $expectedParams['values'][1]['from_date_amount'] = '';
     $expectedParams['values'][1]['to_date_amount'] = '';
     $expectedParams['values'][1]['balance_change'] = '';
+    $expectedParams['values'][1]['type_id'] = '';
     $expectedParams['values'][2]['from_date_amount'] = '';
     $expectedParams['values'][2]['to_date_amount'] = '';
     $expectedParams['values'][2]['balance_change'] = '';
     $expectedParams['values'][2]['toil_duration'] = '';
     $expectedParams['values'][2]['toil_to_accrue'] = '';
     $expectedParams['values'][2]['toil_expiry_date'] = '';
+    $expectedParams['values'][2]['type_id'] = '';
     $expectedParams['values'][4]['sickness_reason'] = '';
     $expectedParams['values'][4]['from_date_amount'] = '';
     $expectedParams['values'][4]['to_date_amount'] = '';
     $expectedParams['values'][4]['balance_change'] = '';
+    $expectedParams['values'][4]['type_id'] = '';
     $genericFieldHandler->process($results);
 
     $this->assertEquals($expectedParams, $results);
@@ -293,16 +299,19 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
     $expectedParams['values'][1]['from_date_amount'] = '';
     $expectedParams['values'][1]['to_date_amount'] = '';
     $expectedParams['values'][1]['balance_change'] = '';
+    $expectedParams['values'][1]['type_id'] = '';
     $expectedParams['values'][2]['from_date_amount'] = '';
     $expectedParams['values'][2]['to_date_amount'] = '';
     $expectedParams['values'][2]['balance_change'] = '';
     $expectedParams['values'][2]['toil_duration'] = '';
     $expectedParams['values'][2]['toil_to_accrue'] = '';
     $expectedParams['values'][2]['toil_expiry_date'] = '';
+    $expectedParams['values'][2]['type_id'] = '';
     $expectedParams['values'][4]['sickness_reason'] = '';
     $expectedParams['values'][4]['from_date_amount'] = '';
     $expectedParams['values'][4]['to_date_amount'] = '';
     $expectedParams['values'][4]['balance_change'] = '';
+    $expectedParams['values'][4]['type_id'] = '';
 
     $genericFieldHandler->process($results);
 

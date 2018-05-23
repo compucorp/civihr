@@ -65,6 +65,13 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
       ],
       'level' => 1
     ],
+    'type_id' => [
+      'restricted_for' => [
+        self::MANAGER_ROLE => ['replace_with' => ''],
+        self::STAFF_ROLE => ['replace_with' => '']
+      ],
+      'level' => 1
+    ],
     'balance_change' => [
       'restricted_for' => [
         self::MANAGER_ROLE => ['replace_with' => ''],
