@@ -921,11 +921,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $expectedValues = [
       [
         'id' => $leaveRequest1->id,
-        'dates' => $this->createLeaveRequestDatesArray($leaveRequest1)
+        'dates' => $this->createLeaveRequestDatesArray($leaveRequest1),
+        'contact_id' => $leaveRequest1->contact_id
       ],
       [
         'id' => $leaveRequest2->id,
-        'dates' => $this->createLeaveRequestDatesArray($leaveRequest2)
+        'dates' => $this->createLeaveRequestDatesArray($leaveRequest2),
+        'contact_id' => $leaveRequest2->contact_id
       ]
     ];
 
@@ -971,11 +973,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $expectedValues = [
       [
         'id' => $leaveRequest1->id,
-        'balance_change' => -1
+        'balance_change' => -1,
+        'contact_id' => $leaveRequest1->contact_id
       ],
       [
         'id' => $leaveRequest2->id,
-        'balance_change' => -1
+        'balance_change' => -1,
+        'contact_id' => $leaveRequest2->contact_id
       ]
     ];
 
@@ -1036,17 +1040,20 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       [
         'id' => $leaveRequest1->id,
         'balance_change' => -1,
-        'dates' => $this->createLeaveRequestDatesArray($leaveRequest1)
+        'dates' => $this->createLeaveRequestDatesArray($leaveRequest1),
+        'contact_id' => $leaveRequest1->contact_id
       ],
       [
         'id' => $leaveRequest2->id,
         'balance_change' => -1,
-        'dates' => $this->createLeaveRequestDatesArray($leaveRequest2)
+        'dates' => $this->createLeaveRequestDatesArray($leaveRequest2),
+        'contact_id' => $leaveRequest2->contact_id
       ],
       [
         'id' => $toilRequest->id,
         'balance_change' => 8,
-        'dates' => $this->createLeaveRequestDatesArray($toilRequest)
+        'dates' => $this->createLeaveRequestDatesArray($toilRequest),
+        'contact_id' => $toilRequest->contact_id
       ]
     ];
 
@@ -1092,11 +1099,13 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $expectedValues = [
       [
         'id' => $leaveRequest1->id,
-        'type_id' => $this->absenceType->id
+        'type_id' => $this->absenceType->id,
+        'contact_id' => $leaveRequest1->contact_id
       ],
       [
         'id' => $leaveRequest2->id,
-        'type_id' => $this->absenceType->id
+        'type_id' => $this->absenceType->id,
+        'contact_id' => $leaveRequest2->contact_id
       ]
     ];
 
