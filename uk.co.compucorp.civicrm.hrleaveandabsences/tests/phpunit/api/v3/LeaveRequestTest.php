@@ -922,12 +922,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       [
         'id' => $leaveRequest1->id,
         'dates' => $this->createLeaveRequestDatesArray($leaveRequest1),
-        'contact_id' => $leaveRequest1->contact_id
       ],
       [
         'id' => $leaveRequest2->id,
         'dates' => $this->createLeaveRequestDatesArray($leaveRequest2),
-        'contact_id' => $leaveRequest2->contact_id
       ]
     ];
 
@@ -974,12 +972,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       [
         'id' => $leaveRequest1->id,
         'balance_change' => -1,
-        'contact_id' => $leaveRequest1->contact_id
       ],
       [
         'id' => $leaveRequest2->id,
         'balance_change' => -1,
-        'contact_id' => $leaveRequest2->contact_id
       ]
     ];
 
@@ -1041,19 +1037,16 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
         'id' => $leaveRequest1->id,
         'balance_change' => -1,
         'dates' => $this->createLeaveRequestDatesArray($leaveRequest1),
-        'contact_id' => $leaveRequest1->contact_id
       ],
       [
         'id' => $leaveRequest2->id,
         'balance_change' => -1,
         'dates' => $this->createLeaveRequestDatesArray($leaveRequest2),
-        'contact_id' => $leaveRequest2->contact_id
       ],
       [
         'id' => $toilRequest->id,
         'balance_change' => 8,
         'dates' => $this->createLeaveRequestDatesArray($toilRequest),
-        'contact_id' => $toilRequest->contact_id
       ]
     ];
 
@@ -1100,12 +1093,10 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       [
         'id' => $leaveRequest1->id,
         'type_id' => $this->absenceType->id,
-        'contact_id' => $leaveRequest1->contact_id
       ],
       [
         'id' => $leaveRequest2->id,
         'type_id' => $this->absenceType->id,
-        'contact_id' => $leaveRequest2->contact_id
       ]
     ];
 
@@ -4610,7 +4601,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($toDate->format('Y-m-d') ." 23:59:00", $leaveRequest->to_date);
   }
 
-  public function testGetAndGetFullReturnsDataForContactIdEvenWhenItsExcludedFromReturnParameters() {
+  public function testAContactCanViewRestrictedFieldsHeHasAccessToEvenWhenTheContactIdIsNotInTheReturnParameters() {
     $contact1 = ContactFabricator::fabricate();
     $this->registerCurrentLoggedInContactInSession($contact1['id']);
     CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
@@ -4640,18 +4631,21 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ]);
 
     $this->assertEquals(1, $result['count']);
-    $this->assertEquals($leaveRequest->contact_id, $result['values'][0]['contact_id']);
+    //type_id is a restricted field but contact has access
     $this->assertEquals($leaveRequest->type_id, $result['values'][0]['type_id']);
     $this->assertEquals($leaveRequest->status_id, $result['values'][0]['status_id']);
+    $this->assertArrayNotHasKey('contact_id', $result['values'][0]);
 
     $result = civicrm_api3('LeaveRequest', 'getfull', [
       'check_permissions' => true,
-      'sequential' => 1
+      'sequential' => 1,
+      'return' => ['status_id', 'type_id']
     ]);
     $this->assertEquals(1, $result['count']);
-    $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    //type_id is a restricted field but contact has access
     $this->assertEquals($leaveRequest->type_id, $result['values'][0]['type_id']);
     $this->assertEquals($leaveRequest->status_id, $result['values'][0]['status_id']);
+    $this->assertArrayNotHasKey('contact_id', $result['values'][0]);
   }
 
   /**

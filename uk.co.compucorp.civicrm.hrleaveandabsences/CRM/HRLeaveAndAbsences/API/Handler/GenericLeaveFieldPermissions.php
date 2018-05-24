@@ -91,6 +91,7 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
   public function __construct($apiRequest, LeaveRequestRightsService $leaveRequestRights) {
     $this->leaveRequestRightsService = $leaveRequestRights;
     $this->apiRequest = $apiRequest;
+    $this->setShouldRemoveDataRowIdentifier();
   }
 
   /**
@@ -146,5 +147,18 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
    */
   protected function currentUserIsAdmin() {
     return CRM_Core_Permission::check('administer leave and absences');
+  }
+
+  /**
+   * Sets the value of the removeDataRowIdentifier variable.
+   */
+  private function setShouldRemoveDataRowIdentifier() {
+    if(empty($this->apiRequest['params']['initial_return'])){
+      return;
+    }
+
+    if (!in_array($this->getDataRowIdentifierKey(), $this->apiRequest['params']['initial_return'])) {
+      $this->removeDataRowIdentifier = TRUE;
+    }
   }
 }
