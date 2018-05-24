@@ -1729,7 +1729,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testGetAndGetFullHidesRestrictedFieldsForUnAssignedContactForLoggedInLeaveManagerWhenUnassignedIsTrue() {
     $manager1 = ContactFabricator::fabricate();
     $this->registerCurrentLoggedInContactInSession($manager1['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API', 'manage leave and absences in ssp'];
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
 
     $this->setLeaveApproverRelationshipTypes([
       'has Leaves Approved By',
@@ -3726,7 +3726,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $contact2 = ContactFabricator::fabricate();
 
     $this->registerCurrentLoggedInContactInSession($manager['id']);
-    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API', 'manage leave and absences in ssp'];
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
 
     $this->setContactAsLeaveApproverOf($manager, $contact2);
 
@@ -4210,7 +4210,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->registerCurrentLoggedInContactInSession($manager['id']);
     $this->setContactAsLeaveApproverOf($manager, $contact2);
-    $this->setPermissions(['access AJAX API', 'manage leave and absences in ssp']);
+    $this->setPermissions(['access AJAX API']);
 
     //Contact one is not among the managees of the manager so the restricted fields
     //values will be hidden for the manager.
