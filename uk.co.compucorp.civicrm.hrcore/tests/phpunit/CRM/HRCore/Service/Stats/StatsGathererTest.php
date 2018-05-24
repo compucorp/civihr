@@ -18,6 +18,7 @@ use CRM_HRCore_Test_Fabricator_ContactType as ContactTypeFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 use CRM_HRCore_Service_Stats_StatsGatherer as StatsGatherer;
 use CRM_HRCore_Test_Helpers_SessionHelper as SessionHelper;
+use CRM_Hrjobroles_Test_Fabricator_HrJobRoles as HrJobRolesFabricator;
 
 /**
  * @group headless
@@ -60,29 +61,33 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $this->assertEquals($expected, $stats->getSiteUrl());
   }
 
-  public function testEntityCountsWillMatchExpectedCount() {
-    $this->truncateTables(['civicrm_contact']);
+  public function testContactCountWillMatchExpectedCount() {
+    $existingContactCount = civicrm_api3('Contact', 'getcount');
+    ContactFabricator::fabricate();
+    ContactFabricator::fabricate();
+    ContactFabricator::fabricate();
+    $expectedContactCount = $existingContactCount + 3;
+    $stats = $this->getGatherer()->gather();
+
+    $this->assertEquals($expectedContactCount, $stats->getEntityCount('contact'));
+  }
+
+  public function testCMSUserCountWillMatchExpectedCount() {
+    $stats = $this->getGatherer()->gather();
+    $this->assertEquals(20, $stats->getEntityCount('cmsUser'));
+  }
+
+  public function testVacancyCountWillMatchExpectedCount() {
+    HRVacancyFabricator::fabricate();
+    HRVacancyFabricator::fabricate();
+    $stats = $this->getGatherer()->gather();
+
+    $this->assertEquals(2, $stats->getEntityCount('vacancy'));
+  }
+
+  public function testTaskCountWillMatchExpectedCounts() {
     $this->setDomainFromAddress('test@test.com', 'Test');
-
-    $documentType = OptionValueFabricator::fabricate([
-      'option_group_id' => 'activity_type',
-      'component_id' => 'CiviDocument'
-    ]);
-
-    // expect 3
-    ContactFabricator::fabricate();
-    ContactFabricator::fabricate();
     $contactID = ContactFabricator::fabricateWithEmail()['id'];
-    SessionHelper::registerCurrentLoggedInContactInSession($contactID);
-
-    // expect 1 UFMatch
-    UFMatchFabricator::fabricate(['contact_id' => $contactID]);
-
-    // expect 2 Vacancies
-    HRVacancyFabricator::fabricate();
-    HRVacancyFabricator::fabricate();
-
-    // expect 1 Task
     $params = ['component_id' => 'CiviTask', 'option_group_id' => 'activity_type'];
     $taskType = OptionValueFabricator::fabricate($params);
     $params = [
@@ -92,29 +97,85 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     ];
     TaskFabricator::fabricate($params);
 
-    // expect 1 Assignment
+    $stats = $this->getGatherer()->gather();
+
+    $this->assertEquals(1, $stats->getEntityCount('task'));
+  }
+
+  public function testCaseTypeCountWillMatchExpectedCount() {
+    CaseTypeFabricator::fabricate();
+    CaseTypeFabricator::fabricate(['name' => 'test_case_type_2']);
+
+    $stats = $this->getGatherer()->gather();
+
+    $this->assertEquals(2, $stats->getEntityCount('caseType'));
+  }
+
+  public function testAssignmentCountsWillMatchExpectedCount() {
     $caseType = CaseTypeFabricator::fabricate();
     AssignmentFabricator::fabricate(['case_type_id' => $caseType['id']]);
 
-    // expect 2 Documents
+    $stats = $this->getGatherer()->gather();
+
+    $this->assertEquals(1, $stats->getEntityCount('assignment'));
+  }
+
+  public function testDocumentCountWillMatchExpectedCount() {
+    $contactId = ContactFabricator::fabricate()['id'];
+    $documentType = OptionValueFabricator::fabricate([
+      'option_group_id' => 'activity_type',
+      'component_id' => 'CiviDocument',
+    ]);
     $params['activity_type_id'] = $documentType['value'];
+    $params['target_contact_id'] = $contactId;
+    $params['source_contact_id'] = $contactId;
     DocumentFabricator::fabricate($params);
     DocumentFabricator::fabricate($params);
 
-    // expect 2 LeaveRequests
+    $stats = $this->getGatherer()->gather();
+
+    $this->assertEquals(2, $stats->getEntityCount('document'));
+  }
+
+  public function testLeaveRequestCountsWillMatchExpectedCount() {
+    $contactID = ContactFabricator::fabricateWithEmail()['id'];
+
     $this->setUpLeaveRequest($contactID);
     $this->fabricateLeaveRequest($contactID);
     $this->fabricateLeaveRequest($contactID);
 
     $stats = $this->getGatherer()->gather();
 
-    $this->assertEquals(3, $stats->getEntityCount('contact'));
-    $this->assertEquals(1, $stats->getEntityCount('cmsUser'));
-    $this->assertEquals(2, $stats->getEntityCount('vacancy'));
-    $this->assertEquals(1, $stats->getEntityCount('task'));
-    $this->assertEquals(1, $stats->getEntityCount('assignment'));
-    $this->assertEquals(2, $stats->getEntityCount('document'));
     $this->assertEquals(2, $stats->getEntityCount('leaveRequest'));
+  }
+
+  public function testJobRoleCountWillMatchExpectedCount() {
+    $contactID = ContactFabricator::fabricateWithEmail()['id'];
+
+    $params = ['contact_id' => $contactID];
+    $contract = HRJobContractFabricator::fabricate($params);
+    $params = ['job_contract_id' => $contract['id']];
+    HrJobRolesFabricator::fabricate($params);
+    HrJobRolesFabricator::fabricate($params);
+
+    $stats = $this->getGatherer()->gather();
+
+    $this->assertEquals(2, $stats->getEntityCount('jobRole'));
+  }
+
+  public function testCostCenterCountWillMatchExpectedCount() {
+    $existingCostCenterCount = civicrm_api3('OptionValue', 'getcount', [
+      'option_group_id' => 'cost_centres'
+    ]);
+    OptionValueFabricator::fabricate([
+      'option_group_id' => 'cost_centres',
+      'name' => 'Test Cost Center'
+    ]);
+    $costCenterCount = $existingCostCenterCount + 1;
+
+    $stats = $this->getGatherer()->gather();
+
+    $this->assertEquals($costCenterCount, $stats->getEntityCount('costCenter'));
   }
 
   public function testLeaveRequestInLast100DaysCountMatchesExpectedCount() {
@@ -241,7 +302,6 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $stats = $this->getGatherer()->gather();
 
     $this->assertEquals(1, $stats->getEntityCount('contact'));
-    $this->assertEquals(0, $stats->getEntityCount('cmsUser'));
     $this->assertEquals(0, $stats->getEntityCount('task'));
     $this->assertEquals(0, $stats->getEntityCount('assignment'));
     $this->assertEquals(0, $stats->getEntityCount('document'));
@@ -260,12 +320,22 @@ class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
     );
   }
 
+  public function testInactiveCaseTypesWillNotBeIncluded() {
+    CaseTypeFabricator::fabricate(['is_active' => 0]);
+    CaseTypeFabricator::fabricate(['name' => 'test_case_type_2']);
+
+    $stats = $this->getGatherer()->gather();
+
+    $this->assertEquals(1, $stats->getEntityCount('caseType'));
+  }
+
   /**
    * @return StatsGatherer
    */
   private function getGatherer() {
     $siteInformation = $this->prophesize(SiteInformationInterface::class);
     $siteInformation->getSiteName()->willReturn('foo');
+    $siteInformation->getActiveUserCount()->willReturn(20);
 
     $roleService = $this->prophesize(RoleServiceInterface::class);
     $roleService->getRoleNames()->willReturn([1 => 'fake_role']);
