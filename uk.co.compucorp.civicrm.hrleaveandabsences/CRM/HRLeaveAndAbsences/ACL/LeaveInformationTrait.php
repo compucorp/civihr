@@ -47,8 +47,7 @@ trait CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait {
     FROM {$contactsTable} c
     LEFT JOIN {$relationshipTable} r ON c.id = r.contact_id_a
     LEFT JOIN {$relationshipTypeTable} rt ON rt.id = r.relationship_type_id
-    WHERE $conditions
-  ";
+    WHERE $conditions";
 
     return $query;
   }

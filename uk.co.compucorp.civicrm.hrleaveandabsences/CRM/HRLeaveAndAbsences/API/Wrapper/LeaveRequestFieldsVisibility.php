@@ -32,6 +32,13 @@ class CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestFieldsVisibility implements
   ];
 
   /**
+   * The contact_id parameter needs to be present in the list of parameters
+   * to be returned so that each result row set to be precessed by the API
+   * handler can identify which data belongs to which contact depending on
+   * the data the current user has access to. If the contact_id is absent,
+   * the result set returned will hide restricted fields even for contact
+   * that should originally have access to those fields.
+   *
    * @param $apiRequest
    * @return mixed
    */
@@ -47,7 +54,7 @@ class CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestFieldsVisibility implements
    * {@inheritdoc}
    */
   public function toApiOutput($apiRequest, $result) {
-    if ($this->canHandleAPiOutput($apiRequest)) {
+    if ($this->canHandleApiOutput($apiRequest)) {
       $handler = $this->getHandler($apiRequest);
       $handler->process($result);
     }
@@ -88,7 +95,7 @@ class CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestFieldsVisibility implements
    *
    * @return bool
    */
-  private function canHandleAPiOutput($apiRequest) {
+  private function canHandleApiOutput($apiRequest) {
     return $this->canHandleTheRequest($apiRequest);
   }
 
