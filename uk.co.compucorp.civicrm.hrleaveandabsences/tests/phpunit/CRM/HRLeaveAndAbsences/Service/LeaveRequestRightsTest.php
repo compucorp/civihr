@@ -282,7 +282,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertTrue($leaveRightsService->canCancelToilWithPastDates($this->leaveContact, $absenceType->id));
   }
 
-  public function testGetLeaveContactsCurrentUserHasAccessToWhenUserIsStaff() {
+  public function testStaffMembersShouldOnlyHaveAccessToThemselves() {
     $staffMember1 = ContactFabricator::fabricate();
     $staffMember2 = ContactFabricator::fabricate();
     $this->registerCurrentLoggedInContactInSession($staffMember1['id']);
@@ -291,7 +291,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertEquals([$staffMember1['id']], $accessibleContacts);
   }
 
-  public function testGetLeaveContactsCurrentUserHasAccessToWhenUserIsALeaveApprover() {
+  public function testGetLeaveApproverShouldOnlyHaveAccessToManagees() {
     $manager = ContactFabricator::fabricate();
     $staffMember1 = ContactFabricator::fabricate();
     $staffMember2 = ContactFabricator::fabricate();
@@ -304,7 +304,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertEquals([$manager['id'],$staffMember2['id']], $accessibleContacts);
   }
 
-  public function testGetLeaveContactsCurrentUserHasAccessToWhenUserIsAnAdmin() {
+  public function testAdminShouldHaveAccessToAllContacts() {
     $staffMember1 = ContactFabricator::fabricate();
     $staffMember2 = ContactFabricator::fabricate();
     $leaveRequestRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();

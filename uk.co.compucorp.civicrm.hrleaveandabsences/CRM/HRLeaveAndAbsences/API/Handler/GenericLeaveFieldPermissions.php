@@ -6,10 +6,6 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
 
   use CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait;
 
-  const ADMIN_ROLE = 'Admin';
-  const MANAGER_ROLE = 'Manager';
-  const STAFF_ROLE = 'Staff';
-
   /**
    * @var array
    *   Stores the contact Id's that the current user has access to.
@@ -52,59 +48,35 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
    */
   private $restrictedFields = [
     'from_date_amount' => [
-      'restricted_for' => [
-        self::MANAGER_ROLE => ['replace_with' => ''],
-        self::STAFF_ROLE => ['replace_with' => '']
-      ],
+      'restricted_value' => '',
       'level' => 1
     ],
     'to_date_amount' => [
-      'restricted_for' => [
-        self::MANAGER_ROLE => ['replace_with' => ''],
-        self::STAFF_ROLE => ['replace_with' => '']
-      ],
+      'restricted_value' => '',
       'level' => 1
     ],
     'type_id' => [
-      'restricted_for' => [
-        self::MANAGER_ROLE => ['replace_with' => ''],
-        self::STAFF_ROLE => ['replace_with' => '']
-      ],
+      'restricted_value' => '',
       'level' => 1
     ],
     'balance_change' => [
-      'restricted_for' => [
-        self::MANAGER_ROLE => ['replace_with' => ''],
-        self::STAFF_ROLE => ['replace_with' => '']
-      ],
+      'restricted_value' => '',
       'level' => 1
     ],
     'toil_duration' => [
-      'restricted_for' => [
-        self::MANAGER_ROLE => ['replace_with' => ''],
-        self::STAFF_ROLE => ['replace_with' => '']
-      ],
+      'restricted_value' => '',
       'level' => 1
     ],
     'toil_to_accrue' => [
-      'restricted_for' => [
-        self::MANAGER_ROLE => ['replace_with' => ''],
-        self::STAFF_ROLE => ['replace_with' => '']
-      ],
+      'restricted_value' => '',
       'level' => 1
     ],
     'toil_expiry_date' => [
-      'restricted_for' => [
-        self::MANAGER_ROLE => ['replace_with' => ''],
-        self::STAFF_ROLE => ['replace_with' => '']
-      ],
+      'restricted_value' => '',
       'level' => 1
     ],
     'sickness_reason' => [
-      'restricted_for' => [
-        self::MANAGER_ROLE => ['replace_with' => ''],
-        self::STAFF_ROLE => ['replace_with' => '']
-      ],
+      'restricted_value' => '',
       'level' => 1
     ],
   ];
@@ -117,7 +89,6 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
    * @param LeaveRequestRightsService $leaveRequestRights
    */
   public function __construct($apiRequest, LeaveRequestRightsService $leaveRequestRights) {
-    $this->setLoggedInUserRole();
     $this->leaveRequestRightsService = $leaveRequestRights;
     $this->apiRequest = $apiRequest;
   }
@@ -136,8 +107,7 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
    * @return array
    */
   protected function getAccessibleContacts() {
-    $isAdminUser = $this->loggedInUserRole === self::ADMIN_ROLE;
-    if(!$this->accessibleContacts && !$isAdminUser) {
+    if(!$this->accessibleContacts && !$this->currentUserIsAdmin()) {
       $this->accessibleContacts = $this->leaveRequestRightsService->getLeaveContactsCurrentUserHasAccessTo();
     }
 
@@ -148,21 +118,13 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
    * {@inheritdoc}
    */
   protected function getNewFieldValue($field, $oldValue, $dataRowIdentifierValue) {
-    $isAdminUser = $this->loggedInUserRole === self::ADMIN_ROLE;
     $canAccessRestrictedData = $this->canAccessRestrictedData($dataRowIdentifierValue);
 
-    if($isAdminUser || $canAccessRestrictedData) {
+    if($this->currentUserIsAdmin() || $canAccessRestrictedData) {
       return $oldValue;
     }
 
-    $rolesRestrictedFor = array_keys($this->getRestrictedFields()[$field]['restricted_for']);
-    $inRestrictedRoles = in_array($this->loggedInUserRole, $rolesRestrictedFor);
-
-    if(!empty($inRestrictedRoles)) {
-      return $this->getRestrictedFields()[$field]['restricted_for'][$this->loggedInUserRole]['replace_with'];
-    }
-
-    return $oldValue;
+    return $this->getRestrictedFields()[$field]['restricted_value'];
   }
 
   /**
@@ -178,19 +140,11 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
   }
 
   /**
-   * Sets the Role for the current logged in user.
+   * Returns whether the current user is an Admin or not.
+   *
+   * @return bool
    */
-  protected function setLoggedInUserRole() {
-    if (CRM_Core_Permission::check('administer leave and absences')) {
-      $role = self::ADMIN_ROLE;
-    }
-    elseif(CRM_Core_Permission::check('manage leave and absences in ssp')) {
-      $role = self::MANAGER_ROLE;
-    }
-    else {
-      $role = self::STAFF_ROLE;
-    }
-
-    $this->loggedInUserRole = $role;
+  protected function currentUserIsAdmin() {
+    return CRM_Core_Permission::check('administer leave and absences');
   }
 }
