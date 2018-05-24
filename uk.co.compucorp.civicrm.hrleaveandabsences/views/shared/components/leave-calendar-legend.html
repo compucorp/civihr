@@ -16,6 +16,11 @@
           ng-style="legend.getAbsenceTypeStyle(absenceType)">
           {{absenceType.title}}
         </div>
+        <div ng-repeat="nonWorkingDayType in legend.nonWorkingDayTypes"
+          class="chr_leave-calendar__legend__type-badge
+            chr_leave-calendar__legend__type-badge-{{nonWorkingDayType.cssClassSuffix}}">
+          {{nonWorkingDayType.label}}
+        </div>
       </div>
       <div class="chr_leave-calendar__legend__header">Other</div>
       <div class="clearfix">
