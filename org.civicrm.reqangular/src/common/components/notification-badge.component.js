@@ -36,13 +36,11 @@ define([
      * @return {Promise}
      */
     function fetchCount () {
-      var promise = [];
-
-      _.each(vm.filters, function (filter) {
-        promise.push(api.getAll(filter.apiName, filter.params, null, null, null, 'getFull', false));
+      var promises = _.map(vm.filters, function (filter) {
+        return api.getAll(filter.apiName, filter.params, null, null, null, 'getFull', false);
       });
 
-      return $q.all(promise)
+      return $q.all(promises)
         .then(function (results) {
           vm.count = _.reduce(results, function (memo, num) {
             return memo + num.total;
