@@ -34,7 +34,12 @@ define([
       beforeEach(function () {
         cleanDocument();
 
-        $triggerElement = angular.element('<div uib-tooltip-template="\'tooltip\'" uib-tooltip-clickable="true" tooltip-append-to-body="true"><script id="tooltip" type="text/ng-template"><div class="tooltip-clickable-template">Content</div></script></div>');
+        $triggerElement = angular.element(
+          '<div uib-tooltip-template="\'tooltip\'" uib-tooltip-clickable="true" tooltip-append-to-body="true">' +
+          '<script id="tooltip" type="text/ng-template">' +
+          '<div class="tooltip-clickable-template">Content</div>' +
+          '</script>' +
+          '</div>');
       });
 
       it('does not yet show the tooltip', function () {
@@ -152,7 +157,7 @@ define([
             });
           });
 
-          describe('when the tooltip clicked', function () {
+          describe('when the tooltip is tapped', function () {
             beforeEach(function () {
               $tooltipElement.trigger('touchend');
               $rootScope.$digest();
@@ -191,7 +196,9 @@ define([
     }
 
     /**
-     * Flushes timeouts one or more times
+     * Flushes timeouts one or more times.
+     * Multiple timeout flushes are needed because the tooltip library
+     * has a timeout when hiding a tooltip.
      */
     function flushTimeout (times) {
       times = times || 1;
