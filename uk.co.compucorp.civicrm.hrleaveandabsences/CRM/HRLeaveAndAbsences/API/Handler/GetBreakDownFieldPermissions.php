@@ -62,11 +62,7 @@ class CRM_HRLeaveAndAbsences_API_Handler_GetBreakDownFieldPermissions extends CR
   protected function getRestrictedFields() {
     $fields = [
       'amount' => [
-        'restricted_for' => [
-          self::MANAGER_ROLE => ['replace_with' => ''],
-          self::STAFF_ROLE => ['replace_with' => '']
-
-        ],
+        'restricted_value' => '',
         'level' => 1
       ],
     ];

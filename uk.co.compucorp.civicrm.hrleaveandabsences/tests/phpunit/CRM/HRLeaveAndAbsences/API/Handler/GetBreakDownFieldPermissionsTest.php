@@ -60,8 +60,8 @@ class CRM_HRLeaveAndAbsences_API_Handler_GetBreakDownFieldPermissionsTest extend
     ]);
   }
 
-  public function testProcessForStaffRequestingOwnBreakDown() {
-    //Staff with contact ID of 204
+  public function testProcessForUserRequestingBreakDownForLeaveRequestContactHeHasAccessTo() {
+    //User with contact ID of 204
     $contactID = 204;
     $this->setPermissions();
     $leaveRequestRights = $this->prophesize(LeaveRequestRightsService::class);
@@ -80,7 +80,7 @@ class CRM_HRLeaveAndAbsences_API_Handler_GetBreakDownFieldPermissionsTest extend
     $this->assertEquals($expectedParams, $results);
   }
 
-  public function testProcessForStaffRequestingBreakdownForAnotherStaff() {
+  public function testProcessForUserRequestingBreakdownForLeaveRequestContactHeDoesNotHaveAccessTo() {
     //Staff with contact ID of 204 trying to access breakdown of staff with contact ID 206
     $contactID = 204;
     $staffID = 206;
@@ -103,51 +103,7 @@ class CRM_HRLeaveAndAbsences_API_Handler_GetBreakDownFieldPermissionsTest extend
     $getBreakDownFieldHandler->process($results);
     $this->assertEquals($expectedParams, $results);
   }
-
-  public function testProcessForManagerRequestingBreakdownForManagee() {
-    //Manager trying to access breakdown for his managee
-    $staffID = 206;
-    $this->setPermissions(['manage leave and absences in ssp']);
-    $leaveRequestRights = $this->prophesize(LeaveRequestRightsService::class);
-    $leaveRequestRights->getLeaveContactsCurrentUserHasAccessTo()->willReturn([$staffID]);
-    $leaveRequest = $this->createLeaveRequest($staffID);
-    $apiRequest = [
-      'params' => [
-        'leave_request_id' => $leaveRequest->id
-      ]
-    ];
-    $getBreakDownFieldHandler = new GetBreakDownFieldHandler($apiRequest, $leaveRequestRights->reveal());
-    $results = $this->sampleData;
-    $expectedParams = $this->sampleData;
-
-    $getBreakDownFieldHandler->process($results);
-    $this->assertEquals($expectedParams, $results);
-  }
-
-  public function testProcessForManagerRequestingBreakdownForNonManagee() {
-    //Manager trying to access breakdown for non managee
-    $staffID = 204;
-    $staffID2 = 206;
-    $this->setPermissions(['manage leave and absences in ssp']);
-    $leaveRequestRights = $this->prophesize(LeaveRequestRightsService::class);
-    $leaveRequestRights->getLeaveContactsCurrentUserHasAccessTo()->willReturn([$staffID]);
-    $leaveRequest = $this->createLeaveRequest($staffID2);
-    $apiRequest = [
-      'params' => [
-        'leave_request_id' => $leaveRequest->id
-      ]
-    ];
-    $getBreakDownFieldHandler = new GetBreakDownFieldHandler($apiRequest, $leaveRequestRights->reveal());
-    $results = $this->sampleData;
-    $expectedParams = $this->sampleData;
-    $expectedParams['values'][0]['amount'] = '';
-    $expectedParams['values'][1]['amount'] = '';
-    $expectedParams['values'][2]['amount'] = '';
-
-    $getBreakDownFieldHandler->process($results);
-    $this->assertEquals($expectedParams, $results);
-  }
-
+  
   public function testProcessForAdmin() {
     //Admin can access all restricted fields for a contaxt
     $this->setPermissions(['administer leave and absences']);

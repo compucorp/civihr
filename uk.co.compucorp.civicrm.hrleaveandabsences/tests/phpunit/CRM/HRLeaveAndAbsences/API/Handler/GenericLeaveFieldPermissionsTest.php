@@ -191,46 +191,10 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
           ],
       ],
   ];
-
-  public function setUp() {
-
-  }
-
-  public function testProcessWhenUserIsStaff() {
-    //User is Staff with ID of 204 and has full access to only his data
+  
+  public function testProcessWhenUserIsNotAnAdminUser() {
     $this->setPermissions();
-    $leaveRequestRights = $this->prophesize(LeaveRequestRightsService::class);
-    $leaveRequestRights->getLeaveContactsCurrentUserHasAccessTo()->willReturn([204]);
-    $apiRequest = [];
-    $genericFieldHandler = new GenericLeaveFieldPermissions($apiRequest, $leaveRequestRights->reveal());
-
-    $results = $this->sampleData;
-    $expectedParams = $this->sampleData;
-    $expectedParams['values'][0]['from_date_amount'] = '';
-    $expectedParams['values'][0]['to_date_amount'] = '';
-    $expectedParams['values'][0]['balance_change'] = '';
-    $expectedParams['values'][0]['type_id'] = '';
-    $expectedParams['values'][3]['from_date_amount'] = '';
-    $expectedParams['values'][3]['to_date_amount'] = '';
-    $expectedParams['values'][3]['balance_change'] = '';
-    $expectedParams['values'][3]['toil_duration'] = '';
-    $expectedParams['values'][3]['toil_to_accrue'] = '';
-    $expectedParams['values'][3]['toil_expiry_date'] = '';
-    $expectedParams['values'][3]['type_id'] = '';
-    $expectedParams['values'][5]['sickness_reason'] = '';
-    $expectedParams['values'][5]['from_date_amount'] = '';
-    $expectedParams['values'][5]['to_date_amount'] = '';
-    $expectedParams['values'][5]['balance_change'] = '';
-    $expectedParams['values'][5]['type_id'] = '';
-    $genericFieldHandler->process($results);
-
-    $this->assertEquals($expectedParams, $results);
-  }
-
-  public function testProcessWhenUserIsManager() {
-    //Manager with access to all data for contact 208 and 209 and restricted access to
-    //other contacts.
-    $this->setPermissions(['manage leave and absences in ssp']);
+    //User has access to two leave contacts.
     $leaveRequestRights = $this->prophesize(LeaveRequestRightsService::class);
     $leaveRequestRights->getLeaveContactsCurrentUserHasAccessTo()->willReturn([209, 208]);
     $apiRequest = [];
@@ -257,7 +221,6 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
     $genericFieldHandler->process($results);
 
     $this->assertEquals($expectedParams, $results);
-    $this->setPermissions();
   }
 
 
