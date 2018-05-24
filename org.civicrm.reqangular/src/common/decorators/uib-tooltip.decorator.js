@@ -28,7 +28,7 @@ define([
           isTooltipClickable && makeTooltipClickable();
 
           /**
-           * Injects an overlay element to the original tooltip trigger element
+           * Injects an overlay element to the original element that triggers the tooltip
            */
           function injectOverlayToTriggerElement () {
             $overlay = angular.element('<div class="tooltip-overlay"></div>');
@@ -50,40 +50,42 @@ define([
            * by making it hoverable on non-touch devices
            * and dismissable on touch devices
            */
-          function makeTooltipClickable (attributes) {
+          function makeTooltipClickable () {
             isTouchDevice && injectOverlayToTriggerElement();
             setEventHandlersToTriggerElements();
           }
 
           /**
-           * Sets handlers to the tooltip trigger elements
+           * Defines the handlers that will be used
+           * to display the tooltip depending on the device
            */
           function setEventHandlersToTriggerElements () {
             if (isTouchDevice) {
               $overlay.on('touchend', function (event) {
-                toggleTooltip('source', true, false, event);
+                toggleTooltip('source', true, 0);
                 !scope.open && setEventHandlersToTooltip();
+                event.stopPropagation();
               });
               $document.find('body').on('touchend', function () {
-                toggleTooltip('source', false, false);
-                toggleTooltip('tooltip', false, false);
+                toggleTooltip('source', false, 0);
+                toggleTooltip('tooltip', false, 0);
               });
               $overlay.on('click', function (event) {
                 event.stopPropagation();
               });
             } else {
               $element.on('mouseenter', function () {
-                toggleTooltip('source', true, false);
+                toggleTooltip('source', true, 0);
                 !scope.open && setEventHandlersToTooltip();
               });
               $element.on('mouseleave', function () {
-                toggleTooltip('source', false, true);
+                toggleTooltip('source', false, 100);
               });
             }
 
             $element.on(clickType, function () {
-              toggleTooltip('source', false, false);
-              toggleTooltip('tooltip', false, false);
+              toggleTooltip('source', false, 0);
+              toggleTooltip('tooltip', false, 0);
             });
           }
 
@@ -97,14 +99,14 @@ define([
               $tooltip = $document.find('.tooltip-clickable-template:visible:last');
 
               $tooltip.on('mouseenter', function () {
-                toggleTooltip('tooltip', true, false);
+                toggleTooltip('tooltip', true, 0);
               });
               $tooltip.on('mouseleave', function () {
-                toggleTooltip('tooltip', false, true);
+                toggleTooltip('tooltip', false, 100);
               });
               $tooltip.on(clickType, function () {
-                toggleTooltip('source', false, false);
-                toggleTooltip('tooltip', false, false);
+                toggleTooltip('source', false, 0);
+                toggleTooltip('tooltip', false, 0);
               });
             });
           }
@@ -122,24 +124,16 @@ define([
            *
            * @param {String} elementType source|tooltip
            * @param {Boolean} elementIsHovered is element currently hovered or not
-           * @param {Boolean} delayEvent should the event be delayed
-           * @param {Event} eventToNotBePropagated if passed, it will not be propagated
+           * @param {Number} delay the event handler should be deferred by
            */
-          function toggleTooltip (elementType, elementIsHovered, delayEvent, eventToNotBePropagated) {
-            var timeout = delayEvent ? 100 : 0;
-
+          function toggleTooltip (elementType, elementIsHovered, delay) {
             $timeout(function () {
               scope[elementType + '_hovered'] = elementIsHovered;
               scope.open = scope.source_hovered || scope.tooltip_hovered;
 
               $element.trigger('custom' + (scope.open ? 'Show' : 'Hide'));
               isTouchDevice && $overlay[scope.open ? 'hide' : 'show']();
-            }, timeout);
-
-            if (eventToNotBePropagated) {
-              eventToNotBePropagated.stopPropagation();
-              eventToNotBePropagated.stopImmediatePropagation();
-            }
+            }, delay);
           }
         };
       };
