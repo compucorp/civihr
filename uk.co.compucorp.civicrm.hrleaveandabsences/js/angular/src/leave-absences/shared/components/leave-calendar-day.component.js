@@ -18,9 +18,9 @@ define([
     controller: LeaveCalendarDayController
   });
 
-  LeaveCalendarDayController.$inject = ['$log', '$scope', '$timeout', 'LeavePopup'];
+  LeaveCalendarDayController.$inject = ['$document', '$log', '$scope', '$timeout', 'LeavePopup'];
 
-  function LeaveCalendarDayController ($log, $scope, $timeout, LeavePopup) {
+  function LeaveCalendarDayController ($document, $log, $scope, $timeout, LeavePopup) {
     'use strict';
     $log.debug('Component: leave-calendar-day');
 
@@ -206,13 +206,30 @@ define([
      * @param {String} sourceElement day_cell|tooltip
      * @param {Boolean} isHovered
      */
-    function toggleTooltip (sourceElement, isHovered) {
-      $timeout(function () {
+    function toggleTooltip (sourceElement, isHovered, isForTouchScreen, event) {
+      var isTouchScreen = 'ontouchstart' in $document[0].documentElement;
+
+      if (event) {
+        event.stopPropagation();
+      }
+
+      if (isForTouchScreen !== isTouchScreen) {
+        return;
+      }
+
+      if (!isHovered) {
+        $timeout(function () {
+          vm.tooltip[sourceElement + '_hovered'] = isHovered;
+
+          vm.tooltip.show =
+            vm.tooltip.day_cell_hovered || vm.tooltip.tooltip_hovered;
+        }, 100);
+      } else {
         vm.tooltip[sourceElement + '_hovered'] = isHovered;
 
         vm.tooltip.show =
           vm.tooltip.day_cell_hovered || vm.tooltip.tooltip_hovered;
-      }, isHovered ? 0 : 100);
+      }
     }
 
     /**
