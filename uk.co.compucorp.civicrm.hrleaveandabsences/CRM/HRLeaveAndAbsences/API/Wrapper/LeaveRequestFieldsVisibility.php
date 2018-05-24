@@ -37,11 +37,7 @@ class CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestFieldsVisibility implements
    */
   public function fromApiInput($apiRequest) {
     if ($this->canHandleApiInput($apiRequest)) {
-      $returnParams = $this->getRequestReturnParameter($apiRequest);
-
-      if(!empty($returnParams)) {
-        $apiRequest['params']['return'] = $returnParams;
-      }
+      $this->setRequestReturnParameter($apiRequest);
     }
 
     return $apiRequest;
@@ -75,7 +71,7 @@ class CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestFieldsVisibility implements
 
   /**
    * Checks whether the request can be handled or not.
-   * 
+   *
    * @param $apiRequest
    *
    * @return bool
@@ -118,18 +114,17 @@ class CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestFieldsVisibility implements
    *
    * @param array $apiRequest
    *
-   * @return array
    */
-  private function getRequestReturnParameter($apiRequest) {
+  private function setRequestReturnParameter(&$apiRequest) {
     $options = _civicrm_api3_get_options_from_params($apiRequest['params']);
     $returnParams = array_keys($options['return']);
 
     if (!empty($returnParams)) {
       if (FALSE === array_search('contact_id', $returnParams)) {
+        $apiRequest['params']['initial_return'] = $returnParams;
         $returnParams[] = 'contact_id';
+        $apiRequest['params']['return'] = $returnParams;
       }
     }
-
-    return $returnParams;
   }
 }

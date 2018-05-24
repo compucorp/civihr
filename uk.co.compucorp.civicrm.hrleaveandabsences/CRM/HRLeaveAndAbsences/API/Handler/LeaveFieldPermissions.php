@@ -50,6 +50,11 @@ abstract class CRM_HRLeaveAndAbsences_API_Handler_LeaveFieldPermissions {
   protected $currentDataRowIdentifierValue = '';
 
   /**
+   * @var bool
+   */
+  protected $removeDataRowIdentifier = FALSE;
+
+  /**
    * Processes the result set and replaces field values as necessary.
    *
    * @param array $results
@@ -69,6 +74,10 @@ abstract class CRM_HRLeaveAndAbsences_API_Handler_LeaveFieldPermissions {
       if($this->getDataRowIdentifierKey() && $this->getDataRowIdentifierLevel() && $level == 0) {
         $rowData = [$field => $value];
         $this->setCurrentDataRowIdentifierValue($rowData);
+      }
+
+      if ($this->removeDataRowIdentifier && $field === $this->getDataRowIdentifierKey() && $level === $this->getDataRowIdentifierLevel()) {
+        unset($data[$field]);
       }
 
       if(array_key_exists($field, $this->getRestrictedFields()) && $level == $this->getRestrictedFields()[$field]['level']) {
