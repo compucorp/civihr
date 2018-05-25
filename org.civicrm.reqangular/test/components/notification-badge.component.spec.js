@@ -76,6 +76,17 @@ define([
       });
     });
 
+    describe('for events outside angular context', function () {
+      beforeEach(function () {
+        spyOn(document, 'addEventListener');
+        compileComponent();
+      });
+
+      it('listens to events fired outside of angular context', function () {
+        expect(document.addEventListener).toHaveBeenCalledWith(eventName, jasmine.any(Function));
+      });
+    });
+
     function compileComponent () {
       controller = $componentController('notificationBadge', null, {
         refreshCountEventName: eventName,
