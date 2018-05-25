@@ -122,6 +122,10 @@
           ]);
         });
 
+        it('hides filters on mobile viewport by default', function () {
+          expect(controller.filters.hideOnMobile).toBe(true);
+        });
+
         describe('after loading support data', function () {
           it('stores absence types', function () {
             expect(controller.supportData.absenceTypes.length).not.toBe(0);
