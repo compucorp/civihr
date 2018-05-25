@@ -40,6 +40,11 @@
                     </select>
                   </div>
                 </div>
+                <div class="col-sm-1 control-label">
+                  <a class="pointer">
+                    <i class="crm-i fa-wrench" ng-click="openOptionsEditor('/civicrm/admin/options/hrjc_contract_type?reset=1', 'hrjobcontract_details_contract_type')"></i>
+                  </a>
+                </div>
               </div>
               <div class="form-group">
                 <label for="{{prefix}}location" class="col-sm-4 control-label">Normal Place of Work</label>
@@ -52,6 +57,11 @@
                       <option value="">- select -</option>
                     </select>
                   </div>
+                </div>
+                <div class="col-sm-1 control-label">
+                  <a class="pointer">
+                    <i class="crm-i fa-wrench" ng-click="openOptionsEditor('/civicrm/admin/options/hrjc_location?reset=1', 'hrjobcontract_details_location')"></i>
+                  </a>
                 </div>
               </div>
               <div class="form-group" ng-show="showIsPrimary">
@@ -109,6 +119,11 @@
                       <option value="">- select -</option>
                     </select>
                   </div>
+                </div>
+                <div class="col-sm-1 control-label">
+                  <a class="pointer">
+                    <i class="crm-i fa-wrench" ng-click="openOptionsEditor('/civicrm/admin/options/hrjc_contract_end_reason?reset=1', 'hrjobcontract_details_end_reason')"></i>
+                  </a>
                 </div>
               </div>
               <div class="form-group">
@@ -237,6 +252,11 @@
                     </select>
                   </div>
                 </div>
+                <div class="col-sm-1 control-label">
+                  <a class="pointer">
+                    <i class="crm-i fa-wrench" ng-click="openHoursLocationOptionsEditor()"></i>
+                  </a>
+                </div>
               </div>
               <div class="form-group">
                 <label for="{{prefix}}hours-type" class="col-sm-4 control-label">Hours type</label>
@@ -326,6 +346,11 @@
                   </select>
                 </div>
               </div>
+              <div class="col-sm-1 control-label">
+                <a class="pointer">
+                  <i class="crm-i fa-wrench" ng-click="openPayScaleGradeOptionsEditor()"></i>
+                </a>
+              </div>
             </div>
             <div class="form-group">
               <label for="{{prefix}}pay-amount" class="col-sm-4 control-label">Pay</label>
@@ -405,7 +430,18 @@
                       <thead ng-show="entity.pay.annual_benefits.length">
                         <tr>
                           <th>#</th>
-                          <th>Benefit</th>
+                          <th>
+                            <div class="row">
+                              <div class="col-sm-6">
+                                Benefit
+                              </div>
+                              <div class="col-sm-2">
+                                <a class="pointer">
+                                  <i class="crm-i fa-wrench" ng-click="openAnnualBenefitOptionsEditor()"></i>
+                                </a>
+                              </div>
+                            </div>
+                          </th>
                           <th>Type</th>
                           <th>% Amount</th>
                           <th>Absolute amount</th>
@@ -475,7 +511,18 @@
                       <thead ng-show="entity.pay.annual_deductions.length">
                         <tr>
                           <th>#</th>
-                          <th>Deduction</th>
+                          <th>
+                            <div class="row">
+                              <div class="col-sm-6">
+                                Deduction
+                              </div>
+                              <div class="col-sm-2">
+                                <a class="pointer">
+                                  <i class="crm-i fa-wrench" ng-click="openAnnualDeductionOptionsEditor()"></i>
+                                </a>
+                              </div>
+                            </div>
+                          </th>
                           <th>Type</th>
                           <th>% Amount</th>
                           <th>Absolute amount</th>
@@ -664,6 +711,11 @@
                     </select>
                   </div>
                 </div>
+                <div class="col-sm-1 control-label">
+                  <a class="pointer">
+                    <i class="crm-i fa-wrench" ng-click="openOptionsEditor('/civicrm/admin/options/hrjc_insurance_plantype?reset=1', 'hrjobcontract_health_health_plan_type')"></i>
+                  </a>
+                </div>
               </div>
               <div class="form-group">
                 <label for="health-health-desc" class="col-sm-4 control-label">Description</label>
@@ -736,6 +788,11 @@
                       <option value="">- select -</option>
                     </select>
                   </div>
+                </div>
+                <div class="col-sm-1 control-label">
+                  <a class="pointer">
+                    <i class="crm-i fa-wrench" ng-click="openOptionsEditor('/civicrm/admin/options/hrjc_insurance_plantype?reset=1', 'hrjobcontract_health_health_plan_type')"></i>
+                  </a>
                 </div>
               </div>
               <div class="form-group">

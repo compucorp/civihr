@@ -45,7 +45,7 @@
           </thead>
          {foreach from=$rows item=row}
         <tr id="HRHoursLocation-{$row.id}" class="crm-entity {cycle values="odd-row,even-row"} {$row.class}{if $row.is_active neq 1} disabled{/if}">
-          <td class="crm-editable" data-field="title">{$row.location}</td>
+          <td class="crm-editable" data-field="location">{$row.location}</td>
           <td>{$row.standard_hours}</td>
           <td>{$row.periodicity}</td>
           <td id="row_{$row.id}_status">{if $row.is_active eq 1} {ts}Yes{/ts} {else} {ts}No{/ts} {/if}</td>
@@ -62,9 +62,6 @@
         {/if}
     </div>
   </div>
-  <script type="text/javascript">
-    CRM.$('.crm-editable').crmEditable();
-  </script>
 {else}
     <div class="messages status no-popup">
         <div class="icon inform-icon"></div>

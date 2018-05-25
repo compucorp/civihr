@@ -1,9 +1,9 @@
-input[type="radio"],
-input[type="checkbox"],
-.radio input[type="radio"],
-.radio-inline input[type="radio"],
-.checkbox input[type="checkbox"],
-.checkbox-inline input[type="checkbox"]  {
+input[type='radio'],
+input[type='checkbox'],
+.radio input[type='radio'],
+.radio-inline input[type='radio'],
+.checkbox input[type='checkbox'],
+.checkbox-inline input[type='checkbox']  {
   margin-top: 2px;
 }
 
@@ -16,6 +16,7 @@ input[type="checkbox"],
     bottom: 8px;
     top: 6px;
   }
+
   .subfield {
     display: block;
   }
@@ -66,9 +67,9 @@ input[type="checkbox"],
 }
 
 .form-group.required {
-  .control-label:after {
-    content:"*";
+  .control-label:first-child:after {
     color:red;
+    content:'*';
   }
 }
 
@@ -98,10 +99,10 @@ input[type="checkbox"],
 
 .ta-toolbar {
   background-color: $gray-lighter;
-  padding: 5px;
-  margin: 0;
   border: 1px solid $input-border;
+  margin: 0;
   margin-bottom: -1px;
+  padding: 5px;
 }
 
 .drop-zone {
