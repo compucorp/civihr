@@ -1,8 +1,16 @@
 <section>
   <crm-loading show="!calendar.loading.page">
     <div class="panel">
+      <div class="panel-default visible-xs pointer text-right"
+        ng-click="calendar.filters.hideOnMobile = true"
+        ng-if="!calendar.filters.hideOnMobile">
+        <div class="panel-subheading panel-heading-plain">
+          <small><i class="fa fa-chevron-down text"></i></small>
+          Hide filters
+        </div>
+      </div>
       <div ng-if="calendar.showFilters" class="panel-heading chr_manager_calendar__header row">
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2" ng-class="{ 'hidden-xs': calendar.filters.hideOnMobile }">
           <ui-select ng-change="calendar.refresh('contacts')" ng-model="calendar.filters.userSettings.contact">
             <ui-select-match placeholder="Staff Member" allow-clear>
               <span ng-bind="$select.selected.display_name"></span>
@@ -12,7 +20,7 @@
             </ui-select-choices>
           </ui-select>
         </div>
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2" ng-class="{ 'hidden-xs': calendar.filters.hideOnMobile }">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -24,7 +32,7 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2" ng-class="{ 'hidden-xs': calendar.filters.hideOnMobile }">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -36,7 +44,7 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2" ng-class="{ 'hidden-xs': calendar.filters.hideOnMobile }">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -48,7 +56,7 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2" ng-class="{ 'hidden-xs': calendar.filters.hideOnMobile }">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -71,8 +79,13 @@
           </div>
         </div>
       </div>
-      <div class="chr_manager_calendar__sub-header row" ng-class="{ 'panel-heading': !calendar.showFilters, 'panel-subheading': calendar.showFilters }">
-        <div class="col-md-12 col-lg-3">
+      <div class="chr_manager_calendar__sub-header row"
+        ng-class="{
+          'panel-heading': !calendar.showFilters,
+          'panel-subheading': calendar.showFilters,
+          'hidden-xs': calendar.filters.hideOnMobile
+        }">
+        <div class="col-md-12" ng-class="{ 'col-lg-3': !!calendar.filtersByAssignee, 'col-lg-5': !calendar.filtersByAssignee }">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -111,6 +124,14 @@
           <i class="fa fa-question-circle chr_leave-calendar__admin-filters-hint text-info pointer"
              aria-hidden="true"
              ng-click="calendar.showAdminFilteringHint()"></i>
+        </div>
+      </div>
+      <div class="panel-default visible-xs pointer text-right"
+        ng-click="calendar.filters.hideOnMobile = false"
+        ng-if="calendar.filters.hideOnMobile">
+        <div class="panel-subheading panel-heading-plain">
+          <small><i class="fa fa-chevron-right text"></i></small>
+          Show filters
         </div>
       </div>
     </div>
