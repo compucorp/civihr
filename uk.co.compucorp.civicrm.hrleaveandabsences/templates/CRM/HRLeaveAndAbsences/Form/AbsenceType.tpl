@@ -49,6 +49,10 @@
               <div class="col-sm-6">{$form.is_active.label}</div>
               <div class="col-sm-6">{$form.is_active.html}</div>
             </div>
+            <div class="form-group row">
+              <div class="col-sm-6">{$form.hide_label.label}</div>
+              <div class="col-sm-6">{$form.hide_label.html}</div>
+            </div>
           </div>
         </div>
         <div class="row">

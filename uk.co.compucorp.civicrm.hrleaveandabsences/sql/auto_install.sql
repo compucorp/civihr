@@ -30,6 +30,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `carry_forward_expiration_unit` int unsigned    COMMENT 'The unit (months or days) of carry_forward_expiration_duration of this type default expiry',
      `is_sick` tinyint   DEFAULT 0 COMMENT 'A flag which is used to determine if this Absence Type can be used for a Sickness Request',
      `calculation_unit` varchar(512) NOT NULL   COMMENT 'One of the values of the Absence type calculation units option group',
+     `hide_label` tinyint   DEFAULT 0 COMMENT 'This controls the visibility of the Leave Type label in the calendar and feeds.',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `hrleaveandabsences_absence_type_title`(title)
 
