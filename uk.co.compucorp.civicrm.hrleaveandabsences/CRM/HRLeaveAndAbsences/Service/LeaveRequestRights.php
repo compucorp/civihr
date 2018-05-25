@@ -6,6 +6,8 @@ use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
 
+  use CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait;
+
   /**
    * @var \CRM_HRLeaveAndAbsences_Service_LeaveManager
    */
@@ -172,5 +174,29 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
     }
 
     return TRUE;
+  }
+
+  /**
+   * Returns the leave contact ids that the current logged in user has access to, For a
+   * user with staff role it would be that user contact id alone, for a manager it
+   * would be the contact Id's of the staff he approves leave for. The query is not ran
+   * for an Admin user because in reality an Admin user has access to all contacts.
+   *
+   * @return array
+   */
+  public function getLeaveContactsCurrentUserHasAccessTo() {
+    $results = [];
+
+    if($this->currentUserIsAdmin()) {
+      return $results;
+    }
+    $query = $this->getLeaveInformationACLQuery();
+    $contactIds = CRM_CORE_DAO::executeQuery($query);
+
+    while ($contactIds->fetch()) {
+      $results[] = $contactIds->id;
+    }
+
+    return $results;
   }
 }
