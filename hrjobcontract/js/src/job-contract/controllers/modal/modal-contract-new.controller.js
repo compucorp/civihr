@@ -10,16 +10,16 @@ define([
   ModalContractNewController.__name = 'ModalContractNewController';
   ModalContractNewController.$inject = [
     '$log', '$q', '$rootElement', '$rootScope', '$sce', '$scope', '$uibModalInstance',
-    '$uibModal', 'Contract', 'contractService', 'contractDetailsService',
+    '$uibModal', 'crmAngService', 'Contract', 'contractService', 'contractDetailsService',
     'contractHourService', 'contractPayService', 'contractLeaveService',
     'contractHealthService', 'contractPensionService', 'contractFilesService',
-    'model', 'utilsService', 'utils', 'settings', 'pubSub'
+    'model', 'OptionGroup', 'utilsService', 'utils', 'settings', 'pubSub'
   ];
 
   function ModalContractNewController ($log, $q, $rootElement, $rootScope, $sce,
-    $scope, $modalInstance, $modal, Contract, contractService, contractDetailsService,
+    $scope, $modalInstance, $modal, crmAngService, Contract, contractService, contractDetailsService,
     contractHourService, contractPayService, contractLeaveService, contractHealthService,
-    contractPensionService, contractFilesService, model, utilsService, utils,
+    contractPensionService, contractFilesService, model, OptionGroup, utilsService, utils,
     settings, pubSub) {
     $log.debug('Controller: ModalContractNewController');
 
@@ -77,9 +77,13 @@ define([
 
     $scope.cancel = cancel;
     $scope.filesValidate = filesValidate;
+    $scope.openOptionsEditor = openOptionsEditor;
+    $scope.openHoursLocationOptionsEditor = openHoursLocationOptionsEditor;
+    $scope.openPayScaleGradeOptionsEditor = openPayScaleGradeOptionsEditor;
+    $scope.openAnnualBenefitOptionsEditor = openAnnualBenefitOptionsEditor;
+    $scope.openAnnualDeductionOptionsEditor = openAnnualDeductionOptionsEditor;
     $scope.save = save;
 
-    // Init
     (function init () {
       angular.copy(model, $scope.entity);
       $scope.entity.contract = {
@@ -284,6 +288,99 @@ define([
         $scope.entity.leave[index].leave_amount = utils.absenceTypes[absenceTypeID].default_entitlement;
         $scope.entity.leave[index].add_public_holidays = utils.absenceTypes[absenceTypeID].add_public_holiday_to_entitlement;
       });
+    }
+
+    /**
+     * Opens option editor window for contract type, location, end reason or insurance
+     *
+     * @param {String} optionUrl
+     * @param {String} fieldName
+     */
+    function openOptionsEditor (optionUrl, fieldName) {
+      var optionTypes = {
+        'hrjobcontract_details_contract_type': 'contract_type',
+        'hrjobcontract_details_location': 'location',
+        'hrjobcontract_details_end_reason': 'end_reason',
+        'hrjobcontract_health_health_plan_type': 'provider_life_insurance'
+      };
+
+      crmAngService.loadForm(optionUrl)
+        .on('crmUnload', function () {
+          if (fieldName === 'hrjobcontract_health_health_plan_type') {
+            contractHealthService.getOptions(fieldName, true)
+              .then(function (data) {
+                var healthOptions = _.mapValues(_.indexBy(data, 'key'), 'value');
+
+                $rootScope.options.health.plan_type = healthOptions;
+                $rootScope.options.health.plan_type_life_insurance = healthOptions;
+              });
+          } else {
+            contractDetailsService.getOptions(fieldName, true)
+              .then(function (data) {
+                $rootScope.options.details[optionTypes[fieldName]] = data.obj;
+              });
+          }
+        });
+    }
+
+    /**
+     * Opens the hours location options editor window
+     */
+    function openHoursLocationOptionsEditor () {
+      crmAngService.loadForm('/civicrm/hours_location?reset=1')
+        .on('crmUnload', function () {
+          utilsService.getHoursLocation()
+            .then(function (data) {
+              $scope.utils.hoursLocation = data;
+            });
+        });
+    }
+
+    /**
+     * Opens the pay scale grade options editor window
+     */
+    function openPayScaleGradeOptionsEditor () {
+      crmAngService.loadForm('/civicrm/pay_scale?reset=1')
+        .on('crmUnload', function () {
+          utilsService.getPayScaleGrade()
+            .then(function (data) {
+              $scope.utils.payScaleGrade = data;
+            });
+        });
+    }
+
+    /**
+     * Opens annual benefit options editor for editing
+     */
+    function openAnnualBenefitOptionsEditor () {
+      crmAngService.loadForm('/civicrm/admin/options/hrjc_benefit_name?reset=1')
+        .on('crmUnload', function () {
+          loadAnnualPayOptions('hrjc_benefit_name', 'benefit_name');
+        });
+    }
+
+    /**
+     * Opens annual deduction options editor for editing
+     */
+    function openAnnualDeductionOptionsEditor () {
+      crmAngService.loadForm('/civicrm/admin/options/hrjc_deduction_name?reset=1')
+        .on('crmUnload', function () {
+          loadAnnualPayOptions('hrjc_deduction_name', 'deduction_name');
+        });
+    }
+
+    /**
+     * Reload updated changes for annual deduction and benefit options
+     *
+     * @param {String} optionType
+     * @param {String} optionName
+     * @returns {Promise}
+     */
+    function loadAnnualPayOptions (optionType, optionName) {
+      return OptionGroup.valuesOf(optionType, false)
+        .then(function (data) {
+          $rootScope.options.pay[optionName] = _.mapValues(_.indexBy(data, 'value'), 'label');
+        });
     }
   }
 
