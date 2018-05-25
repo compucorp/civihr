@@ -201,6 +201,10 @@ $chr-leave-calendar-legend-badge-square-hours-font-size:   6px;
   &.chr_leave-calendar__legend__type-badge-public-holiday {
     background-color: $chr-leave-calendar-item-public-holiday-background-color;
   }
+
+  &.chr_leave-calendar__legend__type-badge-not-selected {
+    opacity: 0.4;
+  }
 }
 
 .chr_leave-calendar__legend__other-badge {
