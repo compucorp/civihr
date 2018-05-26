@@ -28,6 +28,7 @@ define([
   'leave-absences/shared/controllers/sub-controllers/request-modal-details-sickness.controller',
   'leave-absences/shared/controllers/sub-controllers/request-modal-details-toil.controller',
   'leave-absences/shared/modules/shared-settings',
+  'leave-absences/shared/services/leave-calendar.service',
   'leave-absences/shared/services/leave-popup.service',
   'leave-absences/admin-dashboard/modules/config',
   'leave-absences/admin-dashboard/components/admin-dashboard-container'
