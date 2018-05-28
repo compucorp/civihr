@@ -21,7 +21,8 @@ define([
       init: function (_vm_) {
         vm = _vm_;
         leaveCalendar = LeaveCalendarService.init(vm);
-        vm.filters.userSettings.contacts_with_leaves = false;
+        vm.filters.userSettings.contacts_with_leaves = true;
+        vm.showTheseContacts = [vm.contactId];
         vm.showContactName = true;
         vm.showFilters = true;
 

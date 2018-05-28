@@ -58,6 +58,10 @@
         expect(vm.showFilters).toBe(true);
       });
 
+      it('always displays the logged in contact even if they do not have requests for the selected period', function () {
+        expect(vm.showTheseContacts).toEqual([vm.contactId]);
+      });
+
       describe('loadContacts()', function () {
         var result, expectedContactIdsToReduceTo;
 
