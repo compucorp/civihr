@@ -85,7 +85,7 @@
           'panel-subheading': calendar.showFilters,
           'hidden-xs': calendar.filters.hideOnMobile
         }">
-        <div class="col-md-12" ng-class="{ 'col-lg-3': !!calendar.filtersByAssignee, 'col-lg-5': !calendar.filtersByAssignee }">
+        <div class="col-md-12 col-lg-2">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -99,7 +99,7 @@
           </div>
         </div>
         <div class="col-md-12 col-lg-4"
-          ng-class="{ 'col-lg-offset-5': !calendar.filtersByAssignee }">
+          ng-class="{ 'col-lg-offset-6': !calendar.filtersByAssignee }">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -110,8 +110,7 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-md-12 col-lg-3" ng-if="!!calendar.filtersByAssignee"
-          ng-class="{ 'col-lg-offset-2': calendar.filtersByAssignee }">
+        <div class="col-md-12 col-lg-3 col-lg-offset-3" ng-if="!!calendar.filtersByAssignee">
           <div class="crm_custom-select crm_custom-select--full chr_leave-calendar__admin-filters-select">
             <select
               class="no-select2"
