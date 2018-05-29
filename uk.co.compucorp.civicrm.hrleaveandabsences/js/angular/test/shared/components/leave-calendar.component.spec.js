@@ -168,8 +168,8 @@
               compileComponent();
             });
 
-            it('sets the filter to *off* by default', function () {
-              expect(controller.filters.userSettings.contacts_with_leaves).toBe(false);
+            it('sets the filter to *on* by default', function () {
+              expect(controller.filters.userSettings.contacts_with_leaves).toBe(true);
             });
           });
         });
@@ -350,6 +350,8 @@
 
             describe('when filter by assignee is set to "Me"', function () {
               beforeEach(function () {
+                Contract.all.calls.reset();
+                Contact.all.calls.reset();
                 selectFilterByAssignee('me');
               });
 
@@ -512,7 +514,25 @@
         describe('filter option values', function () {
           var optionGroups = ['hrjc_region', 'hrjc_location', 'hrjc_level_type', 'hrjc_department'];
 
-          describe('when the filters should not be shown', function () {
+          describe('when the subcontroller does not show filters', function () {
+            beforeEach(function () {
+              var staffController = $controller('LeaveCalendarStaffController').init(controller);
+
+              // mocks the staff sub controller to hide the filters:
+              $controllerProvider.register('LeaveCalendarStaffController', function () {
+                return {
+                  init: function (vm) {
+                    vm.showFilters = false;
+
+                    return staffController;
+                  }
+                };
+              });
+
+              OptionGroup.valuesOf.calls.reset();
+              compileComponent();
+            });
+
             it('does not fetch the filters option values', function () {
               expect(OptionGroup.valuesOf).not.toHaveBeenCalledWith(optionGroups);
             });
