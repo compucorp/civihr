@@ -1770,7 +1770,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'from_date_type' => 1,
       'to_date_type' => 1,
-      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     // The manager will see results for the contact with the inactive leave manager relationship.
@@ -1782,14 +1781,12 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals(1, $result['count']);
     $contactData = array_shift($result['values']);
     $this->assertEquals($staffMember2['id'], $contactData['contact_id']);
-    $this->assertEquals('', $contactData['toil_duration']);
-    $this->assertEquals('', $contactData['toil_to_accrue']);
+    $this->assertEquals('', $contactData['type_id']);
 
     $this->assertEquals(1, $resultGetFull['count']);
     $contactData = array_shift($resultGetFull['values']);
     $this->assertEquals($staffMember2['id'], $contactData['contact_id']);
-    $this->assertEquals('', $contactData['toil_duration']);
-    $this->assertEquals('', $contactData['toil_to_accrue']);
+    $this->assertEquals('', $contactData['type_id']);
     $this->assertEquals('', $contactData['balance_change']);
   }
 
@@ -3677,9 +3674,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => 1,
       'to_date_type' => 1,
       'status_id' => 1,
-      'toil_to_accrue' => 1,
-      'toil_duration' => 60,
-      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -3690,9 +3684,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => 1,
       'to_date_type' => 1,
       'status_id' => 1,
-      'toil_to_accrue' => 1,
-      'toil_duration' => 30,
-      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL,
     ], true);
 
     //The logged in contact would be able to see results for the other contact too since the Leave ACL
@@ -3700,23 +3691,19 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true, 'sequential' => 1]);
     $this->assertEquals(2, $result['count']);
     $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
-    $this->assertEquals($leaveRequest1->toil_to_accrue, $result['values'][0]['toil_to_accrue']);
-    $this->assertEquals($leaveRequest1->toil_duration, $result['values'][0]['toil_duration']);
+    $this->assertEquals($leaveRequest1->type_id, $result['values'][0]['type_id']);
 
     $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
-    $this->assertEquals('', $result['values'][1]['toil_to_accrue']);
-    $this->assertEquals('', $result['values'][1]['toil_duration']);
+    $this->assertEquals('', $result['values'][1]['type_id']);
 
     $result = civicrm_api3('LeaveRequest', 'getfull', ['check_permissions' => true, 'sequential' => 1]);
     $this->assertEquals(2, $result['count']);
     $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
-    $this->assertEquals($leaveRequest1->toil_to_accrue, $result['values'][0]['toil_to_accrue']);
-    $this->assertEquals($leaveRequest1->toil_duration, $result['values'][0]['toil_duration']);
+    $this->assertEquals($leaveRequest1->type_id, $result['values'][0]['type_id']);
     $this->assertNotEmpty($result['values'][0]['balance_change']);
 
     $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
-    $this->assertEquals('', $result['values'][1]['toil_to_accrue']);
-    $this->assertEquals('', $result['values'][1]['toil_duration']);
+    $this->assertEquals('', $result['values'][1]['type_id']);
     $this->assertEquals('', $result['values'][1]['balance_change']);
   }
 
@@ -3754,9 +3741,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => 1,
       'to_date_type' => 1,
       'status_id' => 1,
-      'toil_to_accrue' => 2,
-      'toil_duration' => 60,
-      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
@@ -3767,9 +3751,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'from_date_type' => 1,
       'to_date_type' => 1,
       'status_id' => 1,
-      'toil_to_accrue' => 1,
-      'toil_duration' => 60,
-      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
     //Results will be returned for both leave contacts even though contact1 is not being managed by
@@ -3779,24 +3760,20 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals(2, $result['count']);
 
     $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
-    $this->assertEquals('', $result['values'][0]['toil_duration']);
-    $this->assertEquals('', $result['values'][0]['toil_to_accrue']);
+    $this->assertEquals('', $result['values'][0]['type_id']);
 
     $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
-    $this->assertEquals($leaveRequest2->toil_duration, $result['values'][1]['toil_duration']);
-    $this->assertEquals($leaveRequest2->toil_to_accrue, $result['values'][1]['toil_to_accrue']);
+    $this->assertEquals($leaveRequest2->type_id, $result['values'][1]['type_id']);
 
     $result = civicrm_api3('LeaveRequest', 'getfull', ['check_permissions' => true, 'sequential' => 1]);
     $this->assertEquals(2, $result['count']);
 
     $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
-    $this->assertEquals('', $result['values'][0]['toil_duration']);
-    $this->assertEquals('', $result['values'][0]['toil_to_accrue']);
+    $this->assertEquals('', $result['values'][0]['type_id']);
     $this->assertEquals('', $result['values'][0]['balance_change']);
 
     $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
-    $this->assertEquals($leaveRequest2->toil_duration, $result['values'][1]['toil_duration']);
-    $this->assertEquals($leaveRequest2->toil_to_accrue, $result['values'][1]['toil_to_accrue']);
+    $this->assertEquals($leaveRequest2->type_id, $result['values'][1]['type_id']);
     $this->assertNotEmpty($result['values'][1]['balance_change']);
   }
 
