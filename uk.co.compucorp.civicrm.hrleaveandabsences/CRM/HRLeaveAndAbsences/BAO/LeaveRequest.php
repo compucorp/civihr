@@ -14,6 +14,8 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_Hrjobcontract_BAO_HRJobContract as JobContract;
 use CRM_HRLeaveAndAbsences_Factory_LeaveDateAmountDeduction as LeaveDateAmountDeductionFactory;
 use CRM_HRLeaveAndAbsences_Service_ContactWorkPattern as ContactWorkPatternService;
+use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
+use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO_LeaveRequest {
 
@@ -1327,10 +1329,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     }
 
     $leaveTable =  CRM_HRLeaveAndAbsences_BAO_LeaveRequest::getTableName();
+    $leaveRequestRights = new LeaveRequestRightsService(new LeaveManagerService());
 
-    $query = "IN (SELECT DISTINCT contact_id FROM {$leaveTable})";
+    $accessibleContacts = $leaveRequestRights->getLeaveContactsCurrentUserHasAccessTo();
+    $contactsAccessIN = "'" . implode(', ', $accessibleContacts) . "'";
+    $notAccessibleLeaveRequestQuery = "SELECT id FROM {$leaveTable} 
+      WHERE contact_id NOT IN ($contactsAccessIN) AND request_type ='" . LeaveRequest::REQUEST_TYPE_TOIL . "'";
 
-    $clauses['contact_id'] = $query;
+    $query = "NOT IN ($notAccessibleLeaveRequestQuery)";
+
+    //Setting this to an empty array has same effect as allowing a contact have access to all
+    //contacts on the leave request table and the Civi default ACL will not be applied
+    $clauses['contact_id'] = [];
+    //Remove leave request ID's that the contact does not have access to
+    $clauses['id'] = $query;
 
     CRM_Utils_Hook::selectWhereClause($this, $clauses);
 
