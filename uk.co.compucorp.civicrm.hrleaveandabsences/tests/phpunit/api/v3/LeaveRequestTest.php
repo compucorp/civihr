@@ -3892,6 +3892,63 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
   }
 
+  public function testGetAndGetFullShouldReturnToilRequestsForAllContactsWhenLoggedInUserIsAnAdmin() {
+    $admin = ContactFabricator::fabricate();
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $this->registerCurrentLoggedInContactInSession($admin['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API', 'view all contacts'];
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contact2['id'] ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contact1['id'] ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact1['id'],
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact2['id'],
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => 1,
+      'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
+    ]);
+
+    $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
+
+    $result = civicrm_api3('LeaveRequest', 'getfull', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
+  }
+
   public function testGetAndGetFullReturnsAllDataWhenLoggedInUserHasViewAllContactsPermission() {
     $adminID = 1;
     $contact1 = ContactFabricator::fabricate();

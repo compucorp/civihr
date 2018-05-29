@@ -1321,7 +1321,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   }
 
   /**
-   *{@inheritdoc}
+   * This is the LeaveRequest Implementation of the addSelectWhereClause method. It allows leave
+   * requests to be filtered based on LeaveRequest ACL rules. The filtering is done basically
+   * for TOIL requests. A staff can not fetch TOIL requests for other contacts, A manager cannot
+   * fetch TOIL requests for contacts that are not managees but an Admin can fetch all TOIL requests.
+   * Requests other than TOIL requests are not restricted by this ACL rules.
    */
   public function addSelectWhereClause() {
     if (CRM_Core_Permission::check([['view all contacts', 'edit all contacts']])) {
