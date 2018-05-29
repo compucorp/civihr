@@ -64,6 +64,15 @@ define([
       }
 
       /**
+       * Returns a list of all contracts. The result is cached locally.
+       *
+       * @return {Promise}
+       */
+      function loadContracts () {
+        return contracts ? $q.resolve(contracts) : Contract.all();
+      }
+
+      /**
        * Returns a list of contacts reduced by the leave calendar filters and
        * sorts them by the contact's display name.
        *
@@ -74,15 +83,6 @@ define([
           .then(function (contacts) {
             return contacts.list;
           });
-      }
-
-      /**
-       * Returns a list of all contracts. The result is cached locally.
-       *
-       * @return {Promise}
-       */
-      function loadContracts () {
-        return contracts ? $q.resolve(contracts) : Contract.all();
       }
 
       /**
