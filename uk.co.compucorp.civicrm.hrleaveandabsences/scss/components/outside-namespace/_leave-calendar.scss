@@ -1,5 +1,6 @@
 $chr-leave-calendar-tooltip-shadow:         0 3px 8px 0 rgba(49, 40, 40, 0.25);
 $chr-leave-calendar-tooltip-item-min-width: 154px;
+$chr-leave-calendar-tooltip-font-size:      11px;
 
 // @TODO the tooltip style should be moved to the global styling
 .chr_leave-calendar__day-tooltip {
@@ -20,12 +21,22 @@ $chr-leave-calendar-tooltip-item-min-width: 154px;
   }
 }
 
-.chr_leave-calendar__day-tooltip_item {
+.chr_leave-calendar__day-tooltip__item {
   cursor: pointer;
+  font-size: $chr-leave-calendar-tooltip-font-size;
   min-width: $chr-leave-calendar-tooltip-item-min-width;
   padding: $crm-gap-medium;
 
   &:hover {
     background-color: $gray-light;
   }
+}
+
+.chr_leave-calendar__day-tooltip__item_absence-type {
+  font-size: $font-size-base;
+}
+
+.chr_leave-calendar__day-tooltip__item_request-status {
+  color: $crm-gray-matte;
+  margin-bottom: #{$font-size-base - $chr-leave-calendar-tooltip-font-size};
 }

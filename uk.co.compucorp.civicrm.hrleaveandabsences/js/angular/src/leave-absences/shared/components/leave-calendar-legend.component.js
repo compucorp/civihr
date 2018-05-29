@@ -18,7 +18,20 @@ define([
     $log.debug('Component: leave-calendar-legend');
 
     var vm = this;
+
     vm.legendCollapsed = true;
+    vm.nonWorkingDayTypes = [
+      { label: 'Weekend', cssClassSuffix: 'weekend' },
+      { label: 'Public Holiday', cssClassSuffix: 'public-holiday' },
+      { label: 'Non Working Day', cssClassSuffix: 'non-working-day' }
+    ];
+    vm.otherBadges = [
+      { label: 'AM', description: 'AM Only' },
+      { label: 'PM', description: 'PM Only' },
+      { label: 'HH:MM', description: 'Time', cssClassSuffix: 'hours' },
+      { label: '', description: 'Requested', cssClassSuffix: 'requested' },
+      { label: 'AT', description: 'Accrued TOIL' }
+    ];
 
     vm.getAbsenceTypeStyle = getAbsenceTypeStyle;
 
