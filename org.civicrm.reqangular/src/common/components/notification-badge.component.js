@@ -37,7 +37,7 @@ define([
      */
     function fetchCount () {
       var promises = _.map(vm.filters, function (filter) {
-        return api.getAll(filter.apiName, filter.params, null, null, null, 'getFull', false);
+        return api.getAll(filter.apiName, filter.params, null, null, null, 'get', false);
       });
 
       return $q.all(promises)

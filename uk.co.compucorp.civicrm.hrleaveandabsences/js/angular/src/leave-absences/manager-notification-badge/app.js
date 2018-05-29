@@ -3,6 +3,7 @@
 define([
   'common/angular',
   'common/models/session.model',
+  'common/modules/templates',
   'common/services/pub-sub',
   'common/components/notification-badge.component',
   'leave-absences/shared/modules/shared-settings',

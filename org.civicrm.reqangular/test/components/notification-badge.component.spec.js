@@ -45,8 +45,8 @@ define([
       });
 
       it('calls api to get the count', function () {
-        expect(api.getAll).toHaveBeenCalledWith(filters[0].apiName, filters[0].params, null, null, null, 'getFull', false);
-        expect(api.getAll).toHaveBeenCalledWith(filters[1].apiName, filters[1].params, null, null, null, 'getFull', false);
+        expect(api.getAll).toHaveBeenCalledWith(filters[0].apiName, filters[0].params, null, null, null, 'get', false);
+        expect(api.getAll).toHaveBeenCalledWith(filters[1].apiName, filters[1].params, null, null, null, 'get', false);
       });
 
       describe('after api returns with value', function () {
@@ -65,8 +65,8 @@ define([
       });
 
       it('calls api to get the count', function () {
-        expect(api.getAll).toHaveBeenCalledWith(filters[0].apiName, filters[0].params, null, null, null, 'getFull', false);
-        expect(api.getAll).toHaveBeenCalledWith(filters[1].apiName, filters[1].params, null, null, null, 'getFull', false);
+        expect(api.getAll).toHaveBeenCalledWith(filters[0].apiName, filters[0].params, null, null, null, 'get', false);
+        expect(api.getAll).toHaveBeenCalledWith(filters[1].apiName, filters[1].params, null, null, null, 'get', false);
       });
 
       describe('after api returns with value', function () {
