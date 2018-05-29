@@ -61,10 +61,7 @@ define([
       });
 
       it('uses the color of the given absence type to define border and background colors', function () {
-        expect(style).toEqual({
-          backgroundColor: absenceType.color,
-          borderColor: absenceType.color
-        });
+        expect(style).toEqual({ backgroundColor: absenceType.color });
       });
     });
 

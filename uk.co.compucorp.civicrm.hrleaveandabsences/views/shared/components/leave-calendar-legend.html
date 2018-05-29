@@ -10,15 +10,24 @@
   <div class="panel-collapse" uib-collapse="legend.legendCollapsed">
     <div class="panel-body chr_leave-calendar__legend" ng-show="!legend.legendCollapsed">
       <div class="chr_leave-calendar__legend__header">Types</div>
-      {{legend.absenceTypesToFilterBy}}
       <div class="clearfix">
         <div ng-repeat="absenceType in legend.absenceTypes"
           ng-click="legend.toggleFilteringByAbsenceType(absenceType.id)"
-          ng-class="{ 'chr_leave-calendar__legend__type-badge-not-selected':
-            !legend.checkIfAbsenceTypeIsSelectedForFiltering(absenceType.id) }"
+          ng-class="{
+            'chr_leave-calendar__legend__type-badge-not-selected':
+              !legend.checkIfAbsenceTypeIsSelectedForFiltering(absenceType.id),
+            'chr_leave-calendar__legend__type-badge-selected':
+              legend.checkIfAbsenceTypeIsSelectedForFiltering(absenceType.id) && legend.absenceTypesToFilterBy.length}"
           class="chr_leave-calendar__legend__type-badge pointer"
           ng-style="legend.getAbsenceTypeStyle(absenceType)">
           {{absenceType.title}}
+        </div>
+        <div class="chr_leave-calendar__legend__type-badge pointer
+            chr_leave-calendar__legend__reset-absence-types-filter"
+          ng-if="legend.absenceTypesToFilterBy.length"
+          ng-click="legend.resetFilteringByAbsenceTypes()">
+          <big><i class="fa fa-times"></i></big>
+          Reset filters
         </div>
       </div>
       <div class="clearfix">

@@ -447,10 +447,10 @@ define([
           : _.pluck(vm.supportData.absenceTypes, 'id') }
       };
 
-      leaveRequests = {};
-
       return LeaveRequest.all(params, null, null, null, false)
         .then(function (leaveRequestsData) {
+          leaveRequests = {};
+
           return indexLeaveRequests(leaveRequestsData.list);
         });
     }

@@ -955,7 +955,7 @@
        */
       function compileComponent (sendSignal) {
         controller = $componentController('leaveCalendarMonth', null, {
-          contacts: ContactData.all.values,
+          contacts: _.clone(ContactData.all.values),
           month: february,
           period: period2016,
           supportData: {

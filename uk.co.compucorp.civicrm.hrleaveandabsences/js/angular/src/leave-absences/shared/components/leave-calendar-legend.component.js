@@ -20,9 +20,9 @@ define([
   function leaveCalendarLegendController ($log, $rootScope) {
     $log.debug('Component: leave-calendar-legend');
 
-    var absenceTypesToFilterBy = [];
     var vm = this;
 
+    vm.absenceTypesToFilterBy = [];
     vm.legendCollapsed = true;
     vm.nonWorkingDayTypes = [
       { label: 'Weekend', cssClassSuffix: 'weekend' },
@@ -53,20 +53,19 @@ define([
      * @return {Boolean}
      */
     function checkIfAbsenceTypeIsSelectedForFiltering (absenceTypeId) {
-      return !absenceTypesToFilterBy.length ||
-        _.includes(absenceTypesToFilterBy, absenceTypeId);
+      return !vm.absenceTypesToFilterBy.length ||
+        _.includes(vm.absenceTypesToFilterBy, absenceTypeId);
     }
 
     /**
-     * Uses the absence type color to return border and background color styles
+     * Uses the absence type color to return background color style
      *
      * @param  {AbsenceTypeInstance} absenceType
      * @return {Object}
      */
     function getAbsenceTypeStyle (absenceType) {
       return {
-        backgroundColor: absenceType.color,
-        borderColor: absenceType.color
+        backgroundColor: absenceType.color
       };
     }
 
@@ -75,11 +74,11 @@ define([
      */
     function initWatchers () {
       $rootScope.$new().$watch(function () {
-        return absenceTypesToFilterBy;
+        return vm.absenceTypesToFilterBy;
       }, function (newValue, oldValue) {
         if (newValue !== oldValue) {
           $rootScope.$emit('LeaveCalendar::updateFiltersByAbsenceType',
-            absenceTypesToFilterBy);
+            vm.absenceTypesToFilterBy);
         }
       }, true);
     }
@@ -88,7 +87,7 @@ define([
      * Resets filtering by absence types
      */
     function resetFilteringByAbsenceTypes () {
-      absenceTypesToFilterBy = [];
+      vm.absenceTypesToFilterBy = [];
     }
 
     /**
@@ -97,10 +96,10 @@ define([
      * @param {String} absenceTypeId
      */
     function toggleFilteringByAbsenceType (absenceTypeId) {
-      if (!_.includes(absenceTypesToFilterBy, absenceTypeId)) {
-        absenceTypesToFilterBy.push(absenceTypeId);
+      if (!_.includes(vm.absenceTypesToFilterBy, absenceTypeId)) {
+        vm.absenceTypesToFilterBy.push(absenceTypeId);
       } else {
-        _.remove(absenceTypesToFilterBy, function (_absenceTypeId_) {
+        _.remove(vm.absenceTypesToFilterBy, function (_absenceTypeId_) {
           return absenceTypeId === _absenceTypeId_;
         });
       }
