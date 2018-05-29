@@ -98,12 +98,15 @@ define([
             $timeout(function () {
               $tooltip = $document.find('.tooltip-clickable-template:visible:last');
 
-              $tooltip.on('mouseenter', function () {
-                toggleTooltip('tooltip', true, 0);
-              });
-              $tooltip.on('mouseleave', function () {
-                toggleTooltip('tooltip', false, 100);
-              });
+              if (!isTouchDevice) {
+                $tooltip.on('mouseenter', function () {
+                  toggleTooltip('tooltip', true, 0);
+                });
+                $tooltip.on('mouseleave', function () {
+                  toggleTooltip('tooltip', false, 100);
+                });
+              }
+
               $tooltip.on(clickType, function () {
                 toggleTooltip('source', false, 0);
                 toggleTooltip('tooltip', false, 0);

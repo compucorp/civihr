@@ -125,6 +125,17 @@ define([
           expect($overlay[0].style['z-index']).toBe('1');
         });
 
+        describe('when the overlay is "hovered"', function () {
+          beforeEach(function () {
+            $overlay.trigger('mouseenter');
+            flushTimeout();
+          });
+
+          it('ignores "hover" event and does not show the tooltip', function () {
+            expect(getTooltipVisibility()).toBe(false);
+          });
+        });
+
         describe('when the overlay is tapped', function () {
           beforeEach(function () {
             $overlay.trigger('touchend');
