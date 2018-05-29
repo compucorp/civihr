@@ -53,8 +53,10 @@ define([
      * @return {Boolean}
      */
     function checkIfAbsenceTypeIsSelectedForFiltering (absenceTypeId) {
-      return !vm.absenceTypesToFilterBy.length ||
-        _.includes(vm.absenceTypesToFilterBy, absenceTypeId);
+      var isIncludedInTheAbsenceTypeFilters = _.includes(vm.absenceTypesToFilterBy, absenceTypeId);
+      var noAbsenceTypesFiltersHaveBeenSelected = !vm.absenceTypesToFilterBy.length;
+
+      return noAbsenceTypesFiltersHaveBeenSelected || isIncludedInTheAbsenceTypeFilters;
     }
 
     /**
@@ -96,12 +98,14 @@ define([
      * @param {String} absenceTypeId
      */
     function toggleFilteringByAbsenceType (absenceTypeId) {
-      if (!_.includes(vm.absenceTypesToFilterBy, absenceTypeId)) {
-        vm.absenceTypesToFilterBy.push(absenceTypeId);
-      } else {
+      var hasAlreadyBeenSelected = _.includes(vm.absenceTypesToFilterBy, absenceTypeId);
+
+      if (hasAlreadyBeenSelected) {
         _.remove(vm.absenceTypesToFilterBy, function (_absenceTypeId_) {
           return absenceTypeId === _absenceTypeId_;
         });
+      } else {
+        vm.absenceTypesToFilterBy.push(absenceTypeId);
       }
     }
   }
