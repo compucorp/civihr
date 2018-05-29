@@ -8,12 +8,13 @@ define([
   'use strict';
 
   describe('leaveCalendarLegend', function () {
-    var $componentController, $log, controller, mockedAbsenceTypes;
+    var $componentController, $log, $rootScope, controller, mockedAbsenceTypes;
 
     beforeEach(module('leave-absences.templates', 'leave-absences.components'));
     beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_) {
       $componentController = _$componentController_;
       $log = _$log_;
+      $rootScope = _$rootScope_;
 
       mockedAbsenceTypes = AbsenceTypeData.all().values;
 
@@ -60,9 +61,78 @@ define([
       });
 
       it('uses the color of the given absence type to define border and background colors', function () {
-        expect(style).toEqual({
-          backgroundColor: absenceType.color,
-          borderColor: absenceType.color
+        expect(style).toEqual({ backgroundColor: absenceType.color });
+      });
+    });
+
+    describe('absence types filter selection storage', function () {
+      beforeEach(function () {
+        spyOn($rootScope, '$emit');
+        $rootScope.$digest();
+      });
+
+      it('has all absence types selelected', function () {
+        expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('1')).toEqual(true);
+        expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('2')).toEqual(true);
+        expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('3')).toEqual(true);
+      });
+
+      describe('when an absence type is selected', function () {
+        beforeEach(function () {
+          controller.toggleFilteringByAbsenceType('1');
+          $rootScope.$digest();
+        });
+
+        it('has the absence type selected', function () {
+          expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('1')).toEqual(true);
+        });
+
+        it('has other absence type not selected', function () {
+          expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('2')).toEqual(false);
+        });
+
+        it('notifies parent controller', function () {
+          expect($rootScope.$emit).toHaveBeenCalledWith(
+            'LeaveCalendar::updateFiltersByAbsenceType', ['1']);
+        });
+
+        describe('when the same absence type is deselected', function () {
+          beforeEach(function () {
+            controller.toggleFilteringByAbsenceType('1');
+          });
+
+          it('selects all absence types back', function () {
+            expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('1')).toEqual(true);
+            expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('2')).toEqual(true);
+            expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('3')).toEqual(true);
+          });
+        });
+
+        describe('when another absence type is selected', function () {
+          beforeEach(function () {
+            controller.toggleFilteringByAbsenceType('2');
+          });
+
+          it('contains multiple absence types', function () {
+            expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('1')).toEqual(true);
+            expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('2')).toEqual(true);
+          });
+
+          it('leave other absence types not selected', function () {
+            expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('3')).toEqual(false);
+          });
+
+          describe('when absence types filter is reset', function () {
+            beforeEach(function () {
+              controller.resetFilteringByAbsenceTypes();
+            });
+
+            it('selects all absence types back', function () {
+              expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('1')).toEqual(true);
+              expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('2')).toEqual(true);
+              expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('3')).toEqual(true);
+            });
+          });
         });
       });
     });

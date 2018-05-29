@@ -30,6 +30,7 @@ define([
     sharedSettings) {
     $log.debug('Component: leave-calendar-month');
 
+    var absenceTypesToFilterBy = [];
     var dataLoaded = false;
     var eventListeners = [];
     var calendars = {};
@@ -286,6 +287,11 @@ define([
           updateLeaveRequest(statusUpdate.leaveRequest);
         }
       }));
+      $rootScope.$on('LeaveCalendar::updateFiltersByAbsenceType', function (event, _absenceTypesToFilterBy_) {
+        absenceTypesToFilterBy = _absenceTypesToFilterBy_;
+
+        showMonth(event, true);
+      });
     }
 
     /**
@@ -429,16 +435,22 @@ define([
      * @return {Promise}
      */
     function loadMonthLeaveRequests () {
-      return LeaveRequest.all({
+      var params = {
         from_date: { to: vm.month.days[vm.month.days.length - 1].date + ' 23:59:59' },
         to_date: { from: vm.month.days[0].date + ' 00:00:00' },
         status_id: { 'IN': leaveStatusesToBeDisplayed() },
         contact_id: { 'IN': vm.contacts.map(function (contact) {
           return contact.id;
         })},
-        type_id: { IN: _.pluck(vm.supportData.absenceTypes, 'id') }
-      }, null, null, null, false)
+        type_id: { 'IN': absenceTypesToFilterBy.length
+          ? absenceTypesToFilterBy
+          : _.pluck(vm.supportData.absenceTypes, 'id') }
+      };
+
+      return LeaveRequest.all(params, null, null, null, false)
         .then(function (leaveRequestsData) {
+          leaveRequests = {};
+
           return indexLeaveRequests(leaveRequestsData.list);
         });
     }

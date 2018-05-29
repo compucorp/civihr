@@ -50,7 +50,8 @@ define([
         level_type: null,
         location: null,
         region: null
-      }
+      },
+      absenceTypes: {}
     };
     vm.monthPaginatorsAvailability = {
       previous: true,

@@ -6,7 +6,7 @@ $chr-leave-calendar-item-public-holiday-background-color:  #8ec68a;
 $chr-leave-calendar-item-requested-border-height:          0.5em;
 $chr-leave-calendar-legend-header-top-margin:              20px;
 $chr-leave-calendar-legend-badge-border-radius:            2px;
-$chr-leave-calendar-legend-badge-padding:                  0 8px;
+$chr-leave-calendar-legend-badge-padding:                  8px;
 $chr-leave-calendar-legend-badge-margin:                   10px;
 $chr-leave-calendar-legend-badge-size:                     24px;
 $chr-leave-calendar-legend-badge-square-right-margin:      20px;
@@ -188,7 +188,7 @@ $chr-leave-calendar-legend-badge-square-hours-font-size:   6px;
   color: $crm-white;
   margin-right: $chr-leave-calendar-legend-badge-margin;
   margin-top: 10px;
-  padding: $chr-leave-calendar-legend-badge-padding;
+  padding: 0 $chr-leave-calendar-legend-badge-padding;
 
   &.chr_leave-calendar__legend__type-badge-weekend {
     background-color: $chr-leave-calendar-item-weekend-background-color;
@@ -201,6 +201,26 @@ $chr-leave-calendar-legend-badge-square-hours-font-size:   6px;
   &.chr_leave-calendar__legend__type-badge-public-holiday {
     background-color: $chr-leave-calendar-item-public-holiday-background-color;
   }
+
+  &.chr_leave-calendar__legend__type-badge-selected {
+    border: solid 1px $crm-white;
+    border-radius: #{$chr-leave-calendar-legend-badge-border-radius + 2px};
+    box-shadow: 0 0 1px 0 $chr-leave-calendar-item-weekend-background-color;
+    height: #{$chr-leave-calendar-legend-badge-size + 2px};
+    margin-bottom: -1px;
+    margin-left: -2px;
+    margin-right: #{$chr-leave-calendar-legend-badge-margin - 1px};
+    margin-top: #{$chr-leave-calendar-legend-badge-margin - 1px};
+    padding-left: #{$chr-leave-calendar-legend-badge-padding + 1px};
+  }
+
+  &.chr_leave-calendar__legend__type-badge-not-selected {
+    opacity: 0.4;
+  }
+}
+
+.chr_leave-calendar__legend__reset-absence-types-filter {
+  color: $gray-darker;
 }
 
 .chr_leave-calendar__legend__other-badge {
