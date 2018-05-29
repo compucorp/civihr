@@ -95,10 +95,7 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
             'from_date_type' => '1',
             'to_date' => '2016-10-20 23:45:00',
             'to_date_type' => '1',
-            'toil_duration' => '200',
-            'toil_to_accrue' => '1',
-            'toil_expiry_date' => '2016-11-01',
-            'request_type' => 'toil',
+            'request_type' => 'leave',
             'is_deleted' => '0',
             'from_date_amount' => '0.00',
             'to_date_amount' => '0.00',
@@ -122,10 +119,7 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
             'from_date_type' => '1',
             'to_date' => '2016-12-15 23:45:00',
             'to_date_type' => '1',
-            'toil_duration' => '360',
-            'toil_to_accrue' => '2',
-            'toil_expiry_date' => '2016-12-31',
-            'request_type' => 'toil',
+            'request_type' => 'leave',
             'is_deleted' => '0',
             'from_date_amount' => '0.00',
             'to_date_amount' => '0.00',
@@ -191,7 +185,7 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
           ],
       ],
   ];
-  
+
   public function testProcessWhenUserIsNotAnAdminUser() {
     $this->setPermissions();
     //User has access to two leave contacts.
@@ -209,9 +203,6 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
     $expectedParams['values'][2]['from_date_amount'] = '';
     $expectedParams['values'][2]['to_date_amount'] = '';
     $expectedParams['values'][2]['balance_change'] = '';
-    $expectedParams['values'][2]['toil_duration'] = '';
-    $expectedParams['values'][2]['toil_to_accrue'] = '';
-    $expectedParams['values'][2]['toil_expiry_date'] = '';
     $expectedParams['values'][2]['type_id'] = '';
     $expectedParams['values'][4]['sickness_reason'] = '';
     $expectedParams['values'][4]['from_date_amount'] = '';
@@ -266,9 +257,6 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
     $expectedParams['values'][2]['from_date_amount'] = '';
     $expectedParams['values'][2]['to_date_amount'] = '';
     $expectedParams['values'][2]['balance_change'] = '';
-    $expectedParams['values'][2]['toil_duration'] = '';
-    $expectedParams['values'][2]['toil_to_accrue'] = '';
-    $expectedParams['values'][2]['toil_expiry_date'] = '';
     $expectedParams['values'][2]['type_id'] = '';
     $expectedParams['values'][4]['sickness_reason'] = '';
     $expectedParams['values'][4]['from_date_amount'] = '';

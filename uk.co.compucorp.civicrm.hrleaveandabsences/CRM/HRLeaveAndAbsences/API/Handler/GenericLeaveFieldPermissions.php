@@ -63,18 +63,6 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
       'restricted_value' => '',
       'level' => 1
     ],
-    'toil_duration' => [
-      'restricted_value' => '',
-      'level' => 1
-    ],
-    'toil_to_accrue' => [
-      'restricted_value' => '',
-      'level' => 1
-    ],
-    'toil_expiry_date' => [
-      'restricted_value' => '',
-      'level' => 1
-    ],
     'sickness_reason' => [
       'restricted_value' => '',
       'level' => 1
