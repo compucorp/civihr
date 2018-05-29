@@ -27,7 +27,7 @@ define([
         helpText = element.find('.help-text').html();
         helpTitle = element.attr('title');
 
-        element.find('button').click();
+        element.find('a').click();
       });
 
       it('displays the help text when the button is clicked', function () {
@@ -45,7 +45,7 @@ define([
 
         helpText = element.find('.help-text').html();
 
-        element.find('button').click();
+        element.find('a').click();
       });
 
       it('displays the help text when the button is clicked', function () {
