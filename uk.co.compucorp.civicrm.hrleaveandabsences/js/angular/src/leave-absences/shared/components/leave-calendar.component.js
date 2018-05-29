@@ -42,6 +42,7 @@ define([
     vm.supportData = {};
     vm.loading = { calendar: true, page: true };
     vm.filters = {
+      hideOnMobile: true,
       optionValues: {},
       userSettings: {
         contact: null,

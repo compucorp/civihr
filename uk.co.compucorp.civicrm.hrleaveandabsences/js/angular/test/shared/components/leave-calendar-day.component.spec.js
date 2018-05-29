@@ -12,16 +12,15 @@ define([
   'use strict';
 
   describe('leaveCalendarDay', function () {
-    var $componentController, $log, $rootScope, $timeout, absenceType, absenceTypes,
+    var $componentController, $log, $rootScope, absenceType, absenceTypes,
       calculationUnits, calculationUnitInDays, calculationUnitInHours,
       contactData, controller, dayTypes, LeavePopup, leaveRequest, leaveRequestAttributes;
 
     beforeEach(module('manager-leave'));
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _$timeout_, _LeavePopup_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _LeavePopup_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
-      $timeout = _$timeout_;
       absenceTypes = _.cloneDeep(absenceTypeData.all().values);
       contactData = {};
       leaveRequest = _.cloneDeep(leaveRequestData.all().values[0]);
@@ -253,74 +252,6 @@ define([
       it('opens the leave request popup', function () {
         expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId, isSelfRecord);
       });
-
-      it('stops the event from propagating', function () {
-        expect(event.stopPropagation).toHaveBeenCalled();
-      });
-    });
-
-    // @TODO this should be moved to a decorator to uib-tooltip
-    describe('toggleTooltip()', function () {
-      it('has the tooltip hidden by default', function () {
-        expect(controller.tooltip.show).toBe(false);
-      });
-
-      describe('when user hovers the day cell', function () {
-        beforeEach(function () {
-          toggleTooltip('day_cell', true);
-        });
-
-        it('shows tooltip', function () {
-          expect(controller.tooltip.show).toBe(true);
-        });
-
-        describe('and then user unhovers the day cell', function () {
-          beforeEach(function () {
-            toggleTooltip('day_cell', false);
-          });
-
-          it('hides the tooltip', function () {
-            expect(controller.tooltip.show).toBe(false);
-          });
-        });
-
-        describe('and then user unhovers the day cell but hovers the tooltip', function () {
-          beforeEach(function () {
-            toggleTooltip('day_cell', false);
-            toggleTooltip('tooltip', true);
-          });
-
-          it('leaves the tooltip shown', function () {
-            expect(controller.tooltip.show).toBe(true);
-          });
-
-          describe('and then user unhovers the tooltip', function () {
-            beforeEach(function () {
-              toggleTooltip('tooltip', false);
-            });
-
-            it('hides the tooltip', function () {
-              expect(controller.tooltip.show).toBe(false);
-            });
-          });
-
-          describe('and then user unhovers the tooltip but hovers the day cell back', function () {
-            beforeEach(function () {
-              toggleTooltip('tooltip', false);
-              toggleTooltip('tooltip', true);
-            });
-
-            it('leaves the tooltip shown', function () {
-              expect(controller.tooltip.show).toBe(true);
-            });
-          });
-        });
-      });
-
-      function toggleTooltip (sourceElement, isHovered) {
-        controller.toggleTooltip(sourceElement, isHovered);
-        $timeout.flush();
-      }
     });
 
     /**
