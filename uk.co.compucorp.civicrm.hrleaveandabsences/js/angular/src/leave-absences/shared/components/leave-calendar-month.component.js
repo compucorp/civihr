@@ -8,6 +8,7 @@ define([
 ], function (_, moment, components) {
   components.component('leaveCalendarMonth', {
     bindings: {
+      showTheseContacts: '<',
       contacts: '<',
       contactIdsToReduceTo: '<',
       month: '<',
@@ -127,7 +128,10 @@ define([
      */
     function contactsList () {
       return !vm.showOnlyWithLeaveRequests ? vm.contacts : vm.contacts.filter(function (contact) {
-        return Object.keys(leaveRequests[contact.id] || {}).length;
+        var hasLeaveRequests = Object.keys(leaveRequests[contact.id] || {}).length;
+        var isAlwaysShown = _.includes(vm.showTheseContacts, contact.id);
+
+        return hasLeaveRequests || isAlwaysShown;
       });
     }
 

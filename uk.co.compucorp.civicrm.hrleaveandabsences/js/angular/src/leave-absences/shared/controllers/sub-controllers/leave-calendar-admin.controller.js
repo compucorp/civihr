@@ -8,12 +8,14 @@ define([
   'common/services/notification.service'
 ], function (_, moment, controllers) {
   controllers.controller('LeaveCalendarAdminController', ['$log', '$q',
-    'Contact', 'ContactInstance', 'Contract', 'notificationService', controller]);
+    'Contact', 'ContactInstance', 'Contract', 'notificationService',
+    'LeaveCalendarService', controller]);
 
-  function controller ($log, $q, Contact, ContactInstance, Contract, notification) {
+  function controller ($log, $q, Contact, ContactInstance, Contract, notification,
+    LeaveCalendarService) {
     $log.debug('LeaveCalendarAdminController');
 
-    var contracts, vm;
+    var leaveCalendar, vm;
 
     return {
       /**
@@ -22,6 +24,7 @@ define([
        */
       init: function (_vm_) {
         vm = _vm_;
+        leaveCalendar = LeaveCalendarService.init(vm);
         vm.showContactDetailsLink = true;
         vm.showContactName = true;
         vm.showFilters = true;
@@ -37,31 +40,6 @@ define([
         return api();
       }
     };
-
-    /**
-     * Get contact IDs filtered according to contracts that belong
-     * to the currently selected absence period
-     *
-     * @return {Promise} resolved to contacts list
-     */
-    function loadContactIdsToReduceTo () {
-      return loadContracts()
-        .then(function (contracts) {
-          var contractsInAbsencePeriod = contracts.filter(function (contract) {
-            var details = contract.info.details;
-
-            return (
-              moment(details.period_start_date).isSameOrBefore(vm.selectedPeriod.end_date) &&
-            (moment(details.period_end_date).isSameOrAfter(vm.selectedPeriod.start_date) ||
-              !details.period_end_date)
-            );
-          });
-
-          return _.uniq(contractsInAbsencePeriod.map(function (contract) {
-            return contract.contact_id;
-          }));
-        });
-    }
 
     /**
      * Returns the api of the sub-controller
@@ -83,9 +61,10 @@ define([
               vm.lookupContacts = contacts;
 
               return $q.all([
-                loadContacts(),
+                leaveCalendar.loadFilteredContacts(),
                 filterByAssignee !== 'me'
-                  ? loadContactIdsToReduceTo() : $q.resolve(null)
+                  ? leaveCalendar.loadContactIdsToReduceTo()
+                  : $q.resolve(null)
               ]);
             })
             .then(function (results) {
@@ -97,27 +76,6 @@ define([
             });
         }
       };
-    }
-
-    /**
-     * Load all contacts with respect to filters
-     *
-     * @return {Promise}
-     */
-    function loadContacts () {
-      return Contact.all(prepareContactFilters(), null, 'display_name')
-        .then(function (contacts) {
-          return contacts.list;
-        });
-    }
-
-    /**
-     * Load all contracts or retrieve them from cache
-     *
-     * @return {Promise}
-     */
-    function loadContracts () {
-      return contracts ? $q.resolve(contracts) : Contract.all();
     }
 
     /**
@@ -135,33 +93,8 @@ define([
           unassigned: true
         });
       } else {
-        return Contact.all().then(function (contacts) {
-          return contacts.list;
-        });
+        return leaveCalendar.loadAllLookUpContacts();
       }
-    }
-
-    /**
-     * Returns the filter object for contacts api
-     *
-     * @TODO This function should be a part of a Filter component, which is planned for future
-     *
-     * @return {Object}
-     */
-    function prepareContactFilters () {
-      return {
-        department: vm.filters.userSettings.department ? vm.filters.userSettings.department.value : null,
-        level_type: vm.filters.userSettings.level_type ? vm.filters.userSettings.level_type.value : null,
-        location: vm.filters.userSettings.location ? vm.filters.userSettings.location.value : null,
-        region: vm.filters.userSettings.region ? vm.filters.userSettings.region.value : null,
-        id: {
-          'IN': vm.filters.userSettings.contact
-            ? [vm.filters.userSettings.contact.id]
-            : vm.lookupContacts.map(function (contact) {
-              return contact.id;
-            })
-        }
-      };
     }
 
     /**

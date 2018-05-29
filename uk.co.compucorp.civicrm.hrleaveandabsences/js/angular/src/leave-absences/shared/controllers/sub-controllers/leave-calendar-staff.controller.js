@@ -5,12 +5,13 @@ define([
   'common/moment',
   'leave-absences/shared/modules/controllers'
 ], function (_, moment, controllers) {
-  controllers.controller('LeaveCalendarStaffController', ['$log', 'Contact', controller]);
+  controllers.controller('LeaveCalendarStaffController', ['$log', 'Contact',
+    'LeaveCalendarService', controller]);
 
-  function controller ($log, Contact) {
+  function controller ($log, Contact, LeaveCalendarService) {
     $log.debug('LeaveCalendarStaffController');
 
-    var vm;
+    var leaveCalendar, vm;
 
     return {
       /**
@@ -19,7 +20,11 @@ define([
        */
       init: function (_vm_) {
         vm = _vm_;
-        vm.filters.userSettings.contacts_with_leaves = false;
+        leaveCalendar = LeaveCalendarService.init(vm);
+        vm.filters.userSettings.contacts_with_leaves = true;
+        vm.showTheseContacts = [vm.contactId];
+        vm.showContactName = true;
+        vm.showFilters = true;
 
         return api();
       }
@@ -41,12 +46,16 @@ define([
          * @return {Promise} resolves as an {Array}
          */
         loadContacts: function () {
-          return Contact.all({
-            id: { in: [vm.contactId] }
-          })
-          .then(function (contacts) {
-            return contacts.list;
-          });
+          return leaveCalendar.loadAllLookUpContacts()
+            .then(function (lookupContacts) {
+              vm.lookupContacts = lookupContacts;
+            })
+            .then(leaveCalendar.loadContactIdsToReduceTo)
+            .then(function (contactIdsToReduceTo) {
+              vm.contactIdsToReduceTo = contactIdsToReduceTo;
+              vm.contactIdsToReduceTo.push(vm.contactId);
+            })
+            .then(leaveCalendar.loadFilteredContacts);
         }
       };
     }

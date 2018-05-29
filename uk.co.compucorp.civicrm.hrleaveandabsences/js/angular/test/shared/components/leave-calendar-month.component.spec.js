@@ -845,6 +845,22 @@
           });
         });
 
+        describe('when show-only-with-leave-requests is set to true, but specific contacts must be shown even if they have no leave requests', function () {
+          var expectedContact;
+
+          beforeEach(function () {
+            expectedContact = { id: _.uniqueId() };
+            controller.showOnlyWithLeaveRequests = true;
+            controller.showTheseContacts = [expectedContact.id];
+
+            controller.contacts.push(expectedContact);
+          });
+
+          it('returns a list including the contacts that have no leave requests', function () {
+            expect(controller.contactsList()).toContain(expectedContact);
+          });
+        });
+
         describe('when show-only-with-leave-requests is set to true and there is no leave request for contacts', function () {
           beforeEach(function () {
             LeaveRequest.all.and.callFake(function () {
