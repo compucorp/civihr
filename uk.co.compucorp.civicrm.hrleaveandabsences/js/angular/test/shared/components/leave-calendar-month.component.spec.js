@@ -252,6 +252,21 @@
               expect(LeaveRequest.all).toHaveBeenCalled();
             });
           });
+
+          describe('filter by absence types', function () {
+            var filterValue = ['777', '888'];
+
+            beforeEach(function () {
+              $rootScope.$emit('LeaveCalendar::updateFiltersByAbsenceType', filterValue);
+              $rootScope.$digest();
+            });
+
+            it('loads leave requests for only selected absence types', function () {
+              expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                type_id: { 'IN': filterValue }
+              }), null, null, null, false);
+            });
+          });
         });
       });
 
