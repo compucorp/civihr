@@ -61,12 +61,15 @@ define([
            */
           function setEventHandlersToTriggerElements () {
             if (isTouchDevice) {
-              $overlay.on('touchend', function (event) {
+              $overlay.on('touchend', function () {
                 toggleTooltip('source', true, 0);
                 !scope.open && setEventHandlersToTooltip();
-                event.stopPropagation();
               });
-              $document.find('body').on('touchend', function () {
+              $document.find('body').on('touchend', function (event) {
+                if (event.target === $overlay[0]) {
+                  return;
+                }
+
                 toggleTooltip('source', false, 0);
                 toggleTooltip('tooltip', false, 0);
               });
@@ -81,12 +84,11 @@ define([
               $element.on('mouseleave', function () {
                 toggleTooltip('source', false, 100);
               });
+              $element.on('click', function () {
+                toggleTooltip('source', false, 0);
+                toggleTooltip('tooltip', false, 0);
+              });
             }
-
-            $element.on(clickType, function () {
-              toggleTooltip('source', false, 0);
-              toggleTooltip('tooltip', false, 0);
-            });
           }
 
           /**
