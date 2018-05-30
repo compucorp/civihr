@@ -84,6 +84,21 @@
         it('returns the filtered contacts', function () {
           expect(result).toEqual(filteredContacts);
         });
+
+        describe('when the component should only display a single contact', function () {
+          beforeEach(function () {
+            vm.displaySingleContact = true;
+            vm.contactId = _.uniqueId();
+            vm.lookupContacts = [];
+
+            controller.loadContacts();
+          });
+
+          it('only loads the information for the given contact', function () {
+            expect(vm.lookupContacts).toEqual([{ id: vm.contactId }]);
+            expect(leaveCalendar.loadFilteredContacts).toHaveBeenCalled();
+          });
+        });
       });
 
       function initController () {

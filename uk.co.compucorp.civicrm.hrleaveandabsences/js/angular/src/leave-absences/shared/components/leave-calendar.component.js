@@ -11,6 +11,7 @@ define([
   components.component('leaveCalendar', {
     bindings: {
       contactId: '<',
+      displaySingleContact: '<?',
       roleOverride: '@?'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
