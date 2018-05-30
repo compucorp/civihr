@@ -53,6 +53,8 @@ define([
      */
     function initListeners () {
       pubSub.subscribe(vm.refreshCountEventName, fetchCount);
+      // Event listener for non-angular context
+      document.addEventListener(vm.refreshCountEventName, fetchCount);
     }
   }
 });
