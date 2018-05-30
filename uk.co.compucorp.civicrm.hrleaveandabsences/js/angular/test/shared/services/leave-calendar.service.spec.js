@@ -187,6 +187,21 @@ define([
           expect(Contact.all).toHaveBeenCalledWith(expectedFilters, null, 'display_name');
         });
       });
+
+      describe('when no contact or look up list are selected as filters', function () {
+        beforeEach(function () {
+          delete vm.lookupContacts;
+          delete vm.filters.userSettings.contact;
+
+          leaveCalendar.loadFilteredContacts();
+        });
+
+        it('does not filter the request by contact id', function () {
+          expect(Contact.all).not.toHaveBeenCalledWith(jasmine.objectContaining({
+            id: { 'IN': jasmine.any(Array) }
+          }), null, 'display_name');
+        });
+      });
     });
 
     /**

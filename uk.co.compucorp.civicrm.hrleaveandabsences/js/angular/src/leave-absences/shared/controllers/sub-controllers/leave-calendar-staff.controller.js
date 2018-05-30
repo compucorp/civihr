@@ -46,16 +46,7 @@ define([
          * @return {Promise} resolves as an {Array}
          */
         loadContacts: function () {
-          return leaveCalendar.loadAllLookUpContacts()
-            .then(function (lookupContacts) {
-              vm.lookupContacts = lookupContacts;
-            })
-            .then(leaveCalendar.loadContactIdsToReduceTo)
-            .then(function (contactIdsToReduceTo) {
-              vm.contactIdsToReduceTo = contactIdsToReduceTo;
-              vm.contactIdsToReduceTo.push(vm.contactId);
-            })
-            .then(leaveCalendar.loadFilteredContacts);
+          return leaveCalendar.loadFilteredContacts();
         }
       };
     }
