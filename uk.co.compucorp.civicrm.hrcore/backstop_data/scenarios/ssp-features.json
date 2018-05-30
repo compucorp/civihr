@@ -1,0 +1,8 @@
+{
+  "scenarios": [
+    {
+      "label": "SSP / Features In CiviHR",
+      "url": "{{siteUrl}}/features-in-civihr"
+    }
+  ]
+}

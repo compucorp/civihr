@@ -1,43 +1,25 @@
-var page = require('./page');
+const page = require('./page');
 
-module.exports = (function () {
-  return page.extend({
-    /**
-     * Wait for the page to be ready by looking at
-     * the visibility of a leave calendar item element
-     */
-    waitForReady: function () {
-      this.waitUntilVisible('leave-calendar-month .chr_leave-calendar__item');
-    },
+module.exports = page.extend({
+  /**
+   * Wait for the page to be ready by looking at
+   * the visibility of a leave calendar item element
+   */
+  async waitForReady () {
+    await this.puppet.waitFor('leave-calendar-month .chr_leave-calendar__item', { visible: true });
+  },
 
-    /**
-     * Toggle the calendar legend
-     *
-     * @return {Promise}
-     */
-    toggleLegend: function () {
-      var casper = this.casper;
+  /**
+   * Toggle the calendar legend
+   */
+  async toggleLegend () {
+    await this.puppet.click('.chr_leave-calendar__legend__title');
+  },
 
-      casper.then(function () {
-        casper.click('.chr_leave-calendar__legend__title');
-      });
-
-      return this;
-    },
-
-    /**
-     * Toggle contacts with leaves
-     *
-     * @return {Promise}
-     */
-    toggleContactsWithLeaves: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.chr_leave-calendar__toggle-contacts-with-leaves');
-      });
-
-      return this;
-    }
-  });
-})();
+  /**
+   * Toggle contacts with leaves
+   */
+  async toggleContactsWithLeaves () {
+    await this.puppet.click('.chr_leave-calendar__toggle-contacts-with-leaves');
+  }
+});

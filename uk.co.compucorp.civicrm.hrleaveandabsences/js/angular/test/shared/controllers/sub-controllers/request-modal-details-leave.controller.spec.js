@@ -413,6 +413,32 @@ define([
       });
     });
 
+    describe('when a leave request is edited', function () {
+      describe('when the leave request is in hours', function () {
+        beforeEach(function () {
+          var absenceType = _.assign(_.cloneDeep(absenceTypeData.all().values[0]), {
+            calculation_unit_name: 'hours'
+          });
+
+          var leaveRequest = LeaveRequestInstance.init({
+            from_date: date2016InServerFormat,
+            to_date: date2016InServerFormat,
+            type_id: absenceType.id
+          });
+
+          compileComponent({
+            mode: 'edit',
+            request: leaveRequest,
+            absenceTypes: [absenceType]
+          });
+        });
+
+        it('finishes loading "from" time and shows the selector to UI', function () {
+          expect(controller.uiOptions.times['from'].loading).toBe(false);
+        });
+      });
+    });
+
     /**
      * Compiles and initializes the component's controller. It returns the
      * parameters used to initialize the controller plus default parameter

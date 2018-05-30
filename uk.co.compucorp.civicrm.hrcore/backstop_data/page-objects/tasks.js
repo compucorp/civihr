@@ -1,154 +1,95 @@
-var Promise = require('es6-promise').Promise;
-var page = require('./page');
+const page = require('./page');
 
-module.exports = (function () {
-  var taskSelector = '.ct-list-task > li:nth-child(1)';
-  var editableSelectors = {
-    assigned: '[editable-ui-select="task.assignee_contact_id[0]"]',
-    date: '[editable-bsdate="task.activity_date_time"]',
-    subject: '[editable-text="task.subject"]',
-    target: '[editable-ui-select="task.target_contact_id[0]"]'
-  };
+const taskSelector = '.ct-list-task > li:nth-child(1)';
+const editableSelectors = {
+  assigned: '[editable-ui-select="task.assignee_contact_id[0]"]',
+  date: '[editable-bsdate="task.activity_date_time"]',
+  subject: '[editable-text="task.subject"]',
+  target: '[editable-ui-select="task.target_contact_id[0]"]'
+};
 
-  return page.extend({
+module.exports = page.extend({
+  /**
+   * Shows the assignment modal
+   *
+   * @return {Object} the assignment modal page object
+   */
+  async addAssignment () {
+    await this.puppet.click('a[ng-click*="modalAssignment"]');
 
-    /**
-     * Shows the assignment modal
-     *
-     * @return {Promise} resolves with the assignment modal page object
-     */
-    addAssignment: function () {
-      var casper = this.casper;
+    return this.waitForModal('assignment');
+  },
 
-      return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click('a[ng-click*="modalAssignment"]');
-          resolve(this.waitForModal('assignment'));
-        }.bind(this));
-      }.bind(this));
-    },
+  /**
+   * Shows the task modal
+   *
+   * @return {Object} the task modal page object
+   */
+  async addTask () {
+    await this.puppet.click('a[ng-click*="itemAdd"]');
 
-    /**
-     * Shows the task modal
-     *
-     * @return {Promise} resolves with the task modal page object
-     */
-    addTask: function () {
-      var casper = this.casper;
+    return this.waitForModal('task');
+  },
 
-      return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click('a[ng-click*="itemAdd"]');
-          resolve(this.waitForModal('task'));
-        }.bind(this));
-      }.bind(this));
-    },
+  /**
+   * Opens the advanced filters
+   */
+  async advancedFilters () {
+    await this.puppet.click('a[ng-click*="isCollapsed.filterAdvanced"]');
+    await this.puppet.waitFor(500);
+  },
 
-    /**
-     * Opens the advanced filters
-     *
-     * @return {object}
-     */
-    advancedFilters: function () {
-      var casper = this.casper;
+  /**
+   * Shows the given edit-in-place field
+   *
+   * @param {string} fieldName
+   */
+  async inPlaceEdit (fieldName) {
+    await this.puppet.click(editableSelectors[fieldName]);
+    await this.puppet.waitFor(200);
+  },
 
-      casper.then(function () {
-        casper.click('a[ng-click*="isCollapsed.filterAdvanced"]');
-        casper.wait(500);
-      });
+  /**
+   * Opens the first task of the list
+   *
+   * @return {Object} the task modal page object
+   */
+  async openTask () {
+    await this.puppet.click(taskSelector + ' .task-title > a[ng-click*="modalTask"]');
+    await this.puppet.waitFor('.spinner', { hidden: true });
 
-      return this;
-    },
+    return this.waitForModal('task');
+  },
 
-    /**
-     * Shows the given edit-in-place field
-     *
-     * @param {string} fieldName
-     * @return {object}
-     */
-    inPlaceEdit: function (fieldName) {
-      var casper = this.casper;
+  /**
+   * Shows the "select dates" filter
+   */
+  async selectDates () {
+    await this.puppet.click('.ct-select-dates');
+    await this.puppet.waitFor(500);
+  },
 
-      casper.then(function () {
-        casper.click(editableSelectors[fieldName]);
-        casper.wait(200);
-      });
+  /**
+   * Expands the "show more" area of the first task of the list
+   */
+  async showMore () {
+    await this.puppet.click(taskSelector + ' a[ng-click*="isCollapsed"]');
+    await this.puppet.waitFor(taskSelector + ' article', { visible: true });
+    await this.puppet.waitFor(500);
+  },
 
-      return this;
-    },
+  /**
+   * Shows the dropdown of the actions available on any given task
+   */
+  async taskActions () {
+    await this.puppet.click(taskSelector + ' .ct-context-menu-toggle');
+  },
 
-    /**
-     * Opens the first task of the list
-     *
-     * @return {Promise} resolves with the task modal page object
-     */
-    openTask: function () {
-      var casper = this.casper;
-
-      return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click(taskSelector + ' .task-title > a[ng-click*="modalTask"]');
-          casper.waitWhileVisible('.spinner');
-
-          resolve(this.waitForModal('task'));
-        }.bind(this));
-      }.bind(this));
-    },
-
-    /**
-     * Shows the "select dates" filter
-     */
-    selectDates: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('.ct-select-dates');
-        casper.wait(500);
-      });
-    },
-
-    /**
-     * Expands the "show more" area of the first task of the list
-     *
-     * @return {object}
-     */
-    showMore: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(taskSelector + ' a[ng-click*="isCollapsed"]');
-        casper.waitUntilVisible(taskSelector + ' article', function () {
-          casper.wait(500);
-        });
-      });
-
-      return this;
-    },
-
-    /**
-     * Shows the dropdown of the actions available on any given task
-     *
-     * @return {object}
-     */
-    taskActions: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click(taskSelector + ' .ct-context-menu-toggle');
-      });
-
-      return this;
-    },
-
-    /**
-     * Waits until the specified select is visible on the page
-     */
-    waitForReady: function () {
-      var casper = this.casper;
-
-      casper.waitUntilVisible('.ct-container-inner', function () {
-        casper.wait(300);
-      });
-    }
-  });
-})();
+  /**
+   * Waits until the specified select is visible on the page
+   */
+  async waitForReady () {
+    await this.puppet.waitFor('.ct-container-inner', { visible: true });
+    await this.puppet.waitFor(300);
+  }
+});

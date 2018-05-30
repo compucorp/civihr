@@ -2,123 +2,103 @@
   "scenarios": [
     {
       "label": "T&A / Tasks",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/task",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/task.js"
     },
     {
       "label": "T&A / Tasks / Advanced Filters",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/advanced-filters",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/advanced-filters.js"
     },
     {
       "label": "T&A / Tasks / Select Dates",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/select-dates",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/select-dates.js"
     },
     {
       "label": "T&A / Tasks / Assignment / Add",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/assignment/add",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/add.js"
     },
     {
       "label": "T&A / Tasks / Assignment / Select Type",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/assignment/select-type",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/select-type.js"
     },
     {
       "label": "T&A / Tasks / Assignment / Add Task",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/assignment/add-task",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/add-task.js"
     },
     {
       "label": "T&A / Tasks / Assignment / Add Document",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/assignment/add-document",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/add-document.js"
     },
     {
       "label": "T&A / Tasks / Assignment / Pick Date",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/assignment/pick-date",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/assignment/pick-date.js"
     },
     {
       "label": "T&A / Tasks / Task / In Place Edit / Due Date",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/editable-date",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-date.js"
     },
     {
       "label": "T&A / Tasks / Task / In Place Edit / Subject",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/editable-subject",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-subject.js"
     },
     {
       "label": "T&A / Tasks / Task / In Place Edit / Target",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/editable-target",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-target.js"
     },
     {
       "label": "T&A / Tasks / Task / In Place Edit / Assigned To",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/editable-assigned",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/editable-assigned.js"
     },
     {
       "label": "T&A / Tasks / Task / Add",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/add",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/add.js"
     },
     {
       "label": "T&A / Tasks / Task / Pick Date",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/pick-date",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/pick-date.js"
     },
     {
       "label": "T&A / Tasks / Task / Select Assignee",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/select-assignee",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/select-assignee.js"
     },
     {
       "label": "T&A / Tasks / Task / Select Type",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/select-type",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/select-type.js"
     },
     {
       "label": "T&A / Tasks / Task / Show All Fields",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/show-all-fields",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/show-all-fields.js"
     },
     {
       "label": "T&A / Tasks / Task / Show More",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/show-more",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/show-more.js"
     },
     {
       "label": "T&A / Tasks / Task / Actions",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/actions",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/actions.js"
     },
     {
       "label": "T&A / Tasks / Task / Open",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
-      "onReadyScript": "tasks/task/open",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/tasks",
+      "onReadyScript": "tasks/task/open.js"
     }
   ]
 }

@@ -1,19 +1,20 @@
-var modal = require('./modal');
+/* global XPathResult */
 
-module.exports = (function () {
-  return modal.extend({
+const modal = require('./modal');
 
-    /**
-     * Selects the tab with the given title
-     *
-     * @param  {string} tabTitle
-     */
-    selectTab: function (tabTitle) {
-      var casper = this.casper;
+module.exports = modal.extend({
+  /**
+   * Selects the tab with the given title
+   *
+   * @param {String} tabTitle
+   */
+  async selectTab (tabTitle) {
+    await this.puppet.evaluate(function (tabTitle) {
+      // = clickLabel
+      const xPath = './/a[text()="' + tabTitle + '"]';
+      const link = document.evaluate(xPath, document.body, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
-      casper.then(function () {
-        casper.clickLabel(tabTitle, 'a');
-      });
-    }
-  });
-})();
+      link.click();
+    }, tabTitle);
+  }
+});

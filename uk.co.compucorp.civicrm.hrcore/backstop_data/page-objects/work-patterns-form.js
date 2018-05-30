@@ -1,27 +1,17 @@
-var page = require('./page');
+const page = require('./page');
 
-module.exports = (function () {
-  return page.extend({
-    /**
-     * Displays the work pattern calendar form.
-     *
-     * @return The Page instance.
-     */
-    showCalendarForm: function () {
-      var casper = this.casper;
+module.exports = page.extend({
+  /**
+   * Displays the work pattern calendar form.
+   */
+  async showCalendarForm () {
+    await this.puppet.click('a[href="#work-pattern-calendar"]');
+  },
 
-      casper.then(function () {
-        casper.click('a[href="#work-pattern-calendar"]');
-      });
-
-      return this;
-    },
-
-    /**
-     * Waits until the work pattern form is visible.
-     */
-    waitForReady: function () {
-      this.waitUntilVisible('.work-pattern-form');
-    }
-  });
-})();
+  /**
+   * Waits until the work pattern form is visible.
+   */
+  async waitForReady () {
+    await this.puppet.waitFor('.work-pattern-form', { visible: true });
+  }
+});

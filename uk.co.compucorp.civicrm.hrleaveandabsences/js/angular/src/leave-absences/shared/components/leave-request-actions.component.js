@@ -165,16 +165,11 @@ define([
         return true;
       }
 
-      // Others but Admin can cancel if only the leave request status is
-      // either "Awaiting for Approval" or "More Information Required"
-      if (!_.includes([statusNames.awaitingApproval, statusNames.moreInformationRequired],
-        leaveRequestStatus)) {
-        return false;
-      }
-
-      // Manager can cancel disregarding the allow_request_cancelation value
+      // Manager can cancel regardless of the allow_request_cancelation value,
+      // but only if the request is either in "Awaiting for Approval" or "More Information Required"
       if (vm.role === 'manager') {
-        return true;
+        return _.includes([statusNames.awaitingApproval, statusNames.moreInformationRequired],
+          leaveRequestStatus);
       }
 
       // If request can only be cancelled in advance of start date

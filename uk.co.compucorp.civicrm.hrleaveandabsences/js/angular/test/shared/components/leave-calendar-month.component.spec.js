@@ -23,7 +23,7 @@
     describe('leaveCalendarMonth', function () {
       var $componentController, $log, $provide, $q, $rootScope, Calendar,
         LeaveRequest, OptionGroup, controller, daysInFebruary, february, leaveRequestInFebruary,
-        period2016, publicHolidays, pubSub;
+        period2016, publicHolidays, pubSub, contactData, leaveRequest, leaveRequestAttributes;
       var currentContactId = CRM.vars.leaveAndAbsences.contactId;
       var contactIdsToReduceTo = null;
 
@@ -173,8 +173,8 @@
 
               expect(requestRecentCallFirstArg).toEqual(
                 jasmine.objectContaining({
-                  from_date: { to: month.days[month.days.length - 1].date },
-                  to_date: { from: month.days[0].date }
+                  from_date: { to: month.days[month.days.length - 1].date + ' 23:59:59' },
+                  to_date: { from: month.days[0].date + ' 00:00:00' }
                 })
               );
             });
@@ -388,6 +388,11 @@
             jasmine.clock().uninstall();
           });
 
+          /**
+           * Mocks current day
+           *
+           * @param {String} date
+           */
           function setCurrentDay (date) {
             jasmine.clock().mockDate(date);
             compileComponent();
@@ -396,8 +401,6 @@
       });
 
       describe("day's data specific for each contact", function () {
-        var contactData;
-
         beforeEach(function () {
           sendShowMonthsSignal();
         });
@@ -447,8 +450,84 @@
           });
         });
 
+        describe('when the contact has multiple leave requests on the same day', function () {
+          var leaveRequest1, leaveRequest2;
+
+          describe('basic tests', function () {
+            beforeEach(function () {
+              leaveRequest1 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest2 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+
+              commonSetup([leaveRequest1, leaveRequest2]);
+            });
+
+            it('has leave requests references in the contact data', function () {
+              expect(contactData.leaveRequests.length).toBe(2);
+              expect(contactData.leaveRequests[0]).toBe(leaveRequest1);
+              expect(contactData.leaveRequests[1]).toBe(leaveRequest2);
+            });
+
+            it('keeps references to leave requests to show in day cell', function () {
+              expect(contactData.leaveRequestsToShowInCell.length).toBe(2);
+              expect(contactData.leaveRequestsToShowInCell[0]).toBe(leaveRequest1);
+              expect(contactData.leaveRequestsToShowInCell[1]).toBe(leaveRequest2);
+            });
+          });
+
+          describe('when day contains unsorted requests in hours', function () {
+            beforeEach(function () {
+              leaveRequest1 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest1.from_date = leaveRequest1.from_date.split(' ')[0] + ' 23:00';
+              leaveRequest2 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest2.from_date = leaveRequest2.from_date.split(' ')[0] + ' 11:00';
+
+              commonSetup([leaveRequest1, leaveRequest2]);
+            });
+
+            it('sorts leave requests', function () {
+              expect(contactData.leaveRequests[0]).toBe(leaveRequest2);
+              expect(contactData.leaveRequests[1]).toBe(leaveRequest1);
+            });
+          });
+
+          describe('when day contains unsorted requests in days', function () {
+            beforeEach(function () {
+              leaveRequest1 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest1.from_date_type = getDayTypeId('half_day_pm');
+              leaveRequest2 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest2.from_date_type = getDayTypeId('half_day_am');
+
+              commonSetup([leaveRequest1, leaveRequest2]);
+            });
+
+            it('sorts leave requests', function () {
+              expect(contactData.leaveRequests[0]).toBe(leaveRequest2);
+              expect(contactData.leaveRequests[1]).toBe(leaveRequest1);
+            });
+          });
+
+          describe('when day contains a mix of TOIL and non-TOIL requests', function () {
+            beforeEach(function () {
+              leaveRequest1 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest2 = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
+              leaveRequest2.request_type = 'toil';
+
+              commonSetup([leaveRequest1, leaveRequest2]);
+            });
+
+            it('only shows toil requests in the day cell', function () {
+              expect(contactData.leaveRequestsToShowInCell.length).toBe(1);
+              expect(contactData.leaveRequestsToShowInCell[0]).toBe(leaveRequest2);
+            });
+
+            it('still has all leave request references', function () {
+              expect(contactData.leaveRequests.length).toBe(2);
+            });
+          });
+        });
+
         describe('when the contact has recorded a leave request on the day', function () {
-          var leaveRequest, workPattern;
+          var workPattern;
 
           beforeEach(function () {
             leaveRequest = _.clone(LeaveRequestData.singleDataSuccess().values[0]);
@@ -465,11 +544,15 @@
                 'hrleaveandabsences_leave_request_status', 'name', 'approved'
               ).value;
 
-              contactData = commonSetup();
+              commonSetup();
             });
 
             it('contains a reference to the leave request itself', function () {
-              expect(contactData.leaveRequest).toBe(leaveRequest);
+              expect(contactData.leaveRequests[0]).toBe(leaveRequest);
+            });
+
+            it('adds a reference to the leave request to show it in the day cell', function () {
+              expect(contactData.leaveRequestsToShowInCell[0]).toBe(leaveRequest);
             });
 
             it('assigns it the colors of its absence type', function () {
@@ -477,7 +560,7 @@
                 return absenceType.id === leaveRequest.type_id;
               }).color;
 
-              expect(contactData.styles).toEqual({
+              expect(leaveRequestAttributes.styles).toEqual({
                 backgroundColor: absenceTypeColor,
                 borderColor: absenceTypeColor
               });
@@ -490,39 +573,35 @@
                 'hrleaveandabsences_leave_request_status', 'name', 'awaiting_approval'
               ).value;
 
-              contactData = commonSetup();
+              commonSetup();
             });
 
             it('marks it as such', function () {
-              expect(contactData.isRequested).toBe(true);
+              expect(leaveRequestAttributes.isRequested).toBe(true);
             });
           });
 
           describe('when the leave request is for half day am', function () {
             beforeEach(function () {
-              leaveRequest.from_date_type = _.find(OptionGroupData.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
-                return absenceType.name === 'half_day_am';
-              }).value;
+              leaveRequest.from_date_type = getDayTypeId('half_day_am');
 
-              contactData = commonSetup();
+              commonSetup();
             });
 
             it('marks it as such', function () {
-              expect(contactData.isAM).toBe(true);
+              expect(leaveRequestAttributes.isAM).toBe(true);
             });
           });
 
           describe('when leave request is for half day pm', function () {
             beforeEach(function () {
-              leaveRequest.from_date_type = _.find(OptionGroupData.getCollection('hrleaveandabsences_leave_request_day_type'), function (absenceType) {
-                return absenceType.name === 'half_day_pm';
-              }).value;
+              leaveRequest.from_date_type = getDayTypeId('half_day_pm');
 
-              contactData = commonSetup();
+              commonSetup();
             });
 
             it('marks it as such', function () {
-              expect(contactData.isPM).toBe(true);
+              expect(leaveRequestAttributes.isPM).toBe(true);
             });
           });
 
@@ -530,33 +609,34 @@
             beforeEach(function () {
               leaveRequest.request_type = 'toil';
 
-              contactData = commonSetup();
+              commonSetup();
             });
 
             it('marks it as such', function () {
-              expect(contactData.isAccruedTOIL).toBe(true);
+              expect(leaveRequestAttributes.isAccruedTOIL).toBe(true);
             });
           });
 
-          function commonSetup () {
-            var day;
+          describe('when the leave request is a single day request', function () {
+            beforeEach(function () {
+              leaveRequest.from_date = leaveRequest.to_date;
 
-            LeaveRequest.all.and.callFake(function () {
-              return $q.resolve({ list: [leaveRequest] });
+              commonSetup();
             });
 
-            compileComponent(true);
-
-            controller.month.days.forEach(function (dayObj) {
-              if (moment(dayObj.date).isSame(leaveRequest.from_date, 'day')) {
-                day = dayObj;
-              }
+            it('marks it as such', function () {
+              expect(leaveRequestAttributes.isSingleDay).toBe(true);
             });
-
-            return day.contactsData[currentContactId];
-          }
+          });
         });
 
+        /**
+         * Returns a day by a given day type
+         *
+         * @param  {String} dayType
+         * @param  {Boolean} returnContactData
+         * @return {Object}
+         */
         function getDayWithType (dayType, returnContactData) {
           var day;
 
@@ -595,9 +675,13 @@
 
           describe('leave request status update event', function () {
             beforeEach(function () {
+              var shrinkedLeaveRequest = _.cloneDeep(leaveRequestToDelete);
+              // Srinking the leave in terms of dates to ensure later that all dates are flushed
+              shrinkedLeaveRequest.to_date = shrinkedLeaveRequest.from_date;
+
               pubSub.publish('LeaveRequest::statusUpdate', {
                 status: 'delete',
-                leaveRequest: leaveRequestToDelete
+                leaveRequest: shrinkedLeaveRequest
               });
               $rootScope.$digest();
             });
@@ -605,12 +689,15 @@
             itHandlesLeaveRequestDeleteEvent();
           });
 
+          /**
+           * Checks that the leave request is deleted
+           */
           function itHandlesLeaveRequestDeleteEvent () {
             it('does not re-fetch the leave requests from the backend', function () {
               expect(LeaveRequest.all).not.toHaveBeenCalled();
             });
 
-            it('resets the properties of each day that the leave request spans', function () {
+            it('resets the properties of each day that the original leave request spans', function () {
               expect(getLeaveRequestDays(leaveRequestToDelete).every(isDayContactDataNull)).toBe(true);
             });
           }
@@ -638,28 +725,37 @@
         });
 
         describe('when a leave request is updated and its dates have changed', function () {
-          var leaveRequestToUpdate, oldDays, newDays;
+          var leaveRequestToUpdate;
 
           beforeEach(function () {
             leaveRequestToUpdate = _.clone(leaveRequestInFebruary);
-            oldDays = getLeaveRequestDays(leaveRequestToUpdate);
             leaveRequestToUpdate = modifyLeaveRequestData(leaveRequestToUpdate);
 
             LeaveRequest.all.calls.reset();
           });
 
           describe('leave request edit event', function () {
+            var updatedRequest;
+
             beforeEach(function () {
               pubSub.publish('LeaveRequest::edit', leaveRequestToUpdate);
               $rootScope.$digest();
 
-              newDays = getLeaveRequestDays(leaveRequestToUpdate);
+              updatedRequest = _.find(controller.month.days, function (day) {
+                return _.find(day.contactsData[leaveRequestToUpdate.contact_id].leaveRequests, function (leaveRequest) {
+                  return leaveRequest === leaveRequestToUpdate;
+                });
+              });
             });
 
-            itHandlesLeaveRequestStatusUpdate();
+            it('updates the leaveRequest', function () {
+              expect(updatedRequest).toBeDefined();
+            });
           });
 
           describe('leave request status update event', function () {
+            var updatedRequest;
+
             beforeEach(function () {
               pubSub.publish('LeaveRequest::statusUpdate', {
                 status: 'cancel',
@@ -667,27 +763,28 @@
               });
               $rootScope.$digest();
 
-              newDays = getLeaveRequestDays(leaveRequestToUpdate);
+              updatedRequest = _.find(controller.month.days, function (day) {
+                return _.find(day.contactsData[leaveRequestToUpdate.contact_id].leaveRequests, function (leaveRequest) {
+                  return leaveRequest === leaveRequestToUpdate;
+                });
+              });
+            });
+
+            it('updates the leaveRequest', function () {
+              expect(updatedRequest).toBeDefined();
             });
           });
-
-          function itHandlesLeaveRequestStatusUpdate () {
-            it('does not re-fetch the leave requests from the backend', function () {
-              expect(LeaveRequest.all).not.toHaveBeenCalled();
-            });
-
-            it('resets the properties of the days that the leave request does not span anymore', function () {
-              expect(oldDays.every(isDayContactDataNull)).toBe(true);
-            });
-
-            it('sets the properties of the days that the leave request now spans', function () {
-              expect(newDays.every(isDayContactDataNull)).toBe(false);
-            });
-          }
         });
 
+        /**
+         * Modifies leave request by settings different dates
+         *
+         * @param  {LeaveRequestInstance} leaveRequest
+         * @param  {Boolean} modifyId if to modify id or not
+         * @return {LeaveRequestInstance}
+         */
         function modifyLeaveRequestData (leaveRequest, modifyId) {
-          var modified = _.assign({}, leaveRequest, {
+          var modifiedLeaveRequest = _.assign({}, leaveRequest, {
             from_date: '2016-02-20',
             to_date: '2016-02-21',
             dates: [
@@ -696,13 +793,19 @@
             ]
           });
 
-          if (modifyId === true) {
-            modified.id = '1';
+          if (modifyId) {
+            modifiedLeaveRequest.id = '1';
           }
 
-          return modified;
+          return modifiedLeaveRequest;
         }
 
+        /**
+         * Returns the array of days for the leave request
+         *
+         * @param  {LeaveRequestInstance} leaveRequest
+         * @return {Array}
+         */
         function getLeaveRequestDays (leaveRequest) {
           var days = [];
           var pointerDate = moment(leaveRequest.from_date).clone();
@@ -719,15 +822,17 @@
           return days;
         }
 
+        /**
+         * Checks if day contact data is empty
+         *
+         * @param  {Object} day
+         * @return {Boolean}
+         */
         function isDayContactDataNull (day) {
-          var contactData = day.contactsData[currentContactId];
+          var leaveRequests = day.contactsData[currentContactId].leaveRequests;
+          var leaveRequestsAttributes = day.contactsData[currentContactId].leaveRequestsAttributes;
 
-          return contactData.leaveRequest === null &&
-            contactData.styles === null &&
-            contactData.isAccruedTOIL === null &&
-            contactData.isRequested === null &&
-            contactData.isAM === null &&
-            contactData.isPM === null;
+          return !leaveRequests.length && !Object.keys(leaveRequestsAttributes).length;
         }
       });
 
@@ -803,6 +908,38 @@
         });
       });
 
+      /**
+       * Initializes controller with default or given leave requests
+       * and caches day, contact data and leave request attributes
+       * for the first leave request in the list for testing convenience
+       *
+       * @param {Array} leaveRequests - optional array of {LeaveRequestInstance}
+       */
+      function commonSetup (leaveRequests) {
+        var day;
+        var leaveRequestsToUse = leaveRequests || [leaveRequest];
+
+        LeaveRequest.all.and.callFake(function () {
+          return $q.resolve({ list: leaveRequestsToUse });
+        });
+
+        compileComponent(true);
+
+        controller.month.days.forEach(function (dayObj) {
+          if (moment(dayObj.date).isSame(leaveRequestsToUse[0].from_date, 'day')) {
+            day = dayObj;
+          }
+        });
+
+        contactData = day.contactsData[currentContactId];
+        leaveRequestAttributes = contactData.leaveRequestsAttributes[leaveRequestsToUse[0].id];
+      }
+
+      /**
+       * Compiles component
+       *
+       * @param {Boolean} sendSignal - if to send a month signal or not
+       */
       function compileComponent (sendSignal) {
         controller = $componentController('leaveCalendarMonth', null, {
           contacts: ContactData.all.values,
@@ -818,6 +955,19 @@
         });
 
         !!sendSignal && sendShowMonthsSignal();
+      }
+
+      /**
+       * Gets day type ID by its name
+       *
+       * @param  {String} dayTypeName
+       * @return {String}
+       */
+      function getDayTypeId (dayTypeName) {
+        return _.find(OptionGroupData.getCollection(
+          'hrleaveandabsences_leave_request_day_type'), function (dayType) {
+          return dayType.name === dayTypeName;
+        }).value;
       }
 
       /**

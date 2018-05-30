@@ -1,14 +1,10 @@
-var page = require('../page');
+const page = require('../page');
 
-module.exports = (function () {
-  return page.extend({
-
-    /**
-     * Defines that the tab is ready when the a specific selector is visible
-     * @return {boolean}
-     */
-    ready: function () {
-      return this.casper.visible(this.readySelector);
-    }
-  });
-})();
+module.exports = page.extend({
+  /**
+   * Defines that the tab is ready when the a specific selector is visible
+   */
+  async waitForReady () {
+    await this.puppet.waitFor(this.readySelector, { visible: true });
+  }
+});
