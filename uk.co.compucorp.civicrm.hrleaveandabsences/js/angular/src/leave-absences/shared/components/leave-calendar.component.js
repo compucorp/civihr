@@ -78,6 +78,7 @@ define([
           ]);
         })
         .then(function () {
+          appendGenericAbsenceType();
           injectAndShowMonth();
           setMonthPaginatorsAvailability();
         })
@@ -85,6 +86,20 @@ define([
           vm.loading.page = false;
         });
     }());
+
+    /**
+     * Appends a generic absence type that can be used for private
+     * leave requests.
+     */
+    function appendGenericAbsenceType () {
+      vm.supportData.absenceTypes.push({
+        id: '',
+        title: 'Leave',
+        color: '#4D4D68',
+        calculation_unit: _.chain(vm.supportData.calculationUnits)
+          .find({ name: 'days' }).get('value').value()
+      });
+    }
 
     /**
      * Creates a list of all the months in the currently selected period
