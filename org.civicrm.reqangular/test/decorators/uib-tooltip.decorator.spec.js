@@ -10,7 +10,7 @@ define([
   'use strict';
 
   describe('$uiTooltip.clickable', function () {
-    var $compile, $document, $rootScope, $triggerElement, $timeout, $tooltipElement, $provide;
+    var $compile, $content, $document, $rootScope, $triggerElement, $timeout, $tooltipElement, $provide;
 
     beforeEach(function () {
       module('ui.bootstrap');
@@ -34,22 +34,22 @@ define([
       beforeEach(function () {
         cleanDocument();
 
-        $triggerElement = angular.element(
-          '<div uib-tooltip-template="\'tooltip\'" uib-tooltip-clickable="true" tooltip-append-to-body="true">' +
-          '<script id="tooltip" type="text/ng-template">' +
-          '<div class="tooltip-clickable-template">Content</div>' +
-          '</script>' +
+        $content = angular.element(
+          '<div>' +
+          generateTriggerElementHTML('tooltip1') +
+          generateTriggerElementHTML('tooltip2') +
           '</div>');
+        $triggerElement = $content.find('[uib-tooltip-template]').eq(0);
       });
 
       it('does not yet show the tooltip', function () {
-        expect(getTooltipVisibility()).toBe(false);
+        expect(getTooltipVisibility('tooltip1')).toBe(false);
       });
 
       describe('non-touch device', function () {
         beforeEach(function () {
-          $compile($triggerElement)($rootScope.$new());
-          $document.find('body').append($triggerElement);
+          $compile($content)($rootScope.$new());
+          $document.find('body').append($content);
         });
 
         describe('when the trigger element is hovered', function () {
@@ -61,7 +61,7 @@ define([
           });
 
           it('shows the tooltip', function () {
-            expect(getTooltipVisibility()).toBe(true);
+            expect(getTooltipVisibility('tooltip1')).toBe(true);
           });
 
           describe('when the trigger tooltip is unhovered', function () {
@@ -71,7 +71,7 @@ define([
             });
 
             it('hides the tooltip', function () {
-              expect(getTooltipVisibility()).toBe(false);
+              expect(getTooltipVisibility('tooltip1')).toBe(false);
             });
           });
 
@@ -84,7 +84,7 @@ define([
             });
 
             it('keeps the tooltip shown', function () {
-              expect(getTooltipVisibility()).toBe(true);
+              expect(getTooltipVisibility('tooltip1')).toBe(true);
             });
 
             describe('when the opened tooltip is unhovered', function () {
@@ -94,7 +94,7 @@ define([
               });
 
               it('keeps the tooltip shown', function () {
-                expect(getTooltipVisibility()).toBe(false);
+                expect(getTooltipVisibility('tooltip1')).toBe(false);
               });
             });
           });
@@ -107,8 +107,8 @@ define([
         beforeEach(function () {
           simulateTouchDevice();
 
-          $compile($triggerElement)($rootScope.$new());
-          $document.find('body').append($triggerElement);
+          $compile($content)($rootScope.$new());
+          $document.find('body').append($content);
 
           $overlay = $triggerElement.find('.tooltip-overlay');
           $rootScope.$digest();
@@ -125,6 +125,17 @@ define([
           expect($overlay[0].style['z-index']).toBe('1');
         });
 
+        describe('when the overlay is "hovered"', function () {
+          beforeEach(function () {
+            $overlay.trigger('mouseenter');
+            flushTimeout();
+          });
+
+          it('ignores "hover" event and does not show the tooltip', function () {
+            expect(getTooltipVisibility('tooltip1')).toBe(false);
+          });
+        });
+
         describe('when the overlay is tapped', function () {
           beforeEach(function () {
             $overlay.trigger('touchend');
@@ -134,26 +145,43 @@ define([
           });
 
           it('shows the tooltip', function () {
-            expect(getTooltipVisibility()).toBe(true);
+            expect(getTooltipVisibility('tooltip1')).toBe(true);
           });
 
           it('hides the overlay', function () {
-            expect(getOverlayVisibility()).toBe(false);
+            expect(getOverlayVisibility($triggerElement)).toBe(false);
+          });
+
+          describe('when another trigger element is tapped', function () {
+            var $triggerElement2, $overlay2;
+
+            beforeEach(function () {
+              $triggerElement2 = $content.find('[uib-tooltip-template]').eq(1);
+              $overlay2 = $triggerElement2.find('.tooltip-overlay');
+
+              $overlay2.trigger('touchend');
+              flushTimeout();
+            });
+
+            it('opens the target tooltip and closes other tooltips', function () {
+              expect(getTooltipVisibility('tooltip2')).toBe(true);
+              expect(getTooltipVisibility('tooltip1')).toBe(false);
+            });
           });
 
           describe('when the trigger element is tapped', function () {
             beforeEach(function () {
               $triggerElement.trigger('touchend');
               $rootScope.$digest();
-              flushTimeout(2);
+              flushTimeout();
             });
 
             it('hides the tooltip', function () {
-              expect(getTooltipVisibility()).toBe(false);
+              expect(getTooltipVisibility('tooltip1')).toBe(false);
             });
 
             it('shows the overlay', function () {
-              expect(getOverlayVisibility()).toBe(true);
+              expect(getOverlayVisibility($triggerElement)).toBe(true);
             });
           });
 
@@ -161,15 +189,15 @@ define([
             beforeEach(function () {
               $tooltipElement.trigger('touchend');
               $rootScope.$digest();
-              flushTimeout(2);
+              flushTimeout();
             });
 
             it('hides the tooltip', function () {
-              expect(getTooltipVisibility()).toBe(false);
+              expect(getTooltipVisibility('tooltip1')).toBe(false);
             });
 
             it('shows the overlay', function () {
-              expect(getOverlayVisibility()).toBe(true);
+              expect(getOverlayVisibility($triggerElement)).toBe(true);
             });
           });
 
@@ -177,11 +205,11 @@ define([
             beforeEach(function () {
               $document.find('body').trigger('touchend');
               $rootScope.$digest();
-              flushTimeout(2);
+              flushTimeout();
             });
 
             it('hides the tooltip', function () {
-              expect(getTooltipVisibility()).toBe(false);
+              expect(getTooltipVisibility('tooltip1')).toBe(false);
             });
           });
         });
@@ -209,11 +237,26 @@ define([
     }
 
     /**
-     * Checks if the overlay is currently visible
+     * Generates HTML for a trigger element with a given ID that is also used as the content
      *
+     * @param  {String} id
+     * @return {String}
+     */
+    function generateTriggerElementHTML (id) {
+      return '<div uib-tooltip-template="\'' + id + '\'" uib-tooltip-clickable="true" tooltip-append-to-body="true">' +
+        '<script id="' + id + '" type="text/ng-template">' +
+        '<div class="tooltip-clickable-template">' + id + '</div>' +
+        '</script>' +
+        '</div>';
+    }
+
+    /**
+     * Checks if the overlay of the given target element is currently visible
+     *
+     * @param  {jQuery} $triggerElement
      * @return {Boolean}
      */
-    function getOverlayVisibility () {
+    function getOverlayVisibility ($triggerElement) {
       return !!$triggerElement.find('.tooltip-overlay:visible').length;
     }
 
@@ -222,8 +265,8 @@ define([
      *
      * @return {Boolean}
      */
-    function getTooltipVisibility () {
-      return !!$document.find('.tooltip-clickable-template:visible').length;
+    function getTooltipVisibility (content) {
+      return !!$document.find('.tooltip-clickable-template:visible:contains(' + content + ')').length;
     }
 
     /**
