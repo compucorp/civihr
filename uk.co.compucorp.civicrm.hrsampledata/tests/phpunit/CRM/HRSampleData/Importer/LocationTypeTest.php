@@ -14,10 +14,10 @@ class CRM_HRSampleData_CSVProcessor_LocationTypeTest extends CRM_HRSampleData_Ba
 
   public function testProcess() {
     $this->rows[] = [
-      'Correspondence',
-      'Correspondence',
-      'Correspondence',
-      'Postal address',
+      'Work',
+      'Work',
+      'Work',
+      'Work address',
       0,
       0,
       0
@@ -25,7 +25,7 @@ class CRM_HRSampleData_CSVProcessor_LocationTypeTest extends CRM_HRSampleData_Ba
 
     $this->runProcessor('CRM_HRSampleData_Importer_LocationType', $this->rows);
 
-    $locationType = $this->apiGet('LocationType', ['name' => 'Correspondence']);
+    $locationType = $this->apiGet('LocationType', ['name' => 'Work']);
 
     foreach($this->rows[0] as $index => $fieldName) {
       $this->assertEquals($this->rows[1][$index], $locationType[$fieldName]);
