@@ -211,6 +211,20 @@ define([
     }
 
     /**
+     * Returns a filtered list of leave requests with defined absence types.
+     * This is useful to only get leave requests the contact has access to.
+     *
+     * @param {Array} leaveRequests a list of leave requests.
+     * @return {Array} a filtered list of leave requests.
+     * @TODO this check should be performed on the back-end.
+     */
+    function getLeaveRequestsWithDefinedAbsenceTypes (leaveRequests) {
+      return _.filter(leaveRequests, function (leaveRequest) {
+        return !!leaveRequest.type_id;
+      });
+    }
+
+    /**
      * Returns leave requests additional attributes for UI
      *
      * @param  {Object} day
@@ -435,6 +449,7 @@ define([
      * @return {Promise}
      */
     function loadMonthLeaveRequests () {
+      var isRequestFilteredByAbsenceType = absenceTypesToFilterBy.length > 0;
       var params = {
         from_date: { to: vm.month.days[vm.month.days.length - 1].date + ' 23:59:59' },
         to_date: { from: vm.month.days[0].date + ' 00:00:00' },
@@ -442,7 +457,7 @@ define([
         contact_id: { 'IN': vm.contacts.map(function (contact) {
           return contact.id;
         })},
-        type_id: { 'IN': absenceTypesToFilterBy.length
+        type_id: { 'IN': isRequestFilteredByAbsenceType
           ? absenceTypesToFilterBy
           : _.pluck(vm.supportData.absenceTypes, 'id') }
       };
@@ -450,6 +465,11 @@ define([
       return LeaveRequest.all(params, null, null, null, false)
         .then(function (leaveRequestsData) {
           leaveRequests = {};
+
+          if (isRequestFilteredByAbsenceType) {
+            leaveRequestsData.list = getLeaveRequestsWithDefinedAbsenceTypes(
+              leaveRequestsData.list);
+          }
 
           return indexLeaveRequests(leaveRequestsData.list);
         });
