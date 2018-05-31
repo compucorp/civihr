@@ -3,10 +3,14 @@
 trait CRM_HRCore_Upgrader_Steps_1017 {
 
   /**
-   * Handles migration of location types
+   * Handles default location type settings and migrating existing data
    */
   public function upgrade_1017() {
     $this->up1017_migrateLocationTypes();
+    $this->up1017_setDefaultLocationType('Work');
+    $this->up1017_reserveLocationTypes(['Work', 'Personal']);
+    $this->up1017_disableLocationType('Billing');
+    $this->up1017_deleteLocationTypes(['Home', 'Correspondence']);
 
     return TRUE;
   }
@@ -42,6 +46,62 @@ trait CRM_HRCore_Upgrader_Steps_1017 {
           $oldLocationId,
           $newLocationId
         );
+      }
+    }
+  }
+
+  /**
+   * Sets the default location type
+   *
+   * @param string $locationType
+   */
+  private function up1017_setDefaultLocationType($locationType) {
+    $locationTypeId = $this->up1017_getLocationTypeID($locationType);
+
+    civicrm_api3('LocationType', 'create', [
+      'id' => $locationTypeId,
+      'is_default' => TRUE
+    ]);
+  }
+
+  /**
+   * Sets all given location types as reserved
+   *
+   * @param array $locationTypes
+   */
+  private function up1017_reserveLocationTypes($locationTypes) {
+    foreach ($locationTypes as $locationType) {
+      $locationTypeId = $this->up1017_getLocationTypeID($locationType);
+      civicrm_api3('LocationType', 'create', [
+        'id' => $locationTypeId,
+        'is_reserved' => TRUE
+      ]);
+    }
+  }
+
+  /**
+   * Sets the given location type to be not active
+   *
+   * @param string $locationType
+   */
+  private function up1017_disableLocationType($locationType) {
+    $locationTypeId = $this->up1017_getLocationTypeID($locationType);
+    civicrm_api3('LocationType', 'create', [
+      'id' => $locationTypeId,
+      'is_active' => FALSE
+    ]);
+  }
+
+  /**
+   * Deletes all given location types if they exist
+   *
+   * @param array $locationTypes
+   */
+  private function up1017_deleteLocationTypes($locationTypes) {
+    foreach ($locationTypes as $locationType) {
+      $locationTypeId = $this->up1017_getLocationTypeID($locationType);
+      if ($locationTypeId) {
+        civicrm_api3('LocationType', 'delete', ['id' => $locationTypeId]);
       }
     }
   }
@@ -85,8 +145,7 @@ trait CRM_HRCore_Upgrader_Steps_1017 {
    * @return array
    */
   private function up1017_convertLocationNamesToIds($locationTypeMap) {
-    $locationTypeIds = civicrm_api3('LocationType', 'get')['values'];
-    $locationTypeIds = array_column($locationTypeIds, 'id', 'name');
+    $locationTypeIds = $this->up1017_getLocationTypeIds();
 
     foreach ($locationTypeMap as $oldLocationName => $newLocationName) {
 
@@ -100,6 +159,35 @@ trait CRM_HRCore_Upgrader_Steps_1017 {
     }
 
     return $locationTypeMap;
+  }
+
+  /**
+   * Looks up the location type ID for a given location type name
+   *
+   * @param $locationTypeName
+   *
+   * @return int
+   */
+  private function up1017_getLocationTypeID($locationTypeName) {
+    $locationIds = $this->up1017_getLocationTypeIds();
+
+    return (int) CRM_Utils_Array::value($locationTypeName, $locationIds);
+  }
+
+  /**
+   * Gets a list of location type names mapped to their database ID
+   *
+   * @return array
+   */
+  private function up1017_getLocationTypeIds() {
+    static $locationTypeIds = [];
+
+    if (empty($locationTypeIds)) {
+      $locationTypeIds = civicrm_api3('LocationType', 'get')['values'];
+      $locationTypeIds = array_column($locationTypeIds, 'id', 'name');
+    }
+
+    return $locationTypeIds;
   }
 
 }
