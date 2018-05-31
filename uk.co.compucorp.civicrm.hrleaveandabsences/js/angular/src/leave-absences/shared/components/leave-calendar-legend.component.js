@@ -37,6 +37,7 @@ define([
       { label: 'AT', description: 'Accrued TOIL' }
     ];
 
+    vm.checkIfAbsenceTypeIdIsDefined = checkIfAbsenceTypeIdIsDefined;
     vm.checkIfAbsenceTypeIsSelectedForFiltering = checkIfAbsenceTypeIsSelectedForFiltering;
     vm.getAbsenceTypeStyle = getAbsenceTypeStyle;
     vm.resetFilteringByAbsenceTypes = resetFilteringByAbsenceTypes;
@@ -45,6 +46,17 @@ define([
     (function init () {
       initWatchers();
     }());
+
+    /**
+     * Checks if the given absence type has a defined id or not.
+     * Useful for filtering absence types with defined ids.
+     *
+     * @param {Object} absenceType
+     * @return boolean
+     */
+    function checkIfAbsenceTypeIdIsDefined (absenceType) {
+      return !!absenceType.id;
+    }
 
     /**
      * Checks if absence type is selected for filtering
@@ -80,7 +92,7 @@ define([
       }, function (newValue, oldValue) {
         if (newValue !== oldValue) {
           $rootScope.$emit('LeaveCalendar::updateFiltersByAbsenceType',
-            _.compact(vm.absenceTypesToFilterBy));
+            vm.absenceTypesToFilterBy);
         }
       }, true);
     }

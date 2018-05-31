@@ -52,6 +52,22 @@ define([
       expect(controller.otherBadges.length).toBe(5);
     });
 
+    describe('checkIfAbsenceTypeIdIsDefined()', function () {
+      describe('when the absence type has an id defined', function () {
+        it('returns true', function () {
+          expect(controller.checkIfAbsenceTypeIdIsDefined({ id: _.uniqueId() }))
+            .toBe(true);
+        });
+      });
+
+      describe('when the absence type has an empty id', function () {
+        it('returns false', function () {
+          expect(controller.checkIfAbsenceTypeIdIsDefined({ id: '' }))
+            .toBe(false);
+        });
+      });
+    });
+
     describe('getAbsenceTypeStyle()', function () {
       var style, absenceType;
 
@@ -132,19 +148,6 @@ define([
               expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('2')).toEqual(true);
               expect(controller.checkIfAbsenceTypeIsSelectedForFiltering('3')).toEqual(true);
             });
-          });
-        });
-
-        describe('when an absence type with an empty id is selected', function () {
-          beforeEach(function () {
-            controller.resetFilteringByAbsenceTypes();
-            controller.toggleFilteringByAbsenceType('');
-            $rootScope.$digest();
-          });
-
-          it('emits an empty array', function () {
-            expect($rootScope.$emit).toHaveBeenCalledWith(
-              'LeaveCalendar::updateFiltersByAbsenceType', []);
           });
         });
       });
