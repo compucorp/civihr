@@ -238,19 +238,16 @@ define([
 
     describe('openLeavePopup()', function () {
       var event;
-      var leaveRequest = { key: 'value' };
-      var leaveType = 'some_leave_type';
-      var selectedContactId = '101';
-      var isSelfRecord = true;
+      var leaveRequest = { id: _.uniqueId() };
 
       beforeEach(function () {
         event = jasmine.createSpyObj('event', ['stopPropagation']);
-        spyOn(LeavePopup, 'openModal');
-        controller.openLeavePopup(event, leaveRequest, leaveType, selectedContactId, isSelfRecord);
+        spyOn(LeavePopup, 'openModalByID');
+        controller.openLeavePopup(event, leaveRequest);
       });
 
       it('opens the leave request popup', function () {
-        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+        expect(LeavePopup.openModalByID).toHaveBeenCalledWith(leaveRequest.id);
       });
     });
 
