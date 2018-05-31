@@ -134,6 +134,19 @@ define([
             });
           });
         });
+
+        describe('when an absence type with an empty id is selected', function () {
+          beforeEach(function () {
+            controller.resetFilteringByAbsenceTypes();
+            controller.toggleFilteringByAbsenceType('');
+            $rootScope.$digest();
+          });
+
+          it('emits an empty array', function () {
+            expect($rootScope.$emit).toHaveBeenCalledWith(
+              'LeaveCalendar::updateFiltersByAbsenceType', []);
+          });
+        });
       });
     });
 

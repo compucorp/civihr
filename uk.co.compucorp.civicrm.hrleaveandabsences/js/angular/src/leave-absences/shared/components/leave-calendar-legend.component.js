@@ -80,7 +80,7 @@ define([
       }, function (newValue, oldValue) {
         if (newValue !== oldValue) {
           $rootScope.$emit('LeaveCalendar::updateFiltersByAbsenceType',
-            vm.absenceTypesToFilterBy);
+            _.compact(vm.absenceTypesToFilterBy));
         }
       }, true);
     }
