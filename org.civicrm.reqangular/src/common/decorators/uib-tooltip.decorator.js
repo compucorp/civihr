@@ -16,7 +16,7 @@ define([
       var tooltip = $delegate.apply(this, arguments);
       var compilator = tooltip.compile;
       var isTouchDevice = 'ontouchstart' in $document[0].documentElement;
-      var clickType = isTouchDevice ? 'touchend' : 'click';
+      var clickType = isTouchDevice ? 'touchend touchcancel' : 'click';
 
       tooltip.compile = function (tElement, tAttr) {
         return function link (scope, $element, attributes, tooltipCtrl) {
@@ -61,11 +61,11 @@ define([
            */
           function setEventHandlersToTriggerElements () {
             if (isTouchDevice) {
-              $overlay.on('touchend', function () {
+              $overlay.on('touchend touchcancel', function () {
                 toggleTooltip('source', true, 50);
                 !scope.open && setEventHandlersToTooltip();
               });
-              $document.find('body').on('touchend', function (event) {
+              $document.find('body').on('touchend touchcancel', function (event) {
                 if (event.target === $overlay[0]) {
                   return;
                 }
