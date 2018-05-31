@@ -18,7 +18,8 @@
               !legend.checkIfAbsenceTypeIsSelectedForFiltering(absenceType.id),
             'chr_leave-calendar__legend__type-badge-selected':
               legend.checkIfAbsenceTypeIsSelectedForFiltering(absenceType.id) && legend.absenceTypesToFilterBy.length}"
-          class="chr_leave-calendar__legend__type-badge pointer"
+          class="chr_leave-calendar__legend__type-badge pointer
+            chr_leave-calendar__legend__type-badge-clickable"
           ng-style="legend.getAbsenceTypeStyle(absenceType)">
           {{absenceType.title}}
         </div>

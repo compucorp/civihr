@@ -202,7 +202,8 @@ $chr-leave-calendar-legend-badge-square-hours-font-size:   6px;
     background-color: $chr-leave-calendar-item-public-holiday-background-color;
   }
 
-  &.chr_leave-calendar__legend__type-badge-selected {
+  &.chr_leave-calendar__legend__type-badge-selected,
+  &.chr_leave-calendar__legend__type-badge-clickable:hover {
     border: solid 1px $crm-white;
     border-radius: #{$chr-leave-calendar-legend-badge-border-radius + 2px};
     box-shadow: 0 0 1px 0 $chr-leave-calendar-item-weekend-background-color;
