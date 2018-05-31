@@ -13,10 +13,15 @@ class CRM_HRSampleData_CSVProcessor_LocationTypeTest extends CRM_HRSampleData_Ba
   }
 
   public function testProcess() {
+    $existing = civicrm_api3('LocationType', 'get', ['name' => 'Work']);
+    if (isset($existing['id'])) {
+      civicrm_api3('LocationType', 'delete', ['id' => $existing['id']]);
+    }
+
     $this->rows[] = [
       'Work',
       'Work',
-      'Work',
+      'WORK',
       'Work address',
       0,
       0,
