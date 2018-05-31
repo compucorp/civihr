@@ -30,11 +30,14 @@ define([
       expect($log.debug).toHaveBeenCalled();
     });
 
-    it('sets the filter with manager id and status id', function () {
-      expect(controller.filters).toEqual({
-        managed_by: window.Drupal.settings.currentCiviCRMUserId,
-        status_id: '3'
-      });
+    it('sets the filter with manager id and status id for leave request', function () {
+      expect(controller.filters).toEqual([{
+        apiName: 'LeaveRequest',
+        params: {
+          managed_by: window.Drupal.settings.currentCiviCRMUserId,
+          status_id: '3'
+        }
+      }]);
     });
 
     function compileComponent () {
