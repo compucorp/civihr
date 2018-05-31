@@ -5,4 +5,8 @@ module.exports = class Modal extends Page {
     super(...arguments);
     this.modalRoot = '.modal';
   }
+
+  async waitForReady () {
+    await this.puppet.waitFor('.modal-body', { visible: true });
+  }
 };
