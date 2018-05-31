@@ -160,7 +160,7 @@ define([
               $overlay2 = $triggerElement2.find('.tooltip-overlay');
 
               $overlay2.trigger('touchend');
-              flushTimeout();
+              flushTimeout(2);
             });
 
             it('opens the target tooltip and closes other tooltips', function () {
@@ -173,7 +173,7 @@ define([
             beforeEach(function () {
               $triggerElement.trigger('touchend');
               $rootScope.$digest();
-              flushTimeout();
+              flushTimeout(2);
             });
 
             it('hides the tooltip', function () {
@@ -189,7 +189,7 @@ define([
             beforeEach(function () {
               $tooltipElement.trigger('touchend');
               $rootScope.$digest();
-              flushTimeout();
+              flushTimeout(2);
             });
 
             it('hides the tooltip', function () {
@@ -205,7 +205,7 @@ define([
             beforeEach(function () {
               $document.find('body').trigger('touchend');
               $rootScope.$digest();
-              flushTimeout();
+              flushTimeout(2);
             });
 
             it('hides the tooltip', function () {

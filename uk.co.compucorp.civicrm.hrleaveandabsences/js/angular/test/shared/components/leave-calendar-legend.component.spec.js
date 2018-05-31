@@ -26,8 +26,8 @@ define([
       expect($log.debug).toHaveBeenCalled();
     });
 
-    it('is collapsed', function () {
-      expect(controller.legendCollapsed).toBe(true);
+    it('is expanded', function () {
+      expect(controller.legendCollapsed).toBe(false);
     });
 
     it('has a list of "non working" day types badges', function () {

@@ -120,8 +120,8 @@ define([
      * @param {Object} leaveRequestAttributes
      */
     function resolveLeaveRequestDates (leaveRequest, leaveRequestAttributes) {
-      leaveRequestAttributes.from_date = new Date(leaveRequest.from_date);
-      leaveRequestAttributes.to_date = new Date(leaveRequest.to_date);
+      leaveRequestAttributes.from_date = moment(leaveRequest.from_date).toDate();
+      leaveRequestAttributes.to_date = moment(leaveRequest.to_date).toDate();
     }
 
     /**
