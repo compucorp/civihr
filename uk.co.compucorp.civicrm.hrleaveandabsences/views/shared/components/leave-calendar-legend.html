@@ -11,7 +11,7 @@
     <div class="panel-body chr_leave-calendar__legend" ng-show="!legend.legendCollapsed">
       <div class="chr_leave-calendar__legend__header">Types</div>
       <div class="clearfix">
-        <div ng-repeat="absenceType in legend.absenceTypes"
+        <div ng-repeat="absenceType in legend.absenceTypes | filter:legend.checkIfAbsenceTypeIdIsDefined"
           ng-click="legend.toggleFilteringByAbsenceType(absenceType.id)"
           ng-class="{
             'chr_leave-calendar__legend__type-badge-not-selected':
@@ -28,7 +28,7 @@
           ng-if="legend.absenceTypesToFilterBy.length"
           ng-click="legend.resetFilteringByAbsenceTypes()">
           <big><i class="fa fa-times"></i></big>
-          Reset filters
+          Display All
         </div>
       </div>
       <div class="clearfix">
@@ -36,6 +36,10 @@
           class="chr_leave-calendar__legend__type-badge
             chr_leave-calendar__legend__type-badge-{{nonWorkingDayType.cssClassSuffix}}">
           {{nonWorkingDayType.label}}
+        </div>
+        <div class="chr_leave-calendar__legend__type-badge
+          chr_leave-calendar__legend__type-badge-generic-leave">
+          Leave
         </div>
       </div>
       <div class="chr_leave-calendar__legend__header">Other</div>

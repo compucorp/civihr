@@ -1,5 +1,6 @@
 $chr-leave-calendar-cell-height:                           35px;
 $chr-leave-calendar-cell-font-size:                        10px;
+$chr-leave-calendar-item-generic-leave-background-color:   #4d4d68;
 $chr-leave-calendar-item-weekend-background-color:         #c7cbd0;
 $chr-leave-calendar-item-non-working-day-background-color: #41afcb;
 $chr-leave-calendar-item-public-holiday-background-color:  #8ec68a;
@@ -200,6 +201,10 @@ $chr-leave-calendar-legend-badge-square-hours-font-size:   6px;
 
   &.chr_leave-calendar__legend__type-badge-public-holiday {
     background-color: $chr-leave-calendar-item-public-holiday-background-color;
+  }
+
+  &.chr_leave-calendar__legend__type-badge-generic-leave {
+    background-color: $chr-leave-calendar-item-generic-leave-background-color;
   }
 
   &.chr_leave-calendar__legend__type-badge-selected,

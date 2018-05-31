@@ -91,19 +91,22 @@ define([
        * @return {Object}
        */
       function prepareContactFilters () {
-        return {
+        var filters = {
           department: _.get(vm, 'filters.userSettings.department.value', null),
           level_type: _.get(vm, 'filters.userSettings.level_type.value', null),
           location: _.get(vm, 'filters.userSettings.location.value', null),
-          region: _.get(vm, 'filters.userSettings.region.value', null),
-          id: {
-            'IN': vm.filters.userSettings.contact
-              ? [vm.filters.userSettings.contact.id]
-              : vm.lookupContacts.map(function (contact) {
-                return contact.id;
-              })
-          }
+          region: _.get(vm, 'filters.userSettings.region.value', null)
         };
+        var hasContactFilter = !!vm.filters.userSettings.contact;
+        var hasLookUpContactsFilter = _.isArray(vm.lookupContacts) && vm.lookupContacts.length;
+
+        if (hasContactFilter) {
+          filters.id = { 'IN': [vm.filters.userSettings.contact.id] };
+        } else if (hasLookUpContactsFilter) {
+          filters.id = { 'IN': _.pluck(vm.lookupContacts, 'id') };
+        }
+
+        return filters;
       }
 
       return {

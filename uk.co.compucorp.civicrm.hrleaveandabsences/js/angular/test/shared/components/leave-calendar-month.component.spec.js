@@ -266,6 +266,42 @@
                 type_id: { 'IN': filterValue }
               }), null, null, null, false);
             });
+
+            describe('displaying only public leave requests', function () {
+              var privateLeaveRequests;
+              var contactId = _.uniqueId();
+
+              beforeEach(function () {
+                var leaveRequests = _.cloneDeep(LeaveRequestData.all().values);
+
+                leaveRequests.slice(0, 3).forEach(function (leaveRequest) {
+                  leaveRequest.contact_id = contactId;
+                  leaveRequest.type_id = '';
+
+                  return leaveRequest;
+                });
+
+                LeaveRequest.all.and.returnValue($q.resolve({
+                  count: leaveRequests.length,
+                  list: leaveRequests
+                }));
+
+                $rootScope.$emit('LeaveCalendar::updateFiltersByAbsenceType', filterValue);
+                $rootScope.$digest();
+
+                // Gets private requests assigned to the contact and stored in
+                // the calendar month controller:
+                privateLeaveRequests = _.chain(controller.month.days).pluck('contactsData')
+                  .pluck(contactId).pluck('leaveRequests').flatten()
+                  .filter(function (leaveRequest) {
+                    return leaveRequest.type_id === '';
+                  }).value();
+              });
+
+              it('is does not store information about private requests', function () {
+                expect(privateLeaveRequests.length).toBe(0);
+              });
+            });
           });
         });
       });
@@ -954,12 +990,20 @@
        * @param {Boolean} sendSignal - if to send a month signal or not
        */
       function compileComponent (sendSignal) {
+        var absenceTypes = _.clone(AbsenceTypeData.all().values);
+
+        // append generic absence type:
+        absenceTypes.push({
+          id: '',
+          label: 'Leave'
+        });
+
         controller = $componentController('leaveCalendarMonth', null, {
           contacts: _.clone(ContactData.all.values),
           month: february,
           period: period2016,
           supportData: {
-            absenceTypes: AbsenceTypeData.all().values,
+            absenceTypes: absenceTypes,
             dayTypes: OptionGroupData.getCollection('hrleaveandabsences_leave_request_day_type'),
             leaveRequestStatuses: OptionGroupData.getCollection('hrleaveandabsences_leave_request_status'),
             publicHolidays: publicHolidays

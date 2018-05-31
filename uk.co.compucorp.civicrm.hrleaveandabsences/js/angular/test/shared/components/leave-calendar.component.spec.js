@@ -154,6 +154,16 @@
           it('stores toil amounts', function () {
             expect(controller.supportData.toilAmounts).toBeDefined();
           });
+
+          it('appends a generic absence type that can be used for private leave requests', function () {
+            expect(controller.supportData.absenceTypes).toContain({
+              id: '',
+              title: 'Leave',
+              color: '#4D4D68',
+              calculation_unit: _.chain(controller.supportData.calculationUnits)
+                .find({ name: 'days' }).get('value').value()
+            });
+          });
         });
 
         describe('taking leave filter', function () {

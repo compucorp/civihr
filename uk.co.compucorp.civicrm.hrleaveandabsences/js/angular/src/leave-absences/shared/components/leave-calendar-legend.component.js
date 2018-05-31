@@ -37,6 +37,7 @@ define([
       { label: 'AT', description: 'Accrued TOIL' }
     ];
 
+    vm.checkIfAbsenceTypeIdIsDefined = checkIfAbsenceTypeIdIsDefined;
     vm.checkIfAbsenceTypeIsSelectedForFiltering = checkIfAbsenceTypeIsSelectedForFiltering;
     vm.getAbsenceTypeStyle = getAbsenceTypeStyle;
     vm.resetFilteringByAbsenceTypes = resetFilteringByAbsenceTypes;
@@ -45,6 +46,16 @@ define([
     (function init () {
       initWatchers();
     }());
+
+    /**
+     * Checks if the given absence type has a defined id or not.
+     *
+     * @param  {Object} absenceType
+     * @return {Boolean}
+     */
+    function checkIfAbsenceTypeIdIsDefined (absenceType) {
+      return !!absenceType.id;
+    }
 
     /**
      * Checks if absence type is selected for filtering

@@ -37,12 +37,9 @@ define([
      *
      * @param {Object} event
      * @param {Object} leaveRequest
-     * @param {String} leaveType
-     * @param {String} selectedContactId
-     * @param {Boolean} isSelfRecord
      */
-    function openLeavePopup (event, leaveRequest, leaveType, selectedContactId, isSelfRecord) {
-      LeavePopup.openModal(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+    function openLeavePopup (event, leaveRequest) {
+      LeavePopup.openModalByID(leaveRequest.id);
     }
 
     /**
@@ -95,8 +92,10 @@ define([
      * @param {Object} leaveRequestAttributes
      */
     function resolveLeaveRequestAbsenceTypeTitle (leaveRequest, leaveRequestAttributes) {
+      var absenceType = _.find(vm.supportData.absenceTypes, { id: leaveRequest.type_id });
+
       vm.contactData.leaveRequestsAttributes[leaveRequest.id].absenceTypeTitle =
-        _.find(vm.supportData.absenceTypes, { id: leaveRequest.type_id }).title;
+        absenceType.title;
     }
 
     /**

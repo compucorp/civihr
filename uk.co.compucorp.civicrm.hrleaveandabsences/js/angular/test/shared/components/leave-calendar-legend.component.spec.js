@@ -52,6 +52,22 @@ define([
       expect(controller.otherBadges.length).toBe(5);
     });
 
+    describe('checkIfAbsenceTypeIdIsDefined()', function () {
+      describe('when the absence type has an id defined', function () {
+        it('returns true', function () {
+          expect(controller.checkIfAbsenceTypeIdIsDefined({ id: _.uniqueId() }))
+            .toBe(true);
+        });
+      });
+
+      describe('when the absence type has an empty id', function () {
+        it('returns false', function () {
+          expect(controller.checkIfAbsenceTypeIdIsDefined({ id: '' }))
+            .toBe(false);
+        });
+      });
+    });
+
     describe('getAbsenceTypeStyle()', function () {
       var style, absenceType;
 

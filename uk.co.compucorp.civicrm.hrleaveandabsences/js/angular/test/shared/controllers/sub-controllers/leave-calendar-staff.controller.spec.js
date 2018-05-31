@@ -77,28 +77,27 @@
           $rootScope.$digest();
         });
 
-        it('loads all the look up contacts', function () {
-          expect(leaveCalendar.loadAllLookUpContacts).toHaveBeenCalled();
-        });
-
-        it('loads the contact ids to reduce to', function () {
-          expect(leaveCalendar.loadContactIdsToReduceTo).toHaveBeenCalled();
-        });
-
         it('loads the filtered contacts', function () {
           expect(leaveCalendar.loadFilteredContacts).toHaveBeenCalled();
         });
 
-        it('stores the looked up contacts', function () {
-          expect(vm.lookupContacts).toEqual(lookedUpContacts);
-        });
-
-        it('stores the contact ids to reduce to by contract plus the logged in contact id', function () {
-          expect(vm.contactIdsToReduceTo).toEqual(expectedContactIdsToReduceTo);
-        });
-
         it('returns the filtered contacts', function () {
           expect(result).toEqual(filteredContacts);
+        });
+
+        describe('when the component should only display a single contact', function () {
+          beforeEach(function () {
+            vm.displaySingleContact = true;
+            vm.contactId = _.uniqueId();
+            vm.lookupContacts = [];
+
+            controller.loadContacts();
+          });
+
+          it('only loads the information for the given contact', function () {
+            expect(vm.lookupContacts).toEqual([{ id: vm.contactId }]);
+            expect(leaveCalendar.loadFilteredContacts).toHaveBeenCalled();
+          });
         });
       });
 
