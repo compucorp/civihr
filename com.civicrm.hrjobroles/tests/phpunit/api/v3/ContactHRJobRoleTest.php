@@ -39,7 +39,7 @@ class api_v3_ContactHRJobRoleTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
       'funder' => 'asddsa',
       'job_contract_id' => $contract['id'],
       'department' => $departments['IT'],
-      'location' => $locations['Personal'],
+      'location' => $locations['Home'],
       'level_type' => $levelTypes['Senior Manager']
     ]);
 
