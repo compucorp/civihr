@@ -23,7 +23,7 @@ define([
     var vm = this;
 
     vm.absenceTypesToFilterBy = [];
-    vm.legendCollapsed = true;
+    vm.legendCollapsed = false;
     vm.nonWorkingDayTypes = [
       { label: 'Weekend', cssClassSuffix: 'weekend' },
       { label: 'Public Holiday', cssClassSuffix: 'public-holiday' },
