@@ -1,7 +1,11 @@
-const tab = require('./tab');
+const Tab = require('./tab');
 
-module.exports = tab.extend({
-  tabTitle: 'Documents',
+module.exports = class DocumentsTab extends Tab {
+  constructor () {
+    super(...arguments);
+    this.tabTitle = 'Documents';
+  }
+
   /**
    * Overrides the original tab's `waitForReady` method
    * There is no single selector that can be used as `readySelector` (which
@@ -13,4 +17,4 @@ module.exports = tab.extend({
     await this.puppet.waitFor('form[name="formDocuments"]', { visible: true });
     await this.puppet.waitFor('.ct-spinner-cover', { hidden: true });
   }
-});
+};

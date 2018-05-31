@@ -1,8 +1,11 @@
-const tab = require('./tab');
+const Tab = require('./tab');
 
-module.exports = tab.extend({
-  readySelector: '.chr_manage_leave_requests__panel_body',
-  tabUiSref: 'requests',
+module.exports = class LeaveRequestsTab extends Tab {
+  constructor () {
+    super(...arguments);
+    this.readySelector = '.chr_manage_leave_requests__panel_body';
+    this.tabUiSref = 'requests';
+  }
 
   /**
    * Shows filters
@@ -11,4 +14,4 @@ module.exports = tab.extend({
     await this.puppet.click('.chr_manage_leave_requests__filter');
     await this.puppet.waitFor('.chr_manage_leave_requests__sub-header', { visible: true });
   }
-});
+};

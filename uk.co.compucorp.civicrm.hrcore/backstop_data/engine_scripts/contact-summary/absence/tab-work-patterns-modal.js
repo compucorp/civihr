@@ -1,10 +1,11 @@
 'use strict';
 
-const pageObj = require('../../../page-objects/tabs/absence');
+const Page = require('../../../page-objects/tabs/absence');
 
 module.exports = async engine => {
-  const page = await pageObj.init(engine);
-  const tab = await page.openSubTab('work-patterns');
+  const page = new Page(engine);
+  await page.init();
 
+  const tab = await page.openSubTab('work-patterns');
   await tab.showModal();
 };

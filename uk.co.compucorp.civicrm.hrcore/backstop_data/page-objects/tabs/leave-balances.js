@@ -1,7 +1,10 @@
-const tab = require('./tab');
+const Tab = require('./tab');
 
-module.exports = tab.extend({
-  readySelector: '.chr_leave-balance-tab__body .table-responsive',
-  tabTitle: 'Leave Balance',
-  tabUiSref: 'leave-balances'
-});
+module.exports = class LeaveBalancesTab extends Tab {
+  constructor () {
+    super(...arguments);
+    this.readySelector = '.chr_leave-balance-tab__body .table-responsive';
+    this.tabTitle = 'Leave Balance';
+    this.tabUiSref = 'leave-balances';
+  }
+};

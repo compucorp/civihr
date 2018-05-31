@@ -1,7 +1,9 @@
-const tab = require('../tab');
-const sspMyLeaveCalendar = require('../../ssp-leave-absences-my-leave-calendar');
+const SSPMyLeaveCalendar = require('../../ssp-leave-absences-my-leave-calendar');
 
-module.exports = sspMyLeaveCalendar.extend(tab).extend({
-  readySelector: '.chr_leave-calendar__month-body',
-  tabTitle: 'Calendar'
-});
+module.exports = class AbsenceCalendarTab extends SSPMyLeaveCalendar {
+  constructor () {
+    super(...arguments);
+    this.readySelector = '.chr_leave-calendar__month-body';
+    this.tabTitle = 'Calendar';
+  }
+};

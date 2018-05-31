@@ -1,6 +1,6 @@
-const modal = require('./page');
+const Page = require('./page');
 
-module.exports = modal.extend({
+module.exports = class SSPReports extends Page {
   /**
    * The Iframe embedding the SSP reports in the CiviCRM admin adapts its height
    * dynamically whenever the viewport resizes. This can lead to false positives
@@ -22,4 +22,4 @@ module.exports = modal.extend({
       document.getElementsByTagName('head')[0].appendChild(tempStyle);
     });
   }
-});
+};

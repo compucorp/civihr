@@ -1,15 +1,15 @@
 /* global Event */
 
-const page = require('./page');
+const Page = require('./page');
 
-module.exports = page.extend({
+module.exports = class SSPLeaveAbsencesManagerLeaveRequests extends Page {
   /**
    * Wait for the page to be ready as it waits for the actions of the first
    * row of leave requests to be visible
    */
   async waitForReady () {
     await this.puppet.waitFor('tbody tr:nth-child(1) a', { visible: true });
-  },
+  }
 
   /**
    * Change the filter by Assignee
@@ -24,7 +24,7 @@ module.exports = page.extend({
       (filters.indexOf(type) + 1) +
       ')');
     await this.puppet.waitFor('tbody tr:nth-child(1) a', { visible: true });
-  },
+  }
 
   /**
    * Opens the dropdown for manager actions like edit/respond, cancel.
@@ -33,7 +33,7 @@ module.exports = page.extend({
    */
   async openActionsForRow (row) {
     await this.puppet.click('.chr_manage_leave_requests__panel_body tr:nth-child(' + (row || 1) + ') .dropdown-toggle');
-  },
+  }
 
   /**
    * Expands filters on screen
@@ -44,7 +44,7 @@ module.exports = page.extend({
     await this.puppet.waitFor('.chr_manage_leave_requests__sub-header div:nth-child(1)', { visible: true });
 
     return this;
-  },
+  }
 
   /**
    * Opens leave type filter
@@ -59,7 +59,7 @@ module.exports = page.extend({
       element.dispatchEvent(new Event('change'));
     }, leaveType);
     await this.puppet.waitFor('tbody tr:nth-child(1) a', { visible: true });
-  },
+  }
 
   /**
    * User clicks on the edit/respond action
@@ -70,7 +70,7 @@ module.exports = page.extend({
     await this.puppet.click('body > ul.dropdown-menu:nth-of-type(' + (row || 1) + ') li:first-child a');
     await this.puppet.waitFor('leave-request-popup-details-tab', { visible: true });
     await this.puppet.waitFor('leave-request-popup-details-tab .spinner', { hidden: true });
-  },
+  }
 
   /**
    * Apply leave on behalf of staff
@@ -83,4 +83,4 @@ module.exports = page.extend({
 
     await this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form');
   }
-});
+};

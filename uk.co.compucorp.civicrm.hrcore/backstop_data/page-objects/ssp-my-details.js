@@ -1,6 +1,6 @@
-const modal = require('./page');
+const Page = require('./page');
 
-module.exports = modal.extend({
+module.exports = class SSPMyDetails extends Page {
   /**
    * Opens Edit My Details Popup
    *
@@ -9,4 +9,4 @@ module.exports = modal.extend({
     await this.puppet.click('[href="/my_details/nojs/view"]');
     await this.puppet.waitFor('.modal-civihr-custom__section', { visible: true });
   }
-});
+};

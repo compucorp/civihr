@@ -1,6 +1,6 @@
-const modal = require('./modal');
+const Modal = require('./modal');
 
-module.exports = modal.extend({
+module.exports = class SSPLeaveRequestModal extends Modal {
   /**
    * Selects tabs like comments or attachments
    *
@@ -9,4 +9,4 @@ module.exports = modal.extend({
   async selectTab (tabName) {
     await this.puppet.click('div.chr_leave-request-modal__tab li[heading=\'' + tabName + '\'] a');
   }
-});
+};

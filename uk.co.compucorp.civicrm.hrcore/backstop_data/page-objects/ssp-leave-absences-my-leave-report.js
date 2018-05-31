@@ -1,9 +1,9 @@
 /* globals Event */
 
 const _ = require('lodash');
-const page = require('./page');
+const Page = require('./page');
 
-module.exports = page.extend({
+module.exports = class SSPLeaveAbsencesMyLeaveReport extends Page {
   /**
    * Selects the days mode for the opened leave request
    *
@@ -13,7 +13,7 @@ module.exports = page.extend({
     const optionIndex = ['multiple', 'single'].indexOf(mode) + 1;
 
     await this.puppet.click('[ng-model="detailsTab.uiOptions.multipleDays"]:nth-child(' + optionIndex + ')');
-  },
+  }
 
   /**
    * User clicks on the edit/respond action
@@ -27,7 +27,7 @@ module.exports = page.extend({
     await this.puppet.waitFor('leave-request-popup-details-tab .spinner', { hidden: true });
 
     return this.waitForModal('ssp-leave-request', '.chr_leave-request-modal__form');
-  },
+  }
 
   /**
    * Expands deduction field to show selectors
@@ -39,7 +39,7 @@ module.exports = page.extend({
 
     await this.puppet.waitFor(fieldSelector);
     await this.puppet.click(fieldSelector);
-  },
+  }
 
   /**
    * Opens the Leave Request Modal for a new request of the given type
@@ -51,7 +51,7 @@ module.exports = page.extend({
     await this.puppet.click(`.leave-request-record-actions__new-${requestType}`);
 
     await this.puppet.waitFor('.chr_leave-request-modal__tab .form-group', { visible: true });
-  },
+  }
 
   /**
    * Opens the dropdown for staff actions like edit/respond, cancel.
@@ -61,7 +61,7 @@ module.exports = page.extend({
   async openActionsForRow (row) {
     await this.puppet.waitFor('tr:nth-child(1)  div[uib-dropdown] a:nth-child(1)');
     await this.puppet.click('div:nth-child(2) > div > table > tbody > tr:nth-child(' + (row || 1) + ')  div[uib-dropdown] a:nth-child(1)');
-  },
+  }
 
   /**
    * Opens the given section of my report pageName
@@ -77,7 +77,7 @@ module.exports = page.extend({
         return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
       });
     });
-  },
+  }
 
   /**
    * Selects the request Absence Type by the given label
@@ -93,7 +93,7 @@ module.exports = page.extend({
       }); // Select the needed option
       absenceTypeSelect.dispatchEvent(new Event('change')); // Trigger onChange event
     }, absenceTypeLabel);
-  },
+  }
 
   /**
    * Selects a date in the datepicker
@@ -109,7 +109,7 @@ module.exports = page.extend({
     await this.puppet.waitFor(daySelector);
     await this.puppet.click(daySelector);
     await this.puppet.waitFor('[ng-switch="detailsTab.uiOptions.times.' + type + '.amountExpanded"]', { visible: true });
-  },
+  }
 
   /**
    * Wait for the page to be ready
@@ -117,7 +117,7 @@ module.exports = page.extend({
   async waitForReady () {
     await this.puppet.waitFor('.spinner', { visible: false });
     await this.puppet.waitFor('td[ng-click="report.toggleSection(\'pending\')"]', { visible: true });
-  },
+  }
 
   /**
    * Waits for the request balance to be calculated
@@ -125,4 +125,4 @@ module.exports = page.extend({
   async waitUntilRequestBalanceIsCalculated () {
     await this.puppet.waitFor('[ng-show="detailsTab.uiOptions.showBalance"]', { visible: true });
   }
-});
+};

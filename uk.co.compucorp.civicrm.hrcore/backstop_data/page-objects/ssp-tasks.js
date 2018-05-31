@@ -1,6 +1,6 @@
-const modal = require('./page');
+const Page = require('./page');
 
-module.exports = modal.extend({
+module.exports = class SSPTasks extends Page {
   /**
    * Opens Completed tasks modal
    */
@@ -8,7 +8,7 @@ module.exports = modal.extend({
     await this.puppet.click('.pane-views-tasks-block a.show-complete-tasks');
     await this.puppet.waitFor('.loading-spinner', { hidden: true });
     await this.puppet.waitFor('.view-Tasks', { visible: true });
-  },
+  }
 
   /**
    * Opens Create New Task modal
@@ -16,7 +16,7 @@ module.exports = modal.extend({
   async openCreateNewTaskModal () {
     await this.puppet.click('.create-new-task');
     await this.puppet.waitFor('#civihr-employee-portal-civi-tasks-form', { visible: true });
-  },
+  }
 
   /**
    * The page always gives false positives for some reason in Chrome, so we need
@@ -25,4 +25,4 @@ module.exports = modal.extend({
   async waitForReady () {
     await this.puppet.waitFor(4000);
   }
-});
+};

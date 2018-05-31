@@ -1,9 +1,10 @@
 'use strict';
 
-const pageObj = require('../../page-objects/onboarding-wizard');
+const Page = require('../../page-objects/onboarding-wizard');
 
 module.exports = async engine => {
-  const page = await pageObj.init(engine);
+  const page = new Page(engine);
 
+  await page.init();
   await page.reachAddressPage();
 };

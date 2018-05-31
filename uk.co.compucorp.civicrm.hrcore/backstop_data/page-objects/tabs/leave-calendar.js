@@ -1,7 +1,10 @@
-const tab = require('./tab');
+const Tab = require('./tab');
 
-module.exports = tab.extend({
-  readySelector: 'leave-calendar-day',
-  tabTitle: 'Leave Calendar',
-  tabUiSref: 'calendar'
-});
+module.exports = class LeaveCalendarTab extends Tab {
+  constructor () {
+    super(...arguments);
+    this.readySelector = 'leave-calendar-day';
+    this.tabTitle = 'Leave Calendar';
+    this.tabUiSref = 'calendar';
+  }
+};

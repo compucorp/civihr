@@ -1,8 +1,11 @@
-const tab = require('./tab');
+const Tab = require('./tab');
 
-module.exports = tab.extend({
-  readySelector: '.job-role__tabs',
-  tabTitle: 'Job Roles',
+module.exports = class JobRolesTab extends Tab {
+  constructor () {
+    super(...arguments);
+    this.readySelector = '.job-role__tabs';
+    this.tabTitle = 'Job Roles';
+  }
 
   /**
    * Clicks on the delete button
@@ -10,7 +13,7 @@ module.exports = tab.extend({
   async attemptDelete () {
     await this.puppet.click('.job-role [ng-click*="removeRole"]');
     await this.waitForModal();
-  },
+  }
 
   /**
    * Clicks on the edit button of a job role
@@ -18,7 +21,7 @@ module.exports = tab.extend({
   async edit () {
     await this.puppet.click('.tab-pane.active .job-role__actions .btn-link[ng-click$="show()"]');
     await this.puppet.waitFor(100);
-  },
+  }
 
   /**
    * Opens the ui-select with the given name
@@ -30,14 +33,14 @@ module.exports = tab.extend({
 
     await this.puppet.click('[ng-model="' + common + '[\'' + name + '\']"] > a');
     await this.puppet.waitFor(100);
-  },
+  }
 
   /**
    * Show the form for adding a new job role
    */
   async showAddNew () {
     await this.puppet.click('.btn-primary[ng-click*="jobroles.addNewRole()"]');
-  },
+  }
 
   /**
    * Changes active tab
@@ -47,4 +50,4 @@ module.exports = tab.extend({
   async switchToTab (tabName) {
     await this.puppet.click('[heading="' + tabName + '"] > a');
   }
-});
+};

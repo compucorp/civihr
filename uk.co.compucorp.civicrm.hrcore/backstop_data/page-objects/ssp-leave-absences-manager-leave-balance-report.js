@@ -1,6 +1,6 @@
-const page = require('./page');
+const Page = require('./page');
 
-module.exports = page.extend({
+module.exports = class SSPLeaveAbsencesManagerLeaveBalanceReport extends Page {
   /**
    * Wait for the page to be ready
    */
@@ -14,4 +14,4 @@ module.exports = page.extend({
       });
     });
   }
-});
+};

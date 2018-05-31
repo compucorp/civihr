@@ -1,6 +1,6 @@
-const modal = require('./page');
+const Page = require('./page');
 
-module.exports = modal.extend({
+module.exports = class SSPHRResources extends Page {
   /**
    * Opens See Resources section
    */
@@ -8,4 +8,4 @@ module.exports = modal.extend({
     await this.puppet.click('.fieldset-title');
     await this.puppet.waitFor(2000); // wait for animation to complete
   }
-});
+};

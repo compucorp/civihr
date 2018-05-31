@@ -1,15 +1,15 @@
 /* globals jQuery */
 
-const page = require('./page');
+const Page = require('./page');
 
-module.exports = page.extend({
+module.exports = class SSPLeaveAbsencesMyLeaveCalendar extends Page {
   /**
    * Clears the currently selected month from the calendar "Selected Months"
    * field.
    */
   async clearCurrentlySelectedMonth () {
     await this.puppet.click('.chr_leave-calendar__day-selector .close.ui-select-match-close');
-  },
+  }
 
   /**
    * Displays the leave information for a particular month in the leave
@@ -24,7 +24,7 @@ module.exports = page.extend({
       jQuery('.ui-select-choices-row:contains(' + monthName + ')').click();
     }, monthName);
     await this.puppet.waitFor('leave-calendar-month leave-calendar-day', { visible: true });
-  },
+  }
 
   /**
    * Hovers on top of a leave day visible on the calendar until a tooltip
@@ -33,7 +33,7 @@ module.exports = page.extend({
   async showTooltip () {
     await this.puppet.hover('.chr_leave-calendar__item a');
     await this.puppet.waitFor('.tooltip', { visible: true });
-  },
+  }
 
   /**
    * Displays the leave information for a particular year in the leave calendar.
@@ -48,7 +48,7 @@ module.exports = page.extend({
       select.val(yearValue).change();
     }, year);
     await this.puppet.waitFor('leave-calendar-month leave-calendar-day', { visible: true });
-  },
+  }
 
   /**
    * Wait for the page to be ready by looking at
@@ -57,4 +57,4 @@ module.exports = page.extend({
   async waitForReady () {
     await this.puppet.waitFor('leave-calendar-month .chr_leave-calendar__item', { visible: true });
   }
-});
+};

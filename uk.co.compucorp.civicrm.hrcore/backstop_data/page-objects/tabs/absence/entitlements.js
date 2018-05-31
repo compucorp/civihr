@@ -1,7 +1,10 @@
-const tab = require('../tab');
+const Tab = require('../tab');
 
-module.exports = tab.extend({
-  tabTitle: 'Entitlements',
+module.exports = class AbsenceEntitlementsTab extends Tab {
+  constructor () {
+    super(...arguments);
+    this.tabTitle = 'Entitlements';
+  }
 
   /**
    * Overrides the original tab's `waitForReady` method
@@ -17,4 +20,4 @@ module.exports = tab.extend({
     await this.puppet.waitFor('contract-entitlements .spinner', { hidden: true });
     await this.puppet.waitFor('annual-entitlements .spinner', { hidden: true });
   }
-});
+};

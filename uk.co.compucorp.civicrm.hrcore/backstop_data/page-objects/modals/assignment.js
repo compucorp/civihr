@@ -1,22 +1,21 @@
 /* global jQuery */
 
-const modal = require('./modal');
+const Modal = require('./modal');
 
-module.exports = modal.extend({
-
+module.exports = class AssignmentModal extends Modal {
   /**
    * Clicks the "add document" button
    */
   async addDocument () {
     await this.puppet.click(this.modalRoot + ' a[ng-click="addActivity(documentList)"]');
-  },
+  }
 
   /**
    * Clicks the "add task" button
    */
   async addTask () {
     await this.puppet.click(this.modalRoot + ' a[ng-click="addActivity(taskList)"]');
-  },
+  }
 
   /**
    * Opens a date picker
@@ -24,7 +23,7 @@ module.exports = modal.extend({
   async pickDate () {
     await this.puppet.click(this.modalRoot + ' [ng-model="assignment.dueDate"]');
     await this.puppet.waitFor('.uib-datepicker-popup', { visible: true });
-  },
+  }
 
   /**
    * Selects an assignment type, so that the rest of the modal is shown
@@ -39,4 +38,4 @@ module.exports = modal.extend({
     }, this.modalRoot);
     await this.puppet.waitFor(500);
   }
-});
+};
