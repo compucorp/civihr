@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Class to set 'Home' address as primary address always.
+ * Class to set 'Personal' address as primary address always.
  */
 class CRM_HRCore_Hook_Pre_PrimaryAddressSetter {
 
   /**
-   * If address being saved has a 'Home' location type, it should be set as
+   * If address being saved has a 'Personal' location type, it should be set as
    * primary, by altering the given $params array.
    *
    * @param string $op
@@ -24,11 +24,11 @@ class CRM_HRCore_Hook_Pre_PrimaryAddressSetter {
       return;
     }
 
-    $homeLocation = civicrm_api3('LocationType', 'getsingle', [
-      'name' => 'Home',
+    $personalLocation = civicrm_api3('LocationType', 'getsingle', [
+      'name' => 'Personal',
     ]);
 
-    if ($params['location_type_id'] == $homeLocation['id']) {
+    if ($params['location_type_id'] == $personalLocation['id']) {
       $params['is_primary'] = 1;
     }
   }
