@@ -62,7 +62,7 @@ define([
           function setEventHandlersToTriggerElements () {
             if (isTouchDevice) {
               $overlay.on('touchend', function () {
-                toggleTooltip('source', true, 0);
+                toggleTooltip('source', true, 50);
                 !scope.open && setEventHandlersToTooltip();
               });
               $document.find('body').on('touchend', function (event) {
