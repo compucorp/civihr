@@ -49,10 +49,9 @@ define([
 
     /**
      * Checks if the given absence type has a defined id or not.
-     * Useful for filtering absence types with defined ids.
      *
-     * @param {Object} absenceType
-     * @return boolean
+     * @param  {Object} absenceType
+     * @return {Boolean}
      */
     function checkIfAbsenceTypeIdIsDefined (absenceType) {
       return !!absenceType.id;
