@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends CRM_HRLeaveAndAbsences_API_Handler_LeaveFieldPermissions {
 
@@ -28,6 +29,12 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
    * @var LeaveRequestRightsService
    */
   protected $leaveRequestRightsService;
+
+  /**
+   * @var array
+   *   Absence type ID's having hide_label property as false
+   */
+  protected $visibleAbsenceTypes;
 
   /**
    * {@inheritdoc}
@@ -80,6 +87,7 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
     $this->leaveRequestRightsService = $leaveRequestRights;
     $this->apiRequest = $apiRequest;
     $this->setShouldRemoveDataRowIdentifier();
+    $this->setVisibleAbsenceTypes();
   }
 
   /**
@@ -110,6 +118,10 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
     $canAccessRestrictedData = $this->canAccessRestrictedData($dataRowIdentifierValue);
 
     if($this->currentUserIsAdmin() || $canAccessRestrictedData) {
+      return $oldValue;
+    }
+
+    if ($field === 'type_id' && in_array($oldValue, $this->visibleAbsenceTypes)) {
       return $oldValue;
     }
 
@@ -148,5 +160,22 @@ class  CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions extends C
     if (!in_array($this->getDataRowIdentifierKey(), $this->apiRequest['params']['initial_return'])) {
       $this->removeDataRowIdentifier = TRUE;
     }
+  }
+
+  /**
+   * Sets the value of the visibleAbsenceTypes property
+   * with absence types that have the hide_label property
+   * as false.
+   */
+  private function setVisibleAbsenceTypes() {
+    $activeAbsenceTypes = AbsenceType::getEnabledAbsenceTypes();
+    $visibleAbsenceTypes = [];
+    foreach ($activeAbsenceTypes as $absenceType) {
+      if (!$absenceType->hide_label) {
+        $visibleAbsenceTypes[] = $absenceType->id;
+      }
+    }
+
+    $this->visibleAbsenceTypes = $visibleAbsenceTypes;
   }
 }
