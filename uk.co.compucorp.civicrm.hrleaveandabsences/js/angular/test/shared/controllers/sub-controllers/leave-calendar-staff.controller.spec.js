@@ -27,6 +27,12 @@
         $log = _$log_;
         $rootScope = _$rootScope_;
         canManageRequests = jasmine.createSpy('canManageRequests');
+        vm = {
+          displaySingleContact: false,
+          contactId: contactId,
+          filters: { userSettings: {} },
+          canManageRequests: canManageRequests
+        };
 
         spyOn($log, 'debug');
         leaveCalendarServiceMock.setup($q);
@@ -101,6 +107,7 @@
             vm.displaySingleContact = true;
             vm.contactId = _.uniqueId();
             vm.lookupContacts = [];
+            initController();
 
             controller.loadContacts();
           });
@@ -112,13 +119,21 @@
         });
       });
 
+      describe('when the component only displays a single contact', function () {
+        beforeEach(function () {
+          vm.displaySingleContact = true;
+          initController();
+        });
+
+        it('does not show the filters', function () {
+          expect(vm.showFilters).toEqual(false);
+        });
+      });
+
+      /**
+       * Initializes the leave calendar staff sub controller.
+       */
       function initController () {
-        vm = {
-          displaySingleContact: false,
-          contactId: contactId,
-          filters: { userSettings: {} },
-          canManageRequests: canManageRequests
-        };
         controller = $controller('LeaveCalendarStaffController').init(vm);
       }
     });
