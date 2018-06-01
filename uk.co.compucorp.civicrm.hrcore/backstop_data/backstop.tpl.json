@@ -21,7 +21,7 @@
   "engineOptions": {
     "waitTimeout": 20000
   },
-  "asyncCaptureLimit": 5,
+  "asyncCaptureLimit": 1,
   "asyncCompareLimit": 50,
   "debug": false,
   "debugWindow": false
