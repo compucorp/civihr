@@ -333,7 +333,8 @@ define([
      */
     function paginateMonth (direction) {
       var monthAction = direction === 'previous' ? 'subtract' : 'add';
-      var dateFromMonth = vm.selectedMonth.moment[monthAction](1, 'month');
+      // moment() is used again to ensure we do not mutate the object
+      var dateFromMonth = moment(vm.selectedMonth.moment)[monthAction](1, 'month');
 
       setSelectedMonth(dateFromMonth);
       setMonthPaginatorsAvailability();
