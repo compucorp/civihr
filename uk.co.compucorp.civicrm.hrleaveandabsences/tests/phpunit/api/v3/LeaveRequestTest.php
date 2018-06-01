@@ -1749,6 +1749,11 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2015-10-01']
     );
 
+    //The type ID field will be visible if the Absence type label is not hidden.
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'hide_label' => 1
+    ]);
+
     // Set Leave Approvers for staffMembers 1 and 2.
     // staffMember2 does not have an active leave manager relationship
     $this->setContactAsLeaveApproverOf($manager1, $staffMember1, null, null, true, 'has Leaves Approved By');
@@ -1756,7 +1761,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember1['id'],
-      'type_id' => $this->absenceType->id,
+      'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'from_date_type' => 1,
@@ -1765,7 +1770,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $staffMember2['id'],
-      'type_id' => $this->absenceType->id,
+      'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
       'from_date_type' => 1,
@@ -3666,9 +3671,14 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       ]
     );
 
+    //The type ID field will be visible if the Absence type label is not hidden.
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'hide_label' => 1
+    ]);
+
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact1['id'],
-      'type_id' => $this->absenceType->id,
+      'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -3678,7 +3688,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact2['id'],
-      'type_id' => $this->absenceType->id,
+      'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
       'from_date_type' => 1,
@@ -3733,9 +3743,14 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       ]
     );
 
+    //The type ID field will be visible if the Absence type label is not hidden.
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'hide_label' => 1
+    ]);
+
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact1['id'],
-      'type_id' => $this->absenceType->id,
+      'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
       'from_date_type' => 1,
@@ -3745,7 +3760,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => $contact2['id'],
-      'type_id' => $this->absenceType->id,
+      'type_id' => $absenceType->id,
       'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
       'from_date_type' => 1,
