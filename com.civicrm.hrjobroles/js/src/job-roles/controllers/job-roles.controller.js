@@ -1113,7 +1113,7 @@ define([
      * @param {string} roleType
      */
     function updateRole (roleId, roleType) {
-      var updatedRole;
+      var updatedRole, updateLocation, updateLevel, updateDepartment, updateRegion;
 
       $log.debug('Update Role');
 
@@ -1122,10 +1122,16 @@ define([
       }
 
       updatedRole = angular.copy(vm.editData[roleId]);
-      updatedRole.location = (updatedRole.location === undefined) ? updatedRole.location = '' : updatedRole.location;
-      updatedRole.level = (updatedRole.level === undefined) ? updatedRole.level = '' : updatedRole.level;
-      updatedRole.department = (updatedRole.department === undefined) ? updatedRole.department = '' : updatedRole.department;
-      updatedRole.region = (updatedRole.region === undefined) ? updatedRole.region = '' : updatedRole.region;
+      // Ensure location, level, department, region exist and not disabled
+      updateLocation = _.includes(_.keys(vm.LocationsData), updatedRole.location);
+      updateLevel = _.includes(_.keys(vm.LevelsData), updatedRole.level);
+      updateDepartment = _.includes(_.keys(vm.DepartmentsData), updatedRole.department);
+      updateRegion = _.includes(_.keys(vm.RegionsData), updatedRole.region);
+
+      updatedRole.location = (updatedRole.location === undefined || !updateLocation) ? updatedRole.location = '' : updatedRole.location;
+      updatedRole.level = (updatedRole.level === undefined || !updateLevel) ? updatedRole.level = '' : updatedRole.level;
+      updatedRole.department = (updatedRole.department === undefined || !updateDepartment) ? updatedRole.department = '' : updatedRole.department;
+      updatedRole.region = (updatedRole.region === undefined || !updateRegion) ? updatedRole.region = '' : updatedRole.region;
       updatedRole.start_date = convertDateToServerFormat(updatedRole.start_date);
 
       if (updatedRole.end_date) {
