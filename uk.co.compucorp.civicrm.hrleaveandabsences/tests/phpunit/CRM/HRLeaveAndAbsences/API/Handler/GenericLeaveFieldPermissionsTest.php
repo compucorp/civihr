@@ -241,7 +241,7 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
 
   public function testProcessWillHideAccessibleFieldsWhenRowIdentifierIsAbsentEvenIfUserHasAccess() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'hide_label' => 1
+      'hide_label' => 0
     ]);
     //User is Staff with ID of 204 and has full access to only his data
     $this->setPermissions();
@@ -262,19 +262,18 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
 
     //Staff will not be able to access all restricted fields for his
     //records since the row identifier is absent
+    //The type_id field is not expected to be restricted to the user since the
+    //Absence type label is public which makes it accessible to user
     $expectedParams['values'][1]['from_date_amount'] = '';
     $expectedParams['values'][1]['to_date_amount'] = '';
     $expectedParams['values'][1]['balance_change'] = '';
-    $expectedParams['values'][1]['type_id'] = '';
     $expectedParams['values'][2]['from_date_amount'] = '';
     $expectedParams['values'][2]['to_date_amount'] = '';
     $expectedParams['values'][2]['balance_change'] = '';
-    $expectedParams['values'][2]['type_id'] = '';
     $expectedParams['values'][4]['sickness_reason'] = '';
     $expectedParams['values'][4]['from_date_amount'] = '';
     $expectedParams['values'][4]['to_date_amount'] = '';
     $expectedParams['values'][4]['balance_change'] = '';
-    $expectedParams['values'][4]['type_id'] = '';
 
     $genericFieldHandler->process($results);
 
