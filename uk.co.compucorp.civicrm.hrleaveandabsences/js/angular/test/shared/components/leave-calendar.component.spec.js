@@ -627,8 +627,10 @@
       describe('paginateMonth()', function () {
         var currentlySelectedMonth;
         var tests = [
-          { direction: 'previous', monthDifference: -1 },
-          { direction: 'next', monthDifference: 1 }
+          { directions: 'previous', monthDifference: -1 },
+          { directions: 'next', monthDifference: 1 },
+          { directions: 'previous next previous next next', monthDifference: 1 },
+          { directions: 'next previous next previous previous', monthDifference: -1 }
         ];
 
         beforeEach(function () {
@@ -638,22 +640,27 @@
         });
 
         tests.forEach(function (test) {
-          describe('when user paginates to the ' + test.direction + ' month', function () {
+          describe('when user paginates to the ' + test.directions + ' month', function () {
+            var directions;
+
             beforeEach(function () {
+              directions = test.directions.split(' ');
               controller.injectMonth = false;
-              controller.paginateMonth(test.direction);
+              directions.forEach(function (direction) {
+                controller.paginateMonth(direction);
+              });
               $rootScope.$digest();
               simulateMonthWithSignal('injected', controller.months.length);
               $rootScope.$digest();
             });
 
-            it('sets the selected month as a ' + test.direction + ' month', function () {
+            it('sets the selected month according to ' + test.directions + ' directions', function () {
               expect(controller.selectedMonth.moment
                 .diff(currentlySelectedMonth.moment, 'month')).toBe(test.monthDifference);
             });
 
-            it('does not allow to paginate further because the are no more months in that direction', function () {
-              expect(controller.monthPaginatorsAvailability[test.direction]).toBe(false);
+            it('does not allow to paginate further because the are no more months in the last mentioned direction', function () {
+              expect(controller.monthPaginatorsAvailability[_.last(directions)]).toBe(false);
             });
 
             it('refreshes the month component without force data reload', function () {
