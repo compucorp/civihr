@@ -172,5 +172,11 @@
       <optionGroupName>hrleaveandabsences_absence_type_calculation_unit</optionGroupName>
     </pseudoconstant>
   </field>
+  <field>
+    <name>hide_label</name>
+    <title>This controls the visibility of the Leave Type label in the calendar and feeds.</title>
+    <type>boolean</type>
+    <default>0</default>
+  </field>
 
 </table>
