@@ -27,7 +27,7 @@ define([
   function controller ($controller, $q, $log, $rootScope, sharedSettings, AbsencePeriod, AbsenceType, PublicHoliday, OptionGroup, checkPermissions) {
     $log.debug('Component: leave-calendar');
 
-    var subController, userRole;
+    var actualUserRole, subController, userRole;
     var vm = this;
 
     vm.absencePeriods = [];
@@ -55,11 +55,18 @@ define([
       },
       absenceTypes: {}
     };
+    vm.filtersByAssignee = [
+      { type: 'me', label: 'People I approve' },
+      { type: 'unassigned', label: 'People without approver' },
+      { type: 'all', label: 'All' }
+    ];
+    vm.filters.userSettings.assignedTo = vm.filtersByAssignee[2];
     vm.monthPaginatorsAvailability = {
       previous: true,
       next: true
     };
 
+    vm.canManageRequests = canManageRequests;
     vm.labelPeriod = labelPeriod;
     vm.navigateToCurrentMonth = navigateToCurrentMonth;
     vm.paginateMonth = paginateMonth;
@@ -116,6 +123,15 @@ define([
       }
 
       vm.months = months;
+    }
+
+    /**
+     * Returns true if the user is an admin or manager.
+     *
+     * @return {Boolean}
+     */
+    function canManageRequests () {
+      return _.includes(['admin', 'manager'], actualUserRole);
     }
 
     /**
@@ -433,18 +449,13 @@ define([
      * @return {Promise}
      */
     function setUserRole () {
-      if (vm.roleOverride) {
-        return $q.resolve().then(function () {
-          userRole = vm.roleOverride;
-        });
-      } else {
-        return $q.all([
-          checkPermissions(sharedSettings.permissions.admin.administer),
-          checkPermissions(sharedSettings.permissions.ssp.manage)
-        ]).then(function (results) {
-          userRole = results[0] ? 'admin' : (results[1] ? 'manager' : 'staff');
-        });
-      }
+      return $q.all([
+        checkPermissions(sharedSettings.permissions.admin.administer),
+        checkPermissions(sharedSettings.permissions.ssp.manage)
+      ]).then(function (results) {
+        actualUserRole = results[0] ? 'admin' : (results[1] ? 'manager' : 'staff');
+        userRole = vm.roleOverride ? vm.roleOverride : actualUserRole;
+      });
     }
 
     /**

@@ -51,7 +51,11 @@ define([
             vm.lookupContacts = [{ id: vm.contactId }];
           }
 
-          return leaveCalendar.loadFilteredContacts();
+          if (!vm.displaySingleContact && vm.canManageRequests()) {
+            return leaveCalendar.loadContactsByAssignationType();
+          } else {
+            return leaveCalendar.loadFilteredContacts();
+          }
         }
       };
     }
