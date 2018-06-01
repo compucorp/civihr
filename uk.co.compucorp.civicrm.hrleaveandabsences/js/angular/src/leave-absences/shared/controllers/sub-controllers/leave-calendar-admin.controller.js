@@ -28,12 +28,7 @@ define([
         vm.showContactDetailsLink = true;
         vm.showContactName = true;
         vm.showFilters = true;
-        vm.filtersByAssignee = [
-          { type: 'me', label: 'People I approve' },
-          { type: 'unassigned', label: 'People without approver' },
-          { type: 'all', label: 'All' }
-        ];
-        vm.filters.userSettings.assignedTo = vm.filtersByAssignee[0];
+        vm.filters.userSettings.assignedTo = _.find(vm.filtersByAssignee, { type: 'me' });
 
         vm.showAdminFilteringHint = showAdminFilteringHint;
 
@@ -54,47 +49,9 @@ define([
          * @return {Promise} resolves as an {Array}
          */
         loadContacts: function () {
-          var filterByAssignee = vm.filters.userSettings.assignedTo.type;
-
-          return lookupContacts(filterByAssignee)
-            .then(function (contacts) {
-              vm.lookupContacts = contacts;
-
-              return $q.all([
-                leaveCalendar.loadFilteredContacts(),
-                filterByAssignee !== 'me'
-                  ? leaveCalendar.loadContactIdsToReduceTo()
-                  : $q.resolve(null)
-              ]);
-            })
-            .then(function (results) {
-              var contacts = results[0];
-
-              vm.contactIdsToReduceTo = results[1];
-
-              return contacts;
-            });
+          return leaveCalendar.loadContactsByAssignationType();
         }
       };
-    }
-
-    /**
-     * Returns the loading contacts promise depending on the
-     * filter by assignee chosen
-     *
-     * @param  {String} filterByAssignee (me|unassigned|all)
-     * @return {Promise} resolved to a list of loaded contacts
-     */
-    function lookupContacts (filterByAssignee) {
-      if (filterByAssignee === 'me') {
-        return Contact.leaveManagees(vm.contactId);
-      } else if (filterByAssignee === 'unassigned') {
-        return Contact.leaveManagees(undefined, {
-          unassigned: true
-        });
-      } else {
-        return leaveCalendar.loadAllLookUpContacts();
-      }
     }
 
     /**
