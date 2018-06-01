@@ -178,6 +178,18 @@
                 })
               );
             });
+
+            describe('when leave requests are reloaded', function () {
+              beforeEach(function () {
+                $rootScope.$emit('LeaveCalendar::updateFiltersByAbsenceType', ['1']);
+              });
+
+              it('flushes days data before populating it', function () {
+                expect(_.every(controller.month.days, function (day) {
+                  return !Object.keys(day.contactsData).length;
+                })).toBe(true);
+              });
+            });
           });
 
           describe('contacts', function () {
