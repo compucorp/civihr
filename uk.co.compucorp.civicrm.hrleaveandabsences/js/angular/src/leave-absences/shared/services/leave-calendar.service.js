@@ -25,17 +25,70 @@ define([
      */
     function init (vm) {
       var contracts;
+      var contactsLookUpStrategies = {
+        all: loadAllContacts,
+        me: loadMyManagees,
+        unassigned: loadAllUnassignedContacts
+      };
+
+      return {
+        loadContactsByAssignationType: loadContactsByAssignationType,
+        loadFilteredContacts: loadFilteredContacts
+      };
 
       /**
        * Returns a promise of all the contacts that can be used for look up
        * against the ids to reduce by.
        *
-       * @return {Promise}
+       * @return {Promise} resolves to an array of contacts.
        */
-      function loadAllLookUpContacts () {
+      function loadAllContacts () {
         return Contact.all().then(function (contacts) {
           return contacts.list;
         });
+      }
+
+      /**
+       * Returns a promise of all the contacts that are not assigned to another
+       * contact.
+       *
+       * @return {Promise} resolves to an array of contacts.
+       */
+      function loadAllUnassignedContacts () {
+        return Contact.leaveManagees(undefined, {
+          unassigned: true
+        });
+      }
+
+      /**
+       * Returns contacts depending on the selected assignation type (my assignees,
+       * unnassigned contacts, or all contacts) and stores a list of lookup contact
+       * ids to based on contacts with active contracts.
+       *
+       * @return {Promise} resolves to an array of contacts.
+       */
+      function loadContactsByAssignationType () {
+        var filterByAssignee = vm.filters.userSettings.assignedTo.type;
+        var loadLookUpContacts = contactsLookUpStrategies[filterByAssignee];
+
+        return loadLookUpContacts()
+          .then(function (contacts) {
+            vm.lookupContacts = contacts;
+
+            return $q.all([
+              loadFilteredContacts(),
+              filterByAssignee !== 'me'
+                ? loadContactIdsToReduceTo()
+                : $q.resolve(null)
+            ]);
+          })
+          .then(function (results) {
+            var contacts = results[0];
+
+            vm.contactIdsToReduceTo = results[1];
+
+            return contacts;
+          });
       }
 
       /**
@@ -86,6 +139,16 @@ define([
       }
 
       /**
+       * Returns a promise of all the contacts that are managed by the logged in
+       * user.
+       *
+       * @return {Promise} resolves to an array of contacts.
+       */
+      function loadMyManagees () {
+        return Contact.leaveManagees(vm.contactId);
+      }
+
+      /**
        * Returns a map of filters to pass to the Contact API.
        *
        * @return {Object}
@@ -108,12 +171,6 @@ define([
 
         return filters;
       }
-
-      return {
-        loadAllLookUpContacts: loadAllLookUpContacts,
-        loadContactIdsToReduceTo: loadContactIdsToReduceTo,
-        loadFilteredContacts: loadFilteredContacts
-      };
     }
 
     return {
