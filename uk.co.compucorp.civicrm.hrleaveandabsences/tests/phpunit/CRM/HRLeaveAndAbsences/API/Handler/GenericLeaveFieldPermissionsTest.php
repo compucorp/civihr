@@ -2,6 +2,8 @@
 
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
 use CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissions as GenericLeaveFieldPermissions;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+
 /**
  * Class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest
  *
@@ -187,6 +189,9 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
   ];
 
   public function testProcessWhenUserIsNotAnAdminUser() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'hide_label' => 1
+    ]);
     $this->setPermissions();
     //User has access to two leave contacts.
     $leaveRequestRights = $this->prophesize(LeaveRequestRightsService::class);
@@ -194,8 +199,11 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
     $apiRequest = [];
     $genericFieldHandler = new GenericLeaveFieldPermissions($apiRequest, $leaveRequestRights->reveal());
 
-    $results = $this->sampleData;
-    $expectedParams = $this->sampleData;
+    $sampleData = $this->sampleData;
+    $this->setAbsenceTypeID($sampleData, $absenceType->id);
+
+    $results = $sampleData;
+    $expectedParams = $sampleData;
     $expectedParams['values'][1]['from_date_amount'] = '';
     $expectedParams['values'][1]['to_date_amount'] = '';
     $expectedParams['values'][1]['balance_change'] = '';
@@ -232,6 +240,9 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
   }
 
   public function testProcessWillHideAccessibleFieldsWhenRowIdentifierIsAbsentEvenIfUserHasAccess() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'hide_label' => 0
+    ]);
     //User is Staff with ID of 204 and has full access to only his data
     $this->setPermissions();
     $leaveRequestRights = $this->prophesize(LeaveRequestRightsService::class);
@@ -240,6 +251,7 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
     $genericFieldHandler = new GenericLeaveFieldPermissions($apiRequest, $leaveRequestRights->reveal());
 
     $sampleData = $this->sampleData;
+    $this->setAbsenceTypeID($sampleData, $absenceType->id);
     unset($sampleData['values'][0], $sampleData['values'][3], $sampleData['values'][5]);
     unset($sampleData['values'][1]['contact_id']);
     unset($sampleData['values'][2]['contact_id']);
@@ -250,22 +262,61 @@ class CRM_HRLeaveAndAbsences_API_Handler_GenericLeaveFieldPermissionsTest extend
 
     //Staff will not be able to access all restricted fields for his
     //records since the row identifier is absent
+    //The type_id field is not expected to be restricted to the user since the
+    //Absence type label is public which makes it accessible to user
     $expectedParams['values'][1]['from_date_amount'] = '';
     $expectedParams['values'][1]['to_date_amount'] = '';
     $expectedParams['values'][1]['balance_change'] = '';
-    $expectedParams['values'][1]['type_id'] = '';
     $expectedParams['values'][2]['from_date_amount'] = '';
     $expectedParams['values'][2]['to_date_amount'] = '';
     $expectedParams['values'][2]['balance_change'] = '';
-    $expectedParams['values'][2]['type_id'] = '';
     $expectedParams['values'][4]['sickness_reason'] = '';
     $expectedParams['values'][4]['from_date_amount'] = '';
     $expectedParams['values'][4]['to_date_amount'] = '';
     $expectedParams['values'][4]['balance_change'] = '';
-    $expectedParams['values'][4]['type_id'] = '';
 
     $genericFieldHandler->process($results);
 
     $this->assertEquals($expectedParams, $results);
+  }
+
+  public function testTypeIDFieldIsNotHiddenWhenAbsenceTypeIsPublicAndUserDoesNotHaveAccessToTheLeaveContact() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'hide_label' => 0
+    ]);
+    $this->setPermissions();
+    //User has access to two leave contacts.
+    $leaveRequestRights = $this->prophesize(LeaveRequestRightsService::class);
+    $leaveRequestRights->getLeaveContactsCurrentUserHasAccessTo()->willReturn([209, 208]);
+    $apiRequest = [];
+    $genericFieldHandler = new GenericLeaveFieldPermissions($apiRequest, $leaveRequestRights->reveal());
+
+    $sampleData = $this->sampleData;
+    $this->setAbsenceTypeID($sampleData, $absenceType->id);
+
+    $results = $sampleData;
+    $expectedParams = $sampleData;
+
+    // All other restricted fields are hidden for the user except the type ID field
+    // because the Absence type allows the label to be public.
+    $expectedParams['values'][1]['from_date_amount'] = '';
+    $expectedParams['values'][1]['to_date_amount'] = '';
+    $expectedParams['values'][1]['balance_change'] = '';
+    $expectedParams['values'][2]['from_date_amount'] = '';
+    $expectedParams['values'][2]['to_date_amount'] = '';
+    $expectedParams['values'][2]['balance_change'] = '';
+    $expectedParams['values'][4]['sickness_reason'] = '';
+    $expectedParams['values'][4]['from_date_amount'] = '';
+    $expectedParams['values'][4]['to_date_amount'] = '';
+    $expectedParams['values'][4]['balance_change'] = '';
+    $genericFieldHandler->process($results);
+
+    $this->assertEquals($expectedParams, $results);
+  }
+
+  private function setAbsenceTypeID(&$sampleData, $absenceTypeID) {
+    foreach ($sampleData['values'] as &$data) {
+      $data['type_id'] = $absenceTypeID;
+    }
   }
 }
