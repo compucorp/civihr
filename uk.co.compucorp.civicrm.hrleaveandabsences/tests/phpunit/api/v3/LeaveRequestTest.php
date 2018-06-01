@@ -3717,6 +3717,76 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals('', $result['values'][1]['balance_change']);
   }
 
+  public function testGetAndGetFullShouldNotHideTypeIDFieldValueForContactsOtherThanLoggedInUserWhenUserIsStaffAndAbsenceTypeLabelIsPublic() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $this->registerCurrentLoggedInContactInSession($contact1['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contact1['id'] ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contact2['id'] ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    //The type ID field will be visible since the Absence type label is set as public
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'hide_label' => 0
+    ]);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact1['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => 1,
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact2['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => 1,
+    ], true);
+
+    //The logged in contact would be able to see results for the other contact too since the Leave ACL
+    //allows it and would not be able to view field values for restricted fields but would view the
+    //type_id field for other users since the Absence type label is public
+    $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($leaveRequest1->type_id, $result['values'][0]['type_id']);
+
+    $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
+    $this->assertEquals($leaveRequest2->type_id, $result['values'][1]['type_id']);
+
+    $result = civicrm_api3('LeaveRequest', 'getfull', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(2, $result['count']);
+    $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($leaveRequest1->type_id, $result['values'][0]['type_id']);
+    $this->assertNotEmpty($result['values'][0]['balance_change']);
+
+    $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
+    $this->assertEquals($leaveRequest2->type_id, $result['values'][1]['type_id']);
+    $this->assertEquals('', $result['values'][1]['balance_change']);
+  }
+
   public function testGetAndGetFullHidesRestrictedFieldValuesForNonManageesWhenLoggedInUserIsALeaveApprover() {
     $manager = ContactFabricator::fabricate();
     $contact1 = ContactFabricator::fabricate();
@@ -3785,6 +3855,82 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
     $this->assertEquals('', $result['values'][0]['type_id']);
+    $this->assertEquals('', $result['values'][0]['balance_change']);
+
+    $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
+    $this->assertEquals($leaveRequest2->type_id, $result['values'][1]['type_id']);
+    $this->assertNotEmpty($result['values'][1]['balance_change']);
+  }
+
+  public function testGetAndGetFullShouldNotHideTypeIDFieldValueForNonManageesWhenLoggedInUserIsALeaveApproverAndAbsenceTypeLabelIsPublic() {
+    $manager = ContactFabricator::fabricate();
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
+
+    $this->setContactAsLeaveApproverOf($manager, $contact2);
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contact2['id'] ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      [ 'contact_id' => $contact1['id'] ],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-10-01'
+      ]
+    );
+
+    //The type ID field will be visible if the Absence type label is not hidden.
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'hide_label' => 0
+    ]);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact1['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'to_date' => CRM_Utils_Date::processDate('2016-03-02'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => 1,
+    ], true);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contact2['id'],
+      'type_id' => $absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-02-20'),
+      'to_date' =>  CRM_Utils_Date::processDate('2016-02-23'),
+      'from_date_type' => 1,
+      'to_date_type' => 1,
+      'status_id' => 1,
+    ], true);
+
+    //Results will be returned for both leave contacts even though contact1 is not being managed by
+    //the logged in manager but manager will not be able to view restricted field values for the contact
+    //which he's not a leave approver for but would view the type_id field for other non managees since the
+    // Absence type label is public
+    $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(2, $result['count']);
+
+    $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($leaveRequest1->type_id, $result['values'][0]['type_id']);
+
+    $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
+    $this->assertEquals($leaveRequest2->type_id, $result['values'][1]['type_id']);
+
+    $result = civicrm_api3('LeaveRequest', 'getfull', ['check_permissions' => true, 'sequential' => 1]);
+    $this->assertEquals(2, $result['count']);
+
+    $this->assertEquals($contact1['id'], $result['values'][0]['contact_id']);
+    $this->assertEquals($leaveRequest1->type_id, $result['values'][0]['type_id']);
     $this->assertEquals('', $result['values'][0]['balance_change']);
 
     $this->assertEquals($contact2['id'], $result['values'][1]['contact_id']);
