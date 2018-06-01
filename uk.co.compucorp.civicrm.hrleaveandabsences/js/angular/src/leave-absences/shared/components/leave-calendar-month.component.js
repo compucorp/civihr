@@ -202,6 +202,15 @@ define([
     }
 
     /**
+     * Flushes days data
+     */
+    function flushDays () {
+      vm.month.days.forEach(function (day) {
+        day.contactsData = {};
+      });
+    }
+
+    /**
      * Get profile URL for the given contact id
      *
      * @param {String|Integer} contactId
@@ -462,6 +471,8 @@ define([
           : _.pluck(vm.supportData.absenceTypes, 'id') }
       };
 
+      flushDays();
+
       return LeaveRequest.all(params, null, null, null, false)
         .then(function (leaveRequestsData) {
           leaveRequests = {};
@@ -607,6 +618,11 @@ define([
       (forceReload || !dataLoaded) && loadMonthData();
     }
 
+    /**
+     * Sorts leave requests by either date or AM/PM
+     *
+     * @param {Array} leaveRequests array of leave requests instances
+     */
     function sortLeaveRequests (leaveRequests) {
       return _.sortBy(leaveRequests, function (leaveRequest) {
         return +moment(leaveRequest.from_date).format('X') +
