@@ -58,10 +58,6 @@ module.exports = class Documents extends Page {
    */
   async waitForReady () {
     await this.puppet.waitFor('.ct-filter-date', { visible: true });
-    await this.puppet.waitFor('.ct-table-documents [href^="/civicrm/contact/view"]', { visible: true });
-    // For some reason Puppetteer considers the user name visible even when it
-    // isn't really yet, this slight delay allows the element to be fully visible
-    // before taking the screenshots
-    await this.puppet.waitFor(500);
+    await this.puppet.waitFor(4000);
   }
 };
