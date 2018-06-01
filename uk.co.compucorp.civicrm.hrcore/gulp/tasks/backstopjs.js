@@ -2,19 +2,18 @@ var _ = require('lodash');
 var argv = require('yargs').argv;
 var backstopjs = require('backstopjs');
 var clean = require('gulp-clean');
-var Chromy = require('chromy');
 var execSync = require('child_process').execSync;
 var file = require('gulp-file');
 var fs = require('fs');
 var gulp = require('gulp');
 var notify = require('gulp-notify');
 var path = require('path');
+var puppeteer = require('puppeteer');
 var Promise = require('es6-promise').Promise;
 
 var utils = require('../utils');
 
 var BACKSTOP_DIR = path.join(__dirname, '..', '..', 'backstop_data');
-var CHROMY_STARTING_PORT = 9222;
 var DEFAULT_USER = 'civihr_admin';
 var USERS = ['admin', 'civihr_admin', 'civihr_manager', 'civihr_staff'];
 var CONFIG_TPL = { 'url': 'http://%{site-host}' };
@@ -249,38 +248,24 @@ function touchSiteConfigFile () {
  *
  * @return {Promise}
  */
-function writeCookies () {
-  var cookiesDir = path.join(BACKSTOP_DIR, 'cookies');
-  var config = siteConfig();
+async function writeCookies () {
+  const cookiesDir = path.join(BACKSTOP_DIR, 'cookies');
+  const config = siteConfig();
 
-  if (!fs.existsSync(cookiesDir)) {
-    fs.mkdirSync(cookiesDir);
-  }
+  !fs.existsSync(cookiesDir) && fs.mkdirSync(cookiesDir);
 
-  return Promise.all(USERS.map(function (user, index) {
-    return new Promise(function (resolve, reject) {
-      var chromy, loginUrl;
-      var cookieFilePath = path.join(cookiesDir, user + '.json');
+  await Promise.all(USERS.map(async user => {
+    let cookieFilePath = path.join(cookiesDir, `${user}.json`);
+    let loginUrl = execSync(`drush uli --name=${user} --uri=${config.url} --browser=0`, { encoding: 'utf8' });
 
-      if (fs.existsSync(cookieFilePath)) {
-        fs.unlinkSync(cookieFilePath);
-      }
+    let browser = await puppeteer.launch();
+    let page = await browser.newPage();
+    await page.goto(loginUrl);
+    let cookies = await page.cookies();
 
-      loginUrl = execSync('drush uli --name=' + user + ' --uri=' + config.url + ' --browser=0', { encoding: 'utf8' });
-      chromy = new Chromy({ port: CHROMY_STARTING_PORT + index, gotoTimeout: 60000 });
+    fs.existsSync(cookieFilePath) && fs.unlinkSync(cookieFilePath);
+    fs.writeFileSync(cookieFilePath, JSON.stringify(cookies));
 
-      chromy.chain()
-        .goto(config.url)
-        .goto(loginUrl)
-        .getCookies()
-        .result(function (cookies) {
-          fs.writeFileSync(cookieFilePath, JSON.stringify(cookies));
-        })
-        .end()
-        .then(function () {
-          chromy.close();
-          resolve();
-        });
-    });
+    await browser.close();
   }));
 }
