@@ -33,7 +33,8 @@ define([
 
       return {
         loadContactsByAssignationType: loadContactsByAssignationType,
-        loadFilteredContacts: loadFilteredContacts
+        loadFilteredContacts: loadFilteredContacts,
+        loadLookUpContacts: loadLookUpContacts
       };
 
       /**
@@ -68,8 +69,7 @@ define([
        * @return {Promise} resolves to an array of contacts.
        */
       function loadContactsByAssignationType () {
-        var filterByAssignee = vm.filters.userSettings.assignedTo.type;
-        var loadLookUpContacts = contactsLookUpStrategies[filterByAssignee];
+        var filterByAssignee = _.get(vm, 'filters.userSettings.assignedTo.type', 'all');
 
         return loadLookUpContacts()
           .then(function (contacts) {
@@ -95,7 +95,7 @@ define([
        * Returns a promise of a list of contact ids for contacts with contracts
        * that are valid for the selected period's start and end dates.
        *
-       * @return {Promise}
+       * @return {Promise} resolves to an array of contact ids.
        */
       function loadContactIdsToReduceTo () {
         return loadContracts()
@@ -119,7 +119,7 @@ define([
       /**
        * Returns a list of all contracts. The result is cached locally.
        *
-       * @return {Promise}
+       * @return {Promise} resolves to an array of contracts.
        */
       function loadContracts () {
         return contracts ? $q.resolve(contracts) : Contract.all();
@@ -129,13 +129,26 @@ define([
        * Returns a list of contacts reduced by the leave calendar filters and
        * sorts them by the contact's display name.
        *
-       * @return {Promise}
+       * @return {Promise} resolves to an array of contacts.
        */
       function loadFilteredContacts () {
         return Contact.all(prepareContactFilters(), null, 'display_name')
           .then(function (contacts) {
             return contacts.list;
           });
+      }
+
+      /**
+       * Loads a list of contacts that can be used for look up. The list is based
+       * on the assignees type filter.
+       *
+       * @return {Promise} resolves to an array of contacts.
+       */
+      function loadLookUpContacts () {
+        var filterByAssignee = _.get(vm, 'filters.userSettings.assignedTo.type', 'all');
+        var loadLookUpContactsMethod = contactsLookUpStrategies[filterByAssignee];
+
+        return loadLookUpContactsMethod();
       }
 
       /**

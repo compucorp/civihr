@@ -68,14 +68,6 @@ define([
           loadContactsByAssignationType(done);
         });
 
-        it('requests all contacts', function () {
-          expect(Contact.all).toHaveBeenCalledWith();
-        });
-
-        it('returns a list of contacts', function () {
-          expect(loadedContacts).toEqual(contactsMockData.all.values);
-        });
-
         it('stores all look up contact', function () {
           expect(vm.lookupContacts).toEqual(contactsMockData.all.values);
         });
@@ -103,10 +95,11 @@ define([
       describe('when loading unassigned contacts', function () {
         beforeEach(function (done) {
           vm.filters.userSettings.assignedTo.type = 'unassigned';
+
           loadContactsByAssignationType(done);
         });
 
-        it('requests unnassigned contacts', function () {
+        it('requests unassigned contacts', function () {
           expect(Contact.leaveManagees)
             .toHaveBeenCalledWith(undefined, { unassigned: true });
         });
@@ -115,7 +108,7 @@ define([
           expect(loadedContacts).toEqual(contactsMockData.all.values);
         });
 
-        it('stores the unnassigned contacts as look up contacts', function () {
+        it('stores the unassigned contacts as look up contacts', function () {
           expect(vm.lookupContacts).toEqual(contactsMockData.all.values.slice(0, 2));
         });
       });
@@ -236,6 +229,57 @@ define([
       });
     });
 
+    describe('loadLookUpContacts()', function () {
+      describe('when the assignees filter value is "all"', function () {
+        beforeEach(function (done) {
+          vm.filters.userSettings.assignedTo.type = 'all';
+
+          loadLookUpContacts(done);
+        });
+
+        it('requests all contacts', function () {
+          expect(Contact.all).toHaveBeenCalledWith();
+        });
+
+        it('returns a list of contacts', function () {
+          expect(loadedContacts).toEqual(contactsMockData.all.values);
+        });
+      });
+
+      describe('when the assignees filter value is "me"', function () {
+        beforeEach(function (done) {
+          vm.filters.userSettings.assignedTo.type = 'me';
+
+          loadLookUpContacts(done);
+        });
+
+        it('requests the logged in user\'s assigned contacts', function () {
+          expect(Contact.leaveManagees).toHaveBeenCalledWith(vm.contactId);
+        });
+
+        it('returns a list of the logged in user\'s assigned contacts', function () {
+          expect(loadedContacts).toEqual(contactsMockData.all.values.slice(0, 2));
+        });
+      });
+
+      describe('when the assignees filter value is "unassigned"', function () {
+        beforeEach(function (done) {
+          vm.filters.userSettings.assignedTo.type = 'unassigned';
+
+          loadLookUpContacts(done);
+        });
+
+        it('requests unassigned contacts', function () {
+          expect(Contact.leaveManagees)
+            .toHaveBeenCalledWith(undefined, { unassigned: true });
+        });
+
+        it('returns a list of unassigned contacts', function () {
+          expect(loadedContacts).toEqual(contactsMockData.all.values.slice(0, 2));
+        });
+      });
+    });
+
     /**
      * Returns a list of mocked contracts with overriden values as provided by
      * the custom contract values parameter.
@@ -271,6 +315,15 @@ define([
      */
     function loadContactsByAssignationType (done) {
       leaveCalendar.loadContactsByAssignationType()
+        .then(function (_loadedContacts_) {
+          loadedContacts = _loadedContacts_;
+        })
+        .finally(done);
+      $rootScope.$digest();
+    }
+
+    function loadLookUpContacts (done) {
+      leaveCalendar.loadLookUpContacts()
         .then(function (_loadedContacts_) {
           loadedContacts = _loadedContacts_;
         })
