@@ -668,16 +668,15 @@ define([
       var leaveRequest = { key: 'value' };
       var leaveType = 'some_leave_type';
       var selectedContactId = '101';
-      var isSelfRecord = true;
 
       beforeEach(function () {
         event = jasmine.createSpyObj('event', ['stopPropagation']);
         spyOn(LeavePopup, 'openModal');
-        controller.openLeavePopup(event, leaveRequest, leaveType, selectedContactId, isSelfRecord);
+        controller.openLeavePopup(event, leaveRequest, leaveType, selectedContactId);
       });
 
       it('opens the leave request popup', function () {
-        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId);
       });
 
       it('stops the event from propagating', function () {
