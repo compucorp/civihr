@@ -25,10 +25,10 @@ define([
       init: function (_vm_) {
         vm = _vm_;
         leaveCalendar = LeaveCalendarService.init(vm);
+        vm.filters.userSettings.assignedTo = _.find(vm.filtersByAssignee, { type: 'me' });
         vm.showContactDetailsLink = true;
         vm.showContactName = true;
         vm.showFilters = true;
-        vm.filters.userSettings.assignedTo = _.find(vm.filtersByAssignee, { type: 'me' });
 
         vm.showAdminFilteringHint = showAdminFilteringHint;
 
