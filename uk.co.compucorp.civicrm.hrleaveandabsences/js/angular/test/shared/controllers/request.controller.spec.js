@@ -1338,7 +1338,7 @@
             $rootScope.section = 'my-leave';
           });
 
-          describe('and I am checking someone else\'s request', function () {
+          describe('and the user is checking someone else\'s request', function () {
             beforeEach(function () {
               leaveRequest.id = _.uniqueId();
               leaveRequest.contact_id = anotherContactId;
@@ -1351,7 +1351,7 @@
             });
           });
 
-          describe('and I am checking my own request', function () {
+          describe('and the user is checking my own request', function () {
             beforeEach(function () {
               leaveRequest.id = _.uniqueId();
               leaveRequest.contact_id = loggedInContactId;
@@ -1364,7 +1364,7 @@
             });
           });
 
-          describe('and I create a new request for myself', function () {
+          describe('and the user creates a new request for themselves', function () {
             beforeEach(function () {
               initTestController({ mode: 'create', leaveRequest: leaveRequest });
             });
@@ -1380,7 +1380,7 @@
             $rootScope.section = 'manager-leave';
           });
 
-          describe('and I am checking someone else\'s request', function () {
+          describe('and the user is checking someone else\'s request', function () {
             beforeEach(function () {
               leaveRequest.id = _.uniqueId();
               leaveRequest.contact_id = anotherContactId;
@@ -1393,7 +1393,7 @@
             });
           });
 
-          describe('and I am checking my own request', function () {
+          describe('and the user is checking my own request', function () {
             beforeEach(function () {
               leaveRequest.id = _.uniqueId();
               leaveRequest.contact_id = loggedInContactId;
@@ -1406,7 +1406,7 @@
             });
           });
 
-          describe('and I create a new request for myself', function () {
+          describe('and the user creates a new request for themselves', function () {
             beforeEach(function () {
               initTestController({ mode: 'create', leaveRequest: leaveRequest });
             });

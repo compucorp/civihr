@@ -27,7 +27,7 @@ define([
   function controller ($controller, $q, $log, $rootScope, sharedSettings, AbsencePeriod, AbsenceType, PublicHoliday, OptionGroup, checkPermissions) {
     $log.debug('Component: leave-calendar');
 
-    var actualUserRole, subController, userRole;
+    var userPermissionRole, subController, userRole;
     var vm = this;
 
     vm.absencePeriods = [];
@@ -131,7 +131,7 @@ define([
      * @return {Boolean}
      */
     function canManageRequests () {
-      return _.includes(['admin', 'manager'], actualUserRole);
+      return _.includes(['admin', 'manager'], userPermissionRole);
     }
 
     /**
@@ -453,8 +453,8 @@ define([
         checkPermissions(sharedSettings.permissions.admin.administer),
         checkPermissions(sharedSettings.permissions.ssp.manage)
       ]).then(function (results) {
-        actualUserRole = results[0] ? 'admin' : (results[1] ? 'manager' : 'staff');
-        userRole = vm.roleOverride ? vm.roleOverride : actualUserRole;
+        userPermissionRole = results[0] ? 'admin' : (results[1] ? 'manager' : 'staff');
+        userRole = vm.roleOverride ? vm.roleOverride : userPermissionRole;
       });
     }
 
