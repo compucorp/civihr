@@ -32,7 +32,7 @@ define([
       };
 
       return {
-        loadContactsByAssignationType: loadContactsByAssignationType,
+        loadContactsForAdmin: loadContactsForAdmin,
         loadFilteredContacts: loadFilteredContacts,
         loadLookUpContacts: loadLookUpContacts
       };
@@ -68,7 +68,7 @@ define([
        *
        * @return {Promise} resolves to an array of contacts.
        */
-      function loadContactsByAssignationType () {
+      function loadContactsForAdmin () {
         var filterByAssignee = _.get(vm, 'filters.userSettings.assignedTo.type', 'all');
 
         return loadLookUpContacts()

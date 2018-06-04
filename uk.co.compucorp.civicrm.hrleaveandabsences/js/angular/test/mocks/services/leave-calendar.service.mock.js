@@ -7,7 +7,7 @@ define([
   var $q, vm;
   var LeaveCalendarService = jasmine.createSpyObj('LeaveCalendarService', ['init']);
   var leaveCalendarInstance = jasmine.createSpyObj('leaveCalendarInstance', [
-    'loadContactsByAssignationType', 'loadFilteredContacts', 'loadLookUpContacts']);
+    'loadContactsForAdmin', 'loadFilteredContacts', 'loadLookUpContacts']);
   var data = {
     contactIdsToReduceTo: [_.uniqueId(), _.uniqueId(), _.uniqueId()],
     filteredContacts: _.clone(contactsMockData.all.values.slice(0, 2)),
@@ -28,13 +28,13 @@ define([
   }
 
   /**
-   * Simulates a call to the leave calendar instance's loadContactsByAssignationType method.
+   * Simulates a call to the leave calendar instance's loadContactsForAdmin method.
    * It assigns the contact ids to reduce to and the look up contacts to the previously provided
    * view model. Finally, it returns a list of filtered contacts.
    *
    * @return {Array} a list of contacts.
    */
-  function loadContactsByAssignationType () {
+  function loadContactsForAdmin () {
     vm.contactIdsToReduceTo = data.contactIdsToReduceTo;
     vm.lookupContacts = data.lookedUpContacts;
 
@@ -49,7 +49,7 @@ define([
   function setup (_$q_) {
     $q = _$q_;
     LeaveCalendarService.init.and.callFake(LeaveCalendarServiceInit);
-    leaveCalendarInstance.loadContactsByAssignationType.and.callFake(loadContactsByAssignationType);
+    leaveCalendarInstance.loadContactsForAdmin.and.callFake(loadContactsForAdmin);
     leaveCalendarInstance.loadFilteredContacts.and.returnValue($q.resolve(
       data.filteredContacts));
     leaveCalendarInstance.loadLookUpContacts.and.returnValue($q.resolve(
