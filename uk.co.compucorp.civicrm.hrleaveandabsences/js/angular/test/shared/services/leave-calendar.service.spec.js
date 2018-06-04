@@ -227,6 +227,21 @@ define([
           }), null, 'display_name');
         });
       });
+
+      describe('when the asegnee filter is not "all" and the look up list is empty', function () {
+        beforeEach(function () {
+          vm.lookupContacts = [];
+          vm.filters.userSettings.assignedTo.type = 'me';
+
+          leaveCalendar.loadFilteredContacts();
+        });
+
+        it('filters the request by look up contact ids', function () {
+          expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+            id: { 'IN': vm.lookupContacts }
+          }), null, 'display_name');
+        });
+      });
     });
 
     describe('loadLookUpContacts()', function () {

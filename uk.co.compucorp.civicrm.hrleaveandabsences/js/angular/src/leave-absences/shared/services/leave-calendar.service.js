@@ -175,10 +175,11 @@ define([
         };
         var hasContactFilter = !!vm.filters.userSettings.contact;
         var hasLookUpContactsFilter = _.isArray(vm.lookupContacts) && vm.lookupContacts.length;
+        var notRequestingAllContacts = _.get(vm, 'filters.userSettings.assignedTo.type', 'all') !== 'all';
 
         if (hasContactFilter) {
           filters.id = { 'IN': [vm.filters.userSettings.contact.id] };
-        } else if (hasLookUpContactsFilter) {
+        } else if (notRequestingAllContacts || hasLookUpContactsFilter) {
           filters.id = { 'IN': _.pluck(vm.lookupContacts, 'id') };
         }
 
