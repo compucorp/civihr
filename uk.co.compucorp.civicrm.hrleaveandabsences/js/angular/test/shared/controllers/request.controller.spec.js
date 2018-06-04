@@ -778,29 +778,56 @@
                   requestOriginalDates.to = controller.request.to_date;
                   controller.newStatusOnSave = optionGroupMock.specificObject(
                     'hrleaveandabsences_leave_request_status', 'name', 'cancelled').value;
-
-                  controller.submit();
+                  controller.request.from_date =
+                    moment(controller.request.from_date).add(15, 'minutes')
+                      .format('YYYY-MM-DD HH:mm');
+                  controller.request.to_date =
+                    moment(controller.request.to_date).add(15, 'minutes')
+                      .format('YYYY-MM-DD HH:mm');
                   $rootScope.$digest();
                 });
 
-                it('does not check the balance change', function () {
-                  expect(LeaveRequestService.promptBalanceChangeRecalculation)
-                    .not.toHaveBeenCalled();
+                describe('when request is not TOIL', function () {
+                  beforeEach(function () {
+                    controller.submit();
+                    $rootScope.$digest();
+                  });
+
+                  it('does not check the balance change', function () {
+                    expect(LeaveRequestService.promptBalanceChangeRecalculation)
+                      .not.toHaveBeenCalled();
+                  });
+
+                  it('updates request', function () {
+                    expect(controller.request.update).toHaveBeenCalled();
+                  });
+
+                  it('tells the backend to not recalculate balance change', function () {
+                    expect(controller.request.change_balance).toBeUndefined();
+                  });
+
+                  it('reverts to original request times', function () {
+                    expect(moment(controller.request.from_date).format('HH:mm')).toEqual(
+                      moment(requestOriginalDates.from).format('HH:mm'));
+                    expect(moment(controller.request.to_date).format('HH:mm')).toEqual(
+                      moment(requestOriginalDates.to).format('HH:mm'));
+                  });
                 });
 
-                it('updates request', function () {
-                  expect(controller.request.update).toHaveBeenCalled();
-                });
+                describe('when request is TOIL', function () {
+                  beforeEach(function () {
+                    controller.request.request_type = 'toil';
 
-                it('tells the backend to not recalculate balance change', function () {
-                  expect(controller.request.change_balance).toBeUndefined();
-                });
+                    controller.submit();
+                    $rootScope.$digest();
+                  });
 
-                it('reverts original request times', function () {
-                  expect(moment(controller.request.from_date).format('HH:mm')).toEqual(
-                    moment(requestOriginalDates.from).format('HH:mm'));
-                  expect(moment(controller.request.to_date).format('HH:mm')).toEqual(
-                    moment(requestOriginalDates.to).format('HH:mm'));
+                  it('does not revert to original request times', function () {
+                    expect(moment(controller.request.from_date).format('HH:mm')).not.toEqual(
+                      moment(requestOriginalDates.from).format('HH:mm'));
+                    expect(moment(controller.request.to_date).format('HH:mm')).not.toEqual(
+                      moment(requestOriginalDates.to).format('HH:mm'));
+                  });
                 });
               });
 
