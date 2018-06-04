@@ -45,6 +45,7 @@ define([
         'hrleaveandabsences_absence_type_calculation_unit', 'name',
         'hours').value;
 
+      absenceTypes.push({ id: '', title: 'Leave' });
       spyOn($log, 'debug');
       compileComponent();
     }));
@@ -123,6 +124,46 @@ define([
         it('does not map neither "from" nor "to" date type label', function () {
           expect(leaveRequestAttributes.from_date_type).not.toBeDefined();
           expect(leaveRequestAttributes.to_date_type).not.toBeDefined();
+        });
+      });
+    });
+
+    /**
+     * @NOTE this block tests an adhoc solution.
+     * @see /shared/components/leave-calendar-day.component.js
+     * resolveLeaveRequestCalculationUnit()
+     * @see PCHR-3774
+     */
+    describe('when absence type is a generic leave type', function () {
+      beforeEach(function () {
+        leaveRequest.type_id = '';
+      });
+
+      describe('when leave request "from" date time is 00:00', function () {
+        beforeEach(function () {
+          leaveRequest.from_date = '2018-05-01 00:00:00';
+          contactData.leaveRequests = [leaveRequest];
+
+          compileComponent();
+          $rootScope.$digest();
+        });
+
+        it('sets the "days" calculation unit', function () {
+          expect(leaveRequestAttributes.unit).toEqual('days');
+        });
+      });
+
+      describe('when leave request "from" date time is not 00:00', function () {
+        beforeEach(function () {
+          leaveRequest.from_date = '2018-05-01 01:00:00';
+          contactData.leaveRequests = [leaveRequest];
+
+          compileComponent();
+          $rootScope.$digest();
+        });
+
+        it('sets the "hours" calculation unit', function () {
+          expect(leaveRequestAttributes.unit).toEqual('hours');
         });
       });
     });
