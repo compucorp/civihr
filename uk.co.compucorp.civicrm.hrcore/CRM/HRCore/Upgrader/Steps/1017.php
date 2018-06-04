@@ -3,9 +3,15 @@
 trait CRM_HRCore_Upgrader_Steps_1017 {
 
   /**
+   * @var array
+   */
+  private $up1017_locationTypeIds = [];
+
+  /**
    * Handles default location type settings and migrating existing data
    */
   public function upgrade_1017() {
+    $this->up1017_createPersonalLocationType();
     $this->up1017_migrateLocationTypes();
     $this->up1017_setDefaultLocationType('Work');
     $this->up1017_reserveLocationTypes(['Work', 'Personal']);
@@ -13,6 +19,30 @@ trait CRM_HRCore_Upgrader_Steps_1017 {
     $this->up1017_deleteLocationTypes(['Home', 'Correspondence']);
 
     return TRUE;
+  }
+
+  /**
+   * The "Personal" location type should be created by the CiviHR installer
+   * script, but it could have been deleted so we need to ensure it exists
+   * before using it and making it reserved.
+   */
+  private function up1017_createPersonalLocationType() {
+    $params = [
+      'name' => 'Personal',
+      'description' => 'Place of Residence',
+      'display_name' => 'Personal',
+      'vcard_name' => 'PERSONAL',
+    ];
+
+    $existingId = $this->up1017_getLocationTypeID('Personal');
+    if ($existingId) {
+      $params['id'] = $existingId;
+    }
+
+    $result = civicrm_api3('LocationType', 'create', $params);
+
+    // update the cached IDs
+    $this->up1017_locationTypeIds['Personal'] = $result['id'];
   }
 
   /**
@@ -166,12 +196,13 @@ trait CRM_HRCore_Upgrader_Steps_1017 {
    *
    * @param string $locationTypeName
    *
-   * @return int
+   * @return int|null
    */
   private function up1017_getLocationTypeID($locationTypeName) {
     $locationIds = $this->up1017_getLocationTypeIds();
+    $existing = CRM_Utils_Array::value($locationTypeName, $locationIds);
 
-    return (int) CRM_Utils_Array::value($locationTypeName, $locationIds);
+    return $existing ? (int) $existing : NULL;
   }
 
   /**
@@ -180,14 +211,12 @@ trait CRM_HRCore_Upgrader_Steps_1017 {
    * @return array
    */
   private function up1017_getLocationTypeIds() {
-    static $locationTypeIds = [];
-
-    if (empty($locationTypeIds)) {
+    if (empty($this->up1017_locationTypeIds)) {
       $locationTypeIds = civicrm_api3('LocationType', 'get')['values'];
-      $locationTypeIds = array_column($locationTypeIds, 'id', 'name');
+      $this->up1017_locationTypeIds = array_column($locationTypeIds, 'id', 'name');
     }
 
-    return $locationTypeIds;
+    return $this->up1017_locationTypeIds;
   }
 
 }
