@@ -589,27 +589,6 @@
         }
       });
 
-      describe('canManageRequests()', function () {
-        var scenarios = [
-          { role: 'admin', expectedResult: true },
-          { role: 'manager', expectedResult: true },
-          { role: 'staff', expectedResult: false }
-        ];
-
-        scenarios.forEach(function (scenario) {
-          describe('when the ' + scenario.role + ' checks if they can manage requests', function () {
-            beforeEach(function () {
-              currentContact.role = scenario.role;
-              compileComponent();
-            });
-
-            it('returns ' + scenario.expectedResult, function () {
-              expect(controller.canManageRequests()).toBe(scenario.expectedResult);
-            });
-          });
-        });
-      });
-
       describe('navigateToCurrentMonth()', function () {
         var currentAbsencePeriod;
 

@@ -9,7 +9,7 @@
     'use strict';
 
     describe('LeaveCalendarStaffController', function () {
-      var $controller, $log, $provide, $rootScope, canManageRequests, controller,
+      var $controller, $log, $provide, $rootScope, controller,
         vm;
       var contactId = CRM.vars.leaveAndAbsences.contactId;
 
@@ -26,12 +26,10 @@
         $controller = _$controller_;
         $log = _$log_;
         $rootScope = _$rootScope_;
-        canManageRequests = jasmine.createSpy('canManageRequests');
         vm = {
           displaySingleContact: false,
           contactId: contactId,
-          filters: { userSettings: {} },
-          canManageRequests: canManageRequests
+          filters: { userSettings: {} }
         };
 
         spyOn($log, 'debug');
