@@ -77,6 +77,14 @@
             expect(leaveCalendarServiceMock.instance.loadFilteredContacts).toHaveBeenCalledWith();
           });
 
+          it('loads the look up contacts', function () {
+            expect(leaveCalendarServiceMock.instance.loadLookUpContacts).toHaveBeenCalledWith();
+          });
+
+          it('stores a list of look up contacts', function () {
+            expect(vm.lookupContacts).toEqual(leaveCalendarServiceMock.data.lookedUpContacts);
+          });
+
           it('returns the filtered contacts', function () {
             expect(loadedContacts).toEqual(leaveCalendarServiceMock.data.filteredContacts);
           });

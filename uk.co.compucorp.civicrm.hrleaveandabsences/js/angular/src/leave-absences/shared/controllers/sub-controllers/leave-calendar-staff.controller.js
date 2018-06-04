@@ -5,10 +5,10 @@ define([
   'common/moment',
   'leave-absences/shared/modules/controllers'
 ], function (_, moment, controllers) {
-  controllers.controller('LeaveCalendarStaffController', ['$log', 'Contact',
+  controllers.controller('LeaveCalendarStaffController', ['$log', '$q', 'Contact',
     'LeaveCalendarService', controller]);
 
-  function controller ($log, Contact, LeaveCalendarService) {
+  function controller ($log, $q, Contact, LeaveCalendarService) {
     $log.debug('LeaveCalendarStaffController');
 
     var leaveCalendar, vm;
@@ -52,10 +52,20 @@ define([
          * @return {Promise} resolves as an {Array}
          */
         loadContacts: function () {
-          if (!vm.displaySingleContact && vm.canManageRequests()) {
+          if (vm.displaySingleContact) {
+            return leaveCalendar.loadFilteredContacts();
+          } else if (vm.canManageRequests()) {
             return leaveCalendar.loadContactsByAssignationType();
           } else {
-            return leaveCalendar.loadFilteredContacts();
+            return $q.all({
+              contacts: leaveCalendar.loadFilteredContacts(),
+              lookupContacts: leaveCalendar.loadLookUpContacts()
+            })
+              .then(function (result) {
+                vm.lookupContacts = result.lookupContacts;
+
+                return result.contacts;
+              });
           }
         }
       };

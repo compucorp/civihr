@@ -7,7 +7,7 @@ define([
   var $q, vm;
   var LeaveCalendarService = jasmine.createSpyObj('LeaveCalendarService', ['init']);
   var leaveCalendarInstance = jasmine.createSpyObj('leaveCalendarInstance', [
-    'loadContactsByAssignationType', 'loadFilteredContacts']);
+    'loadContactsByAssignationType', 'loadFilteredContacts', 'loadLookUpContacts']);
   var data = {
     contactIdsToReduceTo: [_.uniqueId(), _.uniqueId(), _.uniqueId()],
     filteredContacts: _.clone(contactsMockData.all.values.slice(0, 2)),
@@ -52,6 +52,8 @@ define([
     leaveCalendarInstance.loadContactsByAssignationType.and.callFake(loadContactsByAssignationType);
     leaveCalendarInstance.loadFilteredContacts.and.returnValue($q.resolve(
       data.filteredContacts));
+    leaveCalendarInstance.loadLookUpContacts.and.returnValue($q.resolve(
+      data.lookedUpContacts));
   }
 
   return {
