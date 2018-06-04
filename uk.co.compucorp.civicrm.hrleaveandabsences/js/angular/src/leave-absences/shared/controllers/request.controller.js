@@ -274,6 +274,17 @@ define([
     }
 
     /**
+     * Checks if request dates and times need to be reverted to the original state.
+     * They need to be reverted if the balance has not been changed for all requests
+     * except TOIL because its balance is independent from the dates and times.
+     *
+     * @return {Boolean}
+     */
+    function checkIfRequestDatesAndTimesNeedToBeReverted () {
+      return getLeaveType() !== 'toil' && !vm.request.change_balance;
+    }
+
+    /**
      * Closes the error alerts if any
      */
     function closeAlert () {
@@ -931,7 +942,7 @@ define([
       return vm.request.isValid()
         .then(isBalanceChangeRecalculationNeeded() && checkIfBalanceChangeHasChanged)
         .then(decideIfBalanceChangeNeedsAForceRecalculation)
-        .then(!vm.request.change_balance && revertRequestOriginalDatesAndTimes)
+        .then(checkIfRequestDatesAndTimesNeedToBeReverted() && revertRequestOriginalDatesAndTimes)
         .then(submitAllTabs)
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();
