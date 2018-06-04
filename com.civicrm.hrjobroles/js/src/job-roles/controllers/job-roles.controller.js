@@ -1114,6 +1114,12 @@ define([
      */
     function updateRole (roleId, roleType) {
       var updatedRole;
+      var optionsData = {
+        'location': {data: vm.LocationsData},
+        'level': {data: vm.LevelsData},
+        'department': {data: vm.DepartmentsData},
+        'region': {data: vm.RegionsData}
+      };
 
       $log.debug('Update Role');
 
@@ -1122,17 +1128,11 @@ define([
       }
 
       updatedRole = angular.copy(vm.editData[roleId]);
-      updatedRole.location = (updatedRole.location === undefined) ? updatedRole.location = '' : updatedRole.location;
-      updatedRole.level = (updatedRole.level === undefined) ? updatedRole.level = '' : updatedRole.level;
-      updatedRole.department = (updatedRole.department === undefined) ? updatedRole.department = '' : updatedRole.department;
-      updatedRole.region = (updatedRole.region === undefined) ? updatedRole.region = '' : updatedRole.region;
-      updatedRole.start_date = convertDateToServerFormat(updatedRole.start_date);
-
-      if (updatedRole.end_date) {
-        updatedRole.end_date = convertDateToServerFormat(updatedRole.end_date);
-      } else {
-        delete updatedRole.end_date;
-      }
+      // Ensure location, level, department, region exist and not disabled
+      _.forEach(optionsData, function (option, type) {
+        optionsData[type].status = _.includes(_.keys(option.data), updatedRole[type]);
+      });
+      updatedRole = sanitizeUpdatedRole(updatedRole, optionsData);
 
       if (updatedRole.funders && updatedRole.funders.length) {
         updateFundersContactsList(updatedRole.funders);
@@ -1144,6 +1144,30 @@ define([
 
         return getJobRolesList(vm.contactId);
       });
+    }
+
+    /**
+     * Update submitted role if undefined or option type is disabled
+     *
+     * @param {Object} updatedRole
+     * @param {Object} optionData
+     * @returns {Object}
+     */
+    function sanitizeUpdatedRole (updatedRole, optionData) {
+      _.forEach(_.keys(optionData), function (optionType) {
+        updatedRole[optionType] = (updatedRole[optionType] === undefined || !optionData[optionType].status)
+          ? updatedRole[optionType] = ''
+          : updatedRole[optionType];
+      });
+      updatedRole.start_date = convertDateToServerFormat(updatedRole.start_date);
+
+      if (updatedRole.end_date) {
+        updatedRole.end_date = convertDateToServerFormat(updatedRole.end_date);
+      } else {
+        delete updatedRole.end_date;
+      }
+
+      return updatedRole;
     }
 
     /**

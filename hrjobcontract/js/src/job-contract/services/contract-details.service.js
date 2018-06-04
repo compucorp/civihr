@@ -1,8 +1,9 @@
 /* eslint-env amd */
 
 define([
-  'common/angular'
-], function (angular) {
+  'common/angular',
+  'common/lodash'
+], function (angular, _) {
   'use strict';
 
   contractDetailsService.__name = 'contractDetailsService';
@@ -38,15 +39,15 @@ define([
           action: 'validatedates',
           json: params
         },
-          null,
-          function (data) {
-            if (utilsService.errorHandler(data, 'Unable to fetch API "validatedates" response', deffered)) {
-              return;
-            }
+        null,
+        function (data) {
+          if (utilsService.errorHandler(data, 'Unable to fetch API "validatedates" response', deffered)) {
+            return;
+          }
 
-            val = data.values;
-            deffered.resolve(val);
-          });
+          val = data.values;
+          deffered.resolve(val);
+        });
         return deffered.promise;
       },
       getOne: function (params) {
@@ -82,6 +83,10 @@ define([
       getOptions: function (fieldName, callAPI) {
         var deffered = $q.defer();
         var data;
+        var contractTypes = {
+          arr: [],
+          obj: {}
+        };
 
         if (!callAPI) {
           data = settings.CRM.options.HRJobDetails || {};
@@ -92,7 +97,15 @@ define([
 
           deffered.resolve(data || {});
         } else {
-          // TODO call2API
+          CRM.api3('HRJobDetails', 'getoptions', {
+            'sequential': 1,
+            'field': fieldName
+          }).done(function (data) {
+            contractTypes.obj = _.mapValues(_.indexBy(data.values, 'key'), 'value');
+            contractTypes.arr = _.values(_.indexBy(data.values, 'key'));
+
+            deffered.resolve(contractTypes);
+          });
         }
 
         return deffered.promise;

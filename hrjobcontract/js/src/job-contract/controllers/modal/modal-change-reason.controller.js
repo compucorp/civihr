@@ -7,12 +7,12 @@ define([
 
   ModalChangeReasonController.__name = 'ModalChangeReasonController';
   ModalChangeReasonController.$inject = [
-    '$log', '$scope', '$uibModalInstance', 'content', 'date', 'reasonId',
-    'settings', 'contractRevisionService'
+    '$log', '$scope', '$uibModalInstance', 'crmAngService', 'content', 'date', 'reasonId',
+    'settings', 'contractRevisionService', 'contractService'
   ];
 
-  function ModalChangeReasonController ($log, $scope, $modalInstance, content, date,
-    reasonId, settings, contractRevisionService) {
+  function ModalChangeReasonController ($log, $scope, $modalInstance, crmAngService, content, date,
+    reasonId, settings, contractRevisionService, contractService) {
     var copy;
 
     $log.debug('Controller: ModalChangeReasonController');
@@ -28,6 +28,7 @@ define([
 
     $scope.cancel = cancel;
     $scope.dpOpen = dpOpen;
+    $scope.openRevisionChangeReasonEditor = openRevisionChangeReasonEditor;
     $scope.save = save;
 
     (function init () {
@@ -56,17 +57,30 @@ define([
         contact_id: settings.contactId,
         effective_date: $scope.effective_date
       })
-      .then(function (result) {
-        if (result.success) {
-          $modalInstance.close({
-            reasonId: $scope.change_reason,
-            date: $scope.effective_date ? moment($scope.effective_date).format('YYYY-MM-DD') : ''
-          });
-        } else {
-          CRM.alert(result.message, 'Error', 'error');
-          $scope.$broadcast('hrjc-loader-hide');
-        }
-      });
+        .then(function (result) {
+          if (result.success) {
+            $modalInstance.close({
+              reasonId: $scope.change_reason,
+              date: $scope.effective_date ? moment($scope.effective_date).format('YYYY-MM-DD') : ''
+            });
+          } else {
+            CRM.alert(result.message, 'Error', 'error');
+            $scope.$broadcast('hrjc-loader-hide');
+          }
+        });
+    }
+
+    /**
+     * Opens the revision change reasons for editing
+     */
+    function openRevisionChangeReasonEditor () {
+      crmAngService.loadForm('/civicrm/admin/options/hrjc_revision_change_reason?reset=1')
+        .on('crmUnload', function () {
+          contractService.getRevisionOptions('change_reason', true)
+            .then(function (result) {
+              $scope.options.contract.change_reason = result.obj;
+            });
+        });
     }
   }
 

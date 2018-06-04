@@ -5,6 +5,10 @@
 @import 'compass/css3/animation';
 @import 'compass/css3/transform';
 
+@import 'bootstrap-compass';
+@import 'civihr/bootstrap-variables';
+@import 'bootstrap/variables';
+
 ##{$module} {
   //Unset reset.css
   @import 'civihr/modules/unset';
@@ -14,11 +18,6 @@
   // the narrowed scope of the styles for this CiviCRM module only.
   // ==========================================================================
   @import 'bootstrap-sprockets';
-
-  @import 'bootstrap-compass';
-  @import 'civihr/bootstrap-variables';
-
-  @import 'bootstrap/variables';
   @import 'bootstrap/mixins';
 
   // Reset and dependencies
@@ -121,8 +120,6 @@
   @import 'hrjc/partials/summary';
   @import 'hrjc/partials/tables';
   @import 'hrjc/partials/wizard';
-
-  @import '../../../org.civicrm.shoreditch/scss/bootstrap/overrides/variables';
-  @import '../../../org.civicrm.shoreditch/scss/bootstrap/mixins/prefix';
-  @import '../../../org.civicrm.shoreditch/scss/angular/overrides/uib-datepicker';
 }
+
+@import 'civihr/partials/shoreditch-imports';
