@@ -22,8 +22,8 @@ define([
   ];
 
   function ManageLeaveRequestsController ($log, $q, $rootScope, Contact,
-  checkPermissions, OptionGroup, sharedSettings, AbsencePeriod, AbsenceType,
-  LeaveRequest, LeavePopup, pubSub) {
+    checkPermissions, OptionGroup, sharedSettings, AbsencePeriod, AbsenceType,
+    LeaveRequest, LeavePopup, pubSub) {
     'use strict';
     $log.debug('Component: manage-leave-requests');
 
@@ -403,9 +403,8 @@ define([
      * @param {Object} leaveRequest
      * @param {String} leaveType
      * @param {String} selectedContactId
-     * @param {Boolean} isSelfRecord
      */
-    function openLeavePopup (leaveRequest, leaveType, selectedContactId, isSelfRecord) {
+    function openLeavePopup (leaveRequest, leaveType, selectedContactId) {
       LeavePopup.openModal.apply(LeavePopup, arguments);
     }
 

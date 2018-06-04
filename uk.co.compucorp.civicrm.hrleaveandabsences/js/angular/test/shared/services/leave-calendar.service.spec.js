@@ -12,7 +12,8 @@ define([
   'use strict';
 
   describe('LeaveCalendarService', function () {
-    var $rootScope, Contact, contractApi, customContractValues, leaveCalendar, mockedContracts, vm;
+    var $rootScope, Contact, contractApi, customContractValues, leaveCalendar,
+      loadedContacts, mockedContracts, vm;
 
     beforeEach(module('common.mocks', 'common.models', 'common.services',
       'leave-absences.services', function ($provide) {
@@ -31,104 +32,135 @@ define([
     );
 
     beforeEach(inject(function ($q, _$rootScope_, _Contact_, LeaveCalendarService) {
+      var contacts = contactsMockData.all.values;
       $rootScope = _$rootScope_;
-      vm = {};
       Contact = _Contact_;
-      leaveCalendar = LeaveCalendarService.init(vm);
+      vm = {
+        contactId: _.uniqueId(),
+        lookupContacts: [],
+        selectedPeriod: { start_date: '2000-01-01', end_date: '2000-03-31' },
+        filters: {
+          userSettings: {
+            assignedTo: { type: 'all' },
+            department: { value: _.uniqueId() },
+            level_type: { value: _.uniqueId() },
+            location: { value: _.uniqueId() },
+            region: { value: _.uniqueId() }
+          }
+        }
+      };
 
-      spyOn(Contact, 'all').and.returnValue($q.resolve({ list: contactsMockData.all.values }));
+      spyOn(Contact, 'all').and.returnValue($q.resolve({ list: contacts }));
+      spyOn(Contact, 'leaveManagees').and.returnValue($q.resolve(contacts.slice(0, 2)));
       contractApi.all.and.returnValue($q.resolve(mockedContracts));
+
+      leaveCalendar = LeaveCalendarService.init(vm);
     }));
 
-    it('defines a leave calendar service', function () {
+    it('returns a leave calendar service instance', function () {
       expect(leaveCalendar).toBeDefined();
     });
 
-    describe('loadAllLookUpContacts()', function () {
-      var allLookUpContacts;
-
-      beforeEach(function (done) {
-        leaveCalendar.loadAllLookUpContacts()
-          .then(function (_allLookupContacts_) {
-            allLookUpContacts = _allLookupContacts_;
-          })
-          .finally(done);
-        $rootScope.$digest();
-      });
-
-      it('requests all contacts', function () {
-        expect(Contact.all).toHaveBeenCalledWith();
-      });
-
-      it('returns a list of look up contacts', function () {
-        expect(allLookUpContacts).toEqual(contactsMockData.all.values);
-      });
-    });
-
-    describe('loadContactIdsToReduceTo()', function () {
-      var contactIdsToReduceTo, expectedContactIdsToReduceTo;
-
-      describe('when all the contracts are covered by the period filters', function () {
+    describe('loadContactsByAssignationType()', function () {
+      describe('when loading all contacts', function () {
         beforeEach(function (done) {
-          expectedContactIdsToReduceTo = _.pluck(customContractValues, 'contact_id');
-          vm.selectedPeriod = {
-            start_date: customContractValues[0].period_start_date,
-            end_date: customContractValues[2].period_end_date
-          };
-
-          loadContactIdsToReduceTo(done);
+          vm.filters.userSettings.assignedTo.type = 'all';
+          loadContactsByAssignationType(done);
         });
 
-        it('returns all the contact ids with contracts within the selected period', function () {
-          expect(contactIdsToReduceTo).toEqual(expectedContactIdsToReduceTo);
+        it('requests all contacts', function () {
+          expect(Contact.all).toHaveBeenCalledWith();
+        });
+
+        it('returns a list of contacts', function () {
+          expect(loadedContacts).toEqual(contactsMockData.all.values);
+        });
+
+        it('stores all look up contact', function () {
+          expect(vm.lookupContacts).toEqual(contactsMockData.all.values);
         });
       });
 
-      describe('when only some of the contracts are covered by the period filters', function () {
+      describe('when loading my assigned contacts', function () {
         beforeEach(function (done) {
-          expectedContactIdsToReduceTo = _.pluck(customContractValues, 'contact_id').slice(1, 3);
-          vm.selectedPeriod = {
-            start_date: customContractValues[1].period_start_date,
-            end_date: customContractValues[2].period_end_date
-          };
-
-          loadContactIdsToReduceTo(done);
+          vm.filters.userSettings.assignedTo.type = 'me';
+          loadContactsByAssignationType(done);
         });
 
-        it('returns all the contact ids with contracts within the selected period', function () {
-          expect(contactIdsToReduceTo).toEqual(expectedContactIdsToReduceTo);
+        it('requests my assigned contacts', function () {
+          expect(Contact.leaveManagees).toHaveBeenCalledWith(vm.contactId);
+        });
+
+        it('returns a list of contacts', function () {
+          expect(loadedContacts).toEqual(contactsMockData.all.values);
+        });
+
+        it('stores my assignees as look up contacts', function () {
+          expect(vm.lookupContacts).toEqual(contactsMockData.all.values.slice(0, 2));
         });
       });
 
-      /**
-       * Executes the load contact ids to reduce to function and stores the result.
-       *
-       * @param {Function} done the jasmine done function to execute once the contact
-       * ids have been loaded.
-       */
-      function loadContactIdsToReduceTo (done) {
-        leaveCalendar.loadContactIdsToReduceTo()
-          .then(function (_contactIdsToReduceTo_) {
-            contactIdsToReduceTo = _contactIdsToReduceTo_;
-          })
-          .finally(done);
-        $rootScope.$digest();
-      }
+      describe('when loading unassigned contacts', function () {
+        beforeEach(function (done) {
+          vm.filters.userSettings.assignedTo.type = 'unassigned';
+          loadContactsByAssignationType(done);
+        });
+
+        it('requests unnassigned contacts', function () {
+          expect(Contact.leaveManagees)
+            .toHaveBeenCalledWith(undefined, { unassigned: true });
+        });
+
+        it('returns a list of contacts', function () {
+          expect(loadedContacts).toEqual(contactsMockData.all.values);
+        });
+
+        it('stores the unnassigned contacts as look up contacts', function () {
+          expect(vm.lookupContacts).toEqual(contactsMockData.all.values.slice(0, 2));
+        });
+      });
+
+      describe('populating the contact ids to reduce to', function () {
+        var expectedContactIdsToReduceTo;
+
+        describe('when all the contracts are covered by the period filters', function () {
+          beforeEach(function (done) {
+            expectedContactIdsToReduceTo = _.pluck(customContractValues, 'contact_id');
+            vm.selectedPeriod = {
+              start_date: customContractValues[0].period_start_date,
+              end_date: customContractValues[2].period_end_date
+            };
+
+            loadContactsByAssignationType(done);
+          });
+
+          it('returns all the contact ids with contracts within the selected period', function () {
+            expect(vm.contactIdsToReduceTo).toEqual(expectedContactIdsToReduceTo);
+          });
+        });
+
+        describe('when only some of the contracts are covered by the period filters', function () {
+          beforeEach(function (done) {
+            expectedContactIdsToReduceTo = _.pluck(customContractValues, 'contact_id').slice(1, 3);
+            vm.selectedPeriod = {
+              start_date: customContractValues[1].period_start_date,
+              end_date: customContractValues[2].period_end_date
+            };
+
+            loadContactsByAssignationType(done);
+          });
+
+          it('returns all the contact ids with contracts within the selected period', function () {
+            expect(vm.contactIdsToReduceTo).toEqual(expectedContactIdsToReduceTo);
+          });
+        });
+      });
     });
 
     describe('loadFilteredContacts()', function () {
       var expectedFilters;
 
       beforeEach(function () {
-        vm.lookupContacts = [];
-        vm.filters = {
-          userSettings: {
-            department: { value: _.uniqueId() },
-            level_type: { value: _.uniqueId() },
-            location: { value: _.uniqueId() },
-            region: { value: _.uniqueId() }
-          }
-        };
         expectedFilters = {
           department: vm.filters.userSettings.department.value,
           level_type: vm.filters.userSettings.level_type.value,
@@ -229,6 +261,21 @@ define([
       });
 
       return mockedContracts.values;
+    }
+
+    /**
+     * Executes the load contacts by assignation type function and stores the result.
+     *
+     * @param {Function} done the jasmine done function to execute once the contact
+     * ids have been loaded.
+     */
+    function loadContactsByAssignationType (done) {
+      leaveCalendar.loadContactsByAssignationType()
+        .then(function (_loadedContacts_) {
+          loadedContacts = _loadedContacts_;
+        })
+        .finally(done);
+      $rootScope.$digest();
     }
   });
 });

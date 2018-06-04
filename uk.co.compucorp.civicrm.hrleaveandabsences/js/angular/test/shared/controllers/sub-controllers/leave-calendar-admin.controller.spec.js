@@ -41,13 +41,15 @@
         expect(leaveCalendarServiceMock.service.init).toHaveBeenCalledWith(vm);
       });
 
+      it('selects the assignee filter "People I approve" by default', function () {
+        expect(vm.filters.userSettings.assignedTo.type).toBe('me');
+      });
+
       describe('loadContacts()', function () {
         var contacts;
 
         describe('when loading all of the contacts', function () {
           beforeEach(function (done) {
-            vm.filters.userSettings.assignedTo.type = 'all';
-
             controller.loadContacts()
               .then(function (_contacts_) {
                 contacts = _contacts_;
@@ -56,16 +58,8 @@
             $rootScope.$digest();
           });
 
-          it('requests the contact ids for contacts with valid contracts within the selected period', function () {
-            expect(leaveCalendarServiceMock.instance.loadContactIdsToReduceTo).toHaveBeenCalledWith();
-          });
-
-          it('stores the contact ids to reduce to', function () {
-            expect(vm.contactIdsToReduceTo).toEqual(leaveCalendarServiceMock.data.contactIdsToReduceTo);
-          });
-
-          it('requests contacts based on the selected indexes', function () {
-            expect(leaveCalendarServiceMock.instance.loadFilteredContacts).toHaveBeenCalledWith();
+          it('requests contacts by assignation type', function () {
+            expect(leaveCalendarServiceMock.instance.loadContactsByAssignationType).toHaveBeenCalledWith();
           });
 
           it('returns the list of filtered contacts', function () {
@@ -78,7 +72,12 @@
         vm = {
           contactId: contactId,
           filters: { userSettings: {} },
-          selectedPeriod: { start_date: '2016-01-01', end_date: '2016-12-31' }
+          selectedPeriod: { start_date: '2016-01-01', end_date: '2016-12-31' },
+          filtersByAssignee: [
+            { type: 'me', label: 'People I approve' },
+            { type: 'unassigned', label: 'People without approver' },
+            { type: 'all', label: 'All' }
+          ]
         };
         controller = $controller('LeaveCalendarAdminController').init(vm);
       }

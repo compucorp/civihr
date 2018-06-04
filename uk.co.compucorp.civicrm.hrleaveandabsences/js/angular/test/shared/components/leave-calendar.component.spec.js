@@ -108,6 +108,18 @@
         expect($log.debug).toHaveBeenCalled();
       });
 
+      it('has an array of filters by assignee', function () {
+        expect(controller.filtersByAssignee).toEqual([
+          { type: 'me', label: 'People I approve' },
+          { type: 'unassigned', label: 'People without approver' },
+          { type: 'all', label: 'All' }
+        ]);
+      });
+
+      it('selects the assignee filter "All" by default', function () {
+        expect(controller.filters.userSettings.assignedTo.type).toBe('all');
+      });
+
       describe('on init', function () {
         it('hides the loader for the whole page', function () {
           expect(controller.loading.page).toBe(false);
@@ -346,75 +358,6 @@
           });
         });
 
-        describe('filter by assignee', function () {
-          it('does *not* have such a filter for staff', function () {
-            expect(controller.filtersByAssignee).not.toBeDefined();
-          });
-
-          describe('when user is Admin', function () {
-            beforeEach(function () {
-              currentContact.role = 'admin';
-
-              compileComponent();
-            });
-
-            it('has the filter available', function () {
-              expect(controller.filtersByAssignee).toBeDefined();
-            });
-
-            describe('when filter by assignee is set to "Me"', function () {
-              beforeEach(function () {
-                Contract.all.calls.reset();
-                Contact.all.calls.reset();
-                selectFilterByAssignee('me');
-              });
-
-              it('does *not* load contracts', function () {
-                expect(Contract.all).not.toHaveBeenCalledWith();
-              });
-
-              it('loads only managees', function () {
-                expect(Contact.all).not.toHaveBeenCalledWith();
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(currentContact.id);
-              });
-            });
-
-            describe('when filter by assignee is set to "Unassigned"', function () {
-              beforeEach(function () {
-                selectFilterByAssignee('unassigned');
-              });
-
-              it('loads all contracts', function () {
-                expect(Contract.all).toHaveBeenCalledWith();
-              });
-
-              it('loads all contacts', function () {
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(undefined, {
-                  unassigned: true
-                });
-              });
-            });
-
-            describe('when filter by assignee is set to "All"', function () {
-              beforeEach(function () {
-                selectFilterByAssignee('all');
-              });
-
-              it('loads all contracts', function () {
-                expect(Contract.all).toHaveBeenCalledWith();
-              });
-
-              it('loads all contacts', function () {
-                expect(Contact.all).toHaveBeenCalledWith();
-              });
-            });
-          });
-
-          afterEach(function () {
-            currentContact.role = 'staff';
-          });
-        });
-
         describe('hint for admin filtering logic', function () {
           it('does *not* have such a hint for staff', function () {
             expect(controller.showAdminFilteringHint).not.toBeDefined();
@@ -596,6 +539,27 @@
 
           simulateMonthWithSignal('destroyed', controller.months.length);
         }
+      });
+
+      describe('canManageRequests()', function () {
+        var scenarios = [
+          { role: 'admin', expectedResult: true },
+          { role: 'manager', expectedResult: true },
+          { role: 'staff', expectedResult: false }
+        ];
+
+        scenarios.forEach(function (scenario) {
+          describe('when the ' + scenario.role + ' checks if they can manage requests', function () {
+            beforeEach(function () {
+              currentContact.role = scenario.role;
+              compileComponent();
+            });
+
+            it('returns ' + scenario.expectedResult, function () {
+              expect(controller.canManageRequests()).toBe(scenario.expectedResult);
+            });
+          });
+        });
       });
 
       describe('navigateToCurrentMonth()', function () {

@@ -44,6 +44,10 @@
         expect(leaveCalendarServiceMock.service.init).toHaveBeenCalledWith(vm);
       });
 
+      it('selects the assignee filter "People I approve" by default', function () {
+        expect(vm.filters.userSettings.assignedTo.type).toBe('me');
+      });
+
       describe('loadContacts()', function () {
         var contacts;
 
@@ -88,7 +92,12 @@
       function initController () {
         vm = {
           contactId: contactId,
-          filters: { userSettings: {} }
+          filters: { userSettings: {} },
+          filtersByAssignee: [
+            { type: 'me', label: 'People I approve' },
+            { type: 'unassigned', label: 'People without approver' },
+            { type: 'all', label: 'All' }
+          ]
         };
         controller = $controller('LeaveCalendarManagerController').init(vm);
       }

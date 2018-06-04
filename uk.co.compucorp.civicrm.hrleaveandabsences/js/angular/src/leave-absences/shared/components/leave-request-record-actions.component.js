@@ -8,7 +8,6 @@ define([
   components.component('leaveRequestRecordActions', {
     bindings: {
       contactId: '<',
-      isSelfRecord: '<',
       selectedContactId: '<'
     },
     templateUrl: ['shared-settings', function (sharedSettings) {
@@ -39,7 +38,7 @@ define([
       queryParams = beforeHashQueryParams.parse();
 
       if (queryParams.openModal) {
-        openLeavePopup(null, queryParams.openModal, vm.selectedContactId, vm.isSelfRecord);
+        openLeavePopup(null, queryParams.openModal, vm.selectedContactId);
       }
     }());
 
@@ -49,9 +48,8 @@ define([
      * @param {Object} leaveRequest
      * @param {String} leaveType
      * @param {String} selectedContactId
-     * @param {Boolean} isSelfRecord
      */
-    function openLeavePopup (leaveRequest, leaveType, selectedContactId, isSelfRecord) {
+    function openLeavePopup (leaveRequest, leaveType, selectedContactId) {
       LeavePopup.openModal.apply(LeavePopup, arguments);
     }
   }

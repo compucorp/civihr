@@ -3,42 +3,39 @@
 (function (CRM) {
   define([
     'common/lodash',
-    'common/mocks/data/contact.data',
+    'leave-absences/mocks/services/leave-calendar.service.mock',
     'leave-absences/my-leave/app'
-  ], function (_, contactsMock) {
+  ], function (_, leaveCalendarServiceMock) {
     'use strict';
 
     describe('LeaveCalendarStaffController', function () {
-      var $controller, $log, $rootScope, Contact, contactIdsToReduceTo, controller,
-        filteredContacts, leaveCalendar, LeaveCalendarService, lookedUpContacts,
+      var $controller, $log, $provide, $rootScope, canManageRequests, controller,
         vm;
       var contactId = CRM.vars.leaveAndAbsences.contactId;
 
-      beforeEach(module('my-leave'));
-      beforeEach(inject(function (_$controller_, _$log_, $q, _$rootScope_, _Contact_,
-        _LeaveCalendarService_) {
+      beforeEach(module('my-leave', function (_$provide_) {
+        $provide = _$provide_;
+      }));
+
+      beforeEach(inject(['api.contact.mock', function (ContactAPIMock) {
+        $provide.value('api.contact', ContactAPIMock);
+        $provide.value('LeaveCalendarService', leaveCalendarServiceMock.service);
+      }]));
+
+      beforeEach(inject(function (_$controller_, _$log_, $q, _$rootScope_) {
         $controller = _$controller_;
         $log = _$log_;
         $rootScope = _$rootScope_;
-        Contact = _Contact_;
-        contactIdsToReduceTo = [_.uniqueId(), _.uniqueId(), _.uniqueId()];
-        filteredContacts = _.clone(contactsMock.all.values.slice(0, 2));
-        LeaveCalendarService = _LeaveCalendarService_;
-        leaveCalendar = jasmine.createSpyObj('leaveCalendar', [
-          'loadAllLookUpContacts', 'loadContactIdsToReduceTo',
-          'loadFilteredContacts']);
-        lookedUpContacts = _.clone(contactsMock.all.values);
+        canManageRequests = jasmine.createSpy('canManageRequests');
+        vm = {
+          displaySingleContact: false,
+          contactId: contactId,
+          filters: { userSettings: {} },
+          canManageRequests: canManageRequests
+        };
 
         spyOn($log, 'debug');
-        spyOn(Contact, 'all').and.callThrough();
-        spyOn(LeaveCalendarService, 'init').and.returnValue(leaveCalendar);
-        leaveCalendar.loadAllLookUpContacts.and.returnValue($q.resolve(
-          lookedUpContacts));
-        leaveCalendar.loadContactIdsToReduceTo.and.returnValue($q.resolve(
-          contactIdsToReduceTo));
-        leaveCalendar.loadFilteredContacts.and.returnValue($q.resolve(
-          filteredContacts));
-
+        leaveCalendarServiceMock.setup($q);
         initController();
       }));
 
@@ -47,7 +44,7 @@
       });
 
       it('initializes the leave calendar service', function () {
-        expect(LeaveCalendarService.init).toHaveBeenCalledWith(vm);
+        expect(leaveCalendarServiceMock.service.init).toHaveBeenCalledWith(vm);
       });
 
       it('displays the contact names', function () {
@@ -63,26 +60,46 @@
       });
 
       describe('loadContacts()', function () {
-        var result, expectedContactIdsToReduceTo;
+        var loadedContacts;
 
-        beforeEach(function (done) {
-          expectedContactIdsToReduceTo = _.clone(contactIdsToReduceTo);
+        describe('as a staff', function () {
+          beforeEach(function (done) {
+            canManageRequests.and.returnValue(false);
+            controller.loadContacts()
+              .then(function (_loadedContacts_) {
+                loadedContacts = _loadedContacts_;
+              })
+              .finally(done);
+            $rootScope.$digest();
+          });
 
-          expectedContactIdsToReduceTo.push(vm.contactId);
-          controller.loadContacts()
-            .then(function (_result_) {
-              result = _result_;
-            })
-            .finally(done);
-          $rootScope.$digest();
+          it('loads the filtered contacts', function () {
+            expect(leaveCalendarServiceMock.instance.loadFilteredContacts).toHaveBeenCalledWith();
+          });
+
+          it('returns the filtered contacts', function () {
+            expect(loadedContacts).toEqual(leaveCalendarServiceMock.data.filteredContacts);
+          });
         });
 
-        it('loads the filtered contacts', function () {
-          expect(leaveCalendar.loadFilteredContacts).toHaveBeenCalled();
-        });
+        describe('as a manager or admin', function () {
+          beforeEach(function (done) {
+            canManageRequests.and.returnValue(true);
+            controller.loadContacts()
+              .then(function (_loadedContacts_) {
+                loadedContacts = _loadedContacts_;
+              })
+              .finally(done);
+            $rootScope.$digest();
+          });
 
-        it('returns the filtered contacts', function () {
-          expect(result).toEqual(filteredContacts);
+          it('loads the filtered contacts', function () {
+            expect(leaveCalendarServiceMock.instance.loadContactsByAssignationType).toHaveBeenCalledWith();
+          });
+
+          it('returns the filtered contacts', function () {
+            expect(loadedContacts).toEqual(leaveCalendarServiceMock.data.filteredContacts);
+          });
         });
 
         describe('when the component should only display a single contact', function () {
@@ -90,22 +107,33 @@
             vm.displaySingleContact = true;
             vm.contactId = _.uniqueId();
             vm.lookupContacts = [];
+            initController();
 
             controller.loadContacts();
           });
 
           it('only loads the information for the given contact', function () {
             expect(vm.lookupContacts).toEqual([{ id: vm.contactId }]);
-            expect(leaveCalendar.loadFilteredContacts).toHaveBeenCalled();
+            expect(leaveCalendarServiceMock.instance.loadFilteredContacts).toHaveBeenCalledWith();
           });
         });
       });
 
+      describe('when the component only displays a single contact', function () {
+        beforeEach(function () {
+          vm.displaySingleContact = true;
+          initController();
+        });
+
+        it('does not show the filters', function () {
+          expect(vm.showFilters).toEqual(false);
+        });
+      });
+
+      /**
+       * Initializes the leave calendar staff sub controller.
+       */
       function initController () {
-        vm = {
-          contactId: contactId,
-          filters: { userSettings: {} }
-        };
         controller = $controller('LeaveCalendarStaffController').init(vm);
       }
     });

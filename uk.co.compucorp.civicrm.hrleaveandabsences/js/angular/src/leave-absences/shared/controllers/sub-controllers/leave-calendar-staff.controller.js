@@ -26,6 +26,11 @@ define([
         vm.showContactName = true;
         vm.showFilters = true;
 
+        if (vm.displaySingleContact) {
+          vm.showFilters = false;
+          vm.lookupContacts = [{ id: vm.contactId }];
+        }
+
         return api();
       }
     };
@@ -47,11 +52,11 @@ define([
          * @return {Promise} resolves as an {Array}
          */
         loadContacts: function () {
-          if (vm.displaySingleContact) {
-            vm.lookupContacts = [{ id: vm.contactId }];
+          if (!vm.displaySingleContact && vm.canManageRequests()) {
+            return leaveCalendar.loadContactsByAssignationType();
+          } else {
+            return leaveCalendar.loadFilteredContacts();
           }
-
-          return leaveCalendar.loadFilteredContacts();
         }
       };
     }

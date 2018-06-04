@@ -47,10 +47,9 @@ define([
      * @param {String} leaveType
      * @param {String} selectedContactId - Contact ID for the contact dropdown
      *                                     when the manager/admin is opening the request
-     * @param {Boolean} isSelfRecord - True If the owner is opening the leave request
      * @param {Boolean} forceRecalculateBalanceChange optional
      */
-    function openModal (leaveRequest, leaveType, selectedContactId, isSelfRecord, forceRecalculateBalanceChange) {
+    function openModal (leaveRequest, leaveType, selectedContactId, forceRecalculateBalanceChange) {
       $modal.open({
         appendTo: $rootElement.children().eq(0),
         templateUrl: sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup.html',
@@ -63,7 +62,6 @@ define([
               leaveType: leaveType,
               leaveRequest: leaveRequest,
               selectedContactId: selectedContactId,
-              isSelfRecord: isSelfRecord,
               forceRecalculateBalanceChange: forceRecalculateBalanceChange
             };
           },
@@ -88,7 +86,7 @@ define([
           return checkPermissionBeforeOpeningPopup(leaveRequest)
             .then(function (hasPermission) {
               if (hasPermission) {
-                openModal(leaveRequest, leaveRequest.request_type, leaveRequest.contact_id, $rootScope.section === 'my-leave');
+                openModal(leaveRequest, leaveRequest.request_type, leaveRequest.contact_id);
               } else {
                 notification.error('Error', 'You dont have permission to see this leave request');
               }

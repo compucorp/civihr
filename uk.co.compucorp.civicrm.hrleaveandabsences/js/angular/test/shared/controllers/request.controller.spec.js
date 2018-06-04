@@ -575,8 +575,8 @@
                 var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-
-                initTestController({ leaveRequest: leaveRequest, isSelfRecord: true });
+                $rootScope.section = 'my-leave';
+                initTestController({ leaveRequest: leaveRequest });
 
                 expectedStatusValue = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
                 controller.balance.closing = 5;
@@ -1321,6 +1321,101 @@
             });
           });
         }
+      });
+
+      describe('checking if it is a self record', function () {
+        var leaveRequest;
+        var loggedInContactId = CRM.vars.leaveAndAbsences.contactId.toString();
+        var anotherContactId = _.uniqueId();
+
+        beforeEach(function () {
+          role = 'admin';
+          leaveRequest = LeaveRequestInstance.init({});
+        });
+
+        describe('when the section is My Leave', function () {
+          beforeEach(function () {
+            $rootScope.section = 'my-leave';
+          });
+
+          describe('and the user is checking someone else\'s request', function () {
+            beforeEach(function () {
+              leaveRequest.id = _.uniqueId();
+              leaveRequest.contact_id = anotherContactId;
+
+              initTestController({ leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as false', function () {
+              expect(controller.isSelfRecord).toBe(false);
+            });
+          });
+
+          describe('and the user is checking my own request', function () {
+            beforeEach(function () {
+              leaveRequest.id = _.uniqueId();
+              leaveRequest.contact_id = loggedInContactId;
+
+              initTestController({ leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as true', function () {
+              expect(controller.isSelfRecord).toBe(true);
+            });
+          });
+
+          describe('and the user creates a new request for themselves', function () {
+            beforeEach(function () {
+              initTestController({ mode: 'create', leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as true', function () {
+              expect(controller.isSelfRecord).toBe(true);
+            });
+          });
+        });
+
+        describe('when the section is Manager Leave', function () {
+          beforeEach(function () {
+            $rootScope.section = 'manager-leave';
+          });
+
+          describe('and the user is checking someone else\'s request', function () {
+            beforeEach(function () {
+              leaveRequest.id = _.uniqueId();
+              leaveRequest.contact_id = anotherContactId;
+
+              initTestController({ leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as false', function () {
+              expect(controller.isSelfRecord).toBe(false);
+            });
+          });
+
+          describe('and the user is checking my own request', function () {
+            beforeEach(function () {
+              leaveRequest.id = _.uniqueId();
+              leaveRequest.contact_id = loggedInContactId;
+
+              initTestController({ leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as false', function () {
+              expect(controller.isSelfRecord).toBe(false);
+            });
+          });
+
+          describe('and the user creates a new request for themselves', function () {
+            beforeEach(function () {
+              initTestController({ mode: 'create', leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as false', function () {
+              expect(controller.isSelfRecord).toBe(false);
+            });
+          });
+        });
       });
 
       /**
