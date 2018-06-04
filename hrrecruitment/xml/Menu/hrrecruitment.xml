@@ -24,6 +24,8 @@
     <path>civicrm/vacancy/apply</path>
     <title>Application Form</title>
     <page_callback>CRM_HRRecruitment_Form_Application</page_callback>
+    <access_callback>1</access_callback>
+    <is_public>true</is_public>
   </item>
   <item>
     <path>civicrm/case/pipeline</path>
