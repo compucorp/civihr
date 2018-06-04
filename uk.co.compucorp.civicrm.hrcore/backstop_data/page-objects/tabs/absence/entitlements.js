@@ -3,6 +3,7 @@ const Tab = require('../tab');
 module.exports = class AbsenceEntitlementsTab extends Tab {
   constructor () {
     super(...arguments);
+
     this.tabTitle = 'Entitlements';
   }
 

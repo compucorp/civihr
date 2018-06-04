@@ -35,17 +35,17 @@ module.exports = ['reference', 'test', 'openReport', 'approve'].map(action => {
  *   a. All the different groups if `group` is == '_all_',
  *   b. Only the given group
  *
- * @param {Array} usersIds
- * @param {String} group
+ * @param  {Array} usersIds
+ * @param  {String} groupName
  * @return {Array}
  */
-function buildScenariosList (usersIds, group) {
+function buildScenariosList (usersIds, groupName) {
   const config = siteConfig();
   const dirPath = path.join(BACKSTOP_DIR, 'scenarios');
 
   return _(fs.readdirSync(dirPath))
     .filter(scenario => {
-      return (group === '_all_' ? true : scenario === `${group}.json`) && scenario.endsWith('.json');
+      return (groupName === '_all_' ? true : scenario === `${groupName}.json`) && scenario.endsWith('.json');
     })
     .map(scenario => {
       return JSON.parse(fs.readFileSync(path.join(dirPath, scenario))).scenarios;

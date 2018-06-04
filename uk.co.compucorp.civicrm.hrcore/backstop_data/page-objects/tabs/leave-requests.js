@@ -3,6 +3,7 @@ const Tab = require('./tab');
 module.exports = class LeaveRequestsTab extends Tab {
   constructor () {
     super(...arguments);
+
     this.readySelector = '.chr_manage_leave_requests__panel_body';
     this.tabUiSref = 'requests';
   }

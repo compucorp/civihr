@@ -3,6 +3,7 @@ const Tab = require('../tab');
 module.exports = class AbsenceReportTab extends Tab {
   constructor () {
     super(...arguments);
+
     this.readySelector = '.chr_leave-report__table';
     this.tabTitle = 'Report';
   }

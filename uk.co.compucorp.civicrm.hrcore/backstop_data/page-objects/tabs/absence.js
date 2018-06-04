@@ -3,6 +3,7 @@ const Tab = require('./tab');
 module.exports = class AbsenceTab extends Tab {
   constructor () {
     super(...arguments);
+
     this.readySelector = '.absence-tab-page';
     this.tabTitle = 'Absence';
   }

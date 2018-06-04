@@ -3,6 +3,7 @@ const Tab = require('./tab');
 module.exports = class JobRolesTab extends Tab {
   constructor () {
     super(...arguments);
+
     this.readySelector = '.job-role__tabs';
     this.tabTitle = 'Job Roles';
   }

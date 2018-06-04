@@ -3,6 +3,7 @@ const Tab = require('./tab');
 module.exports = class JobContractTab extends Tab {
   constructor () {
     super(...arguments);
+
     this.tabTitle = 'Job Contract';
   }
 
