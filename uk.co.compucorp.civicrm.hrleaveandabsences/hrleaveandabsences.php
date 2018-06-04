@@ -360,6 +360,7 @@ function hrleaveandabsences_civicrm_container(\Symfony\Component\DependencyInjec
  */
 function hrleaveandabsences_civicrm_postInstall() {
   _hrleaveandabsences_set_has_leave_approved_by_as_default_relationship_type();
+  _hrleaveandabsences_civix_civicrm_postInstall();
 }
 
 /**
