@@ -19,9 +19,9 @@
   "engine": "puppet",
   "engineFlags": [],
   "engineOptions": {
-    "waitTimeout": 20000
+    "waitTimeout": 300000
   },
-  "asyncCaptureLimit": 1,
+  "asyncCaptureLimit": 5,
   "asyncCompareLimit": 50,
   "debug": false,
   "debugWindow": false
