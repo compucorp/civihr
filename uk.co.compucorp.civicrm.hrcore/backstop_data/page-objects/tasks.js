@@ -90,6 +90,6 @@ module.exports = class Tasks extends Page {
    */
   async waitForReady () {
     await this.puppet.waitFor('.ct-container-inner', { visible: true });
-    await this.puppet.waitFor(300);
+    await this.puppet.waitFor(4000);
   }
 };
