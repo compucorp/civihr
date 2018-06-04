@@ -183,7 +183,7 @@ function runBackstopJS (command) {
       .pipe(gulp.dest(BACKSTOP_DIR))
       .on('end', async () => {
         try {
-          await writeCookies();
+          (typeof argv.skipCookies === 'undefined') && await writeCookies();
           await backstopjs(command, { configPath: FILES.temp, filter: argv.filter });
 
           success = true;
