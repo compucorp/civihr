@@ -164,7 +164,7 @@ trait CRM_HRCore_Upgrader_Steps_1017 {
   /**
    * Looks up the location type ID for a given location type name
    *
-   * @param $locationTypeName
+   * @param string $locationTypeName
    *
    * @return int
    */
