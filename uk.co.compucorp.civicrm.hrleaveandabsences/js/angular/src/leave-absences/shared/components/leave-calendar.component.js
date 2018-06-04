@@ -41,7 +41,7 @@ define([
     vm.showContactName = false;
     vm.showFilters = false;
     vm.supportData = {};
-    vm.userpermi = 'staff';
+    vm.userPermissionRole = 'staff';
     vm.loading = { calendar: true, page: true };
     vm.filters = {
       hideOnMobile: true,
