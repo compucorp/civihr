@@ -1,0 +1,8 @@
+@import '../../../org.civicrm.shoreditch/scss/bootstrap/overrides/variables';
+@import '../../../org.civicrm.shoreditch/scss/bootstrap/mixins/prefix';
+
+##{$module} {
+  @import '../../../org.civicrm.shoreditch/scss/angular/overrides/uib-datepicker';
+}
+
+@import '../../../org.civicrm.shoreditch/scss/angular/overrides/outside-namespace/uib-datepicker-mobile';
