@@ -167,6 +167,10 @@
             expect(controller.supportData.leaveRequestStatuses.length).not.toBe(0);
           });
 
+          it('has default filter by absence type', function () {
+            expect(controller.supportData.absenceTypesToFilterBy).toEqual([]);
+          });
+
           it('stores toil amounts', function () {
             expect(controller.supportData.toilAmounts).toBeDefined();
           });
@@ -200,6 +204,25 @@
                 });
               });
             });
+          });
+        });
+
+        describe('filter by absence types', function () {
+          var filterValue = ['777', '888'];
+
+          beforeEach(function () {
+            $rootScope.$emit.calls.reset();
+            $rootScope.$emit('LeaveCalendar::updateFiltersByAbsenceType', filterValue);
+            $rootScope.$digest();
+          });
+
+          it('stores the filter value in the support data', function () {
+            expect(controller.supportData.absenceTypesToFilterBy)
+              .toEqual(filterValue);
+          });
+
+          it('refreshes the month data', function () {
+            expect($rootScope.$emit.calls.mostRecent().args[0]).toBe('LeaveCalendar::showMonth');
           });
         });
 

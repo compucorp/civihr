@@ -40,7 +40,6 @@ define([
     vm.selectedPeriod = null;
     vm.showContactName = false;
     vm.showFilters = false;
-    vm.supportData = {};
     vm.userPermissionRole = 'staff';
     vm.loading = { calendar: true, page: true };
     vm.filters = {
@@ -66,6 +65,9 @@ define([
       previous: true,
       next: true
     };
+    vm.supportData = {
+      absenceTypesToFilterBy: []
+    };
 
     vm.canManageRequests = canManageRequests;
     vm.labelPeriod = labelPeriod;
@@ -76,6 +78,7 @@ define([
     (function init () {
       setUserRole()
         .then(initWatchers)
+        .then(initListeners)
         .then(injectSubController)
         .then(makeSureMonthIsNotInjected)
         .then(function () {
@@ -143,6 +146,17 @@ define([
      */
     function getMonthIndex (dateMoment) {
       return dateMoment.format('YYYY-MM');
+    }
+
+    /**
+     * Initializes the event listeners
+     */
+    function initListeners () {
+      $rootScope.$on('LeaveCalendar::updateFiltersByAbsenceType', function (event, absenceTypesToFilterBy) {
+        vm.supportData.absenceTypesToFilterBy = absenceTypesToFilterBy;
+
+        sendShowMonthSignal(true);
+      });
     }
 
     /**
