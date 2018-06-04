@@ -55,7 +55,8 @@
             <div ng-if="day.contactData.leaveRequestsAttributes[leaveRequest.id].unit === 'hours'">
               <div>From: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].from_date | date:'HH:mm'}}</div>
               <div>To: {{day.contactData.leaveRequestsAttributes[leaveRequest.id].to_date | date:'HH:mm'}}</div>
-              <div>For: {{ leaveRequest.from_date_amount | timeUnitApplier :day.contactData.leaveRequestsAttributes[leaveRequest.id].unit }}</div>
+              <div ng-if="leaveRequest.from_date_amount"
+                >For: {{leaveRequest.from_date_amount | timeUnitApplier: day.contactData.leaveRequestsAttributes[leaveRequest.id].unit}}</div>
             </div>
           </div>
           <div ng-if="!day.contactData.leaveRequestsAttributes[leaveRequest.id].isSingleDay">
