@@ -181,7 +181,7 @@
 
             describe('when leave requests are reloaded', function () {
               beforeEach(function () {
-                $rootScope.$emit('LeaveCalendar::updateFiltersByAbsenceType', ['1']);
+                $rootScope.$emit('LeaveCalendar::showMonth', true);
               });
 
               it('flushes days data before populating it', function () {
@@ -269,7 +269,9 @@
             var filterValue = ['777', '888'];
 
             beforeEach(function () {
-              $rootScope.$emit('LeaveCalendar::updateFiltersByAbsenceType', filterValue);
+              controller.supportData.absenceTypesToFilterBy = filterValue;
+
+              $rootScope.$emit('LeaveCalendar::showMonth', true);
               $rootScope.$digest();
             });
 
@@ -1016,6 +1018,7 @@
           period: period2016,
           supportData: {
             absenceTypes: absenceTypes,
+            absenceTypesToFilterBy: [],
             dayTypes: OptionGroupData.getCollection('hrleaveandabsences_leave_request_day_type'),
             leaveRequestStatuses: OptionGroupData.getCollection('hrleaveandabsences_leave_request_status'),
             publicHolidays: publicHolidays
