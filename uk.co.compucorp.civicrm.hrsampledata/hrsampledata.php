@@ -25,6 +25,13 @@ function hrsampledata_civicrm_install() {
   return _hrsampledata_civix_civicrm_install();
 }
 
+/**
+ * Implementation of hook_civicrm_postInstall
+ */
+function hrsampledata_civicrm_postInstall() {
+  return _hrsampledata_civix_civicrm_postInstall();
+}
+
   /**
  * Implementation of hook_civicrm_uninstall
  */
