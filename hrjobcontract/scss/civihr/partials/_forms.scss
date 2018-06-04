@@ -71,7 +71,7 @@ input[type='checkbox'],
 }
 
 .form-group.required {
-  .control-label::after {
+  .control-label:first-child::after {
     color: #f00;
     content: '*';
   }

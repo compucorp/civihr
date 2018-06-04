@@ -153,13 +153,13 @@
                 <label for="newLocation" class="col-sm-4 control-label">
                   Location:
                 </label>
-                <div class="col-sm-8">
+                <div class="col-sm-7">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
                     {{jobroles.LocationsData[jobroles.editData[job_roles_data.id]['location']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <div class="form-inline">
-                      <div class="crm_custom-select">
+                      <div class="crm_custom-select crm_custom-select--full">
                         <ui-select
                           prevent-animations
                           ng-model="jobroles.editData[job_roles_data.id]['location']"
@@ -172,24 +172,26 @@
                           </ui-select-choices>
                         </ui-select>
                       </div>
-                      <a class="pointer">
-                        <i class="crm-i fa-wrench" ng-click="jobroles.openOptionsEditor('hrjc_location')"></i>
-                      </a>
                     </div>
                   </span>
+                </div>
+                <div class="col-sm-1 control-label" ng-show="editableForm.$visible">
+                  <a class="pointer">
+                    <i class="crm-i fa-wrench" ng-click="jobroles.openOptionsEditor('hrjc_location')"></i>
+                  </a>
                 </div>
               </div>
               <div class="form-group" ng-init="jobroles.initData(job_roles_data.id, 'region', job_roles_data.region)">
                 <label for="newRegion" class="col-sm-4 control-label">
                   Region:
                 </label>
-                <div class="col-sm-8">
+                <div class="col-sm-7">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
                     {{jobroles.RegionsData[jobroles.editData[job_roles_data.id]['region']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <div class="form-inline">
-                      <div class="crm_custom-select">
+                      <div class="crm_custom-select crm_custom-select--full">
                         <ui-select
                           prevent-animations
                           ng-model="jobroles.editData[job_roles_data.id]['region']"
@@ -202,24 +204,26 @@
                           </ui-select-choices>
                         </ui-select>
                       </div>
-                      <a class="pointer">
-                        <i class="crm-i fa-wrench" ng-click="jobroles.openOptionsEditor('hrjc_region')"></i>
-                      </a>
                     </div>
                   </span>
+                </div>
+                <div class="col-sm-1 control-label" ng-show="editableForm.$visible">
+                  <a class="pointer">
+                      <i class="crm-i fa-wrench" ng-click="jobroles.openOptionsEditor('hrjc_region')"></i>
+                    </a>
                 </div>
               </div>
               <div class="form-group" ng-init="jobroles.initData(job_roles_data.id, 'department', job_roles_data.department)">
                 <label for="newDepartment" class="col-sm-4 control-label">
                   Department:
                 </label>
-                <div class="col-sm-8">
+                <div class="col-sm-7">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
                     {{jobroles.DepartmentsData[jobroles.editData[job_roles_data.id]['department']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <div class="form-inline">
-                      <div class="crm_custom-select">
+                      <div class="crm_custom-select crm_custom-select--full">
                         <ui-select
                           prevent-animations
                           ng-model="jobroles.editData[job_roles_data.id]['department']"
@@ -232,24 +236,26 @@
                           </ui-select-choices>
                         </ui-select>
                       </div>
-                      <a class="pointer">
-                        <i class="crm-i fa-wrench" ng-click="jobroles.openOptionsEditor('hrjc_department')"></i>
-                      </a>
                     </div>
                   </span>
+                </div>
+                <div class="col-sm-1 control-label" ng-show="editableForm.$visible">
+                  <a class="pointer">
+                      <i class="crm-i fa-wrench" ng-click="jobroles.openOptionsEditor('hrjc_department')"></i>
+                    </a>
                 </div>
               </div>
               <div class="form-group" ng-init="jobroles.initData(job_roles_data.id, 'level', job_roles_data.level_type)">
                 <label for="newLevel" class="col-sm-4 control-label">
                   Level:
                 </label>
-                <div class="col-sm-8">
+                <div class="col-sm-7">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
                     {{jobroles.LevelsData[jobroles.editData[job_roles_data.id]['level']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <div class="form-inline">
-                      <div class="crm_custom-select">
+                      <div class="crm_custom-select crm_custom-select--full">
                         <ui-select
                         prevent-animations
                         ng-model="jobroles.editData[job_roles_data.id]['level']"
@@ -262,11 +268,13 @@
                           </ui-select-choices>
                         </ui-select>
                       </div>
-                      <a class="pointer">
-                        <i class="crm-i fa-wrench" ng-click="jobroles.openOptionsEditor('hrjc_level_type')"></i>
-                      </a>
                     </div>
                   </span>
+                </div>
+                <div class="col-sm-1 control-label" ng-show="editableForm.$visible">
+                  <a class="pointer">
+                      <i class="crm-i fa-wrench" ng-click="jobroles.openOptionsEditor('hrjc_level_type')"></i>
+                    </a>
                 </div>
               </div>
             </div>

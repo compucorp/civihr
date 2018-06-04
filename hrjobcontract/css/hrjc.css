@@ -8838,7 +8838,7 @@ fieldset[disabled]
 #hrjob-contract .text-required {
   color: #f00;
 }
-#hrjob-contract .form-group.required .control-label::after {
+#hrjob-contract .form-group.required .control-label:first-child::after {
   color: #f00;
   content: '*';
 }
