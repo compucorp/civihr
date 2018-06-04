@@ -100,13 +100,35 @@ define([
 
     /**
      * Sets a unit name to the leave requests attributes
+     * @NOTE this function contains an adhoc solution
+     * and should be refactored as soon as possible.
+     * We do not know what calculation to use for generic leave types
+     * so we rely on the "from" date time to *guess* the calculation unit.
+     * It is unlikely that the leave/sickness request in hours will have
+     * 00:00 time because of the work pattern. As per the TOIL, the tooltip
+     * does not care about the calculation unit since TOIL always shows times
+     * disregarding its calculation unit.
+     * @see PCHR-3774
      *
      * @param {LeaveRequestInstance} leaveRequest
      * @param {Object} leaveRequestAttributes
      */
     function resolveLeaveRequestCalculationUnit (leaveRequest, leaveRequestAttributes) {
-      var absenceType = _.find(vm.supportData.absenceTypes, { id: leaveRequest.type_id });
-      var calculationUnit = _.find(vm.supportData.calculationUnits, { 'value': absenceType.calculation_unit });
+      var absenceType, calculationUnit;
+
+      // @NOTE The whole block is an adhoc mentioned in the function description
+      if (!leaveRequest.type_id) {
+        if (moment(leaveRequest.from_date).format('HH:mm') === '00:00') {
+          leaveRequestAttributes.unit = 'days';
+        } else {
+          leaveRequestAttributes.unit = 'hours';
+        }
+
+        return;
+      }
+
+      absenceType = _.find(vm.supportData.absenceTypes, { id: leaveRequest.type_id });
+      calculationUnit = _.find(vm.supportData.calculationUnits, { 'value': absenceType.calculation_unit });
 
       leaveRequestAttributes.unit = calculationUnit.name;
     }
