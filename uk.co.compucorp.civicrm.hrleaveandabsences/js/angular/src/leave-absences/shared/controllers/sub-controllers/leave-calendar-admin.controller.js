@@ -49,7 +49,7 @@ define([
          * @return {Promise} resolves as an {Array}
          */
         loadContacts: function () {
-          return leaveCalendar.loadContactsByAssignationType();
+          return leaveCalendar.loadContactsForAdmin();
         }
       };
     }

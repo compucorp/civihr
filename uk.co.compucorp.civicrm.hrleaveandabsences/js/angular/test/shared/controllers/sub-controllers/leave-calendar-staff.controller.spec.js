@@ -61,38 +61,45 @@
 
       describe('loadContacts()', function () {
         var loadedContacts;
+        var scenarios = [
+          { role: 'staff' },
+          { role: 'manager' }
+        ];
 
-        describe('as a staff', function () {
-          beforeEach(function (done) {
-            canManageRequests.and.returnValue(false);
-            controller.loadContacts()
-              .then(function (_loadedContacts_) {
-                loadedContacts = _loadedContacts_;
-              })
-              .finally(done);
-            $rootScope.$digest();
-          });
+        scenarios.forEach(function (scenario) {
+          describe('as a ' + scenario.role, function () {
+            beforeEach(function (done) {
+              vm.userPermissionRole = scenario.role;
 
-          it('loads the filtered contacts', function () {
-            expect(leaveCalendarServiceMock.instance.loadFilteredContacts).toHaveBeenCalledWith();
-          });
+              controller.loadContacts()
+                .then(function (_loadedContacts_) {
+                  loadedContacts = _loadedContacts_;
+                })
+                .finally(done);
+              $rootScope.$digest();
+            });
 
-          it('loads the look up contacts', function () {
-            expect(leaveCalendarServiceMock.instance.loadLookUpContacts).toHaveBeenCalledWith();
-          });
+            it('loads the filtered contacts', function () {
+              expect(leaveCalendarServiceMock.instance.loadFilteredContacts).toHaveBeenCalledWith();
+            });
 
-          it('stores a list of look up contacts', function () {
-            expect(vm.lookupContacts).toEqual(leaveCalendarServiceMock.data.lookedUpContacts);
-          });
+            it('loads the look up contacts', function () {
+              expect(leaveCalendarServiceMock.instance.loadLookUpContacts).toHaveBeenCalledWith();
+            });
 
-          it('returns the filtered contacts', function () {
-            expect(loadedContacts).toEqual(leaveCalendarServiceMock.data.filteredContacts);
+            it('stores a list of look up contacts', function () {
+              expect(vm.lookupContacts).toEqual(leaveCalendarServiceMock.data.lookedUpContacts);
+            });
+
+            it('returns the filtered contacts', function () {
+              expect(loadedContacts).toEqual(leaveCalendarServiceMock.data.filteredContacts);
+            });
           });
         });
 
-        describe('as a manager or admin', function () {
+        describe('as an admin', function () {
           beforeEach(function (done) {
-            canManageRequests.and.returnValue(true);
+            vm.userPermissionRole = 'admin';
             controller.loadContacts()
               .then(function (_loadedContacts_) {
                 loadedContacts = _loadedContacts_;
@@ -102,7 +109,7 @@
           });
 
           it('loads the filtered contacts', function () {
-            expect(leaveCalendarServiceMock.instance.loadContactsByAssignationType).toHaveBeenCalledWith();
+            expect(leaveCalendarServiceMock.instance.loadContactsForAdmin).toHaveBeenCalledWith();
           });
 
           it('returns the filtered contacts', function () {

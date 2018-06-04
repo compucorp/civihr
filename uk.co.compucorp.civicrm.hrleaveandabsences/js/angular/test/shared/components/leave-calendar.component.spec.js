@@ -120,6 +120,10 @@
         expect(controller.filters.userSettings.assignedTo.type).toBe('all');
       });
 
+      it('sets the user permission role to staff by default', function () {
+        expect(controller.userPermissionRole).toBe('staff');
+      });
+
       describe('on init', function () {
         it('hides the loader for the whole page', function () {
           expect(controller.loading.page).toBe(false);
@@ -174,6 +178,27 @@
               color: '#4D4D68',
               calculation_unit: _.chain(controller.supportData.calculationUnits)
                 .find({ name: 'days' }).get('value').value()
+            });
+          });
+
+          describe('setting the user permission role', function () {
+            var scenarios = [
+              { role: 'admin' },
+              { role: 'manager' },
+              { role: 'staff' }
+            ];
+
+            scenarios.forEach(function (scenario) {
+              describe('when the ' + scenario.role + ' opens the calendar', function () {
+                beforeEach(function () {
+                  currentContact.role = scenario.role;
+                  compileComponent();
+                });
+
+                it('sets the user permission role equal to ' + scenario.role, function () {
+                  expect(controller.userPermissionRole).toBe(scenario.role);
+                });
+              });
             });
           });
         });

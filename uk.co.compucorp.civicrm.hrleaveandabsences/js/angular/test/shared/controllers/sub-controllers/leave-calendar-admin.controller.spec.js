@@ -59,7 +59,7 @@
           });
 
           it('requests contacts by assignation type', function () {
-            expect(leaveCalendarServiceMock.instance.loadContactsByAssignationType).toHaveBeenCalledWith();
+            expect(leaveCalendarServiceMock.instance.loadContactsForAdmin).toHaveBeenCalledWith();
           });
 
           it('returns the list of filtered contacts', function () {

@@ -61,11 +61,11 @@ define([
       expect(leaveCalendar).toBeDefined();
     });
 
-    describe('loadContactsByAssignationType()', function () {
+    describe('loadContactsForAdmin()', function () {
       describe('when loading all contacts', function () {
         beforeEach(function (done) {
           vm.filters.userSettings.assignedTo.type = 'all';
-          loadContactsByAssignationType(done);
+          loadContactsForAdmin(done);
         });
 
         it('stores all look up contact', function () {
@@ -76,7 +76,7 @@ define([
       describe('when loading my assigned contacts', function () {
         beforeEach(function (done) {
           vm.filters.userSettings.assignedTo.type = 'me';
-          loadContactsByAssignationType(done);
+          loadContactsForAdmin(done);
         });
 
         it('requests my assigned contacts', function () {
@@ -96,7 +96,7 @@ define([
         beforeEach(function (done) {
           vm.filters.userSettings.assignedTo.type = 'unassigned';
 
-          loadContactsByAssignationType(done);
+          loadContactsForAdmin(done);
         });
 
         it('requests unassigned contacts', function () {
@@ -124,7 +124,7 @@ define([
               end_date: customContractValues[2].period_end_date
             };
 
-            loadContactsByAssignationType(done);
+            loadContactsForAdmin(done);
           });
 
           it('returns all the contact ids with contracts within the selected period', function () {
@@ -140,7 +140,7 @@ define([
               end_date: customContractValues[2].period_end_date
             };
 
-            loadContactsByAssignationType(done);
+            loadContactsForAdmin(done);
           });
 
           it('returns all the contact ids with contracts within the selected period', function () {
@@ -308,13 +308,13 @@ define([
     }
 
     /**
-     * Executes the load contacts by assignation type function and stores the result.
+     * Executes the load contacts for admin function and stores the result.
      *
      * @param {Function} done the jasmine done function to execute once the contact
      * ids have been loaded.
      */
-    function loadContactsByAssignationType (done) {
-      leaveCalendar.loadContactsByAssignationType()
+    function loadContactsForAdmin (done) {
+      leaveCalendar.loadContactsForAdmin()
         .then(function (_loadedContacts_) {
           loadedContacts = _loadedContacts_;
         })
