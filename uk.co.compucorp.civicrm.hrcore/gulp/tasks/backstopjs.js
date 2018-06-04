@@ -190,7 +190,7 @@ function runBackstopJS (command) {
         } finally {
           cleanUpAndNotify(success);
 
-          success ? resolve() : reject(new Error('BackstopJS error'));
+          success ? resolve() : reject(new Error('BackstopJS error. It may be a task error, a script error or a comparison error'));
         }
       });
   })
