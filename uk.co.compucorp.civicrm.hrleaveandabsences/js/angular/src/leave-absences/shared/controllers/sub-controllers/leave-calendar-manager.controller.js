@@ -42,14 +42,7 @@ define([
          * @return {Promise} resolves as an {Array}
          */
         loadContacts: function () {
-          return ContactInstance.init({ id: vm.contactId })
-            .leaveManagees()
-            .then(function (contacts) {
-              vm.lookupContacts = contacts;
-            })
-            .then(function () {
-              return leaveCalendar.loadFilteredContacts();
-            });
+          return leaveCalendar.loadLookUpAndFilteredContacts();
         }
       };
     }

@@ -57,28 +57,10 @@ define([
           } else if (vm.userPermissionRole === 'admin') {
             return leaveCalendar.loadContactsForAdmin();
           } else {
-            return loadContactsForStaffAndManagers();
+            return leaveCalendar.loadLookUpAndFilteredContacts();
           }
         }
       };
-    }
-
-    /**
-     * Returns a list of filtered contacts for staff and managers. Also stores
-     * a list of look up contacts that can be used for filtering staffs.
-     *
-     * @return {Promise} resolves to an array of contacts.
-     */
-    function loadContactsForStaffAndManagers () {
-      return $q.all({
-        contacts: leaveCalendar.loadFilteredContacts(),
-        lookupContacts: leaveCalendar.loadLookUpContacts()
-      })
-        .then(function (result) {
-          vm.lookupContacts = result.lookupContacts;
-
-          return result.contacts;
-        });
     }
   }
 });

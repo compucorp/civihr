@@ -69,6 +69,7 @@ define([
       absenceTypesToFilterBy: []
     };
 
+    vm.canManageRequests = canManageRequests;
     vm.labelPeriod = labelPeriod;
     vm.navigateToCurrentMonth = navigateToCurrentMonth;
     vm.paginateMonth = paginateMonth;
@@ -126,6 +127,15 @@ define([
       }
 
       vm.months = months;
+    }
+
+    /**
+     * Returns true if the user is an admin or manager.
+     *
+     * @return {Boolean}
+     */
+    function canManageRequests () {
+      return _.includes(['admin', 'manager'], vm.userPermissionRole);
     }
 
     /**

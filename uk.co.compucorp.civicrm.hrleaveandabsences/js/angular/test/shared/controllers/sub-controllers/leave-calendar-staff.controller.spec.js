@@ -9,7 +9,7 @@
     'use strict';
 
     describe('LeaveCalendarStaffController', function () {
-      var $controller, $log, $provide, $rootScope, controller,
+      var $controller, $log, $provide, $rootScope, canManageRequests, controller,
         vm;
       var contactId = CRM.vars.leaveAndAbsences.contactId;
 
@@ -26,10 +26,12 @@
         $controller = _$controller_;
         $log = _$log_;
         $rootScope = _$rootScope_;
+        canManageRequests = jasmine.createSpy('canManageRequests');
         vm = {
           displaySingleContact: false,
           contactId: contactId,
-          filters: { userSettings: {} }
+          filters: { userSettings: {} },
+          canManageRequests: canManageRequests
         };
 
         spyOn($log, 'debug');
@@ -77,16 +79,8 @@
               $rootScope.$digest();
             });
 
-            it('loads the filtered contacts', function () {
-              expect(leaveCalendarServiceMock.instance.loadFilteredContacts).toHaveBeenCalledWith();
-            });
-
-            it('loads the look up contacts', function () {
-              expect(leaveCalendarServiceMock.instance.loadLookUpContacts).toHaveBeenCalledWith();
-            });
-
-            it('stores a list of look up contacts', function () {
-              expect(vm.lookupContacts).toEqual(leaveCalendarServiceMock.data.lookedUpContacts);
+            it('loads the look up and filtered contacts', function () {
+              expect(leaveCalendarServiceMock.instance.loadLookUpAndFilteredContacts).toHaveBeenCalledWith();
             });
 
             it('returns the filtered contacts', function () {
