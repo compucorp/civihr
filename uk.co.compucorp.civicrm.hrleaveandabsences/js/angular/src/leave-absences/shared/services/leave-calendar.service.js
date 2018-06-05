@@ -34,7 +34,8 @@ define([
       return {
         loadContactsForAdmin: loadContactsForAdmin,
         loadFilteredContacts: loadFilteredContacts,
-        loadLookUpContacts: loadLookUpContacts
+        loadLookUpContacts: loadLookUpContacts,
+        loadLookUpAndFilteredContacts: loadLookUpAndFilteredContacts
       };
 
       /**
@@ -149,6 +150,20 @@ define([
         var loadLookUpContactsMethod = contactsLookUpStrategies[filterByAssignee];
 
         return loadLookUpContactsMethod();
+      }
+
+      /**
+       * Requests a list of look up contacts, stores them, and then returns
+       * a list of filtered contacts based on the previously stored look ups.
+       *
+       * @return {Promise} resolve to an array of contacts.
+       */
+      function loadLookUpAndFilteredContacts () {
+        return loadLookUpContacts()
+          .then(function (lookupContacts) {
+            vm.lookupContacts = lookupContacts;
+          })
+          .then(loadFilteredContacts);
       }
 
       /**

@@ -14,6 +14,7 @@ define([
   describe('LeaveCalendarService', function () {
     var $rootScope, Contact, contractApi, customContractValues, leaveCalendar,
       loadedContacts, mockedContracts, vm;
+    var mockData = {};
 
     beforeEach(module('common.mocks', 'common.models', 'common.services',
       'leave-absences.services', function ($provide) {
@@ -35,6 +36,10 @@ define([
       var contacts = contactsMockData.all.values;
       $rootScope = _$rootScope_;
       Contact = _Contact_;
+      mockData = {
+        lookupContacts: contacts,
+        contacts: contacts.slice(0, 2)
+      };
       vm = {
         contactId: _.uniqueId(),
         lookupContacts: [],
@@ -50,8 +55,8 @@ define([
         }
       };
 
-      spyOn(Contact, 'all').and.returnValue($q.resolve({ list: contacts }));
-      spyOn(Contact, 'leaveManagees').and.returnValue($q.resolve(contacts.slice(0, 2)));
+      spyOn(Contact, 'all').and.returnValue($q.resolve({ list: mockData.contacts }));
+      spyOn(Contact, 'leaveManagees').and.returnValue($q.resolve(mockData.lookupContacts));
       contractApi.all.and.returnValue($q.resolve(mockedContracts));
 
       leaveCalendar = LeaveCalendarService.init(vm);
@@ -69,7 +74,7 @@ define([
         });
 
         it('stores all look up contact', function () {
-          expect(vm.lookupContacts).toEqual(contactsMockData.all.values);
+          expect(vm.lookupContacts).toEqual(mockData.contacts);
         });
       });
 
@@ -84,11 +89,11 @@ define([
         });
 
         it('returns a list of contacts', function () {
-          expect(loadedContacts).toEqual(contactsMockData.all.values);
+          expect(loadedContacts).toEqual(mockData.contacts);
         });
 
         it('stores my assignees as look up contacts', function () {
-          expect(vm.lookupContacts).toEqual(contactsMockData.all.values.slice(0, 2));
+          expect(vm.lookupContacts).toEqual(mockData.lookupContacts);
         });
       });
 
@@ -105,11 +110,11 @@ define([
         });
 
         it('returns a list of contacts', function () {
-          expect(loadedContacts).toEqual(contactsMockData.all.values);
+          expect(loadedContacts).toEqual(mockData.contacts);
         });
 
         it('stores the unassigned contacts as look up contacts', function () {
-          expect(vm.lookupContacts).toEqual(contactsMockData.all.values.slice(0, 2));
+          expect(vm.lookupContacts).toEqual(mockData.lookupContacts);
         });
       });
 
@@ -180,7 +185,7 @@ define([
         });
 
         it('returns a list of filtered contacts', function () {
-          expect(filteredContacts).toEqual(contactsMockData.all.values);
+          expect(filteredContacts).toEqual(mockData.contacts);
         });
       });
 
@@ -201,7 +206,7 @@ define([
         var expectedContactIds;
 
         beforeEach(function () {
-          vm.lookupContacts = _.shuffle(contactsMockData.all.values).slice(0, 2);
+          vm.lookupContacts = _.shuffle(mockData.contacts).slice(0, 2);
           expectedContactIds = _.pluck(vm.lookupContacts, 'id');
           expectedFilters.id = { IN: expectedContactIds };
 
@@ -244,6 +249,37 @@ define([
       });
     });
 
+    describe('loadLookUpAndFilteredContacts()', function () {
+      beforeEach(function (done) {
+        vm.filters.userSettings.assignedTo.type = 'me';
+
+        leaveCalendar.loadLookUpAndFilteredContacts()
+          .then(function (contacts) {
+            loadedContacts = contacts;
+          })
+          .finally(done);
+        $rootScope.$digest();
+      });
+
+      it('requests a list of look up contacts', function () {
+        expect(Contact.leaveManagees).toHaveBeenCalled();
+      });
+
+      it('stores a list of look up contacts', function () {
+        expect(vm.lookupContacts).toEqual(mockData.lookupContacts);
+      });
+
+      it('requests a list of filtered contacts using the look ups', function () {
+        expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+          id: { 'IN': _.pluck(vm.lookupContacts, 'id') }
+        }), null, 'display_name');
+      });
+
+      it('returns a list of contacts', function () {
+        expect(loadedContacts).toEqual(mockData.contacts);
+      });
+    });
+
     describe('loadLookUpContacts()', function () {
       describe('when the assignees filter value is "all"', function () {
         beforeEach(function (done) {
@@ -257,7 +293,7 @@ define([
         });
 
         it('returns a list of contacts', function () {
-          expect(loadedContacts).toEqual(contactsMockData.all.values);
+          expect(loadedContacts).toEqual(mockData.contacts);
         });
       });
 
@@ -273,7 +309,7 @@ define([
         });
 
         it('returns a list of the logged in user\'s assigned contacts', function () {
-          expect(loadedContacts).toEqual(contactsMockData.all.values.slice(0, 2));
+          expect(loadedContacts).toEqual(mockData.lookupContacts);
         });
       });
 
@@ -290,7 +326,7 @@ define([
         });
 
         it('returns a list of unassigned contacts', function () {
-          expect(loadedContacts).toEqual(contactsMockData.all.values.slice(0, 2));
+          expect(loadedContacts).toEqual(mockData.lookupContacts);
         });
       });
     });
