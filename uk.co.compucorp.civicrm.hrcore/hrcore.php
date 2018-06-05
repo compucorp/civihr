@@ -304,6 +304,14 @@ function hrcore_civicrm_pre($op, $objectName, $objectId, &$params) {
  */
 function hrcore_civicrm_pageRun($page) {
   _hrcore_add_js_session_vars();
+
+  $hooks = [
+    new CRM_HRCore_Hook_PageRun_LocationTypeFilter(),
+  ];
+
+  foreach ($hooks as $hook) {
+    $hook->handle($page);
+  }
 }
 
 /**
