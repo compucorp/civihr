@@ -60,12 +60,8 @@
           $rootScope.$digest();
         });
 
-        it('gets the leave managees of the current contact', function () {
-          expect(realContactInstance.leaveManagees).toHaveBeenCalled();
-        });
-
-        it('requests the filtered contacts', function () {
-          expect(leaveCalendarServiceMock.instance.loadFilteredContacts).toHaveBeenCalledWith();
+        it('requests the look up and filtered contacts', function () {
+          expect(leaveCalendarServiceMock.instance.loadLookUpAndFilteredContacts).toHaveBeenCalledWith();
         });
 
         it('returns the filtered contacts', function () {
