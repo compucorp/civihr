@@ -542,7 +542,7 @@ define([
                 vm[optionsData[optionGroupName].storage] = optionGroupName !== 'cost_centres'
                   ? getActiveValues(optionsData[optionGroupName].data)
                   : optionsData[optionGroupName].data.filter(function (optionValue) {
-                    return optionValue.is_active === '1';
+                    return !!+optionValue.is_active;
                   });
               }
             }

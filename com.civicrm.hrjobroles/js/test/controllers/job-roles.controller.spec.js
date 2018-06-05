@@ -68,7 +68,7 @@ define([
 
       it('builds the "CostCentreList" array containing the "weight" property', function () {
         expect(ctrl.CostCentreList).toEqual(jasmine.any(Array));
-        expect(Object.keys(ctrl.CostCentreList).length).toBe(3);
+        expect(ctrl.CostCentreList.length).toBe(3);
         expect(ctrl.CostCentreList[0].weight).not.toBeNull();
         expect(ctrl.CostCentreList[1].weight).not.toBeNull();
         expect(ctrl.CostCentreList[2].weight).not.toBeNull();
