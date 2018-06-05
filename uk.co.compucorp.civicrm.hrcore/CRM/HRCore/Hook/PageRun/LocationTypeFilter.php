@@ -1,9 +1,10 @@
 <?php
 
-
 class CRM_HRCore_Hook_PageRun_LocationTypeFilter {
 
   /**
+   * Removes certain location types from the admin edit page for them
+   *
    * @param CRM_Core_Page $page
    */
   public function handle($page) {
@@ -22,6 +23,8 @@ class CRM_HRCore_Hook_PageRun_LocationTypeFilter {
   }
 
   /**
+   * Checks if this is the right page
+   *
    * @param CRM_Core_Page $page
    *
    * @return bool
