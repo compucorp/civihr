@@ -139,9 +139,9 @@ define([
         leaveRequest.type_id = '';
       });
 
-      describe('when leave request "from" date time is 00:00', function () {
+      describe('when leave request "from_date_type" is *not* empty', function () {
         beforeEach(function () {
-          leaveRequest.from_date = '2018-05-01 00:00:00';
+          leaveRequest.from_date_type = '1';
           contactData.leaveRequests = [leaveRequest];
 
           compileComponent();
@@ -153,9 +153,9 @@ define([
         });
       });
 
-      describe('when leave request "from" date time is not 00:00', function () {
+      describe('when leave request "from_date_type" is empty', function () {
         beforeEach(function () {
-          leaveRequest.from_date = '2018-05-01 01:00:00';
+          delete leaveRequest.from_date_type;
           contactData.leaveRequests = [leaveRequest];
 
           compileComponent();
