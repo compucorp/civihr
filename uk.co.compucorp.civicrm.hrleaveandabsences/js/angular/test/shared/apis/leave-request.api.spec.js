@@ -87,7 +87,12 @@ define([
           var statuses = [jasmine.any(String), jasmine.any(String), jasmine.any(String)];
 
           beforeEach(function () {
-            promise = LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String), statuses, true);
+            promise = LeaveRequestAPI.balanceChangeByAbsenceType({
+              contact_id: jasmine.any(String),
+              period_id: jasmine.any(String),
+              statuses: { IN: statuses },
+              public_holiday: true
+            });
           });
 
           afterEach(function () {
@@ -99,12 +104,6 @@ define([
               expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[0]).toBe('LeaveRequest');
               expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[1]).toBe('getbalancechangebyabsencetype');
             });
-          });
-
-          it('sends as `statuses` an "IN" parameter', function () {
-            expect(LeaveRequestAPI.sendGET.calls.mostRecent().args[2]).toEqual(jasmine.objectContaining({
-              statuses: { 'IN': statuses }
-            }));
           });
 
           it('returns the api data as is', function () {
@@ -121,7 +120,10 @@ define([
 
           describe('when passing falsy values for status and publicHolidays', function () {
             beforeEach(function () {
-              LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), jasmine.any(String));
+              LeaveRequestAPI.balanceChangeByAbsenceType({
+                contact_id: jasmine.any(String),
+                period_id: jasmine.any(String)
+              });
             });
 
             it('assigns default values to them', function () {
@@ -135,12 +137,12 @@ define([
 
         describe('error handling', function () {
           it('throws error if contact_id is blank', function () {
-            LeaveRequestAPI.balanceChangeByAbsenceType(null, jasmine.any(String))
+            LeaveRequestAPI.balanceChangeByAbsenceType({ period_id: jasmine.any(String) })
               .catch(commonExpect);
           });
 
           it('throws error if periodId is blank', function () {
-            LeaveRequestAPI.balanceChangeByAbsenceType(jasmine.any(String), null)
+            LeaveRequestAPI.balanceChangeByAbsenceType({ contact_id: jasmine.any(String) })
               .catch(commonExpect);
           });
 
@@ -580,9 +582,9 @@ define([
         $httpBackend.flush();
       });
 
-      it('calls the LeaveRequest.get endpoint', function () {
+      it('calls the LeaveRequest.get endpoint and does not cache results', function () {
         promise.then(function () {
-          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getFull', { id: id });
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getFull', { id: id }, false);
         });
       });
     });

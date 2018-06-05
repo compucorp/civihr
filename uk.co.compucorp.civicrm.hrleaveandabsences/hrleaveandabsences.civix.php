@@ -3,6 +3,83 @@
 // AUTO-GENERATED FILE -- Civix may overwrite any changes made to this file
 
 /**
+ * The ExtensionUtil class provides small stubs for accessing resources of this
+ * extension.
+ */
+class CRM_HRLeaveAndAbsences_ExtensionUtil {
+  const SHORT_NAME = "hrleaveandabsences";
+  const LONG_NAME = "uk.co.compucorp.civicrm.hrleaveandabsences";
+  const CLASS_PREFIX = "CRM_HRLeaveAndAbsences";
+
+  /**
+   * Translate a string using the extension's domain.
+   *
+   * If the extension doesn't have a specific translation
+   * for the string, fallback to the default translations.
+   *
+   * @param string $text
+   *   Canonical message text (generally en_US).
+   * @param array $params
+   * @return string
+   *   Translated text.
+   * @see ts
+   */
+  public static function ts($text, $params = array()) {
+    if (!array_key_exists('domain', $params)) {
+      $params['domain'] = array(self::LONG_NAME, NULL);
+    }
+    return ts($text, $params);
+  }
+
+  /**
+   * Get the URL of a resource file (in this extension).
+   *
+   * @param string|NULL $file
+   *   Ex: NULL.
+   *   Ex: 'css/foo.css'.
+   * @return string
+   *   Ex: 'http://example.org/sites/default/ext/org.example.foo'.
+   *   Ex: 'http://example.org/sites/default/ext/org.example.foo/css/foo.css'.
+   */
+  public static function url($file = NULL) {
+    if ($file === NULL) {
+      return rtrim(CRM_Core_Resources::singleton()->getUrl(self::LONG_NAME), '/');
+    }
+    return CRM_Core_Resources::singleton()->getUrl(self::LONG_NAME, $file);
+  }
+
+  /**
+   * Get the path of a resource file (in this extension).
+   *
+   * @param string|NULL $file
+   *   Ex: NULL.
+   *   Ex: 'css/foo.css'.
+   * @return string
+   *   Ex: '/var/www/example.org/sites/default/ext/org.example.foo'.
+   *   Ex: '/var/www/example.org/sites/default/ext/org.example.foo/css/foo.css'.
+   */
+  public static function path($file = NULL) {
+    // return CRM_Core_Resources::singleton()->getPath(self::LONG_NAME, $file);
+    return __DIR__ . ($file === NULL ? '' : (DIRECTORY_SEPARATOR . $file));
+  }
+
+  /**
+   * Get the name of a class within this extension.
+   *
+   * @param string $suffix
+   *   Ex: 'Page_HelloWorld' or 'Page\\HelloWorld'.
+   * @return string
+   *   Ex: 'CRM_Foo_Page_HelloWorld'.
+   */
+  public static function findClass($suffix) {
+    return self::CLASS_PREFIX . '_' . str_replace('\\', '_', $suffix);
+  }
+
+}
+
+use CRM_HRLeaveAndAbsences_ExtensionUtil as E;
+
+/**
  * (Delegated) Implements hook_civicrm_config().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
@@ -19,14 +96,14 @@ function _hrleaveandabsences_civix_civicrm_config(&$config = NULL) {
   $extRoot = dirname(__FILE__) . DIRECTORY_SEPARATOR;
   $extDir = $extRoot . 'templates';
 
-  if ( is_array( $template->template_dir ) ) {
-      array_unshift( $template->template_dir, $extDir );
+  if (is_array($template->template_dir)) {
+    array_unshift($template->template_dir, $extDir);
   }
   else {
-      $template->template_dir = array( $extDir, $template->template_dir );
+    $template->template_dir = array($extDir, $template->template_dir);
   }
 
-  $include_path = $extRoot . PATH_SEPARATOR . get_include_path( );
+  $include_path = $extRoot . PATH_SEPARATOR . get_include_path();
   set_include_path($include_path);
 }
 
@@ -52,6 +129,20 @@ function _hrleaveandabsences_civix_civicrm_install() {
   _hrleaveandabsences_civix_civicrm_config();
   if ($upgrader = _hrleaveandabsences_civix_upgrader()) {
     $upgrader->onInstall();
+  }
+}
+
+/**
+ * Implements hook_civicrm_postInstall().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_postInstall
+ */
+function _hrleaveandabsences_civix_civicrm_postInstall() {
+  _hrleaveandabsences_civix_civicrm_config();
+  if ($upgrader = _hrleaveandabsences_civix_upgrader()) {
+    if (is_callable(array($upgrader, 'onPostInstall'))) {
+      $upgrader->onPostInstall();
+    }
   }
 }
 
@@ -117,7 +208,7 @@ function _hrleaveandabsences_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue =
  * @return CRM_HRLeaveAndAbsences_Upgrader
  */
 function _hrleaveandabsences_civix_upgrader() {
-  if (!file_exists(__DIR__.'/CRM/HRLeaveAndAbsences/Upgrader.php')) {
+  if (!file_exists(__DIR__ . '/CRM/HRLeaveAndAbsences/Upgrader.php')) {
     return NULL;
   }
   else {
@@ -153,7 +244,8 @@ function _hrleaveandabsences_civix_find_files($dir, $pattern) {
       while (FALSE !== ($entry = readdir($dh))) {
         $path = $subdir . DIRECTORY_SEPARATOR . $entry;
         if ($entry{0} == '.') {
-        } elseif (is_dir($path)) {
+        }
+        elseif (is_dir($path)) {
           $todos[] = $path;
         }
       }
@@ -175,9 +267,12 @@ function _hrleaveandabsences_civix_civicrm_managed(&$entities) {
     $es = include $file;
     foreach ($es as $e) {
       if (empty($e['module'])) {
-        $e['module'] = 'uk.co.compucorp.civicrm.hrleaveandabsences';
+        $e['module'] = E::LONG_NAME;
       }
       $entities[] = $e;
+      if (empty($e['params']['version'])) {
+        $e['params']['version'] = '3';
+      }
     }
   }
 }
@@ -204,7 +299,7 @@ function _hrleaveandabsences_civix_civicrm_caseTypes(&$caseTypes) {
       // throw new CRM_Core_Exception($errorMessage);
     }
     $caseTypes[$name] = array(
-      'module' => 'uk.co.compucorp.civicrm.hrleaveandabsences',
+      'module' => E::LONG_NAME,
       'name' => $name,
       'file' => $file,
     );
@@ -230,7 +325,7 @@ function _hrleaveandabsences_civix_civicrm_angularModules(&$angularModules) {
     $name = preg_replace(':\.ang\.php$:', '', basename($file));
     $module = include $file;
     if (empty($module['ext'])) {
-      $module['ext'] = 'uk.co.compucorp.civicrm.hrleaveandabsences';
+      $module['ext'] = E::LONG_NAME;
     }
     $angularModules[$name] = $module;
   }
@@ -257,8 +352,10 @@ function _hrleaveandabsences_civix_glob($pattern) {
  * Inserts a navigation menu item at a given place in the hierarchy.
  *
  * @param array $menu - menu hierarchy
- * @param string $path - path where insertion should happen (ie. Administer/System Settings)
- * @param array $item - menu you need to insert (parent/child attributes will be filled for you)
+ * @param string $path - path to parent of this item, e.g. 'my_extension/submenu'
+ *    'Mailing', or 'Administer/System Settings'
+ * @param array $item - the item to insert (parent/child attributes will be
+ *    filled for you)
  */
 function _hrleaveandabsences_civix_insert_navigation_menu(&$menu, $path, $item) {
   // If we are done going down the path, insert menu
@@ -273,12 +370,14 @@ function _hrleaveandabsences_civix_insert_navigation_menu(&$menu, $path, $item) 
   }
   else {
     // Find an recurse into the next level down
-    $found = false;
+    $found = FALSE;
     $path = explode('/', $path);
     $first = array_shift($path);
     foreach ($menu as $key => &$entry) {
       if ($entry['attributes']['name'] == $first) {
-        if (!$entry['child']) $entry['child'] = array();
+        if (!isset($entry['child'])) {
+          $entry['child'] = array();
+        }
         $found = _hrleaveandabsences_civix_insert_navigation_menu($entry['child'], implode('/', $path), $item, $key);
       }
     }
@@ -305,7 +404,7 @@ function _hrleaveandabsences_civix_fixNavigationMenu(&$nodes) {
     if ($key === 'navID') {
       $maxNavID = max($maxNavID, $item);
     }
-    });
+  });
   _hrleaveandabsences_civix_fixNavigationMenuItems($nodes, $maxNavID, NULL);
 }
 
@@ -342,7 +441,104 @@ function _hrleaveandabsences_civix_civicrm_alterSettingsFolders(&$metaDataFolder
   $configured = TRUE;
 
   $settingsDir = __DIR__ . DIRECTORY_SEPARATOR . 'settings';
-  if(is_dir($settingsDir) && !in_array($settingsDir, $metaDataFolders)) {
+  if (is_dir($settingsDir) && !in_array($settingsDir, $metaDataFolders)) {
     $metaDataFolders[] = $settingsDir;
   }
+}
+
+/**
+ * (Delegated) Implements hook_civicrm_entityTypes().
+ *
+ * Find any *.entityType.php files, merge their content, and return.
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_entityTypes
+ */
+
+function _hrleaveandabsences_civix_civicrm_entityTypes(&$entityTypes) {
+  $entityTypes = array_merge($entityTypes, array (
+    'CRM_HRLeaveAndAbsences_DAO_AbsencePeriod' => 
+    array (
+      'name' => 'AbsencePeriod',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_AbsencePeriod',
+      'table' => 'civicrm_absenceperiod',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_AbsenceType' => 
+    array (
+      'name' => 'AbsenceType',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_AbsenceType',
+      'table' => 'civicrm_hrleaveandabsences_absence_type',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern' => 
+    array (
+      'name' => 'ContactWorkPattern',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_ContactWorkPattern',
+      'table' => 'civicrm_hrleaveandabsences_contact_work_pattern',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange' => 
+    array (
+      'name' => 'LeaveBalanceChange',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChange',
+      'table' => 'civicrm_hrleaveandabsences_leave_balance_change',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChangeExpiryLog' => 
+    array (
+      'name' => 'LeaveBalanceChangeExpiryLog',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChangeExpiryLog',
+      'table' => 'civicrm_leave_balance_change_expiry_log',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement' => 
+    array (
+      'name' => 'LeavePeriodEntitlement',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlement',
+      'table' => 'civicrm_hrleaveandabsences_leave_period_entitlement',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlementLog' => 
+    array (
+      'name' => 'LeavePeriodEntitlementLog',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_LeavePeriodEntitlementLog',
+      'table' => 'civicrm_hrleaveandabsences_leave_period_entitlement_log',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_LeaveRequest' => 
+    array (
+      'name' => 'LeaveRequest',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequest',
+      'table' => 'civicrm_hrleaveandabsences_leave_request',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_LeaveRequestDate' => 
+    array (
+      'name' => 'LeaveRequestDate',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequestDate',
+      'table' => 'civicrm_hrleaveandabsences_leave_request_date',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_NotificationReceiver' => 
+    array (
+      'name' => 'NotificationReceiver',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_NotificationReceiver',
+      'table' => 'civicrm_hrleaveandabsences_notification_receiver',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_PublicHoliday' => 
+    array (
+      'name' => 'PublicHoliday',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_PublicHoliday',
+      'table' => 'civicrm_hrleaveandabsences_public_holiday',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_WorkDay' => 
+    array (
+      'name' => 'WorkDay',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkDay',
+      'table' => 'civicrm_hrleaveandabsences_work_day',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_WorkPattern' => 
+    array (
+      'name' => 'WorkPattern',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkPattern',
+      'table' => 'civicrm_hrleaveandabsences_work_pattern',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_WorkWeek' => 
+    array (
+      'name' => 'WorkWeek',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_WorkWeek',
+      'table' => 'civicrm_hrleaveandabsences_work_week',
+    ),
+  ));
 }

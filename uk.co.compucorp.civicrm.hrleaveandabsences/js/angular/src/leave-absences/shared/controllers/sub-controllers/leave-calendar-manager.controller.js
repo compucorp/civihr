@@ -6,12 +6,12 @@ define([
   'leave-absences/shared/modules/controllers'
 ], function (_, moment, controllers) {
   controllers.controller('LeaveCalendarManagerController', ['$log', 'Contact',
-    'ContactInstance', controller]);
+    'ContactInstance', 'LeaveCalendarService', controller]);
 
-  function controller ($log, Contact, ContactInstance) {
+  function controller ($log, Contact, ContactInstance, LeaveCalendarService) {
     $log.debug('LeaveCalendarManagerController');
 
-    var vm;
+    var leaveCalendar, vm;
 
     return {
       /**
@@ -20,6 +20,8 @@ define([
        */
       init: function (_vm_) {
         vm = _vm_;
+        leaveCalendar = LeaveCalendarService.init(vm);
+        vm.filters.userSettings.assignedTo = _.find(vm.filtersByAssignee, { type: 'me' });
         vm.showContactName = true;
         vm.showFilters = true;
 
@@ -40,47 +42,7 @@ define([
          * @return {Promise} resolves as an {Array}
          */
         loadContacts: function () {
-          return ContactInstance.init({ id: vm.contactId })
-            .leaveManagees()
-            .then(function (contacts) {
-              vm.lookupContacts = contacts;
-            })
-            .then(loadContacts);
-        }
-      };
-    }
-
-    /**
-     * Load all contacts with respect to filters
-     *
-     * @return {Promise}
-     */
-    function loadContacts () {
-      return Contact.all(prepareContactFilters(), null, 'display_name')
-        .then(function (contacts) {
-          return contacts.list;
-        });
-    }
-
-    /**
-     * Returns the filter object for contacts api
-     *
-     * @TODO This function should be a part of a Filter component, which is planned for future
-     *
-     * @return {Object}
-     */
-    function prepareContactFilters () {
-      return {
-        department: vm.filters.userSettings.department ? vm.filters.userSettings.department.value : null,
-        level_type: vm.filters.userSettings.level_type ? vm.filters.userSettings.level_type.value : null,
-        location: vm.filters.userSettings.location ? vm.filters.userSettings.location.value : null,
-        region: vm.filters.userSettings.region ? vm.filters.userSettings.region.value : null,
-        id: {
-          'IN': vm.filters.userSettings.contact
-            ? [vm.filters.userSettings.contact.id]
-            : vm.lookupContacts.map(function (contact) {
-              return contact.id;
-            })
+          return leaveCalendar.loadLookUpAndFilteredContacts();
         }
       };
     }

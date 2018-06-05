@@ -5,14 +5,27 @@ trait CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait {
   use CRM_HRLeaveAndAbsences_Service_SettingsManagerTrait;
 
   /**
+   * This method creates ACL clause that can be added to queries in order to
+   * filter results to follow leave request ACL rules.
+   *
+   * @return string
+   *   Query String
+   */
+  public function getLeaveInformationACLClauses() {
+    $query = "IN ({$this->getLeaveInformationACLQuery()})";
+
+    return $query;
+  }
+
+  /**
    * For any leave information (Entitlement, Leave Requests etc) the access
    * rules are:
    *   - Staff members can only see their own information
    *   - Managers can see their own information + the information from their
    *     managees
    *
-   * This method creates ACL clauses that can be added to queries in order to
-   * filter results to follow these rules.
+   * This method creates an ACL query that selects contact IDs that the currently
+   * logged in contact has access to based on these rules, i.e
    *
    * The manager > managee relationship is determined by checking if there's an
    * active relationship between the two contacts and that the type of this
@@ -22,20 +35,19 @@ trait CRM_HRLeaveAndAbsences_ACL_LeaveInformationTrait {
    * @return string
    *   Query String
    */
-  public function getLeaveInformationACLClauses() {
+  public function getLeaveInformationACLQuery() {
     $contactsTable = CRM_Contact_BAO_Contact::getTableName();
     $relationshipTable = CRM_Contact_BAO_Relationship::getTableName();
     $relationshipTypeTable = CRM_Contact_BAO_RelationshipType::getTableName();
 
     $conditions = $this->getLeaveInformationACLWhereConditions('c.id');
 
-    $query = "IN (
-      SELECT c.id
-      FROM {$contactsTable} c
-      LEFT JOIN {$relationshipTable} r ON c.id = r.contact_id_a
-      LEFT JOIN {$relationshipTypeTable} rt ON rt.id = r.relationship_type_id
-      WHERE $conditions
-    )";
+    $query = "
+    SELECT c.id
+    FROM {$contactsTable} c
+    LEFT JOIN {$relationshipTable} r ON c.id = r.contact_id_a
+    LEFT JOIN {$relationshipTypeTable} rt ON rt.id = r.relationship_type_id
+    WHERE $conditions";
 
     return $query;
   }

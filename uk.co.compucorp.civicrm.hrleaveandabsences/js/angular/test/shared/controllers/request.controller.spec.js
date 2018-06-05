@@ -575,8 +575,8 @@
                 var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-
-                initTestController({ leaveRequest: leaveRequest, isSelfRecord: true });
+                $rootScope.section = 'my-leave';
+                initTestController({ leaveRequest: leaveRequest });
 
                 expectedStatusValue = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
                 controller.balance.closing = 5;
@@ -778,29 +778,56 @@
                   requestOriginalDates.to = controller.request.to_date;
                   controller.newStatusOnSave = optionGroupMock.specificObject(
                     'hrleaveandabsences_leave_request_status', 'name', 'cancelled').value;
-
-                  controller.submit();
+                  controller.request.from_date =
+                    moment(controller.request.from_date).add(15, 'minutes')
+                      .format('YYYY-MM-DD HH:mm');
+                  controller.request.to_date =
+                    moment(controller.request.to_date).add(15, 'minutes')
+                      .format('YYYY-MM-DD HH:mm');
                   $rootScope.$digest();
                 });
 
-                it('does not check the balance change', function () {
-                  expect(LeaveRequestService.promptBalanceChangeRecalculation)
-                    .not.toHaveBeenCalled();
+                describe('when request is not TOIL', function () {
+                  beforeEach(function () {
+                    controller.submit();
+                    $rootScope.$digest();
+                  });
+
+                  it('does not check the balance change', function () {
+                    expect(LeaveRequestService.promptBalanceChangeRecalculation)
+                      .not.toHaveBeenCalled();
+                  });
+
+                  it('updates request', function () {
+                    expect(controller.request.update).toHaveBeenCalled();
+                  });
+
+                  it('tells the backend to not recalculate balance change', function () {
+                    expect(controller.request.change_balance).toBeUndefined();
+                  });
+
+                  it('reverts to original request times', function () {
+                    expect(moment(controller.request.from_date).format('HH:mm')).toEqual(
+                      moment(requestOriginalDates.from).format('HH:mm'));
+                    expect(moment(controller.request.to_date).format('HH:mm')).toEqual(
+                      moment(requestOriginalDates.to).format('HH:mm'));
+                  });
                 });
 
-                it('updates request', function () {
-                  expect(controller.request.update).toHaveBeenCalled();
-                });
+                describe('when request is TOIL', function () {
+                  beforeEach(function () {
+                    controller.request.request_type = 'toil';
 
-                it('tells the backend to not recalculate balance change', function () {
-                  expect(controller.request.change_balance).toBeUndefined();
-                });
+                    controller.submit();
+                    $rootScope.$digest();
+                  });
 
-                it('reverts original request times', function () {
-                  expect(moment(controller.request.from_date).format('HH:mm')).toEqual(
-                    moment(requestOriginalDates.from).format('HH:mm'));
-                  expect(moment(controller.request.to_date).format('HH:mm')).toEqual(
-                    moment(requestOriginalDates.to).format('HH:mm'));
+                  it('does not revert to original request times', function () {
+                    expect(moment(controller.request.from_date).format('HH:mm')).not.toEqual(
+                      moment(requestOriginalDates.from).format('HH:mm'));
+                    expect(moment(controller.request.to_date).format('HH:mm')).not.toEqual(
+                      moment(requestOriginalDates.to).format('HH:mm'));
+                  });
                 });
               });
 
@@ -1321,6 +1348,101 @@
             });
           });
         }
+      });
+
+      describe('checking if it is a self record', function () {
+        var leaveRequest;
+        var loggedInContactId = CRM.vars.leaveAndAbsences.contactId.toString();
+        var anotherContactId = _.uniqueId();
+
+        beforeEach(function () {
+          role = 'admin';
+          leaveRequest = LeaveRequestInstance.init({});
+        });
+
+        describe('when the section is My Leave', function () {
+          beforeEach(function () {
+            $rootScope.section = 'my-leave';
+          });
+
+          describe('and the user is checking someone else\'s request', function () {
+            beforeEach(function () {
+              leaveRequest.id = _.uniqueId();
+              leaveRequest.contact_id = anotherContactId;
+
+              initTestController({ leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as false', function () {
+              expect(controller.isSelfRecord).toBe(false);
+            });
+          });
+
+          describe('and the user is checking my own request', function () {
+            beforeEach(function () {
+              leaveRequest.id = _.uniqueId();
+              leaveRequest.contact_id = loggedInContactId;
+
+              initTestController({ leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as true', function () {
+              expect(controller.isSelfRecord).toBe(true);
+            });
+          });
+
+          describe('and the user creates a new request for themselves', function () {
+            beforeEach(function () {
+              initTestController({ mode: 'create', leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as true', function () {
+              expect(controller.isSelfRecord).toBe(true);
+            });
+          });
+        });
+
+        describe('when the section is Manager Leave', function () {
+          beforeEach(function () {
+            $rootScope.section = 'manager-leave';
+          });
+
+          describe('and the user is checking someone else\'s request', function () {
+            beforeEach(function () {
+              leaveRequest.id = _.uniqueId();
+              leaveRequest.contact_id = anotherContactId;
+
+              initTestController({ leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as false', function () {
+              expect(controller.isSelfRecord).toBe(false);
+            });
+          });
+
+          describe('and the user is checking my own request', function () {
+            beforeEach(function () {
+              leaveRequest.id = _.uniqueId();
+              leaveRequest.contact_id = loggedInContactId;
+
+              initTestController({ leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as false', function () {
+              expect(controller.isSelfRecord).toBe(false);
+            });
+          });
+
+          describe('and the user creates a new request for themselves', function () {
+            beforeEach(function () {
+              initTestController({ mode: 'create', leaveRequest: leaveRequest });
+            });
+
+            it('sets is self record as false', function () {
+              expect(controller.isSelfRecord).toBe(false);
+            });
+          });
+        });
       });
 
       /**

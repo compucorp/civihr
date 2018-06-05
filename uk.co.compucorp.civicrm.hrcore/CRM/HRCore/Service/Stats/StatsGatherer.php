@@ -79,10 +79,14 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
   private function getEntityCounts() {
     $entityCounts = [];
     $entityCounts['contact'] = $this->getEntityCount('Contact');
-    $entityCounts['cmsUser'] = $this->getEntityCount('UFMatch');
+    $entityCounts['cmsUser'] = $this->siteInformation->getActiveUserCount();
     $entityCounts += $this->getTaskAndAssignmentEntityCounts();
     $entityCounts += $this->getLeaveAndAbsenceEntityCounts();
     $entityCounts += $this->getRecruitmentEntityCounts();
+    $entityCounts += $this->getJobRoleEntityCounts();
+    $entityCounts += $this->getCustomDataCounts();
+    $entityCounts += $this->getCaseEntityCounts();
+    $entityCounts += $this->getHrResourceCounts();
 
     return $entityCounts;
   }
@@ -98,7 +102,7 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
    * @return int
    */
   private function getEntityCount($entity, $params = []) {
-    $params += ['is_deleted' => FALSE];
+    $params += ['is_deleted' => FALSE, 'is_active' => TRUE];
 
     return (int) civicrm_api3($entity, 'getcount', $params);
   }
@@ -117,7 +121,8 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
 
       if (!empty($contactType['parent_id'])) {
         $params = ['contact_sub_type' => $name];
-      } else {
+      }
+      else {
         $params = ['contact_type' => $name];
       }
 
@@ -142,7 +147,6 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
 
     $query = db_select('reports_configuration', 'rc')->fields('rc');
     $result = $query->execute();
-
 
     while ($row = $result->fetchAssoc()) {
       $config = new ReportConfiguration();
@@ -261,6 +265,104 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
     $userSystem = CRM_Core_Config::singleton()->userSystem;
 
     return $userSystem instanceof CRM_Utils_System_Drupal;
+  }
+
+  /**
+   * Fetches entity counts for the job role entities
+   *
+   * @return array
+   */
+  private function getJobRoleEntityCounts() {
+    $jobRoleExtKey = 'com.civicrm.hrjobroles';
+    $counts = [];
+
+    if (!ExtensionHelper::isExtensionEnabled($jobRoleExtKey)) {
+      return $counts;
+    }
+
+    $counts['jobRole'] = $this->getEntityCount('HrJobRoles');
+    $params = ['option_group_id' => 'cost_centres'];
+    $counts['costCenter'] = $this->getEntityCount('OptionValue', $params);
+    $counts['funder'] = $this->getFunderCount();
+
+    return $counts;
+  }
+
+  /**
+   * Gets a count of all contacts in the system that have been marked as a
+   * funder
+   *
+   * @return int
+   */
+  private function getFunderCount() {
+    $result = civicrm_api3('HrJobRoles', 'get', ['return' => ['funder']]);
+    $result = array_column($result['values'], 'funder');
+    // some funder data may not include the delimiter so make sure to add it
+    $funderIds = implode('|', $result);
+    $funderIds = explode('|', $funderIds);
+    $funderIds = array_unique(array_filter($funderIds));
+
+    return count($funderIds);
+  }
+
+  /**
+   * Gets the count of custom groups and fields
+   *
+   * @return array
+   */
+  private function getCustomDataCounts() {
+    $counts = [];
+    $counts['customGroup'] = $this->getEntityCount('CustomGroup');
+    $counts['customField'] = $this->getEntityCount('CustomField');
+
+    return $counts;
+  }
+
+  /**
+   * Gets counts for the case entities
+   *
+   * @return array
+   */
+  private function getCaseEntityCounts() {
+    $counts = [];
+    $counts['caseType'] = $this->getEntityCount('CaseType');
+
+    return $counts;
+  }
+
+  /**
+   * Gets a count of all HR Resource related entities
+   *
+   * @return array
+   */
+  private function getHrResourceCounts() {
+    $counts['hrResourceType'] = 0;
+    $counts['hrResource'] = 0;
+
+    if (!$this->isDrupal()) {
+      return $counts;
+    }
+
+    $hrResourceTypeIds = db_select('node', 'n')
+      ->fields('n', ['nid'])
+      ->condition('n.type', 'hr_documents')
+      ->condition('n.status', NODE_PUBLISHED)
+      ->execute()
+      ->fetchCol();
+
+    $resourceTypeCount = count($hrResourceTypeIds);
+    $counts['hrResourceType'] = $resourceTypeCount;
+
+    if ($resourceTypeCount > 0) {
+      $hrResourceCount = (int) db_select('file_usage')
+        ->condition('id', $hrResourceTypeIds, 'IN')
+        ->countQuery()
+        ->execute()
+        ->fetchField();
+      $counts['hrResource'] = $hrResourceCount;
+    }
+
+    return $counts;
   }
 
 }

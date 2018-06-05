@@ -17,13 +17,13 @@ define([
          * This method returns all the Leave Requests.
          * It supports filters, pagination, sort and extra params
          *
-         * @param {object} filters - Values the full list should be filtered by
-         * @param {object} pagination
+         * @param  {Object} filters Values the full list should be filtered by
+         * @param  {Object} pagination
          *   `page` for the current page, `size` for number of items per page
-         * @param {string} sort - The field and direction to order by
+         * @param  {String} sort The field and direction to order by
          * @param  {Object} params
          * @param  {Boolean} cache
-         * @return {Promise} Resolved with {Object} All leave requests
+         * @return {Promise} Resolves with {Object} All leave requests
          */
         all: function (filters, pagination, sort, params, cache) {
           $log.debug('LeaveRequestAPI.all');
@@ -45,32 +45,23 @@ define([
          * This method returns all the total change in balance that is caused by the
          * leave requests of a given absence type, or of all the absence types of a given contact and period.
          *
-         * @param {string} contactId The ID of the Contact to get the balance change for
-         * @param {string} periodId The ID of the Absence Period to get the balance change for
-         * @param {array} [statuses = null] An array of OptionValue values which the list will be filtered by
-         * @param {boolean} [isPublicHoliday=false] Based on the value of this param,
-         * the calculation will include only the leave requests that aren't/are public holidays
-         * @return {Promise} Resolved with {Object} Balance Change data or Error data
+         * @param  {Object} params
+         * @return {Promise} Resolves with {Object} Balance Change data or Error data
          */
-        balanceChangeByAbsenceType: function (contactId, periodId, statuses, isPublicHoliday) {
+        balanceChangeByAbsenceType: function (params) {
           $log.debug('LeaveRequestAPI.balanceChangeByAbsenceType');
           var deferred = $q.defer();
 
-          if (!contactId || !periodId) {
+          if (!params.contact_id || !params.period_id) {
             deferred.reject('contact_id and period_id are mandatory');
           }
 
-          var params = {
-            contact_id: contactId,
-            period_id: periodId,
-            statuses: statuses ? {'IN': statuses} : null,
-            public_holiday: isPublicHoliday || false
-          };
+          params = _.defaults(params, { statuses: null, public_holiday: false });
 
           this.sendGET('LeaveRequest', 'getbalancechangebyabsencetype', params, false)
-          .then(function (data) {
-            deferred.resolve(data.values);
-          });
+            .then(function (data) {
+              deferred.resolve(data.values);
+            });
 
           return deferred.promise;
         },
@@ -79,10 +70,9 @@ define([
          * Gets the overall balance change after a leave request is created. The
          * API will create and return the detailed breakdown of it in days.
          *
-         * @param {Object} params matched the API end point params like
+         * @param  {Object} params matched the API end point params like
          * mandatory values for contact_id, from_date, from_date_type and optional values for
          * to_date and to_date_type.
-         *
          * @return {Promise} containing the detailed breakdown of balance leaves
          */
         calculateBalanceChange: function (params) {
@@ -103,8 +93,8 @@ define([
          * Gets the balance change breakdown
          * @NOTE: This breakdown is not affected by a work pattern change
          *
-         * @param  {Integer} leaveRequestId Leave Request ID
-         * @return {Promise} resolves with the detailed balance breakdown
+         * @param  {Number} leaveRequestId Leave Request ID
+         * @return {Promise} Resolves with the detailed balance breakdown
          */
         getBalanceChangeBreakdown: function (leaveRequestId) {
           return this.sendGET('LeaveRequest', 'getBreakdown',
@@ -113,11 +103,11 @@ define([
 
         /**
          * Get the "from" and "to" times and number of hours
-         *   for a given date according to the current work pattern
+         * for a given date according to the current work pattern
          *
          * @param  {String} leaveDate in the "YYYY-MM-DD" format
          * @param  {String|Number} contactId
-         * @return {Promise} resolved with the response
+         * @return {Promise} Resolves with the response
          *   as per LeaveRequest.getWorkDayForDate API
          */
         getWorkDayForDate: function (date, contactId) {
@@ -128,11 +118,10 @@ define([
         /**
          * Create a new leave request with given params.
          *
-         * @param {Object} params matched the API end point params with
+         * @param  {Object} params matched the API end point params with
          * mandatory values for contact_id, status_id, from_date, from_date_type
          * and optional values for to_date and to_date_type.
          * If to_date is given then to_date_type is also mandotory.
-         *
          * @return {Promise} containing the leave request object additionally with id key set
          * else rejects the promise with error data
          */
@@ -148,7 +137,7 @@ define([
         /**
          * Calls the `delete` endpoint with the given leave request id
          *
-         * @param  {int/string} id
+         * @param  {Number/String} id
          * @return {Promise}
          */
         delete: function (id) {
@@ -158,10 +147,9 @@ define([
         /**
          * Calls the deletecomment backend API.
          *
-         * @param {String} leaveRequestID - leave request ID
-         * @param {String} attachmentID - attachment ID
-         * @param {Object} params
-         *
+         * @param  {String} leaveRequestID
+         * @param  {String} attachmentID
+         * @param  {Object} params
          * @return {Promise}
          */
         deleteAttachment: function (leaveRequestID, attachmentID, params) {
@@ -171,17 +159,16 @@ define([
           });
 
           return this.sendPOST('LeaveRequest', 'deleteattachment', params)
-          .then(function (result) {
-            return result.values;
-          });
+            .then(function (result) {
+              return result.values;
+            });
         },
 
         /**
          * Calls the deletecomment backend API.
          *
-         * @param {String} commentID - comment ID
-         * @param {Object} params
-         *
+         * @param  {String} commentID
+         * @param  {Object} params
          * @return {Promise}
          */
         deleteComment: function (commentID, params) {
@@ -190,37 +177,35 @@ define([
           });
 
           return this.sendPOST('LeaveRequest', 'deletecomment', params)
-          .then(function (commentsData) {
-            return commentsData.values;
-          });
+            .then(function (commentsData) {
+              return commentsData.values;
+            });
         },
 
         /**
          * Get leave request for the given id
          *
-         * @param {object} id - leave request id
-         *
-         * @return {Promise} resolves with {Object}
+         * @param  {Object} id leave request id
+         * @return {Promise} Resolves with {Object}
          */
         find: function (id) {
           $log.debug('LeaveRequestAPI.find');
 
-          return this.sendGET('LeaveRequest', 'getFull', { id: id })
-          .then(function (response) {
-            if (response.values.length === 0) {
-              return $q.reject('LeaveRequest not found with this ID');
-            }
+          return this.sendGET('LeaveRequest', 'getFull', { id: id }, false)
+            .then(function (response) {
+              if (response.values.length === 0) {
+                return $q.reject('LeaveRequest not found with this ID');
+              }
 
-            return response.values[0];
-          });
+              return response.values[0];
+            });
         },
 
         /**
          * Calls the getattachments backend API.
          *
-         * @param {String} leaveRequestID - ID of leave request
-         * @param {Object} params
-         *
+         * @param  {String} leaveRequestID ID of leave request
+         * @param  {Object} params
          * @return {Promise}
          */
         getAttachments: function (leaveRequestID, params) {
@@ -229,17 +214,16 @@ define([
           });
 
           return this.sendGET('LeaveRequest', 'getattachments', params, false)
-          .then(function (attachments) {
-            return attachments.values;
-          });
+            .then(function (attachments) {
+              return attachments.values;
+            });
         },
 
         /**
          * Calls the getcomment backend API.
          *
-         * @param {String} leaveRequestID - ID of leave request
-         * @param {Object} params
-         *
+         * @param  {String} leaveRequestID
+         * @param  {Object} params
          * @return {Promise}
          */
         getComments: function (leaveRequestID, params) {
@@ -248,17 +232,17 @@ define([
           });
 
           return this.sendGET('LeaveRequest', 'getcomment', params, false)
-          .then(function (commentsData) {
-            return commentsData.values;
-          });
+            .then(function (commentsData) {
+              return commentsData.values;
+            });
         },
 
         /**
          * Calls the isManagedBy backend API.
          *
-         * @param {String} leaveRequestID - ID of leave request
-         * @param {String} contactID - ID of contact
-         * @return {Promise} resolves with an {Boolean}
+         * @param  {String} leaveRequestID
+         * @param  {String} contactID
+         * @return {Promise} Resolves with a {Boolean}
          */
         isManagedBy: function (leaveRequestID, contactID) {
           $log.debug('LeaveRequestAPI.isManagedBy');
@@ -267,31 +251,31 @@ define([
             leave_request_id: leaveRequestID,
             contact_id: contactID
           })
-          .then(function (response) {
-            return response.values;
-          });
+            .then(function (response) {
+              return response.values;
+            });
         },
 
         /**
          * Validate params for a new new leave request. It can be used before
          * creating a leave request to validate data.
          *
-         * @param {Object} params matched the API end point params with
+         * @param  {Object} params matched the API end point params with
          * values like contact_id, status_id, from_date, from_date_type etc.,
-         * @return {Promise} returns an array of errors for invalid data else empty array
+         * @return {Promise} Returns an array of errors for invalid data else empty array
          */
         isValid: function (params) {
           $log.debug('LeaveRequestAPI.isValid', params);
           var deferred = $q.defer();
 
           this.sendPOST('LeaveRequest', 'isValid', params)
-          .then(function (data) {
-            if (data.count > 0) {
-              deferred.reject(_(data.values).map().flatten().value());
-            } else {
-              deferred.resolve(data.values);
-            }
-          });
+            .then(function (data) {
+              if (data.count > 0) {
+                deferred.reject(_(data.values).map().flatten().value());
+              } else {
+                deferred.resolve(data.values);
+              }
+            });
 
           return deferred.promise;
         },
@@ -299,10 +283,9 @@ define([
         /**
          * Calls the addcomment backend API.
          *
-         * @param {string} leaveRequestID - ID of Leave Request
-         * @param {Object} comment - Comment object
-         * @param {Object} params
-         *
+         * @param  {String} leaveRequestID
+         * @param  {Object} comment
+         * @param  {Object} params
          * @return {Promise}
          */
         saveComment: function (leaveRequestID, comment, params) {
@@ -313,16 +296,16 @@ define([
           });
 
           return this.sendPOST('LeaveRequest', 'addcomment', params)
-          .then(function (commentsData) {
-            return commentsData.values;
-          });
+            .then(function (commentsData) {
+              return commentsData.values;
+            });
         },
 
         /**
          * This method is used to update a leave request
          *
-         * @param {object} params - Updated values of leave request
-         * @return {Promise} Resolved with {Object} Updated Leave request
+         * @param  {Object} params Updated values of leave request
+         * @return {Promise} Resolves with {Object} Updated Leave request
          */
         update: function (params) {
           $log.debug('LeaveRequestAPI.update', params);
@@ -333,9 +316,9 @@ define([
           }
 
           return this.sendPOST('LeaveRequest', 'create', params)
-          .then(function (data) {
-            return data.values[0];
-          });
+            .then(function (data) {
+              return data.values[0];
+            });
         }
       });
     }]);

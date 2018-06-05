@@ -1,3 +1,3 @@
 @mixin striped-background($stripe-color) {
-  background: repeating-linear-gradient(45deg, $stripe-color, $stripe-color 5px, transparent 5px, transparent 8px);
+  background: repeating-linear-gradient(45deg, $stripe-color, $stripe-color 5px, transparent 5px, transparent 7px);
 }

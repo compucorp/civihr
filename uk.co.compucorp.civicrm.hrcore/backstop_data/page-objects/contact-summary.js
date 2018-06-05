@@ -1,62 +1,54 @@
-var Promise = require('es6-promise').Promise;
-var page = require('./page');
+const page = require('./page');
 
-module.exports = (function () {
-  return page.extend({
+module.exports = page.extend({
+  /**
+   * Opens the "contact access rights" modal
+   *
+   * @return {Object} the modal page object
+   */
+  async openManageRightsModal () {
+    await this.showActions();
+    await this.puppet.click('[data-contact-access-rights]');
+    await this.puppet.waitFor('.spinner', { hidden: true });
 
-    /**
-     * Opens the "contact access rights" modal
-     *
-     * @return {Promise} resolves with the modal page object
-     */
-    openManageRightsModal: function () {
-      var casper = this.casper;
+    return this.waitForModal('contact-access-rights');
+  },
 
-      return new Promise(function (resolve) {
-        casper.then(function () {
-          this.showActions();
-        }.bind(this));
+  /**
+   * Opens one of the contact summary tabs
+   *
+   * @param  {String} tabId
+   * @return {Object} the tab page object
+   */
+  async openTab (tabId) {
+    const tabObj = require('./tabs/' + tabId);
 
-        casper.then(function () {
-          casper.click('[data-contact-access-rights]');
-          casper.waitWhileVisible('.spinner');
+    await this.puppet.click('[title="' + tabObj.tabTitle + '"]');
 
-          resolve(this.waitForModal('contact-access-rights'));
-        }.bind(this));
-      }.bind(this));
-    },
+    return tabObj.init(this.puppet, false);
+  },
 
-    /**
-     * Opens one of the contact summary tabs
-     *
-     * @param  {string} tabId
-     * @return {object} resolves with the tab page object
-     */
-    openTab: function (tabId) {
-      var casper = this.casper;
-      var tab = require('./tabs/' + tabId).init(casper, false);
+  /**
+   * Shows the dropdown of the "Actions" button in the contact summary page
+   */
+  async showActions () {
+    await this.puppet.click('#crm-contact-actions-link');
+    await this.puppet.waitFor('#crm-contact-actions-list');
+  },
 
-      return new Promise(function (resolve) {
-        casper.then(function () {
-          casper.click('[title="' + tab.tabTitle + '"]');
-          casper.waitFor(tab.ready.bind(tab), function () {
-            casper.wait(500);
-            resolve(tab);
-          });
-        });
+  /**
+   * Wait an arbitrary amount of time for the data to load, then waits
+   * for all the spinners to disappear
+   */
+  async waitForReady () {
+    await this.puppet.waitFor('#contactsummary', { visible: true });
+    await this.puppet.waitFor(6000);
+    await this.puppet.waitFor(function () {
+      const spinners = document.querySelectorAll('.spinner');
+
+      return Array.prototype.every.call(spinners, function (dom) {
+        return dom === null || (dom.offsetWidth <= 0 && dom.offsetHeight <= 0);
       });
-    },
-
-    /**
-     * Shows the dropdown of the "Actions" button in the contact summary page
-     */
-    showActions: function () {
-      var casper = this.casper;
-
-      casper.then(function () {
-        casper.click('#crm-contact-actions-link');
-        casper.waitUntilVisible('#crm-contact-actions-list');
-      });
-    }
-  });
-})();
+    });
+  }
+});

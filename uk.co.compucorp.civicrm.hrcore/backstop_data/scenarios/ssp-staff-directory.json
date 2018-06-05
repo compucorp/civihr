@@ -1,8 +1,8 @@
 {
   "scenarios": [
     {
-      "label": "SSP - Staff Directory",
-      "url": "staff-directory"
+      "label": "SSP / Staff Directory",
+      "url": "{{siteUrl}}/staff-directory"
     }
   ]
 }

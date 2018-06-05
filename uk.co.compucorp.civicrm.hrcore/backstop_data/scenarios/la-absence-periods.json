@@ -1,0 +1,12 @@
+{
+  "scenarios": [
+    {
+      "label": "L&A / Absence Periods / List",
+      "url": "{{siteUrl}}/civicrm/admin/leaveandabsences/periods?action=browse"
+    },
+    {
+      "label": "L&A / Absence Periods / Form",
+      "url": "{{siteUrl}}/civicrm/admin/leaveandabsences/periods?action=add"
+    }
+  ]
+}

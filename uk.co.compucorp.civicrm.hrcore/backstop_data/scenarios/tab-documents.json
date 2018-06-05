@@ -2,9 +2,8 @@
   "scenarios": [
     {
       "label": "Documents",
-      "url": "index.php?q=civicrm/contact/view&reset=1&cid={{contactId:staff}}",
-      "onReadyScript": "contact-summary/documents/show",
-      "credential": "admin"
+      "url": "{{siteUrl}}/civicrm/contact/view?cid={{contactId:civihr_staff}}&selectedChild=cividocuments",
+      "onReadyScript": "contact-summary/documents/show.js"
     }
   ]
 }

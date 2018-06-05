@@ -117,15 +117,14 @@ define([
       var leaveRequest = { key: 'value' };
       var leaveType = 'some_leave_type';
       var selectedContactId = '101';
-      var isSelfRecord = true;
 
       beforeEach(function () {
         spyOn(LeavePopup, 'openModal');
-        controller.openLeavePopup(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+        controller.openLeavePopup(leaveRequest, leaveType, selectedContactId);
       });
 
       it('opens the leave request popup', function () {
-        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId);
       });
     });
 

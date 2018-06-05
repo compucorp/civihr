@@ -47,7 +47,7 @@
 
         {* CRM-12735 - Conditionally include the Actions and Edit buttons if contact is NOT in trash.*}
         {if !$isDeleted}
-          {if $canAccessCiviCRM}
+          {if call_user_func(array('CRM_Core_Permission','check'), 'access CiviCRM')}
             <li class="crm-contact-activity crm-summary-block">
               {if !empty($alternativeActionsTemplate)}
                 {include file="$alternativeActionsTemplate"}
