@@ -8,6 +8,7 @@ define([
 ], function (_, moment, components) {
   components.component('leaveCalendarMonth', {
     bindings: {
+      showTheseContacts: '<',
       contacts: '<',
       contactIdsToReduceTo: '<',
       month: '<',
@@ -46,7 +47,7 @@ define([
     vm.getContactUrl = getContactUrl;
 
     (function init () {
-      var dateFromMonth = moment().month(vm.month.index).year(vm.month.year);
+      var dateFromMonth = moment().month(vm.month.month).year(vm.month.year);
 
       indexData();
       initListeners();
@@ -74,7 +75,8 @@ define([
      */
     function buildMonthStructure (dateMoment) {
       return {
-        index: dateMoment.month(),
+        index: dateMoment.format('YYYY-MM'),
+        month: dateMoment.month(),
         year: dateMoment.year(),
         name: dateMoment.format('MMMM'),
         loading: true,
@@ -126,7 +128,10 @@ define([
      */
     function contactsList () {
       return !vm.showOnlyWithLeaveRequests ? vm.contacts : vm.contacts.filter(function (contact) {
-        return Object.keys(leaveRequests[contact.id] || {}).length;
+        var hasLeaveRequests = Object.keys(leaveRequests[contact.id] || {}).length;
+        var isAlwaysShown = _.includes(vm.showTheseContacts, contact.id);
+
+        return hasLeaveRequests || isAlwaysShown;
       });
     }
 
@@ -196,12 +201,35 @@ define([
     }
 
     /**
+     * Flushes days data
+     */
+    function flushDays () {
+      vm.month.days.forEach(function (day) {
+        day.contactsData = {};
+      });
+    }
+
+    /**
      * Get profile URL for the given contact id
      *
      * @param {String|Integer} contactId
      */
     function getContactUrl (contactId) {
       return CRM.url('civicrm/contact/view', { cid: contactId });
+    }
+
+    /**
+     * Returns a filtered list of leave requests with defined absence types.
+     * This is useful to only get leave requests the contact has access to.
+     *
+     * @param {Array} leaveRequests a list of leave requests.
+     * @return {Array} a filtered list of leave requests.
+     * @TODO this check should be performed on the back-end.
+     */
+    function getLeaveRequestsWithDefinedAbsenceTypes (leaveRequests) {
+      return _.filter(leaveRequests, function (leaveRequest) {
+        return !!leaveRequest.type_id;
+      });
     }
 
     /**
@@ -269,7 +297,7 @@ define([
      * Initializes the event listeners
      */
     function initListeners () {
-      eventListeners.push($rootScope.$on('LeaveCalendar::showMonths', showMonthIfInList));
+      eventListeners.push($rootScope.$on('LeaveCalendar::showMonth', showMonth));
       eventListeners.push(pubSub.subscribe('LeaveRequest::new', addLeaveRequest));
       eventListeners.push(pubSub.subscribe('LeaveRequest::edit', updateLeaveRequest));
       eventListeners.push(pubSub.subscribe('LeaveRequest::updatedByManager', updateLeaveRequest));
@@ -355,7 +383,7 @@ define([
 
       while (pointerDate.isSameOrBefore(toDate)) {
         // Ensure that pointerDate is in same month/year that component represents
-        if (pointerDate.month() === vm.month.index && pointerDate.year() === vm.month.year) {
+        if (pointerDate.month() === vm.month.month && pointerDate.year() === vm.month.year) {
           days.push(_.find(vm.month.days, function (day) {
             return day.date === pointerDate.format('YYYY-MM-DD');
           }));
@@ -424,16 +452,30 @@ define([
      * @return {Promise}
      */
     function loadMonthLeaveRequests () {
-      return LeaveRequest.all({
+      var isRequestFilteredByAbsenceType = vm.supportData.absenceTypesToFilterBy.length > 0;
+      var params = {
         from_date: { to: vm.month.days[vm.month.days.length - 1].date + ' 23:59:59' },
         to_date: { from: vm.month.days[0].date + ' 00:00:00' },
         status_id: { 'IN': leaveStatusesToBeDisplayed() },
         contact_id: { 'IN': vm.contacts.map(function (contact) {
           return contact.id;
         })},
-        type_id: { IN: _.pluck(vm.supportData.absenceTypes, 'id') }
-      }, null, null, null, false)
+        type_id: { 'IN': isRequestFilteredByAbsenceType
+          ? vm.supportData.absenceTypesToFilterBy
+          : _.pluck(vm.supportData.absenceTypes, 'id') }
+      };
+
+      flushDays();
+
+      return LeaveRequest.all(params, null, null, null, false)
         .then(function (leaveRequestsData) {
+          leaveRequests = {};
+
+          if (isRequestFilteredByAbsenceType) {
+            leaveRequestsData.list = getLeaveRequestsWithDefinedAbsenceTypes(
+              leaveRequestsData.list);
+          }
+
           return indexLeaveRequests(leaveRequestsData.list);
         });
     }
@@ -561,24 +603,20 @@ define([
     /**
      * Show the month and its data if it's included in the given list
      *
-     * @param  {Array} monthsToShow
-     * @param  {Boolean} forceReload If true it forces the reload of the data
+     * @param {Boolean} forceReload If true it forces the reload of the data
      */
-    function showMonthIfInList (__, monthsToShow, forceReload) {
-      var isIncluded = !!_.find(monthsToShow, function (month) {
-        return month.index === vm.month.index;
-      });
+    function showMonth (__, forceReload) {
+      vm.currentPage = 0;
+      vm.visible = true;
 
-      if (isIncluded) {
-        vm.currentPage = 0;
-        vm.visible = true;
-
-        (forceReload || !dataLoaded) && loadMonthData();
-      } else {
-        vm.visible = false;
-      }
+      (forceReload || !dataLoaded) && loadMonthData();
     }
 
+    /**
+     * Sorts leave requests by either date or AM/PM
+     *
+     * @param {Array} leaveRequests array of leave requests instances
+     */
     function sortLeaveRequests (leaveRequests) {
       return _.sortBy(leaveRequests, function (leaveRequest) {
         return +moment(leaveRequest.from_date).format('X') +

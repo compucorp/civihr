@@ -11,6 +11,7 @@
     'leave-absences/mocks/data/option-group.data',
     'leave-absences/mocks/data/public-holiday.data',
     'common/mocks/services/api/contact-mock',
+    'common/mocks/services/api/contract-mock',
     'leave-absences/mocks/apis/absence-period-api-mock',
     'leave-absences/mocks/apis/absence-type-api-mock',
     'leave-absences/mocks/apis/public-holiday-api-mock',
@@ -29,6 +30,8 @@
         id: CRM.vars.leaveAndAbsences.contactId,
         role: 'staff'
       };
+      var currentYear = 2016;
+      var currentMonth = 1;
 
       beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'my-leave', function (_$provide_, _$controllerProvider_) {
         $provide = _$provide_;
@@ -69,6 +72,7 @@
           sharedSettings = _sharedSettings_;
           notification = _notificationService_;
 
+          spyOn(window, 'alert');
           spyOn($log, 'debug');
           spyOn($rootScope, '$emit').and.callThrough();
           spyOn(AbsencePeriod, 'all');
@@ -93,7 +97,7 @@
       // The mocked "work pattern calendar" and "leave request" data is made for
       // the month of February, so we pretend we are in February
       beforeAll(function () {
-        jasmine.clock().mockDate(new Date(2016, 1, 1));
+        jasmine.clock().mockDate(new Date(currentYear, currentMonth, 1));
       });
 
       afterAll(function () {
@@ -102,6 +106,22 @@
 
       it('is initialized', function () {
         expect($log.debug).toHaveBeenCalled();
+      });
+
+      it('has an array of filters by assignee', function () {
+        expect(controller.filtersByAssignee).toEqual([
+          { type: 'me', label: 'People I approve' },
+          { type: 'unassigned', label: 'People without approver' },
+          { type: 'all', label: 'All' }
+        ]);
+      });
+
+      it('selects the assignee filter "All" by default', function () {
+        expect(controller.filters.userSettings.assignedTo.type).toBe('all');
+      });
+
+      it('sets the user permission role to staff by default', function () {
+        expect(controller.userPermissionRole).toBe('staff');
       });
 
       describe('on init', function () {
@@ -120,6 +140,10 @@
             'hrleaveandabsences_leave_request_status',
             'hrleaveandabsences_toil_amounts'
           ]);
+        });
+
+        it('hides filters on mobile viewport by default', function () {
+          expect(controller.filters.hideOnMobile).toBe(true);
         });
 
         describe('after loading support data', function () {
@@ -143,8 +167,62 @@
             expect(controller.supportData.leaveRequestStatuses.length).not.toBe(0);
           });
 
+          it('has default filter by absence type', function () {
+            expect(controller.supportData.absenceTypesToFilterBy).toEqual([]);
+          });
+
           it('stores toil amounts', function () {
             expect(controller.supportData.toilAmounts).toBeDefined();
+          });
+
+          it('appends a generic absence type that can be used for private leave requests', function () {
+            expect(controller.supportData.absenceTypes).toContain({
+              id: '',
+              title: 'Leave',
+              color: '#4D4D68',
+              calculation_unit: _.chain(controller.supportData.calculationUnits)
+                .find({ name: 'days' }).get('value').value()
+            });
+          });
+
+          describe('setting the user permission role', function () {
+            var scenarios = [
+              { role: 'admin' },
+              { role: 'manager' },
+              { role: 'staff' }
+            ];
+
+            scenarios.forEach(function (scenario) {
+              describe('when the ' + scenario.role + ' opens the calendar', function () {
+                beforeEach(function () {
+                  currentContact.role = scenario.role;
+                  compileComponent();
+                });
+
+                it('sets the user permission role equal to ' + scenario.role, function () {
+                  expect(controller.userPermissionRole).toBe(scenario.role);
+                });
+              });
+            });
+          });
+        });
+
+        describe('filter by absence types', function () {
+          var filterValue = ['777', '888'];
+
+          beforeEach(function () {
+            $rootScope.$emit.calls.reset();
+            $rootScope.$emit('LeaveCalendar::updateFiltersByAbsenceType', filterValue);
+            $rootScope.$digest();
+          });
+
+          it('stores the filter value in the support data', function () {
+            expect(controller.supportData.absenceTypesToFilterBy)
+              .toEqual(filterValue);
+          });
+
+          it('refreshes the month data', function () {
+            expect($rootScope.$emit.calls.mostRecent().args[0]).toBe('LeaveCalendar::showMonth');
           });
         });
 
@@ -164,8 +242,8 @@
               compileComponent();
             });
 
-            it('sets the filter to *off* by default', function () {
-              expect(controller.filters.userSettings.contacts_with_leaves).toBe(false);
+            it('sets the filter to *on* by default', function () {
+              expect(controller.filters.userSettings.contacts_with_leaves).toBe(true);
             });
           });
         });
@@ -243,6 +321,45 @@
           });
         });
 
+        describe('month paginators', function () {
+          describe('when current month is the first month of the current absence period', function () {
+            beforeEach(function () {
+              controller.selectedMonthIndex = _.first(controller.months).index;
+
+              $rootScope.$digest();
+            });
+
+            it('does not allow to paginate to the previous month', function () {
+              expect(controller.monthPaginatorsAvailability.previous).toBe(false);
+            });
+          });
+
+          describe('when current month is the last month of the current absence period', function () {
+            beforeEach(function () {
+              controller.selectedMonthIndex = _.last(controller.months).index;
+
+              $rootScope.$digest();
+            });
+
+            it('does not allow to paginate to the previous month', function () {
+              expect(controller.monthPaginatorsAvailability.next).toBe(false);
+            });
+          });
+
+          describe('when current month is neither the first nor the last month of the current absence period', function () {
+            beforeEach(function () {
+              controller.selectedMonthIndex = controller.months[1].index;
+
+              $rootScope.$digest();
+            });
+
+            it('allows to paginate the month in both directions', function () {
+              expect(controller.monthPaginatorsAvailability.previous).toBe(true);
+              expect(controller.monthPaginatorsAvailability.next).toBe(true);
+            });
+          });
+        });
+
         describe('additional contacts filter', function () {
           describe('when the user is an admin', function () {
             beforeEach(function () {
@@ -281,73 +398,6 @@
 
             it('does not load additional contacts IDs to filter', function () {
               expect(controller.contactIdsToReduceTo).toBe(null);
-            });
-          });
-
-          afterEach(function () {
-            currentContact.role = 'staff';
-          });
-        });
-
-        describe('filter by assignee', function () {
-          it('does *not* have such a filter for staff', function () {
-            expect(controller.filtersByAssignee).not.toBeDefined();
-          });
-
-          describe('when user is Admin', function () {
-            beforeEach(function () {
-              currentContact.role = 'admin';
-
-              compileComponent();
-            });
-
-            it('has the filter available', function () {
-              expect(controller.filtersByAssignee).toBeDefined();
-            });
-
-            describe('when filter by assignee is set to "Me"', function () {
-              beforeEach(function () {
-                selectFilterByAssignee('me');
-              });
-
-              it('does *not* load contracts', function () {
-                expect(Contract.all).not.toHaveBeenCalledWith();
-              });
-
-              it('loads only managees', function () {
-                expect(Contact.all).not.toHaveBeenCalledWith();
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(currentContact.id);
-              });
-            });
-
-            describe('when filter by assignee is set to "Unassigned"', function () {
-              beforeEach(function () {
-                selectFilterByAssignee('unassigned');
-              });
-
-              it('loads all contracts', function () {
-                expect(Contract.all).toHaveBeenCalledWith();
-              });
-
-              it('loads all contacts', function () {
-                expect(Contact.leaveManagees).toHaveBeenCalledWith(undefined, {
-                  unassigned: true
-                });
-              });
-            });
-
-            describe('when filter by assignee is set to "All"', function () {
-              beforeEach(function () {
-                selectFilterByAssignee('all');
-              });
-
-              it('loads all contracts', function () {
-                expect(Contract.all).toHaveBeenCalledWith();
-              });
-
-              it('loads all contacts', function () {
-                expect(Contact.all).toHaveBeenCalledWith();
-              });
             });
           });
 
@@ -401,6 +451,20 @@
           it('selects the current period', function () {
             expect(controller.selectedPeriod.current).toBe(true);
           });
+
+          describe('when absence period has been changed', function () {
+            beforeEach(function () {
+              controller.injectMonth = false;
+              controller.selectedPeriod = controller.absencePeriods[1];
+
+              controller.refresh('period');
+              $rootScope.$digest();
+            });
+
+            it('sets the first month from the period as the selected month', function () {
+              expect(controller.selectedMonth).toEqual(controller.months[0]);
+            });
+          });
         });
 
         describe('months', function () {
@@ -409,14 +473,24 @@
             var periodStartDate = moment(controller.selectedPeriod.start_date);
             var periodEndDate = moment(controller.selectedPeriod.end_date);
 
-            expect(months[0].index).toEqual(periodStartDate.month());
+            expect(months[0].month).toEqual(periodStartDate.month());
             expect(months[0].year).toEqual(periodStartDate.year());
-            expect(months[months.length - 1].index).toEqual(periodEndDate.month());
+            expect(months[months.length - 1].month).toEqual(periodEndDate.month());
             expect(months[months.length - 1].year).toEqual(periodEndDate.year());
           });
 
+          it('sorts the list of the months', function () {
+            var months = controller.months;
+            var monthsSorted = _.sortBy(months, function (month) {
+              return new Date(month.moment);
+            });
+
+            expect(months).toEqual(monthsSorted);
+          });
+
           it('selects the current month', function () {
-            expect(controller.selectedMonths).toEqual([moment().month()]);
+            expect(controller.selectedMonth).toEqual(_.find(controller.months,
+              { index: moment().format('YYYY-MM') }));
           });
         });
 
@@ -445,7 +519,25 @@
         describe('filter option values', function () {
           var optionGroups = ['hrjc_region', 'hrjc_location', 'hrjc_level_type', 'hrjc_department'];
 
-          describe('when the filters should not be shown', function () {
+          describe('when the subcontroller does not show filters', function () {
+            beforeEach(function () {
+              var staffController = $controller('LeaveCalendarStaffController').init(controller);
+
+              // mocks the staff sub controller to hide the filters:
+              $controllerProvider.register('LeaveCalendarStaffController', function () {
+                return {
+                  init: function (vm) {
+                    vm.showFilters = false;
+
+                    return staffController;
+                  }
+                };
+              });
+
+              OptionGroup.valuesOf.calls.reset();
+              compileComponent();
+            });
+
             it('does not fetch the filters option values', function () {
               expect(OptionGroup.valuesOf).not.toHaveBeenCalledWith(optionGroups);
             });
@@ -470,30 +562,13 @@
             controller.injectMonths = true;
           });
 
-          describe('when it has not yet received the "month injected" event from all the months', function () {
+          describe('when it has received the "month injected" event from the month', function () {
             beforeEach(function () {
-              simulateMonthsWithSignal('injected', 2);
-            });
-
-            it('does not send the event', function () {
-              expect($rootScope.$emit).not.toHaveBeenCalled();
-            });
-          });
-
-          describe('when it has received the "month injected" event from all the months', function () {
-            beforeEach(function () {
-              simulateMonthsWithSignal('injected', controller.months.length);
+              simulateMonthWithSignal('injected');
             });
 
             it('sends the event', function () {
-              expect($rootScope.$emit).toHaveBeenCalled();
-              expect($rootScope.$emit.calls.mostRecent().args[0]).toBe('LeaveCalendar::showMonths');
-            });
-
-            it('attaches to the event only the currently selected months', function () {
-              expect($rootScope.$emit.calls.mostRecent().args[1]).toEqual(controller.months.filter(function (month) {
-                return _.includes(controller.selectedMonths, month.index);
-              }));
+              expect($rootScope.$emit.calls.mostRecent().args[0]).toBe('LeaveCalendar::showMonth');
             });
           });
         });
@@ -510,39 +585,99 @@
           controller.refresh('contacts');
           $rootScope.$digest();
 
-          simulateMonthsWithSignal('destroyed', controller.months.length);
+          simulateMonthWithSignal('destroyed', controller.months.length);
         }
       });
 
-      describe('selected months watcher', function () {
-        describe('when some other months are selected', function () {
-          beforeEach(function () {
-            controller.selectedMonths = [1, 2, 3];
-            $rootScope.$digest();
-          });
+      describe('canManageRequests()', function () {
+        var scenarios = [
+          { role: 'admin', expectedResult: true },
+          { role: 'manager', expectedResult: true },
+          { role: 'staff', expectedResult: false }
+        ];
 
-          it('sends the "show months" event with the newly selected months', function () {
-            expect($rootScope.$emit).toHaveBeenCalledWith(
-              'LeaveCalendar::showMonths',
-              controller.months.filter(function (month) {
-                return _.includes([1, 2, 3], month.index);
-              }),
-              jasmine.any(Boolean)
-            );
+        scenarios.forEach(function (scenario) {
+          describe('when the ' + scenario.role + ' checks if they can manage requests', function () {
+            beforeEach(function () {
+              currentContact.role = scenario.role;
+              compileComponent();
+            });
+
+            it('returns ' + scenario.expectedResult, function () {
+              expect(controller.canManageRequests()).toBe(scenario.expectedResult);
+            });
           });
         });
+      });
 
-        describe('when none of the months are selected', function () {
-          beforeEach(function () {
-            controller.selectedMonths = [];
-            $rootScope.$digest();
-          });
+      describe('navigateToCurrentMonth()', function () {
+        var currentAbsencePeriod;
 
-          it('sends the "show months" event with the all the months', function () {
-            expect($rootScope.$emit).toHaveBeenCalledWith(
-              'LeaveCalendar::showMonths',
-              controller.months,
-              jasmine.any(Boolean));
+        beforeEach(function () {
+          currentAbsencePeriod = _.find(controller.absencePeriods,
+            { current: true });
+          controller.injectMonth = false;
+          controller.selectedPeriod = controller.absencePeriods[1];
+          $rootScope.$digest();
+          controller.selectedMonthIndex =
+            moment().year(currentYear).month(currentMonth).format('YYYY-MM');
+          $rootScope.$digest();
+          controller.navigateToCurrentMonth();
+          $rootScope.$digest();
+        });
+
+        it('sets the selected month as the current month', function () {
+          expect(controller.selectedMonth.year).toBe(currentYear);
+          expect(controller.selectedMonth.month).toBe(currentMonth);
+        });
+
+        it('sets the current absence period', function () {
+          expect(controller.selectedPeriod).toEqual(currentAbsencePeriod);
+        });
+      });
+
+      describe('paginateMonth()', function () {
+        var currentlySelectedMonth;
+        var tests = [
+          { directions: 'previous', monthDifference: -1 },
+          { directions: 'next', monthDifference: 1 },
+          { directions: 'previous next previous next next', monthDifference: 1 },
+          { directions: 'next previous next previous previous', monthDifference: -1 }
+        ];
+
+        beforeEach(function () {
+          currentlySelectedMonth = controller.selectedMonth.month;
+          // This is needed to test the paginators availability
+          controller.months = _.slice(controller.months, 0, 3);
+        });
+
+        tests.forEach(function (test) {
+          describe('when user paginates to the ' + test.directions + ' month', function () {
+            var directions;
+
+            beforeEach(function () {
+              directions = test.directions.split(' ');
+              controller.injectMonth = false;
+              directions.forEach(function (direction) {
+                controller.paginateMonth(direction);
+              });
+              $rootScope.$digest();
+              simulateMonthWithSignal('injected', controller.months.length);
+              $rootScope.$digest();
+            });
+
+            it('sets the selected month according to ' + test.directions + ' directions', function () {
+              expect(controller.selectedMonth.moment
+                .diff(currentlySelectedMonth.moment, 'month')).toBe(test.monthDifference);
+            });
+
+            it('does not allow to paginate further because the are no more months in the last mentioned direction', function () {
+              expect(controller.monthPaginatorsAvailability[_.last(directions)]).toBe(false);
+            });
+
+            it('refreshes the month component without force data reload', function () {
+              expect($rootScope.$emit).toHaveBeenCalledWith('LeaveCalendar::showMonth', false);
+            });
           });
         });
       });
@@ -610,8 +745,8 @@
               controller.refresh('period');
               $rootScope.$digest();
 
-              simulateMonthsWithSignal('destroyed', controller.months.length);
-              simulateMonthsWithSignal('injected', controller.months.length);
+              simulateMonthWithSignal('destroyed', controller.months.length);
+              simulateMonthWithSignal('injected', controller.months.length);
             });
 
             it('rebuilds the months structure', function () {
@@ -624,10 +759,7 @@
 
             it('sends the "show months" signal without forcing data reload', function () {
               expect($rootScope.$emit).toHaveBeenCalledWith(
-                'LeaveCalendar::showMonths',
-                jasmine.any(Array),
-                false
-              );
+                'LeaveCalendar::showMonth', false);
             });
           });
 
@@ -636,8 +768,8 @@
               controller.refresh('contacts');
               $rootScope.$digest();
 
-              simulateMonthsWithSignal('destroyed', controller.months.length);
-              simulateMonthsWithSignal('injected', controller.months.length);
+              simulateMonthWithSignal('destroyed', controller.months.length);
+              simulateMonthWithSignal('injected', controller.months.length);
             });
 
             it('does not rebuild the months structure', function () {
@@ -650,10 +782,7 @@
 
             it('sends the "show months" signal with forcing data reload', function () {
               expect($rootScope.$emit).toHaveBeenCalledWith(
-                'LeaveCalendar::showMonths',
-                jasmine.any(Array),
-                true
-              );
+                'LeaveCalendar::showMonth', true);
             });
           });
         });
@@ -706,13 +835,10 @@
        * Simulates that the given number of months sends the given
        * signal to the component
        *
-       * @param {string} signal
-       * @param {int} numberOfMonths
+       * @param {String} signal
        */
-      function simulateMonthsWithSignal (signal, numberOfMonths) {
-        _.times(numberOfMonths, function () {
-          $rootScope.$emit('LeaveCalendar::month' + _.capitalize(signal));
-        });
+      function simulateMonthWithSignal (signal) {
+        $rootScope.$emit('LeaveCalendar::month' + _.capitalize(signal));
 
         $rootScope.$emit.calls.reset();
         $rootScope.$digest();

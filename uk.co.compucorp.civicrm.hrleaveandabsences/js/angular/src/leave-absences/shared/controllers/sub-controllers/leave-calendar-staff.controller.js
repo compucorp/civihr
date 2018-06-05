@@ -5,12 +5,13 @@ define([
   'common/moment',
   'leave-absences/shared/modules/controllers'
 ], function (_, moment, controllers) {
-  controllers.controller('LeaveCalendarStaffController', ['$log', 'Contact', controller]);
+  controllers.controller('LeaveCalendarStaffController', ['$log', '$q', 'Contact',
+    'LeaveCalendarService', controller]);
 
-  function controller ($log, Contact) {
+  function controller ($log, $q, Contact, LeaveCalendarService) {
     $log.debug('LeaveCalendarStaffController');
 
-    var vm;
+    var leaveCalendar, vm;
 
     return {
       /**
@@ -19,7 +20,16 @@ define([
        */
       init: function (_vm_) {
         vm = _vm_;
-        vm.filters.userSettings.contacts_with_leaves = false;
+        leaveCalendar = LeaveCalendarService.init(vm);
+        vm.filters.userSettings.contacts_with_leaves = true;
+        vm.showTheseContacts = [vm.contactId];
+        vm.showContactName = true;
+        vm.showFilters = true;
+
+        if (vm.displaySingleContact) {
+          vm.showFilters = false;
+          vm.lookupContacts = [{ id: vm.contactId }];
+        }
 
         return api();
       }
@@ -33,20 +43,22 @@ define([
     function api () {
       return {
         /**
-         * Returns the data of the current contact
+         * Returns the data of the current contact.
          *
-         * It returns it as a single-item array to comply with the standard
-         * structure leave-calendar expect to receive the contacts as
+         * It displays a list of contacts taking leave for the current selected
+         * period. If the display single contact property is set, it will only
+         * fetch the information for the contact provided.
          *
          * @return {Promise} resolves as an {Array}
          */
         loadContacts: function () {
-          return Contact.all({
-            id: { in: [vm.contactId] }
-          })
-          .then(function (contacts) {
-            return contacts.list;
-          });
+          if (vm.displaySingleContact) {
+            return leaveCalendar.loadFilteredContacts();
+          } else if (vm.userPermissionRole === 'admin') {
+            return leaveCalendar.loadContactsForAdmin();
+          } else {
+            return leaveCalendar.loadLookUpAndFilteredContacts();
+          }
         }
       };
     }

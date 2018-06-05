@@ -33,6 +33,7 @@ define([
   'leave-absences/shared/controllers/sub-controllers/request-modal-details-toil.controller',
   'leave-absences/shared/models/absence-period.model',
   'leave-absences/shared/models/absence-type.model',
+  'leave-absences/shared/services/leave-calendar.service',
   'leave-absences/shared/services/leave-popup.service',
   'leave-absences/manager-leave/components/manager-leave-container',
   'leave-absences/manager-leave/modules/config'

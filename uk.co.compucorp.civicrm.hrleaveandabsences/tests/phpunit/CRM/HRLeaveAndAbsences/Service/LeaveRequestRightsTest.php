@@ -3,6 +3,7 @@
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsService;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
+use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest
@@ -279,6 +280,38 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
 
     $leaveRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
     $this->assertTrue($leaveRightsService->canCancelToilWithPastDates($this->leaveContact, $absenceType->id));
+  }
+
+  public function testStaffMembersShouldOnlyHaveAccessToThemselves() {
+    $staffMember1 = ContactFabricator::fabricate();
+    $staffMember2 = ContactFabricator::fabricate();
+    $this->registerCurrentLoggedInContactInSession($staffMember1['id']);
+    $leaveRequestRightsService = $this->getLeaveRightsService();
+    $accessibleContacts = $leaveRequestRightsService->getLeaveContactsCurrentUserHasAccessTo();
+    $this->assertEquals([$staffMember1['id']], $accessibleContacts);
+  }
+
+  public function testGetLeaveApproverShouldOnlyHaveAccessToManagees() {
+    $manager = ContactFabricator::fabricate();
+    $staffMember1 = ContactFabricator::fabricate();
+    $staffMember2 = ContactFabricator::fabricate();
+    $this->registerCurrentLoggedInContactInSession($manager['id']);
+    $this->setContactAsLeaveApproverOf($manager, $staffMember2);
+    $leaveRequestRightsService = $this->getLeaveRightsService();
+    $accessibleContacts = $leaveRequestRightsService->getLeaveContactsCurrentUserHasAccessTo();
+    sort($accessibleContacts);
+    //The leave approver has access to his own contact id and that of his managees.
+    $this->assertEquals([$manager['id'],$staffMember2['id']], $accessibleContacts);
+  }
+
+  public function testAdminShouldHaveAccessToAllContacts() {
+    $staffMember1 = ContactFabricator::fabricate();
+    $staffMember2 = ContactFabricator::fabricate();
+    $leaveRequestRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
+    $accessibleContacts = $leaveRequestRightsService->getLeaveContactsCurrentUserHasAccessTo();
+    //In reality, An admin user has access to all contacts, but an empty array is returned in
+    //this case.
+    $this->assertEquals([], $accessibleContacts);
   }
 
   private function getLeaveRightsService($isAdmin = FALSE, $isManager = FALSE) {

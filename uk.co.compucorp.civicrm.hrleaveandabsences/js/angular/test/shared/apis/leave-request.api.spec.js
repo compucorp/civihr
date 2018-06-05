@@ -582,9 +582,9 @@ define([
         $httpBackend.flush();
       });
 
-      it('calls the LeaveRequest.get endpoint', function () {
+      it('calls the LeaveRequest.get endpoint and does not cache results', function () {
         promise.then(function () {
-          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getFull', { id: id });
+          expect(LeaveRequestAPI.sendGET).toHaveBeenCalledWith('LeaveRequest', 'getFull', { id: id }, false);
         });
       });
     });
