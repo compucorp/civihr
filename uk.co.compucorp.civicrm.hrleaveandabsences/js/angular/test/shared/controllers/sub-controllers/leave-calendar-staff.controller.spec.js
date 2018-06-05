@@ -79,16 +79,8 @@
               $rootScope.$digest();
             });
 
-            it('loads the filtered contacts', function () {
-              expect(leaveCalendarServiceMock.instance.loadFilteredContacts).toHaveBeenCalledWith();
-            });
-
-            it('loads the look up contacts', function () {
-              expect(leaveCalendarServiceMock.instance.loadLookUpContacts).toHaveBeenCalledWith();
-            });
-
-            it('stores a list of look up contacts', function () {
-              expect(vm.lookupContacts).toEqual(leaveCalendarServiceMock.data.lookedUpContacts);
+            it('loads the look up and filtered contacts', function () {
+              expect(leaveCalendarServiceMock.instance.loadLookUpAndFilteredContacts).toHaveBeenCalledWith();
             });
 
             it('returns the filtered contacts', function () {
