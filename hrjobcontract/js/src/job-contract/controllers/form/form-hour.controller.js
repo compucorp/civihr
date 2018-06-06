@@ -24,7 +24,7 @@ define([
     $scope.hrsAmountDefined = false;
 
     (function init () {
-      entityHour.location_standard_hours = entityHour.location_standard_hours || '1';
+      entityHour.location_standard_hours = entityHour.location_standard_hours || $scope.utils.hoursLocation[0].id;
       locStandHrs = $filter('getObjById')(utilsHoursLocation, entityHour.location_standard_hours);
 
       initWatchers();
