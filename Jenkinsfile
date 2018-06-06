@@ -66,11 +66,11 @@ pipeline {
             mergeEnvBranchInAllRepos(envBranch)
           }
 
+          applyCoreForkPatch()
+
           // The JS tests use the cv tool to find the path  of an extension.
           // For it to work, the extensions have to be installed on the site
           installCiviHRExtensions()
-
-          applyCoreForkPatch()
         }
       }
     }
