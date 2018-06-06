@@ -95,12 +95,15 @@ define([
       initAvailableStatusesMatrix();
       initListeners();
 
-      return $q.all([
-        loadLoggedInContactId(),
-        initRoles(),
-        loadAbsencePeriods(),
-        loadStatuses()
-      ])
+      return loadLoggedInContactId()
+        .then(initIsSelfRecord)
+        .then(function () {
+          return $q.all([
+            initRoles(),
+            loadAbsencePeriods(),
+            loadStatuses()
+          ]);
+        })
         .then(initRequest)
         .then(setModalMode)
         .then(setInitialAbsencePeriod)
@@ -271,6 +274,17 @@ define([
             return $q.reject();
           }
         });
+    }
+
+    /**
+     * Checks if request dates and times need to be reverted to the original state.
+     * They need to be reverted if the balance has not been changed for all requests
+     * except TOIL because its balance is independent from the dates and times.
+     *
+     * @return {Boolean}
+     */
+    function checkIfRequestDatesAndTimesNeedToBeReverted () {
+      return getLeaveType() !== 'toil' && !vm.request.change_balance;
     }
 
     /**
@@ -510,6 +524,19 @@ define([
     }
 
     /**
+     * Initializes the is self record property and sets it to true when
+     * on My Leave section and the user is editing their own request or creating
+     * a new one for themselves.
+     */
+    function initIsSelfRecord () {
+      var isSectionMyLeave = $rootScope.section === 'my-leave';
+      var isMyOwnRequest = +loggedInContactId === +_.get(vm, 'leaveRequest.contact_id');
+      var isNewRequest = !_.get(vm, 'leaveRequest.id');
+
+      vm.isSelfRecord = isSectionMyLeave && (isMyOwnRequest || isNewRequest);
+    }
+
+    /**
      * Initialises listeners
      */
     function initListeners () {
@@ -585,7 +612,7 @@ define([
 
       // If the user is creating or editing their own leave, they will be
       // treated as a staff regardless of their actual role.
-      if ($rootScope.section === 'my-leave') {
+      if (vm.isSelfRecord) {
         return;
       }
 
@@ -931,7 +958,7 @@ define([
       return vm.request.isValid()
         .then(isBalanceChangeRecalculationNeeded() && checkIfBalanceChangeHasChanged)
         .then(decideIfBalanceChangeNeedsAForceRecalculation)
-        .then(!vm.request.change_balance && revertRequestOriginalDatesAndTimes)
+        .then(checkIfRequestDatesAndTimesNeedToBeReverted() && revertRequestOriginalDatesAndTimes)
         .then(submitAllTabs)
         .then(function () {
           return vm.isMode('edit') ? updateRequest() : createRequest();

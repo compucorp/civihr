@@ -992,7 +992,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // This balance change will not be returned because it's not linked to
     // the leave request
     LeaveBalanceChangeFabricator::fabricate([
-      'source_id' => 100,
+      'source_id' => $expectedLeaveBalanceChanges[1]->source_id + 1,
       'source_type' => LeaveBalanceChange::SOURCE_LEAVE_REQUEST_DAY,
     ]);
 

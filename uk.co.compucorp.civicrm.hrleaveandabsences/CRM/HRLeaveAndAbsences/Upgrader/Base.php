@@ -1,6 +1,7 @@
 <?php
 
 // AUTO-GENERATED FILE -- Civix may overwrite any changes made to this file
+use CRM_HRLeaveAndAbsences_ExtensionUtil as E;
 
 /**
  * Base class which provides helpers to execute upgrade logic
@@ -8,7 +9,7 @@
 class CRM_HRLeaveAndAbsences_Upgrader_Base {
 
   /**
-   * @var varies, subclass of ttis
+   * @var varies, subclass of this
    */
   static $instance;
 
@@ -33,14 +34,20 @@ class CRM_HRLeaveAndAbsences_Upgrader_Base {
   private $revisions;
 
   /**
+   * @var boolean
+   *   Flag to clean up extension revision data in civicrm_setting
+   */
+  private $revisionStorageIsDeprecated = FALSE;
+
+  /**
    * Obtain a reference to the active upgrade handler.
    */
   static public function instance() {
-    if (! self::$instance) {
+    if (!self::$instance) {
       // FIXME auto-generate
       self::$instance = new CRM_HRLeaveAndAbsences_Upgrader(
         'uk.co.compucorp.civicrm.hrleaveandabsences',
-        realpath(__DIR__ .'/../../../')
+        realpath(__DIR__ . '/../../../')
       );
     }
     return self::$instance;
@@ -91,7 +98,6 @@ class CRM_HRLeaveAndAbsences_Upgrader_Base {
    * @return bool
    */
   protected static function executeCustomDataFileByAbsPath($xml_file) {
-    require_once 'CRM/Utils/Migrate/Import.php';
     $import = new CRM_Utils_Migrate_Import();
     $import->run($xml_file);
     return TRUE;
@@ -107,7 +113,26 @@ class CRM_HRLeaveAndAbsences_Upgrader_Base {
   public function executeSqlFile($relativePath) {
     CRM_Utils_File::sourceSQLFile(
       CIVICRM_DSN,
-      $this->extensionDir . '/' . $relativePath
+      $this->extensionDir . DIRECTORY_SEPARATOR . $relativePath
+    );
+    return TRUE;
+  }
+
+  /**
+   * @param string $tplFile
+   *   The SQL file path (relative to this extension's dir).
+   *   Ex: "sql/mydata.mysql.tpl".
+   * @return bool
+   */
+  public function executeSqlTemplate($tplFile) {
+    // Assign multilingual variable to Smarty.
+    $upgrade = new CRM_Upgrade_Form();
+
+    $tplFile = CRM_Utils_File::isAbsolute($tplFile) ? $tplFile : $this->extensionDir . DIRECTORY_SEPARATOR . $tplFile;
+    $smarty = CRM_Core_Smarty::singleton();
+    $smarty->assign('domainID', CRM_Core_Config::domainID());
+    CRM_Utils_File::sourceSQLFile(
+      CIVICRM_DSN, $smarty->fetch($tplFile), NULL, TRUE
     );
     return TRUE;
   }
@@ -205,7 +230,7 @@ class CRM_HRLeaveAndAbsences_Upgrader_Base {
    * @return array(revisionNumbers) sorted numerically
    */
   public function getRevisions() {
-    if (! is_array($this->revisions)) {
+    if (!is_array($this->revisions)) {
       $this->revisions = array();
 
       $clazz = new ReflectionClass(get_class($this));
@@ -222,29 +247,53 @@ class CRM_HRLeaveAndAbsences_Upgrader_Base {
   }
 
   public function getCurrentRevision() {
-    // return CRM_Core_BAO_Extension::getSchemaVersion($this->extensionName);
+    $revision = CRM_Core_BAO_Extension::getSchemaVersion($this->extensionName);
+    if (!$revision) {
+      $revision = $this->getCurrentRevisionDeprecated();
+    }
+    return $revision;
+  }
+
+  private function getCurrentRevisionDeprecated() {
     $key = $this->extensionName . ':version';
-    return CRM_Core_BAO_Setting::getItem('Extension', $key);
+    if ($revision = CRM_Core_BAO_Setting::getItem('Extension', $key)) {
+      $this->revisionStorageIsDeprecated = TRUE;
+    }
+    return $revision;
   }
 
   public function setCurrentRevision($revision) {
-    // We call this during hook_civicrm_install, but the underlying SQL
-    // UPDATE fails because the extension record hasn't been INSERTed yet.
-    // Instead, track revisions in our own namespace.
-    // CRM_Core_BAO_Extension::setSchemaVersion($this->extensionName, $revision);
-
-    $key = $this->extensionName . ':version';
-    CRM_Core_BAO_Setting::setItem($revision, 'Extension', $key);
+    CRM_Core_BAO_Extension::setSchemaVersion($this->extensionName, $revision);
+    // clean up legacy schema version store (CRM-19252)
+    $this->deleteDeprecatedRevision();
     return TRUE;
+  }
+
+  private function deleteDeprecatedRevision() {
+    if ($this->revisionStorageIsDeprecated) {
+      $setting = new CRM_Core_BAO_Setting();
+      $setting->name = $this->extensionName . ':version';
+      $setting->delete();
+      CRM_Core_Error::debug_log_message("Migrated extension schema revision ID for {$this->extensionName} from civicrm_setting (deprecated) to civicrm_extension.\n");
+    }
   }
 
   // ******** Hook delegates ********
 
+  /**
+   * @see https://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
+   */
   public function onInstall() {
     $files = glob($this->extensionDir . '/sql/*_install.sql');
     if (is_array($files)) {
       foreach ($files as $file) {
         CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
+      }
+    }
+    $files = glob($this->extensionDir . '/sql/*_install.mysql.tpl');
+    if (is_array($files)) {
+      foreach ($files as $file) {
+        $this->executeSqlTemplate($file);
       }
     }
     $files = glob($this->extensionDir . '/xml/*_install.xml');
@@ -256,13 +305,31 @@ class CRM_HRLeaveAndAbsences_Upgrader_Base {
     if (is_callable(array($this, 'install'))) {
       $this->install();
     }
+  }
+
+  /**
+   * @see https://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_postInstall
+   */
+  public function onPostInstall() {
     $revisions = $this->getRevisions();
     if (!empty($revisions)) {
       $this->setCurrentRevision(max($revisions));
     }
+    if (is_callable(array($this, 'postInstall'))) {
+      $this->postInstall();
+    }
   }
 
+  /**
+   * @see https://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
+   */
   public function onUninstall() {
+    $files = glob($this->extensionDir . '/sql/*_uninstall.mysql.tpl');
+    if (is_array($files)) {
+      foreach ($files as $file) {
+        $this->executeSqlTemplate($file);
+      }
+    }
     if (is_callable(array($this, 'uninstall'))) {
       $this->uninstall();
     }
@@ -272,9 +339,11 @@ class CRM_HRLeaveAndAbsences_Upgrader_Base {
         CRM_Utils_File::sourceSQLFile(CIVICRM_DSN, $file);
       }
     }
-    $this->setCurrentRevision(NULL);
   }
 
+  /**
+   * @see https://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
+   */
   public function onEnable() {
     // stub for possible future use
     if (is_callable(array($this, 'enable'))) {
@@ -282,6 +351,9 @@ class CRM_HRLeaveAndAbsences_Upgrader_Base {
     }
   }
 
+  /**
+   * @see https://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
+   */
   public function onDisable() {
     // stub for possible future use
     if (is_callable(array($this, 'disable'))) {
@@ -300,4 +372,5 @@ class CRM_HRLeaveAndAbsences_Upgrader_Base {
       default:
     }
   }
+
 }

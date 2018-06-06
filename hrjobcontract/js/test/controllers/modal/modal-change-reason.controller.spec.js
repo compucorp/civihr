@@ -8,12 +8,16 @@ define([
   'use strict';
 
   describe('ModalChangeReasonController', function () {
-    var $q, $rootScope, $scope, $controller, modalInstanceSpy, ContractRevisionServiceMock, ContractRevisionServiceSpy;
+    var $q, $rootScope, $scope, $controller, modalInstanceSpy, crmAngService,
+      ContractServiceMock, ContractServiceSpy,
+      ContractRevisionServiceMock, ContractRevisionServiceSpy, popupFormUrl;
 
     beforeEach(function () {
+      module('job-contract.core');
       module('job-contract.controllers');
       module(function ($provide) {
         $provide.value('contractRevisionService', ContractRevisionServiceMock);
+        $provide.value('contractService', ContractServiceMock);
       });
 
       ContractRevisionServiceMock = {
@@ -21,11 +25,13 @@ define([
       };
     });
 
-    beforeEach(inject(function (_$controller_, _$rootScope_, _$q_, contractRevisionService) {
+    beforeEach(inject(function (_$controller_, _$rootScope_, _$q_, _crmAngService_, contractRevisionService, contractService) {
       $controller = _$controller_;
       $q = _$q_;
       $rootScope = _$rootScope_;
+      crmAngService = _crmAngService_;
       ContractRevisionServiceSpy = contractRevisionService;
+      ContractServiceSpy = contractService;
 
       modalInstanceSpy = jasmine.createSpyObj('modalInstanceSpy', ['dismiss', 'close']);
 
@@ -95,6 +101,24 @@ define([
       });
     });
 
+    describe('when user clicks on the wrench icon', function () {
+      popupFormUrl = '/civicrm/admin/options/hrjc_revision_change_reason?reset=1';
+
+      beforeEach(function () {
+        spyOn(crmAngService, 'loadForm').and.callFake(function () {
+          return {
+            on: function (event, callback) {
+            }
+          };
+        });
+        $scope.openRevisionChangeReasonEditor();
+      });
+
+      it('calls the crmAngService with the requested url', function () {
+        expect(crmAngService.loadForm).toHaveBeenCalledWith(popupFormUrl);
+      });
+    });
+
     function makeController () {
       $scope = $rootScope.$new();
 
@@ -111,7 +135,8 @@ define([
         date: '',
         reasonId: '',
         settings: '',
-        contractRevisionService: ContractRevisionServiceSpy
+        contractRevisionService: ContractRevisionServiceSpy,
+        contractService: ContractServiceSpy
       });
     }
   });

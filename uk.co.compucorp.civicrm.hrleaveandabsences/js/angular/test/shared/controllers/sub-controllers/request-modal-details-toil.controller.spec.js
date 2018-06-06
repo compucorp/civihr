@@ -476,7 +476,7 @@ define([
           requestModalHelper.setTestDates(controller, date2016, date2016To);
           $rootScope.$digest();
 
-          expiryDate = new Date(controller.request.toil_expiry_date);
+          expiryDate = controller.convertDateFormatFromServer(controller.request.toil_expiry_date);
           originalToilToAccrue = optionGroupMock.specificObject('hrleaveandabsences_toil_amounts', 'name', 'quarter_day');
           controller.request.toil_to_accrue = originalToilToAccrue.value;
         });

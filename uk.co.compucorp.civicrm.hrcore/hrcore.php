@@ -126,6 +126,25 @@ function hrcore_civicrm_buildForm($formName, &$form) {
 }
 
 /**
+ * Implements hook_civicrm_validateForm().
+ *
+ * @param string $formName
+ * @param array $fields
+ * @param mixed $files
+ * @param object $form
+ * @param array $errors
+ */
+function hrcore_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
+  $listeners = [
+    new CRM_HRCore_Hook_ValidateForm_AdminFormOptionsValidation(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($formName, $fields, $files, $form, $errors);
+  }
+}
+
+/**
  * Implements hook_civicrm_xmlMenu().
  *
  * @param array $files
@@ -143,6 +162,15 @@ function hrcore_civicrm_xmlMenu(&$files) {
  */
 function hrcore_civicrm_install() {
   _hrcore_civix_civicrm_install();
+}
+
+/**
+ * Implements hook_civicrm_postInstall().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_postInstall
+ */
+function hrcore_civicrm_postInstall() {
+  _hrcore_civix_civicrm_postInstall();
 }
 
 /**

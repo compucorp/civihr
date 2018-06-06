@@ -1,8 +1,9 @@
 /* eslint-env amd */
 
 define([
-  'common/angular'
-], function (angular) {
+  'common/angular',
+  'common/lodash'
+], function (angular, _) {
   'use strict';
 
   contractPayService.__name = 'contractPayService';
@@ -53,6 +54,10 @@ define([
       getOptions: function (fieldName, callAPI) {
         var deffered = $q.defer();
         var data;
+        var jobPayOptions = {
+          arr: [],
+          obj: {}
+        };
 
         if (!callAPI) {
           data = settings.CRM.options.HRJobPay || {};
@@ -63,7 +68,15 @@ define([
 
           deffered.resolve(data || {});
         } else {
-          // TODO call2API
+          CRM.api3('HRJobPay', 'getoptions', {
+            'sequential': 1,
+            'field': fieldName
+          }).done(function (data) {
+            jobPayOptions.obj = _.mapValues(_.indexBy(data.values, 'key'), 'value');
+            jobPayOptions.arr = _.values(_.indexBy(data.values, 'key'));
+
+            deffered.resolve(jobPayOptions);
+          });
         }
 
         return deffered.promise;

@@ -12,10 +12,11 @@ define([
 
   describe('ModalContractController', function () {
     var $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock,
-      $uibModalMock, contractDetailsService, contractHealthService,
+      $uibModalMock, crmAngService, contractDetailsService, contractHealthService,
       contractHourService, contractLeaveService, contractPayService,
       contractPensionService, contractRevisionService, contractService, settings,
-      utilsService;
+      utilsService, locationUrl, popupLists, payScaleGradeUrl,
+      annualBenefitUrl, annualDeductionUrl;
     var today = moment().format('YYYY-MM-DD');
 
     beforeEach(module('job-contract'));
@@ -40,7 +41,7 @@ define([
     beforeEach(inject(function (_$controller_, _$rootScope_, _$httpBackend_, _$q_,
       _contractDetailsService_, _contractHealthService_, _contractHourService_,
       _contractLeaveService_, _contractPayService_, _contractPensionService_,
-      _contractService_, _settings_, _utilsService_) {
+      _contractService_, _crmAngService_, _settings_, _utilsService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
@@ -52,6 +53,7 @@ define([
       contractPayService = _contractPayService_;
       contractPensionService = _contractPensionService_;
       contractService = _contractService_;
+      crmAngService = _crmAngService_;
       settings = _settings_;
       utilsService = _utilsService_;
     }));
@@ -454,6 +456,118 @@ define([
             expect(contractService.saveRevision).toHaveBeenCalled();
           });
         });
+      });
+    });
+
+    describe('when user clicks on the "HRJobContract options" wrench icon', function () {
+      popupLists = [
+        {
+          'popupFormUrl': '/civicrm/admin/options/hrjc_contract_type?reset=1',
+          'popupFormField': 'hrjobcontract_details_contract_type'
+        },
+        {
+          'popupFormUrl': '/civicrm/admin/options/hrjc_location?reset=1',
+          'popupFormField': 'hrjobcontract_details_location'
+        },
+        {
+          'popupFormUrl': '/civicrm/admin/options/hrjc_contract_end_reason?reset=1',
+          'popupFormField': 'hrjobcontract_details_end_reason'
+        },
+        {
+          'popupFormUrl': '/civicrm/admin/options/hrjc_insurance_plantype?reset=1',
+          'popupFormField': 'hrjobcontract_health_health_plan_type'
+        }
+      ];
+
+      beforeEach(function () {
+        spyOn(crmAngService, 'loadForm').and.callFake(function () {
+          return {
+            on: function (event, callback) {
+            }
+          };
+        });
+        _.each(popupLists, function (popupList) {
+          $scope.openOptionsEditor(popupList.popupFormUrl, popupList.popupFormField);
+        });
+      });
+
+      it('calls the crmAngService with the requested url', function () {
+        expect(crmAngService.loadForm).toHaveBeenCalledWith(popupLists[0].popupFormUrl);
+        expect(crmAngService.loadForm).toHaveBeenCalledWith(popupLists[1].popupFormUrl);
+        expect(crmAngService.loadForm).toHaveBeenCalledWith(popupLists[2].popupFormUrl);
+        expect(crmAngService.loadForm).toHaveBeenCalledWith(popupLists[3].popupFormUrl);
+      });
+    });
+
+    describe('when user clicks on the "hours location" wrench icon', function () {
+      locationUrl = '/civicrm/hours_location?reset=1';
+
+      beforeEach(function () {
+        spyOn(crmAngService, 'loadForm').and.callFake(function () {
+          return {
+            on: function (event, callback) {
+            }
+          };
+        });
+        $scope.openHoursLocationOptionsEditor();
+      });
+
+      it('calls the crmAngService with the requested url', function () {
+        expect(crmAngService.loadForm).toHaveBeenCalledWith(locationUrl);
+      });
+    });
+
+    describe('when user clicks on the "pay scale/ grade" wrench icon', function () {
+      payScaleGradeUrl = '/civicrm/pay_scale?reset=1';
+
+      beforeEach(function () {
+        spyOn(crmAngService, 'loadForm').and.callFake(function () {
+          return {
+            on: function (event, callback) {
+            }
+          };
+        });
+        $scope.openPayScaleGradeOptionsEditor();
+      });
+
+      it('calls the crmAngService with the requested url', function () {
+        expect(crmAngService.loadForm).toHaveBeenCalledWith(payScaleGradeUrl);
+      });
+    });
+
+    describe('when user clicks on the "annual benefit" wrench icon', function () {
+      annualBenefitUrl = '/civicrm/admin/options/hrjc_benefit_name?reset=1';
+
+      beforeEach(function () {
+        spyOn(crmAngService, 'loadForm').and.callFake(function () {
+          return {
+            on: function (event, callback) {
+            }
+          };
+        });
+        $scope.openAnnualBenefitOptionsEditor();
+      });
+
+      it('calls the crmAngService with the requested url', function () {
+        expect(crmAngService.loadForm).toHaveBeenCalledWith(annualBenefitUrl);
+      });
+    });
+
+    describe('when user clicks on the "annual deduction" wrench icon', function () {
+      annualDeductionUrl = '/civicrm/admin/options/hrjc_deduction_name?reset=1';
+
+      beforeEach(function () {
+        spyOn(crmAngService, 'loadForm').and.callFake(function () {
+          return {
+            on: function (event, callback) {
+            }
+          };
+        });
+        $scope.openAnnualDeductionOptionsEditor();
+      });
+
+      it('calls the crmAngService with the requested url', function () {
+        expect(crmAngService.loadForm).toHaveBeenCalledWith(annualDeductionUrl);
       });
     });
 

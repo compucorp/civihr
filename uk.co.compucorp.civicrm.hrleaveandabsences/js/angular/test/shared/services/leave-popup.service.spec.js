@@ -44,7 +44,7 @@ define([
         var forceRecalculateBalanceChange = true;
 
         beforeEach(function () {
-          LeavePopup.openModal(jasmine.any(String), jasmine.any(String), jasmine.any(String), jasmine.any(String),
+          LeavePopup.openModal(jasmine.any(String), jasmine.any(String), jasmine.any(String),
             forceRecalculateBalanceChange);
           $rootScope.$digest();
         });

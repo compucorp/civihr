@@ -6,7 +6,7 @@ module.exports = class SSPLeaveAbsencesManagerLeaveCalendar extends Page {
    * the visibility of a leave calendar item element
    */
   async waitForReady () {
-    await this.puppet.waitFor('leave-calendar-month .chr_leave-calendar__item', { visible: true });
+    await this.puppet.waitFor('leave-calendar-month .chr_leave-calendar__day', { visible: true });
   }
 
   /**

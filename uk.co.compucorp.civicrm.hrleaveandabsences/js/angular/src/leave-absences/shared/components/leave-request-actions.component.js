@@ -268,11 +268,10 @@ define([
      * @param {Object} leaveRequest
      * @param {String} leaveType
      * @param {String} selectedContactId
-     * @param {Boolean} isSelfRecord
      */
-    function openLeavePopup (event, leaveRequest, leaveType, selectedContactId, isSelfRecord) {
+    function openLeavePopup (event, leaveRequest, leaveType, selectedContactId) {
       event.stopPropagation();
-      LeavePopup.openModal(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+      LeavePopup.openModal(leaveRequest, leaveType, selectedContactId);
     }
 
     /**
