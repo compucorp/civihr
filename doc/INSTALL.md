@@ -54,7 +54,6 @@ individually:
 
  * org.civicrm.hrbank: Bank Details
  * org.civicrm.hrcareer: Career History
- * org.civicrm.hrdemog: Extended Demographics
  * org.civicrm.hremerg: Emergency Contacts
  * org.civicrm.hrabsence: Absences
  * org.civicrm.hrjobcontract: Job Contracts
