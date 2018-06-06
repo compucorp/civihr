@@ -1,6 +1,7 @@
 <?php
 
 // AUTO-GENERATED FILE -- Civix may overwrite any changes made to this file
+use CRM_HRCore_ExtensionUtil as E;
 
 /**
  * Base class which provides helpers to execute upgrade logic
@@ -8,7 +9,7 @@
 class CRM_HRCore_Upgrader_Base {
 
   /**
-   * @var varies, subclass of ttis
+   * @var varies, subclass of this
    */
   static $instance;
 
@@ -97,7 +98,6 @@ class CRM_HRCore_Upgrader_Base {
    * @return bool
    */
   protected static function executeCustomDataFileByAbsPath($xml_file) {
-    require_once 'CRM/Utils/Migrate/Import.php';
     $import = new CRM_Utils_Migrate_Import();
     $import->run($xml_file);
     return TRUE;

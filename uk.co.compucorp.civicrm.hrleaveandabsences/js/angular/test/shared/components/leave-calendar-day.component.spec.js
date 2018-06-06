@@ -12,16 +12,15 @@ define([
   'use strict';
 
   describe('leaveCalendarDay', function () {
-    var $componentController, $log, $rootScope, $timeout, absenceType, absenceTypes,
+    var $componentController, $log, $rootScope, absenceType, absenceTypes,
       calculationUnits, calculationUnitInDays, calculationUnitInHours,
       contactData, controller, dayTypes, LeavePopup, leaveRequest, leaveRequestAttributes;
 
     beforeEach(module('manager-leave'));
-    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _$timeout_, _LeavePopup_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$rootScope_, _LeavePopup_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $rootScope = _$rootScope_;
-      $timeout = _$timeout_;
       absenceTypes = _.cloneDeep(absenceTypeData.all().values);
       contactData = {};
       leaveRequest = _.cloneDeep(leaveRequestData.all().values[0]);
@@ -46,6 +45,7 @@ define([
         'hrleaveandabsences_absence_type_calculation_unit', 'name',
         'hours').value;
 
+      absenceTypes.push({ id: '', title: 'Leave' });
       spyOn($log, 'debug');
       compileComponent();
     }));
@@ -124,6 +124,46 @@ define([
         it('does not map neither "from" nor "to" date type label', function () {
           expect(leaveRequestAttributes.from_date_type).not.toBeDefined();
           expect(leaveRequestAttributes.to_date_type).not.toBeDefined();
+        });
+      });
+    });
+
+    /**
+     * @NOTE this block tests an adhoc solution.
+     * @see /shared/components/leave-calendar-day.component.js
+     * resolveLeaveRequestCalculationUnit()
+     * @see PCHR-3774
+     */
+    describe('when absence type is a generic leave type', function () {
+      beforeEach(function () {
+        leaveRequest.type_id = '';
+      });
+
+      describe('when leave request "from_date_type" is *not* empty', function () {
+        beforeEach(function () {
+          leaveRequest.from_date_type = '1';
+          contactData.leaveRequests = [leaveRequest];
+
+          compileComponent();
+          $rootScope.$digest();
+        });
+
+        it('sets the "days" calculation unit', function () {
+          expect(leaveRequestAttributes.unit).toEqual('days');
+        });
+      });
+
+      describe('when leave request "from_date_type" is empty', function () {
+        beforeEach(function () {
+          delete leaveRequest.from_date_type;
+          contactData.leaveRequests = [leaveRequest];
+
+          compileComponent();
+          $rootScope.$digest();
+        });
+
+        it('sets the "hours" calculation unit', function () {
+          expect(leaveRequestAttributes.unit).toEqual('hours');
         });
       });
     });
@@ -239,88 +279,17 @@ define([
 
     describe('openLeavePopup()', function () {
       var event;
-      var leaveRequest = { key: 'value' };
-      var leaveType = 'some_leave_type';
-      var selectedContactId = '101';
-      var isSelfRecord = true;
+      var leaveRequest = { id: _.uniqueId() };
 
       beforeEach(function () {
         event = jasmine.createSpyObj('event', ['stopPropagation']);
-        spyOn(LeavePopup, 'openModal');
-        controller.openLeavePopup(event, leaveRequest, leaveType, selectedContactId, isSelfRecord);
+        spyOn(LeavePopup, 'openModalByID');
+        controller.openLeavePopup(event, leaveRequest);
       });
 
       it('opens the leave request popup', function () {
-        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+        expect(LeavePopup.openModalByID).toHaveBeenCalledWith(leaveRequest.id);
       });
-
-      it('stops the event from propagating', function () {
-        expect(event.stopPropagation).toHaveBeenCalled();
-      });
-    });
-
-    // @TODO this should be moved to a decorator to uib-tooltip
-    describe('toggleTooltip()', function () {
-      it('has the tooltip hidden by default', function () {
-        expect(controller.tooltip.show).toBe(false);
-      });
-
-      describe('when user hovers the day cell', function () {
-        beforeEach(function () {
-          toggleTooltip('day_cell', true);
-        });
-
-        it('shows tooltip', function () {
-          expect(controller.tooltip.show).toBe(true);
-        });
-
-        describe('and then user unhovers the day cell', function () {
-          beforeEach(function () {
-            toggleTooltip('day_cell', false);
-          });
-
-          it('hides the tooltip', function () {
-            expect(controller.tooltip.show).toBe(false);
-          });
-        });
-
-        describe('and then user unhovers the day cell but hovers the tooltip', function () {
-          beforeEach(function () {
-            toggleTooltip('day_cell', false);
-            toggleTooltip('tooltip', true);
-          });
-
-          it('leaves the tooltip shown', function () {
-            expect(controller.tooltip.show).toBe(true);
-          });
-
-          describe('and then user unhovers the tooltip', function () {
-            beforeEach(function () {
-              toggleTooltip('tooltip', false);
-            });
-
-            it('hides the tooltip', function () {
-              expect(controller.tooltip.show).toBe(false);
-            });
-          });
-
-          describe('and then user unhovers the tooltip but hovers the day cell back', function () {
-            beforeEach(function () {
-              toggleTooltip('tooltip', false);
-              toggleTooltip('tooltip', true);
-            });
-
-            it('leaves the tooltip shown', function () {
-              expect(controller.tooltip.show).toBe(true);
-            });
-          });
-        });
-      });
-
-      function toggleTooltip (sourceElement, isHovered) {
-        controller.toggleTooltip(sourceElement, isHovered);
-        $timeout.flush();
-      }
     });
 
     /**

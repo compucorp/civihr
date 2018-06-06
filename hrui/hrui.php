@@ -82,7 +82,15 @@ function hrui_civicrm_buildForm($formName, &$form) {
   }
 
   if ($formName === 'CRM_Admin_Form_Options' && $form->elementExists('value')) {
-    $form->removeElement('value');
+    $optionGroupName = $form->getVar('_gName');
+    $optionGroupsToCheck = [
+      'hrleaveandabsences_toil_amounts',
+      'hrleaveandabsences_leave_days_amounts'
+    ];
+
+    if (!in_array($optionGroupName, $optionGroupsToCheck)) {
+      $form->removeElement('value');
+    }
   }
 
   if ($form instanceof CRM_Admin_Form_Setting_Localization) {

@@ -126,6 +126,25 @@ function hrcore_civicrm_buildForm($formName, &$form) {
 }
 
 /**
+ * Implements hook_civicrm_validateForm().
+ *
+ * @param string $formName
+ * @param array $fields
+ * @param mixed $files
+ * @param object $form
+ * @param array $errors
+ */
+function hrcore_civicrm_validateForm($formName, &$fields, &$files, &$form, &$errors) {
+  $listeners = [
+    new CRM_HRCore_Hook_ValidateForm_AdminFormOptionsValidation(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($formName, $fields, $files, $form, $errors);
+  }
+}
+
+/**
  * Implements hook_civicrm_xmlMenu().
  *
  * @param array $files
@@ -146,11 +165,28 @@ function hrcore_civicrm_install() {
 }
 
 /**
+ * Implements hook_civicrm_postInstall().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_postInstall
+ */
+function hrcore_civicrm_postInstall() {
+  _hrcore_civix_civicrm_postInstall();
+}
+
+/**
  * Implements hook_civicrm_uninstall().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function hrcore_civicrm_uninstall() {
+  $listeners = [
+    new CRM_HRCore_Hook_Uninstall_CustomGroupRemover()
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->handle();
+  }
+
   _hrcore_civix_civicrm_uninstall();
 }
 
@@ -160,6 +196,19 @@ function hrcore_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function hrcore_civicrm_enable() {
+  // _hrcore_civix_civicrm_config() will add this extension to the include path.
+  // We need to do this here because before extension is enabled the config
+  // hook is not called for it
+  _hrcore_civix_civicrm_config();
+
+  $listeners = [
+    new CRM_HRCore_Hook_Enable_CustomGroupEnabler()
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->handle();
+  }
+
   _hrcore_civix_civicrm_enable();
 }
 
@@ -169,6 +218,14 @@ function hrcore_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function hrcore_civicrm_disable() {
+  $listeners = [
+    new CRM_HRCore_Hook_Disable_CustomGroupDisabler()
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->handle();
+  }
+
   _hrcore_civix_civicrm_disable();
 }
 

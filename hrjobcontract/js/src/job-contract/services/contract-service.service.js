@@ -148,6 +148,10 @@ define([
       getRevisionOptions: function (fieldName, callAPI) {
         var data;
         var deffered = $q.defer();
+        var revisionOptions = {
+          arr: [],
+          obj: {}
+        };
 
         if (!callAPI) {
           data = settings.CRM.options.HRJobContractRevision || {};
@@ -158,7 +162,15 @@ define([
 
           deffered.resolve(data || {});
         } else {
-          // TODO call2API
+          CRM.api3('HRJobContractRevision', 'getoptions', {
+            'sequential': 1,
+            'field': fieldName
+          }).done(function (data) {
+            revisionOptions.obj = _.mapValues(_.indexBy(data.values, 'key'), 'value');
+            revisionOptions.arr = _.values(_.indexBy(data.values, 'key'));
+
+            deffered.resolve(revisionOptions);
+          });
         }
 
         return deffered.promise;
@@ -272,22 +284,22 @@ define([
         }
 
         AbsenceType.all()
-        .then(AbsenceType.loadCalculationUnits)
-        .then(function (absenceTypes) {
-          return Contract.get({
-            action: 'getfulldetails',
-            json: {
-              jobcontract_id: contractId
-            }
-          }, function (contract) {
-            contract.leave = filterOutDisabledAbsenceTypes(contract.leave, absenceTypes);
+          .then(AbsenceType.loadCalculationUnits)
+          .then(function (absenceTypes) {
+            return Contract.get({
+              action: 'getfulldetails',
+              json: {
+                jobcontract_id: contractId
+              }
+            }, function (contract) {
+              contract.leave = filterOutDisabledAbsenceTypes(contract.leave, absenceTypes);
 
-            adjustAddPublicHolidaysValue(contract, _.indexBy(absenceTypes, 'id'));
-            deferred.resolve(contract);
-          }, function () {
-            deferred.reject('Could not fetch full details for contract ID:' + contractId);
+              adjustAddPublicHolidaysValue(contract, _.indexBy(absenceTypes, 'id'));
+              deferred.resolve(contract);
+            }, function () {
+              deferred.reject('Could not fetch full details for contract ID:' + contractId);
+            });
           });
-        });
 
         return deferred.promise;
       }

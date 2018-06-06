@@ -360,6 +360,7 @@ function hrleaveandabsences_civicrm_container(\Symfony\Component\DependencyInjec
  */
 function hrleaveandabsences_civicrm_postInstall() {
   _hrleaveandabsences_set_has_leave_approved_by_as_default_relationship_type();
+  _hrleaveandabsences_civix_civicrm_postInstall();
 }
 
 /**
@@ -452,6 +453,7 @@ function hrleaveandabsences_civicrm_validateForm($formName, &$fields, &$files, &
  */
 function hrleaveandabsences_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   $wrappers[] = new CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestDates();
+  $wrappers[] = new CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestFieldsVisibility();
 }
 
 

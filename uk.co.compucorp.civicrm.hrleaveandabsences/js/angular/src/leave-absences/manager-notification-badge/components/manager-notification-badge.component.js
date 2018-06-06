@@ -17,8 +17,12 @@ define([
   function ManagerNotificationBadgeController ($log, $q, Session, OptionGroup, sharedSettings) {
     $log.debug('Component: manager-notification-badge');
 
-    var filters = {};
     var vm = this;
+    var leaveRequestFilters = {
+      apiName: 'LeaveRequest',
+      params: {}
+    };
+
     vm.refreshCountEventName = 'ManagerBadge:: Update Count';
 
     (function init () {
@@ -26,7 +30,7 @@ define([
         getManagerId(),
         getStatusId()
       ]).then(function () {
-        vm.filters = filters;
+        vm.filters = [leaveRequestFilters];
       });
     })();
 
@@ -38,7 +42,7 @@ define([
     function getManagerId () {
       return Session.get()
         .then(function (session) {
-          filters.managed_by = session.contactId;
+          leaveRequestFilters.params.managed_by = session.contactId;
         });
     }
 
@@ -50,7 +54,7 @@ define([
     function getStatusId () {
       return loadStatuses()
         .then(function (leaveRequestStatuses) {
-          filters.status_id = _.find(leaveRequestStatuses, function (status) {
+          leaveRequestFilters.params.status_id = _.find(leaveRequestStatuses, function (status) {
             return status.name === sharedSettings.statusNames.awaitingApproval;
           }).value;
         });

@@ -9,106 +9,47 @@
   </header>
   <div class="panel-collapse" uib-collapse="legend.legendCollapsed">
     <div class="panel-body chr_leave-calendar__legend" ng-show="!legend.legendCollapsed">
-      <div class="row" ng-repeat-start="absenceType in legend.absenceTypes">
-        <div class="col-xs-6 col-md-3" ng-if="absenceType.calculation_unit_name === 'days'">
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item"
-               ng-style="legend.getAbsenceTypeStyle(absenceType)"></div>
-            <span class="chr_leave-calendar__legend__label">{{absenceType.title}}</span>
-          </div>
+      <div class="chr_leave-calendar__legend__header">Types</div>
+      <div class="clearfix">
+        <div ng-repeat="absenceType in legend.absenceTypes | filter:legend.checkIfAbsenceTypeIdIsDefined"
+          ng-click="legend.toggleFilteringByAbsenceType(absenceType.id)"
+          ng-class="{
+            'chr_leave-calendar__legend__type-badge-not-selected':
+              !legend.checkIfAbsenceTypeIsSelectedForFiltering(absenceType.id),
+            'chr_leave-calendar__legend__type-badge-selected':
+              legend.checkIfAbsenceTypeIsSelectedForFiltering(absenceType.id) && legend.absenceTypesToFilterBy.length}"
+          class="chr_leave-calendar__legend__type-badge pointer
+            chr_leave-calendar__legend__type-badge-clickable"
+          ng-style="legend.getAbsenceTypeStyle(absenceType)">
+          {{absenceType.title}}
         </div>
-        <div class="col-xs-6 col-md-3" ng-if="absenceType.calculation_unit_name === 'days'">
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item"
-                 ng-style="legend.getAbsenceTypeStyle(absenceType)"><span>AM</span>
-            </div>
-            <span class="chr_leave-calendar__legend__label">{{absenceType.title}} AM Only</span>
-          </div>
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item"
-                 ng-style="legend.getAbsenceTypeStyle(absenceType)"><span>PM</span>
-            </div>
-            <span class="chr_leave-calendar__legend__label">{{absenceType.title}} PM Only</span>
-          </div>
-        </div>
-        <div class="col-xs-6 col-md-3" ng-if="absenceType.calculation_unit_name === 'hours'">
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item"
-                 ng-style="legend.getAbsenceTypeStyle(absenceType)">
-              <span class="chr_leave-calendar__time-unit">10:00</span>
-            </div>
-            <span class="chr_leave-calendar__legend__label">{{absenceType.title}} specific time</span>
-          </div>
-        </div>
-        <div class="col-xs-6 col-md-3" ng-if="absenceType.calculation_unit_name === 'days'">
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
-               ng-style="legend.getAbsenceTypeStyle(absenceType)"></div>
-            <span class="chr_leave-calendar__legend__label">Requested {{absenceType.title}}</span>
-          </div>
-        </div>
-        <div class="col-xs-6 col-md-3" ng-if="absenceType.calculation_unit_name === 'days'">
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
-               ng-style="legend.getAbsenceTypeStyle(absenceType)"><span>AM</span>
-            </div>
-            <span class="chr_leave-calendar__legend__label">Requested {{absenceType.title}} AM</span>
-          </div>
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
-               ng-style="legend.getAbsenceTypeStyle(absenceType)"><span>PM</span>
-            </div>
-            <span class="chr_leave-calendar__legend__label">Requested {{absenceType.title}} PM</span>
-          </div>
-        </div>
-        <div class="col-xs-6 col-md-3" ng-if="absenceType.calculation_unit_name === 'hours'">
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item chr_leave-calendar__item--requested"
-               ng-style="legend.getAbsenceTypeStyle(absenceType)">
-              <span class="chr_leave-calendar__time-unit">10:00</span>
-            </div>
-            <span class="chr_leave-calendar__legend__label">Requested {{absenceType.title}} specific time</span>
-          </div>
+        <div class="chr_leave-calendar__legend__type-badge pointer
+            chr_leave-calendar__legend__reset-absence-types-filter"
+          ng-if="legend.absenceTypesToFilterBy.length"
+          ng-click="legend.resetFilteringByAbsenceTypes()">
+          <big><i class="fa fa-times"></i></big>
+          Display All
         </div>
       </div>
-      <div class="row" ng-repeat-end ng-if="absenceType.allow_accruals_request == 1">
-        <div class="col-xs-6 col-md-3">
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item chr_leave-calendar__item--alt"
-               ng-style="{borderColor: absenceType.color}">
-              <span>AT</span>
-            </div>
-            <span class="chr_leave-calendar__legend__label">Accrued TOIL</span>
-          </div>
+      <div class="clearfix">
+        <div ng-repeat="nonWorkingDayType in legend.nonWorkingDayTypes"
+          class="chr_leave-calendar__legend__type-badge
+            chr_leave-calendar__legend__type-badge-{{nonWorkingDayType.cssClassSuffix}}">
+          {{nonWorkingDayType.label}}
         </div>
-        <div class="col-xs-6 col-md-3">
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item chr_leave-calendar__item--alt chr_leave-calendar__item--toil-requested"
-               ng-style="{borderColor: absenceType.color}">
-              <span>AT</span>
-            </div>
-            <span class="chr_leave-calendar__legend__label">Requested Accrued TOIL</span>
-          </div>
+        <div class="chr_leave-calendar__legend__type-badge
+          chr_leave-calendar__legend__type-badge-generic-leave">
+          Leave
         </div>
       </div>
-      <div class="row">
-        <div class="col-xs-6 col-md-3">
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item chr_leave-calendar__day-container--type--weekend"></div>
-            <span class="chr_leave-calendar__legend__label">Weekend</span>
-          </div>
-        </div>
-        <div class="col-xs-6 col-md-3">
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item chr_leave-calendar__day-container--type--public-holiday"></div>
-            <span class="chr_leave-calendar__legend__label">Public Holiday</span>
-          </div>
-        </div>
-        <div class="col-xs-6 col-md-3">
-          <div class="chr_leave-calendar__legend__entry">
-            <div class="chr_leave-calendar__item chr_leave-calendar__day-container--type--non-working"></div>
-            <span class="chr_leave-calendar__legend__label">Non Working Day</span>
-          </div>
+      <div class="chr_leave-calendar__legend__header">Other</div>
+      <div class="clearfix">
+        <div ng-repeat="otherBadge in legend.otherBadges"
+          class="chr_leave-calendar__legend__other-badge-wrapper">
+          <div class="chr_leave-calendar__legend__other-badge
+            {{otherBadge.cssClassSuffix ? 'chr_leave-calendar__legend__other-badge-' + otherBadge.cssClassSuffix : ''}}">
+            {{otherBadge.label}}</div>
+          {{otherBadge.description}}
         </div>
       </div>
     </div>
