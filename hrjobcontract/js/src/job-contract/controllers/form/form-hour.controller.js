@@ -1,8 +1,9 @@
 /* eslint-env amd */
 
 define([
+  'common/lodash',
   'job-contract/vendor/fraction'
-], function (Fraction) {
+], function (_, Fraction) {
   'use strict';
 
   FormHourController.__name = 'FormHourController';
@@ -24,7 +25,7 @@ define([
     $scope.hrsAmountDefined = false;
 
     (function init () {
-      entityHour.location_standard_hours = entityHour.location_standard_hours || $scope.utils.hoursLocation[0].id;
+      entityHour.location_standard_hours = entityHour.location_standard_hours || _.get(utilsHoursLocation, '[0].id');
       locStandHrs = $filter('getObjById')(utilsHoursLocation, entityHour.location_standard_hours);
 
       initWatchers();
