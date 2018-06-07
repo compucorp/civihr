@@ -4740,6 +4740,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testCreateReturnsFalseForFromEmailParameterWhenFromEmailIsNotConfigured() {
+    $this->removeAllFromEmailAddresses();
+
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
     $startDate = new DateTime();
@@ -5039,4 +5041,5 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'leave_date' => '2017-01-02']
     );
   }
+
 }

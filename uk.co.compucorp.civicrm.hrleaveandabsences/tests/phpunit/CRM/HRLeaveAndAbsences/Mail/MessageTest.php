@@ -194,6 +194,8 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
   }
 
   public function testGetFromEmailReturnsTheFirstOptionFromTheFromEmailAddressOptionGroupWhenThereIsNoDefaultAddress() {
+    $this->removeAllFromEmailAddresses();
+
     $fromEmailAddress = [
       'From Email 1 <from_email1@testdomain.com>',
       'From Email 2 <from_email2@testdomain.com>',
@@ -232,6 +234,11 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
   }
 
   public function testGetFromEmailReturnsNullWhenThereIsNoOptionForTheFromEmailAddressOptionGroup() {
+    $values = civicrm_api3('OptionValue', 'get', ['option_group_id' => 'from_email_address']);
+    foreach ($values['values'] as $value) {
+      civicrm_api3('OptionValue', 'delete', ['id' => $value['id']]);
+    }
+
     $leaveRequest = new LeaveRequest();
     $message = new Message($leaveRequest, $this->leaveRequestTemplateFactory, $this->getManagerService());
     $fromEmail = $message->getFromEmail();
