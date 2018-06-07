@@ -4042,6 +4042,27 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ]);
 
+    echo 'Contact 1 is ' . $contact1['id'] . PHP_EOL;
+    echo 'Contact 2 is ' . $contact2['id'] . PHP_EOL;
+    echo 'Manager is ' . $manager['id'] . PHP_EOL;
+    echo '----------------------' . PHP_EOL;
+
+    echo 'Relationship Type:' . PHP_EOL;
+    echo json_encode(civicrm_api3('RelationshipType', 'get')['values']) . PHP_EOL;
+    echo '----------------------' . PHP_EOL;
+    echo 'Relationship:' . PHP_EOL;
+    echo json_encode(civicrm_api3('Relationship', 'get')['values']) . PHP_EOL;
+    echo '----------------------' . PHP_EOL;
+    echo 'Contact:' . PHP_EOL;
+    echo json_encode(civicrm_api3('Contact', 'get')['values']) . PHP_EOL;
+    echo '----------------------' . PHP_EOL;
+    echo 'Leave Request:' . PHP_EOL;
+    echo json_encode(civicrm_api3('LeaveRequest', 'get')['values']) . PHP_EOL;
+    echo '----------------------' . PHP_EOL;
+    echo 'Job Contract:' . PHP_EOL;
+    echo json_encode(civicrm_api3('HRJobContract', 'get')['values']) . PHP_EOL;
+    echo '----------------------' . PHP_EOL;
+
     //Results will be not be returned for contact1 since contact one is not a managee of the leave
     //approver
     $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true, 'sequential' => 1]);
