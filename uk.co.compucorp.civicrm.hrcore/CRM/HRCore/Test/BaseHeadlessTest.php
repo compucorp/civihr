@@ -16,6 +16,7 @@ abstract class CRM_HRCore_Test_BaseHeadlessTest extends PHPUnit_Framework_TestCa
       'com.civicrm.hrjobroles',
     ];
 
+
     return \Civi\Test::headless()
       ->installMe(__DIR__)
       ->install($requiredExtensions)
