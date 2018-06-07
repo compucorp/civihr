@@ -378,8 +378,10 @@ define([
      */
     function leaveRequestDays (leaveRequest) {
       var days = [];
-      var pointerDate = moment(leaveRequest.from_date).clone();
-      var toDate = moment(leaveRequest.to_date);
+      var pointerDate = moment(leaveRequest.from_date)
+        .hour(0).minute(0).second(0).clone();
+      var toDate = moment(leaveRequest.to_date)
+        .hour(0).minute(0).second(0);
 
       while (pointerDate.isSameOrBefore(toDate)) {
         // Ensure that pointerDate is in same month/year that component represents
