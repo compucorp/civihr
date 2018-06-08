@@ -318,6 +318,34 @@
             });
           });
         });
+
+        describe('when *to* time is less than *from* time for multiple leave request', function () {
+          var originalLeaveRequestInFebruary;
+
+          beforeEach(function () {
+            originalLeaveRequestInFebruary = _.cloneDeep(leaveRequestInFebruary);
+
+            leaveRequestInFebruary.from_date =
+              moment(leaveRequestInFebruary.from_date).hour(11).minute(0)
+                .format('YYYY-MM-DD HH:mm');
+            leaveRequestInFebruary.to_date =
+              moment(leaveRequestInFebruary.to_date).hour(9).minute(0)
+                .format('YYYY-MM-DD HH:mm');
+            sendShowMonthSignal();
+          });
+
+          afterEach(function () {
+            leaveRequestInFebruary = originalLeaveRequestInFebruary;
+          });
+
+          it('includes the leave request in the celandar day cell for the *to* date', function () {
+            expect(
+              _.find(controller.month.days,
+                { index: moment(leaveRequestInFebruary.to_date).day().toString() })
+                .contactsData[leaveRequestInFebruary.contact_id]
+                .leaveRequests.length).toBe(1);
+          });
+        });
       });
 
       describe('month structure', function () {
