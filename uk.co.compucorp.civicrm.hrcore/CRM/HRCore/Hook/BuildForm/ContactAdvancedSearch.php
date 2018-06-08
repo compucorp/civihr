@@ -3,7 +3,7 @@
 class CRM_HRCore_Hook_BuildForm_ContactAdvancedSearch {
   /**
    * Checks if the form is the contact advance search and removes
-   * some unnused fields if so.
+   * some unused fields if so.
    *
    * @param string $formName
    * @param CRM_Core_Form $form
@@ -13,7 +13,7 @@ class CRM_HRCore_Hook_BuildForm_ContactAdvancedSearch {
       return;
     }
 
-    $this->removeUnnusedSearchFields($form);
+    $this->removeUnusedSearchFields($form);
   }
 
   /**
@@ -31,12 +31,12 @@ class CRM_HRCore_Hook_BuildForm_ContactAdvancedSearch {
   }
 
   /**
-   * Removes a few unnused fields from the contact advanced search, basic
+   * Removes a few unused fields from the contact advanced search, basic
    * section.
    *
    * @param CRM_Core_Form $form
    */
-  private function removeUnnusedSearchFields($form) {
+  private function removeUnusedSearchFields($form) {
     $basicSearchFields = $form->get_template_vars('basicSearchFields');
     $fieldsToRemove = [
       'privacy_toggle',

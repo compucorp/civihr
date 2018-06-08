@@ -7,7 +7,7 @@ class CRM_HRCore_Hook_BuildForm_ContactAdvancedSearchTest extends BaseHeadlessTe
   /**
    * Assets that the hook removes the right fields and leaves others untouched.
    */
-  public function testRemovingUnnusedFields() {
+  public function testRemovingUnusedFields() {
     $form = new CRM_Core_Form();
     $formName = 'CRM_Contact_Form_Search_Advanced';
     $form->assign('basicSearchFields', [
