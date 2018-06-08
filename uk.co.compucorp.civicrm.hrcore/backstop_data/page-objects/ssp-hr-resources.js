@@ -1,6 +1,6 @@
-const Page = require('./page');
+const SSP = require('./ssp');
 
-module.exports = class SSPHRResources extends Page {
+module.exports = class SSPHRResources extends SSP {
   /**
    * Opens See Resources section
    */

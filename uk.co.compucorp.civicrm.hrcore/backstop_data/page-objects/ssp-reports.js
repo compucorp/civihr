@@ -1,6 +1,6 @@
-const Page = require('./page');
+const SSP = require('./ssp');
 
-module.exports = class SSPReports extends Page {
+module.exports = class SSPReports extends SSP {
   /**
    * The Iframe embedding the SSP reports in the CiviCRM admin adapts its height
    * dynamically whenever the viewport resizes. This can lead to false positives
@@ -13,6 +13,7 @@ module.exports = class SSPReports extends Page {
    * change when Chrome resizes the viewport.
    */
   async waitForReady () {
+    await super.waitForReady();
     await this.puppet.evaluate(function () {
       const tempStyle = document.createElement('style');
 

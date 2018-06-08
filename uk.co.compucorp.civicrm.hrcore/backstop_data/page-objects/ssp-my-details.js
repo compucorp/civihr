@@ -1,6 +1,6 @@
-const Page = require('./page');
+const SSP = require('./ssp');
 
-module.exports = class SSPMyDetails extends Page {
+module.exports = class SSPMyDetails extends SSP {
   /**
    * Opens Edit My Details Popup
    *

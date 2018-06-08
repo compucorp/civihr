@@ -1,6 +1,6 @@
-const Page = require('./page');
+const SSP = require('./ssp');
 
-module.exports = class SSPTasks extends Page {
+module.exports = class SSPTasks extends SSP {
   /**
    * Opens Completed tasks modal
    */
@@ -23,6 +23,7 @@ module.exports = class SSPTasks extends Page {
    * to wait a couple of seconds for it to "stabilize" before taking the screenshot
    */
   async waitForReady () {
+    await super.waitForReady();
     await this.puppet.waitFor(4000);
   }
 };

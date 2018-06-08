@@ -1,8 +1,8 @@
 /* globals jQuery */
 
-const Page = require('./page');
+const SSP = require('./ssp');
 
-module.exports = class SSPLeaveAbsencesMyLeaveCalendar extends Page {
+module.exports = class SSPLeaveAbsencesMyLeaveCalendar extends SSP {
   /**
    * Clears the currently selected month from the calendar "Selected Months"
    * field.
@@ -55,6 +55,7 @@ module.exports = class SSPLeaveAbsencesMyLeaveCalendar extends Page {
    * the visibility of a leave calendar item element
    */
   async waitForReady () {
+    await super.waitForReady();
     await this.puppet.waitFor('leave-calendar-month .chr_leave-calendar__item', { visible: true });
   }
 };

@@ -1,13 +1,14 @@
 /* global Event */
 
-const Page = require('./page');
+const SSP = require('./ssp');
 
-module.exports = class SSPLeaveAbsencesManagerLeaveRequests extends Page {
+module.exports = class SSPLeaveAbsencesManagerLeaveRequests extends SSP {
   /**
    * Wait for the page to be ready as it waits for the actions of the first
    * row of leave requests to be visible
    */
   async waitForReady () {
+    await super.waitForReady();
     await this.puppet.waitFor('tbody tr:nth-child(1) a', { visible: true });
   }
 

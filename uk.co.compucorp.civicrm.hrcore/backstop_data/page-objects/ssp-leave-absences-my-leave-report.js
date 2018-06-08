@@ -1,9 +1,9 @@
 /* globals Event */
 
 const _ = require('lodash');
-const Page = require('./page');
+const SSP = require('./ssp');
 
-module.exports = class SSPLeaveAbsencesMyLeaveReport extends Page {
+module.exports = class SSPLeaveAbsencesMyLeaveReport extends SSP {
   /**
    * Selects the days mode for the opened leave request
    *
@@ -115,6 +115,7 @@ module.exports = class SSPLeaveAbsencesMyLeaveReport extends Page {
    * Wait for the page to be ready
    */
   async waitForReady () {
+    await super.waitForReady();
     await this.puppet.waitFor('.spinner', { visible: false });
     await this.puppet.waitFor('td[ng-click="report.toggleSection(\'pending\')"]', { visible: true });
   }

@@ -1,11 +1,12 @@
-const Page = require('./page');
+const SSP = require('./ssp');
 
-module.exports = class SSPLeaveAbsencesManagerLeaveCalendar extends Page {
+module.exports = class SSPLeaveAbsencesManagerLeaveCalendar extends SSP {
   /**
    * Wait for the page to be ready by looking at
    * the visibility of a leave calendar item element
    */
   async waitForReady () {
+    await super.waitForReady();
     await this.puppet.waitFor('leave-calendar-month .chr_leave-calendar__day', { visible: true });
   }
 
