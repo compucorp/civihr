@@ -1,8 +1,12 @@
-const tab = require('../tab');
+const Tab = require('../tab');
 
-module.exports = tab.extend({
-  readySelector: '.chr_leave-report__table',
-  tabTitle: 'Report',
+module.exports = class AbsenceReportTab extends Tab {
+  constructor () {
+    super(...arguments);
+
+    this.readySelector = '.chr_leave-report__table';
+    this.tabTitle = 'Report';
+  }
 
   /**
    * Open the report section with the given name
@@ -23,7 +27,7 @@ module.exports = tab.extend({
         return table.offsetWidth > 0 && table.offsetHeight > 0;
       });
     });
-  },
+  }
 
   /**
    * Show the actions of the first leave request available
@@ -32,4 +36,4 @@ module.exports = tab.extend({
   async showActions () {
     await this.puppet.click('.table-nested .dropdown-toggle');
   }
-});
+};

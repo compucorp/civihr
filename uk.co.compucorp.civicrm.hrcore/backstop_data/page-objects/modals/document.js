@@ -1,13 +1,13 @@
-const modal = require('./modal');
+const Modal = require('./modal');
 
-module.exports = modal.extend({
+module.exports = class DocumentModal extends Modal {
   /**
    * Opens the "due date" datepicker
    */
   async pickDueDate () {
     await this.puppet.click(this.modalRoot + ' [ng-model="documentModal.document.activity_date_time"]');
     await this.puppet.waitFor('.uib-datepicker-popup', { visible: true });
-  },
+  }
 
   /**
    * Shows the given field
@@ -16,7 +16,7 @@ module.exports = modal.extend({
    */
   async showField (fieldName) {
     await this.puppet.click(this.modalRoot + ' a[ng-click*="show' + fieldName + 'Field"]');
-  },
+  }
 
   /**
    * Selects an assignee for the document
@@ -24,7 +24,7 @@ module.exports = modal.extend({
   async selectAssignee () {
     await this.puppet.click(this.modalRoot + ' [ng-model="documentModal.document.assignee_contact"] .ui-select-match');
     await this.puppet.waitFor('.select2-with-searchbox:not(.select2-display-none)', { visible: true });
-  },
+  }
 
   /**
    * Selects the type of document
@@ -32,7 +32,7 @@ module.exports = modal.extend({
   async selectType () {
     await this.puppet.click(this.modalRoot + ' [ng-model="documentModal.document.activity_type_id"] .ui-select-match');
     await this.puppet.waitFor('.select2-with-searchbox:not(.select2-display-none)', { visible: true });
-  },
+  }
 
   /**
    * Opens the given tab
@@ -41,4 +41,4 @@ module.exports = modal.extend({
     await this.puppet.click(this.modalRoot + ' a[data-target="#' + tabName.toLowerCase() + 'Tab"]');
     await this.puppet.waitFor(200);
   }
-});
+};

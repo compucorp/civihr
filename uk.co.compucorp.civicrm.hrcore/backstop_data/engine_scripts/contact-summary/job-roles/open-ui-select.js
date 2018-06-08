@@ -1,10 +1,11 @@
 'use strict';
 
-const pageObj = require('../../../page-objects/tabs/job-roles');
+const Page = require('../../../page-objects/tabs/job-roles');
 
 module.exports = async engine => {
-  const page = await pageObj.init(engine);
+  const page = new Page(engine);
 
+  await page.init();
   await page.switchToTab('Basic Details');
   await page.edit();
   await page.openDropdown('department');

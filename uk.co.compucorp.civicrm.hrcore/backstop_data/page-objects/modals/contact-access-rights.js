@@ -1,6 +1,6 @@
-const modal = require('./modal');
+const Modal = require('./modal');
 
-module.exports = modal.extend({
+module.exports = class ContactAccessRights extends Modal {
   /**
    * Opens a ui-select dropdown
    */
@@ -10,4 +10,4 @@ module.exports = modal.extend({
     await this.puppet.click(common.replace('%{name}', name));
     await this.puppet.waitFor(100);
   }
-});
+};

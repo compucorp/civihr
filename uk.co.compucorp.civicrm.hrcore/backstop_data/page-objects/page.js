@@ -1,6 +1,9 @@
-const _ = require('lodash');
+module.exports = class Page {
+  constructor (puppet, clearDialogs = true) {
+    this.puppet = puppet;
+    this.clearDialogs = clearDialogs;
+  }
 
-module.exports = {
   /**
    * Initializes the page and removes any code warnings from the page
    *
@@ -8,10 +11,7 @@ module.exports = {
    * @param  {Boolean} clearDialogs if true it will close modals and notifications
    * @return {Object}
    */
-  async init (puppet, clearDialogs) {
-    clearDialogs = typeof clearDialogs !== 'undefined' ? !!clearDialogs : true;
-
-    this.puppet = puppet;
+  async init () {
     !!this.waitForReady && await this.waitForReady();
 
     const href = await this.puppet.evaluate(() => document.location.href);
@@ -24,24 +24,11 @@ module.exports = {
       errorsWrapper && (errorsWrapper.style.display = 'none');
     }, isAdmin);
 
-    if (clearDialogs) {
+    if (this.clearDialogs) {
       await closeAnyModal.call(this);
       await closeNotifications.call(this);
     }
-
-    return this;
-  },
-
-  /**
-   * Used to extend the main page
-   *
-   * @param  {Object} page
-   *   a collection of methods and properties that will extend the main page
-   * @return {Object}
-   */
-  extend (page) {
-    return _.assign(Object.create(this), page);
-  },
+  }
 
   /**
    * Waits for the modal dialog to load. By default it waits for the .modal class
@@ -57,7 +44,12 @@ module.exports = {
     await this.puppet.waitFor(300);
 
     if (modalModule) {
-      return require('./modals/' + modalModule).init(this.puppet, false);
+      const Modal = require('./modals/' + modalModule);
+      const modal = new Modal(this.puppet, false);
+
+      await modal.init();
+
+      return modal;
     }
   }
 };

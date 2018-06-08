@@ -1,13 +1,13 @@
-const page = require('./page');
+const Page = require('./page');
 
-module.exports = page.extend({
+module.exports = class OnboardingWizard extends Page {
   /**
    * Navigate to Address Page
    */
   async reachAddressPage () {
     await this.puppet.click('.webform-next');
     await this.puppet.waitFor('input[value="Address"]');
-  },
+  }
 
   /**
    * Navigate to Contact Info Page
@@ -16,7 +16,7 @@ module.exports = page.extend({
     await this.reachAddressPage();
     await this.puppet.click('.webform-next');
     await this.puppet.waitFor('input[value="Contact Info"]');
-  },
+  }
 
   /**
    * Navigate to Payroll Page
@@ -25,7 +25,7 @@ module.exports = page.extend({
     await this.reachContactInfoPage();
     await this.puppet.click('.webform-next');
     await this.puppet.waitFor('input[value="Payroll"]');
-  },
+  }
 
   /**
    * Navigate to Emergency Contact Page
@@ -34,7 +34,7 @@ module.exports = page.extend({
     await this.reachPayrollPage();
     await this.puppet.click('.webform-next');
     await this.puppet.waitFor('input[value="Emergency Contact"]');
-  },
+  }
 
   /**
    * Navigate to Dependent Page
@@ -46,7 +46,7 @@ module.exports = page.extend({
     await this.puppet.type('#edit-submitted-civicrm-1-contact-1-cg99999-fieldset-civicrm-1-contact-1-cg99999-custom-100001', '1234');
     await this.puppet.click('.webform-next');
     await this.puppet.waitFor('input[value="Dependants"]');
-  },
+  }
 
   /**
    * Navigate to Profile Picture Page
@@ -58,4 +58,4 @@ module.exports = page.extend({
     await this.puppet.click('.webform-next');
     await this.puppet.waitFor('input[value="Profile Picture"]');
   }
-});
+};

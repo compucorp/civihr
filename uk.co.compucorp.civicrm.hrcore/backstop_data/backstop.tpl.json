@@ -9,19 +9,29 @@
   "onReadyScript": "onReady.js",
   "scenarios": [],
   "paths": {
-    "bitmaps_reference": "backstop_data/screenshots/reference",
-    "bitmaps_test": "backstop_data/screenshots/test",
+    "bitmaps_reference": "backstop_data/screenshots/{group}/reference",
+    "bitmaps_test": "backstop_data/screenshots/{group}/test",
     "engine_scripts": "backstop_data/engine_scripts",
-    "html_report": "backstop_data/html_report",
-    "ci_report": "backstop_data/ci_report"
+    "html_report": "backstop_data/html_report/{group}",
+    "ci_report": "backstop_data/ci_report/{group}"
   },
   "report": ["browser"],
   "engine": "puppet",
   "engineFlags": [],
   "engineOptions": {
-    "waitTimeout": 20000
+    "waitTimeout": 300000,
+    "slowMo": 250,
+    "ignoreHTTPSErrors": true,
+    "args": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-gpu",
+      "--force-device-scale-factor=1",
+      "--disable-infobars=true",
+      "--hide-scrollbars"
+    ]
   },
-  "asyncCaptureLimit": 1,
+  "asyncCaptureLimit": 2,
   "asyncCompareLimit": 50,
   "debug": false,
   "debugWindow": false
