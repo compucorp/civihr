@@ -4045,6 +4045,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     //Results will be not be returned for contact1 since contact one is not a managee of the leave
     //approver
     $result = civicrm_api3('LeaveRequest', 'get', ['check_permissions' => true, 'sequential' => 1]);
+    var_dump(civicrm_api3('LeaveRequest', 'get'));
     $this->assertEquals(1, $result['count']);
     $this->assertEquals($contact2['id'], $result['values'][0]['contact_id']);
 
