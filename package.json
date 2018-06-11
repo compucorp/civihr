@@ -4,10 +4,10 @@
   "license": "AGPL-3.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/civicrm/civihr.git"
+    "url": "https://github.com/compucorp/civihr.git"
   },
   "bugs": {
-    "url": "https://github.com/civicrm/civihr/issues"
+    "url": "https://github.com/compucorp/civihr/issues"
   },
   "scripts": {
     "precommit": "lint-staged",
