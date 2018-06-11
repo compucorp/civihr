@@ -1352,11 +1352,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
 
     echo 'Not accessible contacts query:' . PHP_EOL;
     print_r($query);
-    echo '----------------------' . PHP_EOL;
+    echo PHP_EOL . '----------------------' . PHP_EOL;
 
     echo 'Not accessible query results:' . PHP_EOL;
     print_r(CRM_Core_DAO::executeQuery($notAccessibleLeaveRequestQuery)->fetchAll());
-    echo '----------------------' . PHP_EOL;
+    echo PHP_EOL . '----------------------' . PHP_EOL;
 
     return $clauses;
   }
