@@ -4370,24 +4370,40 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testGetAttachments() {
-    $leaveRequestID = 1;
-    $leaveRequestID2 = 2;
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' =>2,
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
     $attachment1 = $this->createAttachmentForLeaveRequest([
-      'entity_id' => $leaveRequestID,
+      'entity_id' => $leaveRequest1->id,
       'name' => 'LeaveRequestSampleFile1.txt'
     ]);
 
     $attachment2 = $this->createAttachmentForLeaveRequest([
-      'entity_id' => $leaveRequestID,
+      'entity_id' => $leaveRequest1->id,
       'name' => 'LeaveRequestSampleFile2.txt'
     ]);
 
     $attachment3 = $this->createAttachmentForLeaveRequest([
-      'entity_id' => $leaveRequestID2,
+      'entity_id' => $leaveRequest2->id,
       'name' => 'LeaveRequestSampleFile3.txt'
     ]);
 
-    $params = ['leave_request_id' => $leaveRequestID, 'sequential' => 1];
+    $params = ['leave_request_id' => $leaveRequest1->id, 'sequential' => 1];
     $result = civicrm_api3('LeaveRequest', 'getAttachments', $params);
 
     $expectedResult = [
