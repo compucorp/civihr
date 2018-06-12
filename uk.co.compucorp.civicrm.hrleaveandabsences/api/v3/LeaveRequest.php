@@ -709,11 +709,15 @@ function _civicrm_api3_leave_request_getattachments_spec(&$spec) {
 function civicrm_api3_leave_request_getattachments($params) {
   $params['entity_id'] = $params['leave_request_id'];
   $params['entity_table'] = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::getTableName();
+  $leaveRequestAttachmentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachment();
 
-  $result =  civicrm_api3('Attachment', 'get', $params);
+  $result =  $leaveRequestAttachmentService->get($params);
 
-  if ($result['count'] > 0) {
+  if (!empty($result)) {
     array_walk($result['values'], '_civicrm_api3_leave_request_filter_attachment_fields');
+  }
+  else{
+    $result = civicrm_api3_create_success([]);
   }
 
   return $result;

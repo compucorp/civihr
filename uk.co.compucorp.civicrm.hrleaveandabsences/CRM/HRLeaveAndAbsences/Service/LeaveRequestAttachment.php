@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveManager as LeaveManagerService;
+use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRights;
 
 class CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachment {
 
@@ -71,5 +72,29 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachment {
     $params = $this->prepareParametersForAttachmentPayload($params);
 
     return civicrm_api3('Attachment', $action, $params);
+  }
+
+  /**
+   * Uses the Attachment API to retrieve attachments associated with a LeaveRequest.
+   * It ensures that the current user can only retrieve Leave attachments for the
+   * Leave requests linked to the contacts the user has access to. The admin can
+   * retrieve all Leave attachments for all contacts.
+   *
+   * @param array $params
+   *
+   * @return array
+   */
+  public function get($params) {
+    $leaveRequestID = isset($params['entity_id']) ? $params['entity_id'] : '';
+    $leaveRequest = LeaveRequest::findById($leaveRequestID);
+    $leaveManagerService = new LeaveManagerService();
+    $leaveRequestRights = new LeaveRequestRights($leaveManagerService);
+    $accessibleContacts = $leaveRequestRights->getLeaveContactsCurrentUserHasAccessTo();
+
+    if ($leaveManagerService->currentUserIsAdmin() || in_array($leaveRequest->contact_id, $accessibleContacts)) {
+      return $this->callAttachmentAPI('get', $params);
+    }
+
+    return [];
   }
 }
