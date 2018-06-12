@@ -346,6 +346,7 @@ function hrcore_civicrm_permission(&$permissions) {
   $prefix = ts('CiviHR') . ': ';
   $permissions['access CiviCRM developer menu and tools'] = ts('Access CiviCRM developer menu and tools');
   $permissions['access root menu items and configurations'] = $prefix . ts('Access root menu items and configurations');
+  $permissions['view system status on footer'] = $prefix . ts('View System Status on Footer');
 }
 
 /**
