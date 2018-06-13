@@ -152,6 +152,77 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachmentTest extends BaseHead
     return array_merge($defaultParams, $params);
   }
 
+
+  public function testGetReturnsLeaveAttachmentDataOnlyForContactAUserHasAccessTo() {
+    $staff1 = 1;
+    $staff2 = 2;
+    $params1 = $this->getDefaultLeaveRequestParams(['contact_id' => $staff1]);
+    $params2 = $this->getDefaultLeaveRequestParams(['contact_id' => $staff2]);
+
+    //Create Leave requests
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation($params1);
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation($params2);
+
+    //create attachments for Leave requests
+    $attachment1 = $this->createAttachmentForLeaveRequest(['entity_id' => $leaveRequest1->id]);
+    $attachment2 = $this->createAttachmentForLeaveRequest(['entity_id' => $leaveRequest2->id]);
+
+
+    //Register the staff1 in session
+    $this->registerCurrentLoggedInContactInSession($staff1);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = [];
+
+    $leaveManagerService = new LeaveManagerService();
+    $leaveRightsService = $this->prophesize(LeaveRightsService::class);
+
+    // staff1 has access to own self alone
+    $leaveRightsService->getLeaveContactsCurrentUserHasAccessTo()->willReturn([$staff1]);
+    $leaveRequestAttachmentService = new LeaveRequestAttachmentService($leaveRightsService->reveal(), $leaveManagerService);
+
+    $staff1Attachment = $leaveRequestAttachmentService->get(['entity_id' => $leaveRequest1->id, 'sequential' => 1]);
+    $staff2Attachment = $leaveRequestAttachmentService->get(['entity_id' => $leaveRequest2->id, 'sequential' => 1]);
+
+    //result would be empty for contact user does not have access to
+    $this->assertEmpty($staff2Attachment);
+
+    $this->assertCount(1, $staff1Attachment['values']);
+    $this->assertEquals($staff1Attachment['values'][0]['id'], $attachment1['id']);
+    $this->assertEquals($staff1Attachment['values'][0]['name'], $attachment1['name']);
+  }
+
+  public function testGetReturnsLeaveAttachmentDataOnlyForAllContactsForAdmin() {
+    $staff1 = 1;
+    $staff2 = 2;
+    $params1 = $this->getDefaultLeaveRequestParams(['contact_id' => $staff1]);
+    $params2 = $this->getDefaultLeaveRequestParams(['contact_id' => $staff2]);
+
+    //Create Leave requests
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation($params1);
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation($params2);
+
+    //create attachments for Leave requests
+    $attachment1 = $this->createAttachmentForLeaveRequest(['entity_id' => $leaveRequest1->id]);
+    $attachment2 = $this->createAttachmentForLeaveRequest(['entity_id' => $leaveRequest2->id]);
+
+
+    $leaveManagerService = $this->getLeaveManagerServiceWhenUserIsAdmin();
+    $leaveRightsService = $this->prophesize(LeaveRightsService::class);
+    $leaveRightsService->getLeaveContactsCurrentUserHasAccessTo()->willReturn([]);
+    $leaveRequestAttachmentService = new LeaveRequestAttachmentService($leaveRightsService->reveal(), $leaveManagerService);
+
+    $staff1Attachment = $leaveRequestAttachmentService->get(['entity_id' => $leaveRequest1->id, 'sequential' => 1]);
+    $staff2Attachment = $leaveRequestAttachmentService->get(['entity_id' => $leaveRequest2->id, 'sequential' => 1]);
+
+    //Admin is able to access attachments for all contacts
+    $this->assertCount(1, $staff1Attachment['values']);
+    $this->assertEquals($staff1Attachment['values'][0]['id'], $attachment1['id']);
+    $this->assertEquals($staff1Attachment['values'][0]['name'], $attachment1['name']);
+
+    $this->assertCount(1, $staff1Attachment['values']);
+    $this->assertEquals($staff2Attachment['values'][0]['id'], $attachment2['id']);
+    $this->assertEquals($staff2Attachment['values'][0]['name'], $attachment2['name']);
+  }
+
   private function getLeaveManagerService($isAdmin, $leaveContact = NULL) {
     $leaveManagerService = $this->prophesize(LeaveManagerService::class);
     $leaveManagerService->currentUserIsAdmin()->willReturn($isAdmin);
