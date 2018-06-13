@@ -4369,7 +4369,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     civicrm_api3('LeaveRequest', 'getattachments');
   }
 
-  public function testGetAttachments() {
+  public function testGetAttachmentsReturnsAllExpectedFields() {
     $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => $this->absenceType->id,
