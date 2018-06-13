@@ -53,10 +53,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachmentTest extends BaseHead
   public function testDeleteShouldDeleteAttachmentWhenLoggedInUserIsAnAdmin() {
     $params = $this->getDefaultLeaveRequestParams();
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
-
-    $leaveManagerService = $this->getLeaveManagerServiceWhenUserIsAdmin();
-    $leaveRequestRights = new LeaveRightsService($leaveManagerService);
-    $leaveRequestAttachmentService = new LeaveRequestAttachmentService($leaveRequestRights, $leaveManagerService);
+    $leaveRequestAttachmentService = $this->createLeaveRequestAttachmentsServiceWhenUserIsAdmin();
 
     $attachment = $this->createAttachmentForLeaveRequest(['entity_id' => $leaveRequest->id]);
     $attachment2 = $this->createAttachmentForLeaveRequest(['entity_id' => $leaveRequest->id]);
@@ -112,10 +109,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachmentTest extends BaseHead
   public function testDeleteShouldThrowAnExceptionWhenAttachmentHasBeenDeletedBefore() {
     $params = $this->getDefaultLeaveRequestParams();
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
-
-    $leaveManagerService = $this->getLeaveManagerServiceWhenUserIsAdmin();
-    $leaveRequestRights = new LeaveRightsService($leaveManagerService);
-    $leaveRequestAttachmentService = new LeaveRequestAttachmentService($leaveRequestRights, $leaveManagerService);
+    $leaveRequestAttachmentService = $this->createLeaveRequestAttachmentsServiceWhenUserIsAdmin();
 
     $attachment = $this->createAttachmentForLeaveRequest(['entity_id' => $leaveRequest->id]);
 
@@ -132,10 +126,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachmentTest extends BaseHead
    */
   public function testDeleteShouldThrowAnExceptionWhenAttachmentDoesNotExist() {
     $leaveRequestID = 1;
-
-    $leaveManagerService = $this->getLeaveManagerServiceWhenUserIsAdmin();
-    $leaveRequestRights = new LeaveRightsService($leaveManagerService);
-    $leaveRequestAttachmentService = new LeaveRequestAttachmentService($leaveRequestRights, $leaveManagerService);
+    $leaveRequestAttachmentService = $this->createLeaveRequestAttachmentsServiceWhenUserIsAdmin();
 
     $leaveRequestAttachmentService->delete(['leave_request_id' => $leaveRequestID, 'attachment_id' => 1]);
   }
@@ -204,7 +195,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachmentTest extends BaseHead
     $attachment1 = $this->createAttachmentForLeaveRequest(['entity_id' => $leaveRequest1->id]);
     $attachment2 = $this->createAttachmentForLeaveRequest(['entity_id' => $leaveRequest2->id]);
 
-
     $leaveManagerService = $this->getLeaveManagerServiceWhenUserIsAdmin();
     $leaveRightsService = $this->prophesize(LeaveRightsService::class);
     $leaveRightsService->getLeaveContactsCurrentUserHasAccessTo()->willReturn([]);
@@ -218,7 +208,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachmentTest extends BaseHead
     $this->assertEquals($staff1Attachment['values'][0]['id'], $attachment1['id']);
     $this->assertEquals($staff1Attachment['values'][0]['name'], $attachment1['name']);
 
-    $this->assertCount(1, $staff1Attachment['values']);
+    $this->assertCount(1, $staff2Attachment['values']);
     $this->assertEquals($staff2Attachment['values'][0]['id'], $attachment2['id']);
     $this->assertEquals($staff2Attachment['values'][0]['name'], $attachment2['name']);
   }
@@ -240,5 +230,13 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachmentTest extends BaseHead
 
   private function getLeaveManagerServiceWhenUserIsLeaveApprover($leaveContact) {
    return $this->getLeaveManagerService(FALSE, $leaveContact);
+  }
+
+  private function createLeaveRequestAttachmentsServiceWhenUserIsAdmin() {
+    $leaveManagerService = $this->getLeaveManagerServiceWhenUserIsAdmin();
+    $leaveRequestRights = new LeaveRightsService($leaveManagerService);
+    $leaveRequestAttachmentService = new LeaveRequestAttachmentService($leaveRequestRights, $leaveManagerService);
+
+    return $leaveRequestAttachmentService;
   }
 }
