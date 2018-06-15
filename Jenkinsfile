@@ -374,7 +374,7 @@ def testJS(hrcoreFolder, java.util.LinkedHashMap extension) {
 def listCivihrGitRepoPath() {
   return [
     [
-      'url': 'https://github.com/civicrm/civihr.git',
+      'url': 'https://github.com/compucorp/civihr.git',
       'folder': "$CIVICRM_EXT_ROOT/civihr"
     ],
     [
