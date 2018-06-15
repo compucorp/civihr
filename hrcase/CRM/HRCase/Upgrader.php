@@ -182,6 +182,42 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
 
     return TRUE;
   }
+  
+  /**
+   * Sets case type category to Vacancy for application type or
+   * to Workflow if otherwise
+   *
+   * @return bool
+   */
+  public function upgrade_1432() {
+    $customFieldId = CRM_Core_BAO_CustomField::getCustomFieldID('Category');
+    if ($customFieldId == null) {
+      return FALSE;
+    }
+    
+    $category = "custom_" . $customFieldId;
+    // set category to Vacancy if name is application
+    civicrm_api3('CaseType', 'get', [
+      'sequential' => 1,
+      'name' => 'application',
+      'api.CaseType.create' => [
+        'id' => '$value.id',
+        $category => 'Vacancy'
+      ],
+    ]);
+    
+    // set category to Workflow if name is not application
+    civicrm_api3('CaseType', 'get', [
+      'sequential' => 1,
+      'name' => ['!=' => 'application'],
+      'api.CaseType.create' => [
+        'id' => '$value.id',
+        $category => 'Workflow'
+      ],
+    ]);
+    
+    return TRUE;
+  }
 
   /**
    * Replaces (Case) keyword and (Open Case) keyword with (Assignment) keyword
