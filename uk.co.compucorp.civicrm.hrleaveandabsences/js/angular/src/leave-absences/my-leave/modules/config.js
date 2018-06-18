@@ -1,6 +1,7 @@
+/* global Drupal */
 /* eslint-env amd */
 
-(function (CRM) {
+(function (CRM, Drupal) {
   define([
     'common/angular',
     'common/lodash',
@@ -51,9 +52,9 @@
 
           $analyticsProvider.withAutoBase(true);
           $analyticsProvider.settings.ga = {
-            userId: _.get(CRM, 'vars.session.contact_id')
+            userId: _.get(Drupal, 'settings.currentCiviCRMUserId')
           };
         }
       ]);
   });
-})(CRM);
+})(CRM, Drupal);
