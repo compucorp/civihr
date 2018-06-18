@@ -2,12 +2,15 @@
 
 define([
   'common/angular',
+  'common/lodash',
   'leave-absences/admin-dashboard/modules/settings'
-], function (angular) {
+], function (angular, _) {
   return angular.module('admin-dashboard.config', ['admin-dashboard.settings'])
     .config([
-      '$stateProvider', '$resourceProvider', '$urlRouterProvider', '$httpProvider', '$logProvider', 'settings',
-      function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider, $logProvider, settings) {
+      '$stateProvider', '$resourceProvider', '$urlRouterProvider', '$httpProvider',
+      '$logProvider', '$analyticsProvider', 'settings',
+      function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider,
+        $logProvider, $analyticsProvider, settings) {
         var toResolve = {
           format: ['DateFormat', function (DateFormat) {
             return DateFormat.getDateFormat();
@@ -36,6 +39,11 @@ define([
             template: '<leave-balance-tab></leave-balance-tab>',
             resolve: toResolve
           });
+
+        $analyticsProvider.withAutoBase(true);
+        $analyticsProvider.settings.ga = {
+          userId: _.get(CRM, 'vars.session.contact_id')
+        };
       }
     ]);
 });

@@ -3,6 +3,8 @@
 define([
   'common/angular',
   'common/angularBootstrap',
+  'common/angulartics',
+  'common/angulartics-google-tag-manager',
   'common/directives/scroll-shadows.directive',
   'common/directives/time-amount-picker.directive',
   'common/directives/timepicker-select.directive',
@@ -36,6 +38,8 @@ define([
   angular.module('admin-dashboard', [
     'ngAnimate',
     'ngResource',
+    'angulartics',
+    'angulartics.google.tagmanager',
     'ui.bootstrap',
     'ui.router',
     'ui.select',
