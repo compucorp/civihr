@@ -3,12 +3,15 @@
 (function (CRM) {
   define([
     'common/angular',
+    'common/lodash',
     'leave-absences/manager-leave/modules/settings'
-  ], function (angular) {
+  ], function (angular, _) {
     return angular.module('manager-leave.config', ['manager-leave.settings'])
       .config([
-        '$stateProvider', '$resourceProvider', '$urlRouterProvider', '$httpProvider', '$logProvider', 'settings',
-        function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider, $logProvider, settings) {
+        '$stateProvider', '$resourceProvider', '$urlRouterProvider', '$httpProvider',
+        '$logProvider', '$analyticsProvider', 'settings',
+        function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider,
+          $logProvider, $analyticsProvider, settings) {
           $logProvider.debugEnabled(settings.debug);
 
           $resourceProvider.defaults.stripTrailingSlashes = false;
@@ -49,6 +52,11 @@
               url: '/leave-balances',
               template: '<leave-balance-tab></leave-balance-tab>'
             });
+
+          $analyticsProvider.withAutoBase(true);
+          $analyticsProvider.settings.ga = {
+            userId: _.get(CRM, 'vars.session.contact_id')
+          };
         }
       ]);
   });
