@@ -17,12 +17,13 @@ define([
           }]
         };
 
+        configureAnalytics($analyticsProvider);
+
         $logProvider.debugEnabled(settings.debug);
-
-        $resourceProvider.defaults.stripTrailingSlashes = false;
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
+        $resourceProvider.defaults.stripTrailingSlashes = false;
         $urlRouterProvider.otherwise('/requests');
+
         $stateProvider
           .state('requests', {
             url: '/requests',
@@ -39,11 +40,18 @@ define([
             template: '<leave-balance-tab></leave-balance-tab>',
             resolve: toResolve
           });
-
-        $analyticsProvider.withAutoBase(true);
-        $analyticsProvider.settings.ga = {
-          userId: _.get(CRM, 'vars.session.contact_id')
-        };
       }
     ]);
+
+  /**
+   * Configures Google Analytics via the angulartics provider
+   *
+   * @param {Object} $analyticsProvider
+   */
+  function configureAnalytics ($analyticsProvider) {
+    $analyticsProvider.withAutoBase(true);
+    $analyticsProvider.settings.ga = {
+      userId: _.get(CRM, 'vars.session.contact_id')
+    };
+  }
 });

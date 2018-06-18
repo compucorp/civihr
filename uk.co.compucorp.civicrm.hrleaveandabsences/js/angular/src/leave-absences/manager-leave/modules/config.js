@@ -13,12 +13,13 @@
         '$logProvider', '$analyticsProvider', 'settings',
         function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider,
           $logProvider, $analyticsProvider, settings) {
+          configureAnalytics($analyticsProvider);
+
           $logProvider.debugEnabled(settings.debug);
-
-          $resourceProvider.defaults.stripTrailingSlashes = false;
           $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
+          $resourceProvider.defaults.stripTrailingSlashes = false;
           $urlRouterProvider.otherwise('/manager-leave/requests');
+
           $stateProvider
             .state('manager-leave', {
               abstract: true,
@@ -53,12 +54,19 @@
               url: '/leave-balances',
               template: '<leave-balance-tab></leave-balance-tab>'
             });
-
-          $analyticsProvider.withAutoBase(true);
-          $analyticsProvider.settings.ga = {
-            userId: _.get(Drupal, 'settings.currentCiviCRMUserId')
-          };
         }
       ]);
+
+    /**
+     * Configures Google Analytics via the angulartics provider
+     *
+     * @param {Object} $analyticsProvider
+     */
+    function configureAnalytics ($analyticsProvider) {
+      $analyticsProvider.withAutoBase(true);
+      $analyticsProvider.settings.ga = {
+        userId: _.get(CRM, 'vars.session.contact_id')
+      };
+    }
   });
 })(CRM, Drupal);
