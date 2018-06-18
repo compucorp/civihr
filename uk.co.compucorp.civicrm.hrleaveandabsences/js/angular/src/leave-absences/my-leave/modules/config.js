@@ -3,12 +3,15 @@
 (function (CRM) {
   define([
     'common/angular',
+    'common/lodash',
     'leave-absences/my-leave/modules/settings'
-  ], function (angular) {
+  ], function (angular, _) {
     return angular.module('my-leave.config', ['my-leave.settings'])
       .config([
-        '$stateProvider', '$resourceProvider', '$urlRouterProvider', '$httpProvider', '$logProvider', 'settings',
-        function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider, $logProvider, settings) {
+        '$stateProvider', '$resourceProvider', '$urlRouterProvider', '$httpProvider',
+        '$logProvider', '$analyticsProvider', 'settings',
+        function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider,
+          $logProvider, $analyticsProvider, settings) {
           $logProvider.debugEnabled(settings.debug);
 
           $resourceProvider.defaults.stripTrailingSlashes = false;
@@ -45,6 +48,11 @@
               url: '/calendar',
               template: '<leave-calendar contact-id="myleave.contactId" role-override="staff"></leave-calendar>'
             });
+
+          $analyticsProvider.withAutoBase(true);
+          $analyticsProvider.settings.ga = {
+            userId: _.get(CRM, 'vars.session.contact_id')
+          };
         }
       ]);
   });
