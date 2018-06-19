@@ -190,33 +190,66 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1432() {
-    $customFieldId = CRM_Core_BAO_CustomField::getCustomFieldID('Category');
-    if ($customFieldId == null) {
+    $result = civicrm_api3('CustomField', 'get', [
+      'name' => 'Category',
+      'custom_group_id' => 'case_type_category'
+    ]);
+    if ($result['count'] == 0) {
       return FALSE;
     }
     
-    $category = "custom_" . $customFieldId;
+    $category = "custom_" . $result['id'];
     // set category to Vacancy if name is application
+    $categoryValue = $this->getCaseTypeCategoryOptionValue('Vacancy');
+    if ($categoryValue == null) {
+      return FALSE;
+    }
+    
     civicrm_api3('CaseType', 'get', [
-      'sequential' => 1,
       'name' => 'application',
       'api.CaseType.create' => [
         'id' => '$value.id',
-        $category => 'Vacancy'
+        $category => $categoryValue
       ],
     ]);
     
     // set category to Workflow if name is not application
+    $categoryValue = $this->getCaseTypeCategoryOptionValue('Workflow');
+    if ($categoryValue == null) {
+      return FALSE;
+    }
+    
     civicrm_api3('CaseType', 'get', [
       'sequential' => 1,
       'name' => ['!=' => 'application'],
       'api.CaseType.create' => [
         'id' => '$value.id',
-        $category => 'Workflow'
+        $category => $categoryValue
       ],
     ]);
     
     return TRUE;
+  }
+  
+  /**
+   * Retrieves option value
+   *
+   * @param $option
+   *
+   * @return null
+   */
+  private function getCaseTypeCategoryOptionValue($option) {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'sequential' => 1,
+      'option_group_id' => 'case_type_category',
+      'value' => $option
+    ]);
+    
+    if ($result['count'] != 0) {
+      return $result['values'][0]['value'];
+    }
+    
+    return null;
   }
 
   /**
