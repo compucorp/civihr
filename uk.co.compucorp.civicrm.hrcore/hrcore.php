@@ -308,6 +308,13 @@ function hrcore_civicrm_pageRun($page) {
 }
 
 /**
+ * Implements hook_civicrm_coreResourceList().
+ */
+function hrcore_civicrm_coreResourceList(&$items, $region) {
+  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/hrcore.js');
+}
+
+/**
  * Implements hook_civicrm_navigationMenu().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu/
