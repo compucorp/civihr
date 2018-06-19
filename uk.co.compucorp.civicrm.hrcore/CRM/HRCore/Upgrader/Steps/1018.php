@@ -16,7 +16,7 @@ trait CRM_HRCore_Upgrader_Steps_1018 {
     $this->up1018_setDefaultLocationType('Work');
     $this->up1018_reserveLocationTypes(['Work', 'Personal']);
     $this->up1018_disableLocationType('Billing');
-    $this->up1018_deleteLocationTypes(['Home', 'Correspondence']);
+    $this->up1018_deleteLocationTypes(['Home', 'Correspondence', 'Main', 'Other']);
 
     return TRUE;
   }
