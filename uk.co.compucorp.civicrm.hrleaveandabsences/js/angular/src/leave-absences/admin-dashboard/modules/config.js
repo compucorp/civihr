@@ -17,11 +17,11 @@ define([
           }]
         };
 
-        configureAnalytics($analyticsProvider);
-
-        $logProvider.debugEnabled(settings.debug);
-        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
         $resourceProvider.defaults.stripTrailingSlashes = false;
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+        configureAnalytics($analyticsProvider);
+        $logProvider.debugEnabled(settings.debug);
         $urlRouterProvider.otherwise('/requests');
 
         $stateProvider
@@ -49,9 +49,10 @@ define([
    * @param {Object} $analyticsProvider
    */
   function configureAnalytics ($analyticsProvider) {
-    $analyticsProvider.withAutoBase(true);
     $analyticsProvider.settings.ga = {
       userId: _.get(CRM, 'vars.session.contact_id')
     };
+
+    $analyticsProvider.withAutoBase(true);
   }
 });

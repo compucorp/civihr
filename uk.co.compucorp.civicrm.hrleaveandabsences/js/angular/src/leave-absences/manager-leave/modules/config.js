@@ -13,12 +13,12 @@
         '$logProvider', '$analyticsProvider', 'settings',
         function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider,
           $logProvider, $analyticsProvider, settings) {
-          configureAnalytics($analyticsProvider);
-
-          $logProvider.debugEnabled(settings.debug);
           $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
           $resourceProvider.defaults.stripTrailingSlashes = false;
           $urlRouterProvider.otherwise('/manager-leave/requests');
+
+          configureAnalytics($analyticsProvider);
+          $logProvider.debugEnabled(settings.debug);
 
           $stateProvider
             .state('manager-leave', {
@@ -64,6 +64,7 @@
      */
     function configureAnalytics ($analyticsProvider) {
       $analyticsProvider.withAutoBase(true);
+
       $analyticsProvider.settings.ga = {
         userId: _.get(CRM, 'vars.session.contact_id')
       };
