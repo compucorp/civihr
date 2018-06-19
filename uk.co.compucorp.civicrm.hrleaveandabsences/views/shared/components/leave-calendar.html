@@ -1,8 +1,16 @@
 <section>
   <crm-loading show="!calendar.loading.page">
     <div class="panel">
+      <div class="panel-default visible-xs pointer text-right"
+        ng-click="calendar.filters.hideOnMobile = true"
+        ng-if="!calendar.filters.hideOnMobile">
+        <div class="panel-subheading panel-heading-plain">
+          <small><i class="fa fa-chevron-down text"></i></small>
+          Hide filters
+        </div>
+      </div>
       <div ng-if="calendar.showFilters" class="panel-heading chr_manager_calendar__header row">
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2" ng-class="{ 'hidden-xs': calendar.filters.hideOnMobile }">
           <ui-select ng-change="calendar.refresh('contacts')" ng-model="calendar.filters.userSettings.contact">
             <ui-select-match placeholder="Staff Member" allow-clear>
               <span ng-bind="$select.selected.display_name"></span>
@@ -12,7 +20,7 @@
             </ui-select-choices>
           </ui-select>
         </div>
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2" ng-class="{ 'hidden-xs': calendar.filters.hideOnMobile }">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -24,7 +32,7 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2" ng-class="{ 'hidden-xs': calendar.filters.hideOnMobile }">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -36,7 +44,7 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2" ng-class="{ 'hidden-xs': calendar.filters.hideOnMobile }">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -48,7 +56,7 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-md-4 col-lg-2">
+        <div class="col-md-4 col-lg-2" ng-class="{ 'hidden-xs': calendar.filters.hideOnMobile }">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -71,18 +79,27 @@
           </div>
         </div>
       </div>
-      <div class="chr_manager_calendar__sub-header row" ng-class="{ 'panel-heading': !calendar.showFilters, 'panel-subheading': calendar.showFilters }">
-        <div class="col-md-12" ng-class="{ 'col-lg-6': !!calendar.filtersByAssignee, 'col-lg-8': !calendar.filtersByAssignee }">
-          <ui-select class="chr_leave-calendar__day-selector" multiple ng-model="calendar.selectedMonths">
-            <ui-select-match placeholder="Select Months">
-              <span>{{$item.shortName}}</span>
-            </ui-select-match>
-            <ui-select-choices repeat="month.index as month in (calendar.months | filter: $select.search)">
-              <span>{{month.name}}</span>
-            </ui-select-choices>
-          </ui-select>
+      <div class="chr_manager_calendar__sub-header row"
+        ng-class="{
+          'panel-heading': !calendar.showFilters,
+          'panel-subheading': calendar.showFilters,
+          'hidden-xs': calendar.filters.hideOnMobile
+        }">
+        <div class="col-md-12 col-lg-2">
+          <div class="crm_custom-select crm_custom-select--full">
+            <select
+              class="no-select2"
+              ng-model="calendar.selectedMonthIndex"
+              ng-change="calendar.refresh('month')">
+              <option
+                ng-repeat="month in calendar.months"
+                value="{{month.index}}">{{month.name}} {{month.year}}</option>
+            </select>
+            <span class="crm_custom-select__arrow"></span>
+          </div>
         </div>
-        <div class="col-md-12 col-lg-3" ng-class="{ 'col-lg-offset-1': !calendar.filtersByAssignee }">
+        <div class="col-md-12 col-lg-4"
+          ng-class="{ 'col-lg-offset-6': !calendar.canManageRequests() || !calendar.showFilters }">
           <div class="crm_custom-select crm_custom-select--full">
             <select
               class="no-select2"
@@ -93,7 +110,7 @@
             <span class="crm_custom-select__arrow"></span>
           </div>
         </div>
-        <div class="col-md-12 col-lg-3" ng-if="!!calendar.filtersByAssignee">
+        <div class="col-md-12 col-lg-3 col-lg-offset-3" ng-if="calendar.canManageRequests() && calendar.showFilters">
           <div class="crm_custom-select crm_custom-select--full chr_leave-calendar__admin-filters-select">
             <select
               class="no-select2"
@@ -103,27 +120,53 @@
             </select>
             <span class="crm_custom-select__arrow"></span>
           </div>
-
           <i class="fa fa-question-circle chr_leave-calendar__admin-filters-hint text-info pointer"
              aria-hidden="true"
              ng-click="calendar.showAdminFilteringHint()"></i>
         </div>
       </div>
+      <div class="panel-default visible-xs pointer text-right"
+        ng-click="calendar.filters.hideOnMobile = false"
+        ng-if="calendar.filters.hideOnMobile">
+        <div class="panel-subheading panel-heading-plain">
+          <small><i class="fa fa-chevron-right text"></i></small>
+          Show filters
+        </div>
+      </div>
     </div>
-    <crm-loading show="!calendar.loading.calendar">
-      <div ng-if="calendar.injectMonths">
-        <leave-calendar-month ng-repeat="month in calendar.months track by $index"
+    <section class="panel panel-default">
+      <header class="panel-heading chr_leave-calendar__month-header">
+        <h2 class="panel-title">
+          <button class="btn btn-secondary-outline chr_leave-calendar__month-header__go-to-current-month"
+            ng-click="calendar.navigateToCurrentMonth()">Today</button>
+          <button class="btn btn-link chr_leave-calendar__month-header__month-paginator"
+            ng-class="{ disabled: !calendar.monthPaginatorsAvailability.previous }"
+            ng-click="calendar.paginateMonth('previous')"
+            ng-disabled="!calendar.monthPaginatorsAvailability.previous">
+            <i class="fa fa-chevron-left"></i>
+          </button>
+          <button class="btn btn-link chr_leave-calendar__month-header__month-paginator"
+            ng-click="calendar.paginateMonth('next')"
+            ng-disabled="!calendar.monthPaginatorsAvailability.next">
+            <i class="fa fa-chevron-right"></i>
+          </button>
+          {{calendar.selectedMonth.name}} {{calendar.selectedMonth.year}}</h2>
+      </header>
+      <crm-loading show="calendar.injectMonth">
+        <leave-calendar-month
+          ng-if="calendar.injectMonth"
           contacts="calendar.contacts"
           contact-ids-to-reduce-to="calendar.contactIdsToReduceTo"
-          month="month"
+          month="calendar.selectedMonth"
           period="calendar.selectedPeriod"
           show-contact-name="calendar.showContactName"
           show-contact-details-link="calendar.showContactDetailsLink"
           show-only-with-leave-requests="calendar.filters.userSettings.contacts_with_leaves"
+          show-these-contacts="calendar.showTheseContacts"
           support-data="calendar.supportData">
         </leave-calendar-month>
-      </div>
-    </crm-loading>
+      </crm-loading>
+    </section>
     <leave-calendar-legend absence-types="calendar.supportData.absenceTypes" ng-if="calendar.supportData.absenceTypes.length"></leave-calendar-legend>
   </crm-loading>
 </section>

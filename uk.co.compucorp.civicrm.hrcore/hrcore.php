@@ -116,6 +116,7 @@ function hrcore_civicrm_buildForm($formName, &$form) {
   $listeners = [
     new CRM_HRCore_Hook_BuildForm_ActivityFilterSelectFieldsModifier(),
     new CRM_HRCore_Hook_BuildForm_ActivityLinksFilter(),
+    new CRM_HRCore_Hook_BuildForm_ContactAdvancedSearch(),
     new CRM_HRCore_Hook_BuildForm_LocalisationPageFilter(),
     new CRM_HRCore_Hook_BuildForm_OptionEditPathFilter(),
   ];
@@ -332,6 +333,7 @@ function hrcore_civicrm_permission(&$permissions) {
   $prefix = ts('CiviHR') . ': ';
   $permissions['access CiviCRM developer menu and tools'] = ts('Access CiviCRM developer menu and tools');
   $permissions['access root menu items and configurations'] = $prefix . ts('Access root menu items and configurations');
+  $permissions['view system status on footer'] = $prefix . ts('View System Status on Footer');
 }
 
 /**

@@ -1,8 +1,12 @@
-const tab = require('./tab');
+const Tab = require('./tab');
 
-module.exports = tab.extend({
-  readySelector: '.absence-tab-page',
-  tabTitle: 'Absence',
+module.exports = class AbsenceTab extends Tab {
+  constructor () {
+    super(...arguments);
+
+    this.readySelector = '.absence-tab-page';
+    this.tabTitle = 'Absence';
+  }
 
   /**
    * Opens one of the absence sub tabs
@@ -10,9 +14,12 @@ module.exports = tab.extend({
    * @param {String} tabId
    */
   async openSubTab (tabId) {
-    const tab = require('./absence/' + tabId);
+    const Tab = require('./absence/' + tabId);
+    const tab = new Tab(this.puppet, false);
 
     await this.puppet.click('[heading="' + tab.tabTitle + '"] > a');
-    return tab.init(this.puppet, false);
+    await tab.init();
+
+    return tab;
   }
-});
+};

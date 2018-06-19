@@ -1,6 +1,6 @@
-const modal = require('./page');
+const SSP = require('./ssp');
 
-module.exports = modal.extend({
+module.exports = class SSPVacancies extends SSP {
   /**
    * Opens More Details section
    */
@@ -8,4 +8,4 @@ module.exports = modal.extend({
     await this.puppet.click('.fieldset-title');
     await this.puppet.waitFor(2000); // wait for animation to complete
   }
-});
+};

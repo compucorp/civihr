@@ -12,7 +12,7 @@
       <li ng-repeat="option in vm.leaveRequestOptions">
         <a href
           class="leave-request-record-actions__new-{{option.type}}"
-          ng-click="vm.openLeavePopup(null, option.type, vm.selectedContactId, vm.isSelfRecord)">
+          ng-click="vm.openLeavePopup(null, option.type, vm.selectedContactId)">
           <span class="btn-icon"><i class="fa fa-{{option.icon}}"></i></span> {{option.label}}
         </a>
       </li>

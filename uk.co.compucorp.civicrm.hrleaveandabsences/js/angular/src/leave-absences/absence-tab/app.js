@@ -41,6 +41,7 @@ define([
   'leave-absences/shared/models/absence-type.model',
   'leave-absences/shared/models/entitlement.model',
   'leave-absences/shared/modules/shared-settings',
+  'leave-absences/shared/services/leave-calendar.service',
   'leave-absences/shared/services/leave-popup.service',
   'leave-absences/absence-tab/components/absence-tab-container.component',
   'leave-absences/absence-tab/components/absence-tab-entitlements.component',

@@ -1,9 +1,10 @@
 'use strict';
 
-const pageObj = require('../../../page-objects/tasks');
+const Page = require('../../../page-objects/tasks');
 
 module.exports = async engine => {
-  const page = await pageObj.init(engine);
+  const page = new Page(engine);
 
+  await page.init();
   await page.inPlaceEdit('target');
 };

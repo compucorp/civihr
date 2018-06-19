@@ -1,8 +1,8 @@
 /* global XPathResult */
 
-const modal = require('./modal');
+const Modal = require('./modal');
 
-module.exports = modal.extend({
+module.exports = class JobContractModal extends Modal {
   /**
    * Selects the tab with the given title
    *
@@ -17,4 +17,4 @@ module.exports = modal.extend({
       link.click();
     }, tabTitle);
   }
-});
+};

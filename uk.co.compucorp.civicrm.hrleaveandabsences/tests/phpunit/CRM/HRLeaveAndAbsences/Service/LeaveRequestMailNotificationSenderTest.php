@@ -84,6 +84,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestMailNotificationSenderTest exte
   }
 
   public function testSendThrowsExceptionWhenFromEmailIsNotConfigured() {
+    $this->removeAllFromEmailAddresses();
+
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
       'contact_id' => $this->leaveContact['id'],

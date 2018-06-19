@@ -1,5 +1,13 @@
-const page = require('../page');
+const Page = require('../page');
 
-module.exports = page.extend({
-  modalRoot: '.modal'
-});
+module.exports = class Modal extends Page {
+  constructor () {
+    super(...arguments);
+
+    this.modalRoot = '.modal';
+  }
+
+  async waitForReady () {
+    await this.puppet.waitFor('.modal-body', { visible: true });
+  }
+};

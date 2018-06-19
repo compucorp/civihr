@@ -1,9 +1,10 @@
 'use strict';
 
-const pageObj = require('../../page-objects/contact-summary');
+const Page = require('../../page-objects/contact-summary');
 
 module.exports = async engine => {
-  const page = await pageObj.init(engine);
+  const page = new Page(engine);
 
+  await page.init();
   await page.openManageRightsModal();
 };

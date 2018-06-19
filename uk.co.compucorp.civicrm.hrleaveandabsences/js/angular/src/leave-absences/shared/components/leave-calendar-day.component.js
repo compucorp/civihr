@@ -18,22 +18,15 @@ define([
     controller: LeaveCalendarDayController
   });
 
-  LeaveCalendarDayController.$inject = ['$log', '$scope', '$timeout', 'LeavePopup'];
+  LeaveCalendarDayController.$inject = ['$log', '$scope', 'LeavePopup'];
 
-  function LeaveCalendarDayController ($log, $scope, $timeout, LeavePopup) {
+  function LeaveCalendarDayController ($log, $scope, LeavePopup) {
     'use strict';
     $log.debug('Component: leave-calendar-day');
 
     var vm = this;
 
-    vm.tooltip = {
-      show: false,
-      day_cell_hovered: false,
-      tooltip_hovered: false
-    };
-
     vm.openLeavePopup = openLeavePopup;
-    vm.toggleTooltip = toggleTooltip;
 
     (function init () {
       watchLeaveRequests();
@@ -42,19 +35,11 @@ define([
     /**
      * Opens the leave request popup
      *
-     * When leave-request-actions.component sits inside manage-request component's table rows,
-     * and the table row has a click event to open leave request, so event.stopPropagation()
-     * is necessary to prevent the parents click event from being called
-     *
      * @param {Object} event
      * @param {Object} leaveRequest
-     * @param {String} leaveType
-     * @param {String} selectedContactId
-     * @param {Boolean} isSelfRecord
      */
-    function openLeavePopup (event, leaveRequest, leaveType, selectedContactId, isSelfRecord) {
-      event.stopPropagation();
-      LeavePopup.openModal(leaveRequest, leaveType, selectedContactId, isSelfRecord);
+    function openLeavePopup (event, leaveRequest) {
+      LeavePopup.openModalByID(leaveRequest.id);
     }
 
     /**
@@ -107,19 +92,36 @@ define([
      * @param {Object} leaveRequestAttributes
      */
     function resolveLeaveRequestAbsenceTypeTitle (leaveRequest, leaveRequestAttributes) {
+      var absenceType = _.find(vm.supportData.absenceTypes, { id: leaveRequest.type_id });
+
       vm.contactData.leaveRequestsAttributes[leaveRequest.id].absenceTypeTitle =
-        _.find(vm.supportData.absenceTypes, { id: leaveRequest.type_id }).title;
+        absenceType.title;
     }
 
     /**
      * Sets a unit name to the leave requests attributes
+     * @NOTE this function contains an adhoc solution
+     * and should be refactored as soon as possible.
+     * We do not know what calculation to use for generic leave types
+     * so we rely on the "from_date_type" field to identify it.
+     * @see PCHR-3774
      *
      * @param {LeaveRequestInstance} leaveRequest
      * @param {Object} leaveRequestAttributes
      */
     function resolveLeaveRequestCalculationUnit (leaveRequest, leaveRequestAttributes) {
-      var absenceType = _.find(vm.supportData.absenceTypes, { id: leaveRequest.type_id });
-      var calculationUnit = _.find(vm.supportData.calculationUnits, { 'value': absenceType.calculation_unit });
+      var absenceType, calculationUnit;
+
+      // @NOTE This block is an adhoc mentioned in the function description
+      if (!leaveRequest.type_id) {
+        leaveRequestAttributes.unit = leaveRequest.from_date_type
+          ? 'days' : 'hours';
+
+        return;
+      }
+
+      absenceType = _.find(vm.supportData.absenceTypes, { id: leaveRequest.type_id });
+      calculationUnit = _.find(vm.supportData.calculationUnits, { 'value': absenceType.calculation_unit });
 
       leaveRequestAttributes.unit = calculationUnit.name;
     }
@@ -132,8 +134,8 @@ define([
      * @param {Object} leaveRequestAttributes
      */
     function resolveLeaveRequestDates (leaveRequest, leaveRequestAttributes) {
-      leaveRequestAttributes.from_date = new Date(leaveRequest.from_date);
-      leaveRequestAttributes.to_date = new Date(leaveRequest.to_date);
+      leaveRequestAttributes.from_date = moment(leaveRequest.from_date).toDate();
+      leaveRequestAttributes.to_date = moment(leaveRequest.to_date).toDate();
     }
 
     /**
@@ -193,26 +195,6 @@ define([
       resolvingFunctions.forEach(function (resolvingFunction) {
         resolvingFunction.call(this, leaveRequest, leaveRequestAttributes);
       });
-    }
-
-    /**
-     * Toggles tooltip for the day.
-     * It reacts to entering/leaving either day cell or the tooltip itself,
-     * if either of the elements are hovered, it remains the tooltip open.
-     * It instantly shows a tooltip, but has a 100ms timeout to hide it once unhovered.
-     *
-     * @TODO this should be moved to a decorator to uib-tooltip
-     *
-     * @param {String} sourceElement day_cell|tooltip
-     * @param {Boolean} isHovered
-     */
-    function toggleTooltip (sourceElement, isHovered) {
-      $timeout(function () {
-        vm.tooltip[sourceElement + '_hovered'] = isHovered;
-
-        vm.tooltip.show =
-          vm.tooltip.day_cell_hovered || vm.tooltip.tooltip_hovered;
-      }, isHovered ? 0 : 100);
     }
 
     /**

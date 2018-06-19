@@ -47,8 +47,8 @@
         LeaveRequest = _LeaveRequest_;
         OptionGroup = _OptionGroup_;
 
-        february = { index: 1, year: 2016 };
-        daysInFebruary = moment().month(february.index).year(february.year).daysInMonth();
+        february = { index: '2016-02', month: 1, year: 2016 };
+        daysInFebruary = moment().month(february.month).year(february.year).daysInMonth();
         period2016 = _.clone(AbsencePeriodData.all().values[0]);
         publicHolidays = PublicHolidayData.all().values;
         leaveRequestInFebruary = LeaveRequestData.all().values[0];
@@ -104,7 +104,7 @@
       describe('on "show months" event', function () {
         describe('when it is included in the list of months to show', function () {
           beforeEach(function () {
-            sendShowMonthsSignal();
+            sendShowMonthSignal();
           });
 
           it('shows itself', function () {
@@ -178,6 +178,18 @@
                 })
               );
             });
+
+            describe('when leave requests are reloaded', function () {
+              beforeEach(function () {
+                $rootScope.$emit('LeaveCalendar::showMonth', true);
+              });
+
+              it('flushes days data before populating it', function () {
+                expect(_.every(controller.month.days, function (day) {
+                  return !Object.keys(day.contactsData).length;
+                })).toBe(true);
+              });
+            });
           });
 
           describe('contacts', function () {
@@ -188,7 +200,7 @@
                 contactIdsToReduceTo = randomContactIds;
 
                 compileComponent();
-                sendShowMonthsSignal();
+                sendShowMonthSignal();
                 $rootScope.$digest();
               });
 
@@ -203,7 +215,7 @@
                 contactIdsToReduceTo = null;
 
                 compileComponent();
-                sendShowMonthsSignal();
+                sendShowMonthSignal();
                 $rootScope.$digest();
               });
 
@@ -217,7 +229,7 @@
             beforeEach(function () {
               controller.currentPage = 5;
 
-              sendShowMonthsSignal();
+              sendShowMonthSignal();
             });
 
             it('resets it to 0', function () {
@@ -230,7 +242,7 @@
               Calendar.get.calls.reset();
               LeaveRequest.all.calls.reset();
 
-              sendShowMonthsSignal();
+              sendShowMonthSignal();
             });
 
             it('does not fetch the data again', function () {
@@ -244,7 +256,7 @@
               Calendar.get.calls.reset();
               LeaveRequest.all.calls.reset();
 
-              sendShowMonthsSignal(true, true);
+              sendShowMonthSignal(true, true);
             });
 
             it('fetches the data again', function () {
@@ -252,23 +264,86 @@
               expect(LeaveRequest.all).toHaveBeenCalled();
             });
           });
+
+          describe('filter by absence types', function () {
+            var filterValue = ['777', '888'];
+
+            beforeEach(function () {
+              controller.supportData.absenceTypesToFilterBy = filterValue;
+
+              $rootScope.$emit('LeaveCalendar::showMonth', true);
+              $rootScope.$digest();
+            });
+
+            it('loads leave requests for only selected absence types', function () {
+              expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                type_id: { 'IN': filterValue }
+              }), null, null, null, false);
+            });
+
+            describe('displaying only public leave requests', function () {
+              var privateLeaveRequests;
+              var contactId = _.uniqueId();
+
+              beforeEach(function () {
+                var leaveRequests = _.cloneDeep(LeaveRequestData.all().values);
+
+                leaveRequests.slice(0, 3).forEach(function (leaveRequest) {
+                  leaveRequest.contact_id = contactId;
+                  leaveRequest.type_id = '';
+
+                  return leaveRequest;
+                });
+
+                LeaveRequest.all.and.returnValue($q.resolve({
+                  count: leaveRequests.length,
+                  list: leaveRequests
+                }));
+
+                $rootScope.$emit('LeaveCalendar::updateFiltersByAbsenceType', filterValue);
+                $rootScope.$digest();
+
+                // Gets private requests assigned to the contact and stored in
+                // the calendar month controller:
+                privateLeaveRequests = _.chain(controller.month.days).pluck('contactsData')
+                  .pluck(contactId).pluck('leaveRequests').flatten()
+                  .filter(function (leaveRequest) {
+                    return leaveRequest.type_id === '';
+                  }).value();
+              });
+
+              it('is does not store information about private requests', function () {
+                expect(privateLeaveRequests.length).toBe(0);
+              });
+            });
+          });
         });
 
-        describe('when it is not included in the list of months to show', function () {
+        describe('when *to* time is less than *from* time for multiple leave request', function () {
+          var originalLeaveRequestInFebruary;
+
           beforeEach(function () {
-            sendShowMonthsSignal(false);
+            originalLeaveRequestInFebruary = _.cloneDeep(leaveRequestInFebruary);
+
+            leaveRequestInFebruary.from_date =
+              moment(leaveRequestInFebruary.from_date).hour(11).minute(0)
+                .format('YYYY-MM-DD HH:mm');
+            leaveRequestInFebruary.to_date =
+              moment(leaveRequestInFebruary.to_date).hour(9).minute(0)
+                .format('YYYY-MM-DD HH:mm');
+            sendShowMonthSignal();
           });
 
-          it('hides itself', function () {
-            expect(controller.visible).toBe(false);
+          afterEach(function () {
+            leaveRequestInFebruary = originalLeaveRequestInFebruary;
           });
 
-          it("does not load the contacts' work pattern calendars", function () {
-            expect(Calendar.get).not.toHaveBeenCalled();
-          });
-
-          it("does not load the contacts' leave requests", function () {
-            expect(LeaveRequest.all).not.toHaveBeenCalled();
+          it('includes the leave request in the celandar day cell for the *to* date', function () {
+            expect(
+              _.find(controller.month.days,
+                { index: moment(leaveRequestInFebruary.to_date).day().toString() })
+                .contactsData[leaveRequestInFebruary.contact_id]
+                .leaveRequests.length).toBe(1);
           });
         });
       });
@@ -402,7 +477,7 @@
 
       describe("day's data specific for each contact", function () {
         beforeEach(function () {
-          sendShowMonthsSignal();
+          sendShowMonthSignal();
         });
 
         it('is indexed by contact id', function () {
@@ -652,7 +727,7 @@
 
       describe('event listeners', function () {
         beforeEach(function () {
-          sendShowMonthsSignal();
+          sendShowMonthSignal();
         });
 
         describe('when a leave request is deleted', function () {
@@ -838,7 +913,7 @@
 
       describe('contactsList()', function () {
         beforeEach(function () {
-          sendShowMonthsSignal();
+          sendShowMonthSignal();
         });
 
         describe('when show-only-with-leave-requests is set to false', function () {
@@ -860,6 +935,22 @@
             expect(controller.contactsList()).toEqual(controller.contacts.filter(function (contact) {
               return contact.id === leaveRequestInFebruary.contact_id;
             }));
+          });
+        });
+
+        describe('when show-only-with-leave-requests is set to true, but specific contacts must be shown even if they have no leave requests', function () {
+          var expectedContact;
+
+          beforeEach(function () {
+            expectedContact = { id: _.uniqueId() };
+            controller.showOnlyWithLeaveRequests = true;
+            controller.showTheseContacts = [expectedContact.id];
+
+            controller.contacts.push(expectedContact);
+          });
+
+          it('returns a list including the contacts that have no leave requests', function () {
+            expect(controller.contactsList()).toContain(expectedContact);
           });
         });
 
@@ -941,12 +1032,21 @@
        * @param {Boolean} sendSignal - if to send a month signal or not
        */
       function compileComponent (sendSignal) {
+        var absenceTypes = _.clone(AbsenceTypeData.all().values);
+
+        // append generic absence type:
+        absenceTypes.push({
+          id: '',
+          label: 'Leave'
+        });
+
         controller = $componentController('leaveCalendarMonth', null, {
-          contacts: ContactData.all.values,
+          contacts: _.clone(ContactData.all.values),
           month: february,
           period: period2016,
           supportData: {
-            absenceTypes: AbsenceTypeData.all().values,
+            absenceTypes: absenceTypes,
+            absenceTypesToFilterBy: [],
             dayTypes: OptionGroupData.getCollection('hrleaveandabsences_leave_request_day_type'),
             leaveRequestStatuses: OptionGroupData.getCollection('hrleaveandabsences_leave_request_status'),
             publicHolidays: publicHolidays
@@ -954,7 +1054,7 @@
           contactIdsToReduceTo: contactIdsToReduceTo
         });
 
-        !!sendSignal && sendShowMonthsSignal();
+        !!sendSignal && sendShowMonthSignal();
       }
 
       /**
@@ -973,18 +1073,12 @@
       /**
        * Sends the "show months" signal to the component
        *
-       * @param  {Boolean} includeFebruary Whether to include Feb (the current month)
-       * @param  {Boolean} forceReload Whether to force reloading the month's data
+       * @param {Boolean} forceReload Whether to force reloading the month's data
        */
-      function sendShowMonthsSignal (includeFebruary, forceReload) {
-        var selectedMonths = [{ index: 11, year: 2016 }];
-
-        includeFebruary = typeof includeFebruary === 'undefined' ? true : !!includeFebruary;
+      function sendShowMonthSignal (forceReload) {
         forceReload = typeof forceReload === 'undefined' ? false : !!forceReload;
 
-        includeFebruary && selectedMonths.push(february);
-
-        $rootScope.$emit('LeaveCalendar::showMonths', selectedMonths, forceReload);
+        $rootScope.$emit('LeaveCalendar::showMonth', forceReload);
         $rootScope.$digest();
       }
     });

@@ -1,7 +1,9 @@
 'use strict';
 
-const pageObj = require('../../page-objects/ssp-tasks');
+const Page = require('../../page-objects/ssp-tasks');
 
 module.exports = async engine => {
-  await pageObj.init(engine);
+  const page = new Page(engine);
+
+  await page.init();
 };

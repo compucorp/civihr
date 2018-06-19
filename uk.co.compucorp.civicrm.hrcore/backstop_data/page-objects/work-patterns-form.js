@@ -1,12 +1,12 @@
-const page = require('./page');
+const Page = require('./page');
 
-module.exports = page.extend({
+module.exports = class WorkPatternsForm extends Page {
   /**
    * Displays the work pattern calendar form.
    */
   async showCalendarForm () {
     await this.puppet.click('a[href="#work-pattern-calendar"]');
-  },
+  }
 
   /**
    * Waits until the work pattern form is visible.
@@ -14,4 +14,4 @@ module.exports = page.extend({
   async waitForReady () {
     await this.puppet.waitFor('.work-pattern-form', { visible: true });
   }
-});
+};
