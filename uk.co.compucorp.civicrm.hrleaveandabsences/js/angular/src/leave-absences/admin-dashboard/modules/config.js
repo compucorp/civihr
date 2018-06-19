@@ -2,24 +2,28 @@
 
 define([
   'common/angular',
+  'common/lodash',
   'leave-absences/admin-dashboard/modules/settings'
-], function (angular) {
+], function (angular, _) {
   return angular.module('admin-dashboard.config', ['admin-dashboard.settings'])
     .config([
-      '$stateProvider', '$resourceProvider', '$urlRouterProvider', '$httpProvider', '$logProvider', 'settings',
-      function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider, $logProvider, settings) {
+      '$stateProvider', '$resourceProvider', '$urlRouterProvider', '$httpProvider',
+      '$logProvider', '$analyticsProvider', 'settings',
+      function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider,
+        $logProvider, $analyticsProvider, settings) {
         var toResolve = {
           format: ['DateFormat', function (DateFormat) {
             return DateFormat.getDateFormat();
           }]
         };
 
-        $logProvider.debugEnabled(settings.debug);
-
         $resourceProvider.defaults.stripTrailingSlashes = false;
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
+        configureAnalytics($analyticsProvider);
+        $logProvider.debugEnabled(settings.debug);
         $urlRouterProvider.otherwise('/requests');
+
         $stateProvider
           .state('requests', {
             url: '/requests',
@@ -38,4 +42,17 @@ define([
           });
       }
     ]);
+
+  /**
+   * Configures Google Analytics via the angulartics provider
+   *
+   * @param {Object} $analyticsProvider
+   */
+  function configureAnalytics ($analyticsProvider) {
+    $analyticsProvider.settings.ga = {
+      userId: _.get(CRM, 'vars.session.contact_id')
+    };
+
+    $analyticsProvider.withAutoBase(true);
+  }
 });

@@ -1,20 +1,25 @@
+/* global Drupal */
 /* eslint-env amd */
 
-(function (CRM) {
+(function (CRM, Drupal) {
   define([
     'common/angular',
+    'common/lodash',
     'leave-absences/manager-leave/modules/settings'
-  ], function (angular) {
+  ], function (angular, _) {
     return angular.module('manager-leave.config', ['manager-leave.settings'])
       .config([
-        '$stateProvider', '$resourceProvider', '$urlRouterProvider', '$httpProvider', '$logProvider', 'settings',
-        function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider, $logProvider, settings) {
+        '$stateProvider', '$resourceProvider', '$urlRouterProvider', '$httpProvider',
+        '$logProvider', '$analyticsProvider', 'settings',
+        function ($stateProvider, $resourceProvider, $urlRouterProvider, $httpProvider,
+          $logProvider, $analyticsProvider, settings) {
+          $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+          $resourceProvider.defaults.stripTrailingSlashes = false;
+          $urlRouterProvider.otherwise('/manager-leave/requests');
+
+          configureAnalytics($analyticsProvider);
           $logProvider.debugEnabled(settings.debug);
 
-          $resourceProvider.defaults.stripTrailingSlashes = false;
-          $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
-          $urlRouterProvider.otherwise('/manager-leave/requests');
           $stateProvider
             .state('manager-leave', {
               abstract: true,
@@ -51,5 +56,18 @@
             });
         }
       ]);
+
+    /**
+     * Configures Google Analytics via the angulartics provider
+     *
+     * @param {Object} $analyticsProvider
+     */
+    function configureAnalytics ($analyticsProvider) {
+      $analyticsProvider.withAutoBase(true);
+
+      $analyticsProvider.settings.ga = {
+        userId: _.get(CRM, 'vars.session.contact_id')
+      };
+    }
   });
-})(CRM);
+})(CRM, Drupal);

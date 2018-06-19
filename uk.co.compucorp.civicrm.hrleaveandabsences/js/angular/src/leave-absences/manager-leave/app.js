@@ -3,6 +3,8 @@
 define([
   'common/angular',
   'common/angularBootstrap',
+  'common/angulartics',
+  'common/angulartics-google-tag-manager',
   'common/text-angular',
   'common/directives/loading',
   'common/directives/scroll-shadows.directive',
@@ -41,6 +43,8 @@ define([
   angular.module('manager-leave', [
     'ngResource',
     'ngAnimate',
+    'angulartics',
+    'angulartics.google.tagmanager',
     'ui.bootstrap',
     'ui.router',
     'ui.select',
