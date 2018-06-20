@@ -9,6 +9,6 @@ define([
   instances.factory('CalendarFeedConfigInstance', [
     'ModelInstance',
     function (ModelInstance) {
-      return ModelInstance;
+      return ModelInstance.extend({});
     }]);
 });

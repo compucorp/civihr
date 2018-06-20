@@ -11,9 +11,9 @@ define([
   models.factory('CalendarFeedConfig', [
     'Model', 'CalendarFeedConfigAPI', 'CalendarFeedConfigInstance',
     function (Model, CalendarFeedConfigAPI, CalendarFeedConfigInstance) {
-      var methods = {
+      return Model.extend({
         all: all
-      };
+      });
 
       /**
        * Get all feeds
@@ -28,8 +28,6 @@ define([
             });
           });
       }
-
-      return Model.extend(methods);
     }
   ]);
 });

@@ -59,9 +59,11 @@ define([
       });
 
       it('calls the "LeaveRequestCalendarFeedConfig.create" endpoint with specified params', function () {
-        expect(CalendarFeedConfigAPI.sendPOST.calls.mostRecent().args[0]).toBe('LeaveRequestCalendarFeedConfig');
-        expect(CalendarFeedConfigAPI.sendPOST.calls.mostRecent().args[1]).toBe('create');
-        expect(CalendarFeedConfigAPI.sendPOST.calls.mostRecent().args[2]).toBe(params);
+        expect(CalendarFeedConfigAPI.sendPOST.calls.mostRecent().args).toEqual([
+          'LeaveRequestCalendarFeedConfig',
+          'create',
+          params
+        ]);
       });
 
       it('returns expected data', function () {
@@ -73,13 +75,10 @@ define([
      * Intercept HTTP calls to be handled by httpBackend
      */
     function interceptHTTP () {
-      // Intercept backend calls for CalendarFeedConfigAPI.get
+      // Intercept backend calls for GET CalendarFeedConfigAPI.all
       $httpBackend.whenGET(/action=get&entity=LeaveRequestCalendarFeedConfig/)
         .respond(calendarFeedConfigData.all());
-      // Intercept backend calls for CalendarFeedConfigAPI.get
-      $httpBackend.whenGET(/action=create&entity=LeaveRequestCalendarFeedConfig/)
-        .respond(calendarFeedConfigData.singleDataSuccess());
-      // Intercept backend calls for LeaveRequest.create in POST
+      // Intercept backend calls for POST CalendarFeedConfigAPI.create
       $httpBackend.whenPOST(/\/civicrm\/ajax\/rest/)
         .respond(function (method, url, data) {
           if (mockHelper.isEntityActionInPost(data, 'LeaveRequestCalendarFeedConfig', 'create')) {
