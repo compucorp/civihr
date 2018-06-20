@@ -1,8 +1,6 @@
 /* eslint-env amd */
 
-define([
-  'common/models/instances/instance'
-], function (instances) {
+define(function (instances) {
   'use strict';
 
   CalendarFeedConfigInstance.__name = 'CalendarFeedConfigInstance';

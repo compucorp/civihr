@@ -1,9 +1,6 @@
 /* eslint-env amd */
 
-define([
-  'common/lodash',
-  'common/services/api'
-], function (_) {
+define(function (_) {
   'use strict';
 
   CalendarFeedConfigAPI.__name = 'CalendarFeedConfigAPI';
