@@ -26,7 +26,9 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   use CRM_HRCore_Upgrader_Steps_1016;
   use CRM_HRCore_Upgrader_Steps_1017;
   use CRM_HRCore_Upgrader_Steps_1018;
+  use CRM_HRCore_Upgrader_Steps_1019;
   use CRM_HRCore_Upgrader_Steps_1020;
+
 
   /**
    * @var array
@@ -63,6 +65,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   public function install() {
     $this->setScheduledJobsDefaultStatus();
     $this->deleteLocationTypes();
+    $this->createRequiredLocationTypes();
     $this->deleteUnneededCustomGroups();
     $this->createDefaultRelationshipTypes();
     $this->runAllUpgraders();
@@ -154,6 +157,34 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
       'name' => ['IN' => $locationsToDelete],
       'api.LocationType.delete' => ['id' => "\$value.id"]
     ]);
+
+  }
+
+  /**
+   * Creates location types required by CiviHR and makes them reserved
+   */
+  private function createRequiredLocationTypes() {
+    $locationTypesToCreate = [
+      'Personal',
+    ];
+
+    foreach ($locationTypesToCreate as $locationTypeName) {
+      $existing = civicrm_api3('LocationType', 'get', [
+        'name' => $locationTypeName
+      ]);
+
+      if ($existing['count'] > 0) {
+        continue;
+      }
+
+      civicrm_api3('LocationType', 'create', [
+        'name' => $locationTypeName,
+        'display_name' => $locationTypeName,
+        'vcard_name' => strtoupper($locationTypeName),
+        'is_reserved' => 1,
+        'is_active' => 1
+      ]);
+    }
   }
 
   /**

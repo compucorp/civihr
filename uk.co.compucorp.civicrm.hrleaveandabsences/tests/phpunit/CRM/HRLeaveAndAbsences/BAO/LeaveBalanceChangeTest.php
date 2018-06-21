@@ -3631,8 +3631,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ];
 
     $dateNow = new DateTime();
-    $this->assertEquals($dateNow, new DateTime($balanceExpiryLogs[$toilExpiryRecord->id]['created_date']), 10);
-    $this->assertEquals($dateNow, new DateTime($balanceExpiryLogs[$broughtForwardExpiryRecord->id]['created_date']), 10);
+    $this->assertEquals(
+      $dateNow,
+      new DateTime($balanceExpiryLogs[$toilExpiryRecord->id]['created_date']),
+      '',
+      10
+    );
+    $this->assertEquals(
+      $dateNow,
+      new DateTime($balanceExpiryLogs[$broughtForwardExpiryRecord->id]['created_date']),
+      '',
+      10
+    );
 
     //we need to remove the created dates from the array as its not possible to assert the exact value.
     unset($balanceExpiryLogs[$toilExpiryRecord->id]['created_date']);
