@@ -1,16 +1,15 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'leave-absences/shared/models/calendar-feed-config.model',
   'leave-absences/mocks/apis/calendar-feed-config-api-mock',
-  'leave-absences/shared/instances/calendar-feed-config.instance'
+  './calendar-feeds.module'
 ], function () {
   'use strict';
 
   describe('CalendarFeedConfig', function () {
     var $provide, $rootScope, CalendarFeedConfig, CalendarFeedConfigAPI;
 
-    beforeEach(module('leave-absences.models', 'leave-absences.mocks',
+    beforeEach(module('calendar-feeds', 'leave-absences.mocks',
       function (_$provide_) {
         $provide = _$provide_;
       }));

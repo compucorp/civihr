@@ -1,17 +1,18 @@
 /* eslint-env amd, jasmine */
 
 define([
+  'common/angular',
   'common/lodash',
   'leave-absences/mocks/data/calendar-feed-config.data',
   'leave-absences/mocks/helpers/helper',
-  'leave-absences/shared/apis/calendar-feed-config.api'
-], function (_, calendarFeedConfigData, mockHelper) {
+  './calendar-feeds.module'
+], function (angular, _, calendarFeedConfigData, mockHelper) {
   'use strict';
 
   describe('CalendarFeedConfigAPI', function () {
     var $httpBackend, $rootScope, CalendarFeedConfigAPI, expectedResults;
 
-    beforeEach(module('leave-absences.apis'));
+    beforeEach(module('calendar-feeds'));
     beforeEach(inject(['$httpBackend', '$rootScope', 'CalendarFeedConfigAPI',
       function (_$httpBackend_, _$rootScope_, _CalendarFeedConfigAPI_) {
         $httpBackend = _$httpBackend_;
