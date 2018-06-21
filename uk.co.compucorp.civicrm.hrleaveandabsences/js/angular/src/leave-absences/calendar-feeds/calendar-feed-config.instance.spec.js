@@ -3,15 +3,14 @@
 define([
   'common/lodash',
   'leave-absences/mocks/data/calendar-feed-config.data',
-  'leave-absences/shared/instances/calendar-feed-config.instance',
-  'leave-absences/shared/modules/models'
+  './calendar-feeds.module'
 ], function (_, calendarFeedConfigData) {
   'use strict';
 
   describe('CalendarFeedConfigInstance', function () {
     var CalendarFeedConfigInstance;
 
-    beforeEach(module('leave-absences.models'));
+    beforeEach(module('calendar-feeds'));
 
     beforeEach(inject(function (_CalendarFeedConfigInstance_) {
       CalendarFeedConfigInstance = _CalendarFeedConfigInstance_;

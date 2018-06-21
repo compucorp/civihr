@@ -1,0 +1,18 @@
+<div class="calendar-feed-list-component">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>hash</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="config in list.calendarFeedConfigs">
+        <td>{{config.title}}</td>
+        <td>{{config.hash}}</td>
+        <td><a href="#">View Link</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
