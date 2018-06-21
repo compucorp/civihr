@@ -108,6 +108,7 @@ function hrleaveandabsences_civicrm_permission(&$permissions) {
   $permissions['administer leave and absences'] = $prefix . ts('Administer Leave and Absences');
   $permissions['access leave and absences in ssp'] = $prefix . ts('Access Leave and Absences in SSP');
   $permissions['manage leave and absences in ssp'] = $prefix . ts('Manage Leave and Absences in SSP');
+  $permissions['can administer calendar feeds'] = $prefix . ts('Can Administer Calendar Feeds');
 }
 
 /**
