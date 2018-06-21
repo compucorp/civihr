@@ -2,11 +2,11 @@
 
 define([
   'common/angular',
-  './list.component',
-  '../calendar-feeds.module'
+  'leave-absences/calendar-feeds/list/calendar-feeds-list.component',
+  'leave-absences/calendar-feeds/calendar-feeds.core'
 ], function (angular, listComponent) {
   return angular.module('calendar-feeds.list', [
-    'calendar-feeds'
+    'calendar-feeds.core'
   ])
     .component(listComponent.__name, listComponent);
 });

@@ -3,18 +3,18 @@
 define(function () {
   'use strict';
 
-  CalendarFeedListController.$inject = ['CalendarFeedConfig'];
+  CalendarFeedListsController.$inject = ['CalendarFeedConfig'];
 
   return {
-    __name: 'calendarFeedList',
-    controller: CalendarFeedListController,
+    __name: 'calendarFeedsList',
+    controller: CalendarFeedListsController,
     controllerAs: 'list',
     templateUrl: ['shared-settings', function (settings) {
-      return settings.sourcePath + 'calendar-feeds/list/list.html';
+      return settings.sourcePath + 'calendar-feeds/list/calendar-feeds-list.html';
     }]
   };
 
-  function CalendarFeedListController (CalendarFeedConfig) {
+  function CalendarFeedListsController (CalendarFeedConfig) {
     var vm = this;
 
     vm.calendarFeedConfigs = [];

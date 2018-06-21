@@ -4,11 +4,11 @@ define(function (_) {
   'use strict';
 
   CalendarFeedConfigAPI.__name = 'CalendarFeedConfigAPI';
-  CalendarFeedConfigAPI.$inject = ['$log', 'api', '$q'];
+  CalendarFeedConfigAPI.$inject = ['$log', '$q', 'api'];
 
   return CalendarFeedConfigAPI;
 
-  function CalendarFeedConfigAPI ($log, api, $q) {
+  function CalendarFeedConfigAPI ($log, $q, api) {
     $log.debug('CalendarFeedConfigAPI');
 
     return api.extend({
