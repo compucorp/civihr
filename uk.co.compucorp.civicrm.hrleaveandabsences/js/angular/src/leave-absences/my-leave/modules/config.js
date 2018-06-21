@@ -16,6 +16,10 @@
 
           $urlRouterProvider.otherwise('/my-leave/report');
           $stateProvider
+            .state('calendar-feed', {
+              url: '/calendar-feeds',
+              template: '<calendar-feed-list></calendar-feed-list>'
+            })
             .state('my-leave', {
               abstract: true,
               url: '/my-leave',
