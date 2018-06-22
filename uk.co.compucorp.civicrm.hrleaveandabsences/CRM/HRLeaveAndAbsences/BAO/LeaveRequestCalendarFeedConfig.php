@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestCalendarFeedConfigException as InvalidLeaveRequestCalendarFeedConfigException;
+use CRM_HRLeaveAndAbsences_Validator_TimeZone as TimeZoneValidator;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLeaveAndAbsences_DAO_LeaveRequestCalendarFeedConfig {
 
@@ -88,11 +89,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
     if (!$timeZone) {
       return;
     }
-    $timeZoneList = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
-     if (!in_array($params['timezone'], $timeZoneList)) {
-       throw new InvalidLeaveRequestCalendarFeedConfigException(
-         'Please add a valid timezone for the leave request calendar feed configuration'
-       );
+
+    if (!TimeZoneValidator::isValid($timeZone)) {
+      throw new InvalidLeaveRequestCalendarFeedConfigException(
+        'Please add a valid timezone for the leave request calendar feed configuration'
+      );
     }
   }
 
