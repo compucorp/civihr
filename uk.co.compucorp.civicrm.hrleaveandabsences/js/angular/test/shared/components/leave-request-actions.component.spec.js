@@ -612,16 +612,18 @@ define([
         });
 
         describe('when user proceeds with balance change recalculation', function () {
+          var expectedDefaultStatus = 'approved';
+
           beforeEach(function () {
             spyOn(LeavePopup, 'openModal');
             proceedWithBalanceChangeRecalculation();
             $rootScope.$digest();
           });
 
-          it('opens a leave request modal with this request', function () {
+          it('opens a leave request modal with this request with a correct default status', function () {
             expect(LeavePopup.openModal).toHaveBeenCalledWith(
-              leaveRequest, leaveRequest.request_type, leaveRequest.contact_id, jasmine.any(Boolean),
-              true);
+              leaveRequest, leaveRequest.request_type, leaveRequest.contact_id,
+              true, expectedDefaultStatus);
           });
         });
       });

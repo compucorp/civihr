@@ -111,6 +111,9 @@ define([
         }
       }
     };
+    var actionsToStatusesMap = {
+      'approve': 'approved'
+    };
 
     vm.allowedActions = [];
 
@@ -200,11 +203,7 @@ define([
                   LeaveRequestService.getBalanceChangeRecalculationPromptOptions(),
                   {
                     onCloseAfterConfirm: function () {
-                      LeavePopup.openModal(vm.leaveRequest,
-                        vm.leaveRequest.request_type,
-                        vm.leaveRequest.contact_id,
-                        $rootScope.section === 'my-leave',
-                        true);
+                      openLeavePopupForAction(action);
                     }
                   }
                 );
@@ -272,6 +271,19 @@ define([
     function openLeavePopup (event, leaveRequest, leaveType, selectedContactId) {
       event.stopPropagation();
       LeavePopup.openModal(leaveRequest, leaveType, selectedContactId);
+    }
+
+    /**
+     * Opens a leave popup for a specific action
+     *
+     * @param {String} action
+     */
+    function openLeavePopupForAction (action) {
+      LeavePopup.openModal(vm.leaveRequest,
+        vm.leaveRequest.request_type,
+        vm.leaveRequest.contact_id,
+        true,
+        sharedSettings.statusNames[actionsToStatusesMap[action]]);
     }
 
     /**
