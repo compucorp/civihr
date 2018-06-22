@@ -1260,7 +1260,24 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     return TRUE;
   }
-
+  
+  /**
+   * Changes the url of Standard Full Time Hours
+   *
+   * @return bool
+   */
+  public function upgrade_1037() {
+    civicrm_api3('Navigation', 'get', [
+      'name' => 'Standard Full Time Hours',
+      'api.Navigation.create' => [
+        'id' => '$value.id',
+        'url' => 'civicrm/standard_full_time_hours'
+      ],
+    ]);
+    
+    return TRUE;
+  }
+  
   /**
    * Creates a navigation menu item using the API
    *

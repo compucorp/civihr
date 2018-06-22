@@ -134,7 +134,7 @@ define([
     });
 
     describe('when user clicks on the "hours location" wrench icon', function () {
-      locationUrl = '/civicrm/hours_location?reset=1';
+      locationUrl = '/civicrm/standard_full_time_hours?reset=1';
 
       beforeEach(function () {
         spyOn(crmAngService, 'loadForm').and.callFake(function () {
