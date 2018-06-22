@@ -621,9 +621,13 @@ define([
           });
 
           it('opens a leave request modal with this request with a correct default status', function () {
-            expect(LeavePopup.openModal).toHaveBeenCalledWith(
-              leaveRequest, leaveRequest.request_type, leaveRequest.contact_id,
-              true, expectedDefaultStatus);
+            expect(LeavePopup.openModal).toHaveBeenCalledWith({
+              leaveRequest: leaveRequest,
+              leaveType: leaveRequest.request_type,
+              selectedContactId: leaveRequest.contact_id,
+              forceRecalculateBalanceChange: true,
+              defaultStatus: expectedDefaultStatus
+            });
           });
         });
       });
@@ -667,18 +671,21 @@ define([
 
     describe('openLeavePopup()', function () {
       var event;
-      var leaveRequest = { key: 'value' };
-      var leaveType = 'some_leave_type';
-      var selectedContactId = '101';
+      var params = {
+        leaveRequest: { key: 'value' },
+        leaveType: 'some_leave_type',
+        selectedContactId: '101'
+      };
 
       beforeEach(function () {
         event = jasmine.createSpyObj('event', ['stopPropagation']);
+
         spyOn(LeavePopup, 'openModal');
-        controller.openLeavePopup(event, leaveRequest, leaveType, selectedContactId);
+        controller.openLeavePopup(event, params);
       });
 
       it('opens the leave request popup', function () {
-        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId);
+        expect(LeavePopup.openModal).toHaveBeenCalledWith(params);
       });
 
       it('stops the event from propagating', function () {

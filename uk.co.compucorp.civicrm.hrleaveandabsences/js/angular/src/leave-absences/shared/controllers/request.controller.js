@@ -635,7 +635,7 @@ define([
     /**
      * Initialises status.
      * If a default status is specified, then sets it.
-     * If not, sets the status to Approved if user is and admin
+     * If not, sets the status to Approved if user is an admin
      * or a manager who creates a new leave request,
      * otherwise leaves the status unset.
      */

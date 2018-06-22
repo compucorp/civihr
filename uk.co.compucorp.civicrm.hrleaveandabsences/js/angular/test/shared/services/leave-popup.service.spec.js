@@ -31,7 +31,7 @@ define([
 
     describe('openModal()', function () {
       beforeEach(function () {
-        LeavePopup.openModal(null, 'Leave');
+        LeavePopup.openModal({ leaveType: 'Leave' });
       });
 
       it('initializes the leave popup with RequestCtrl', function () {
@@ -44,8 +44,8 @@ define([
         var forceRecalculateBalanceChange = true;
 
         beforeEach(function () {
-          LeavePopup.openModal(jasmine.any(String), jasmine.any(String), jasmine.any(String),
-            forceRecalculateBalanceChange);
+          LeavePopup.openModal(
+            { forceRecalculateBalanceChange: forceRecalculateBalanceChange });
           $rootScope.$digest();
         });
 
@@ -59,8 +59,7 @@ define([
         var defaultStatus = 'approved';
 
         beforeEach(function () {
-          LeavePopup.openModal(jasmine.any(String), jasmine.any(String), jasmine.any(String),
-            null, defaultStatus);
+          LeavePopup.openModal({ defaultStatus: defaultStatus });
           $rootScope.$digest();
         });
 

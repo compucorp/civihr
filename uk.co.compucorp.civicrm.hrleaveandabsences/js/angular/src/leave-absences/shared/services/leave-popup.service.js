@@ -43,14 +43,14 @@ define([
     /**
      * Open leave request popup for the given leave request
      *
-     * @param {LeaveRequestInstance} leaveRequest
-     * @param {String} leaveType
-     * @param {String} selectedContactId - Contact ID for the contact dropdown
-     *                                     when the manager/admin is opening the request
-     * @param {Boolean} [forceRecalculateBalanceChange]
-     * @param {String} [defaultStatus] - "approved", "rejected" etc.
+     * @param {Object} params
+     * @param {LeaveRequestInstance} params.request - to edit a leave request
+     * @param {String} params.leaveType - to open in the correct
+     * @param {String} params.selectedContactId - to default to a specific contact
+     * @param {Boolean} params.forceRecalculateBalanceChange
+     * @param {String} params.defaultStatus - "approved", "rejected" etc.
      */
-    function openModal (leaveRequest, leaveType, selectedContactId, forceRecalculateBalanceChange, defaultStatus) {
+    function openModal (params) {
       $modal.open({
         appendTo: $rootElement.children().eq(0),
         templateUrl: sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup.html',
@@ -59,13 +59,7 @@ define([
         windowClass: 'chr_leave-request-modal',
         resolve: {
           directiveOptions: function () {
-            return {
-              leaveType: leaveType,
-              leaveRequest: leaveRequest,
-              selectedContactId: selectedContactId,
-              forceRecalculateBalanceChange: forceRecalculateBalanceChange,
-              defaultStatus: defaultStatus
-            };
+            return params;
           },
           // to set HR_settings DateFormat
           format: ['DateFormat', function (DateFormat) {
@@ -79,7 +73,7 @@ define([
     /**
      * Open leave request popup for a given ID
      *
-     * @param  {String}  leaveRequestID
+     * @param  {String} leaveRequestID
      * @return {Promise}
      */
     function openModalByID (leaveRequestID) {
@@ -88,7 +82,11 @@ define([
           return checkPermissionBeforeOpeningPopup(leaveRequest)
             .then(function (hasPermission) {
               if (hasPermission) {
-                openModal(leaveRequest, leaveRequest.request_type, leaveRequest.contact_id);
+                openModal({
+                  leaveRequest: leaveRequest,
+                  leaveType: leaveRequest.request_type,
+                  selectedContactId: leaveRequest.contact_id
+                });
               } else {
                 notification.error('Error', 'You dont have permission to see this leave request');
               }

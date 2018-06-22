@@ -7,7 +7,7 @@
     <li ng-repeat="action in actions.allowedActions"
       ng-switch="!action.isDirectAction">
       <a href
-        ng-click="actions.openLeavePopup($event, actions.leaveRequest, null, null)"
+        ng-click="actions.openLeavePopup($event, { leaveRequest: actions.leaveRequest })"
         ng-switch-when="true">
         {{action.label}}
       </a>
