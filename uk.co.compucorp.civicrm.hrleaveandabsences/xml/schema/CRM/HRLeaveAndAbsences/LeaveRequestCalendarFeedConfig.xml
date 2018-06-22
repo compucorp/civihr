@@ -28,6 +28,12 @@
     <unique>true</unique>
     <comment>The Calendar Feed Config Title. There cannot be more than one entity with the same title</comment>
   </field>
+  <index>
+    <name>unique_calendar_title</name>
+    <fieldName>title</fieldName>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
 
   <field>
     <name>timezone</name>
@@ -40,15 +46,22 @@
   <field>
     <name>hash</name>
     <type>varchar</type>
-    <length>50</length>
+    <length>32</length>
     <required>true</required>
     <unique>true</unique>
     <comment>The Calendar Feed Config Hash. Should be unique per config</comment>
   </field>
+  <index>
+    <name>unique_calendar_hash</name>
+    <fieldName>hash</fieldName>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
 
   <field>
     <name>is_active</name>
     <type>boolean</type>
+    <required>true</required>
     <default>1</default>
     <comment>Whether the feed is active or not</comment>
   </field>
@@ -56,6 +69,7 @@
   <field>
     <name>created_date</name>
     <type>datetime</type>
+    <required>true</required>
     <comment>The date and time this Calendar Feed Config was created</comment>
     <add>4.4</add>
   </field>
