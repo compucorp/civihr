@@ -301,6 +301,12 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChangeExpiryLog',
     'table' => 'civicrm_hrleaveandabsences_leave_balance_change_expiry_log',
   ];
+
+  $entityTypes[] = [
+    'name' => 'LeaveRequestCalendarFeedConfig',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequestCalendarFeedConfig',
+    'table' => 'civicrm_hrleaveandabsences_calendar_feed_config',
+  ];
 }
 
 /**
