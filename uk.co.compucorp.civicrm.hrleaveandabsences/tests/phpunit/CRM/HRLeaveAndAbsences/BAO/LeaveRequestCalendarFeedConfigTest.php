@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig as LeaveRequestCalendarFeedConfig;
+use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestCalendarFeedConfigException as InvalidLeaveRequestCalendarFeedConfigException;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest
@@ -65,16 +66,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
     ]);
   }
 
-  /**
-   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestCalendarFeedConfigException
-   * @expectedExceptionMessage A leave request calendar feed configuration with same title already exists!
-   */
   public function testCreateWillThrowAnExceptionWhenTitleAlreadyExists() {
     LeaveRequestCalendarFeedConfig::create([
       'title' => 'Feed 1',
       'timezone' => 'Europe/Stockholm',
     ]);
 
+    $this->setExpectedException(InvalidLeaveRequestCalendarFeedConfigException::class, 'A leave request calendar feed configuration with same title already exists!');
     LeaveRequestCalendarFeedConfig::create([
       'title' => 'Feed 1',
       'timezone' => 'Europe/Tallinn',
