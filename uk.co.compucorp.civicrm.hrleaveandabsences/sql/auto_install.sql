@@ -438,3 +438,22 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_balance_change_expiry_log` (
      `created_date` datetime    COMMENT 'The date and time this log was created' ,
     PRIMARY KEY (`id`)
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_calendar_feed_config
+-- *
+-- * Leave Request Calendar Feed Config
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_calendar_feed_config` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique LeaveRequestCalendarFeedConfig ID',
+     `title` varchar(127) NOT NULL   COMMENT 'The Calendar Feed Config Title. There cannot be more than one entity with the same title',
+     `timezone` varchar(50) NOT NULL   COMMENT 'The Calendar Feed Config Timezone',
+     `hash` varchar(50) NOT NULL   COMMENT 'The Calendar Feed Config Hash. Should be unique per config',
+     `is_active` tinyint   DEFAULT 1 COMMENT 'Whether the feed is active or not',
+     `created_date` datetime    COMMENT 'The date and time this Calendar Feed Config was created',
+    PRIMARY KEY (`id`)
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
