@@ -54,6 +54,21 @@ define([
             .toBe(forceRecalculateBalanceChange);
         });
       });
+
+      describe('when default leave request status is specified', function () {
+        var defaultStatus = 'approved';
+
+        beforeEach(function () {
+          LeavePopup.openModal(jasmine.any(String), jasmine.any(String), jasmine.any(String),
+            null, defaultStatus);
+          $rootScope.$digest();
+        });
+
+        it('opens the leave popup with a default status', function () {
+          expect($uibModal.open.calls.mostRecent().args[0].resolve
+            .directiveOptions().defaultStatus).toBe(defaultStatus);
+        });
+      });
     });
 
     describe('openModalByID()', function () {

@@ -47,9 +47,10 @@ define([
      * @param {String} leaveType
      * @param {String} selectedContactId - Contact ID for the contact dropdown
      *                                     when the manager/admin is opening the request
-     * @param {Boolean} forceRecalculateBalanceChange optional
+     * @param {Boolean} [forceRecalculateBalanceChange]
+     * @param {String} [defaultStatus] - "approved", "rejected" etc.
      */
-    function openModal (leaveRequest, leaveType, selectedContactId, forceRecalculateBalanceChange) {
+    function openModal (leaveRequest, leaveType, selectedContactId, forceRecalculateBalanceChange, defaultStatus) {
       $modal.open({
         appendTo: $rootElement.children().eq(0),
         templateUrl: sharedSettings.sharedPathTpl + 'components/leave-request-popup/leave-request-popup.html',
@@ -62,7 +63,8 @@ define([
               leaveType: leaveType,
               leaveRequest: leaveRequest,
               selectedContactId: selectedContactId,
-              forceRecalculateBalanceChange: forceRecalculateBalanceChange
+              forceRecalculateBalanceChange: forceRecalculateBalanceChange,
+              defaultStatus: defaultStatus
             };
           },
           // to set HR_settings DateFormat
