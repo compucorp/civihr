@@ -633,10 +633,16 @@ define([
     }
 
     /**
-     * Initialises status
+     * Initialises status.
+     * If a default status is specified, then sets it.
+     * If not, sets the status to Approved if user is and admin
+     * or a manager who creates a new leave request,
+     * otherwise leaves the status unset.
      */
     function initStatus () {
-      if (vm.isRole('admin') || (vm.isMode('create') && vm.isRole('manager'))) {
+      if (vm.defaultStatus) {
+        vm.newStatusOnSave = vm.requestStatuses[sharedSettings.statusNames[vm.defaultStatus]].value;
+      } else if (vm.isRole('admin') || (vm.isMode('create') && vm.isRole('manager'))) {
         vm.newStatusOnSave = vm.requestStatuses[sharedSettings.statusNames.approved].value;
       }
     }
