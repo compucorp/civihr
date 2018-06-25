@@ -9,6 +9,7 @@ define([
 
   describe('CalendarFeedsLinkModalService', function () {
     var CalendarFeedsLinkModal;
+
     beforeEach(angular.mock.module('calendar-feeds.link-modal'));
 
     beforeEach(inject(function ($componentController) {

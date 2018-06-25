@@ -48,7 +48,7 @@ define([
       });
 
       it('passes the dismiss function to the link modal component', function () {
-        expect(typeof calendarFeedsLinkModalComponent.dismiss).toBe('function');
+        expect(calendarFeedsLinkModalComponent.dismiss).toEqual(jasmine.any(Function));
       });
     });
 

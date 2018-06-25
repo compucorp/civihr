@@ -30,6 +30,9 @@ define([
 
       vm.copy = copy;
 
+      /**
+       * Copies the content of the input to the user's clipboard.
+       */
       function copy () {
         var input = $element.find('input');
 
