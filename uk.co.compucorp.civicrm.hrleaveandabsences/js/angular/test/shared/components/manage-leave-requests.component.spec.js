@@ -867,17 +867,19 @@ define([
     });
 
     describe('openLeavePopup()', function () {
-      var leaveRequest = { key: 'value' };
-      var leaveType = 'some_leave_type';
-      var selectedContactId = '101';
+      var params = {
+        leaveRequest: { key: 'value' },
+        leaveType: 'some_leave_type',
+        selectedContactId: '101'
+      };
 
       beforeEach(function () {
         spyOn(LeavePopup, 'openModal');
-        controller.openLeavePopup(leaveRequest, leaveType, selectedContactId);
+        controller.openLeavePopup(params);
       });
 
       it('opens the leave request popup', function () {
-        expect(LeavePopup.openModal).toHaveBeenCalledWith(leaveRequest, leaveType, selectedContactId);
+        expect(LeavePopup.openModal).toHaveBeenCalledWith(params);
       });
     });
 
