@@ -1,0 +1,14 @@
+<div class="calendar-feeds-link-modal-component">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="linkModal.dismiss()">
+      <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+    </button>
+    <h4 class="modal-title">Calendar feed link:</h4>
+  </div>
+  <div class="modal-body">
+    <input-with-copy-button ng-model="linkModal.url"></input-with-copy-button>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="linkModal.dismiss()">Done</button>
+  </div>
+</div>

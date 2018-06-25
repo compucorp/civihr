@@ -2,9 +2,10 @@
 
 define([
   'common/angular',
+  'common/lodash',
   'common/angularMocks',
   'leave-absences/calendar-feeds/link-modal/calendar-feeds.link-modal.module'
-], function (angular) {
+], function (angular, _) {
   'use strict';
 
   describe('CalendarFeedsLinkModalService', function () {
@@ -63,16 +64,18 @@ define([
         bindings: {
           dismiss: '<',
           url: '<'
+        },
+        controller: function () {
+          calendarFeedsLinkModalComponent = this;
         }
       });
 
+      // removes any other link modal component that might have been defined
+      // and only provides the mock one:
       $provide.decorator('calendarFeedsLinkModalDirective', function ($delegate) {
-        $delegate[0].controller = function () {
-          calendarFeedsLinkModalComponent = this;
-        };
-        delete $delegate[0].templateUrl;
+        var component = _.last($delegate);
 
-        return $delegate;
+        return [component];
       });
     }
   });
