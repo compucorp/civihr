@@ -113,4 +113,28 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
       unset($params['created_date'], $params['hash']);
     }
   }
+
+  /**
+   * Returns an array containing all the fields values for the
+   * LeaveRequestCalendarFeedConfig with the given ID.
+   *
+   * This method is mainly used by the LeaveRequestCalendarFeedConfig form, so it
+   * can get the data to fill its fields.
+   *
+   * An empty array is returned if it is not possible to load
+   * the data.
+   *
+   * @param int $id
+   *  The id of the LeaveRequestCalendarFeedConfig to retrieve the values
+   *
+   * @return array An array containing the values
+   */
+  public static function getValuesArray($id) {
+    try {
+      $result = civicrm_api3('LeaveRequestCalendarFeedConfig', 'getsingle', ['id' => $id]);
+      return $result;
+    } catch (CiviCRM_API3_Exception $ex) {
+      return [];
+    }
+  }
 }
