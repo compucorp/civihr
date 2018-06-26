@@ -1294,7 +1294,24 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     
     return TRUE;
   }
-
+  
+  /**
+   * Renames page title from job contract deduction name to deductions
+   *
+   * @return bool
+   */
+  public function upgrade_1039() {
+    civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrjc_deduction_name',
+      'api.OptionGroup.create' => [
+        'id' => '$value.id',
+        'title' => 'Deductions'
+      ],
+    ]);
+    
+    return TRUE;
+  }
+  
   /**
    * Creates a navigation menu item using the API
    *
