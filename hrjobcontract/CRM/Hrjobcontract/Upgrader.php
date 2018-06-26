@@ -1277,6 +1277,24 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     
     return TRUE;
   }
+
+  /**
+   * Renames option group title from job contract end reason
+   * to contract end reasons
+   *
+   * @return bool
+   */
+  public function upgrade_1041() {
+    civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrjc_contract_end_reason',
+      'api.OptionGroup.create' => [
+        'id' => '$value.id',
+        'title' => 'Contract End Reasons'
+      ],
+    ]);
+    
+    return TRUE;
+  }
   
   /**
    * Renames page title from job contract benefit name to benefits
