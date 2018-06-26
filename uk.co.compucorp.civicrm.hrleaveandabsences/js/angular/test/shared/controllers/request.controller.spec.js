@@ -593,6 +593,29 @@
       });
 
       describe('manager opens leave request popup in edit mode', function () {
+        beforeEach(function () {
+          role = 'manager';
+        });
+
+        describe('when a leave request is opened with a default status specified', function () {
+          var defaultStatusPassed = 'approved';
+          var expectedDefaultStatus = optionGroupMock.specificObject(
+            'hrleaveandabsences_leave_request_status', 'name', defaultStatusPassed).value;
+
+          beforeEach(function () {
+            var leaveRequest = LeaveRequestInstance.init();
+
+            leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+
+            initTestController({ leaveRequest: leaveRequest, defaultStatus: defaultStatusPassed });
+            $rootScope.$digest();
+          });
+
+          it('sets the default status to "Approved"', function () {
+            expect(controller.newStatusOnSave).toBe(expectedDefaultStatus);
+          });
+        });
+
         describe('when leave request "from" date is same as absence period start date *or* "to" date is same as absence period end date', function () {
           beforeEach(function () {
             var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
@@ -601,7 +624,6 @@
             leaveRequest.from_date = '2017-12-31 00:00:00';
             leaveRequest.to_date = '2017-12-31 23:59:00';
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-            role = 'manager';
 
             initTestController({ leaveRequest: leaveRequest });
             spyOn(controller.request, 'update').and.callThrough();
@@ -621,7 +643,6 @@
             var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
             leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
-            role = 'manager';
 
             initTestController({ leaveRequest: leaveRequest });
           });
