@@ -1313,6 +1313,24 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
   
   /**
+   * Renames option group title from job contract revision change reason to
+   * contract revision reasons
+   *
+   * @return bool
+   */
+  public function upgrade_1040() {
+    civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrjc_revision_change_reason',
+      'api.OptionGroup.create' => [
+        'id' => '$value.id',
+        'title' => 'Contract Revision Reasons'
+      ]
+    ]);
+    
+    return TRUE;
+  }
+  
+  /**
    * Creates a navigation menu item using the API
    *
    * @param string $name
