@@ -1279,6 +1279,23 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
   
   /**
+   * Renames page title from job contract benefit name to benefits
+   *
+   * @return bool
+   */
+  public function upgrade_1038() {
+    civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrjc_benefit_name',
+      'api.OptionGroup.create' => [
+        'id' => '$value.id',
+        'title' => 'Benefits'
+      ],
+    ]);
+    
+    return TRUE;
+  }
+
+  /**
    * Creates a navigation menu item using the API
    *
    * @param string $name
