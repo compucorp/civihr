@@ -1,0 +1,11 @@
+@media screen and (max-width: $screen-xs-max) {
+  calendar-feeds-dropdown-button {
+    margin-top: $crm-gap-medium;
+
+    &,
+    .btn-group,
+    .btn {
+      width: 100%;
+    }
+  }
+}
