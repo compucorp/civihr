@@ -93,4 +93,18 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
 
     $this->assertNotNull($leaveFeedConfig2->id);
   }
+
+  public function testGetValuesArrayShouldReturnLeaveRequestCalendarFeedConfigValues() {
+    $params = [
+      'title' => 'Feed 1',
+      'is_active' => 1,
+      'timezone' => 'America/Monterrey',
+    ];
+
+    $entity = LeaveRequestCalendarFeedConfig::create($params);
+    $values = LeaveRequestCalendarFeedConfig::getValuesArray($entity->id);
+    foreach ($params as $field => $value) {
+      $this->assertEquals($value, $values[$field]);
+    }
+  }
 }

@@ -54,4 +54,10 @@
     <title>Dashboard</title>
     <access_arguments>administer leave and absences</access_arguments>
   </item>
+  <item>
+    <path>civicrm/admin/leaveandabsences/calendar-feeds</path>
+    <page_callback>CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeedConfig</page_callback>
+    <title>LeaveRequestCalendarFeedConfig</title>
+    <access_arguments>can administer calendar feeds</access_arguments>
+  </item>
 </menu>
