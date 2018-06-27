@@ -1355,7 +1355,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
   
   /**
-   * Deletes cost centre other option value or disable it if not in use
+   * Deletes cost centre "other" option value or disable it if not in use
    *
    * @return bool
    */
@@ -1368,7 +1368,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $otherId = $this->retrieveCostCentreOtherId();
     $inUse = FALSE;
     $roles = $jobRoles['values'];
-    $pattern = '/(\|' . $otherId . '\|)/';
+    $pattern = '/\|' . $otherId . '\|/';
     foreach ($roles as $role) {
       if (preg_match($pattern, $role['cost_center'])) {
         $inUse = TRUE;
@@ -1376,7 +1376,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       }
     }
     
-    if (! $inUse) { // disables cost centre other
+    if (!$inUse) { // disables cost centre other
       civicrm_api3('OptionValue', 'get', [
         'option_group_id' => 'cost_centres',
         'name' => 'Other',
@@ -1388,7 +1388,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
   
   /**
-   * Deletes cost centre option value with name other
+   * Deletes cost centre option value with name "other"
    */
   private function deleteCostCentreOther() {
     civicrm_api3('OptionValue', 'get', [
@@ -1401,7 +1401,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
   
   /**
-   * Fetches the id of cost center other option value
+   * Fetches the id of cost center "other" option value
    *
    * @return int
    */
