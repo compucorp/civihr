@@ -380,6 +380,18 @@ def listCivihrGitRepoPath() {
     [
       'url': 'https://github.com/compucorp/civihr-tasks-assignments.git',
       'folder': "$CIVICRM_EXT_ROOT/civihr_tasks"
+    ],
+    // These are not really dependencies for the tests, but both the shoreditch
+    // and the styleguide installation is hardcoded in drush-install.sh
+    // file and if the code cannot be found in the site, the installation will
+    // fail
+    [
+      'url': 'https://github.com/compucorp/org.civicrm.shoreditch.git',
+      'folder': "$CIVICRM_EXT_ROOT/org.civicrm.shoreditch"
+    ],
+    [
+      'url': 'https://github.com/compucorp/org.civicrm.styleguide.git',
+      'folder': "$CIVICRM_EXT_ROOT/org.civicrm.styleguide"
     ]
   ]
 }
