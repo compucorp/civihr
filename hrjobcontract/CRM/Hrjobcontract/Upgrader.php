@@ -515,6 +515,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1034();
     $this->upgrade_1035();
     $this->upgrade_1036();
+    $this->upgrade_1037();
+    $this->upgrade_1038();
+    $this->upgrade_1039();
+    $this->upgrade_1040();
+    $this->upgrade_1041();
+    $this->upgrade_1042();
   }
 
   function upgrade_1001() {
@@ -1277,24 +1283,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     
     return TRUE;
   }
-
-  /**
-   * Renames option group title from job contract end reason
-   * to contract end reasons
-   *
-   * @return bool
-   */
-  public function upgrade_1041() {
-    civicrm_api3('OptionGroup', 'get', [
-      'name' => 'hrjc_contract_end_reason',
-      'api.OptionGroup.create' => [
-        'id' => '$value.id',
-        'title' => 'Contract End Reasons'
-      ],
-    ]);
-    
-    return TRUE;
-  }
   
   /**
    * Renames page title from job contract benefit name to benefits
@@ -1346,6 +1334,84 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     ]);
     
     return TRUE;
+  }
+  
+  /**
+   * Renames option group title from job contract end reason
+   * to contract end reasons
+   *
+   * @return bool
+   */
+  public function upgrade_1041() {
+    civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrjc_contract_end_reason',
+      'api.OptionGroup.create' => [
+        'id' => '$value.id',
+        'title' => 'Contract End Reasons'
+      ],
+    ]);
+    
+    return TRUE;
+  }
+  
+  /**
+   * Deletes cost centre other option value or disable it if not in use
+   *
+   * @return bool
+   */
+  public function upgrade_1042() {
+    $jobRoles = civicrm_api3('HrJobRoles', 'get');
+    if ($jobRoles['count'] == 0) {
+      $this->deleteCostCentreOther();
+    }
+  
+    $otherId = $this->retrieveCostCentreOtherId();
+    $inUse = FALSE;
+    $roles = $jobRoles['values'];
+    $pattern = '/(\|' . $otherId . '\|)/';
+    foreach ($roles as $role) {
+      if (preg_match($pattern, $role['cost_center'])) {
+        $inUse = TRUE;
+        break;
+      }
+    }
+    
+    if (! $inUse) { // disables cost centre other
+      civicrm_api3('OptionValue', 'get', [
+        'option_group_id' => 'cost_centres',
+        'name' => 'Other',
+        'api.OptionValue.create' => ['id' => '$value.id', 'is_active' => 0],
+      ]);
+    }
+    
+    return TRUE;
+  }
+  
+  /**
+   * Deletes cost centre option value with name other
+   */
+  private function deleteCostCentreOther() {
+    civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'cost_centres',
+      'api.OptionValue.delete' => [
+        'id' => '$value.id',
+        'name' => 'Other'
+      ],
+    ]);
+  }
+  
+  /**
+   * Fetches the id of cost center other option value
+   *
+   * @return int
+   */
+  private function retrieveCostCentreOtherId() {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'cost_centres',
+      'name' => 'Other',
+    ]);
+    
+    return $result['id'];
   }
   
   /**
