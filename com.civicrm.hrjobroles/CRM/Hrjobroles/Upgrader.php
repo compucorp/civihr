@@ -139,7 +139,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
       'name' => 'Other',
     ]);
     
-    return ($result['id'])? $result['id'] : null;
+    return isset($result['id'])? $result['id'] : null;
   }
 
   /**
