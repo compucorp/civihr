@@ -53,7 +53,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
    * @throws InvalidLeaveRequestCalendarFeedConfigException
    */
   private static function validateComposedOfFilter($params) {
-    $allowedFields = ['department','location', 'leave_type'];
+    $allowedFields = ['department', 'location', 'leave_type'];
     $requiredFields = ['leave_type'];
     self::validateFilterFields('composed_of', $params, $allowedFields, $requiredFields);
   }
@@ -66,7 +66,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
    * @throws InvalidLeaveRequestCalendarFeedConfigException
    */
   private static function validateVisibleToFilter($params) {
-    $allowedFields = ['department','location'];
+    $allowedFields = ['department', 'location'];
     self::validateFilterFields('visible_to', $params, $allowedFields);
   }
 
@@ -113,7 +113,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
           );
         }
       }
-      else {
+    }
+
+    foreach ($feedConfigFilter as $filterFieldName => $filterFieldValue) {
+      if (!in_array($filterFieldName, $allowedFields)) {
         throw new InvalidLeaveRequestCalendarFeedConfigException(
           'The ' . $filterFieldName . ' field is not a valid ' . $filterName . ' filter field for the calendar feed configuration'
         );
