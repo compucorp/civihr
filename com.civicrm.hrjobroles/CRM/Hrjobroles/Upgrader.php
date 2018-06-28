@@ -93,6 +93,9 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     }
     
     $otherId = $this->retrieveCostCentreOtherId();
+    if ($otherId == null) {
+      return FALSE;
+    }
     $inUse = FALSE;
     $roles = $jobRoles['values'];
     $pattern = '/\|' . $otherId . '\|/';
@@ -120,10 +123,8 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
   private function deleteCostCentreOther() {
     civicrm_api3('OptionValue', 'get', [
       'option_group_id' => 'cost_centres',
-      'api.OptionValue.delete' => [
-        'id' => '$value.id',
-        'name' => 'Other'
-      ],
+      'name' => 'Other',
+      'api.OptionValue.delete' => ['id' => '$value.id'],
     ]);
   }
   
@@ -138,7 +139,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
       'name' => 'Other',
     ]);
     
-    return $result['id'];
+    return ($result['id'])? $result['id'] : null;
   }
 
   /**
