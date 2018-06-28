@@ -453,6 +453,8 @@ CREATE TABLE `civicrm_hrleaveandabsences_calendar_feed_config` (
      `title` varchar(127) NOT NULL   COMMENT 'The Calendar Feed Config Title. There cannot be more than one entity with the same title',
      `timezone` varchar(50) NOT NULL   COMMENT 'The Calendar Feed Config Timezone',
      `hash` varchar(32) NOT NULL   COMMENT 'The Calendar Feed Config Hash. Should be unique per config',
+     `composed_of` text NOT NULL   COMMENT 'The components of the leave request feed, e.g leave types, departments',
+     `visible_to` text NOT NULL   COMMENT 'Who gets to view the feed link e.g staff in certain departments or location',
      `is_active` tinyint NOT NULL  DEFAULT 1 COMMENT 'Whether the feed is active or not',
      `created_date` datetime NOT NULL   COMMENT 'The date and time this Calendar Feed Config was created',
     PRIMARY KEY (`id`),
