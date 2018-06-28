@@ -82,7 +82,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
   }
   
   /**
-   * Deletes cost centre "other" option value or disable it if not in use
+   * Deletes cost centre "other" option value if not in use
    *
    * @return bool
    */
@@ -90,6 +90,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     $jobRoles = civicrm_api3('HrJobRoles', 'get');
     if ($jobRoles['count'] == 0) {
       $this->deleteCostCentreOther();
+      return TRUE;
     }
     
     $otherId = $this->retrieveCostCentreOtherId();
@@ -106,12 +107,8 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
       }
     }
     
-    if (!$inUse) { // disables cost centre other
-      civicrm_api3('OptionValue', 'get', [
-        'option_group_id' => 'cost_centres',
-        'name' => 'Other',
-        'api.OptionValue.create' => ['id' => '$value.id', 'is_active' => 0],
-      ]);
+    if (!$inUse) {
+      $this->deleteCostCentreOther();
     }
     
     return TRUE;
