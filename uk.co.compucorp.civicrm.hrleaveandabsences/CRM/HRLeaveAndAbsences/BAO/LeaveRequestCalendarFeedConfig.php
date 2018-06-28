@@ -19,6 +19,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
     self::validateParams($params);
     self::setDefaultParameterValues($params);
+    self::serializeFilterValues($params);
 
     $instance = new self();
     $instance->copyValues($params);
@@ -40,8 +41,99 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
   public static function validateParams($params) {
     self::validateLeaveRequestCalendarFeedConfigTitle($params);
     self::validateTimezone($params);
+    self::validateComposedOfFilter($params);
+    self::validateVisibleToFilter($params);
   }
 
+  /**
+   * Validates the composed_of field for the LeaveRequestCalendarFeedConfig Entity.
+   *
+   * @param array $params
+   *
+   * @throws InvalidLeaveRequestCalendarFeedConfigException
+   */
+  private static function validateComposedOfFilter($params) {
+    $allowedFields = ['department','location', 'leave_type'];
+    $requiredFields = ['leave_type'];
+    self::validateFilterFields('composed_of', $params, $allowedFields, $requiredFields);
+  }
+
+  /**
+   * Validates the visible_to field for the LeaveRequestCalendarFeedConfig Entity.
+   *
+   * @param array $params
+   *
+   * @throws InvalidLeaveRequestCalendarFeedConfigException
+   */
+  private static function validateVisibleToFilter($params) {
+    $allowedFields = ['department','location'];
+    self::validateFilterFields('visible_to', $params, $allowedFields);
+  }
+
+  /**
+   * Validates the Filter fields (visible_to, composed_of) for the entity
+   * It ensures that only the allowed fields are present for respective filters
+   * and also that required fields should be present.
+   *
+   * @param string $filterName
+   * @param array $params
+   * @param array $allowedFields
+   * @param array $requiredFields
+   *
+   * @throws InvalidLeaveRequestCalendarFeedConfigException
+   */
+  private static function validateFilterFields($filterName, $params, array $allowedFields, array $requiredFields = []) {
+    if (!isset($params[$filterName]) && !empty($params['id'])) {
+      return;
+    }
+
+    $feedConfigFilter = CRM_Utils_Array::value($filterName, $params);
+
+    if (!is_array($feedConfigFilter)) {
+      throw new InvalidLeaveRequestCalendarFeedConfigException(
+        'The ' . $filterName . ' filter is absent or not passed in the proper format'
+      );
+    }
+
+    if (!empty($requiredFields)) {
+      foreach($requiredFields as $requiredField) {
+        if (!array_key_exists($requiredField, $feedConfigFilter)) {
+          throw new InvalidLeaveRequestCalendarFeedConfigException(
+            'The ' . $requiredField . ' is a required ' . $filterName . ' filter field for the calendar feed configuration'
+          );
+        }
+      }
+    }
+
+    foreach ($feedConfigFilter as $filterFieldName => $filterFieldValue) {
+      if (in_array($filterFieldName, $allowedFields)) {
+        if (!is_array($filterFieldValue) || empty($filterFieldValue)) {
+          throw new InvalidLeaveRequestCalendarFeedConfigException(
+            'The ' . $filterName  .' '. $filterFieldName . ' filter field value is not passed in the proper format!'
+          );
+        }
+      }
+      else {
+        throw new InvalidLeaveRequestCalendarFeedConfigException(
+          'The ' . $filterFieldName . ' field is not a valid ' . $filterName . ' filter field for the calendar feed configuration'
+        );
+      }
+    }
+  }
+
+  /**
+   * Serializes the values of the composed_of and visible_to fields
+   *
+   * @param array $params
+   */
+  public static function serializeFilterValues(&$params) {
+    $filters = ['visible_to', 'composed_of'];
+    foreach($filters as $filter) {
+      if (isset($params[$filter])) {
+        $params[$filter] = serialize($params[$filter]);
+      }
+    }
+  }
 
   /**
    * Validates that the Title of the Leave calendar feed configuration
