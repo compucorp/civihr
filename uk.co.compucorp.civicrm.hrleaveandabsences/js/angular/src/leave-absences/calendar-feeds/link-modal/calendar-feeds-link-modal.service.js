@@ -2,11 +2,11 @@
 
 define(function () {
   CalendarFeedsLinkModal.__name = 'CalendarFeedsLinkModal';
-  CalendarFeedsLinkModal.$inject = ['$uibModal'];
+  CalendarFeedsLinkModal.$inject = ['$uibModal', 'SITE_HOST'];
 
   return CalendarFeedsLinkModal;
 
-  function CalendarFeedsLinkModal ($uibModal) {
+  function CalendarFeedsLinkModal ($uibModal, SITE_HOST) {
     return {
       open: open
     };
@@ -14,9 +14,11 @@ define(function () {
     /**
      * Opens a modal with the calendar feed link.
      *
-     * @param {String} url - the url to display on the modal.
+     * @param {String} hash - the unique feed hash.
      */
-    function open (url) {
+    function open (hash) {
+      var url = SITE_HOST + 'calendar-feed?hash=' + hash;
+
       $uibModal.open({
         controllerAs: 'modal',
         size: 'md',

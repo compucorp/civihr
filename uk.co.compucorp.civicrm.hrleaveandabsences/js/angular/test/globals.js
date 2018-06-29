@@ -15,6 +15,9 @@
   window.Drupal = {
     settings: {
       currentCiviCRMUserId: '202'
+    },
+    absoluteUrl: function () {
+      return 'https://civihr.org/';
     }
   };
 })(CRM);

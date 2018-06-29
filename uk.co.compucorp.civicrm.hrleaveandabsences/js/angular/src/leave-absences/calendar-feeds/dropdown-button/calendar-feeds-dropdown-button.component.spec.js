@@ -9,22 +9,25 @@ define([
   'use strict';
 
   describe('CalendarFeedsDropdownButton', function () {
-    var $provide, $rootScope, CalendarFeed, CalendarFeedsDropdownButton;
+    var $provide, $rootScope, CalendarFeed,
+      CalendarFeedsDropdownButton, CalendarFeedsLinkModal;
     var dropdownPositionParameter = 'right';
 
     beforeEach(angular.mock.module('calendar-feeds.dropdown-button'));
 
-    beforeEach(module('leave-absences.mocks', 'calendar-feeds.dropdown-button', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(module('leave-absences.mocks', 'calendar-feeds.dropdown-button',
+      function (_$provide_) {
+        $provide = _$provide_;
+      }));
 
     beforeEach(inject(function (CalendarFeedAPIMock) {
       $provide.value('CalendarFeed', CalendarFeedAPIMock);
     }));
 
-    beforeEach(inject(function (_$rootScope_, _CalendarFeed_) {
+    beforeEach(inject(function (_$rootScope_, _CalendarFeed_, _CalendarFeedsLinkModal_) {
       $rootScope = _$rootScope_;
       CalendarFeed = _CalendarFeed_;
+      CalendarFeedsLinkModal = _CalendarFeedsLinkModal_;
     }));
 
     beforeEach(function () {
@@ -56,6 +59,8 @@ define([
     });
 
     describe('on init', function () {
+      var allFeedsData = calendarFeedAPIData.all().values;
+
       beforeEach(function () {
         $rootScope.$digest();
       });
@@ -69,7 +74,22 @@ define([
       });
 
       it('stores feeds', function () {
-        expect(CalendarFeedsDropdownButton.feeds).toEqual(calendarFeedAPIData.all().values);
+        expect(CalendarFeedsDropdownButton.feeds).toEqual(allFeedsData);
+      });
+
+      describe('when user chooses the feed', function () {
+        var hash;
+
+        beforeEach(function () {
+          hash = allFeedsData[0].hash;
+
+          spyOn(CalendarFeedsLinkModal, 'open');
+          CalendarFeedsDropdownButton.openLinkModal(hash);
+        });
+
+        it('opens the Feed Link modal with the feed hash', function () {
+          expect(CalendarFeedsLinkModal.open).toHaveBeenCalledWith(hash);
+        });
       });
     });
   });
