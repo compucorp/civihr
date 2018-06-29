@@ -5,18 +5,18 @@ define([
   'leave-absences/calendar-feeds/apis/calendar-feeds.calendar-feed.api.data',
   'leave-absences/mocks/helpers/helper',
   'leave-absences/calendar-feeds/apis/calendar-feeds.calendar-feed.api'
-], function (_, calendarFeedConfigData, mockHelper) {
+], function (_, calendarFeedAPIData, mockHelper) {
   'use strict';
 
-  describe('CalendarFeedConfigAPI', function () {
-    var $httpBackend, $rootScope, CalendarFeedConfigAPI, expectedResults;
+  describe('CalendarFeedAPI', function () {
+    var $httpBackend, $rootScope, CalendarFeedAPI, expectedResults;
 
     beforeEach(module('leave-absences.apis'));
-    beforeEach(inject(['$httpBackend', '$rootScope', 'CalendarFeedConfigAPI',
-      function (_$httpBackend_, _$rootScope_, _CalendarFeedConfigAPI_) {
+    beforeEach(inject(['$httpBackend', '$rootScope', 'CalendarFeedAPI',
+      function (_$httpBackend_, _$rootScope_, _CalendarFeedAPI_) {
         $httpBackend = _$httpBackend_;
         $rootScope = _$rootScope_;
-        CalendarFeedConfigAPI = _CalendarFeedConfigAPI_;
+        CalendarFeedAPI = _CalendarFeedAPI_;
 
         interceptHTTP();
       }
@@ -24,8 +24,8 @@ define([
 
     describe('all()', function () {
       beforeEach(function () {
-        spyOn(CalendarFeedConfigAPI, 'sendGET').and.callThrough();
-        CalendarFeedConfigAPI
+        spyOn(CalendarFeedAPI, 'sendGET').and.callThrough();
+        CalendarFeedAPI
           .all()
           .then(function (results) {
             expectedResults = results;
@@ -34,13 +34,13 @@ define([
         $httpBackend.flush();
       });
 
-      it('calls the "LeaveRequestCalendarFeedConfig.get" endpoint', function () {
-        expect(CalendarFeedConfigAPI.sendGET.calls.mostRecent().args[0]).toBe('LeaveRequestCalendarFeedConfig');
-        expect(CalendarFeedConfigAPI.sendGET.calls.mostRecent().args[1]).toBe('get');
+      it('calls the "LeaveRequestCalendarFeed.get" endpoint', function () {
+        expect(CalendarFeedAPI.sendGET.calls.mostRecent().args[0]).toBe('LeaveRequestCalendarFeedConfig');
+        expect(CalendarFeedAPI.sendGET.calls.mostRecent().args[1]).toBe('get');
       });
 
       it('returns expected data', function () {
-        expect(expectedResults).toEqual(calendarFeedConfigData.all().values);
+        expect(expectedResults).toEqual(calendarFeedAPIData.all().values);
       });
     });
 
@@ -48,9 +48,9 @@ define([
      * Intercept HTTP calls to be handled by httpBackend
      */
     function interceptHTTP () {
-      // Intercept backend calls for GET CalendarFeedConfigAPI.all
+      // Intercept backend calls for GET CalendarFeedConfigAPI.get
       $httpBackend.whenGET(/action=get&entity=LeaveRequestCalendarFeedConfig/)
-        .respond(calendarFeedConfigData.all());
+        .respond(calendarFeedAPIData.all());
     }
   });
 });

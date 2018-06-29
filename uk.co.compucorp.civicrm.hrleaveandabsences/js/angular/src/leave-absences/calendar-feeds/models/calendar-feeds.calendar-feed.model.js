@@ -1,16 +1,13 @@
 /* eslint-env amd */
 
 define([
-  'leave-absences/shared/modules/models',
-  'common/models/model',
-  'leave-absences/calendar-feeds/apis/calendar-feeds.calendar-feed.api',
-  'leave-absences/calendar-feeds/instances/calendar-feeds.calendar-feed.instance'
+  'leave-absences/shared/modules/models'
 ], function (models) {
   'use strict';
 
-  models.factory('CalendarFeedConfig', [
-    'Model', 'CalendarFeedConfigAPI', 'CalendarFeedConfigInstance',
-    function (Model, CalendarFeedConfigAPI, CalendarFeedConfigInstance) {
+  return models.factory('CalendarFeed', [
+    'Model', 'CalendarFeedAPI', 'CalendarFeedInstance',
+    function (Model, CalendarFeedAPI, CalendarFeedInstance) {
       return Model.extend({
         all: all
       });
@@ -21,10 +18,10 @@ define([
        * @return {Promise} resolves with an array of feeds instances
        */
       function all () {
-        return CalendarFeedConfigAPI.all()
+        return CalendarFeedAPI.all()
           .then(function (response) {
-            return response.map(function (calendarFeedConfig) {
-              return CalendarFeedConfigInstance.init(calendarFeedConfig, true);
+            return response.map(function (calendarFeed) {
+              return CalendarFeedInstance.init(calendarFeed, true);
             });
           });
       }

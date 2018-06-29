@@ -6,7 +6,7 @@ define([
 ], function (instances) {
   'use strict';
 
-  instances.factory('CalendarFeedConfigInstance', [
+  instances.factory('CalendarFeedInstance', [
     'ModelInstance',
     function (ModelInstance) {
       return ModelInstance.extend({});

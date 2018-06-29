@@ -7,34 +7,34 @@ define([
 ], function () {
   'use strict';
 
-  describe('CalendarFeedConfig', function () {
-    var $provide, $rootScope, CalendarFeedConfig, CalendarFeedConfigAPI;
+  describe('CalendarFeed', function () {
+    var $provide, $rootScope, CalendarFeed, CalendarFeedAPI;
 
     beforeEach(module('leave-absences.models', 'leave-absences.mocks',
       function (_$provide_) {
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (_CalendarFeedConfigAPIMock_) {
-      $provide.value('CalendarFeedConfigAPI', _CalendarFeedConfigAPIMock_);
+    beforeEach(inject(function (_CalendarFeedAPIMock_) {
+      $provide.value('CalendarFeedAPI', _CalendarFeedAPIMock_);
     }));
 
-    beforeEach(inject(function (_CalendarFeedConfig_, _CalendarFeedConfigAPI_,
+    beforeEach(inject(function (_CalendarFeed_, _CalendarFeedAPI_,
       _$rootScope_) {
-      CalendarFeedConfig = _CalendarFeedConfig_;
-      CalendarFeedConfigAPI = _CalendarFeedConfigAPI_;
+      CalendarFeed = _CalendarFeed_;
+      CalendarFeedAPI = _CalendarFeedAPI_;
       $rootScope = _$rootScope_;
     }));
 
     describe('all()', function () {
       beforeEach(function () {
-        spyOn(CalendarFeedConfigAPI, 'all').and.callThrough();
-        CalendarFeedConfig.all();
+        spyOn(CalendarFeedAPI, 'all').and.callThrough();
+        CalendarFeed.all();
         $rootScope.$digest();
       });
 
       it('calls the equivalent API method', function () {
-        expect(CalendarFeedConfigAPI.all).toHaveBeenCalledWith();
+        expect(CalendarFeedAPI.all).toHaveBeenCalledWith();
       });
     });
   });
