@@ -88,6 +88,7 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   allow_request_cancelation,
   allow_accruals_request,
   max_leave_accrual,
+  allow_accrue_in_the_past,
   accrual_expiration_duration,
   accrual_expiration_unit,
   is_reserved,
@@ -102,6 +103,7 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   3,
   1,
   5,
+  1,
   3,
   2, -- months
   1,
