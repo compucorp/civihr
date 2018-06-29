@@ -1,8 +1,8 @@
 {*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2018                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,6 +28,7 @@
   {if !empty($contactId)}
     {include file="CRM/common/contactFooter.tpl"}
   {/if}
+
   <div class="crm-footer" id="civicrm-footer">
     {* PCHR-1323 - Display CiviHR version info. *}
     {ts}Powered by CiviHR {/ts} {civihrVersion}.
