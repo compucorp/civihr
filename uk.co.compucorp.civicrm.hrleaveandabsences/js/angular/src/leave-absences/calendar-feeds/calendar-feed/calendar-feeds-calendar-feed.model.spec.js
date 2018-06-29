@@ -1,9 +1,9 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'leave-absences/calendar-feeds/models/calendar-feeds.calendar-feed.model',
-  'leave-absences/calendar-feeds/apis/calendar-feeds.calendar-feed.api.mock',
-  'leave-absences/calendar-feeds/instances/calendar-feeds.calendar-feed.instance'
+  'leave-absences/calendar-feeds/calendar-feed/calendar-feeds-calendar-feed.model',
+  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.api.mock',
+  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.instance'
 ], function () {
   'use strict';
 

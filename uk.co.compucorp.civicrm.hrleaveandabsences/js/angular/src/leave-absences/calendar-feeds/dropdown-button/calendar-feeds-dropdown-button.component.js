@@ -2,7 +2,7 @@
 
 define([
   'common/lodash',
-  'leave-absences/calendar-feeds/models/calendar-feeds.models.module'
+  'leave-absences/calendar-feeds/calendar-feed/calendar-feeds.calendar-feed.module'
 ], function (_) {
   CalendarFeedsDropdownButtonController.$inject = ['CalendarFeed'];
 
@@ -14,7 +14,7 @@ define([
     controller: CalendarFeedsDropdownButtonController,
     controllerAs: 'dropdownButton',
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sourcePath + 'calendar-feeds/dropdown-button/calendar-feeds.dropdown-button.html';
+      return sharedSettings.sourcePath + 'calendar-feeds/dropdown-button/calendar-feeds-dropdown-button.html';
     }]
   };
 

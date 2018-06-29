@@ -2,10 +2,10 @@
 
 define([
   'common/angular',
-  'leave-absences/calendar-feeds/dropdown-button/calendar-feeds.dropdown-button.component',
-  'leave-absences/calendar-feeds/models/calendar-feeds.models.module',
+  './calendar-feeds-dropdown-button.component',
+  '../calendar-feed/calendar-feeds.calendar-feed.module',
   'common/angularBootstrap',
-  'leave-absences/calendar-feeds/calendar-feeds.core'
+  '../calendar-feeds.core'
 ], function (angular, CalendarFeedsDropdownButtonComponent) {
   return angular.module('calendar-feeds.dropdown-button', [
     'ui.bootstrap',
