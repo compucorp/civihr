@@ -31,7 +31,7 @@ define([
 
     describe('openModal()', function () {
       beforeEach(function () {
-        LeavePopup.openModal(null, 'Leave');
+        LeavePopup.openModal({ leaveType: 'Leave' });
       });
 
       it('initializes the leave popup with RequestCtrl', function () {
@@ -44,14 +44,28 @@ define([
         var forceRecalculateBalanceChange = true;
 
         beforeEach(function () {
-          LeavePopup.openModal(jasmine.any(String), jasmine.any(String), jasmine.any(String),
-            forceRecalculateBalanceChange);
+          LeavePopup.openModal(
+            { forceRecalculateBalanceChange: forceRecalculateBalanceChange });
           $rootScope.$digest();
         });
 
         it('opens the leave popup', function () {
           expect($uibModal.open.calls.mostRecent().args[0].resolve.directiveOptions().forceRecalculateBalanceChange)
             .toBe(forceRecalculateBalanceChange);
+        });
+      });
+
+      describe('when default leave request status is specified', function () {
+        var defaultStatus = 'approved';
+
+        beforeEach(function () {
+          LeavePopup.openModal({ defaultStatus: defaultStatus });
+          $rootScope.$digest();
+        });
+
+        it('opens the leave popup with a default status', function () {
+          expect($uibModal.open.calls.mostRecent().args[0].resolve
+            .directiveOptions().defaultStatus).toBe(defaultStatus);
         });
       });
     });

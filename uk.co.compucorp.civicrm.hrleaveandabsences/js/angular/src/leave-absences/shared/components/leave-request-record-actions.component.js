@@ -38,19 +38,21 @@ define([
       queryParams = beforeHashQueryParams.parse();
 
       if (queryParams.openModal) {
-        openLeavePopup(null, queryParams.openModal, vm.selectedContactId);
+        openLeavePopup({
+          leaveType: queryParams.openModal,
+          selectedContactId: vm.selectedContactId
+        });
       }
     }());
 
     /**
      * Opens the leave request popup
      *
-     * @param {Object} leaveRequest
-     * @param {String} leaveType
-     * @param {String} selectedContactId
+     * @param {Object} params
+     * @see LeavePopup.openModal for the reference to the `params` argument
      */
-    function openLeavePopup (leaveRequest, leaveType, selectedContactId) {
-      LeavePopup.openModal.apply(LeavePopup, arguments);
+    function openLeavePopup (params) {
+      LeavePopup.openModal(params);
     }
   }
 });

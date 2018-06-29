@@ -6,8 +6,8 @@
   uib-tooltip-clickable="true"
   ng-class="{
     'chr_leave-calendar__day-container--type--weekend': day.contactData.isWeekend,
-    'chr_leave-calendar__day-container--non-working': day.contactData.isNonWorkingDay,
-    'chr_leave-calendar__day-container--public-holiday': day.contactData.isPublicHoliday
+    'chr_leave-calendar__day-container--type--non-working': day.contactData.isNonWorkingDay,
+    'chr_leave-calendar__day-container--type--public-holiday': day.contactData.isPublicHoliday
   }">
   <div class="chr_leave-calendar__item"
     ng-repeat="(leaveRequestIndex, leaveRequest) in day.contactData.leaveRequestsToShowInCell"

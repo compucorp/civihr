@@ -1,14 +1,11 @@
-<tr
-  ng-repeat="request in requests track by $index"
-  ng-init="absenceType = report.absenceTypesIndexed[request.type_id]">
+<tr ng-repeat="request in requests track by $index">
   <td class="chr_leave-report__label">
-    {{absenceType.title}}
+    {{report.absenceTypesIndexed[request.type_id].title}}
     <span ng-if="request.toil_expiry_date">
       (expires {{request.toil_expiry_date | formatDate}})
     </span>
   </td>
-  <td ng-init="unit = absenceType.calculation_unit_name"
-    ng-include="$root.sharedPathTpl + 'components/partials/leave-request-dates.html'"></td>
+  <td ng-include="$root.sharedPathTpl + 'components/partials/leave-request-dates.html'"></td>
   <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
   <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
     title="({{ absenceType.calculation_unit_label | lowercase }})">

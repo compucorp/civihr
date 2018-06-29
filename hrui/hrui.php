@@ -93,8 +93,9 @@ function hrui_civicrm_buildForm($formName, &$form) {
     }
   }
 
-  if ($form instanceof CRM_Admin_Form_Setting_Localization) {
-    $form->removeElement('makeMultilingual');
+  if ($form instanceof CRM_Admin_Form_Setting_Localization &&
+    $form->elementExists('makeMultilingual')) {
+      $form->removeElement('makeMultilingual');
   }
 }
 
