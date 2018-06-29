@@ -2,7 +2,7 @@
 
 define([
   'common/angular',
-  'leave-absences/calendar-feeds/apis/calendar-feeds.calendar-feed.api.data',
+  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.api.data',
   'common/angularMocks',
   'leave-absences/calendar-feeds/dropdown-button/calendar-feeds.dropdown-button.module'
 ], function (angular, calendarFeedAPIData) {
