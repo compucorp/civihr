@@ -5,10 +5,10 @@ define([
   'leave-absences/calendar-feeds/apis/calendar-feeds.calendar-feed.api.data',
   'leave-absences/mocks/module',
   'common/angularMocks'
-], function (_, calendarFeedConfigData, mocks) {
+], function (_, calendarFeedData, mocks) {
   'use strict';
 
-  mocks.factory('CalendarFeedConfigAPIMock', [
+  mocks.factory('CalendarFeedAPIMock', [
     '$q',
     function ($q) {
       var methods = {
@@ -23,7 +23,7 @@ define([
       function all () {
         return $q.resolve()
           .then(function () {
-            return calendarFeedConfigData.all().values;
+            return calendarFeedData.all().values;
           });
       }
 

@@ -7,16 +7,16 @@ define([
 ], function (apis, _) {
   'use strict';
 
-  apis.factory('CalendarFeedConfigAPI', ['$log', 'api', '$q',
+  apis.factory('CalendarFeedAPI', ['$log', 'api', '$q',
     function ($log, api, $q) {
-      $log.debug('CalendarFeedConfigAPI');
+      $log.debug('CalendarFeedAPI');
 
       return api.extend({
         all: all
       });
 
       /**
-       * Returns all Calendar Feed Configs
+       * Returns all Calendar Feeds
        *
        * @return {Promise} resolved with an array of objects of feeds
        */
