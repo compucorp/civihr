@@ -6,7 +6,8 @@
   </button>
   <ul class="dropdown-menu dropdown-menu-{{dropdownButton.dropdownPosition}}"
     role="menu" ng-switch="dropdownButton.feeds.length > 0" uib-dropdown-menu>
-    <li ng-repeat="feed in dropdownButton.feeds" ng-switch-when="true">
+    <li ng-repeat="feed in dropdownButton.feeds" ng-switch-when="true"
+      ng-click="dropdownButton.openLinkModal(feed.hash)">
       <a href>{{feed.title}}</a>
     </li>
     <li ng-switch-when="false">
