@@ -3,7 +3,7 @@
 trait CRM_HRCore_Upgrader_Steps_1024 {
 
   /**
-   * Remove Social Account Options and reorder de remaining
+   * Removes social account options and reorder the remaining
    */
   public function upgrade_1024() {
     $this->up1024_removeSocialAccountOptions([
@@ -24,7 +24,7 @@ trait CRM_HRCore_Upgrader_Steps_1024 {
   }
 
   /**
-   * Removes Some Social Account Options
+   * Removes some social account options if not used, and disable it if used
    */
   private function up1024_removeSocialAccountOptions($accounts) {
     $socialAccounts = civicrm_api3('OptionValue', 'get', [
@@ -34,9 +34,21 @@ trait CRM_HRCore_Upgrader_Steps_1024 {
 
     $socialAccounts = $socialAccounts['values'];
     foreach ($socialAccounts as $optionValueId => $optionValue) {
-      civicrm_api3('OptionValue', 'delete', [
-        'id' => $optionValueId,
+      $socialAccountIsUsed = civicrm_api3('Website', 'get', [
+        'website_type_id' => $optionValue['name'],
+        'url' => ['IS NOT NULL' => 1],
       ]);
+      if ($socialAccountIsUsed['count'] == 0) {
+        civicrm_api3('OptionValue', 'delete', [
+          'id' => $optionValueId,
+        ]);
+      }
+      else {
+        civicrm_api3('OptionValue', 'create', [
+          'id' => $optionValueId,
+          'is_active' => 0,
+        ]);
+      }
     }
   }
 
