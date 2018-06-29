@@ -461,6 +461,7 @@ function hrleaveandabsences_civicrm_validateForm($formName, &$fields, &$files, &
 function hrleaveandabsences_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   $wrappers[] = new CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestDates();
   $wrappers[] = new CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestFieldsVisibility();
+  $wrappers[] = new CRM_HRLeaveAndAbsences_API_Wrapper_LeaveCalendarFeedFilterFields();
 }
 
 

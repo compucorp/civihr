@@ -59,6 +59,22 @@
   </index>
 
   <field>
+    <name>composed_of</name>
+    <type>text</type>
+    <required>true</required>
+    <comment>The components of the leave request feed, e.g leave types, departments</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>visible_to</name>
+    <type>text</type>
+    <required>true</required>
+    <comment>Who gets to view the feed link e.g staff in certain departments or location</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
     <name>is_active</name>
     <type>boolean</type>
     <required>true</required>
