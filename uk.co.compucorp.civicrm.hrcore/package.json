@@ -29,6 +29,7 @@
     "karma-junit-reporter": "^1.2.0",
     "karma-ng-html2js-preprocessor": "^1.0.0",
     "karma-requirejs": "^1.1.0",
+    "karma-spec-reporter": "0.0.32",
     "lodash": "^4.17.10",
     "plugin-error": "^1.0.1",
     "requirejs": "^2.3.5",
