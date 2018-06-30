@@ -32,7 +32,6 @@
     "lodash": "^4.17.10",
     "plugin-error": "^1.0.1",
     "requirejs": "^2.3.5",
-    "xml-parse": "^0.3.1",
-    "yargs": "^10.1.2"
+    "xml-parse": "^0.3.1"
   }
 }
