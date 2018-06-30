@@ -1,3 +1,5 @@
+var argv = require('yargs').argv;
+
 module.exports = function (config) {
   var civicrmPath = '../../../../../';
   var civihrPath = 'tools/extensions/civihr/';
@@ -70,6 +72,7 @@ module.exports = function (config) {
         ]
       }
     },
+    reporters: argv.reporters ? argv.reporters.split(',') : ['spec'],
     junitReporter: {
       outputDir: extPath + 'test-reports',
       useBrowserName: false,
