@@ -48,7 +48,11 @@ class CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeedConfig extends CRM_Cor
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/crm/hrleaveandabsences.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/angular/dist/calendar-feeds.min.js', 1000);
     CRM_Core_Resources::singleton()->addScriptFile('civicrm', 'js/jquery/jquery.crmEditable.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()->addVars('leaveAndAbsences', [
+      'baseURL' => CRM_Core_Resources::singleton()->getUrl('uk.co.compucorp.civicrm.hrleaveandabsences'),
+    ]);
     $this->assign('rows', $rows);
   }
 
@@ -68,8 +72,8 @@ class CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeedConfig extends CRM_Cor
         ],
         CRM_Core_Action::BASIC => [
           'name' => ts('View Feed Link'),
-          'class' => '',
-          'title' => ts('View Feed Link')
+          'class' => 'calendar-feeds-display-link',
+          'title' => ts('View Feed Link'),
         ],
         CRM_Core_Action::DISABLE => [
           'name'  => ts('Disable'),
