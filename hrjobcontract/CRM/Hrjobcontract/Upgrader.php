@@ -1311,7 +1311,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'name' => 'hrjc_deduction_name',
       'api.OptionGroup.create' => [
         'id' => '$value.id',
-        'title' => 'Deductions'
+        'title' => 'Deductions',
+        'is_active' => 1
       ],
     ]);
     
