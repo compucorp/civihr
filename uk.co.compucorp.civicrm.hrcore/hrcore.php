@@ -351,7 +351,7 @@ function hrcore_civicrm_permission(&$permissions) {
  * @param string $newLabel
  */
 function _hrcore_renameMenuLabel(&$params, $menuName, $newLabel) {
-  $menuItemID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $menuName, 'id', 'name');
+  $menuItemID = _hrcore_getNavigationIdByName($menuName);
   $params[$menuItemID]['attributes']['label'] = $newLabel;
 }
 
@@ -372,7 +372,7 @@ function _hrcore_add_js_session_vars() {
  */
 function _hrcore_coreMenuChanges(&$params) {
   // remove search items
-  $searchNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Search...', 'id', 'name');
+  $searchNavId = _hrcore_getNavigationIdByName('Search...');
   $toRemove = [
     'Full-text search',
     'Search builder',
@@ -387,12 +387,12 @@ function _hrcore_coreMenuChanges(&$params) {
     ) {
       continue;
     }
-    $itemId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $item , 'id', 'name');
+    $itemId = _hrcore_getNavigationIdByName($item);
     unset($params[$searchNavId]['child'][$itemId]);
   }
 
   // remove contact items
-  $searchNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+  $searchNavId = _hrcore_getNavigationIdByName('Contacts');
   $toRemove = [
     'New Tag',
     'Manage Tags (Categories)',
@@ -411,26 +411,43 @@ function _hrcore_coreMenuChanges(&$params) {
     unset($params[$searchNavId]['child'][$itemId]);
   }
 
-  // remove main Reports menu
-  $reportsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
-  unset($params[$reportsNavId]);
-
-  // remove Mailings menu
-  $mailingsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Mailings', 'id', 'name');
-  unset($params[$mailingsNavId]);
+  _hrcore_removeItemFromMainNavigationMenuByName('Reports', $params);
+  _hrcore_removeItemFromMainNavigationMenuByName('Mailings', $params);
+  _hrcore_removeItemFromMainNavigationMenuByName('Support', $params);
 
   // Remove Admin items
-  $adminNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
+  $adminNavId = _hrcore_getNavigationIdByName('Administer');
+  _hrcore_removeItemFromMainNavigationMenuByName('CiviReport', $params[$adminNavId]['child']);
 
-  $civiReportNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviReport', 'id', 'name');
+  $civiCaseNavId = _hrcore_getNavigationIdByName('CiviCase');
+  _hrcore_removeItemFromMainNavigationMenuByName('Redaction Rules',$params[$adminNavId]['child'][$civiCaseNavId]['child']);
+}
 
-  $civiCaseNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviCase', 'id', 'name');
-  $redactionRulesNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Redaction Rules', 'id', 'name');
-  $supportNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Support', 'id', 'name');
+/**
+ * Removes the item with the given $name from the root of the given $menu
+ *
+ * @todo Use the NavigationMenuHelper methods instead of these helper functions here
+ *
+ * @param string $name
+ * @param array $menu
+ *   An array like the one used in hook_civicrm_navigationMenu
+ */
+function _hrcore_removeItemFromMainNavigationMenuByName($name, &$menu) {
+  $id = _hrcore_getNavigationIdByName($name);
+  unset($menu[$id]);
+}
 
-  unset($params[$supportNavId]);
-  unset($params[$adminNavId]['child'][$civiReportNavId]);
-  unset($params[$adminNavId]['child'][$civiCaseNavId]['child'][$redactionRulesNavId]);
+/**
+ * Returns the ID of the Navigation item with the given $name
+ *
+ * @todo Use the NavigationMenuHelper methods instead of these helper functions here
+ *
+ * @param string $name
+ *
+ * @return null|int
+ */
+function _hrcore_getNavigationIdByName($name) {
+  return CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $name, 'id', 'name');
 }
 
 /**
