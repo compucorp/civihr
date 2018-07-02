@@ -439,6 +439,7 @@ function _hrcore_createHelpMenu(&$menu) {
   _hrcore_civix_insert_navigation_menu($menu, '', [
     'name' => ts('Help'),
     'permission' => 'access CiviCRM',
+    'weight' => _hrcore_getMaxMenuWeight($menu) + 1
   ]);
 
   _hrcore_civix_insert_navigation_menu($menu, 'Help', [
@@ -473,7 +474,8 @@ function _hrcore_createDeveloperMenu(&$menu) {
   _hrcore_civix_insert_navigation_menu($menu, '', [
     'name' => ts('Developer'),
     'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
-    'operator' => 'AND'
+    'operator' => 'AND',
+    'weight' => _hrcore_getMaxMenuWeight($menu) + 1
   ]);
 
   _hrcore_civix_insert_navigation_menu($menu, 'Developer', [
@@ -547,5 +549,28 @@ function _hrcore_createSelfServicePortalMenu(&$menu) {
     'name' => ts('ssp'),
     'label' => ts('Self Service Portal'),
     'url' => 'dashboard',
+    'weight' => _hrcore_getMaxMenuWeight($menu) + 1
   ]);
+}
+
+/**
+ * Returns the maximum weight among all the menu items in the given
+ * $menu array.
+ *
+ * @param array $menu
+ *   An array in the same format as the one used by hook_civicrm_navigationMenu
+ *
+ * @return int
+ */
+function _hrcore_getMaxMenuWeight($menu) {
+  $maxWeight = 0;
+
+  foreach ($menu as $item) {
+    $itemWeight = !empty($item['attributes']['weight']) ? $item['attributes']['weight'] : 0;
+    if ($itemWeight > $maxWeight) {
+      $maxWeight = $itemWeight;
+    }
+  }
+
+  return $maxWeight;
 }
