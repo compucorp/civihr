@@ -1349,7 +1349,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'name' => 'hrjc_contract_end_reason',
       'api.OptionGroup.create' => [
         'id' => '$value.id',
-        'title' => 'Contract End Reasons'
+        'title' => 'Contract End Reasons',
+        'is_active' => 1
       ],
     ]);
     
