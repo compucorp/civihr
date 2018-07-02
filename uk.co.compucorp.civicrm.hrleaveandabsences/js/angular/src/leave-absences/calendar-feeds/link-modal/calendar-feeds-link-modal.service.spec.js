@@ -33,7 +33,7 @@
 
       describe('open()', function () {
         var hash = 'jahmaljahsurjahber';
-        var expectedFeedUrl = Drupal.absoluteUrl('/') + 'calendar-feed?hash=' + hash;
+        var expectedFeedUrl = Drupal.absoluteUrl('/') + 'civicrm/calendar-feed?hash=' + hash;
 
         beforeEach(function () {
           CalendarFeedsLinkModal.open(hash);

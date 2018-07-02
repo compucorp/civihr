@@ -17,7 +17,7 @@ define(function () {
      * @param {String} hash - the unique feed hash.
      */
     function open (hash) {
-      var url = SITE_HOST + 'calendar-feed?hash=' + hash;
+      var url = SITE_HOST + 'civicrm/calendar-feed?hash=' + hash;
 
       $uibModal.open({
         controllerAs: 'modal',
