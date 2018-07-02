@@ -2,11 +2,11 @@
 
 define(function () {
   CalendarFeedsLinkModal.__name = 'CalendarFeedsLinkModal';
-  CalendarFeedsLinkModal.$inject = ['$uibModal', 'HOST_URL'];
+  CalendarFeedsLinkModal.$inject = ['$document', '$uibModal', 'HOST_URL'];
 
   return CalendarFeedsLinkModal;
 
-  function CalendarFeedsLinkModal ($uibModal, HOST_URL) {
+  function CalendarFeedsLinkModal ($document, $uibModal, HOST_URL) {
     return {
       open: open
     };
@@ -17,7 +17,12 @@ define(function () {
      * @param {String} hash - the unique feed hash.
      */
     function open (hash) {
+      var appendToElement = $document.find('#bootstrap-theme');
       var url = HOST_URL + 'civicrm/calendar-feed?hash=' + hash;
+
+      if (appendToElement.length === 0) {
+        appendToElement = $document.find('body');
+      }
 
       $uibModal.open({
         controllerAs: 'modal',
@@ -27,6 +32,7 @@ define(function () {
           this.url = url;
           this.dismiss = $uibModalInstance.dismiss;
         }],
+        appendTo: appendToElement.eq(0),
         resolve: {
           url: function () {
             return url;
