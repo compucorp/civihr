@@ -21,7 +21,6 @@
             <th>{ts}Timezone{/ts}</th>
             <th>{ts}Status{/ts}</th>
             <th>{ts}Actions{/ts}</th>
-            <th>&nbsp;</th>
             </thead>
             {foreach from=$rows item=row}
               <tr id="LeaveRequestCalendarFeedConfig-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}" data-hash="{$row.hash}">
