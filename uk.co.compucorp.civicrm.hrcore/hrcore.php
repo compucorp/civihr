@@ -415,6 +415,10 @@ function _hrcore_coreMenuChanges(&$params) {
   $reportsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
   unset($params[$reportsNavId]);
 
+  // remove Mailings menu
+  $mailingsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Mailings', 'id', 'name');
+  unset($params[$mailingsNavId]);
+
   // Remove Admin items
   $adminNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
 
