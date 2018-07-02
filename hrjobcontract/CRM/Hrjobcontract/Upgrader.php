@@ -1293,7 +1293,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'name' => 'hrjc_benefit_name',
       'api.OptionGroup.create' => [
         'id' => '$value.id',
-        'title' => 'Benefits'
+        'title' => 'Benefits',
+        'is_active' => 1
       ],
     ]);
     
