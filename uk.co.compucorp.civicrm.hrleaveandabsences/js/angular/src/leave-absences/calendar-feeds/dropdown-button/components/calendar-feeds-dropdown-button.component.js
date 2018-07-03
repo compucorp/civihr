@@ -11,7 +11,7 @@ define([], function () {
     controller: CalendarFeedsDropdownButtonController,
     controllerAs: 'dropdownButton',
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sourcePath + 'calendar-feeds/dropdown-button/calendar-feeds-dropdown-button.html';
+      return sharedSettings.sourcePath + 'calendar-feeds/dropdown-button/components/calendar-feeds-dropdown-button.html';
     }]
   };
 

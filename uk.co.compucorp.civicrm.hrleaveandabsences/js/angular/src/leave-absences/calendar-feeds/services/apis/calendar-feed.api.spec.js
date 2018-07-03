@@ -2,16 +2,17 @@
 
 define([
   'common/lodash',
-  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.api.data',
+  'leave-absences/calendar-feeds/services/apis/calendar-feed.api.data',
   'leave-absences/mocks/helpers/helper',
-  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.api'
+  'leave-absences/calendar-feeds/calendar-feeds.models'
 ], function (_, calendarFeedAPIData, mockHelper) {
   'use strict';
 
   describe('CalendarFeedAPI', function () {
     var $httpBackend, $rootScope, CalendarFeedAPI, expectedResults;
 
-    beforeEach(module('leave-absences.apis'));
+    beforeEach(module('calendar-feeds.models'));
+
     beforeEach(inject(['$httpBackend', '$rootScope', 'CalendarFeedAPI',
       function (_$httpBackend_, _$rootScope_, _CalendarFeedAPI_) {
         $httpBackend = _$httpBackend_;

@@ -3,7 +3,7 @@
 define([
   'common/angular',
   'common/angularMocks',
-  'leave-absences/calendar-feeds/link-modal/calendar-feeds.link-modal.module'
+  'leave-absences/calendar-feeds/link-modal/link-modal.module'
 ], function (angular) {
   'use strict';
 

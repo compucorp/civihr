@@ -1,16 +1,15 @@
 /* eslint-env amd, jasmine */
 
 define([
-  'leave-absences/calendar-feeds/calendar-feed/calendar-feeds-calendar-feed.model',
-  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.api.mock',
-  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.instance'
+  'leave-absences/calendar-feeds/calendar-feeds.models',
+  'leave-absences/calendar-feeds/services/apis/calendar-feed.api.mock'
 ], function () {
   'use strict';
 
   describe('CalendarFeed', function () {
     var $provide, $rootScope, CalendarFeed, CalendarFeedAPI;
 
-    beforeEach(module('leave-absences.models', 'leave-absences.mocks',
+    beforeEach(module('calendar-feeds.models', 'leave-absences.mocks',
       function (_$provide_) {
         $provide = _$provide_;
       }));

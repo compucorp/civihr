@@ -2,16 +2,15 @@
 
 define([
   'common/lodash',
-  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.api.data',
-  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.instance',
-  'leave-absences/shared/modules/models'
+  'leave-absences/calendar-feeds/services/apis/calendar-feed.api.data',
+  'leave-absences/calendar-feeds/calendar-feeds.models'
 ], function (_, calendarFeedData) {
   'use strict';
 
   describe('CalendarFeedInstance', function () {
     var CalendarFeedInstance;
 
-    beforeEach(module('leave-absences.models'));
+    beforeEach(module('calendar-feeds.models'));
 
     beforeEach(inject(function (_CalendarFeedInstance_) {
       CalendarFeedInstance = _CalendarFeedInstance_;

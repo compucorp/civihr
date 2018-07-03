@@ -6,7 +6,7 @@
     'common/angular',
     'common/lodash',
     'common/angularMocks',
-    'leave-absences/calendar-feeds/link-modal/calendar-feeds.link-modal.module'
+    'leave-absences/calendar-feeds/link-modal/link-modal.module'
   ], function (angular, _) {
     'use strict';
 
