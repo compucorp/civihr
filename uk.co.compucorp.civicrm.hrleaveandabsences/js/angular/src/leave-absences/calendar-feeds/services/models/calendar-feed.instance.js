@@ -1,14 +1,13 @@
 /* eslint-env amd */
 
-define([
-  'leave-absences/shared/modules/models-instances',
-  'common/models/instances/instance'
-], function (instances) {
+define(function () {
   'use strict';
 
-  instances.factory('CalendarFeedInstance', [
-    'ModelInstance',
-    function (ModelInstance) {
-      return ModelInstance.extend({});
-    }]);
+  CalendarFeedInstance.__name = 'CalendarFeedInstance';
+
+  function CalendarFeedInstance (ModelInstance) {
+    return ModelInstance.extend({});
+  }
+
+  return CalendarFeedInstance;
 });

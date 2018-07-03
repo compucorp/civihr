@@ -1,6 +1,6 @@
 /* eslint-env amd */
 
-define(function (models) {
+define(function () {
   'use strict';
 
   CalendarFeed.__name = 'CalendarFeed';
