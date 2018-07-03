@@ -2,7 +2,7 @@
 
 define([
   'common/angular',
-  'leave-absences/calendar-feeds-calendar-feed.api',
+  'leave-absences/calendar-feed.api',
   'common/services/api'
 ], function (angular, CalendarFeedAPI) {
   return angular.module('calendar-feeds.apis', [
