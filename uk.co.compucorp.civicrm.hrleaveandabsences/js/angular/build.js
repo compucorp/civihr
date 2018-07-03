@@ -7,7 +7,8 @@
     {name: 'absence-tab'},
     {name: 'manager-leave'},
     {name: 'manager-notification-badge'},
-    {name: 'my-leave'}
+    {name: 'my-leave'},
+    {name: 'calendar-feeds'}
   ],
   mainConfigFile: 'src/leave-absences/shared/config.js',
   generateSourceMaps: true,
