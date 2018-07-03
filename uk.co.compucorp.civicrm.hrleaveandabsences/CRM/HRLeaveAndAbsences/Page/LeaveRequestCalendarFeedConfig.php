@@ -184,7 +184,7 @@ class CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeedConfig extends CRM_Cor
     foreach($filterParams as $field => $value) {
       if ($field == 'department') {
         $departmentNames = $this->getOptionValuesList('hrjc_department', $value);
-        $displayText .= 'Department: '. implode(', ' , $departmentNames) . '. ';
+        $displayText .= 'Department: ' . implode(', ' , $departmentNames) . '. ';
       }
 
       if ($field == 'location') {
@@ -192,7 +192,7 @@ class CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeedConfig extends CRM_Cor
         if ($displayText) {
           $displayText .= '<br/>';
         }
-        $displayText .= 'Location: '. implode(', ' , $locationNames) . '.';
+        $displayText .= 'Location: ' . implode(', ' , $locationNames) . '.';
       }
     }
 
@@ -211,7 +211,7 @@ class CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeedConfig extends CRM_Cor
     $displayText = '';
 
     foreach($filterFields as $field => $value) {
-      if ($field == 'leave_type') {
+      if ($field === 'leave_type') {
         $leaveTypeNames = $this->getAbsenceTypesList($value);
         $displayText .= implode(', ' , $leaveTypeNames);
       }
