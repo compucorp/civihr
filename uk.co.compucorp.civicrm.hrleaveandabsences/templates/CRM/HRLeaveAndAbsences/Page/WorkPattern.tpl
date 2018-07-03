@@ -19,19 +19,20 @@
             <th>&nbsp;</th>
           </thead>
           {foreach from=$rows item=row}
-            <tr id="WorkPattern-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}">
-              <td data-field="title">{$row.label|escape}</td>
-              <td>{$row.description|escape}</td>
-              <td>{$row.number_of_weeks}</td>
-              <td>{$row.number_of_hours}</td>
+            {assign var='workPattern' value=$row.entity}
+            <tr id="WorkPattern-{$workPattern->id}" class="crm-entity {if NOT $workPattern->is_active} disabled{/if}">
+              <td data-field="title">{$workPattern->label|escape}</td>
+              <td>{$workPattern->description|escape}</td>
+              <td>{$workPattern->getNumberOfWeeks()}</td>
+              <td>{if $workPattern->getNumberOfWeeks() gt 1} {ts}Various{/ts} {else} {$workPattern->getNumberOfHours()} {/if}</td>
               <td>
-                {if $row.is_default eq 1}
+                {if $workPattern->is_default eq 1}
                   <i class="fa fa-check"></i>
                 {/if}
               </td>
-              <td>{$row.weight}</td>
-              <td>{if $row.is_active eq 1} {ts}Enabled{/ts} {else} {ts}Disabled{/ts} {/if}</td>
-              <td>{$row.action|replace:'xx':$row.id}</td>
+              <td>{$workPattern->weight}</td>
+              <td>{if $workPattern->is_active eq 1} {ts}Enabled{/ts} {else} {ts}Disabled{/ts} {/if}</td>
+              <td>{$row.action|replace:'xx':$workPattern->id}</td>
             </tr>
           {/foreach}
         </table>
