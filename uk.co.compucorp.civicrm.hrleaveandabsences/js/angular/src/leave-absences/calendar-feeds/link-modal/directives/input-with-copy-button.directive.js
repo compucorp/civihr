@@ -9,7 +9,7 @@ define([
   return InputWithCopyButton;
 
   function InputWithCopyButton (sharedSettings) {
-    var templateUrl = sharedSettings.sourcePath + 'calendar-feeds/link-modal/input-with-copy-button.html';
+    var templateUrl = sharedSettings.sourcePath + 'calendar-feeds/link-modal/directives/input-with-copy-button.html';
 
     return {
       controller: _.noop,

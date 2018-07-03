@@ -2,8 +2,8 @@
 
 define([
   'common/lodash',
-  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.api.data',
-  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.instance',
+  'leave-absences/calendar-feeds/calendar-feed.api.data',
+  'leave-absences/calendar-feeds/calendar-feed.instance',
   'leave-absences/shared/modules/models'
 ], function (_, calendarFeedData) {
   'use strict';

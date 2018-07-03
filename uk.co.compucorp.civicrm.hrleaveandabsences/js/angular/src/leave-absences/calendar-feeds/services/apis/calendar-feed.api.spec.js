@@ -2,9 +2,9 @@
 
 define([
   'common/lodash',
-  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.api.data',
+  'leave-absences/calendar-feeds/services/apis/calendar-feed.api.data',
   'leave-absences/mocks/helpers/helper',
-  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.api'
+  'leave-absences/calendar-feeds/services/apis/calendar-feed.api'
 ], function (_, calendarFeedAPIData, mockHelper) {
   'use strict';
 

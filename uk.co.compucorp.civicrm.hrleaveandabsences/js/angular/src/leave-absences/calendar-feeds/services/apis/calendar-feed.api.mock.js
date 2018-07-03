@@ -2,7 +2,7 @@
 
 define([
   'common/lodash',
-  'leave-absences/calendar-feeds/calendar-feeds-calendar-feed.api.data',
+  'leave-absences/calendar-feeds/services/apis/calendar-feed.api.data',
   'leave-absences/mocks/module',
   'common/angularMocks'
 ], function (_, calendarFeedData, mocks) {
