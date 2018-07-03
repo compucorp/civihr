@@ -7,13 +7,13 @@
     'leave-absences/calendar-feeds/link-modal/calendar-feeds-link-modal.component',
     'leave-absences/calendar-feeds/link-modal/calendar-feeds-link-modal.service',
     'leave-absences/calendar-feeds/link-modal/input-with-copy-button.directive',
-    'common/angularBootstrap',
-    'leave-absences/calendar-feeds/calendar-feeds.core'
+    'leave-absences/calendar-feeds/calendar-feeds.core',
+    'leave-absences/calendar-feeds/link-modal/calendar-feeds.link-modal.core'
   ], function (angular, CalendarFeedsLinkModalComponent, CalendarFeedsLinkModalService,
     inputWithCopyButton) {
     return angular.module('calendar-feeds.link-modal', [
-      'ui.bootstrap',
-      'calendar-feeds.core'
+      'calendar-feeds.core',
+      'calendar-feeds.link-modal.core'
     ])
       .constant('SITE_HOST', Drupal.absoluteUrl('/'))
       .component(CalendarFeedsLinkModalComponent.__name, CalendarFeedsLinkModalComponent)
