@@ -1,30 +1,32 @@
 /* eslint-env amd */
 
 define([
-  'leave-absences/shared/modules/apis',
-  'common/lodash',
-  'common/services/api'
-], function (apis, _) {
+  'common/lodash'
+], function (_) {
   'use strict';
 
-  apis.factory('CalendarFeedAPI', ['$log', 'api', '$q',
-    function ($log, api, $q) {
-      $log.debug('CalendarFeedAPI');
+  CalendarFeedAPI.__name = 'CalendarFeedAPI';
+  CalendarFeedAPI.$inject = ['$log', '$q', 'api'];
 
-      return api.extend({
-        all: all
-      });
+  function CalendarFeedAPI ($log, api, $q) {
+    $log.debug('CalendarFeedAPI');
 
-      /**
-       * Returns all Calendar Feeds
-       *
-       * @return {Promise} resolved with an array of objects of feeds
-       */
-      function all () {
-        return this.sendGET('LeaveRequestCalendarFeedConfig', 'get', {}, false)
-          .then(function (response) {
-            return response.values;
-          });
-      }
-    }]);
+    return api.extend({
+      all: all
+    });
+
+    /**
+     * Returns all Calendar Feeds
+     *
+     * @return {Promise} resolved with an array of objects of feeds
+     */
+    function all () {
+      return this.sendGET('LeaveRequestCalendarFeedConfig', 'get', {}, false)
+        .then(function (response) {
+          return response.values;
+        });
+    }
+  }
+
+  return CalendarFeedAPI;
 });
