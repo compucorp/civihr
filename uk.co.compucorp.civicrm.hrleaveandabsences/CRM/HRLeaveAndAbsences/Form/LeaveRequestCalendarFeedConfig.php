@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig as LeaveRequestCalendarFeedConfig;
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestCalendarFeedConfigException as InvalidLeaveRequestCalendarFeedConfigException;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 /**
  * Form controller class
@@ -29,7 +30,10 @@ class CRM_HRLeaveAndAbsences_Form_LeaveRequestCalendarFeedConfig extends CRM_Cor
   public function setDefaultValues() {
     if(empty($this->defaultValues)) {
       if ($this->_id) {
-        $this->defaultValues = LeaveRequestCalendarFeedConfig::getValuesArray($this->_id);
+        $results = LeaveRequestCalendarFeedConfig::getValuesArray($this->_id);
+        $this->setDefaultFilterFieldValues('composed_of', $results);
+        $this->setDefaultFilterFieldValues('visible_to', $results);
+        $this->defaultValues = $results;
         $this->defaultValues['_id'] = $this->_id;
       }
     }
@@ -69,6 +73,10 @@ class CRM_HRLeaveAndAbsences_Form_LeaveRequestCalendarFeedConfig extends CRM_Cor
         $params['is_active'] = 0;
       }
 
+      $composedOfValues = $this->extractFromFormValues('composed_of', $params);
+      $visibleToValues = $this->extractFromFormValues('visible_to', $params);
+      $params = array_merge($params, $composedOfValues, $visibleToValues);
+
       $actionDescription = ($this->_action & CRM_Core_Action::UPDATE) ? 'updated' : 'created';
       try {
         $leaveRequestCalendarFeedConfig = LeaveRequestCalendarFeedConfig::create($params);
@@ -99,6 +107,57 @@ class CRM_HRLeaveAndAbsences_Form_LeaveRequestCalendarFeedConfig extends CRM_Cor
       ts('Title'),
       $this->getDAOFieldAttributes('title'),
       TRUE
+    );
+
+    $this->addSelect(
+      'composed_of_department',
+      [
+        'options' => $this->getDepartmentsList(),
+        'multiple' => TRUE,
+        'placeholder' => 'Filter by Department',
+        'label' => 'Staff to include',
+      ]
+    );
+
+    $this->addSelect(
+      'composed_of_location',
+      [
+        'options' => $this->getLocationsList(),
+        'multiple' => TRUE,
+        'placeholder' => 'Filter by Location',
+        'label' => '',
+      ]
+    );
+
+    $this->addSelect(
+      'visible_to_department',
+      [
+        'options' => $this->getDepartmentsList(),
+        'multiple' => TRUE,
+        'placeholder' => 'Filter by Department',
+        'label' => 'Share link with',
+      ]
+    );
+
+    $this->addSelect(
+      'visible_to_location',
+      [
+        'options' => $this->getLocationsList(),
+        'multiple' => TRUE,
+        'placeholder' => 'Filter by Location',
+        'label' => '',
+      ]
+    );
+
+    $this->addSelect(
+      'composed_of_leave_type',
+      [
+        'options' => $this->getAbsenceTypesList(),
+        'multiple' => TRUE,
+        'placeholder' => 'Select leave types',
+        'label' => 'Leave types to include',
+      ],
+      true
     );
 
     $this->addSelect(
@@ -182,4 +241,93 @@ class CRM_HRLeaveAndAbsences_Form_LeaveRequestCalendarFeedConfig extends CRM_Cor
     return $buttons;
   }
 
+  /**
+   * Returns the departments list.
+   *
+   * @return array
+   */
+  private function getDepartmentsList() {
+    return $this->getOptionValuesList('hrjc_department');
+  }
+
+  /**
+   * Returns the locations list.
+   *
+   * @return array
+   */
+  private function getLocationsList() {
+    return $this->getOptionValuesList('hrjc_location');
+  }
+
+  /**
+   * Returns the values for an option group formatted for a
+   * select list options.
+   *
+   * @param array $optionGroupName
+   *
+   * @return array
+   */
+  private function getOptionValuesList($optionGroupName) {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'return' => ['label', 'value'],
+      'option_group_id' => $optionGroupName,
+      'is_active' => 1,
+    ]);
+
+    return array_column($result['values'], 'label', 'value');
+  }
+
+  /**
+   * Returns enabled absence types.
+   *
+   * @return array
+   */
+  private function getAbsenceTypesList() {
+    $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
+    $absenceTypesList = [];
+
+    foreach ($absenceTypes as $absenceType) {
+      $absenceTypesList[$absenceType->id] = $absenceType->title;
+    }
+
+    return $absenceTypesList;
+  }
+
+  /**
+   * Extracts the filter field values for composed_of and visible_to
+   * filters in a format expected by the BAO create method.
+   *
+   * @param string $filterName
+   * @param array $params
+   *
+   * @return mixed
+   */
+  private function extractFromFormValues($filterName, $params) {
+    $formValues[$filterName] = [];
+    foreach($params as $field => $value) {
+      if(strpos($field, $filterName) === 0 && !empty($value)) {
+        $filterFieldName = str_replace($filterName . '_', '', $field);
+        $formValues[$filterName][$filterFieldName] = $value;
+      }
+    }
+
+    return $formValues;
+  }
+
+  /**
+   * Sets the default form field values for the composed_of and visible_to
+   * filter fields.
+   *
+   * @param string $filterName
+   * @param array $params
+   */
+  private function setDefaultFilterFieldValues($filterName, &$params) {
+    foreach ($params as $field => $value) {
+      if ($field === $filterName) {
+        foreach($value as $itemName => $itemValue) {
+          $params[$filterName . '_' . $itemName] = $itemValue;
+        }
+      }
+    }
+  }
 }
