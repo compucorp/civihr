@@ -6,8 +6,8 @@ define([
   'leave-absences/calendar-feeds/link-modal/services/calendar-feeds-link-modal.service',
   'leave-absences/calendar-feeds/link-modal/input-with-copy-button.directive',
   'leave-absences/calendar-feeds/calendar-feeds.core',
-  'leave-absences/calendar-feeds/link-modal/calendar-feeds.link-modal.core',
-  'leave-absences/calendar-feeds/link-modal/calendar-feeds.link-modal.constants'
+  'leave-absences/calendar-feeds/link-modal/link-modal.core',
+  'leave-absences/calendar-feeds/link-modal/link-modal.constants'
 ], function (angular, CalendarFeedsLinkModalComponent, CalendarFeedsLinkModalService,
   inputWithCopyButton) {
   return angular.module('calendar-feeds.link-modal', [
