@@ -8,6 +8,6 @@
     'use strict';
 
     angular.module('calendar-feeds.link-modal.constants', [])
-      .constant('SITE_HOST', Drupal.absoluteUrl('/'));
+      .constant('HOST_URL', Drupal.absoluteUrl('/'));
   });
 }(Drupal));
