@@ -2,9 +2,9 @@
 
 define([
   'common/angular',
-  'leave-absences/calendar-feeds/link-modal/calendar-feeds-link-modal.component',
+  'leave-absences/calendar-feeds/link-modal/component/calendar-feeds-link-modal.component',
   'leave-absences/calendar-feeds/link-modal/services/calendar-feeds-link-modal.service',
-  'leave-absences/calendar-feeds/link-modal/input-with-copy-button.directive',
+  'leave-absences/calendar-feeds/link-modal/directives/input-with-copy-button.directive',
   'leave-absences/calendar-feeds/calendar-feeds.core',
   'leave-absences/calendar-feeds/link-modal/link-modal.core',
   'leave-absences/calendar-feeds/link-modal/link-modal.constants'

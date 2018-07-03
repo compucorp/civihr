@@ -2,7 +2,7 @@
 
 define([
   'common/angular',
-  'leave-absences/calendar-feeds/dropdown-button/calendar-feeds-dropdown-button.component',
+  'leave-absences/calendar-feeds/dropdown-button/components/calendar-feeds-dropdown-button.component',
   'leave-absences/calendar-feeds/calendar-feeds.core',
   'leave-absences/calendar-feeds/calendar-feeds.models',
   'leave-absences/calendar-feeds/link-modal/link-modal.module',
