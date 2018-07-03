@@ -1,5 +1,6 @@
-.chr_leave-report {
+/* stylelint-disable selector-max-compound-selectors, max-nesting-depth */
 
+.chr_leave-report {
   .dropdown-toggle {
     color: $gray-darker;
     padding: 0 10px;
@@ -35,7 +36,7 @@
 
 
 .chr_leave-report__heading {
-  background-color: $gray-lighter;
+  background-color: $crm-lna-report-heading-color;
   border-bottom: 1px solid $chr-panel-border;
 
   .chr_leave-report__export-button {
@@ -45,7 +46,6 @@
 
 
 .chr_leave-report__table {
-
   table,
   .table {
     @include table-first-row-border();
@@ -55,12 +55,11 @@
     border-collapse: separate;
 
     > thead {
-
       > tr {
 
         // The headings have a different background and different color than normal cells
         > th {
-          background: $gray-lighter;
+          background: $crm-lna-report-heading-color;
           border-bottom: 0;
           color: $gray-darker;
           text-transform: capitalize;
@@ -69,14 +68,12 @@
     }
 
     > tbody {
-
       > tr:first-child > td {
         border-color: $table-border-color !important;
       }
     }
 
     > tfoot {
-
       > tr {
         background: $gray-lighter;
       }
@@ -86,11 +83,8 @@
   // The outer table's headings have a different padding than normal cells
   > table,
   > .table {
-
     > thead {
-
       > tr {
-
         > th {
           $padding-y: nth($chr-table-heading-padding, 1);
 
