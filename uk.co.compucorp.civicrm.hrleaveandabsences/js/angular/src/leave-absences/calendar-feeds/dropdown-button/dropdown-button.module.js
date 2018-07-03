@@ -8,7 +8,7 @@ define([
   'leave-absences/calendar-feeds/link-modal/link-modal.module',
   'leave-absences/calendar-feeds/dropdown-button/dropdown-button.core'
 ], function (angular, CalendarFeedsDropdownButtonComponent) {
-  return angular.module('calendar-feeds.dropdown-button', [
+  angular.module('calendar-feeds.dropdown-button', [
     'calendar-feeds.core',
     'calendar-feeds.models',
     'calendar-feeds.link-modal',

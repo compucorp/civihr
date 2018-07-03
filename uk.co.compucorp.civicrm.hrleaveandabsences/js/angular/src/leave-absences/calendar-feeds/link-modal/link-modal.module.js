@@ -10,7 +10,7 @@ define([
   'leave-absences/calendar-feeds/link-modal/link-modal.constants'
 ], function (angular, CalendarFeedsLinkModalComponent, CalendarFeedsLinkModalService,
   inputWithCopyButton) {
-  return angular.module('calendar-feeds.link-modal', [
+  angular.module('calendar-feeds.link-modal', [
     'calendar-feeds.core',
     'calendar-feeds.link-modal.core',
     'calendar-feeds.link-modal.constants'

@@ -7,7 +7,7 @@
   ], function (angular) {
     'use strict';
 
-    return angular.module('calendar-feeds.link-modal.constants', [])
+    angular.module('calendar-feeds.link-modal.constants', [])
       .constant('SITE_HOST', Drupal.absoluteUrl('/'));
   });
 }(Drupal));

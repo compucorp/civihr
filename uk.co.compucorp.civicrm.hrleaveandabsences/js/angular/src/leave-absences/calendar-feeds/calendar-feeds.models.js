@@ -8,7 +8,7 @@ define([
   'common/models/model',
   'common/services/api'
 ], function (angular, CalendarFeedAPI, CalendarFeed, CalendarFeedInstance) {
-  return angular.module('calendar-feeds.models', [
+  angular.module('calendar-feeds.models', [
     'common.apis',
     'common.models'
   ])
