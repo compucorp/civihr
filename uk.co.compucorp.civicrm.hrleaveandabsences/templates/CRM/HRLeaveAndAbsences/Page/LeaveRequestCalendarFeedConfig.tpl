@@ -15,6 +15,9 @@
           <table cellpadding="0" cellspacing="0" border="0" class="table table-responsive hrleaveandabsences-entity-list">
             <thead class="sticky">
             <th>{ts}Title{/ts}</th>
+            <th>{ts}Staff displayed{/ts}</th>
+            <th>{ts}Leave types displayed{/ts}</th>
+            <th>{ts}Link visible to{/ts}</th>
             <th>{ts}Timezone{/ts}</th>
             <th>{ts}Status{/ts}</th>
             <th>{ts}Actions{/ts}</th>
@@ -23,6 +26,9 @@
             {foreach from=$rows item=row}
               <tr id="LeaveRequestCalendarFeedConfig-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}">
                 <td data-field="title">{$row.title|escape}</td>
+                <td>{$row.composed_of_display}</td>
+                <td>{$row.leave_type_display}</td>
+                <td>{$row.visible_to_display}</td>
                 <td>{$row.timezone}</td>
                 <td>{if $row.is_active eq 1} {ts}Enabled{/ts} {else} {ts}Disabled{/ts} {/if}</td>
                 <td>{$row.action|replace:'xx':$row.id}</td>

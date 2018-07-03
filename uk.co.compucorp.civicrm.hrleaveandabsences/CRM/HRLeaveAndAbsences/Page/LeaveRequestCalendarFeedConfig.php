@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig as LeaveRequestCalendarFeedConfig;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 class CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeedConfig extends CRM_Core_Page_Basic {
 
@@ -31,6 +32,9 @@ class CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeedConfig extends CRM_Cor
       $rows[$object->id] = array();
 
       CRM_Core_DAO::storeValues($object, $rows[$object->id]);
+      $rows[$object->id]['leave_type_display'] = $this->getLeaveTypeDisplayText(unserialize($rows[$object->id]['composed_of']));
+      $rows[$object->id]['composed_of_display'] = $this->getFilterDisplayText(unserialize($rows[$object->id]['composed_of']));
+      $rows[$object->id]['visible_to_display'] = $this->getFilterDisplayText(unserialize($rows[$object->id]['visible_to']));
 
       $rows[$object->id]['action'] = CRM_Core_Action::formLink(
         $this->links(),
@@ -165,5 +169,94 @@ class CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeedConfig extends CRM_Cor
     }
 
     return $mask;
+  }
+
+  /**
+   * Returns the text to be displayed for the composed_of or visible_to
+   * filter fields in the calendar feed listing table.
+   *
+   * @param array $filterParams
+   *
+   * @return string
+   */
+  private function getFilterDisplayText($filterParams) {
+    $displayText = '';
+    foreach($filterParams as $field => $value) {
+      if ($field == 'department') {
+        $departmentNames = $this->getOptionValuesList('hrjc_department', $value);
+        $displayText .= 'Department: ' . implode(', ' , $departmentNames) . '. ';
+      }
+
+      if ($field == 'location') {
+        $locationNames = $this->getOptionValuesList('hrjc_location', $value);
+        if ($displayText) {
+          $displayText .= '<br/>';
+        }
+        $displayText .= 'Location: ' . implode(', ' , $locationNames) . '.';
+      }
+    }
+
+    return $displayText ? $displayText : 'All Staff';
+  }
+
+  /**
+   * Returns the text to be displayed for the leave_type filter field of the
+   * composed_of filter in the calendar feed listing table.
+   *
+   * @param array $filterFields
+   *
+   * @return string
+   */
+  private function getLeaveTypeDisplayText($filterFields) {
+    $displayText = '';
+
+    foreach($filterFields as $field => $value) {
+      if ($field === 'leave_type') {
+        $leaveTypeNames = $this->getAbsenceTypesList($value);
+        $displayText .= implode(', ' , $leaveTypeNames);
+      }
+    }
+
+    return $displayText;
+  }
+
+  /**
+   * Returns the value/label for option values of an option group in an array
+   * for the given values.
+   *
+   * @param string $values
+   * @param array $optionGroupName
+   *
+   * @return array
+   */
+  private function getOptionValuesList($optionGroupName, $values) {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'return' => ['label', 'value'],
+      'option_group_id' => $optionGroupName,
+      'value' => ['IN' => $values],
+      'is_active' => 1,
+    ]);
+
+    return array_column($result['values'], 'label', 'value');
+  }
+
+  /**
+   * Returns enabled absence types for the given type ID's
+   *
+   * @param array $typeId
+   *
+   * @return array
+   */
+  private function getAbsenceTypesList($typeId) {
+    $absenceTypes = AbsenceType::getEnabledAbsenceTypes();
+    $absenceTypesList = [];
+
+    foreach ($absenceTypes as $absenceType) {
+      if (in_array($absenceType->id, $typeId)) {
+        $absenceTypesList[$absenceType->id] = $absenceType->title;
+      }
+    }
+
+    return $absenceTypesList;
   }
 }
