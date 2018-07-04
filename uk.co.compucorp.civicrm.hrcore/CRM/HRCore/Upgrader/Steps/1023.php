@@ -9,7 +9,7 @@ trait CRM_HRCore_Upgrader_Steps_1023 {
    */
   public function upgrade_1023() {
 
-    $this->deleteExtendDemographicFields([
+    $this->up1023_deleteExtendDemographicFields([
       'Ethnicity',
       'Religion',
       'Sexual_Orientation',
@@ -21,21 +21,27 @@ trait CRM_HRCore_Upgrader_Steps_1023 {
   /**
    * Deletes Custom Demographic Fields only if they are not used
    *
-   * @param $fieldsToDelete
+   * @param array $fieldsToDelete
    */
-  private function deleteExtendDemographicFields($fieldsToDelete) {
+  private function up1023_deleteExtendDemographicFields($fieldsToDelete) {
     $customGroup = civicrm_api3('CustomGroup', 'get', [
-      'name' => ['LIKE' => 'Extended_Demographics'],
+      'name' => 'Extended_Demographics',
     ]);
     $customGroup = array_shift($customGroup['values']);
     $customFields = civicrm_api3('CustomField', 'get', [
       'name' => ['IN' => $fieldsToDelete],
     ]);
+    $tableName = $customGroup['table_name'];
     foreach ($customFields['values'] as $customField) {
-      $query = 'SELECT * FROM ' . $customGroup['table_name'] . ' WHERE ' . $customField['column_name'] . ' NOT LIKE "%Not Applicable%" AND ' . $customField['column_name'] . ' IS NOT NULL AND ' . $customField['column_name'] . ' <> ""';
-      $dao = CRM_Core_DAO::executeQuery($query);
-      $isCustomFieldUsed = $dao->fetchAll();
-      if (!empty($isCustomFieldUsed)) {
+      $column = $customField['column_name'];
+      $queryFormat = 'SELECT COUNT(id) FROM %s'
+        . ' WHERE %s NOT LIKE "%%Not Applicable%%"'
+        . ' AND %s IS NOT NULL'
+        . ' AND %s <> ""';
+
+      $query = sprintf($queryFormat, $tableName, $column, $column, $column);
+      $customFieldItems = CRM_Core_DAO::singleValueQuery($query);
+      if ($customFieldItems > 0) {
         continue;
       }
 
