@@ -2,7 +2,7 @@
   {include file="CRM/HRLeaveAndAbsences/Form/LeaveRequestCalendarFeedConfig.tpl"}
 {else}
   {if $rows}
-    <div id="bootstrap-theme" class="crm-leave-and-absences-list-block" data-leave-absences-calendar-feeds>
+    <div id="bootstrap-theme" class="crm-leave-and-absences-list-block" data-leave-absences-calendar-feeds-list>
       <div class="alert alert-info">
         {ts}All Calendar feeds make some or all of your staff leave data public to the internet.
           Anyone with the appropriate feed link will be able to view the data available on the feed.

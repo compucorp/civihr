@@ -5,7 +5,7 @@
   modules: [
     { name: 'admin-dashboard' },
     { name: 'absence-tab' },
-    { name: 'calendar-feeds' },
+    { name: 'calendar-feeds.list' },
     { name: 'manager-leave' },
     { name: 'manager-notification-badge' },
     { name: 'my-leave' }

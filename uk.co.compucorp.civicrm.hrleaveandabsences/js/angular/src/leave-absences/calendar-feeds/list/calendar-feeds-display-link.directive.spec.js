@@ -4,7 +4,7 @@ define([
   'common/angular',
   'common/lodash',
   'common/angularMocks',
-  'leave-absences/calendar-feeds/link-modal/calendar-feeds.link-modal.module'
+  'leave-absences/calendar-feeds/list/calendar-feeds.list.module'
 ], function (angular, _) {
   'use strict';
 
@@ -12,7 +12,7 @@ define([
     var $rootScope, displayLink, linkModal, scope;
     var hashValue = _.uniqueId();
 
-    beforeEach(angular.mock.module('calendar-feeds.link-modal', 'leave-absences.templates'));
+    beforeEach(angular.mock.module('calendar-feeds.list', 'leave-absences.templates'));
 
     beforeEach(inject(function ($compile, _$rootScope_, CalendarFeedsLinkModal) {
       var template = '<div data-hash="' + hashValue + '">' +
