@@ -515,6 +515,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1034();
     $this->upgrade_1035();
     $this->upgrade_1036();
+    $this->upgrade_1037();
   }
 
   function upgrade_1001() {
@@ -1192,7 +1193,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'HRJob_Summary',
       'HRJobContract_Summary'
     ];
-    
+
     $result = civicrm_api3('CustomGroup', 'get', [
       'return' => ['id', 'name'],
       'name' => ['IN' => $customGroups],
@@ -1257,6 +1258,25 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     foreach ($childLinks as $itemName => $link) {
       $this->createNavItem($itemName, $permission, $parentId, ['url' => $link]);
     }
+
+    return TRUE;
+  }
+
+  /**
+   * Updates the custom field to view only and disables the custom group
+   *
+   * @return bool
+   */
+  public function upgrade_1037() {
+    civicrm_api3('CustomField', 'get', [
+      'name' => 'Length_Of_Service',
+      'api.CustomField.create' => ['id' => '$value.id', 'is_view' => 1],
+    ]);
+
+    civicrm_api3('CustomGroup', 'get', [
+      'name' => 'Contact_Length_Of_Service',
+      'api.CustomGroup.create' => ['id' => '$value.id', 'is_active' => 0],
+    ]);
 
     return TRUE;
   }
