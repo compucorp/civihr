@@ -2,7 +2,7 @@
   .chr_manage_leave_requests__header {
     @include uniform-padding(20px);
 
-    background-color: $chr-panel-header-background;
+    background-color: $panel-default-heading-bg;
     border-bottom: 1px solid $chr-panel-border;
     margin: 0;
 
@@ -39,7 +39,7 @@
   .chr_manage_leave_requests__sub-header {
     @include uniform-padding(20px);
 
-    background-color: $chr-panel-header-background;
+    background-color: $panel-default-heading-bg;
     border-bottom: 1px solid $chr-panel-border;
     margin: 0;
     padding-top: 15px;
@@ -74,7 +74,7 @@
   .chr_manage_leave_requests__status_container {
     @include uniform-padding(20px);
 
-    background-color: $chr-panel-header-background;
+    background-color: $panel-default-heading-bg;
 
     > div {
       padding-left: 15px;
@@ -105,7 +105,7 @@
     }
 
     .panel-body, .chr_vertical_tabs {
-      background-color: $chr-panel-header-background;
+      background-color: $panel-default-heading-bg;
     }
 
     input[type="search"] {

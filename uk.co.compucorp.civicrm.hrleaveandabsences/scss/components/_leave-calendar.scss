@@ -260,7 +260,7 @@ $chr-leave-calendar-legend-badge-square-hours-font-size:   6px;
 }
 
 .chr_leave-calendar__month-header {
-  background: $panel-default-heading-bg;
+  background: $panel-default-heading-bg !important;
 
   .panel-title {
     font-size: 16px;

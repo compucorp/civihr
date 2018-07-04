@@ -3,7 +3,7 @@
 
   padding-top: 15px;
   margin: 0;
-  background-color: $chr-panel-header-background;
+  background-color: $panel-default-heading-bg;
   border-bottom: 1px solid $chr-panel-border;
 
   .checkbox {
@@ -20,7 +20,7 @@
 .chr_manager_calendar__sub-header {
   @include uniform-padding(20px);
 
-  background-color: $chr-panel-header-background;
+  background-color: $panel-default-heading-bg;
   margin: 0;
 
   @media screen and (max-width: $screen-md-max) {
