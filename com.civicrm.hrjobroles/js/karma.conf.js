@@ -70,6 +70,9 @@ module.exports = function (config) {
       }
     },
     reporters: argv.reporters ? argv.reporters.split(',') : ['spec'],
+    specReporter: {
+      suppressSkipped: true
+    },
     junitReporter: {
       outputDir: extPath + 'test-reports',
       useBrowserName: false,
