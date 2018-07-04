@@ -5,7 +5,8 @@ define([
   'common/lodash',
   'leave-absences/calendar-feeds/services/apis/calendar-feed.api.data',
   'common/angularMocks',
-  'leave-absences/calendar-feeds/dropdown-button/dropdown-button.module'
+  'leave-absences/calendar-feeds/dropdown-button/dropdown-button.module',
+  'leave-absences/calendar-feeds/services/apis/calendar-feed.api.mock'
 ], function (angular, _, calendarFeedAPIData) {
   'use strict';
 
