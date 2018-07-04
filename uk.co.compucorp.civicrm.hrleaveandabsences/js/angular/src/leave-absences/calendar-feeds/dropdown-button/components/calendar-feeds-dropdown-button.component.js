@@ -1,7 +1,8 @@
 /* eslint-env amd */
 
 define([], function () {
-  CalendarFeedsDropdownButtonController.$inject = ['CalendarFeed', 'CalendarFeedsLinkModal'];
+  CalendarFeedsDropdownButtonController.$inject = [
+    'CalendarFeed', 'CalendarFeedsLinkModal', 'checkPermissions', 'shared-settings'];
 
   return {
     __name: 'calendarFeedsDropdownButton',
@@ -15,9 +16,11 @@ define([], function () {
     }]
   };
 
-  function CalendarFeedsDropdownButtonController (CalendarFeed, CalendarFeedsLinkModal) {
+  function CalendarFeedsDropdownButtonController (
+    CalendarFeed, CalendarFeedsLinkModal, checkPermissions, sharedSettings) {
     var vm = this;
 
+    vm.canCreateNewFeed = false;
     vm.feeds = [];
     vm.loading = {
       feeds: false
@@ -27,7 +30,20 @@ define([], function () {
 
     (function init () {
       loadFeeds();
+      defineIfCanCreateFeeds();
     }());
+
+    /**
+     * Defines if user can create feeds based on permissions
+     *
+     * @return {Promise}
+     */
+    function defineIfCanCreateFeeds () {
+      return checkPermissions('can administer calendar feeds')
+        .then(function (canAdministerCalendarFeeds) {
+          vm.canCreateNewFeed = !!canAdministerCalendarFeeds;
+        });
+    }
 
     /**
      * Loads Calendar Feeds

@@ -24,6 +24,8 @@ define([
     ]));
 
     describe('all()', function () {
+      var apiCallArgs;
+
       beforeEach(function () {
         spyOn(CalendarFeedAPI, 'sendGET').and.callThrough();
         CalendarFeedAPI
@@ -33,11 +35,17 @@ define([
           });
         $rootScope.$digest();
         $httpBackend.flush();
+
+        apiCallArgs = CalendarFeedAPI.sendGET.calls.mostRecent().args;
       });
 
       it('calls the "LeaveRequestCalendarFeed.get" endpoint', function () {
-        expect(CalendarFeedAPI.sendGET.calls.mostRecent().args[0]).toBe('LeaveRequestCalendarFeedConfig');
-        expect(CalendarFeedAPI.sendGET.calls.mostRecent().args[1]).toBe('get');
+        expect(apiCallArgs[0]).toBe('LeaveRequestCalendarFeedConfig');
+        expect(apiCallArgs[1]).toBe('get');
+      });
+
+      it('fetches only enabled feeds', function () {
+        expect(apiCallArgs[2].is_active).toBe(true);
       });
 
       it('returns expected data', function () {

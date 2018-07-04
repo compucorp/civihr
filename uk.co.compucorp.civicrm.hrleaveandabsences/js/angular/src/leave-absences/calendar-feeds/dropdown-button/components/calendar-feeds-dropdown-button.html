@@ -14,5 +14,12 @@
       <crm-loading show="!dropdownButton.loading.feeds"></crm-loading>
       <a ng-if="!dropdownButton.loading.feeds">No calendar feeds yet.</a>
     </li>
+    <li role="separator" class="divider" ng-if="dropdownButton.canCreateNewFeed"></li>
+    <li ng-if="dropdownButton.canCreateNewFeed">
+      <a href="/civicrm/admin/leaveandabsences/calendar-feeds?action=add&reset=1"
+        target="_blank">
+        <i class="fa fa-plus"></i> Add new feed
+      </a>
+    </li>
   </ul>
 </div>

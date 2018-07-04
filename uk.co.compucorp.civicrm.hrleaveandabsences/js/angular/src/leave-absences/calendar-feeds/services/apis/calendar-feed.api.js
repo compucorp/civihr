@@ -21,7 +21,8 @@ define([
      * @return {Promise} resolved with an array of objects of feeds
      */
     function all () {
-      return this.sendGET('LeaveRequestCalendarFeedConfig', 'get', {}, false)
+      return this.sendGET('LeaveRequestCalendarFeedConfig', 'get',
+        { is_active: true })
         .then(function (response) {
           return response.values;
         });
