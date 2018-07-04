@@ -4,7 +4,7 @@ define([
   'common/angular',
   'leave-absences/shared/modules/shared-settings'
 ], function (angular) {
-  return angular.module('calendar-feeds.core', [
+  angular.module('calendar-feeds.core', [
     'leave-absences.settings'
   ]);
 });

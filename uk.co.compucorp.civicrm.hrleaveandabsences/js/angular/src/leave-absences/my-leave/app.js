@@ -47,6 +47,7 @@ define([
   'leave-absences/shared/modules/shared-settings',
   'leave-absences/shared/services/leave-calendar.service',
   'leave-absences/shared/services/leave-popup.service',
+  'leave-absences/calendar-feeds/dropdown-button/dropdown-button.module',
   'leave-absences/my-leave/components/my-leave-container.component',
   'leave-absences/my-leave/modules/config'
 ], function (angular) {
@@ -68,6 +69,7 @@ define([
     'leave-absences.models',
     'leave-absences.services',
     'leave-absences.settings',
+    'calendar-feeds.dropdown-button',
     'my-leave.components',
     'my-leave.config'
   ])

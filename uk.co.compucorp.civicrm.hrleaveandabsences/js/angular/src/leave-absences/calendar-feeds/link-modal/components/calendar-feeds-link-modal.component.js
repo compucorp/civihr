@@ -12,7 +12,7 @@ define([
     controller: _.noop,
     controllerAs: 'linkModal',
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sourcePath + 'calendar-feeds/link-modal/calendar-feeds-link-modal.html';
+      return sharedSettings.sourcePath + 'calendar-feeds/link-modal/components/calendar-feeds-link-modal.html';
     }]
   };
 });

@@ -4,20 +4,21 @@ define([
   'common/angular',
   'common/lodash',
   'common/angularMocks',
-  'leave-absences/calendar-feeds/link-modal/calendar-feeds.link-modal.module'
+  'leave-absences/calendar-feeds/link-modal/link-modal.module'
 ], function (angular, _) {
   'use strict';
 
   describe('CalendarFeedsLinkModalService', function () {
     var $rootScope, $uibModal, CalendarFeedsLinkModal,
-      calendarFeedsLinkModalComponent;
+      calendarFeedsLinkModalComponent, HOST_URL;
 
     beforeEach(angular.mock.module('calendar-feeds.link-modal', function ($compileProvider,
       $provide) {
       mockCalendarFeedsLinkModalComponent($compileProvider, $provide);
     }));
 
-    beforeEach(inject(function (_$rootScope_, _$uibModal_, _CalendarFeedsLinkModal_) {
+    beforeEach(inject(function (_$rootScope_, _$uibModal_, _CalendarFeedsLinkModal_, _HOST_URL_) {
+      HOST_URL = _HOST_URL_;
       $rootScope = _$rootScope_;
       $uibModal = _$uibModal_;
       CalendarFeedsLinkModal = _CalendarFeedsLinkModal_;
@@ -30,10 +31,13 @@ define([
     });
 
     describe('open()', function () {
-      var url = 'https://civihr.org/';
+      var expectedFeedUrl;
+      var hash = 'jahmaljahsurjahber';
 
       beforeEach(function () {
-        CalendarFeedsLinkModal.open(url);
+        expectedFeedUrl = HOST_URL + 'civicrm/calendar-feed?hash=' + hash;
+
+        CalendarFeedsLinkModal.open(hash);
         $rootScope.$digest();
       });
 
@@ -43,8 +47,8 @@ define([
         }));
       });
 
-      it('passes the url to the link modal component', function () {
-        expect(calendarFeedsLinkModalComponent.url).toBe(url);
+      it('constructs and passes the url to the link modal component', function () {
+        expect(calendarFeedsLinkModalComponent.url).toBe(expectedFeedUrl);
       });
 
       it('passes the dismiss function to the link modal component', function () {
