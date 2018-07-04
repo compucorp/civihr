@@ -12,7 +12,13 @@
    * directly on the tab
    */
   function trackContactTabVirtualPageviews () {
-    var contactPagePath = window.location.pathname + '?reset=1&cid=' + CRM.contactId;
+    var contactPagePath;
+
+    if (!dataLayer) {
+      return;
+    }
+
+    contactPagePath = window.location.pathname + '?reset=1&cid=' + CRM.contactId;
 
     CRM.$('#mainTabContainer').on('tabsactivate', function (event, ui) {
       var tabName = ui.newTab[0].id.replace('tab_', '');
@@ -23,4 +29,4 @@
       });
     });
   }
-}(window, CRM, dataLayer));
+}(window, CRM, (typeof dataLayer !== 'undefined' ? dataLayer : null)));
