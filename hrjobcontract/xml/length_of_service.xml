@@ -19,23 +19,5 @@
     </CustomGroup>
   </CustomGroups>
   <CustomFields>
-    <CustomField>
-      <name>Length_Of_Service</name>
-      <label>Length of Service</label>
-      <data_type>Int</data_type>
-      <html_type>Text</html_type>
-      <is_required>0</is_required>
-      <is_searchable>1</is_searchable>
-      <is_search_range>0</is_search_range>
-      <weight>1</weight>
-      <is_active>1</is_active>
-      <is_view>0</is_view>
-      <text_length>16</text_length>
-      <note_columns>60</note_columns>
-      <note_rows>4</note_rows>
-      <column_name>length_of_service</column_name>
-      <custom_group_name>Contact_Length_Of_Service</custom_group_name>
-      <in_selector>1</in_selector>
-    </CustomField>
   </CustomFields>
 </CustomData>
