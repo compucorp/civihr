@@ -7,6 +7,8 @@
     }
   };
 
+  CRM.permissions = [];
+
   CRM.url({
     back: '/index.php?q=*path*&*query*',
     front: '/index.php?q=*path*&*query*'
