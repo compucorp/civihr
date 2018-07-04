@@ -1268,23 +1268,15 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1037() {
-    $customField = civicrm_api3('CustomField', 'get', [
+    civicrm_api3('CustomField', 'get', [
       'name' => 'Length_Of_Service',
+      'api.CustomField.create' => ['id' => '$value.id', 'is_view' => 1],
     ]);
-    civicrm_api3('CustomField', 'create', [
-        'id' => $customField['id'],
-        'is_view' => 1,
-      ]
-    );
 
-    $customGroup = civicrm_api3('CustomGroup', 'get', [
+    civicrm_api3('CustomGroup', 'get', [
       'name' => 'Contact_Length_Of_Service',
+      'api.CustomGroup.create' => ['id' => '$value.id', 'is_active' => 0],
     ]);
-    civicrm_api3('CustomGroup', 'create', [
-        'id' => $customGroup['id'],
-        'is_active' => 0,
-      ]
-    );
 
     return TRUE;
   }
