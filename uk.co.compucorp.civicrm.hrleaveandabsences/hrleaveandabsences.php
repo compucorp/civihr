@@ -485,16 +485,18 @@ function hrleaveandabsences_addContactMenuActions(ActionsMenu $menu){
 }
 
 /**
- * Implementation of hook_civicrm_pageRun
+ * Implements hrcore_civicrm_pageRun.
+ *
+ * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_pageRun/
  */
 function hrleaveandabsences_civicrm_pageRun(&$page) {
-  // Adds the baseURL var to all L&A pages
-  CRM_Core_Resources::singleton()->addVars('leaveAndAbsences', [
-    'attachmentToken' => CRM_Core_Page_AJAX_Attachment::createToken(),
-    'baseURL' => CRM_Core_Resources::singleton()->getUrl('uk.co.compucorp.civicrm.hrleaveandabsences'),
-    'contactId' => CRM_Utils_Request::retrieve('cid', 'Integer'),
-    'loggedInUserId' => CRM_Core_Session::getLoggedInContactID(),
-  ]);
+  $hooks = [
+    new CRM_HRLeaveAndAbsences_Hook_PageRun_AddLeaveAndAbsencesVar(),
+  ];
+
+  foreach ($hooks as $hook) {
+    $hook->handle($page);
+  }
 }
 //----------------------------------------------------------------------------//
 //                               Helper Functions                             //
