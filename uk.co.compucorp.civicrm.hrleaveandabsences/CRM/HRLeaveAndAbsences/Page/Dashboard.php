@@ -8,13 +8,6 @@ class CRM_HRLeaveAndAbsences_Page_Dashboard extends CRM_Core_Page {
     CRM_Utils_System::setTitle(ts('Dashboard'));
 
     CRM_Core_Resources::singleton()
-      ->addPermissions([
-        'access leave and absences',
-        'administer leave and absences',
-        'access leave and absences in ssp',
-        'manage leave and absences in ssp',
-        'can administer calendar feeds'
-      ])
       ->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css')
       ->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/angular/dist/admin-dashboard.min.js', 1010)
       ->addVars('leaveAndAbsences', [
