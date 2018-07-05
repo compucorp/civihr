@@ -251,7 +251,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
       return;
     }
 
-    $inaccessibleFeedConfigs = $this->getInAccessibleFeedConfigsForCurrentUser($limitedVisibilityFeedConfigs);
+    $inaccessibleFeedConfigs = $this->getInaccessibleFeedConfigIDsForCurrentUser($limitedVisibilityFeedConfigs);
 
     if (empty($inaccessibleFeedConfigs)) {
       return;
@@ -272,17 +272,15 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
    *
    * @return array
    */
-  private function getInAccessibleFeedConfigsForCurrentUser($limitedVisibilityFeedConfigs) {
+  private function getInaccessibleFeedConfigIDsForCurrentUser($limitedVisibilityFeedConfigs) {
     $accessibleDepartments = $this->getAccessibleDepartmentsForLoggedInContact();
     $accessibleLocations = $this->getAccessibleLocationsForLoggedInContact();
 
-    $inaccessibleFeedConfigs = $this->getInAccessibleFeedConfigs(
+    return $this->getInaccessibleFeedConfigs(
       $limitedVisibilityFeedConfigs,
       $accessibleDepartments,
       $accessibleLocations
     );
-
-    return $inaccessibleFeedConfigs;
   }
   /**
    * Returns feeds that have limited visibility i.e feeds
@@ -405,7 +403,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
    *
    * @return array
    */
-  public function getInAccessibleFeedConfigs(
+  public function getInaccessibleFeedConfigs(
     $limitedVisibilityFeedConfigs,
     $accessibleDepartments,
     $accessibleLocations
