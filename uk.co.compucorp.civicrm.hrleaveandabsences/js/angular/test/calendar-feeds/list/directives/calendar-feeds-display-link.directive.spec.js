@@ -4,7 +4,7 @@ define([
   'common/angular',
   'common/lodash',
   'common/angularMocks',
-  'leave-absences/calendar-feeds/list/calendar-feeds.list.module'
+  'leave-absences/calendar-feeds/list/list.module'
 ], function (angular, _) {
   'use strict';
 

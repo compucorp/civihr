@@ -10,8 +10,6 @@ define([
 
   function DisplayLink (linkModal) {
     return {
-      controller: _.noop,
-      controllerAs: 'displayLink',
       link: DisplayLinkFn,
       restrict: 'C'
     };

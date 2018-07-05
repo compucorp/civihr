@@ -1,7 +1,7 @@
 (function (require) {
   require([
     'common/angular',
-    'leave-absences/calendar-feeds/list/calendar-feeds.list.module'
+    'leave-absences/calendar-feeds/list/list.module'
   ],
   function (angular) {
     angular.bootstrap(
