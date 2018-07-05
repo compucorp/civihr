@@ -128,6 +128,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeExpiryLogTest extends BaseHea
 
     $dateNow = new DateTime();
     $expiryLog = LeaveBalanceChangeExpiryLog::create($params);
-    $this->assertEquals($dateNow, new DateTime($expiryLog->created_date), 10);
+    $this->assertEquals($dateNow, new DateTime($expiryLog->created_date), '', 10);
   }
 }

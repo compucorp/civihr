@@ -1,3 +1,5 @@
+var argv = require('yargs').argv;
+
 module.exports = function (config) {
   var civicrmPath = '../../../../../../';
   var civihrPath = 'tools/extensions/civihr/';
@@ -70,6 +72,10 @@ module.exports = function (config) {
           '--remote-debugging-port=9222'
         ]
       }
+    },
+    reporters: argv.reporters ? argv.reporters.split(',') : ['spec'],
+    specReporter: {
+      suppressSkipped: true
     },
     junitReporter: {
       outputDir: extPath + 'test-reports',
