@@ -328,6 +328,23 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create($params, false);
   }
 
+  public function testCreateThrowsAnExceptionWhenAttemptingToApproveOwnLeaveRequest() {
+    $params = $this->getDefaultParams();
+    $leaveRequestStatuses = LeaveRequest::getStatuses();
+
+    $params['status_id'] = $leaveRequestStatuses['awaiting_approval'];
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+
+    $this->setExpectedException(
+      'RuntimeException', "You can't approve your own leave requests");
+
+    $params['id'] = $leaveRequest->id;
+    $params['status_id'] = $leaveRequestStatuses['approved'];
+
+    $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create($params, false);
+  }
+
   /**
    * @expectedException RuntimeException
    * @expectedExceptionMessage You are not allowed to change the request dates
