@@ -16,12 +16,12 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1030 {
       'option_group_id' => 'hrleaveandabsences_sickness_reason',
     ]);
   
-    $result = $this->up1030_getLeaveRequestTotal();
+    $result = $this->up1030_getTotalSicknessReasonRequests();
     if ($result == 0) {
-      $this->up1030_deleteOldSicknessReasons($oldSicknessReasons['values']);
+      $this->up1030_deleteOptionValues($oldSicknessReasons['values']);
     }
     else {
-      $this->up1030_disableOldSicknessReasons($oldSicknessReasons['values']);
+      $this->up1030_disableOptionValues($oldSicknessReasons['values']);
     }
     
     $this->up1030_addNewSicknessReasons();
@@ -34,7 +34,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1030 {
    *
    * @return int
    */
-  private function up1030_getLeaveRequestTotal() {
+  private function up1030_getTotalSicknessReasonRequests() {
     $leaveRequest = new LeaveRequest();
     $leaveRequest->whereAdd('sickness_reason IS NOT NULL');
     $leaveRequest->find();
@@ -48,7 +48,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1030 {
    *
    * @param array $sicknessReasons
    */
-  private function up1030_disableOldSicknessReasons($sicknessReasons) {
+  private function up1030_disableOptionValues($sicknessReasons) {
     foreach ($sicknessReasons as $id => $sicknessReason) {
       civicrm_api3('OptionValue', 'create', [
         'id' => $id,
@@ -62,7 +62,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1030 {
    *
    * @param array $sicknessReasons
    */
-  private function up1030_deleteOldSicknessReasons($sicknessReasons) {
+  private function up1030_deleteOptionValues($sicknessReasons) {
     foreach ($sicknessReasons as $id => $sicknessReason) {
       civicrm_api3('OptionValue', 'delete', ['id' => $id]);
     }
@@ -97,8 +97,17 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1030 {
       ['label' => 'Other', 'name' => 'other']
     ];
     
+    $optionGroupId = 'hrleaveandabsences_sickness_reason';
     foreach ($newSicknessOptions as $sicknessReason) {
-      $sicknessReason['option_group_id'] = 'hrleaveandabsences_sickness_reason';
+      $result = civicrm_api3('OptionValue', 'getcount', [
+        'option_group_id' => $optionGroupId,
+        'name' => $sicknessReason,
+      ]);
+      if ($result > 0) {
+        continue;
+      }
+      
+      $sicknessReason['option_group_id'] = $optionGroupId;
       civicrm_api3('OptionValue', 'create', $sicknessReason);
     }
   }
