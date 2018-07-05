@@ -17,12 +17,8 @@ define(function () {
      * @param {String} hash - the unique feed hash.
      */
     function open (hash) {
-      var appendToElement = $document.find('#bootstrap-theme');
+      var modalContainerElement = getModalContainerElement();
       var url = HOST_URL + 'civicrm/calendar-feed?hash=' + hash;
-
-      if (appendToElement.length === 0) {
-        appendToElement = $document.find('body');
-      }
 
       $uibModal.open({
         controllerAs: 'modal',
@@ -32,13 +28,31 @@ define(function () {
           this.url = url;
           this.dismiss = $uibModalInstance.dismiss;
         }],
-        appendTo: appendToElement.eq(0),
+        appendTo: modalContainerElement,
         resolve: {
           url: function () {
             return url;
           }
         }
       });
+    }
+
+    /**
+     * Returns the element that the modal should be appended to, which is either
+     * #bootstrap-theme or the body if the former is not available. This is
+     * done to correctly display the modal where Bootstrap CSS rules
+     * are accessible.
+     *
+     * @return {Object} an HTML Element reference.
+     */
+    function getModalContainerElement () {
+      var modalContainerElement = $document.find('#bootstrap-theme');
+
+      if (modalContainerElement.length === 0) {
+        modalContainerElement = $document.find('body');
+      }
+
+      return modalContainerElement.eq(0);
     }
   }
 });
