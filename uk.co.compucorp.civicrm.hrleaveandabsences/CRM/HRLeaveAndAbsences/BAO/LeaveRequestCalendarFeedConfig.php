@@ -251,14 +251,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
       return;
     }
 
-    $accessibleDepartments = $this->getAccessibleDepartmentsForLoggedInContact();
-    $accessibleLocations = $this->getAccessibleLocationsForLoggedInContact();
-
-    $inaccessibleFeedConfigs = $this->getNotAccessibleFeedConfigs(
-      $limitedVisibilityFeedConfigs,
-      $accessibleDepartments,
-      $accessibleLocations
-    );
+    $inaccessibleFeedConfigs = $this->getInAccessibleFeedConfigsForCurrentUser($limitedVisibilityFeedConfigs);
 
     if (empty($inaccessibleFeedConfigs)) {
       return;
@@ -271,6 +264,26 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
     return $clauses;
   }
 
+  /**
+   * Gets the ids of the feeds that are not accessible to the current user from the
+   * list of feed configs passed in.
+   *
+   * @param array $limitedVisibilityFeedConfigs
+   *
+   * @return array
+   */
+  private function getInAccessibleFeedConfigsForCurrentUser($limitedVisibilityFeedConfigs) {
+    $accessibleDepartments = $this->getAccessibleDepartmentsForLoggedInContact();
+    $accessibleLocations = $this->getAccessibleLocationsForLoggedInContact();
+
+    $inaccessibleFeedConfigs = $this->getInAccessibleFeedConfigs(
+      $limitedVisibilityFeedConfigs,
+      $accessibleDepartments,
+      $accessibleLocations
+    );
+
+    return $inaccessibleFeedConfigs;
+  }
   /**
    * Returns feeds that have limited visibility i.e feeds
    * that do not have 'viewable by all' set for it. viewable by
@@ -344,6 +357,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
    */
   private function getAccessibleDepartmentsForLoggedInContact() {
     $departments = $this->getDepartmentsList();
+
     return $this->getLoggedInContactJobRoleAccessFor('department', $departments);
   }
 
@@ -355,6 +369,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
    */
   private function getAccessibleLocationsForLoggedInContact() {
     $locations = $this->getLocationsList();
+
     return $this->getLoggedInContactJobRoleAccessFor('location', $locations);
   }
 
@@ -390,7 +405,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
    *
    * @return array
    */
-  public function getNotAccessibleFeedConfigs($limitedVisibilityFeedConfigs, $accessibleDepartments, $accessibleLocations) {
+  public function getInAccessibleFeedConfigs(
+    $limitedVisibilityFeedConfigs,
+    $accessibleDepartments,
+    $accessibleLocations
+  ) {
     $inaccessibleFeeds = [];
     foreach ($limitedVisibilityFeedConfigs as $feedId => $feedVisibility) {
       $hasDepartmentAccess = $hasLocationAccess = FALSE;

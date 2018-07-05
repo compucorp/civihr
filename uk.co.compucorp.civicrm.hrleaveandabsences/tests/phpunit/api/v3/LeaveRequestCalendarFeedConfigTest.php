@@ -300,6 +300,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
     ];
 
     $params = array_merge($defaultParameters, $params);
+
     return LeaveRequestCalendarFeedConfig::create($params);
   }
 

@@ -128,13 +128,13 @@ class api_v3_ContactHRJobRoleTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
     civicrm_api3('ContactHrJobRoles', 'get', ['contact_id' => [$operator => [1]]]);
   }
 
-  public function testGeDoesNotThrowExceptionWhenUsingTheINOperatorForTheContactIdParameter() {
+  public function testGetDoesNotThrowExceptionWhenUsingTheINOperatorForTheContactIdParameter() {
     $values = civicrm_api3('ContactHrJobRoles', 'get', ['contact_id' => ['IN' => [1]]]);
 
     $this->assertEquals(0, $values['is_error']);
   }
 
-  public function testGeDoesNotThrowExceptionWhenUsingTheEqualsToOperatorForTheContactIdParameter() {
+  public function testGetDoesNotThrowExceptionWhenUsingTheEqualsToOperatorForTheContactIdParameter() {
     $values = civicrm_api3('ContactHrJobRoles', 'get', ['contact_id' => 1]);
 
     $this->assertEquals(0, $values['is_error']);
