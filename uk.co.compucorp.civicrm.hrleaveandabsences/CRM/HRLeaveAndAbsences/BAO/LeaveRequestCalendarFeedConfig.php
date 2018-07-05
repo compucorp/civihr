@@ -232,4 +232,202 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
       return [];
     }
   }
+
+  /**
+   * Implementation of the addSelectWhereClause:
+   * This ensures that the administrator (user with 'can administer calendar feeds')
+   * permission can access all feed configs while users without this permission can
+   * only access feed configs which they have visibility access to. i.e if they belong
+   * to any of the department or location visibility set  for a feed config.
+   */
+  public function addSelectWhereClause() {
+    if (CRM_Core_Permission::check([['can administer calendar feeds']])) {
+      return;
+    }
+
+    $limitedVisibilityFeedConfigs = $this->getLimitedVisibilityFeedConfigs();
+
+    if (empty($limitedVisibilityFeedConfigs)) {
+      return;
+    }
+
+    $inaccessibleFeedConfigs = $this->getInaccessibleFeedConfigIDsForCurrentUser($limitedVisibilityFeedConfigs);
+
+    if (empty($inaccessibleFeedConfigs)) {
+      return;
+    }
+
+    $clauses['id'] = 'NOT IN (' . implode(',', $inaccessibleFeedConfigs) . ')';
+
+    CRM_Utils_Hook::selectWhereClause($this, $clauses);
+
+    return $clauses;
+  }
+
+  /**
+   * Gets the ids of the feeds that are not accessible to the current user from the
+   * list of feed configs passed in.
+   *
+   * @param array $limitedVisibilityFeedConfigs
+   *
+   * @return array
+   */
+  private function getInaccessibleFeedConfigIDsForCurrentUser($limitedVisibilityFeedConfigs) {
+    $accessibleDepartments = $this->getAccessibleDepartmentsForLoggedInContact();
+    $accessibleLocations = $this->getAccessibleLocationsForLoggedInContact();
+
+    return $this->getInaccessibleFeedConfigs(
+      $limitedVisibilityFeedConfigs,
+      $accessibleDepartments,
+      $accessibleLocations
+    );
+  }
+  /**
+   * Returns feeds that have limited visibility i.e feeds
+   * that do not have 'viewable by all' set for it. viewable by
+   * all means the visible_to field has an empty array value.
+   * The feed configs are returned in an array of the visibility
+   * settings indexed by the feed config Id.
+   *
+   * @return array
+   */
+  private function getLimitedVisibilityFeedConfigs() {
+    $feedConfig = new self();
+    $feedConfig->addWhere('visible_to !=' . serialize([]));
+    $feedConfig->find();
+
+    $results = [];
+    while($feedConfig->fetch()) {
+      $visibleTo = unserialize($feedConfig->visible_to);
+      if (!empty($visibleTo['department'])){
+        $results[$feedConfig->id]['department'] = $visibleTo['department'];
+      }
+      if (!empty($visibleTo['location'])){
+        $results[$feedConfig->id]['location'] = $visibleTo['location'];
+      }
+    }
+
+    return $results;
+  }
+
+  /**
+   * Returns the departments list.
+   *
+   * @return array
+   */
+  private function getDepartmentsList() {
+    return $this->getOptionValuesList('hrjc_department');
+  }
+
+  /**
+   * Returns the locations list.
+   *
+   * @return array
+   */
+  private function getLocationsList() {
+    return $this->getOptionValuesList('hrjc_location');
+  }
+
+  /**
+   * Returns the values for an option group formatted
+   * as an array.
+   *
+   * @param array $optionGroupName
+   *
+   * @return array
+   */
+  private function getOptionValuesList($optionGroupName) {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'return' => ['value'],
+      'option_group_id' => $optionGroupName,
+      'is_active' => 1,
+    ]);
+
+    return array_column($result['values'], 'value');
+  }
+
+
+  /**
+   * Gets the departments the logged in user has access to from the list of
+   * active departments.
+   *
+   * @return array
+   */
+  private function getAccessibleDepartmentsForLoggedInContact() {
+    $departments = $this->getDepartmentsList();
+
+    return $this->getLoggedInContactJobRoleAccessFor('department', $departments);
+  }
+
+  /**
+   * Gets the locations the logged in user has access to from the list of
+   * active locations.
+   *
+   * @return array
+   */
+  private function getAccessibleLocationsForLoggedInContact() {
+    $locations = $this->getLocationsList();
+
+    return $this->getLoggedInContactJobRoleAccessFor('location', $locations);
+  }
+
+  /**
+   * Gets the options the logged in user has access to based on the field
+   * to search by on the HRJobRoles entity and the options given.
+   *
+   * @param string $field
+   * @param array $options
+   *
+   * @return array
+   */
+  private function getLoggedInContactJobRoleAccessFor($field, $options) {
+    if (empty($options)) {
+      return [];
+    }
+
+    $result = civicrm_api3('ContactHrJobRoles', 'get', [
+      $field => ['IN' => $options],
+      'contact_id' => CRM_Core_Session::getLoggedInContactID(),
+    ]);
+
+    return array_unique(array_column($result['values'], $field));
+  }
+
+  /**
+   * Returns the Feed Configs that the logged in user does not have visibility
+   * access to based on the given parameters.
+   *
+   * @param array $limitedVisibilityFeedConfigs
+   * @param array $accessibleDepartments
+   * @param array $accessibleLocations
+   *
+   * @return array
+   */
+  public function getInaccessibleFeedConfigs(
+    $limitedVisibilityFeedConfigs,
+    $accessibleDepartments,
+    $accessibleLocations
+  ) {
+    $inaccessibleFeeds = [];
+    foreach ($limitedVisibilityFeedConfigs as $feedId => $feedVisibility) {
+      $hasDepartmentAccess = $hasLocationAccess = FALSE;
+      if (!empty($feedVisibility['department'])) {
+        if (array_intersect($feedVisibility['department'], $accessibleDepartments)) {
+          $hasDepartmentAccess = TRUE;
+        }
+      }
+
+      if (!empty($feedVisibility['location'])) {
+        if (array_intersect($feedVisibility['location'], $accessibleLocations)) {
+          $hasLocationAccess = TRUE;
+        }
+      }
+
+      if (!$hasDepartmentAccess && !$hasLocationAccess) {
+        $inaccessibleFeeds[] = $feedId;
+      }
+    }
+
+    return $inaccessibleFeeds;
+  }
 }
