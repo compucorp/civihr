@@ -11,7 +11,7 @@
       {if $action neq 8}
         <div class="form-group row">
           <div class="col-sm-3">{$form.title.label}</div>
-          <div class="col-sm-9">{$form.title.html}</div>
+          <div class="col-sm-9 form-group">{$form.title.html}</div>
         </div>
         <div class="form-group row composed_of_department">
           <div class="col-sm-3">{$form.composed_of_department.label}</div>
@@ -23,7 +23,10 @@
         </div>
         <div class="form-group row">
           <div class="col-sm-3"></div>
-          <div class="col-sm-9 pull-left composed_of_help_text"></div>
+          <div class="col-sm-9 pull-left text-muted form-group">
+            <span>*</span>
+            <span class="composed_of_help_text"></span>
+          </div>
         </div>
         <div class="form-group row visible_to_department">
           <div class="col-sm-3">{$form.visible_to_department.label}</div>
@@ -35,7 +38,10 @@
         </div>
         <div class="form-group row">
           <div class="col-sm-3"></div>
-          <div class="col-sm-9 pull-left visible_to_help_text"></div>
+          <div class="col-sm-9 pull-left text-muted form-group">
+            <span>*</span>
+            <span class="visible_to_help_text"></span>
+          </div>
         </div>
         <div class="form-group row composed_of_leave_type">
           <div class="col-sm-3">{$form.composed_of_leave_type.label}</div>
