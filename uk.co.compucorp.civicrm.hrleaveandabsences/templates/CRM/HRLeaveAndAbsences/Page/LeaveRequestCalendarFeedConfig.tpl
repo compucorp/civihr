@@ -2,7 +2,7 @@
   {include file="CRM/HRLeaveAndAbsences/Form/LeaveRequestCalendarFeedConfig.tpl"}
 {else}
   {if $rows}
-    <div id="bootstrap-theme" class="crm-leave-and-absences-list-block">
+    <div id="bootstrap-theme" class="crm-leave-and-absences-list-block" data-leave-absences-calendar-feeds-list>
       <div class="alert alert-info">
         {ts}All Calendar feeds make some or all of your staff leave data public to the internet.
           Anyone with the appropriate feed link will be able to view the data available on the feed.
@@ -21,11 +21,12 @@
             <th>{ts}Timezone{/ts}</th>
             <th>{ts}Status{/ts}</th>
             <th>{ts}Actions{/ts}</th>
-            <th>&nbsp;</th>
             </thead>
             {foreach from=$rows item=row}
-              <tr id="LeaveRequestCalendarFeedConfig-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}">
-                <td data-field="title">{$row.title|escape}</td>
+              <tr id="LeaveRequestCalendarFeedConfig-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}" data-hash="{$row.hash}">
+                <td data-field="title">
+                  <a href="#" class="calendar-feeds-display-link">{$row.title|escape}</a>
+                </td>
                 <td>{$row.composed_of_display}</td>
                 <td>{$row.leave_type_display}</td>
                 <td>{$row.visible_to_display}</td>

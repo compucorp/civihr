@@ -483,6 +483,21 @@ function hrleaveandabsences_addContactMenuActions(ActionsMenu $menu){
   $leaveActionGroup->setWeight(1);
   $menu->addToMainPanel($leaveActionGroup);
 }
+
+/**
+ * Implements hrcore_civicrm_pageRun.
+ *
+ * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_pageRun/
+ */
+function hrleaveandabsences_civicrm_pageRun(&$page) {
+  $hooks = [
+    new CRM_HRLeaveAndAbsences_Hook_PageRun_LeaveAndAbsencesVarsAdder(CRM_Core_Resources::singleton()),
+  ];
+
+  foreach ($hooks as $hook) {
+    $hook->handle($page);
+  }
+}
 //----------------------------------------------------------------------------//
 //                               Helper Functions                             //
 //----------------------------------------------------------------------------//

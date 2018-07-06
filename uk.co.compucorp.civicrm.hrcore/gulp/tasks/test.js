@@ -31,7 +31,7 @@ module.exports = [
       if (utils.canCurrentExtensionRun('test')) {
         extPath = utils.getExtensionPath();
         watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
-          path.join(extPath, '**/*.spec.js'),
+          path.join(extPath, '**', 'test/**/*.spec.js'),
           '!' + path.join(extPath, '**', 'test/mocks/**/*.js'),
           '!' + path.join(extPath, '**', 'test/test-main.js')
         ], 'test');

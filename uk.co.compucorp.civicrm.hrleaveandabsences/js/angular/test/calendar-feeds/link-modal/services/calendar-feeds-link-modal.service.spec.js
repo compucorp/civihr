@@ -9,7 +9,7 @@ define([
   'use strict';
 
   describe('CalendarFeedsLinkModalService', function () {
-    var $rootScope, $uibModal, CalendarFeedsLinkModal,
+    var $document, $rootScope, $uibModal, CalendarFeedsLinkModal,
       calendarFeedsLinkModalComponent, HOST_URL;
 
     beforeEach(angular.mock.module('calendar-feeds.link-modal', function ($compileProvider,
@@ -17,7 +17,9 @@ define([
       mockCalendarFeedsLinkModalComponent($compileProvider, $provide);
     }));
 
-    beforeEach(inject(function (_$rootScope_, _$uibModal_, _CalendarFeedsLinkModal_, _HOST_URL_) {
+    beforeEach(inject(function (_$document_, _$rootScope_, _$uibModal_, _CalendarFeedsLinkModal_,
+      _HOST_URL_) {
+      $document = _$document_;
       HOST_URL = _HOST_URL_;
       $rootScope = _$rootScope_;
       $uibModal = _$uibModal_;
@@ -41,6 +43,10 @@ define([
         $rootScope.$digest();
       });
 
+      afterEach(function () {
+        $document.find('body').empty();
+      });
+
       it('opens a medium sized modal', function () {
         expect($uibModal.open).toHaveBeenCalledWith(jasmine.objectContaining({
           size: 'md'
@@ -53,6 +59,35 @@ define([
 
       it('passes the dismiss function to the link modal component', function () {
         expect(calendarFeedsLinkModalComponent.dismiss).toEqual(jasmine.any(Function));
+      });
+
+      describe('when there is a bootstrap theme element', function () {
+        beforeEach(function () {
+          $uibModal.open.calls.reset();
+          $document.find('body').append('<div id="bootstrap-theme"></div>');
+          CalendarFeedsLinkModal.open(hash);
+          $rootScope.$digest();
+        });
+
+        it('appends the modal to the bootstrap theme element', function () {
+          expect($uibModal.open.calls.mostRecent().args[0].appendTo).toEqual(
+            $document.find('#bootstrap-theme').eq(0)
+          );
+        });
+      });
+
+      describe('when there is not a bootstrap theme element', function () {
+        beforeEach(function () {
+          $uibModal.open.calls.reset();
+          CalendarFeedsLinkModal.open(hash);
+          $rootScope.$digest();
+        });
+
+        it('appends the modal to the body element', function () {
+          expect($uibModal.open.calls.mostRecent().args[0].appendTo).toEqual(
+            $document.find('body').eq(0)
+          );
+        });
       });
     });
 
