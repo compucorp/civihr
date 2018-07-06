@@ -13,34 +13,34 @@
           <div class="col-sm-3">{$form.title.label}</div>
           <div class="col-sm-9">{$form.title.html}</div>
         </div>
-      <div class="form-group row composed_of_department">
-        <div class="col-sm-3">{$form.composed_of_department.label}</div>
-        <div class="col-sm-9">{$form.composed_of_department.html}</div>
-      </div>
-      <div class="form-group row composed_of_location">
-        <div class="col-sm-3">{$form.composed_of_location.label}</div>
-        <div class="col-sm-9">{$form.composed_of_location.html}</div>
-      </div>
-      <div class="form-group row">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-9 pull-left composed_of_help_text"></div>
-      </div>
-      <div class="form-group row visible_to_department">
-        <div class="col-sm-3">{$form.visible_to_department.label}</div>
-        <div class="col-sm-9">{$form.visible_to_department.html}</div>
-      </div>
-      <div class="form-group row visible_to_location">
-        <div class="col-sm-3">{$form.visible_to_location.label}</div>
-        <div class="col-sm-9">{$form.visible_to_location.html}</div>
-      </div>
-      <div class="form-group row">
-        <div class="col-sm-3"></div>
-        <div class="col-sm-9 pull-left visible_to_help_text"></div>
-      </div>
-      <div class="form-group row composed_of_leave_type">
-        <div class="col-sm-3">{$form.composed_of_leave_type.label}</div>
-        <div class="col-sm-9">{$form.composed_of_leave_type.html}</div>
-      </div>
+        <div class="form-group row composed_of_department">
+          <div class="col-sm-3">{$form.composed_of_department.label}</div>
+          <div class="col-sm-9">{$form.composed_of_department.html}</div>
+        </div>
+        <div class="form-group row composed_of_location">
+          <div class="col-sm-3">{$form.composed_of_location.label}</div>
+          <div class="col-sm-9">{$form.composed_of_location.html}</div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-3"></div>
+          <div class="col-sm-9 pull-left composed_of_help_text"></div>
+        </div>
+        <div class="form-group row visible_to_department">
+          <div class="col-sm-3">{$form.visible_to_department.label}</div>
+          <div class="col-sm-9">{$form.visible_to_department.html}</div>
+        </div>
+        <div class="form-group row visible_to_location">
+          <div class="col-sm-3">{$form.visible_to_location.label}</div>
+          <div class="col-sm-9">{$form.visible_to_location.html}</div>
+        </div>
+        <div class="form-group row">
+          <div class="col-sm-3"></div>
+          <div class="col-sm-9 pull-left visible_to_help_text"></div>
+        </div>
+        <div class="form-group row composed_of_leave_type">
+          <div class="col-sm-3">{$form.composed_of_leave_type.label}</div>
+          <div class="col-sm-9">{$form.composed_of_leave_type.html}</div>
+        </div>
         <div class="form-group row">
           <div class="col-sm-3">{$form.timezone.label}</div>
           <div class="col-sm-9">{$form.timezone.html}</div>
