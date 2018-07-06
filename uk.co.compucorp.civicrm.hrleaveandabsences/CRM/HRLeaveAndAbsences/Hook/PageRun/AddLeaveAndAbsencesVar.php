@@ -1,6 +1,11 @@
 <?php
 
 class CRM_HRLeaveAndAbsences_Hook_PageRun_AddLeaveAndAbsencesVar {
+  private $resources;
+
+  public function __construct(CRM_Core_Resources $resources) {
+    $this->resources = $resources;
+  }
 
   /**
    * Adds variables needed by specific Leave and Absences pages.
@@ -12,7 +17,7 @@ class CRM_HRLeaveAndAbsences_Hook_PageRun_AddLeaveAndAbsencesVar {
       return;
     }
 
-    CRM_Core_Resources::singleton()->addVars('leaveAndAbsences', [
+    $this->resources->addVars('leaveAndAbsences', [
       'attachmentToken' => CRM_Core_Page_AJAX_Attachment::createToken(),
       'baseURL' => CRM_Core_Resources::singleton()->getUrl('uk.co.compucorp.civicrm.hrleaveandabsences'),
       'contactId' => CRM_Utils_Request::retrieve('cid', 'Integer'),
