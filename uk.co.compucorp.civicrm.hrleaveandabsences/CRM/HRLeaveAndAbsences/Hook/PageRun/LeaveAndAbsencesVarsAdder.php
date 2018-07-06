@@ -1,6 +1,6 @@
 <?php
 
-class CRM_HRLeaveAndAbsences_Hook_PageRun_AddLeaveAndAbsencesVar {
+class CRM_HRLeaveAndAbsences_Hook_PageRun_LeaveAndAbsencesVarsAdder {
   private $resources;
 
   public function __construct(CRM_Core_Resources $resources) {

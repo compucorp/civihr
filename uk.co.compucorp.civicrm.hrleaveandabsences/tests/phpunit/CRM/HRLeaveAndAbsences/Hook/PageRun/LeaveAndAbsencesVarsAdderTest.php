@@ -3,11 +3,11 @@
 /**
  * @group headless
  */
-class CRM_HRLeaveAndAbsences_Hook_PageRun_AddLeaveAndAbsencesVarTest extends BaseHeadlessTest {
+class CRM_HRLeaveAndAbsences_Hook_PageRun_LeaveAndAbsencesVarsAdderTest extends BaseHeadlessTest {
 
   public function testAddingVarsToLeaveAndAbsencesPages() {
     $resources = new MockCoreResources();
-    $hook = new CRM_HRLeaveAndAbsences_Hook_PageRun_AddLeaveAndAbsencesVar($resources);
+    $hook = new CRM_HRLeaveAndAbsences_Hook_PageRun_LeaveAndAbsencesVarsAdder($resources);
     $page = new CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeedConfig();
     $expectedVars = [
       'leaveAndAbsences' => [
@@ -30,7 +30,7 @@ class CRM_HRLeaveAndAbsences_Hook_PageRun_AddLeaveAndAbsencesVarTest extends Bas
 
   public function testItWillNotAddVarsToPagesItShouldNotHandle() {
     $resources = new MockCoreResources();
-    $hook = new CRM_HRLeaveAndAbsences_Hook_PageRun_AddLeaveAndAbsencesVar($resources);
+    $hook = new CRM_HRLeaveAndAbsences_Hook_PageRun_LeaveAndAbsencesVarsAdder($resources);
     $page = new CRM_Core_Page();
 
     $hook->handle($page);

@@ -491,7 +491,7 @@ function hrleaveandabsences_addContactMenuActions(ActionsMenu $menu){
  */
 function hrleaveandabsences_civicrm_pageRun(&$page) {
   $hooks = [
-    new CRM_HRLeaveAndAbsences_Hook_PageRun_AddLeaveAndAbsencesVar(CRM_Core_Resources::singleton()),
+    new CRM_HRLeaveAndAbsences_Hook_PageRun_LeaveAndAbsencesVarsAdder(CRM_Core_Resources::singleton()),
   ];
 
   foreach ($hooks as $hook) {
