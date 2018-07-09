@@ -23,7 +23,10 @@
             <th>{ts}Actions{/ts}</th>
             </thead>
             {foreach from=$rows item=row}
-              <tr id="LeaveRequestCalendarFeedConfig-{$row.id}" class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}" data-hash="{$row.hash}">
+              <tr id="LeaveRequestCalendarFeedConfig-{$row.id}"
+                class="crm-entity {$row.class}{if NOT $row.is_active} disabled{/if}"
+                data-title="{$row.title}"
+                data-hash="{$row.hash}">
                 <td data-field="title">
                   <a href="#" class="calendar-feeds-display-link">{$row.title|escape}</a>
                 </td>

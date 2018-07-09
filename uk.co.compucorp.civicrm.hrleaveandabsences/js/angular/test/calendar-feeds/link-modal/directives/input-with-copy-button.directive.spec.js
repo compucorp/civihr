@@ -41,7 +41,7 @@ define([
     describe('when focusing the copy input', function () {
       beforeEach(function () {
         spyOn(copyInput[0], 'select').and.callThrough();
-        copyInput.triggerHandler('focus');
+        copyInput.triggerHandler('click');
         $rootScope.$digest();
       });
 

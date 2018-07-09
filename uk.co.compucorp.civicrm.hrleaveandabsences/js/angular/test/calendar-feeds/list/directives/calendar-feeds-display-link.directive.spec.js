@@ -10,12 +10,13 @@ define([
 
   describe('displayLink', function () {
     var $rootScope, displayLink, linkModal, scope;
+    var titleValue = 'Feed Title';
     var hashValue = _.uniqueId();
 
     beforeEach(angular.mock.module('calendar-feeds.list', 'leave-absences.templates'));
 
     beforeEach(inject(function ($compile, _$rootScope_, CalendarFeedsLinkModal) {
-      var template = '<div data-hash="' + hashValue + '">' +
+      var template = '<div data-title="' + titleValue + '" data-hash="' + hashValue + '">' +
         '  <a class="calendar-feeds-display-link">View Link</a>' +
         '</div>';
       $rootScope = _$rootScope_;
@@ -33,8 +34,8 @@ define([
         $rootScope.$digest();
       });
 
-      it('opens the link modal and passes the hash value stored in the parent element', function () {
-        expect(linkModal.open).toHaveBeenCalledWith(hashValue);
+      it('opens the link modal and passes the title and hash values stored in the closest parent element', function () {
+        expect(linkModal.open).toHaveBeenCalledWith(titleValue, hashValue);
       });
     });
   });

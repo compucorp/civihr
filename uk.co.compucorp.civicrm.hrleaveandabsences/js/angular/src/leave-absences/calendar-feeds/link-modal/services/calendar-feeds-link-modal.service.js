@@ -14,22 +14,27 @@ define(function () {
     /**
      * Opens a modal with the calendar feed link.
      *
+     * @param {String} title - the title of the feed.
      * @param {String} hash - the unique feed hash.
      */
-    function open (hash) {
+    function open (title, hash) {
       var modalContainerElement = getModalContainerElement();
       var url = HOST_URL + 'civicrm/calendar-feed?hash=' + hash;
 
       $uibModal.open({
         controllerAs: 'modal',
         size: 'md',
-        template: '<calendar-feeds-link-modal dismiss="modal.dismiss" url="modal.url"></calendar-feeds-link-modal>',
-        controller: ['$uibModalInstance', 'url', function ($uibModalInstance, url) {
-          this.url = url;
+        template: '<calendar-feeds-link-modal dismiss="modal.dismiss" url="modal.url" title="modal.title"></calendar-feeds-link-modal>',
+        controller: ['$uibModalInstance', 'title', 'url', function ($uibModalInstance, title, url) {
           this.dismiss = $uibModalInstance.dismiss;
+          this.title = title;
+          this.url = url;
         }],
         appendTo: modalContainerElement,
         resolve: {
+          title: function () {
+            return title;
+          },
           url: function () {
             return url;
           }
