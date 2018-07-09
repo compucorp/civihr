@@ -8,7 +8,7 @@ define([
   'use strict';
 
   describe('inputWithCopyButton', function () {
-    var $rootScope, $timeout, inputWithCopyButton, scope;
+    var $rootScope, $timeout, copyInput, copyButton, inputWithCopyButton, scope;
     var modelValue = 'http://www.civihr.org/';
 
     beforeEach(angular.mock.module('calendar-feeds.link-modal', 'leave-absences.templates'));
@@ -19,7 +19,11 @@ define([
       scope = $rootScope.$new();
       scope.url = modelValue;
       inputWithCopyButton = $compile('<input-with-copy-button ng-model="url"></input-with-copy-button>')(scope);
+
       $rootScope.$digest();
+
+      copyInput = inputWithCopyButton.find('input').eq(0);
+      copyButton = inputWithCopyButton.find('button').eq(0);
     }));
 
     it('is defined', function () {
@@ -27,20 +31,16 @@ define([
     });
 
     it('displays the model value in inside an input', function () {
-      expect(inputWithCopyButton.find('input').val()).toEqual(modelValue);
+      expect(copyInput.val()).toEqual(modelValue);
     });
 
     describe('when clicking the copy button', function () {
-      var copiedValue, copyButton;
+      var copiedValue;
 
       beforeEach(function () {
-        copyButton = inputWithCopyButton.find('button').eq(0);
-
         spyOn(document, 'execCommand').and.callFake(function () {
-          var element = inputWithCopyButton.find('input')[0];
-
-          copiedValue = element.value.slice(element.selectionStart,
-            element.selectionEnd);
+          copiedValue = copyInput.val().slice(copyInput[0].selectionStart,
+            copyInput[0].selectionEnd);
         });
         copyButton.click();
         $rootScope.$digest();
