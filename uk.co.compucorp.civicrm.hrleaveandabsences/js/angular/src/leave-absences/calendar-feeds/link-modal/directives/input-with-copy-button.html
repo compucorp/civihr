@@ -1,10 +1,12 @@
 <div class="input-with-copy-button-component row">
   <div class="col-xs-10">
     <input type="text" class="form-control"
-      ng-model="input.model.$viewValue" readonly>
+      ng-model="input.model.$viewValue" readonly
+      ng-click="input.selectInputText()">
   </div>
   <div class="col-xs-2">
-    <button class="btn btn-secondary-outline" ng-click="input.copy()"
+    <button class="btn btn-secondary-outline"
+      ng-click="input.copy()"
       ng-switch="input.justCopied">
       <span ng-switch-when="false">
         Copy

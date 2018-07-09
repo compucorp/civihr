@@ -38,6 +38,18 @@ define([
       expect(copyInput.attr('readonly')).toBeDefined();
     });
 
+    describe('when focusing the copy input', function () {
+      beforeEach(function () {
+        spyOn(copyInput[0], 'select').and.callThrough();
+        copyInput.triggerHandler('focus');
+        $rootScope.$digest();
+      });
+
+      it('selects the whole text in the copy input', function () {
+        expect(copyInput[0].select).toHaveBeenCalled();
+      });
+    });
+
     describe('when clicking the copy button', function () {
       var copiedValue;
 
@@ -46,7 +58,7 @@ define([
           copiedValue = copyInput.val().slice(copyInput[0].selectionStart,
             copyInput[0].selectionEnd);
         });
-        copyButton.click();
+        copyButton.triggerHandler('click');
         $rootScope.$digest();
       });
 
@@ -60,6 +72,11 @@ define([
 
       it('shows that the input has just been copied', function () {
         expect(copyButton.text().trim()).toBe('Copied!');
+      });
+
+      it('does not leave text selected inside the copy input', function () {
+        expect(copyInput[0].selectionStart).toBe(0);
+        expect(copyInput[0].selectionEnd).toBe(0);
       });
 
       describe('when time has passed', function () {

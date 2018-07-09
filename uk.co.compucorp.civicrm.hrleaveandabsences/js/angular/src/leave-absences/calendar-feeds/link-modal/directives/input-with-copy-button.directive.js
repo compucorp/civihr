@@ -24,13 +24,18 @@ define([
     };
 
     function InputWithCopyButtonLink ($scope, $element, $attr, $ctrl) {
-      var justCopiedTimeout;
+      var input, justCopiedTimeout;
       var vm = $scope.input;
 
       vm.model = $ctrl.model;
       vm.justCopied = false;
 
       vm.copy = copy;
+      vm.selectInputText = selectInputText;
+
+      (function init () {
+        input = $element.find('input');
+      }());
 
       /**
        * Copies the content of the input to the user's clipboard
@@ -42,14 +47,27 @@ define([
       }
 
       /**
+       * Deselects the text in the copy input
+       */
+      function deselectInputText () {
+        input[0].selectionStart = 0;
+        input[0].selectionEnd = 0;
+      }
+
+      /**
        * Copies the content of the input to the user's clipboard
        */
       function copyInputToClipboard () {
-        var input = $element.find('input');
-
-        input.select();
+        selectInputText();
         document.execCommand('copy');
-        input.blur();
+        deselectInputText();
+      }
+
+      /**
+       * Selects whole text in the copy input
+       */
+      function selectInputText () {
+        input.select();
       }
 
       /**
