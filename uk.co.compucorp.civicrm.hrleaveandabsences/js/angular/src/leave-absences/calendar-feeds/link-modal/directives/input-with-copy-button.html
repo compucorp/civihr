@@ -3,9 +3,13 @@
     <input type="text" class="form-control" ng-model="input.model.$viewValue">
   </div>
   <div class="col-xs-2">
-    <button class="btn btn-secondary-outline" ng-click="input.copy()">
-      Copy
-      <i class="fa fa-copy"></i>
+    <button class="btn btn-secondary-outline" ng-click="input.copy()"
+      ng-switch="input.justCopied">
+      <span ng-switch-when="false">
+        Copy
+        <i class="fa fa-copy"></i>
+      </span>
+      <span ng-switch-when="true">Copied!</span>
     </button>
   </div>
 </div>

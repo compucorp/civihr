@@ -8,13 +8,14 @@ define([
   'use strict';
 
   describe('inputWithCopyButton', function () {
-    var $rootScope, inputWithCopyButton, scope;
+    var $rootScope, $timeout, inputWithCopyButton, scope;
     var modelValue = 'http://www.civihr.org/';
 
     beforeEach(angular.mock.module('calendar-feeds.link-modal', 'leave-absences.templates'));
 
-    beforeEach(inject(function ($compile, _$rootScope_) {
+    beforeEach(inject(function ($compile, _$rootScope_, _$timeout_) {
       $rootScope = _$rootScope_;
+      $timeout = _$timeout_;
       scope = $rootScope.$new();
       scope.url = modelValue;
       inputWithCopyButton = $compile('<input-with-copy-button ng-model="url"></input-with-copy-button>')(scope);
@@ -30,16 +31,18 @@ define([
     });
 
     describe('when clicking the copy button', function () {
-      var copiedValue;
+      var copiedValue, copyButton;
 
       beforeEach(function () {
+        copyButton = inputWithCopyButton.find('button').eq(0);
+
         spyOn(document, 'execCommand').and.callFake(function () {
           var element = inputWithCopyButton.find('input')[0];
 
           copiedValue = element.value.slice(element.selectionStart,
             element.selectionEnd);
         });
-        inputWithCopyButton.find('button').click();
+        copyButton.click();
         $rootScope.$digest();
       });
 
@@ -49,6 +52,20 @@ define([
 
       it('copies the content of the input to the clipboard', function () {
         expect(copiedValue).toBe(modelValue);
+      });
+
+      it('shows that the input has just been copied', function () {
+        expect(copyButton.text().trim()).toBe('Copied!');
+      });
+
+      describe('when time has passed', function () {
+        beforeEach(function () {
+          $timeout.flush();
+        });
+
+        it('reverts the button view to the original state', function () {
+          expect(copyButton.text().trim()).toBe('Copy');
+        });
       });
     });
   });
