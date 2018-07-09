@@ -34,6 +34,10 @@ define([
       expect(copyInput.val()).toEqual(modelValue);
     });
 
+    it('does not allow to change the input value', function () {
+      expect(copyInput.attr('readonly')).toBeDefined();
+    });
+
     describe('when clicking the copy button', function () {
       var copiedValue;
 
