@@ -6,16 +6,20 @@
     <h4 class="modal-title">Calendar feed link:</h4>
   </div>
   <div class="modal-body">
+    <div class="form-group" ng-if="linkModal.title">
+      <strong>{{linkModal.title}}:</strong>
+    </div>
     <div class="form-group">
       <input-with-copy-button ng-model="linkModal.url"></input-with-copy-button>
     </div>
     <div>
       <a target="_blank" href="https://sprt.freshdesk.com/solution/articles/7000036944-using-calendar-feeds">
-        How to add your calendar feed
+        How to add your calendar feed?
       </a>
     </div>
   </div>
   <div class="modal-footer text-left">
-    <button type="button" class="btn btn-secondary-outline" ng-click="linkModal.dismiss()">Done</button>
+    <button type="button" class="btn btn-secondary-outline pull-left"
+      ng-click="linkModal.dismiss()">Done</button>
   </div>
 </div>

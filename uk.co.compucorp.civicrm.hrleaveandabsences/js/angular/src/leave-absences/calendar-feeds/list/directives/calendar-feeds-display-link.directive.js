@@ -21,13 +21,14 @@ define([
 
       /**
        * Listens for click events on target element. When triggered it opens
-       * the link modal using the parent's hash attribute.
+       * the link modal using the closest parent's title and hash attributes.
        */
       function initEventListeners () {
         $element.on('click', function (event) {
-          var hash = $element.parents('[data-hash]').attr('data-hash');
+          var title = $element.closest('[data-title]').attr('data-title');
+          var hash = $element.closest('[data-hash]').attr('data-hash');
 
-          linkModal.open(hash);
+          linkModal.open(title, hash);
         });
       }
     }

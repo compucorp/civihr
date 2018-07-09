@@ -65,10 +65,11 @@ define([], function () {
     /**
      * Opens Link Modal for a particular feed
      *
+     * @param {String} feedTitle - the title of the feed
      * @param {String} feedHash - the hash for the feed to open
      */
-    function openLinkModal (feedHash) {
-      CalendarFeedsLinkModal.open(feedHash);
+    function openLinkModal (feedTitle, feedHash) {
+      CalendarFeedsLinkModal.open(feedTitle, feedHash);
     }
   }
 });

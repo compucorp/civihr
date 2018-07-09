@@ -85,17 +85,18 @@ define([
         });
 
         describe('when user chooses the feed', function () {
-          var hash;
+          var hash, title;
 
           beforeEach(function () {
+            title = allFeedsData[0].title;
             hash = allFeedsData[0].hash;
 
             spyOn(CalendarFeedsLinkModal, 'open');
-            CalendarFeedsDropdownButton.openLinkModal(hash);
+            CalendarFeedsDropdownButton.openLinkModal(title, hash);
           });
 
-          it('opens the Feed Link modal with the feed hash', function () {
-            expect(CalendarFeedsLinkModal.open).toHaveBeenCalledWith(hash);
+          it('opens the Feed Link modal with the feed hash and title', function () {
+            expect(CalendarFeedsLinkModal.open).toHaveBeenCalledWith(title, hash);
           });
         });
       });

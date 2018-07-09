@@ -35,35 +35,41 @@ define([
     describe('open()', function () {
       var expectedFeedUrl;
       var hash = 'jahmaljahsurjahber';
-
-      beforeEach(function () {
-        expectedFeedUrl = HOST_URL + 'civicrm/calendar-feed?hash=' + hash;
-
-        CalendarFeedsLinkModal.open(hash);
-        $rootScope.$digest();
-      });
+      var title = 'Feed Title';
 
       afterEach(function () {
         $document.find('body').empty();
       });
 
-      it('opens a medium sized modal', function () {
-        expect($uibModal.open).toHaveBeenCalledWith(jasmine.objectContaining({
-          size: 'md'
-        }));
-      });
+      describe('basic tests', function () {
+        beforeEach(function () {
+          expectedFeedUrl = HOST_URL + 'civicrm/calendar-feed?hash=' + hash;
 
-      it('constructs and passes the url to the link modal component', function () {
-        expect(calendarFeedsLinkModalComponent.url).toBe(expectedFeedUrl);
-      });
+          CalendarFeedsLinkModal.open(title, hash);
+          $rootScope.$digest();
+        });
 
-      it('passes the dismiss function to the link modal component', function () {
-        expect(calendarFeedsLinkModalComponent.dismiss).toEqual(jasmine.any(Function));
+        it('opens a medium sized modal', function () {
+          expect($uibModal.open).toHaveBeenCalledWith(jasmine.objectContaining({
+            size: 'md'
+          }));
+        });
+
+        it('constructs and passes the url to the link modal component', function () {
+          expect(calendarFeedsLinkModalComponent.url).toBe(expectedFeedUrl);
+        });
+
+        it('passes the optional title to the link modal component', function () {
+          expect(calendarFeedsLinkModalComponent.title).toBe(title);
+        });
+
+        it('passes the dismiss function to the link modal component', function () {
+          expect(calendarFeedsLinkModalComponent.dismiss).toEqual(jasmine.any(Function));
+        });
       });
 
       describe('when there is a bootstrap theme element', function () {
         beforeEach(function () {
-          $uibModal.open.calls.reset();
           $document.find('body').append('<div id="bootstrap-theme"></div>');
           CalendarFeedsLinkModal.open(hash);
           $rootScope.$digest();
@@ -78,7 +84,6 @@ define([
 
       describe('when there is not a bootstrap theme element', function () {
         beforeEach(function () {
-          $uibModal.open.calls.reset();
           CalendarFeedsLinkModal.open(hash);
           $rootScope.$digest();
         });
@@ -102,7 +107,8 @@ define([
       $compileProvider.component('calendarFeedsLinkModal', {
         bindings: {
           dismiss: '<',
-          url: '<'
+          url: '<',
+          title: '<'
         },
         controller: function () {
           calendarFeedsLinkModalComponent = this;
