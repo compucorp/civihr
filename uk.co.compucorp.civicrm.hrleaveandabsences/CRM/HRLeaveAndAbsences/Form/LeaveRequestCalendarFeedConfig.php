@@ -35,6 +35,8 @@ class CRM_HRLeaveAndAbsences_Form_LeaveRequestCalendarFeedConfig extends CRM_Cor
         $this->setDefaultFilterFieldValues('visible_to', $results);
         $this->defaultValues = $results;
         $this->defaultValues['_id'] = $this->_id;
+      } else {
+        $this->defaultValues['is_active'] = TRUE;
       }
     }
 
