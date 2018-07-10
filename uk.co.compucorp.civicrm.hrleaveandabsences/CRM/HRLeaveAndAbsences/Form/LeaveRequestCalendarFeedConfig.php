@@ -67,12 +67,6 @@ class CRM_HRLeaveAndAbsences_Form_LeaveRequestCalendarFeedConfig extends CRM_Cor
         $params['id'] = $this->_id;
       }
 
-      //when a checkbox is not checked, it is not sent on the request
-      //so we check if it wasn't sent and set the param value to 0
-      if(!array_key_exists('is_active', $params)) {
-        $params['is_active'] = 0;
-      }
-
       $composedOfValues = $this->extractFromFormValues('composed_of', $params);
       $visibleToValues = $this->extractFromFormValues('visible_to', $params);
       $params = array_merge($params, $composedOfValues, $visibleToValues);
@@ -157,7 +151,7 @@ class CRM_HRLeaveAndAbsences_Form_LeaveRequestCalendarFeedConfig extends CRM_Cor
         'placeholder' => 'Select leave types',
         'label' => 'Leave types to include',
       ],
-      true
+      TRUE
     );
 
     $this->addSelect(
@@ -168,11 +162,11 @@ class CRM_HRLeaveAndAbsences_Form_LeaveRequestCalendarFeedConfig extends CRM_Cor
         'placeholder' => 'Select a timezone',
         'label' => 'Timezone',
       ],
-      true
+      TRUE
     );
 
     $this->add(
-      'checkbox',
+      'advcheckbox',
       'is_active',
       ts('Enabled')
     );
