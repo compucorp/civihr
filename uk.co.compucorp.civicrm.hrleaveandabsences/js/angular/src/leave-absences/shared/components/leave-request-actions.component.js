@@ -111,6 +111,9 @@ define([
         }
       }
     };
+    var actionsToStatusesMap = {
+      'approve': 'approved'
+    };
 
     vm.allowedActions = [];
 
@@ -200,11 +203,7 @@ define([
                   LeaveRequestService.getBalanceChangeRecalculationPromptOptions(),
                   {
                     onCloseAfterConfirm: function () {
-                      LeavePopup.openModal(vm.leaveRequest,
-                        vm.leaveRequest.request_type,
-                        vm.leaveRequest.contact_id,
-                        $rootScope.section === 'my-leave',
-                        true);
+                      openLeavePopupForAction(action);
                     }
                   }
                 );
@@ -264,14 +263,27 @@ define([
      * which also having click events, event.stopPropagation() is necessary
      * to prevent the click events of parent elements from being called
      *
-     * @param {Object} event
-     * @param {Object} leaveRequest
-     * @param {String} leaveType
-     * @param {String} selectedContactId
+     * @param {Object} params
+     * @see LeavePopup.openModal for the reference to the `params` argument
      */
-    function openLeavePopup (event, leaveRequest, leaveType, selectedContactId) {
+    function openLeavePopup (event, params) {
       event.stopPropagation();
-      LeavePopup.openModal(leaveRequest, leaveType, selectedContactId);
+      LeavePopup.openModal(params);
+    }
+
+    /**
+     * Opens a leave popup for a specific action
+     *
+     * @param {String} action
+     */
+    function openLeavePopupForAction (action) {
+      LeavePopup.openModal({
+        leaveRequest: vm.leaveRequest,
+        leaveType: vm.leaveRequest.request_type,
+        selectedContactId: vm.leaveRequest.contact_id,
+        forceRecalculateBalanceChange: true,
+        defaultStatus: sharedSettings.statusNames[actionsToStatusesMap[action]]
+      });
     }
 
     /**

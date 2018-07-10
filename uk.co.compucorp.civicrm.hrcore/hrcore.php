@@ -116,6 +116,7 @@ function hrcore_civicrm_buildForm($formName, &$form) {
   $listeners = [
     new CRM_HRCore_Hook_BuildForm_ActivityFilterSelectFieldsModifier(),
     new CRM_HRCore_Hook_BuildForm_ActivityLinksFilter(),
+    new CRM_HRCore_Hook_BuildForm_ContactAdvancedSearch(),
     new CRM_HRCore_Hook_BuildForm_LocalisationPageFilter(),
     new CRM_HRCore_Hook_BuildForm_OptionEditPathFilter(),
   ];
@@ -305,34 +306,27 @@ function hrcore_civicrm_apiWrappers(&$wrappers, $apiRequest) {
 }
 
 /**
- * Implementation of hook_civicrm_pre hook.
- *
- * @param string $op
- *   Operation being done
- * @param string $objectName
- *   Name of the object on which the operation is being done
- * @param int $objectId
- *   ID of the record the object instantiates
- * @param array $params
- *   Parameter array being used to call the operation
- */
-function hrcore_civicrm_pre($op, $objectName, $objectId, &$params) {
-  $listeners = [
-    new CRM_HRCore_Hook_Pre_PrimaryAddressSetter(),
-  ];
-
-  foreach ($listeners as $currentListener) {
-    $currentListener->handle($op, $objectName, $objectId, $params);
-  }
-}
-
-/**
  * Implements hrcore_civicrm_pageRun.
  *
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_pageRun/
  */
 function hrcore_civicrm_pageRun($page) {
   _hrcore_add_js_session_vars();
+
+  $hooks = [
+    new CRM_HRCore_Hook_PageRun_LocationTypeFilter(),
+  ];
+
+  foreach ($hooks as $hook) {
+    $hook->handle($page);
+  }
+}
+
+/**
+ * Implements hook_civicrm_coreResourceList().
+ */
+function hrcore_civicrm_coreResourceList(&$items, $region) {
+  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/hrcore.js');
 }
 
 /**
@@ -375,6 +369,7 @@ function hrcore_civicrm_permission(&$permissions) {
   $prefix = ts('CiviHR') . ': ';
   $permissions['access CiviCRM developer menu and tools'] = ts('Access CiviCRM developer menu and tools');
   $permissions['access root menu items and configurations'] = $prefix . ts('Access root menu items and configurations');
+  $permissions['view system status on footer'] = $prefix . ts('View System Status on Footer');
 }
 
 /**

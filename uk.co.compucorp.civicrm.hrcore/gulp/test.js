@@ -1,4 +1,3 @@
-var argv = require('yargs').argv;
 var clean = require('gulp-clean');
 var find = require('find');
 var findUp = require('find-up');
@@ -48,11 +47,8 @@ function forFile (srcFile) {
  * @param {Function} cb - The callback to call when the server closes
  */
 function runServer (configFile, cb) {
-  var reporters = argv.reporters ? argv.reporters.split(',') : ['progress'];
-
   new karma.Server({
     configFile: configFile,
-    reporters: reporters,
     singleRun: true
   }, function () {
     cb && cb();
