@@ -1,8 +1,8 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData as LeaveRequestCalendarFeedData;
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig as LeaveRequestCalendarFeedConfig;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcal as LeaveRequestCalendarFeedIcal;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequestCalendarFeedConfig as LeaveCalendarFeedConfigFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcalTest
@@ -32,7 +32,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcalTest extends Ba
       ],
     ];
 
-    $feedConfig = $this->createLeaveCalendarFeedConfig([]);
+    $feedConfig = LeaveCalendarFeedConfigFabricator::fabricate();
     $leaveFeedData = $this->prophesize(LeaveRequestCalendarFeedData::class);
     $leaveFeedData->getFeedConfig()->willReturn($feedConfig);
     $leaveFeedData->getStartDate()->willReturn(new DateTime('today'));
@@ -87,20 +87,5 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcalTest extends Ba
     $calendarLibraryPath =
       CRM_Core_Resources::singleton()->getPath('uk.co.compucorp.civicrm.hrcore') . '/vendor/icalendar/zapcallib.php';
     require_once("$calendarLibraryPath");
-  }
-
-  private function createLeaveCalendarFeedConfig($params) {
-    $defaultParameters = [
-      'title' => 'Feed 1',
-      'timezone' => 'America/Monterrey',
-      'composed_of' => [
-        'leave_type' => [1]
-      ],
-      'visible_to' => []
-    ];
-
-    $params = array_merge($defaultParameters, $params);
-
-    return LeaveRequestCalendarFeedConfig::create($params);
   }
 }

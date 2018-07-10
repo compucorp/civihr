@@ -6,6 +6,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 use CRM_Hrjobroles_Test_Fabricator_HrJobRoles as HRJobRolesFabricator;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequestCalendarFeedConfig as LeaveCalendarFeedConfigFabricator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData as LeaveRequestCalendarFeedData;
@@ -24,7 +25,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
   private $leaveTypes;
 
   public function testDateRangeForLeaveData() {
-    $feedConfig =  $this->createLeaveCalendarFeedConfig([]);
+    $feedConfig =  LeaveCalendarFeedConfigFabricator::fabricate([]);
     $feedData = new LeaveRequestCalendarFeedData($feedConfig->hash);
     $startDate = $feedData->getStartDate();
     $endDate = $feedData->getEndDate();
@@ -37,7 +38,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
   }
 
   public function testGetFeedConfig() {
-    $feedConfig =  $this->createLeaveCalendarFeedConfig([]);
+    $feedConfig =  LeaveCalendarFeedConfigFabricator::fabricate([]);
 
     $feedData = new LeaveRequestCalendarFeedData($feedConfig->hash);
     $this->assertEquals($feedConfig->id, $feedData->getFeedConfig()->id);
@@ -51,7 +52,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
 
   public function testExceptionIsThrownWhenFeedConfigIsDisabled() {
     $this->setExpectedException('RuntimeException', 'An enabled feed with the given hash does not exist!');
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig(['is_active' => 0]);
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate(['is_active' => 0]);
     new LeaveRequestCalendarFeedData($feedConfig1->hash);
   }
 
@@ -160,7 +161,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
       $param['id'] =  $leaveRequest->id;
     }
 
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'composed_of' => [
         'leave_type' => [$absenceType->id],
@@ -199,7 +200,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
     ]);
 
     //feed config is for all contacts in any department/location
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'composed_of' => [
         'leave_type' => [$absenceType->id],
@@ -243,7 +244,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
     ]);
 
     //feed config is for all contacts in any department/location
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'composed_of' => [
         'leave_type' => [$absenceType->id],
@@ -303,7 +304,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
     }
 
     //feed config is for all contacts in any department/location
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'composed_of' => [
         'leave_type' => [$absenceType->id, $absenceType2->id],
@@ -353,7 +354,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
     }
 
     //feed config is for all contacts in any department/location
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'composed_of' => [
         'leave_type' => [$absenceType->id],
@@ -391,7 +392,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
     }
 
     //feed config is for all contacts in any department/location
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'composed_of' => [
         'leave_type' => [$absenceType->id],
@@ -446,7 +447,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
     }
 
     //feed config is for all contacts in any department/location
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'composed_of' => [
         'leave_type' => [$absenceType->id],
@@ -491,21 +492,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
     }
 
     return $this->leaveTypes[$typeId];
-  }
-
-  private function createLeaveCalendarFeedConfig($params) {
-    $defaultParameters = [
-      'title' => 'Feed 1',
-      'timezone' => 'America/Monterrey',
-      'composed_of' => [
-        'leave_type' => [1]
-      ],
-      'visible_to' => []
-    ];
-
-    $params = array_merge($defaultParameters, $params);
-
-    return LeaveRequestCalendarFeedConfig::create($params);
   }
 
   private function createDepartment($departmentName) {

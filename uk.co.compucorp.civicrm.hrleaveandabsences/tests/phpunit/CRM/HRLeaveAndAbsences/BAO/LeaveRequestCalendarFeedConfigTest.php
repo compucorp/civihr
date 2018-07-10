@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig as LeaveRequestCalendarFeedConfig;
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestCalendarFeedConfigException as InvalidLeaveRequestCalendarFeedConfigException;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequestCalendarFeedConfig as LeaveCalendarFeedConfigFabricator;
 
 /**
  * Class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest
@@ -11,7 +12,7 @@ use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestCalendarFeedConfigExcept
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
 
   public function testDefaultParametersAreSetWhenCreatingACalendarConfig() {
-    $leaveFeedConfig = $this->createLeaveCalendarFeedConfig([
+    $leaveFeedConfig = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'timezone' => 'America/Monterrey',
     ]);
@@ -25,7 +26,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
     $hash = '5aejfkfdjJJU';
     $createdDate = CRM_Utils_Date::processDate('2016-01-01');
 
-    $leaveFeedConfig = $this->createLeaveCalendarFeedConfig([
+    $leaveFeedConfig = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'timezone' => 'America/Monterrey',
       'hash' => $hash,
@@ -40,7 +41,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
     $hash = '5aejfkfdjJJU';
     $createdDate = CRM_Utils_Date::processDate('2016-01-01');
 
-    $leaveFeedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $leaveFeedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'timezone' => 'America/Monterrey',
     ]);
@@ -60,27 +61,27 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
    * @expectedExceptionMessage Please add a valid timezone for the leave request calendar feed configuration
    */
   public function testCreateWillThrowAnExceptionWhenTimezoneIsNotValid() {
-    $this->createLeaveCalendarFeedConfig([
+    LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'timezone' => 'America/Whatever',
     ]);
   }
 
   public function testCreateWillThrowAnExceptionWhenTitleAlreadyExists() {
-    $this->createLeaveCalendarFeedConfig([
+    LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'timezone' => 'Europe/Stockholm',
     ]);
 
     $this->setExpectedException(InvalidLeaveRequestCalendarFeedConfigException::class, 'A leave request calendar feed configuration with same title already exists!');
-    $this->createLeaveCalendarFeedConfig([
+    LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'timezone' => 'Europe/Tallinn',
     ]);
   }
 
   public function testCreateWillNotThrowAnExceptionWhenUpdatingCalendarFeedConfigWithoutChangingTheTitle() {
-    $leaveFeedConfig = $this->createLeaveCalendarFeedConfig([
+    $leaveFeedConfig = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'timezone' => 'Europe/Stockholm',
     ]);
@@ -101,7 +102,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
       'timezone' => 'America/Monterrey',
     ];
 
-    $entity = $this->createLeaveCalendarFeedConfig($params);
+    $entity = LeaveCalendarFeedConfigFabricator::fabricate($params);
     $values = LeaveRequestCalendarFeedConfig::getValuesArray($entity->id);
     foreach ($params as $field => $value) {
       $this->assertEquals($value, $values[$field]);
@@ -113,7 +114,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
    * @expectedExceptionMessage The leave_type is a required composed_of filter field for the calendar feed configuration
    */
   public function testCreateWillThrowExceptionWhenLeaveTypeFilterFieldIsAbsentForComposedOfFilter() {
-    $this->createLeaveCalendarFeedConfig([
+    LeaveCalendarFeedConfigFabricator::fabricate([
       'composed_of' => []
     ]);
   }
@@ -123,7 +124,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
    * @expectedExceptionMessage The composed_of leave_type filter field value is not passed in the proper format!
    */
   public function testCreateWillThrowExceptionWhenLeaveTypeFilterFieldHasEmptyValueForComposedOfFilter() {
-    $this->createLeaveCalendarFeedConfig([
+    LeaveCalendarFeedConfigFabricator::fabricate([
       'composed_of' => [
         'leave_type' => []
       ]
@@ -135,7 +136,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
    * @expectedExceptionMessage The sample field is not a valid composed_of filter field for the calendar feed configuration
    */
   public function testCreateWillThrowExceptionWhenNonAllowedFieldIsPresentForComposedOfFilter() {
-    $this->createLeaveCalendarFeedConfig([
+    LeaveCalendarFeedConfigFabricator::fabricate([
       'composed_of' => [
         'leave_type' => [1],
         'sample' => [2]
@@ -148,7 +149,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
    * @expectedExceptionMessage The sample field is not a valid visible_to filter field for the calendar feed configuration
    */
   public function testCreateWillThrowExceptionWhenNonAllowedFieldIsPresentForVisibleToFilter() {
-    $this->createLeaveCalendarFeedConfig([
+    LeaveCalendarFeedConfigFabricator::fabricate([
       'visible_to' => [
         'sample' => [2]
       ]
@@ -160,7 +161,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
    * @expectedExceptionMessage The visible_to department filter field value is not passed in the proper format!
    */
   public function testCreateWillThrowExceptionForInvalidFilterFieldValueForVisibleToFilter() {
-    $this->createLeaveCalendarFeedConfig([
+    LeaveCalendarFeedConfigFabricator::fabricate([
       'visible_to' => [
         'department' => 'Bla Bla'
       ]
@@ -172,7 +173,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
    * @expectedExceptionMessage The composed_of department filter field value is not passed in the proper format!
    */
   public function testCreateWillThrowExceptionForNonAllowedFilterFieldValueForComposedOfFilter() {
-    $this->createLeaveCalendarFeedConfig([
+    LeaveCalendarFeedConfigFabricator::fabricate([
       'composed_of' => [
         'department' => 'Bla Bla',
         'leave_type' => [1]
@@ -217,31 +218,12 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
       'location' => [3]
     ];
 
-    $calendarFeedConfig = $this->createLeaveCalendarFeedConfig([
+    $calendarFeedConfig = LeaveCalendarFeedConfigFabricator::fabricate([
       'composed_of' => $composedOf,
       'visible_to' => $visibleTo
     ]);
 
     $this->assertEquals(serialize($visibleTo), $calendarFeedConfig->visible_to);
     $this->assertEquals(serialize($composedOf), $calendarFeedConfig->composed_of);
-  }
-
-  private function createLeaveCalendarFeedConfig($params) {
-    $defaultParameters = [
-      'title' => 'Feed 1',
-      'timezone' => 'America/Monterrey',
-      'composed_of' => [
-        'leave_type' => [1],
-        'department' => [3],
-        'location' => [3]
-      ],
-      'visible_to' => [
-        'department' => [1,2],
-        'location' => [1]
-      ]
-    ];
-
-    $params = array_merge($defaultParameters, $params);
-    return LeaveRequestCalendarFeedConfig::create($params);
   }
 }
