@@ -1,6 +1,6 @@
 <?php
 
-trait CRM_HRCore_Upgrader_Steps_1017 {
+trait CRM_HRCore_Upgrader_Steps_1021 {
 
   /**
    * Uninstall the hrdemog extension.
@@ -11,7 +11,7 @@ trait CRM_HRCore_Upgrader_Steps_1017 {
    *
    * @return bool
    */
-  public function upgrade_1017() {
+  public function upgrade_1021() {
     $key = 'org.civicrm.hrdemog';
 
     if (!CRM_HRCore_Helper_ExtensionHelper::isExtensionEnabled($key)) {
