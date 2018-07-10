@@ -40,13 +40,13 @@ define([
 
     describe('when focusing the copy input', function () {
       beforeEach(function () {
-        spyOn(copyInput[0], 'select').and.callThrough();
         copyInput.triggerHandler('click');
         $rootScope.$digest();
       });
 
       it('selects the whole text in the copy input', function () {
-        expect(copyInput[0].select).toHaveBeenCalled();
+        expect(copyInput[0].selectionStart).toBe(0);
+        expect(copyInput[0].selectionEnd).toBe(copyInput.val().length);
       });
     });
 

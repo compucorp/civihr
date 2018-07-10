@@ -24,7 +24,7 @@ define([
     };
 
     function InputWithCopyButtonLink ($scope, $element, $attr, $ctrl) {
-      var input, justCopiedTimeout;
+      var $input, justCopiedTimeout;
       var vm = $scope.input;
 
       vm.model = $ctrl.model;
@@ -34,7 +34,7 @@ define([
       vm.selectInputText = selectInputText;
 
       (function init () {
-        input = $element.find('input');
+        $input = $element.find('input');
       }());
 
       /**
@@ -50,8 +50,7 @@ define([
        * Deselects the text in the copy input
        */
       function deselectInputText () {
-        input[0].selectionStart = 0;
-        input[0].selectionEnd = 0;
+        $input[0].setSelectionRange(0, 0);
       }
 
       /**
@@ -67,7 +66,7 @@ define([
        * Selects whole text in the copy input
        */
       function selectInputText () {
-        input.select();
+        $input[0].setSelectionRange(0, $input.val().length);
       }
 
       /**
