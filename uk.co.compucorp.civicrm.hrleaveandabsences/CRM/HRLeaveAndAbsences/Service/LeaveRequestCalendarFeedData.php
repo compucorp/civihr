@@ -50,12 +50,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
    */
   private $enabledLeaveTypesForFeed;
 
-  /**
-   * @var \DateTime
-   *    the date and time this
-   *    LeaveCalendarFeedData class was instantiated
-   */
-  private $instantiatedDateTime;
 
   /**
    * CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData constructor.
@@ -67,7 +61,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
     $this->feedHash = $feedHash;
     $this->loadFeedConfig($feedHash);
     $this->setDataDateRange();
-    $this->instantiatedDateTime = new DateTime();
     $this->leaveDayTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
     $this->enabledLeaveTypesForFeed = $this->getEnabledFeedLeaveTypes();
   }
@@ -89,6 +82,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
       $leaveTypeName = $this->getLeaveTypeLabel($leaveRequest['type_id']);
       //We need to adjust the time for leave request in days for display in the calendar
       //different from the default time stored in the leave request table.
+      //This time need to be adjusted because in reality, the time stored in the db may be
+      //unrealistic in real life, For example leave request in days in the db has time
+      //as 00:00 for from_date and 23:59 for to_date.
       CalendarLeaveTimeHelper::adjust($leaveRequest);
       $leaveData[] = [
         'id' => $leaveRequest['id'],
@@ -103,10 +99,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
   }
 
   /**
-   * Returns the Leave type label from the leave type ID. For cases
-   * where the typeId is not found in the absence types list, i.e for
-   * leave types with their hide_label property as true, the leave label
-   * is returned as 'Leave'.
+   * Returns the Leave type label from the leave type ID.
+   * 'Leave' is returned when the typeID is not found in
+   * the absence type list
    *
    * @param int $typeId
    *
@@ -125,16 +120,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
    */
   public function getTimeZone() {
     return $this->feedConfig->timezone;
-  }
-
-  /**
-   * Returns the datetime for this leave feed data class
-   * was instantiated.
-   *
-   * @return \DateTime
-   */
-  public function getInstantiatedDateTime() {
-    return $this->instantiatedDateTime;
   }
 
   /**

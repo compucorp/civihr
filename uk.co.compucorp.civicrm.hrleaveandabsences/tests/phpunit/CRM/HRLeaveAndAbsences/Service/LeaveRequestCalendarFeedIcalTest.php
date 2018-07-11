@@ -34,7 +34,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcalTest extends Ba
 
     $feedConfig = LeaveCalendarFeedConfigFabricator::fabricate(['timezone' => 'America/Monterrey']);
     $leaveFeedData = $this->prophesize(LeaveRequestCalendarFeedData::class);
-    $leaveFeedData->getInstantiatedDateTime()->willReturn($dateTime);
     $leaveFeedData->getTimeZone()->willReturn($feedConfig->timezone);
     $leaveFeedData->getStartDate()->willReturn(new DateTime('2018-06-01'));
     $leaveFeedData->getEndDate()->willReturn(new DateTime('2018-09-01'));
@@ -42,10 +41,22 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcalTest extends Ba
 
     $feedIcal = new LeaveRequestCalendarFeedIcal();
     $feedIcal = $feedIcal->get($leaveFeedData->reveal());
+    $feedIcalArray = explode("\r\n", $feedIcal);
+    //The DTSTAMP ical property is at position 49 and 56 for the two events
+    //testing it will mean extracting the time and making it a date object
+    //not including it in the test.
+    unset($feedIcalArray[49], $feedIcalArray[56]);
 
-    $expectedIcal = $this->getIcalHeaderForMonterreyTimezoneAndCurrentYearIs2018() .
-      $this->getIcalBody($dateTime, $sampleData);
-    $this->assertEquals($expectedIcal, $feedIcal);
+    $expectedIcalArray = array_merge(
+      $this->getIcalHeaderForMonterreyTimezoneAndCurrentYearIs2018(),
+      $this->getIcalBody($dateTime, $sampleData)
+    );
+
+    //The DTSTAMP ical property is at position 49 and 56 for the two events
+    //testing it will mean extracting the time and making it a date object
+    //not including it in the test.
+    unset($expectedIcalArray[49], $expectedIcalArray[56]);
+    $this->assertEquals($expectedIcalArray, $feedIcalArray);
   }
 
   private function getIcalBody($instantiatedDateTime, $leaveData) {
@@ -62,8 +73,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcalTest extends Ba
       $icalData[] = 'END:VEVENT';
     }
 
-    $icalData[] = 'END:VCALENDAR' ."\r\n";
-    return implode("\r\n", $icalData);
+    $icalData[] = 'END:VCALENDAR';
+    $icalData[] = '';
+    return $icalData;
   }
 
   private function getIcalHeaderForMonterreyTimezoneAndCurrentYearIs2018() {
@@ -111,9 +123,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcalTest extends Ba
       'TZOFFSETTO:-0600',
       'TZNAME:CST',
       'END:STANDARD',
-      'END:VTIMEZONE'."\r\n",
+      'END:VTIMEZONE',
     ];
 
-    return implode("\r\n", $header);
+    return $header;
   }
 }

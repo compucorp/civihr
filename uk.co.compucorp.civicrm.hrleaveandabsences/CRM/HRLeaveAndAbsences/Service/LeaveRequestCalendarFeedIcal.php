@@ -29,7 +29,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcal {
       $icalObject->curnode
     );
 
-    $dateTime = $feedData->getInstantiatedDateTime()->format('Y-m-d H:i:s');
+    $dateTime = new DateTime();
+    $dateTime = $dateTime->format('Y-m-d H:i:s');
 
     foreach ($feedData->get() as $data) {
       $eventObject = new ZCiCalNode("VEVENT", $icalObject->curnode);
