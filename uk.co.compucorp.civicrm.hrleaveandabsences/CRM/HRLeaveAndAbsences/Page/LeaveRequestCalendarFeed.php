@@ -19,15 +19,12 @@ class CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeed {
       $leaveFeedIcal = new LeaveRequestCalendarFeedIcal();
       $leaveFeedIcal = $leaveFeedIcal->get($leaveFeedData);
 
-      header('Content-Type: text/calendar; charset=utf-8');
-      header('Content-Disposition: attachment; filename="cal.ics"');
-      echo $leaveFeedIcal;
-      die();
+      CRM_Utils_System::download('cal.ics', 'text/calendar', $leaveFeedIcal);
+      CRM_Utils_System::civiExit();
 
     } catch(Exception $e) {
       http_response_code(404);
-      echo $e->getMessage();
-      die();
+      CRM_Utils_System::civiExit();
     }
   }
 }

@@ -6,7 +6,6 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequestCalendarFeedConfig exte
   CRM_HRLeaveAndAbsences_Test_Fabricator_SequentialTitle {
 
   private static $defaultParams = [
-    'title' => 'Feed 1',
     'timezone' => 'America/Monterrey',
     'composed_of' => ['leave_type' => [1]],
     'visible_to' => []
