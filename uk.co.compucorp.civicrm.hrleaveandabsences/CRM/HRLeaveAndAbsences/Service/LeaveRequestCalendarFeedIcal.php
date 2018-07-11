@@ -29,9 +29,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcal {
       $icalObject->curnode
     );
 
-    $dateTime = new DateTime();
-    $dateTime = $dateTime->format('Y-m-d H:i:s');
-
     foreach ($feedData->get() as $data) {
       $eventObject = new ZCiCalNode("VEVENT", $icalObject->curnode);
       $eventObject->addNode(new ZCiCalDataNode("SUMMARY:" . $data['display_name']));
@@ -41,7 +38,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcal {
       // The leave request is used as a string for this event so that on reimport by calendar app
       // the event is not duplicated and changes will be updated.
       $eventObject->addNode(new ZCiCalDataNode("UID:" . $data['id']));
-      $eventObject->addNode(new ZCiCalDataNode("DTSTAMP:" . ZCiCal::fromSqlDateTime($dateTime)));
+      $eventObject->addNode(new ZCiCalDataNode("DTSTAMP:" . ZCiCal::fromSqlDateTime()));
     }
 
     return $icalObject->export();
