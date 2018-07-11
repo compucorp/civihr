@@ -51,6 +51,7 @@ define([
        */
       function deselectInputText () {
         $input[0].setSelectionRange(0, 0);
+        $input.blur();
       }
 
       /**
@@ -66,6 +67,7 @@ define([
        * Selects whole text in the copy input
        */
       function selectInputText () {
+        $input.focus();
         $input[0].setSelectionRange(0, $input.val().length);
       }
 
