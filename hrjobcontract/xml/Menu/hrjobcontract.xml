@@ -7,9 +7,9 @@
     <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>
-    <path>civicrm/hours_location</path>
+    <path>civicrm/standard_full_time_hours</path>
     <page_callback>CRM_Hrjobcontract_Page_HoursLocation</page_callback>
-    <title>HoursLocation</title>
+    <title>StandardFullTimeHours</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>

@@ -24,7 +24,15 @@
  +--------------------------------------------------------------------+
 *}
 {* this template is used for adding/editing/deleting hours location  *}
-<h3>{if $action eq 1}{ts}New Hours Location{/ts}{elseif $action eq 2}{ts}Edit Hours Location{/ts}{else}{ts}Delete Hours Location{/ts}{/if}</h3>
+<h3>
+  {if $action eq 1}
+    {ts}New Standard Full Time Hours{/ts}
+  {elseif $action eq 2}
+    {ts}Edit Standard Full Time Hours{/ts}
+  {else}
+    {ts}Delete Standard Full Time Hours{/ts}
+  {/if}
+</h3>
 <div class="crm-block crm-form-block crm-hours_location-form-block">
    {if $action neq 8}
      <div class="crm-submit-buttons">{include file="CRM/common/formButtons.tpl" location="top"}</div>

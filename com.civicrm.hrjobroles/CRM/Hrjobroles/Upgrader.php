@@ -80,6 +80,64 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
 
     return TRUE;
   }
+  
+  /**
+   * Deletes cost centre "other" option value if not in use
+   *
+   * @return bool
+   */
+  public function upgrade_1006() {
+    $jobRoles = civicrm_api3('HrJobRoles', 'get');
+    if ($jobRoles['count'] == 0) {
+      $this->deleteCostCentreOther();
+      return TRUE;
+    }
+    
+    $otherId = $this->retrieveCostCentreOtherId();
+    if ($otherId == null) {
+      return TRUE;
+    }
+    $inUse = FALSE;
+    $roles = $jobRoles['values'];
+    $pattern = '/\|' . $otherId . '\|/';
+    foreach ($roles as $role) {
+      if (preg_match($pattern, $role['cost_center'])) {
+        $inUse = TRUE;
+        break;
+      }
+    }
+    
+    if (!$inUse) {
+      $this->deleteCostCentreOther();
+    }
+    
+    return TRUE;
+  }
+  
+  /**
+   * Deletes cost centre option value with name "other"
+   */
+  private function deleteCostCentreOther() {
+    civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'cost_centres',
+      'name' => 'Other',
+      'api.OptionValue.delete' => ['id' => '$value.id'],
+    ]);
+  }
+  
+  /**
+   * Fetches the id of cost center "other" option value
+   *
+   * @return int
+   */
+  private function retrieveCostCentreOtherId() {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'cost_centres',
+      'name' => 'Other',
+    ]);
+    
+    return isset($result['id']) ? $result['id'] : null;
+  }
 
   /**
    * Creates a navigation menu item using the API
