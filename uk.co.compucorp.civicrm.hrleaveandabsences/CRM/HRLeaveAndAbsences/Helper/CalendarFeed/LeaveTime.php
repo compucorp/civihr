@@ -7,6 +7,10 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
  *
  * This is an helper class that helps to modify the time for leave request
  * in days for display in a calendar.
+ * This time adjusted is needed because the leave times stored in the leave
+ * request table may be unrealistic in real life. For example leave request in
+ * days in the db has time as as 00:00 for from_date and 23:59 for to date
+ *
  */
 class CRM_HRLeaveAndAbsences_Helper_CalendarFeed_LeaveTime {
 
