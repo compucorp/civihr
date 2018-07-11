@@ -226,4 +226,56 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfigTest extends Base
     $this->assertEquals(serialize($visibleTo), $calendarFeedConfig->visible_to);
     $this->assertEquals(serialize($composedOf), $calendarFeedConfig->composed_of);
   }
+
+  public function testFindActiveByHashThrowsExceptionWhenNoActiveFeedByGivenHashIsFound() {
+    $this->setExpectedException(InvalidLeaveRequestCalendarFeedConfigException::class, 'An enabled feed with the given hash does not exist!');
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate(['is_active' => 0]);
+    LeaveRequestCalendarFeedConfig::findActiveByHash($feedConfig1->hash);
+  }
+
+  public function testFindActiveByHashThrowsExceptionWhenANonExistentHashIsPassed() {
+    $this->setExpectedException(InvalidLeaveRequestCalendarFeedConfigException::class, 'An enabled feed with the given hash does not exist!');
+    LeaveRequestCalendarFeedConfig::findActiveByHash('blablabla');
+  }
+
+  public function testFindActiveByHashReturnsResultWhenFeedIsFound() {
+    $expectedFeedConfig = LeaveCalendarFeedConfigFabricator::fabricate(['is_active' => 1]);
+    $feedConfig = LeaveRequestCalendarFeedConfig::findActiveByHash($expectedFeedConfig->hash);
+    $this->assertEquals($expectedFeedConfig->id, $feedConfig->id);
+  }
+
+  public function testGetDepartmentsComposedOfReturnsFeedConfigDepartments() {
+    $departments = [1,5];
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
+      'composed_of' => [
+        'leave_type' => [1,2],
+        'department' => $departments
+      ]
+    ]);
+
+    $this->assertEquals($departments, $feedConfig1->getDepartmentsComposedOf());
+  }
+
+  public function testGetLocationsComposedOfReturnsFeedConfigLocations() {
+    $locations = [1,6];
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
+      'composed_of' => [
+        'leave_type' => [1,2],
+        'location' => $locations
+      ]
+    ]);
+
+    $this->assertEquals($locations, $feedConfig1->getLocationsComposedOf());
+  }
+
+  public function testGetLeaveTypesComposedOfReturnsFeedConfigLeaveTypes() {
+    $leaveTypes = [3,6];
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
+      'composed_of' => [
+        'leave_type' => $leaveTypes
+      ]
+    ]);
+
+    $this->assertEquals($leaveTypes, $feedConfig1->getLeaveTypesComposedOf());
+  }
 }

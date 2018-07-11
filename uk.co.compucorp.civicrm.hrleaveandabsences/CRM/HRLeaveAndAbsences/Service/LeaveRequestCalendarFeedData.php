@@ -7,6 +7,11 @@ use CRM_HRLeaveAndAbsences_Helper_CalendarFeed_LeaveTime as CalendarLeaveTimeHel
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData
+ *
+ * This class encapsulates the logic needed to generate a leave feed
+ * data off the corresponding feed configuration. In essence it gets
+ * the actual leave calendar data off the blue print set for the it in the
+ * feed configuration.
  */
 class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
 
@@ -49,10 +54,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
    * CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData constructor.
    *
    * @param string $feedHash
+   *   The unique hash for a Leave request calendar config.
    */
   public function __construct($feedHash) {
     $this->feedHash = $feedHash;
-    $this->setFeedConfig($feedHash);
+    $this->loadFeedConfig($feedHash);
     $this->setDataDateRange();
     $this->leaveDayTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
     $this->enabledLeaveTypesForFeed = $this->getEnabledFeedLeaveTypes();
@@ -68,12 +74,13 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
     $leaveRequests = $this->getLeaveRequests();
     $leaveRequestContacts = array_column($leaveRequests, 'contact_id');
     $contactNames = $this->getContactNames($leaveRequestContacts);
-    $absenceTypesList = $this->enabledLeaveTypesForFeed;
+
 
     $leaveData = [];
     foreach($leaveRequests as $leaveRequest) {
-      $leaveTypeName =
-        !empty($absenceTypesList[$leaveRequest['type_id']]) ? $absenceTypesList[$leaveRequest['type_id']] : 'Leave';
+      $leaveTypeName = $this->getLeaveTypeLabel($leaveRequest['type_id']);
+      //We need to adjust the time for leave request in days for display in the calendar
+      //different from the default time stored in the leave request table.
       CalendarLeaveTimeHelper::adjust($leaveRequest);
       $leaveData[] = [
         'id' => $leaveRequest['id'],
@@ -87,6 +94,21 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
     return $leaveData;
   }
 
+  /**
+   * Returns the Leave type label from the leave type ID. For cases
+   * where the typeId is not found in the absence types list, i.e for
+   * leave types with their hide_label property as true, the leave label
+   * is returned as 'Leave'.
+   *
+   * @param int $typeId
+   *
+   * @return string
+   */
+  private function getLeaveTypeLabel($typeId) {
+    $absenceTypesList = $this->enabledLeaveTypesForFeed;
+
+    return !empty($absenceTypesList[$typeId]) ? $absenceTypesList[$typeId] : 'Leave';
+  }
   /**
    * Returns the Feed Config object.
    *
@@ -141,7 +163,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
       'status_id' => ['IN' => ['approved', 'admin_approved']],
       'from_date' => ['>=' => $this->startDate->format('Y-m-d H:i:s')],
       'to_date' => ['<=' => $this->endDate->format('Y-m-d H:i:s')],
-      'request_type' => array('!=' => LeaveRequest::REQUEST_TYPE_TOIL),
+      'request_type' => ['!=' => LeaveRequest::REQUEST_TYPE_TOIL],
     ];
 
     if (!$this->isFeedForAllContacts()) {
@@ -158,21 +180,12 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
    *
    * @param string $hash
    */
-  private function setFeedConfig($hash) {
+  private function loadFeedConfig($hash) {
     if (!$hash) {
       throw new RuntimeException('The feed hash should not be empty');
     }
 
-    $feedConfig = new LeaveRequestCalendarFeedConfig();
-    $feedConfig->is_active = 1;
-    $feedConfig->hash = $hash;
-    $feedConfig->find(true);
-
-    if (!$feedConfig->id) {
-      throw new RuntimeException('An enabled feed with the given hash does not exist!');
-    }
-
-    $this->feedConfig = $feedConfig;
+    $this->feedConfig = LeaveRequestCalendarFeedConfig::findActiveByHash($hash);
   }
 
   /**
@@ -183,9 +196,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
    */
   private function getFeedContacts() {
     if (!$this->feedContacts) {
-      $composedOf = unserialize($this->feedConfig->composed_of);
-      $departments = !empty($composedOf['department']) ? $composedOf['department'] : '';
-      $locations = !empty($composedOf['location']) ? $composedOf['location'] : '';
+      $departments = $this->feedConfig->getDepartmentsComposedOf();
+      $locations = $this->feedConfig->getLocationsComposedOf();
 
       $params = ['return' => ['contact_id']];
       if ($departments) {
@@ -214,13 +226,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
    * @return bool
    */
   private function isFeedForAllContacts() {
-    $composedOf = unserialize($this->feedConfig->composed_of);
-
-    if (empty($composedOf['location']) && empty($composedOf['department'])) {
-      return TRUE;
-    }
-
-    return FALSE;
+    return empty($this->feedConfig->getLocationsComposedOf())
+      && empty($this->feedConfig->getDepartmentsComposedOf());
   }
 
   /**
@@ -229,9 +236,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
    * @return array
    */
   private function getFeedLeaveTypes() {
-    $composedOf = unserialize($this->feedConfig->composed_of);
-
-    return $composedOf['leave_type'];
+    return $this->feedConfig->getLeaveTypesComposedOf();
   }
 
   /**

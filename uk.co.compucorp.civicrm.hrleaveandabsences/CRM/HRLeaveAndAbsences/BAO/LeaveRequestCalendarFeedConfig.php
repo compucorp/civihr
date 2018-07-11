@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestCalendarFeedConfigException as InvalidLeaveRequestCalendarFeedConfigException;
 use CRM_HRLeaveAndAbsences_Validator_TimeZone as TimeZoneValidator;
+use CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig as LeaveRequestCalendarFeedConfig;
 
 class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLeaveAndAbsences_DAO_LeaveRequestCalendarFeedConfig {
 
@@ -429,5 +430,63 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig extends CRM_HRLe
     }
 
     return $inaccessibleFeeds;
+  }
+
+  /**
+   * Returns a LeaveRequestCalendarFeedConfig object if an
+   * active feed config with the given hash is found.
+   *
+   * @param string $hash
+   *
+   * @return LeaveRequestCalendarFeedConfig
+   */
+  public static function findActiveByHash($hash) {
+    $feedConfig = new self();
+    $feedConfig->is_active = 1;
+    $feedConfig->hash = $hash;
+
+    if (!$feedConfig->find(TRUE)) {
+      throw new InvalidLeaveRequestCalendarFeedConfigException(
+        "An enabled feed with the given hash does not exist!"
+      );
+    }
+
+    return $feedConfig;
+  }
+
+  /**
+   * Returns the departments the feed config has set for the
+   * composed of property.
+   *
+   * @return string
+   */
+  public function getDepartmentsComposedOf() {
+    $composedOf = unserialize($this->composed_of);
+
+    return !empty($composedOf['department']) ? $composedOf['department'] : '';
+  }
+
+  /**
+   * Returns the locations the feed config has set for the
+   * composed of property.
+   *
+   * @return string
+   */
+  public function getLocationsComposedOf() {
+    $composedOf = unserialize($this->composed_of);
+
+    return !empty($composedOf['location']) ? $composedOf['location'] : '';
+  }
+
+  /**
+   * Returns the leave types the feed config has set for the
+   * composed of property.
+   *
+   * @return mixed
+   */
+  public function getLeaveTypesComposedOf() {
+    $composedOf = unserialize($this->composed_of);
+
+    return $composedOf['leave_type'];
   }
 }

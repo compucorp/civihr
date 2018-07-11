@@ -10,7 +10,6 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequestCalendarFeedConfig as Lea
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData as LeaveRequestCalendarFeedData;
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig as LeaveRequestCalendarFeedConfig;
 use CRM_HRLeaveAndAbsences_Helper_CalendarFeed_LeaveTime as CalendarLeaveTimeHelper;
 
 /**
@@ -24,8 +23,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
 
   private $leaveTypes;
 
-  public function testDateRangeForLeaveData() {
-    $feedConfig =  LeaveCalendarFeedConfigFabricator::fabricate([]);
+  public function testDateRangeForLeaveDataIsBetweenCurrentDateAndThreeMonthsTime() {
+    $feedConfig = LeaveCalendarFeedConfigFabricator::fabricate();
     $feedData = new LeaveRequestCalendarFeedData($feedConfig->hash);
     $startDate = $feedData->getStartDate();
     $endDate = $feedData->getEndDate();
@@ -48,17 +47,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
   public function testExceptionIsThrownWhenFeedHashIsEmpty() {
     $this->setExpectedException('RuntimeException', 'The feed hash should not be empty');
     new LeaveRequestCalendarFeedData('');
-  }
-
-  public function testExceptionIsThrownWhenFeedConfigIsDisabled() {
-    $this->setExpectedException('RuntimeException', 'An enabled feed with the given hash does not exist!');
-    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate(['is_active' => 0]);
-    new LeaveRequestCalendarFeedData($feedConfig1->hash);
-  }
-
-  public function testExceptionIsThrownWhenFeedConfigHashDoesNotExist() {
-    $this->setExpectedException('RuntimeException', 'An enabled feed with the given hash does not exist!');
-    new LeaveRequestCalendarFeedData("blabla");
   }
 
   public function testGetWillReturnDataForFeedConfigLocationAndDepartmentContacts() {
@@ -267,7 +255,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
 
   public function testGetWillNotReturnDisabledLeaveTypesData() {
     $absenceType = AbsenceTypeFabricator::fabricate();
-    $absenceType2 = AbsenceTypeFabricator::fabricate();
+    $absenceType2 = AbsenceTypeFabricator::fabricate(['is_active' => 0]);
     $contact1 = ContactFabricator::fabricate(['first_name' => 'Contact1', 'last_name' => 'LastContact1']);
 
     HRJobContractFabricator::fabricate(
@@ -284,7 +272,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
     ];
 
-    //This leave request will not be returned because  the absence type is disabled
+    //This leave request will not be returned because the absence type is disabled
     //just after the leave was created for it.
     $params[2] = [
       'contact_id' => $contact1['id'],
@@ -294,9 +282,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
       'from_date' => CRM_Utils_Date::processDate('today'),
       'to_date' => CRM_Utils_Date::processDate('+2 days'),
     ];
-
-    //disable absence type 2
-    AbsenceTypeFabricator::fabricate(['id' => $absenceType2->id, 'is_active' => 0]);
 
     foreach ($params as &$param) {
       $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($param);
@@ -313,6 +298,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
 
     $leaveFeedData = new LeaveRequestCalendarFeedData($feedConfig1->hash);
 
+    //The second leave request will not be returned because it is linked to a
+    //disabled absence type
     unset($params[2]);
     $this->assertEquals($this->getExpectedLeaveDataResult($params), $leaveFeedData->get());
   }
@@ -363,6 +350,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
 
     $leaveFeedData = new LeaveRequestCalendarFeedData($feedConfig1->hash);
 
+    //The first leave request will not be returned because it is not an approved leave
     unset($params[1]);
     $this->assertEquals($this->getExpectedLeaveDataResult($params), $leaveFeedData->get());
   }
