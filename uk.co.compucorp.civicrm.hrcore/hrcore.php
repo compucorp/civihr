@@ -286,6 +286,7 @@ function hrcore_civicrm_pageRun($page) {
 
   $hooks = [
     new CRM_HRCore_Hook_PageRun_LocationTypeFilter(),
+    new CRM_HRCore_Hook_PageRun_RelationshipTypesFilter(),
   ];
 
   foreach ($hooks as $hook) {
