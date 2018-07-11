@@ -13,9 +13,18 @@ class CRM_HRCore_Hook_PageRun_RelationshipTypesFilter {
     }
 
     $rows = $page->get_template_vars('rows');
+
+    $targetRelTypes = [
+      'Case Coordinator is',
+      'Employee of',
+      'Head of Household for',
+      'Household member of',
+    ];
     // remove disabled relationship types
     foreach ($rows as $index => $row) {
-      if (CRM_Utils_Array::value('is_active', $row) == '0'&& in_array(CRM_Utils_Array::value('name', $row),['Case Coordinator is','Employee of','Head of Household for','Household member of'])) {
+      $isActive = CRM_Utils_Array::value('is_active', $row) == '1';
+      $isTargetType = in_array(CRM_Utils_Array::value('name', $row), $targetRelTypes);
+      if (!$isActive && $isTargetType) {
         unset($rows[$index]);
       }
     }
@@ -31,7 +40,9 @@ class CRM_HRCore_Hook_PageRun_RelationshipTypesFilter {
    */
   public function shouldHandle($page) {
     global $user;
-    return $page instanceof CRM_Admin_Page_RelationshipType && !in_array('administrator', $user->roles);
+    $isRootAdmin = in_array('administrator', $user->roles);
+
+    return $page instanceof CRM_Admin_Page_RelationshipType && !$isRootAdmin;
   }
 
 }
