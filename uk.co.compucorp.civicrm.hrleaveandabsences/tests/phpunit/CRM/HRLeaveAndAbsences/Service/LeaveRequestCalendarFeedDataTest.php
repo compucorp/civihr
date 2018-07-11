@@ -47,14 +47,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
     $this->assertEquals($feedConfig->timezone, $feedData->getTimeZone());
   }
 
-  public function testGetInstantiatedDateTimeReturnsTimeLeaveFeedDataClassWasInstantiated() {
-    $feedConfig =  LeaveCalendarFeedConfigFabricator::fabricate();
-    $feedData = new LeaveRequestCalendarFeedData($feedConfig->hash);
-    $now = new DateTime();
-    $this->assertEquals($now, $feedData->getInstantiatedDateTime(), '', 10);
-  }
-
-
   public function testGetWillReturnDataForFeedConfigLocationAndDepartmentContacts() {
     $absenceType = AbsenceTypeFabricator::fabricate();
     $contact1 = ContactFabricator::fabricate(['first_name' => 'Contact1', 'last_name' => 'LastContact1']);
