@@ -4,7 +4,7 @@ use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_Hrjobroles_Test_Fabricator_HrJobRoles as HRJobRolesFabricator;
 use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
-use CRM_HRLeaveAndAbsences_BAO_LeaveRequestCalendarFeedConfig as LeaveRequestCalendarFeedConfig;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequestCalendarFeedConfig as LeaveCalendarFeedConfigFabricator;
 
 /**
  * Class api_v3_LeaveRequestCalendarFeedConfigTest
@@ -45,7 +45,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
     $adminId = 2;
     $this->setPermissions(['access AJAX API', 'can administer calendar feeds']);
     $this->registerCurrentLoggedInContactInSession($adminId);
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'visible_to' => [
         'location' => ['Sample Location1'],
@@ -53,7 +53,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
       ]
     ]);
 
-    $feedConfig2 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig2 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 2',
       'visible_to' => [
         'location' => ['Sample Location2'],
@@ -61,7 +61,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
       ]
     ]);
 
-    $feedConfig3 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig3 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 3',
       'visible_to' => []
     ]);
@@ -97,7 +97,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
       'location' => $location1['value']
     ]);
 
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'visible_to' => [
         'location' => [$location1['value']],
@@ -105,7 +105,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
       ]
     ]);
 
-    $feedConfig2 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig2 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 2',
       'visible_to' => [
         'location' => [$location2['value']],
@@ -115,7 +115,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
 
     //A feed with an empty array as its visible_to filter means it is accessible to all locations
     // and departments.
-    $feedConfig3 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig3 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 3',
       'visible_to' => []
     ]);
@@ -150,7 +150,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
       'department' => $department1['value']
     ]);
 
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'visible_to' => [
         'location' => [$location1['value']],
@@ -158,7 +158,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
       ]
     ]);
 
-    $feedConfig2 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig2 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 2',
       'visible_to' => [
         'location' => [$location1['value']],
@@ -168,7 +168,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
 
     //A feed with an empty array as its visible_to filter means it is accessible to all locations
     //and departments.
-    $feedConfig3 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig3 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 3',
       'visible_to' => []
     ]);
@@ -205,7 +205,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
       'location' => $location1['value']
     ]);
 
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'visible_to' => [
         'location' => [$location1['value']],
@@ -213,7 +213,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
       ]
     ]);
 
-    $feedConfig2 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig2 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 2',
       'visible_to' => [
         'location' => [$location2['value']],
@@ -223,7 +223,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
 
     //A feed with an empty array as its visible_to filter means it is accessible to all locations
     //and departments.
-    $feedConfig3 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig3 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 3',
       'visible_to' => []
     ]);
@@ -260,7 +260,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
       'location' => $location1['value']
     ]);
 
-    $feedConfig1 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 1',
       'visible_to' => [
         'location' => [$location2['value']],
@@ -268,7 +268,7 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
       ]
     ]);
 
-    $feedConfig2 = $this->createLeaveCalendarFeedConfig([
+    $feedConfig2 = LeaveCalendarFeedConfigFabricator::fabricate([
       'title' => 'Feed 2',
       'visible_to' => [
         'department' => [$department2['value']]
@@ -282,26 +282,6 @@ class api_v3_LeaveRequestCalendarFeedConfigTest extends BaseHeadlessTest {
 
     $this->assertEquals(0, $results['count']);
     $this->setPermissions([]);
-  }
-
-  private function createLeaveCalendarFeedConfig($params) {
-    $defaultParameters = [
-      'title' => 'Feed 1',
-      'timezone' => 'America/Monterrey',
-      'composed_of' => [
-        'leave_type' => [1],
-        'department' => [3],
-        'location' => [3]
-      ],
-      'visible_to' => [
-        'department' => [1,2],
-        'location' => [1]
-      ]
-    ];
-
-    $params = array_merge($defaultParameters, $params);
-
-    return LeaveRequestCalendarFeedConfig::create($params);
   }
 
   private function createDepartment($departmentName) {
