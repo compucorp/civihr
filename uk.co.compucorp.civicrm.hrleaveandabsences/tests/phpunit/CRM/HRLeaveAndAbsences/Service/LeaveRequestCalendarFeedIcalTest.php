@@ -12,9 +12,9 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequestCalendarFeedConfig as Lea
 class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcalTest extends BaseHeadlessTest {
 
   public function testGetReturnsAnIcalDataFormat() {
-    $this->requireIcalLibrary();
-    $date1 = new DateTime('today');
-    $date2 = new DateTime('tomorrow');
+    $dateTime = new DateTime();
+    $date1 = new DateTime('2018-06-25');
+    $date2 = new DateTime('2018-07-16');
     $sampleData = [
       [
         'id' => 1,
@@ -32,60 +32,88 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcalTest extends Ba
       ],
     ];
 
-    $feedConfig = LeaveCalendarFeedConfigFabricator::fabricate();
+    $feedConfig = LeaveCalendarFeedConfigFabricator::fabricate(['timezone' => 'America/Monterrey']);
     $leaveFeedData = $this->prophesize(LeaveRequestCalendarFeedData::class);
-    $leaveFeedData->getFeedConfig()->willReturn($feedConfig);
-    $leaveFeedData->getStartDate()->willReturn(new DateTime('today'));
-    $leaveFeedData->getEndDate()->willReturn(new DateTime('+3 months'));
+    $leaveFeedData->getInstantiatedDateTime()->willReturn($dateTime);
+    $leaveFeedData->getTimeZone()->willReturn($feedConfig->timezone);
+    $leaveFeedData->getStartDate()->willReturn(new DateTime('2018-06-01'));
+    $leaveFeedData->getEndDate()->willReturn(new DateTime('2018-09-01'));
     $leaveFeedData->get()->willReturn($sampleData);
 
     $feedIcal = new LeaveRequestCalendarFeedIcal();
     $feedIcal = $feedIcal->get($leaveFeedData->reveal());
 
-    $icalObject = new ZCiCal($feedIcal);
-    //Two events are present.
-    $this->assertEquals(2, $icalObject->countEvents());
-    $eventDetails = $this->extractEventDetails($icalObject);
-    $firstEvent = array_shift($eventDetails);
-    $secondEvent = array_shift($eventDetails);
-
-    $this->assertEquals($firstEvent['SUMMARY'], $sampleData[0]['display_name']);
-    $this->assertEquals($firstEvent['UID'], $sampleData[0]['id'] . '_feed_' . $sampleData[0]['contact_id']);
-    $this->assertEquals($firstEvent['DTSTART'], $date1->format('Ymd\THis'));
-    $this->assertEquals($firstEvent['DTEND'], $date2->format('Ymd\THis'));
-
-    $this->assertEquals($secondEvent['SUMMARY'], $sampleData[1]['display_name']);
-    $this->assertEquals($secondEvent['UID'], $sampleData[1]['id'] . '_feed_' . $sampleData[1]['contact_id']);
-    $this->assertEquals($secondEvent['DTSTART'], $date2->format('Ymd\THis'));
-    $this->assertEquals($secondEvent['DTEND'], $date2->format('Ymd\THis'));
+    $expectedIcal = $this->getIcalHeaderForMonterreyTimezoneAndCurrentYearIs2018() .
+      $this->getIcalBody($dateTime, $sampleData);
+    $this->assertEquals($expectedIcal, $feedIcal);
   }
 
-  private function extractEventDetails($icalObject) {
-    $events = [];
-    if(isset($icalObject->tree->child)) {
-      $counter = 0;
-      foreach($icalObject->tree->child as $node) {
-        if($node->getName() == "VEVENT") {
-          foreach($node->data as $key => $value) {
-            if(is_array($value)) {
-              for($i = 0; $i < count($value); $i++) {
-                $events[$counter][$key] = $value[$i]->getValues();
-              }
-            }
-            else {
-              $events[$counter][$key] = $value->getValues();
-            }
-          }
-        }
-        $counter++;
-      }
+  private function getIcalBody($instantiatedDateTime, $leaveData) {
+    foreach($leaveData as $data) {
+      $fromDate = new DateTime($data['from_date']);
+      $toDate = new DateTime($data['to_date']);
+
+      $icalData[] = 'BEGIN:VEVENT';
+      $icalData[] = 'SUMMARY:' . $data['display_name'];
+      $icalData[] = 'DTSTART:' . $fromDate->format('Ymd\THis');
+      $icalData[] = 'DTEND:' . $toDate->format('Ymd\THis');
+      $icalData[] = 'UID:' . $data['id'];
+      $icalData[] = 'DTSTAMP:' . $instantiatedDateTime->format('Ymd\THis');
+      $icalData[] = 'END:VEVENT';
     }
 
-    return $events;
+    $icalData[] = 'END:VCALENDAR' ."\r\n";
+    return implode("\r\n", $icalData);
   }
-  private function requireIcalLibrary() {
-    $calendarLibraryPath =
-      CRM_Core_Resources::singleton()->getPath('uk.co.compucorp.civicrm.hrcore') . '/vendor/icalendar/zapcallib.php';
-    require_once("$calendarLibraryPath");
+
+  private function getIcalHeaderForMonterreyTimezoneAndCurrentYearIs2018() {
+    $header = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//ZContent.net//ZapCalLib 1.0//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VTIMEZONE',
+      'TZID:America/Monterrey',
+      'BEGIN:DAYLIGHT',
+      'DTSTART:20170402T030000',
+      'TZOFFSETFROM:-0600',
+      'TZOFFSETTO:-0500',
+      'TZNAME:CDT',
+      'END:DAYLIGHT',
+      'BEGIN:STANDARD',
+      'DTSTART:20171029T010000',
+      'TZOFFSETFROM:-0500',
+      'TZOFFSETTO:-0600',
+      'TZNAME:CST',
+      'END:STANDARD',
+      'BEGIN:DAYLIGHT',
+      'DTSTART:20180401T030000',
+      'TZOFFSETFROM:-0600',
+      'TZOFFSETTO:-0500',
+      'TZNAME:CDT',
+      'END:DAYLIGHT',
+      'BEGIN:STANDARD',
+      'DTSTART:20181028T010000',
+      'TZOFFSETFROM:-0500',
+      'TZOFFSETTO:-0600',
+      'TZNAME:CST',
+      'END:STANDARD',
+      'BEGIN:DAYLIGHT',
+      'DTSTART:20190407T030000',
+      'TZOFFSETFROM:-0600',
+      'TZOFFSETTO:-0500',
+      'TZNAME:CDT',
+      'END:DAYLIGHT',
+      'BEGIN:STANDARD',
+      'DTSTART:20191027T010000',
+      'TZOFFSETFROM:-0500',
+      'TZOFFSETTO:-0600',
+      'TZNAME:CST',
+      'END:STANDARD',
+      'END:VTIMEZONE'."\r\n",
+    ];
+
+    return implode("\r\n", $header);
   }
 }

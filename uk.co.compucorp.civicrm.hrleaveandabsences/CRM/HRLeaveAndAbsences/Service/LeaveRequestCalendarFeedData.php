@@ -51,6 +51,13 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
   private $enabledLeaveTypesForFeed;
 
   /**
+   * @var \DateTime
+   *    the date and time this
+   *    LeaveCalendarFeedData class was instantiated
+   */
+  private $instantiatedDateTime;
+
+  /**
    * CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData constructor.
    *
    * @param string $feedHash
@@ -60,6 +67,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
     $this->feedHash = $feedHash;
     $this->loadFeedConfig($feedHash);
     $this->setDataDateRange();
+    $this->instantiatedDateTime = new DateTime();
     $this->leaveDayTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
     $this->enabledLeaveTypesForFeed = $this->getEnabledFeedLeaveTypes();
   }
@@ -109,13 +117,24 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
 
     return !empty($absenceTypesList[$typeId]) ? $absenceTypesList[$typeId] : 'Leave';
   }
+
   /**
-   * Returns the Feed Config object.
+   * Returns the feed config timezone.
    *
-   * @return LeaveRequestCalendarFeedConfig
+   * @return string
    */
-  public function getFeedConfig() {
-    return $this->feedConfig;
+  public function getTimeZone() {
+    return $this->feedConfig->timezone;
+  }
+
+  /**
+   * Returns the datetime for this leave feed data class
+   * was instantiated.
+   *
+   * @return \DateTime
+   */
+  public function getInstantiatedDateTime() {
+    return $this->instantiatedDateTime;
   }
 
   /**

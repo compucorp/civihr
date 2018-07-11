@@ -4,6 +4,9 @@ use CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData as LeaveRequestC
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcal
+ *
+ * This class converts the leave feed data to an ical format. It
+ * accepts a LeaveRequestCalendarFeedData object to achieve this.
  */
 class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcal {
 
@@ -18,15 +21,15 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcal {
   public function get(LeaveRequestCalendarFeedData $feedData) {
     $this->requireIcalLibrary();
 
-    $feedConfig = $feedData->getFeedConfig();
-
     $icalObject = new ZCiCal();
     ZCTimeZoneHelper::getTZNode(
       $feedData->getStartDate()->format('Y'),
       $feedData->getEndDate()->format('Y'),
-      $feedConfig->timezone,
+      $feedData->getTimeZone(),
       $icalObject->curnode
     );
+
+    $dateTime = $feedData->getInstantiatedDateTime()->format('Y-m-d H:i:s');
 
     foreach ($feedData->get() as $data) {
       $eventObject = new ZCiCalNode("VEVENT", $icalObject->curnode);
@@ -34,11 +37,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedIcal {
       $eventObject->addNode(new ZCiCalDataNode("DTSTART:" . ZCiCal::fromSqlDateTime($data['from_date'])));
       $eventObject->addNode(new ZCiCalDataNode("DTEND:" . ZCiCal::fromSqlDateTime($data['to_date'])));
 
-      // We need to create a unique string for this event so that on reimport by calendar app
-      // Event is not duplicated and changes will be updated.
-      $uid = $data['id'] . '_feed_' . $data['contact_id'];
-      $eventObject->addNode(new ZCiCalDataNode("UID:" . $uid));
-      $eventObject->addNode(new ZCiCalDataNode("DTSTAMP:" . ZCiCal::fromSqlDateTime()));
+      // The leave request is used as a string for this event so that on reimport by calendar app
+      // the event is not duplicated and changes will be updated.
+      $eventObject->addNode(new ZCiCalDataNode("UID:" . $data['id']));
+      $eventObject->addNode(new ZCiCalDataNode("DTSTAMP:" . ZCiCal::fromSqlDateTime($dateTime)));
     }
 
     return $icalObject->export();
