@@ -4,6 +4,9 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Helper_CalendarFeed_LeaveTime
+ *
+ * This is an helper class that helps to modify the time for leave request
+ * in days for display in a calendar.
  */
 class CRM_HRLeaveAndAbsences_Helper_CalendarFeed_LeaveTime {
 
@@ -12,6 +15,13 @@ class CRM_HRLeaveAndAbsences_Helper_CalendarFeed_LeaveTime {
    * Ical format.
    *
    * @param array $leaveRequest
+   *  [
+   *    from_date_type => from date type,
+   *    to_date_type => to date type,
+   *    from_date => leave request date time,
+   *    to_date => leave request date time,
+   *    ...
+   *  ]
    */
   public static function adjust(&$leaveRequest) {
     if (empty($leaveRequest['from_date_type']) && empty($leaveRequest['to_date_type'])) {
