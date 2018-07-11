@@ -67,9 +67,9 @@ function hrcontactactionsmenu_civicrm_pageRun(&$page) {
     CRM_Core_Resources::singleton()->addStyleFile($extName, 'css/contactactions.css');
     CRM_Core_Resources::singleton()->addScriptFile($extName, 'js/contactactions.js');
 
-    CRM_Core_Region::instance('contact-page-inline-actions')->update('default', array(
+    CRM_Core_Region::instance('contact-page-inline-actions')->update('default', [
       'disabled' => TRUE,
-    ));
+    ]);
     CRM_Core_Region::instance('contact-page-inline-actions')->add([
       'template' => 'CRM/HRContactActionsMenu/Page/Inline/Actions.tpl'
     ]);

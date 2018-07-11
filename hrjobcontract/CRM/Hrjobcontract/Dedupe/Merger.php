@@ -707,7 +707,6 @@ INNER JOIN  civicrm_membership membership2 ON membership1.membership_type_id = m
   /**
    * Get where string for dedupe join.
    *
-   * @param int $batchLimit
    * @param bool $isSelected
    *
    * @return string

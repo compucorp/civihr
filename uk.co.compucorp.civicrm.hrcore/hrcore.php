@@ -426,7 +426,7 @@ function _hrcore_coreMenuChanges(&$params) {
 /**
  * Removes the item with the given $name from the root of the given $menu
  *
- * @todo Use the NavigationMenuHelper methods instead of these helper functions here
+ * @todo Either use the NavigationMenuHelper methods instead or save the navigation menu to the database.
  *
  * @param string $name
  * @param array $menu
@@ -440,7 +440,7 @@ function _hrcore_removeItemFromMainNavigationMenuByName($name, &$menu) {
 /**
  * Returns the ID of the Navigation item with the given $name
  *
- * @todo Use the NavigationMenuHelper methods instead of these helper functions here
+ * @todo Either use the NavigationMenuHelper methods instead or save the navigation menu to the database.
  *
  * @param string $name
  *
@@ -460,7 +460,7 @@ function _hrcore_createHelpMenu(&$menu) {
   _hrcore_civix_insert_navigation_menu($menu, '', [
     'name' => ts('Help'),
     'permission' => 'access CiviCRM',
-    'weight' => _hrcore_getMaxMenuWeight($menu) + 1
+    'weight' => _hrcore_getMaxMenuWeight($menu) + 1,
   ]);
 
   _hrcore_civix_insert_navigation_menu($menu, 'Help', [
@@ -496,7 +496,7 @@ function _hrcore_createDeveloperMenu(&$menu) {
     'name' => ts('Developer'),
     'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
     'operator' => 'AND',
-    'weight' => _hrcore_getMaxMenuWeight($menu) + 1
+    'weight' => _hrcore_getMaxMenuWeight($menu) + 1,
   ]);
 
   _hrcore_civix_insert_navigation_menu($menu, 'Developer', [
@@ -570,7 +570,7 @@ function _hrcore_createSelfServicePortalMenu(&$menu) {
     'name' => ts('ssp'),
     'label' => ts('Self Service Portal'),
     'url' => 'dashboard',
-    'weight' => _hrcore_getMaxMenuWeight($menu) + 1
+    'weight' => _hrcore_getMaxMenuWeight($menu) + 1,
   ]);
 }
 
