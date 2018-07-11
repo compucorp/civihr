@@ -33,6 +33,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   use CRM_HRCore_Upgrader_Steps_1023;
   use CRM_HRCore_Upgrader_Steps_1024;
   use CRM_HRCore_Upgrader_Steps_1025;
+  use CRM_HRCore_Upgrader_Steps_1026;
 
 
   /**
