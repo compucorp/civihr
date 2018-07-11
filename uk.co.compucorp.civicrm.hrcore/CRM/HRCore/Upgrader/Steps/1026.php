@@ -28,14 +28,8 @@ trait CRM_HRCore_Upgrader_Steps_1026 {
   private function up1026_deleteDefaultGroups($groupsToDelete) {
     $groups = civicrm_api3('Group', 'get', [
       'name' => ['IN' => $groupsToDelete],
+      'api.Group.delete' => ['id' => '$value.id'],
     ]);
-
-    $groups = $groups['values'];
-    foreach ($groups as $groupId => $group) {
-      civicrm_api3('Group', 'delete', [
-        'id' => $groupId,
-      ]);
-    }
   }
 
   /**
@@ -46,12 +40,11 @@ trait CRM_HRCore_Upgrader_Steps_1026 {
   private function up1026_disableAndHideDefaultGroup($groupToHide) {
     $group = civicrm_api3('Group', 'get', [
       'name' => $groupToHide,
-    ]);
-
-    civicrm_api3('Group', 'create', [
-      'id' => $group['id'],
-      'is_hidden' => 1,
-      'is_active' => 0,
+      'api.Group.create' => [
+        'id' => '$value.id',
+        'is_hidden' => 1,
+        'is_active' => 0,
+      ],
     ]);
   }
 
