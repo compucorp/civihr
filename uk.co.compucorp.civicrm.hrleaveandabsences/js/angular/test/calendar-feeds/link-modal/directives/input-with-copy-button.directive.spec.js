@@ -40,11 +40,13 @@ define([
 
     describe('when focusing the copy input', function () {
       beforeEach(function () {
+        spyOn(copyInput[0], 'focus').and.callThrough();
         copyInput.triggerHandler('click');
         $rootScope.$digest();
       });
 
       it('selects the whole text in the copy input', function () {
+        expect(copyInput[0].focus).toHaveBeenCalled();
         expect(copyInput[0].selectionStart).toBe(0);
         expect(copyInput[0].selectionEnd).toBe(copyInput.val().length);
       });
@@ -58,6 +60,7 @@ define([
           copiedValue = copyInput.val().slice(copyInput[0].selectionStart,
             copyInput[0].selectionEnd);
         });
+        spyOn(copyInput[0], 'blur').and.callThrough();
         copyButton.triggerHandler('click');
         $rootScope.$digest();
       });
@@ -75,6 +78,7 @@ define([
       });
 
       it('does not leave text selected inside the copy input', function () {
+        expect(copyInput[0].blur).toHaveBeenCalled();
         expect(copyInput[0].selectionStart).toBe(0);
         expect(copyInput[0].selectionEnd).toBe(0);
       });
