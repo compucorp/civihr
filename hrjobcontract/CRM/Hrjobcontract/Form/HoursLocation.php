@@ -94,7 +94,7 @@ class CRM_Hrjobcontract_Form_HoursLocation extends CRM_Core_Form {
       return;
     }
 
-    $this->add('text', 'location', ts('Location'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HoursLocation', 'location'), TRUE);
+    $this->add('text', 'location', ts('Label'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HoursLocation', 'location'), TRUE);
     $this->add('text', 'standard_hours', ts('Standard Hours'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HoursLocation', 'standard_hours'), TRUE);
     $this->add('select', 'periodicity', ts('Periodicity'), array('' => ts('- select -')) + CRM_Hrjobcontract_SelectValues::commonUnit(), TRUE);
 
@@ -152,7 +152,7 @@ class CRM_Hrjobcontract_Form_HoursLocation extends CRM_Core_Form {
         CRM_Core_Session::setStatus(ts('The Hours Location for \'%1\' has been added.', array( 1 => $hoursLocation->location)), 'Success', 'success');
       }
 
-      $url = CRM_Utils_System::url('civicrm/hours_location', 'reset=1&action=browse');
+      $url = CRM_Utils_System::url('civicrm/standard_full_time_hours', 'reset=1&action=browse');
       $session = CRM_Core_Session::singleton();
       $session->replaceUserContext($url);
     }

@@ -112,9 +112,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
       $this->getCurrentStatus($params), $params['status_id'], $params['contact_id'])
     ) {
       throw new RuntimeException(
-        "You can't change the Leave Request status from ".
-        $this->getCurrentStatus($params). " to {$params['status_id']}"
-      );
+        $this->getErrorMessageForInvalidStatusTransition($params));
     }
 
     $isTOILWithPastDates = LeaveRequest::isTOILWithPastDates($params);
@@ -128,6 +126,28 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     }
 
     return $this->createRequestWithBalanceChanges($params);
+  }
+
+  /**
+   * Return an error message either for specific invalid status transition cases
+   * or a default generic message
+   *
+   * @param array $params
+   *
+   * @return string
+   */
+  private function getErrorMessageForInvalidStatusTransition($params) {
+    $leaveStatuses = LeaveRequest::getStatuses();
+    $leaveStatusesLabels = LeaveRequest::buildOptions('status_id');
+    $isOwnRequest = CRM_Core_Session::getLoggedInContactID() === $params['contact_id'];
+
+    if ($isOwnRequest && (int)$params['status_id'] === (int)$leaveStatuses['approved']) {
+      return "You can't approve your own leave requests";
+    }
+
+    return "You can't change the Leave Request status from \"" .
+      $leaveStatusesLabels[$this->getCurrentStatus($params)] . '" to "' .
+      $leaveStatusesLabels[$params['status_id']] . '"';
   }
 
   /**
