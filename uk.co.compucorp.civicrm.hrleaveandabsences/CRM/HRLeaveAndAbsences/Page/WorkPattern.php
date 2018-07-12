@@ -1,5 +1,6 @@
 <?php
 
+use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
 use CRM_HRLeaveAndAbsences_Service_WorkPattern as WorkPatternService;
 
 class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
@@ -18,28 +19,28 @@ class CRM_HRLeaveAndAbsences_Page_WorkPattern extends CRM_Core_Page_Basic {
   }
 
   public function browse() {
-    $object = new CRM_HRLeaveAndAbsences_BAO_WorkPattern();
-    $object->findWithNumberOfWeeksAndHours();
+    $workPatternFinder = new WorkPattern();
+    $workPatternFinder->find();
     $rows = [];
-    while($object->fetch()) {
-      $rows[$object->id] = array();
 
-      CRM_Core_DAO::storeValues($object, $rows[$object->id]);
+    while($workPatternFinder->fetch()) {
+      // The reason for this usage of storeValues and copyValues is to make each $workPattern
+      // a completely new instance of a WorkPattern BAO.
+      // This way we won't have problems when we call methods like getNumberOfWeeks() and
+      // getNumberOfHours() (in the template), which work based on data cached in the object.
+      $fieldsValues = [];
+      CRM_Core_DAO::storeValues($workPatternFinder, $fieldsValues);
+      $workPattern = new WorkPattern();
+      $workPattern->copyValues($fieldsValues);
 
-      // we need to manually add these fields because, since they are not
-      // real fields, storeValues will ignore them
-      $rows[$object->id]['number_of_weeks'] = (int)$object->number_of_weeks;
-      $rows[$object->id]['number_of_hours'] = (float)$object->number_of_hours;
-
-      if($object->number_of_weeks > 1) {
-        $rows[$object->id]['number_of_hours'] = ts('Various');
-      }
-
-      $rows[$object->id]['action'] = CRM_Core_Action::formLink(
+      $rows[] = [
+        'entity' => $workPattern,
+        'action' => CRM_Core_Action::formLink(
           $this->links(),
-          $this->calculateLinksMask($object),
-          ['id' => $object->id]
-      );
+          $this->calculateLinksMask($workPattern),
+          ['id' => $workPattern->id]
+        )
+      ];
     }
 
     $returnURL = CRM_Utils_System::url('civicrm/admin/leaveandabsences/work_patterns', 'reset=1');

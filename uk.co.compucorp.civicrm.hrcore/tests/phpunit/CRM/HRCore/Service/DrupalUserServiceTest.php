@@ -10,7 +10,7 @@ use CRM_HRCore_Test_Helpers_SessionHelper as SessionHelper;
 /**
  * @group headless
  */
-class DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
+class CRM_HRCore_Service_DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   /**
    * @var string

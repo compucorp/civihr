@@ -5,7 +5,7 @@ use CRM_HRCore_CMSData_Role_DrupalRoleService as DrupalRoleService;
 /**
  * @group headless
  */
-class DrupalRoleServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
+class CRM_HRCore_CMSData_Role_DrupalRoleServiceTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   /**
    * @var string

@@ -9,7 +9,7 @@ use CRM_HRCore_Service_Stats_StatsJSONConvertor as StatsJSONConvertor;
 /**
  * @group headless
  */
-class StatsSenderTest extends BaseHeadlessTest {
+class CRM_HRCore_Service_Stats_StatsSenderTest extends BaseHeadlessTest {
 
   public function testSuccessfulResponseWillNotThrowException() {
     $stats = new CiviHRStatistics();
@@ -18,7 +18,7 @@ class StatsSenderTest extends BaseHeadlessTest {
     $response = [HttpClient::STATUS_OK, ''];
     $client = $this->prophesize(HttpClient::class);
     $client->post(CIVIHR_STATISTICS_ENDPOINT, $json)->willReturn($response);
-    
+
     $sender = new StatsSender($client->reveal());
 
     $sender->send($stats);
@@ -34,7 +34,7 @@ class StatsSenderTest extends BaseHeadlessTest {
     $client = $this->prophesize(HttpClient::class);
     $response = [HttpClient::STATUS_DL_ERROR, '<error message>'];
     $client->post(CIVIHR_STATISTICS_ENDPOINT, $json)->willReturn($response);
-    
+
     $sender = new StatsSender($client->reveal());
 
     $sender->send($stats);

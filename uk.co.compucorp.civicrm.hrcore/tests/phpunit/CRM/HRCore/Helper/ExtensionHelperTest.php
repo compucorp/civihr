@@ -5,7 +5,7 @@ use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
 /**
  * @group headless
  */
-class ExtensionHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
+class CRM_HRCore_Helper_ExtensionHelperTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   /**
    * @var string

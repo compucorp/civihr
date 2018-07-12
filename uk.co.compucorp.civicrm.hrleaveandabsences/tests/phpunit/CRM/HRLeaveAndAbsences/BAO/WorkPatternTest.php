@@ -62,23 +62,32 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPatternTest extends BaseHeadlessTest {
     $this->assertEquals(1, $entity2->is_default);
   }
 
-  public function testFindWithNumberOfWeeksAndHours() {
+  public function testNumberOfWeeksShouldReturnZeroIfTheWorkPatternHasNoWeeks() {
+    $workPattern = new WorkPattern();
+
+    $this->assertEquals(0, $workPattern->getNumberOfWeeks());
+  }
+
+  public function testNumberOfWeeksShouldReturnTheNumberOfWorkWeeksLinkedToThePattern() {
     $workPattern1 = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
     $workPattern2 = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
 
-    $object = new WorkPattern();
-    $object->findWithNumberOfWeeksAndHours();
-    $this->assertEquals(2, $object->N);
+    $this->assertEquals(1, $workPattern1->getNumberOfWeeks());
+    $this->assertEquals(2, $workPattern2->getNumberOfWeeks());
+  }
 
-    $object->fetch();
-    $this->assertEquals($workPattern1->label, $object->label);
-    $this->assertEquals(1, $object->number_of_weeks);
-    $this->assertEquals(40.0, $object->number_of_hours);
+  public function testNumberOfHoursShouldReturnZeroIfTheWorkPatternHasNoWeeks() {
+    $workPattern = new WorkPattern();
 
-    $object->fetch();
-    $this->assertEquals($workPattern2->label, $object->label);
-    $this->assertEquals(2, $object->number_of_weeks);
-    $this->assertEquals(31.5, $object->number_of_hours);
+    $this->assertEquals(0, $workPattern->getNumberOfHours());
+  }
+
+  public function testNumberOfHoursShouldReturnTheSumOfHoursOfEachWorkDaysOfTheWorkWeeksLinkedToThePattern() {
+    $workPattern1 = WorkPatternFabricator::fabricateWithA40HourWorkWeek();
+    $workPattern2 = WorkPatternFabricator::fabricateWithTwoWeeksAnd31AndHalfHours();
+
+    $this->assertEquals(40, $workPattern1->getNumberOfHours());
+    $this->assertEquals(31.5, $workPattern2->getNumberOfHours());
   }
 
   public function testGetValuesArrayShouldReturnWorkPatternValues() {

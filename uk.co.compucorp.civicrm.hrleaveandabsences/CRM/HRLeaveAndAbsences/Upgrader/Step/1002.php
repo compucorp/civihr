@@ -13,7 +13,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1002 {
       'name' => 'other',
     ]);
 
-    if ($result['result'] == 0) {
+    if ($result == 0) {
       civicrm_api3('OptionValue', 'create', [
         'option_group_id' => 'hrleaveandabsences_sickness_reason',
         'name' => 'other',
