@@ -1,0 +1,24 @@
+<div class="btn-group" uib-dropdown>
+  <button type="button" class="btn btn-default btn-lg dropdown-toggle"
+    uib-dropdown-toggle>
+    <span class="btn-icon"><i class="fa fa-rss-square"></i></span>
+    Calendar Feeds
+  </button>
+  <ul class="dropdown-menu dropdown-menu-{{dropdownButton.dropdownPosition}}"
+    role="menu" ng-switch="dropdownButton.feeds.length > 0" uib-dropdown-menu>
+    <li ng-repeat="feed in dropdownButton.feeds" ng-switch-when="true"
+      ng-click="dropdownButton.openLinkModal(feed.title, feed.hash)">
+      <a href>{{feed.title}}</a>
+    </li>
+    <li ng-switch-when="false">
+      <crm-loading show="!dropdownButton.loading.feeds"></crm-loading>
+      <a ng-if="!dropdownButton.loading.feeds">No calendar feeds yet.</a>
+    </li>
+    <li role="separator" class="divider" ng-if="dropdownButton.canCreateNewFeed"></li>
+    <li ng-if="dropdownButton.canCreateNewFeed">
+      <a href="/civicrm/admin/leaveandabsences/calendar-feeds?action=add&reset=1">
+        <i class="fa fa-plus"></i> Add new feed
+      </a>
+    </li>
+  </ul>
+</div>
