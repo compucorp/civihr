@@ -64,6 +64,7 @@
     <path>civicrm/calendar-feed</path>
     <page_callback>CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeed::get</page_callback>
     <title>LeaveCalendarFeed</title>
+    <access_callback>1</access_callback>
     <is_public>true</is_public>
   </item>
 </menu>
