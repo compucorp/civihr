@@ -9,6 +9,7 @@
       debug: CRM.debug,
       managerPathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/manager-leave/',
       sharedPathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/shared/',
+      sourcePath: CRM.vars.leaveAndAbsences.baseURL + '/js/angular/src/leave-absences/',
       serverDateFormat: 'YYYY-MM-DD',
       serverDateTimeFormat: 'YYYY-MM-DD HH:mm:ss',
       permissions: {

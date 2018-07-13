@@ -13,17 +13,16 @@ class CRM_HRCore_Hook_PageRun_RelationshipTypesFilter {
     }
 
     $rows = $page->get_template_vars('rows');
-
     $targetRelTypes = [
       'Case Coordinator is',
       'Employee of',
       'Head of Household for',
-      'Household member of',
+      'Household Member of',
     ];
     // remove disabled relationship types
     foreach ($rows as $index => $row) {
       $isActive = CRM_Utils_Array::value('is_active', $row) == '1';
-      $isTargetType = in_array(CRM_Utils_Array::value('name', $row), $targetRelTypes);
+      $isTargetType = in_array(CRM_Utils_Array::value('name_a_b', $row), $targetRelTypes);
       if (!$isActive && $isTargetType) {
         unset($rows[$index]);
       }

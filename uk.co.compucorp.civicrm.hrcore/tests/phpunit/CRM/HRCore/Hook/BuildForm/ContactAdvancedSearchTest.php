@@ -2,6 +2,11 @@
 use CRM_HRCore_Test_BaseHeadlessTest as BaseHeadlessTest;
 use CRM_HRCore_Hook_BuildForm_ContactAdvancedSearch as ContactAdvancedSearch;
 
+/**
+ * Class CRM_HRCore_Hook_BuildForm_ContactAdvancedSearchTest
+ *
+ * @group headless
+ */
 class CRM_HRCore_Hook_BuildForm_ContactAdvancedSearchTest extends BaseHeadlessTest {
 
   /**

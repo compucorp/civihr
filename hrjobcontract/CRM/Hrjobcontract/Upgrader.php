@@ -96,15 +96,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     }
 
     $i = 4;
-    $params = array(
-      'option_group_id' => 'hrjc_contract_type',
-      'name' => 'Employee_Permanent',
-      'weight' => $i,
-      'label' => 'Employee - Permanent',
-      'value' => 'Employee - Permanent',
-    );
-    civicrm_api3('OptionValue', 'create',$params);
-
     $optionGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup', 'hrjc_contract_type', 'id', 'name');
     foreach (array('Intern','Trustee','Volunteer') as $opName) {
       $i++;
@@ -516,6 +507,11 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1035();
     $this->upgrade_1036();
     $this->upgrade_1037();
+    $this->upgrade_1038();
+    $this->upgrade_1039();
+    $this->upgrade_1040();
+    $this->upgrade_1041();
+    $this->upgrade_1042();
   }
 
   function upgrade_1001() {
@@ -1263,11 +1259,102 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Updates the custom field to view only and disables the custom group
+   * Changes the url of Standard Full Time Hours
    *
    * @return bool
    */
   public function upgrade_1037() {
+    civicrm_api3('Navigation', 'get', [
+      'name' => 'Standard Full Time Hours',
+      'api.Navigation.create' => [
+        'id' => '$value.id',
+        'url' => 'civicrm/standard_full_time_hours'
+      ],
+    ]);
+
+    return TRUE;
+  }
+
+  /**
+   * Renames page title from job contract benefit name to benefits
+   *
+   * @return bool
+   */
+  public function upgrade_1038() {
+    civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrjc_benefit_name',
+      'api.OptionGroup.create' => [
+        'id' => '$value.id',
+        'title' => 'Benefits',
+        'is_active' => 1
+      ],
+    ]);
+
+    return TRUE;
+  }
+
+  /**
+   * Renames page title from job contract deduction name to deductions
+   *
+   * @return bool
+   */
+  public function upgrade_1039() {
+    civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrjc_deduction_name',
+      'api.OptionGroup.create' => [
+        'id' => '$value.id',
+        'title' => 'Deductions',
+        'is_active' => 1
+      ],
+    ]);
+
+    return TRUE;
+  }
+
+  /**
+   * Renames option group title from job contract revision change reason to
+   * contract revision reasons
+   *
+   * @return bool
+   */
+  public function upgrade_1040() {
+    civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrjc_revision_change_reason',
+      'api.OptionGroup.create' => [
+        'id' => '$value.id',
+        'title' => 'Contract Revision Reasons',
+        'is_active' => 1
+      ]
+    ]);
+
+    return TRUE;
+  }
+
+  /**
+   * Renames option group title from job contract end reason
+   * to contract end reasons
+   *
+   * @return bool
+   */
+  public function upgrade_1041() {
+    civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrjc_contract_end_reason',
+      'api.OptionGroup.create' => [
+        'id' => '$value.id',
+        'title' => 'Contract End Reasons',
+        'is_active' => 1
+      ],
+    ]);
+
+    return TRUE;
+  }
+
+  /**
+   * Updates the custom field to view only and disables the custom group
+   *
+   * @return bool
+   */
+  public function upgrade_1042() {
     civicrm_api3('CustomField', 'get', [
       'name' => 'Length_Of_Service',
       'api.CustomField.create' => ['id' => '$value.id', 'is_view' => 1],

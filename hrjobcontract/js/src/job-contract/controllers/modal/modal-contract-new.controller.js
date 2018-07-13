@@ -327,7 +327,7 @@ define([
      * Opens the hours location options editor window
      */
     function openHoursLocationOptionsEditor () {
-      crmAngService.loadForm('/civicrm/hours_location?reset=1')
+      crmAngService.loadForm('/civicrm/standard_full_time_hours?reset=1')
         .on('crmUnload', function () {
           utilsService.getHoursLocation()
             .then(function (data) {

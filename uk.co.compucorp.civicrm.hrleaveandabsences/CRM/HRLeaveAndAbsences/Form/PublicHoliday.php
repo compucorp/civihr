@@ -60,15 +60,6 @@ class CRM_HRLeaveAndAbsences_Form_PublicHoliday extends CRM_Core_Form {
             $params['id'] = $this->_id;
         }
 
-        //when a checkbox is not checked, it is not sent on the request
-        //so we check if it wasn't sent and set the param value to 0
-        $checkboxFields = ['is_active'];
-        foreach ($checkboxFields as $field) {
-            if(!array_key_exists($field, $params)) {
-                $params[$field] = 0;
-            }
-        }
-
         $actionDescription = ($this->_action & CRM_Core_Action::UPDATE) ? 'updated' : 'created';
         try {
             $publicHoliday = CRM_HRLeaveAndAbsences_BAO_PublicHoliday::create($params);
@@ -112,7 +103,7 @@ class CRM_HRLeaveAndAbsences_Form_PublicHoliday extends CRM_Core_Form {
       ['time' => false]
     );
     $this->add(
-      'checkbox',
+      'advcheckbox',
       'is_active',
       ts('Enabled')
     );

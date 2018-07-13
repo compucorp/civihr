@@ -74,15 +74,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
         $params['id'] = $this->_id;
       }
 
-      //when a checkbox is not checked, it is not sent on the request
-      //so we check if it wasn't sent and set the param value to 0
-      $checkboxFields = ['is_default', 'is_active', 'allow_accruals_request', 'allow_carry_forward', 'hide_label'];
-      foreach ($checkboxFields as $field) {
-        if(!array_key_exists($field, $params)) {
-          $params[$field] = 0;
-        }
-      }
-
       if(!empty($params['notification_receivers_ids'])) {
         $params['notification_receivers_ids'] = explode(',', $params['notification_receivers_ids']);
       }
@@ -133,18 +124,18 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
       TRUE
     );
     $this->add(
-      'checkbox',
+      'advcheckbox',
       'hide_label',
       ts('Hide leave type label on public calendars and feeds?')
     );
     $this->add(
-      'checkbox',
+      'advcheckbox',
       'is_default',
       ts('Is default leave type')
     );
     if ($this->_action & CRM_Core_Action::UPDATE) {
       $this->add(
-        'checkbox',
+        'advcheckbox',
         'is_reserved',
         ts('Is reserved'),
         FALSE,
@@ -178,7 +169,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
       ts('By default should public holiday be added to the default entitlement? You can always modify this for each staff member on the add/edit job contract screen')
     );
     $this->add(
-      'checkbox',
+      'advcheckbox',
       'is_active',
       ts('Enabled')
     );
@@ -210,7 +201,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
    */
   private function addTOILFields() {
     $this->add(
-      'checkbox',
+      'advcheckbox',
       'allow_accruals_request',
       ts('Allow staff to request to accrue additional leave of this type during the period')
     );
@@ -241,7 +232,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
    */
   private function addCarryForwardFields() {
     $this->add(
-      'checkbox',
+      'advcheckbox',
       'allow_carry_forward',
       ts('Allow leave of this type to be carried forward from one period to another?')
     );

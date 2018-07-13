@@ -3,6 +3,8 @@
 define([
   'common/angular',
   'common/angularBootstrap',
+  'common/angulartics',
+  'common/angulartics-google-tag-manager',
   'common/directives/scroll-shadows.directive',
   'common/directives/time-amount-picker.directive',
   'common/directives/timepicker-select.directive',
@@ -31,11 +33,14 @@ define([
   'leave-absences/shared/services/leave-calendar.service',
   'leave-absences/shared/services/leave-popup.service',
   'leave-absences/admin-dashboard/modules/config',
-  'leave-absences/admin-dashboard/components/admin-dashboard-container'
+  'leave-absences/admin-dashboard/components/admin-dashboard-container',
+  'leave-absences/calendar-feeds/dropdown-button/dropdown-button.module'
 ], function (angular) {
   angular.module('admin-dashboard', [
     'ngAnimate',
     'ngResource',
+    'angulartics',
+    'angulartics.google.tagmanager',
     'ui.bootstrap',
     'ui.router',
     'ui.select',
@@ -49,7 +54,8 @@ define([
     'leave-absences.settings',
     'leave-absences.services',
     'admin-dashboard.config',
-    'admin-dashboard.components'
+    'admin-dashboard.components',
+    'calendar-feeds.dropdown-button'
   ]).run(['$log', '$rootScope', 'shared-settings', 'settings', function ($log, $rootScope, sharedSettings, settings) {
     $log.debug('app.run');
 

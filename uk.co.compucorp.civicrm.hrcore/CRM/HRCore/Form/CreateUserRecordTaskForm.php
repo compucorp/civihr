@@ -11,7 +11,8 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
   public function buildQuickForm() {
     CRM_Utils_System::setTitle(ts('Create User Account(s)'));
     $this->addDefaultButtons(ts('Create'));
-    $this->add('advcheckbox', 'sendEmail', ts('Send welcome email?'));
+    $element = $this->add('advcheckbox', 'sendEmail', ts('Send welcome email?'));
+    $element->setChecked(TRUE);
 
     foreach ($this->getAssignableRoles() as $role) {
       $this->add('advcheckbox', sprintf('roles[%s]', $role), $role);

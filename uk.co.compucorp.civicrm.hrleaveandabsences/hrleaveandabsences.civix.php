@@ -269,10 +269,10 @@ function _hrleaveandabsences_civix_civicrm_managed(&$entities) {
       if (empty($e['module'])) {
         $e['module'] = E::LONG_NAME;
       }
-      $entities[] = $e;
       if (empty($e['params']['version'])) {
         $e['params']['version'] = '3';
       }
+      $entities[] = $e;
     }
   }
 }
@@ -503,6 +503,12 @@ function _hrleaveandabsences_civix_civicrm_entityTypes(&$entityTypes) {
       'name' => 'LeaveRequest',
       'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequest',
       'table' => 'civicrm_hrleaveandabsences_leave_request',
+    ),
+    'CRM_HRLeaveAndAbsences_DAO_LeaveRequestCalendarFeedConfig' => 
+    array (
+      'name' => 'LeaveRequestCalendarFeedConfig',
+      'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequestCalendarFeedConfig',
+      'table' => 'civicrm_hrleaveandabsences_calendar_feed_config',
     ),
     'CRM_HRLeaveAndAbsences_DAO_LeaveRequestDate' => 
     array (
