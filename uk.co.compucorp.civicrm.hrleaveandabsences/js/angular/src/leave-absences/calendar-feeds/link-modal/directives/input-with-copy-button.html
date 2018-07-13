@@ -1,0 +1,18 @@
+<div class="input-with-copy-button-component row">
+  <div class="col-sm-10 form-group">
+    <input type="text" class="form-control"
+      ng-model="input.model.$viewValue" readonly
+      ng-click="input.selectInputText()">
+  </div>
+  <div class="col-sm-2 form-group">
+    <button class="btn btn-secondary-outline btn-sm form-control"
+      ng-click="input.copy()"
+      ng-switch="input.justCopied">
+      <span ng-switch-when="false">
+        Copy
+        <i class="fa fa-copy"></i>
+      </span>
+      <span ng-switch-when="true">Copied!</span>
+    </button>
+  </div>
+</div>

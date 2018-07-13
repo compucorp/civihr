@@ -23,7 +23,7 @@ use CRM_Hrjobroles_Test_Fabricator_HrJobRoles as HrJobRolesFabricator;
 /**
  * @group headless
  */
-class StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
+class CRM_HRCore_Service_Stats_StatsGathererTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   use CRM_HRCore_Test_Helpers_TableCleanupTrait;
   use CRM_HRCore_Test_Helpers_DomainConfigurationTrait;

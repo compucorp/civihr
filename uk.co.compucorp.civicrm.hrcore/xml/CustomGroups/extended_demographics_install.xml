@@ -15,8 +15,7 @@
       <table_name>civicrm_value_extended_demographics_8</table_name>
       <is_multiple>0</is_multiple>
       <collapse_adv_display>0</collapse_adv_display>
-      <created_date>0000-00-00 00:00:00</created_date>
-      <is_reserved>1</is_reserved>
+      <is_reserved>0</is_reserved>
     </CustomGroup>
   </CustomGroups>
   <CustomFields>
@@ -35,6 +34,63 @@
       <note_columns>60</note_columns>
       <note_rows>4</note_rows>
       <column_name>nationality_44</column_name>
+      <custom_group_name>Extended_Demographics</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Ethnicity</name>
+      <label>Ethnicity</label>
+      <data_type>String</data_type>
+      <html_type>Multi-Select</html_type>
+      <default_value>:;:;:;Not Applicable:;:;:;</default_value>
+      <is_required>0</is_required>
+      <is_searchable>1</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>3</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>ethnicity_45</column_name>
+      <option_group_name>ethnicity_20130725123943</option_group_name>
+      <custom_group_name>Extended_Demographics</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Religion</name>
+      <label>Religion</label>
+      <data_type>String</data_type>
+      <html_type>Select</html_type>
+      <default_value>Not Applicable</default_value>
+      <is_required>0</is_required>
+      <is_searchable>1</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>4</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>religion_46</column_name>
+      <option_group_name>religion_20130725124132</option_group_name>
+      <custom_group_name>Extended_Demographics</custom_group_name>
+    </CustomField>
+    <CustomField>
+      <name>Sexual_Orientation</name>
+      <label>Sexual Orientation</label>
+      <data_type>String</data_type>
+      <html_type>Select</html_type>
+      <default_value>Not Applicable</default_value>
+      <is_required>0</is_required>
+      <is_searchable>0</is_searchable>
+      <is_search_range>0</is_search_range>
+      <weight>5</weight>
+      <is_active>1</is_active>
+      <is_view>0</is_view>
+      <text_length>255</text_length>
+      <note_columns>60</note_columns>
+      <note_rows>4</note_rows>
+      <column_name>sexual_orientation_47</column_name>
+      <option_group_name>sexual_orientation_20130725124348</option_group_name>
       <custom_group_name>Extended_Demographics</custom_group_name>
     </CustomField>
     <CustomField>
@@ -77,6 +133,24 @@
   </CustomFields>
   <OptionGroups>
     <OptionGroup>
+      <name>ethnicity_20130725123943</name>
+      <title>Ethnicity</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>religion_20130725124132</name>
+      <title>Religion</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
+      <name>sexual_orientation_20130725124348</name>
+      <title>Sexual Orientation</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+    <OptionGroup>
       <name>marital_status_20130913084916</name>
       <title>Marital Status</title>
       <is_reserved>1</is_reserved>
@@ -90,6 +164,193 @@
     </OptionGroup>
   </OptionGroups>
   <OptionValues>
+    <OptionValue>
+      <label>Prefer Not to Say</label>
+      <value>Prefer Not to Say</value>
+      <name>Prefer_Not_to_Say</name>
+      <is_default>0</is_default>
+      <weight>6</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>ethnicity_20130725123943</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Not Applicable</label>
+      <value>Not Applicable</value>
+      <name>Not_Applicable</name>
+      <is_default>0</is_default>
+      <weight>7</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>ethnicity_20130725123943</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Buddhist</label>
+      <value>Buddhist</value>
+      <name>Buddhist</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>religion_20130725124132</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Christian</label>
+      <value>Christian</value>
+      <name>Christian</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>religion_20130725124132</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Hindu</label>
+      <value>Hindu</value>
+      <name>Hindu</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>religion_20130725124132</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Jewish</label>
+      <value>Jewish</value>
+      <name>Jewish</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>religion_20130725124132</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Muslim</label>
+      <value>Muslim</value>
+      <name>Muslim</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>religion_20130725124132</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Unaffiliated</label>
+      <value>Unaffiliated</value>
+      <name>Unaffiliated</name>
+      <is_default>0</is_default>
+      <weight>6</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>religion_20130725124132</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Other</label>
+      <value>Other</value>
+      <name>Other</name>
+      <is_default>0</is_default>
+      <weight>7</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>religion_20130725124132</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Prefer Not to Say</label>
+      <value>Prefer Not to Say</value>
+      <name>Prefer_Not_to_Say</name>
+      <is_default>0</is_default>
+      <weight>8</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>religion_20130725124132</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Not Applicable</label>
+      <value>Not Applicable</value>
+      <name>Not_Applicable</name>
+      <is_default>0</is_default>
+      <weight>9</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>religion_20130725124132</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Asexual</label>
+      <value>Asexual</value>
+      <name>Asexual</name>
+      <is_default>0</is_default>
+      <weight>1</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>sexual_orientation_20130725124348</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Bisexual</label>
+      <value>Bisexual</value>
+      <name>Bisexual</name>
+      <is_default>0</is_default>
+      <weight>2</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>sexual_orientation_20130725124348</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Heterosexual</label>
+      <value>Heterosexual</value>
+      <name>Heterosexual</name>
+      <is_default>0</is_default>
+      <weight>3</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>sexual_orientation_20130725124348</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Homosexual</label>
+      <value>Homosexual</value>
+      <name>Homosexual</name>
+      <is_default>0</is_default>
+      <weight>4</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>sexual_orientation_20130725124348</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Prefer Not to Say</label>
+      <value>Prefer Not to Say</value>
+      <name>Prefer_Not_to_Say</name>
+      <is_default>0</is_default>
+      <weight>5</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>sexual_orientation_20130725124348</option_group_name>
+    </OptionValue>
+    <OptionValue>
+      <label>Not Applicable</label>
+      <value>Not Applicable</value>
+      <name>Not_Applicable</name>
+      <is_default>0</is_default>
+      <weight>6</weight>
+      <is_optgroup>0</is_optgroup>
+      <is_reserved>0</is_reserved>
+      <is_active>1</is_active>
+      <option_group_name>sexual_orientation_20130725124348</option_group_name>
+    </OptionValue>
     <OptionValue>
       <label>Single</label>
       <value>Single</value>

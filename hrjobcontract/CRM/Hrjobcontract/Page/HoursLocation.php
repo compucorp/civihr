@@ -30,25 +30,25 @@ class CRM_Hrjobcontract_Page_HoursLocation extends CRM_Core_Page_Basic {
       self::$_links = array(
         CRM_Core_Action::UPDATE  => array(
           'name'  => ts('Edit'),
-          'url'   => 'civicrm/hours_location',
+          'url'   => 'civicrm/standard_full_time_hours',
           'qs'    => 'action=update&id=%%id%%&reset=1',
-          'title' => ts('Edit Hours Location'),
+          'title' => ts('Edit Standard Full Time Hours'),
         ),
         CRM_Core_Action::DISABLE => array(
           'name'  => ts('Disable'),
           'class' => 'crm-enable-disable',
-          'title' => ts('Disable Hours Location'),
+          'title' => ts('Disable Standard Full Time Hours'),
         ),
         CRM_Core_Action::ENABLE  => array(
           'name'  => ts('Enable'),
           'class' => 'crm-enable-disable',
-          'title' => ts('Enable Hours Location'),
+          'title' => ts('Enable Standard Full Time Hours'),
         ),
         CRM_Core_Action::DELETE  => array(
           'name'  => ts('Delete'),
-          'url'   => 'civicrm/hours_location',
+          'url'   => 'civicrm/standard_full_time_hours',
           'qs'    => 'action=delete&id=%%id%%',
-          'title' => ts('Delete Hours Location'),
+          'title' => ts('Delete Standard Full Time Hours'),
         ),
       );
     }
@@ -67,7 +67,7 @@ class CRM_Hrjobcontract_Page_HoursLocation extends CRM_Core_Page_Basic {
    *
    */
   function run() {
-    CRM_Utils_System::setTitle(ts('Hours Location'));
+    CRM_Utils_System::setTitle(ts('Standard Full Time Hours'));
     // get the requested action
     $action = CRM_Utils_Request::retrieve('action', 'String', $this, false, 'browse'); // default to 'browse'
     
@@ -169,6 +169,6 @@ class CRM_Hrjobcontract_Page_HoursLocation extends CRM_Core_Page_Basic {
    * @return string user context.
    */
   function userContext($mode = null) {
-    return 'civicrm/hours_location';
+    return 'civicrm/standard_full_time_hours';
   }
 }

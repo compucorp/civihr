@@ -7,7 +7,7 @@ use CRM_HRCore_Model_CiviHRStatistics as CiviHRStatistics;
 /**
  * @group headless
  */
-class FileCacheTest extends BaseHeadlessTest {
+class CRM_HRCore_Service_FileCacheTest extends BaseHeadlessTest {
 
   public function testNonExistantKeyWillReturnNull() {
     $cache = new FileCache();

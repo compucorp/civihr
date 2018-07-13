@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/HRLeaveAndAbsences</base>
+  <class>LeaveRequestCalendarFeedConfig</class>
+  <name>civicrm_hrleaveandabsences_calendar_feed_config</name>
+  <comment>Leave Request Calendar Feed Config</comment>
+  <add>4.4</add>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique LeaveRequestCalendarFeedConfig ID</comment>
+    <add>4.4</add>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <name>title</name>
+    <type>varchar</type>
+    <length>127</length>
+    <required>true</required>
+    <unique>true</unique>
+    <comment>The Calendar Feed Config Title. There cannot be more than one entity with the same title</comment>
+  </field>
+  <index>
+    <name>unique_calendar_title</name>
+    <fieldName>title</fieldName>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
+
+  <field>
+    <name>timezone</name>
+    <type>varchar</type>
+    <length>50</length>
+    <required>true</required>
+    <comment>The Calendar Feed Config Timezone</comment>
+  </field>
+
+  <field>
+    <name>hash</name>
+    <type>varchar</type>
+    <length>32</length>
+    <required>true</required>
+    <unique>true</unique>
+    <comment>The Calendar Feed Config Hash. Should be unique per config</comment>
+  </field>
+  <index>
+    <name>unique_calendar_hash</name>
+    <fieldName>hash</fieldName>
+    <unique>true</unique>
+    <add>4.4</add>
+  </index>
+
+  <field>
+    <name>composed_of</name>
+    <type>text</type>
+    <required>true</required>
+    <comment>The components of the leave request feed, e.g leave types, departments</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>visible_to</name>
+    <type>text</type>
+    <required>true</required>
+    <comment>Who gets to view the feed link e.g staff in certain departments or location</comment>
+    <add>4.4</add>
+  </field>
+
+  <field>
+    <name>is_active</name>
+    <type>boolean</type>
+    <required>true</required>
+    <default>1</default>
+    <comment>Whether the feed is active or not</comment>
+  </field>
+
+  <field>
+    <name>created_date</name>
+    <type>datetime</type>
+    <required>true</required>
+    <comment>The date and time this Calendar Feed Config was created</comment>
+    <add>4.4</add>
+  </field>
+
+</table>
