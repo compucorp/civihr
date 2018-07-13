@@ -35,8 +35,8 @@ module.exports = function (config) {
       civihrPath + 'org.civicrm.reqangular/dist/reqangular.mocks.min.js',
 
       // External extensions files
-      { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/angular/src/**/!(*.spec).js', included: false },
-      { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/angular/test/mocks/**/*.js', included: false },
+      { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/src/**/!(*.spec).js', included: false },
+      { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/test/mocks/**/*.js', included: false },
 
       // the application modules
       { pattern: extPath + 'js/src/job-contract/**/*.js', included: false },

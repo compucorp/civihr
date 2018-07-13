@@ -3,9 +3,10 @@ var argv = require('yargs').argv;
 module.exports = function (config) {
   var civicrmPath = '../../../../../';
   var civihrPath = 'tools/extensions/civihr/';
-  var extPath = civihrPath + 'contactsummary/';
+  var extPath = civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/';
 
   config.set({
+    browserNoActivityTimeout: 100000,
     basePath: civicrmPath,
     browsers: ['ChromeHeadless'],
     frameworks: ['jasmine'],
@@ -31,11 +32,11 @@ module.exports = function (config) {
       // all the common/ dependencies
       civihrPath + 'org.civicrm.reqangular/dist/reqangular.min.js',
 
-      // External extensions files
-      { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/src/**/!(*.spec).js', included: false },
+      // all the common/ mocked dependencies
+      civihrPath + 'org.civicrm.reqangular/dist/reqangular.mocks.min.js',
 
       // the application modules
-      { pattern: extPath + 'js/src/contact-summary/**/*.js', included: false },
+      { pattern: extPath + 'js/src/leave-absences/**/*.js', included: false },
 
       // the mocked components files
       { pattern: extPath + 'js/test/mocks/**/*.js', included: false },
@@ -44,22 +45,22 @@ module.exports = function (config) {
       { pattern: extPath + 'js/test/**/*.spec.js', included: false },
 
       // angular templates
-      extPath + 'views/**/*.html',
+      extPath + '**/*.html',
 
       // the requireJS config file that bootstraps the whole test suite
       extPath + 'js/test/test-main.js'
     ],
     exclude: [
-      extPath + 'js/src/contact-summary.js'
+      extPath + 'js/src/my-leave.js'
     ],
     // Used to transform angular templates in JS strings
     preprocessors: (function (obj) {
-      obj[extPath + 'views/**/*.html'] = ['ng-html2js'];
+      obj[extPath + '**/*.html'] = ['ng-html2js'];
       return obj;
     })({}),
     ngHtml2JsPreprocessor: {
       prependPrefix: '/base/',
-      moduleName: 'contact-summary.templates'
+      moduleName: 'leave-absences.templates'
     },
     customLaunchers: {
       ChromeHeadless: {
@@ -79,7 +80,7 @@ module.exports = function (config) {
     junitReporter: {
       outputDir: extPath + 'test-reports',
       useBrowserName: false,
-      outputFile: 'contactsummary.xml'
+      outputFile: 'hrleaveandabsences.xml'
     }
   });
 };

@@ -16,7 +16,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceTab extends  CRM_Core_Page {
 
     CRM_Core_Resources::singleton()
       ->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css')
-      ->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/angular/dist/absence-tab.min.js', 1010);
+      ->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/dist/absence-tab.min.js', 1010);
 
     parent::run();
   }
