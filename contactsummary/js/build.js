@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable */
 
 ({
   baseUrl: 'src',
@@ -10,4 +10,4 @@
     common: 'empty:',
     'leave-absences': '%{uk.co.compucorp.civicrm.hrleaveandabsences}/js/src/leave-absences'
   }
-});
+});
