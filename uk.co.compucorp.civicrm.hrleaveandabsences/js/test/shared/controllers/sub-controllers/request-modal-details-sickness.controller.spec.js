@@ -10,7 +10,12 @@ define([
   'leave-absences/mocks/data/option-group.data',
   'leave-absences/mocks/helpers/helper',
   'leave-absences/mocks/helpers/request-modal-helper',
+  'common/mocks/services/hr-settings-mock',
+  'leave-absences/mocks/apis/absence-type-api-mock',
+  'leave-absences/mocks/apis/leave-request-api-mock',
   'leave-absences/mocks/apis/option-group-api-mock',
+  'leave-absences/mocks/apis/public-holiday-api-mock',
+  'leave-absences/mocks/apis/work-pattern-api-mock',
   'leave-absences/manager-leave/app',
   'leave-absences/shared/modules/shared-settings'
 ], function (angular, _, moment, absencePeriodData, absenceTypeData, leaveRequestData, optionGroupMock, helper, requestModalHelper, crmAngService) {
@@ -113,7 +118,6 @@ define([
       });
 
       describe('when users click on the sick reason wrench icon', function () {
-        var onPopupFormSuccess;
         var url;
         var sicknessReasons;
 
@@ -123,11 +127,7 @@ define([
 
           spyOn(crmAngService, 'loadForm').and.callFake(function () {
             return {
-              on: function (event, callback) {
-                if (event === 'crmUnload') {
-                  onPopupFormSuccess = callback;
-                }
-              }
+              on: function () {}
             };
           });
           controller.openSicknessReasonOptionsEditor();

@@ -15,10 +15,11 @@ define([
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (_AbsencePeriodAPIMock_, _HR_settingsMock_) {
-      $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
-      $provide.value('HR_settings', _HR_settingsMock_);
-    }));
+    beforeEach(inject(['AbsencePeriodAPIMock', 'HR_settingsMock',
+      function (_AbsencePeriodAPIMock_, _HRSettingsMock_) {
+        $provide.value('AbsencePeriodAPI', _AbsencePeriodAPIMock_);
+        $provide.value('HR_settings', _HRSettingsMock_);
+      }]));
 
     beforeEach(inject(function (_AbsencePeriod_, _AbsencePeriodAPI_, _$rootScope_) {
       AbsencePeriod = _AbsencePeriod_;

@@ -15,10 +15,11 @@ define([
         $provide = _$provide_;
       }));
 
-    beforeEach(inject(function (_PublicHolidayAPIMock_, _HR_settingsMock_) {
-      $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
-      $provide.value('HR_settings', _HR_settingsMock_);
-    }));
+    beforeEach(inject(['PublicHolidayAPIMock', 'HR_settingsMock',
+      function (_PublicHolidayAPIMock_, _HRSettingsMock_) {
+        $provide.value('HR_settings', _HRSettingsMock_);
+        $provide.value('PublicHolidayAPI', _PublicHolidayAPIMock_);
+      }]));
 
     beforeEach(inject(function (_PublicHoliday_, _PublicHolidayAPI_, _$rootScope_) {
       PublicHoliday = _PublicHoliday_;

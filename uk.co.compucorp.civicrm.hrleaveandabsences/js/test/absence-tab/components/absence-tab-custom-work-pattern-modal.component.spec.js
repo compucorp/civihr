@@ -143,17 +143,12 @@
       });
 
       describe('when users click on the reason for change wrench icon', function () {
-        var onPopupFormSuccess;
         var url = '/civicrm/admin/options/hrleaveandabsences_work_pattern_change_reason?reset=1';
 
         beforeEach(function () {
           spyOn(crmAngService, 'loadForm').and.callFake(function () {
             return {
-              on: function (event, callback) {
-                if (event === 'crmUnload') {
-                  onPopupFormSuccess = callback;
-                }
-              }
+              on: function () {}
             };
           });
           controller.openWorkPatternChangeReasonEditor();
