@@ -2,7 +2,6 @@
 CRM.HRLeaveAndAbsencesApp = CRM.HRLeaveAndAbsencesApp || {};
 CRM.HRLeaveAndAbsencesApp.Form = CRM.HRLeaveAndAbsencesApp.Form || {};
 
-
 /**
  * This class represents the AbsencePeriod form.
  *
@@ -10,14 +9,13 @@ CRM.HRLeaveAndAbsencesApp.Form = CRM.HRLeaveAndAbsencesApp.Form || {};
  * adding event listeners to it, updating fields values, showing
  * confirmation and more.
  */
-CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function($) {
-
+CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function ($) {
   /**
    * Creates a new AbsencePeriod form object for the given form Element
    *
    * @constructor
    */
-  function AbsencePeriod() {
+  function AbsencePeriod () {
     this._formElement = $('form#AbsencePeriod');
     this._saveButton = $('#_qf_AbsencePeriod_next-bottom');
     this._addEventListeners();
@@ -28,7 +26,7 @@ CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function($) {
    *
    * @private
    */
-  AbsencePeriod.prototype._addEventListeners = function() {
+  AbsencePeriod.prototype._addEventListeners = function () {
     this._saveButton.on('click', this._onSaveButtonClick.bind(this));
   };
 
@@ -38,7 +36,7 @@ CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function($) {
    * @param event
    * @private
    */
-  AbsencePeriod.prototype._onSaveButtonClick = function(event) {
+  AbsencePeriod.prototype._onSaveButtonClick = function (event) {
     event.preventDefault();
     this._setSaveButtonValidatingState();
     this._validateOrder();
@@ -50,18 +48,18 @@ CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function($) {
    *
    * @private
    */
-  AbsencePeriod.prototype._validateOrder = function() {
+  AbsencePeriod.prototype._validateOrder = function () {
     var id = null;
     var params = {
       weight: document.getElementById('weight').value
     };
 
-    if((id = document.getElementsByName('_id')[0].value)) {
-      params.id = {"!=": id};
+    if ((id = document.getElementsByName('_id')[0].value)) {
+      params.id = {'!=': id};
     }
 
     CRM.api3('AbsencePeriod', 'getcount', params)
-      .done(this._validateOrderAPICallback.bind(this))
+      .done(this._validateOrderAPICallback.bind(this));
   };
 
   /**
@@ -74,9 +72,9 @@ CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function($) {
    * @param {Object} data - The JSON data returned by the API call
    * @private
    */
-  AbsencePeriod.prototype._validateOrderAPICallback = function(data) {
+  AbsencePeriod.prototype._validateOrderAPICallback = function (data) {
     this._unsetSaveButtonValidatingState();
-    if(data.result > 0) {
+    if (data.result > 0) {
       this._showConfirmation();
     } else {
       this._submitForm();
@@ -90,7 +88,7 @@ CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function($) {
    *
    * @private
    */
-  AbsencePeriod.prototype._showConfirmation = function() {
+  AbsencePeriod.prototype._showConfirmation = function () {
     var confirmationMessage = 'Another period has this order number. ' +
                               'If you choose to continue all periods ' +
                               'with the same or greater order number ' +
@@ -105,7 +103,7 @@ CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function($) {
         no: ts('No')
       }
     })
-    .on('crmConfirm:yes', this._submitForm.bind(this))
+      .on('crmConfirm:yes', this._submitForm.bind(this));
   };
 
   /**
@@ -116,7 +114,7 @@ CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function($) {
    *
    * @private
    */
-  AbsencePeriod.prototype._submitForm = function() {
+  AbsencePeriod.prototype._submitForm = function () {
     this._formElement.submit();
   };
 
@@ -127,7 +125,7 @@ CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function($) {
    *
    * @private
    */
-  AbsencePeriod.prototype._setSaveButtonValidatingState = function() {
+  AbsencePeriod.prototype._setSaveButtonValidatingState = function () {
     this._saveButton.attr('disabled', 'disabled');
     this._saveButton.val(ts('Validating order...'));
   };
@@ -138,11 +136,10 @@ CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function($) {
    *
    * @private
    */
-  AbsencePeriod.prototype._unsetSaveButtonValidatingState = function() {
+  AbsencePeriod.prototype._unsetSaveButtonValidatingState = function () {
     this._saveButton.removeAttr('disabled');
     this._saveButton.val(ts('Save'));
   };
-
 
   return AbsencePeriod;
 })(CRM.$);

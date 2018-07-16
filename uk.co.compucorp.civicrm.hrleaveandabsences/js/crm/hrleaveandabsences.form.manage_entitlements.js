@@ -2,18 +2,16 @@
 CRM.HRLeaveAndAbsencesApp = CRM.HRLeaveAndAbsencesApp || {};
 CRM.HRLeaveAndAbsencesApp.Form = CRM.HRLeaveAndAbsencesApp.Form || {};
 
-
 /**
  * This class represents the whole ManageEntitlements form.
  *
  */
-CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
-
+CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function ($) {
   /**
    * Creates a new ManageEntitlements form instance
    * @constructor
    */
-  function ManageEntitlements() {
+  function ManageEntitlements () {
     this._filtersElement = $('.entitlement-calculation-filters');
     this._listElement = $('.entitlement-calculation-list');
     this._formElement = $('.CRM_HRLeaveAndAbsences_Form_ManageEntitlements');
@@ -26,7 +24,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
     this._addEventListeners();
   }
 
-  //Constants for the Override Filter values
+  // Constants for the Override Filter values
   ManageEntitlements.prototype.OVERRIDE_FILTER_OVERRIDDEN = 1;
   ManageEntitlements.prototype.OVERRIDE_FILTER_NON_OVERRIDDEN = 2;
   ManageEntitlements.prototype.OVERRIDE_FILTER_BOTH = 3;
@@ -36,7 +34,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._setUpOverrideFilters = function() {
+  ManageEntitlements.prototype._setUpOverrideFilters = function () {
     this._filtersElement.find('.override-filters').buttonset();
   };
 
@@ -45,9 +43,9 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._instantiateProposedEntitlements = function() {
+  ManageEntitlements.prototype._instantiateProposedEntitlements = function () {
     var that = this;
-    this._listElement.find('.proposed-entitlement').each(function(i, element) {
+    this._listElement.find('.proposed-entitlement').each(function (i, element) {
       that._proposedEntitlements.push(
         new CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement($(element))
       );
@@ -59,9 +57,9 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._instantiateComments = function() {
-    this._listElement.find('td.comment').each(function(i, element) {
-      new CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment($(element))
+  ManageEntitlements.prototype._instantiateComments = function () {
+    this._listElement.find('td.comment').each(function (i, element) {
+      new CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment($(element));
     });
   };
 
@@ -70,7 +68,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._addEventListeners = function() {
+  ManageEntitlements.prototype._addEventListeners = function () {
     this._filtersElement.find('.override-filter').on('change', this._onOverrideFilterChange.bind(this));
     this._filtersElement.find('.absence-type-filter select').on('change', this._onAbsenceTypeFilterChange.bind(this));
     this._filtersElement.find('.export-csv-action').on('click', this._onExportCSVClick.bind(this));
@@ -88,9 +86,9 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    * @param {Object} event
    * @private
    */
-  ManageEntitlements.prototype._onOverrideFilterChange = function(event) {
+  ManageEntitlements.prototype._onOverrideFilterChange = function (event) {
     var newOverrideFilterValue = parseInt(event.target.value);
-    if(newOverrideFilterValue != this._overrideFilter) {
+    if (newOverrideFilterValue != this._overrideFilter) {
       this._overrideFilter = newOverrideFilterValue;
       this._updateList();
     }
@@ -102,7 +100,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    * @param {Object} event
    * @private
    */
-  ManageEntitlements.prototype._onAbsenceTypeFilterChange = function(event) {
+  ManageEntitlements.prototype._onAbsenceTypeFilterChange = function (event) {
     this._absenceTypeFilter = $(event.target).val() || [];
     this._updateList();
   };
@@ -112,7 +110,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._updateList = function() {
+  ManageEntitlements.prototype._updateList = function () {
     this._showAll();
     this._filterEntitlementsByAbsenceType();
     this._filterEntitlementsByOverride();
@@ -123,7 +121,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._showAll = function() {
+  ManageEntitlements.prototype._showAll = function () {
     this._listElement.find('tr').removeClass('hidden');
   };
 
@@ -133,17 +131,17 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._filterEntitlementsByAbsenceType = function() {
-    if(this._absenceTypeFilter.length > 0) {
+  ManageEntitlements.prototype._filterEntitlementsByAbsenceType = function () {
+    if (this._absenceTypeFilter.length > 0) {
       var selectors = [];
-      this._absenceTypeFilter.forEach(function(absenceTypeID) {
+      this._absenceTypeFilter.forEach(function (absenceTypeID) {
         selectors.push("tr[data-absence-type='" + absenceTypeID + "']");
       });
 
       this._listElement
-        .find('tbody tr:not(.hidden)')  // finds all the visible rows
-        .not(selectors.join(','))       // that doesn't match the select types
-        .addClass('hidden');            // and hide them
+        .find('tbody tr:not(.hidden)') // finds all the visible rows
+        .not(selectors.join(',')) // that doesn't match the select types
+        .addClass('hidden'); // and hide them
     }
   };
 
@@ -153,8 +151,8 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._filterEntitlementsByOverride = function() {
-    switch(this._overrideFilter) {
+  ManageEntitlements.prototype._filterEntitlementsByOverride = function () {
+    switch (this._overrideFilter) {
       case this.OVERRIDE_FILTER_OVERRIDDEN:
         this._hideNonOverriddenEntitlements();
         break;
@@ -169,7 +167,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._hideNonOverriddenEntitlements = function() {
+  ManageEntitlements.prototype._hideNonOverriddenEntitlements = function () {
     this._listElement
       .find('.proposed-entitlement .override-checkbox:not(:checked)')
       .parents('tr:not(.hidden)')
@@ -181,7 +179,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._hideOverriddenEntitlements = function() {
+  ManageEntitlements.prototype._hideOverriddenEntitlements = function () {
     this._listElement
       .find('.proposed-entitlement .override-checkbox:checked')
       .parents('tr')
@@ -198,10 +196,10 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    * @param event
    * @private
    */
-  ManageEntitlements.prototype._onListRowClick = function(event) {
+  ManageEntitlements.prototype._onListRowClick = function (event) {
     // If the user clicked to override and entitlement or to add a comment,
     // we don't show the calculationDescription
-    if($(event.currentTarget).hasClass('proposed-entitlement') ||
+    if ($(event.currentTarget).hasClass('proposed-entitlement') ||
       $(event.currentTarget).hasClass('comment')) {
       return;
     }
@@ -233,12 +231,12 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    * @param event
    * @private
    */
-  ManageEntitlements.prototype._onExportCSVClick = function(event) {
+  ManageEntitlements.prototype._onExportCSVClick = function (event) {
     event.preventDefault();
 
-    this._formElement.find('#export_csv').val(1); //set the export csv flag
+    this._formElement.find('#export_csv').val(1); // set the export csv flag
     this._formElement.submit();
-    this._formElement.find('#export_csv').val(''); //resets the export csv flag
+    this._formElement.find('#export_csv').val(''); // resets the export csv flag
   };
 
   /**
@@ -250,8 +248,8 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._onAddOneDayClick = function() {
-    this._proposedEntitlements.forEach(function(proposedEntitlement) {
+  ManageEntitlements.prototype._onAddOneDayClick = function () {
+    this._proposedEntitlements.forEach(function (proposedEntitlement) {
       proposedEntitlement.addOneDay();
     });
   };
@@ -265,31 +263,28 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function($) {
    *
    * @private
    */
-  ManageEntitlements.prototype._onCopyToAllClick = function() {
+  ManageEntitlements.prototype._onCopyToAllClick = function () {
     var firsEntitlementValue = this._proposedEntitlements[0].getCurrentValue();
-    this._proposedEntitlements.forEach(function(proposedEntitlement) {
+    this._proposedEntitlements.forEach(function (proposedEntitlement) {
       proposedEntitlement.setValue(firsEntitlementValue);
     });
   };
 
   return ManageEntitlements;
-
 })($);
-
 
 /**
  * This class wraps the small set of controls that each calculation on the ManageEntitlements
  * list has to allow the user to edit/override the proposed entitlement.
  */
-CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (function($) {
-
+CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (function ($) {
   /**
    * Creates a new ProposedEntitlement instance
    *
    * @param {Object} element - The element wrapping all of the proposed entitlement controls
    * @constructor
    */
-  function ProposedEntitlement(element) {
+  function ProposedEntitlement (element) {
     this._overrideButton = element.find('button');
     this._overrideCheckbox = element.find('.override-checkbox');
     this._overrideField = element.find('input[type="text"]');
@@ -303,8 +298,8 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
    *
    * @private
    */
-  ProposedEntitlement.prototype._init = function() {
-    if(this._overrideCheckbox.is(':checked')) {
+  ProposedEntitlement.prototype._init = function () {
+    if (this._overrideCheckbox.is(':checked')) {
       this._makeEntitlementEditable();
     }
     this._setupOverrideFieldMask();
@@ -319,8 +314,8 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
    *
    * @param {float} newValue
    */
-  ProposedEntitlement.prototype.setValue = function(newValue) {
-    if(!this._isOverridden) {
+  ProposedEntitlement.prototype.setValue = function (newValue) {
+    if (!this._isOverridden) {
       this._makeEntitlementEditable();
     }
 
@@ -333,7 +328,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
    * If this proposed entitlement is not overridden, it will be
    * marked as so.
    */
-  ProposedEntitlement.prototype.addOneDay = function() {
+  ProposedEntitlement.prototype.addOneDay = function () {
     var currentEntitlement = this.getCurrentValue();
     this.setValue(currentEntitlement + 1);
   };
@@ -348,10 +343,10 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
    *
    * @returns {float}
    */
-  ProposedEntitlement.prototype.getCurrentValue = function() {
+  ProposedEntitlement.prototype.getCurrentValue = function () {
     var currentValue;
 
-    if(this._isOverridden) {
+    if (this._isOverridden) {
       currentValue = this._overrideField.val();
     } else {
       currentValue = this._proposedValue.text();
@@ -359,14 +354,14 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
 
     currentValue = parseFloat(currentValue);
 
-    if(isNaN(currentValue)) {
+    if (isNaN(currentValue)) {
       currentValue = 0;
     }
 
     return currentValue;
   };
 
-  ProposedEntitlement.prototype._setupOverrideFieldMask = function() {
+  ProposedEntitlement.prototype._setupOverrideFieldMask = function () {
     var mask = Inputmask({
       'alias': 'decimal',
       'rightAlign': false
@@ -380,7 +375,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
    *
    * @private
    */
-  ProposedEntitlement.prototype._addEventListeners = function() {
+  ProposedEntitlement.prototype._addEventListeners = function () {
     this._overrideButton.on('click', this._onOverrideButtonClick.bind(this));
     this._overrideCheckbox.on('click', this._onOverrideCheckboxClick.bind(this));
   };
@@ -392,10 +387,9 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
    *
    * @private
    */
-  ProposedEntitlement.prototype._onOverrideButtonClick = function() {
+  ProposedEntitlement.prototype._onOverrideButtonClick = function () {
     this._makeEntitlementEditable();
   };
-
 
   /**
    * This is the event handle for when the override checkbox is clicked.
@@ -407,8 +401,8 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
    * @param event
    * @private
    */
-  ProposedEntitlement.prototype._onOverrideCheckboxClick = function(event) {
-    if(event.target.checked) {
+  ProposedEntitlement.prototype._onOverrideCheckboxClick = function (event) {
+    if (event.target.checked) {
       this._makeEntitlementEditable();
     } else {
       this._displayProposedEntitlementValue();
@@ -422,12 +416,12 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
    *
    * @private
    */
-  ProposedEntitlement.prototype._makeEntitlementEditable = function() {
+  ProposedEntitlement.prototype._makeEntitlementEditable = function () {
     this._overrideButton.hide();
     this._proposedValue.hide();
 
-    if(!this._overrideField.val()) {
-      this._overrideField.val(this._proposedValue.data('raw-value'))
+    if (!this._overrideField.val()) {
+      this._overrideField.val(this._proposedValue.data('raw-value'));
     }
     this._calculationUnit.show();
     this._overrideField
@@ -446,7 +440,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
    *
    * @private
    */
-  ProposedEntitlement.prototype._displayProposedEntitlementValue = function() {
+  ProposedEntitlement.prototype._displayProposedEntitlementValue = function () {
     this._overrideButton.show();
     this._proposedValue.show();
     this._calculationUnit.hide();
@@ -469,14 +463,13 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (functio
  * button and updates the entitlement comment in case the user add or edit it.
  *
  */
-CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment = (function($) {
-
+CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment = (function ($) {
   /**
    * Creates a new Comment instance
    * @param {Object} commentElement - A jQuery object of the TD wrapping the comment field and button
    * @constructor
    */
-  function Comment(commentElement) {
+  function Comment (commentElement) {
     this._commentElement = commentElement;
     this._addCommentButton = this._commentElement.find('.add-comment');
     this._commentTextarea = this._commentElement.find('.comment-text');
@@ -488,7 +481,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment = (function($) {
    *
    * @private
    */
-  Comment.prototype._addEventListeners = function() {
+  Comment.prototype._addEventListeners = function () {
     this._addCommentButton.on('click', this._onAddCommentClick.bind(this));
   };
 
@@ -500,10 +493,10 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment = (function($) {
    *
    * @private
    */
-  Comment.prototype._onAddCommentClick = function() {
+  Comment.prototype._onAddCommentClick = function () {
     CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.CommentDialog.show(
       this._getCurrentValue(),
-      function(comment) {
+      function (comment) {
         this._setCurrentValue(comment);
       }.bind(this)
     );
@@ -515,7 +508,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment = (function($) {
    * @returns {String}
    * @private
    */
-  Comment.prototype._getCurrentValue = function() {
+  Comment.prototype._getCurrentValue = function () {
     return this._commentTextarea.val();
   };
 
@@ -525,7 +518,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment = (function($) {
    * @param comment
    * @private
    */
-  Comment.prototype._setCurrentValue = function(comment) {
+  Comment.prototype._setCurrentValue = function (comment) {
     this._commentTextarea.val(comment);
   };
 
@@ -540,23 +533,22 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment = (function($) {
  * plain object with a single method name "show", that can be used to show the
  * dialog to user, with the given comment.
  */
-CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.CommentDialog = (function($) {
-
+CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.CommentDialog = (function ($) {
   var dialogSelector = '#add-comment-dialog';
   var textAreaSelector = dialogSelector + ' .calculation_comment';
 
   /**
    * Erases the value of the dialog's textarea
    */
-  function eraseCommentInDialog() {
+  function eraseCommentInDialog () {
     $(textAreaSelector).val('');
   }
 
   /**
    * Closes the dialog
    */
-  function closeDialog() {
-    $(dialogSelector).dialog("close");
+  function closeDialog () {
+    $(dialogSelector).dialog('close');
   }
 
   /**
@@ -564,7 +556,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.CommentDialog = (function($) {
    *
    * @returns {String}
    */
-  function getCommentInDialog() {
+  function getCommentInDialog () {
     return $(textAreaSelector).val();
   }
 
@@ -573,8 +565,8 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.CommentDialog = (function($) {
    *
    * @param {String} comment
    */
-  function setCommentInDialog(comment) {
-    $(textAreaSelector).val(comment)
+  function setCommentInDialog (comment) {
+    $(textAreaSelector).val(comment);
   }
 
   /**
@@ -586,7 +578,7 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.CommentDialog = (function($) {
    *
    * @param {Function} callback
    */
-  function showDialog(callback) {
+  function showDialog (callback) {
     $('#add-comment-dialog').dialog({
       'width': '500px',
       'close': eraseCommentInDialog,
@@ -619,10 +611,9 @@ CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.CommentDialog = (function($) {
      * @param {String} comment
      * @param {Function} callback
      */
-    show: function(comment, callback) {
+    show: function (comment, callback) {
       setCommentInDialog(comment);
       showDialog(callback);
     }
   };
-
 })($);

@@ -9,15 +9,14 @@ CRM.HRLeaveAndAbsencesApp.List = CRM.HRLeaveAndAbsencesApp.List || {};
  * As the ListPage class cannot be easily extended, we just wrap it and
  * add the new action needed for this list.
  */
-CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod = (function($) {
-
+CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod = (function ($) {
   /**
    * Creates a new instance of the AbsencePeriod list
    *
    * @param {Object} listElement - a jQuery element containing the list of entities
    * @constructor
    */
-  function AbsencePeriod(listElement) {
+  function AbsencePeriod (listElement) {
     this._listElement = listElement;
     this._listPage = new CRM.HRLeaveAndAbsencesApp.ListPage(listElement);
     this._addEventListeners();
@@ -29,7 +28,7 @@ CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod = (function($) {
    *
    * @private
    */
-  AbsencePeriod.prototype._addEventListeners = function() {
+  AbsencePeriod.prototype._addEventListeners = function () {
     this._listElement.find('.civihr-manage-entitlements')
       .on('click', this._onManageEntitlementsClick.bind(this));
   };
@@ -43,7 +42,7 @@ CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod = (function($) {
    * @param {Object} event
    * @private
    */
-  AbsencePeriod.prototype._onManageEntitlementsClick = function(event) {
+  AbsencePeriod.prototype._onManageEntitlementsClick = function (event) {
     event.preventDefault();
     var $target = $(event.target);
     var action = new CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod.ManageEntitlementAction(
@@ -54,7 +53,6 @@ CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod = (function($) {
   };
 
   return AbsencePeriod;
-
 })($);
 
 /**
@@ -64,8 +62,7 @@ CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod = (function($) {
  * updated and, if the user confirms, redirects they to the Entitlement Calculation
  * page.
  */
-CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod.ManageEntitlementAction = (function() {
-
+CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod.ManageEntitlementAction = (function () {
   /**
    * Creates a new action instance
    *
@@ -73,7 +70,7 @@ CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod.ManageEntitlementAction = (function
    * @param {String} confirmationMessage - The confirmation message to be displayed to the user
    * @constructor
    */
-  function ManageEntitlementAction(target, confirmationMessage) {
+  function ManageEntitlementAction (target, confirmationMessage) {
     CRM.HRLeaveAndAbsencesApp.ListPage.Action.call(
       this, target, 'Update leave entitlement?', confirmationMessage, ''
     );
@@ -86,9 +83,9 @@ CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod.ManageEntitlementAction = (function
    *
    * @private
    */
-  ManageEntitlementAction.prototype._executeAction = function() {
+  ManageEntitlementAction.prototype._executeAction = function () {
     var manageEntitlementsURL = this._target.attr('href');
-    if(manageEntitlementsURL) {
+    if (manageEntitlementsURL) {
       window.location = manageEntitlementsURL;
     }
   };
