@@ -29,7 +29,8 @@
   "semistandard": {
     "globals": [
       "CRM",
-      "inject"
+      "inject",
+      "CustomEvent"
     ],
     "ignore": [
       "templates.js"
