@@ -232,10 +232,10 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    */
   private function makeAllCurrenciesAvailable() {
     $result = civicrm_api3('OptionValue', 'get', [
-      'return' => ['name'],
+      'return' => ['value'],
       'option_group_id' => 'currencies_enabled',
     ]);
-    $enabledCurrencies = array_column($result['values'], 'name');
+    $enabledCurrencies = array_column($result['values'], 'value');
 
     $dao = CRM_Core_DAO::executeQuery('SELECT * from civicrm_currency');
     while ($dao->fetch()) {
