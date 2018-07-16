@@ -45,8 +45,7 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
 
   /**
    * Updates the default localization settings which includes :
-   *   1- setting the default currency to GBP and adding it to
-   *      enabled currencies list.
+   *   1- setting the default currency to GBP
    *   2- setting the default date formats
    *   3- setting the default country to UK
    *   4- setting the system language to UK english (en_GB)
@@ -72,20 +71,6 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
     }
 
     civicrm_api3('Setting', 'create', $settings);
-
-    $currenciesToEnable = [
-      ['EUR (€)','EUR', 0],
-    ];
-
-    foreach ($currenciesToEnable as $currency) {
-      civicrm_api3('OptionValue', 'create', [
-        'option_group_id' => 'currencies_enabled',
-        'label' => $currency[0],
-        'value' => $currency[1],
-        'is_default' => $currency[2],
-        'is_active' => 1,
-      ]);
-    }
   }
 
   /**
