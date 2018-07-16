@@ -110,7 +110,7 @@ CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function ($) {
         no: ts('No')
       }
     })
-    .on('crmConfirm:yes', this._deleteWorkPattern.bind(this));
+      .on('crmConfirm:yes', this._deleteWorkPattern.bind(this));
   };
 
   /**
