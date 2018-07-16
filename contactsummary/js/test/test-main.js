@@ -17,7 +17,7 @@ require.config({
   paths: {
     'contact-summary': srcPath,
     'mocks': mocksPath,
-    'leave-absences': CRM.vars.contactsummary.baseURL + '/../uk.co.compucorp.civicrm.hrleaveandabsences/js/angular/src/leave-absences'
+    'leave-absences': CRM.vars.contactsummary.baseURL + '/../uk.co.compucorp.civicrm.hrleaveandabsences/js/src/leave-absences'
   },
   callback: function () {
     window.__karma__.start();
