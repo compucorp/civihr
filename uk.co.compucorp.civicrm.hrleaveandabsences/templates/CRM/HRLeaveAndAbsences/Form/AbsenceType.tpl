@@ -133,238 +133,241 @@
             </div>
           </div>
         </div>
-      {literal}
-          <script type="text/javascript">
-              CRM.$(function($) {
-                $(document).ready(function() {
-                  initToilControls();
-                  initCarryForwardControls();
-                  initColorPicker();
-                  initDeleteButton();
-                  initCalculationUnitControls();
-                  supportValueSubmissionOfAllSelectorsIfDisabled();
+        <script type="text/javascript">
+          {literal}
+            CRM.$(function($) {
+              $(document).ready(function() {
+                initToilControls();
+                initCarryForwardControls();
+                initDeleteButton();
+                initCalculationUnitControls();
+                supportValueSubmissionOfAllSelectorsIfDisabled();
+              });
+
+              $(document).on('SpectrumLibraryLoaded', function() {
+                initColorPicker();
+              });
+
+              function initToilControls() {
+                var allow_accruals_request = $('#allow_accruals_request');
+                var accrual_never_expire = $('#accrual_never_expire');
+
+                if(allow_accruals_request.is(':checked')) {
+                  $('.toil-option').show();
+                }
+
+                if(!accrual_never_expire.is(':checked')) {
+                  $('.toil-expiration').show();
+                }
+
+                allow_accruals_request.on('click', function() {
+                  if(this.checked) {
+                    $('.toil-option').show();
+                  } else {
+                    hideToilOptions();
+                  }
                 });
 
-                function initToilControls() {
-                  var allow_accruals_request = $('#allow_accruals_request');
-                  var accrual_never_expire = $('#accrual_never_expire');
-
-                  if(allow_accruals_request.is(':checked')) {
-                    $('.toil-option').show();
-                  }
-
-                  if(!accrual_never_expire.is(':checked')) {
+                accrual_never_expire.on('click', function() {
+                  if(this.checked) {
+                    hideToilExpiration();
+                  } else {
                     $('.toil-expiration').show();
                   }
+                });
+              }
 
-                  allow_accruals_request.on('click', function() {
-                    if(this.checked) {
-                      $('.toil-option').show();
-                    } else {
-                      hideToilOptions();
-                    }
-                  });
+              function hideToilOptions() {
+                document.getElementById('max_leave_accrual').value = '';
+                var allow_accrue_in_the_past_radios = document.getElementsByName('allow_accrue_in_the_past')
+                for(i = 0; i < allow_accrue_in_the_past_radios.length; i++) {
+                  allow_accrue_in_the_past_radios.item(i).checked = false;
+                }
+                document.getElementById('accrual_never_expire').checked = true;
+                hideToilExpiration();
+                $('.toil-option').hide();
+              }
 
-                  accrual_never_expire.on('click', function() {
-                    if(this.checked) {
-                      hideToilExpiration();
-                    } else {
-                      $('.toil-expiration').show();
-                    }
-                  });
+              function hideToilExpiration() {
+                document.getElementById('accrual_expiration_duration').value = '';
+                $('#accrual_expiration_unit').select2('val', '').trigger("change");
+                $('.toil-expiration').hide();
+              }
+
+              function initCarryForwardControls() {
+                var allow_carry_forward = $('#allow_carry_forward');
+                var carry_forward_never_expire = $('#carry_forward_never_expire');
+                var carry_forward_expire_after_duration = $('#carry_forward_expire_after_duration');
+
+                if(allow_carry_forward.is(':checked')) {
+                  $('.carry-forward-option').show();
                 }
 
-                function hideToilOptions() {
-                  document.getElementById('max_leave_accrual').value = '';
-                  var allow_accrue_in_the_past_radios = document.getElementsByName('allow_accrue_in_the_past')
-                  for(i = 0; i < allow_accrue_in_the_past_radios.length; i++) {
-                    allow_accrue_in_the_past_radios.item(i).checked = false;
-                  }
-                  document.getElementById('accrual_never_expire').checked = true;
-                  hideToilExpiration();
-                  $('.toil-option').hide();
+                if(!carry_forward_never_expire.is(':checked')) {
+                  $('.carry-forward-expiration-duration').show();
                 }
 
-                function hideToilExpiration() {
-                  document.getElementById('accrual_expiration_duration').value = '';
-                  $('#accrual_expiration_unit').select2('val', '').trigger("change");
-                  $('.toil-expiration').hide();
-                }
-
-                function initCarryForwardControls() {
-                  var allow_carry_forward = $('#allow_carry_forward');
-                  var carry_forward_never_expire = $('#carry_forward_never_expire');
-                  var carry_forward_expire_after_duration = $('#carry_forward_expire_after_duration');
-
-                  if(allow_carry_forward.is(':checked')) {
+                allow_carry_forward.on('click', function() {
+                  if(this.checked) {
                     $('.carry-forward-option').show();
+                  } else {
+                    hideCarryForwardOptions();
                   }
+                });
 
-                  if(!carry_forward_never_expire.is(':checked')) {
+                carry_forward_never_expire.on('click', function() {
+                  if(this.checked) {
+                    hideCarryForwardExpirationDuration();
+                  }
+                });
+
+                carry_forward_expire_after_duration.on('click', function() {
+                  if(this.checked) {
                     $('.carry-forward-expiration-duration').show();
                   }
+                });
+              }
 
-                  allow_carry_forward.on('click', function() {
-                    if(this.checked) {
-                      $('.carry-forward-option').show();
-                    } else {
-                      hideCarryForwardOptions();
-                    }
-                  });
-
-                  carry_forward_never_expire.on('click', function() {
-                    if(this.checked) {
-                      hideCarryForwardExpirationDuration();
-                    }
-                  });
-
-                  carry_forward_expire_after_duration.on('click', function() {
-                    if(this.checked) {
-                      $('.carry-forward-expiration-duration').show();
-                    }
-                  });
+              function hideCarryForwardOptions() {
+                var carry_forward_expiration_radios = document.getElementsByName('carry_forward_expiration');
+                document.getElementById('max_number_of_days_to_carry_forward').value = '';
+                for(i = 0; i < carry_forward_expiration_radios.length; i++) {
+                  carry_forward_expiration_radios.item(i).checked = false;
                 }
+                carry_forward_expiration_radios.item(0).checked = true;
+                hideCarryForwardExpirationDuration();
+                $('.carry-forward-option').hide();
+              }
 
-                function hideCarryForwardOptions() {
-                  var carry_forward_expiration_radios = document.getElementsByName('carry_forward_expiration');
-                  document.getElementById('max_number_of_days_to_carry_forward').value = '';
-                  for(i = 0; i < carry_forward_expiration_radios.length; i++) {
-                    carry_forward_expiration_radios.item(i).checked = false;
-                  }
-                  carry_forward_expiration_radios.item(0).checked = true;
-                  hideCarryForwardExpirationDuration();
-                  $('.carry-forward-option').hide();
-                }
+              function hideCarryForwardExpirationDuration() {
+                document.getElementById('carry_forward_expiration_duration').value = '';
+                $('#carry_forward_expiration_unit').select2('val', '').trigger("change");
+                $('.carry-forward-expiration-duration').hide();
+              }
 
-                function hideCarryForwardExpirationDuration() {
-                  document.getElementById('carry_forward_expiration_duration').value = '';
-                  $('#carry_forward_expiration_unit').select2('val', '').trigger("change");
-                  $('.carry-forward-expiration-duration').hide();
-                }
-
-                function initColorPicker() {
-                  $('#color').spectrum({
-                    preferredFormat: "hex3",
-                    allowEmpty:true,
-                    showPaletteOnly: true,
-                    showPalette:true,
-                    {/literal}
-                    palette: {$availableColors}
-                    {literal}
-                  });
-                }
-
-                function initDeleteButton() {
-                  $('.crm-button-type-delete').on('click', function(e) {
-                    e.preventDefault();
-                    {/literal}
-                    {if $canDeleteType}
-                    {literal}
-                    CRM.confirm({
-                      title: ts('Delete Leave/Absence type'),
-                      message: ts('Are you sure you want to delete this leave/absence type?'),
-                      options: {
-                        yes: ts('Yes'),
-                        no: ts('No')
-                      }
-                    })
-                      .on('crmConfirm:yes', deleteCallback);
-                    {/literal}
-                    {else}
-                    {literal}
-                    CRM.alert("This leave/absence type is in use and cannot be deleted. Please disable it instead.",
-                      'Delete Leave/Absence type', 'error');
-                    {/literal}
-                    {/if}
-                    {literal}
-
-                  });
-                }
-
-                function deleteCallback() {
+              function initColorPicker() {
+                $('#color').spectrum({
+                  preferredFormat: "hex3",
+                  allowEmpty:true,
+                  showPaletteOnly: true,
+                  showPalette:true,
                   {/literal}
-                  window.location = "{$deleteUrl}";
+                  palette: {$availableColors}
                   {literal}
-                }
+                });
+              }
 
-                function initCalculationUnitControls() {
+              function initDeleteButton() {
+                $('.crm-button-type-delete').on('click', function(e) {
+                  e.preventDefault();
+                  {/literal}
+                  {if $canDeleteType}
+                  {literal}
+                  CRM.confirm({
+                    title: ts('Delete Leave/Absence type'),
+                    message: ts('Are you sure you want to delete this leave/absence type?'),
+                    options: {
+                      yes: ts('Yes'),
+                      no: ts('No')
+                    }
+                  })
+                    .on('crmConfirm:yes', deleteCallback);
+                  {/literal}
+                  {else}
+                  {literal}
+                  CRM.alert("This leave/absence type is in use and cannot be deleted. Please disable it instead.",
+                    'Delete Leave/Absence type', 'error');
+                  {/literal}
+                  {/if}
+                  {literal}
+
+                });
+              }
+
+              function deleteCallback() {
+                {/literal}
+                window.location = "{$deleteUrl}";
+                {literal}
+              }
+
+              function initCalculationUnitControls() {
+                toggleCalculationUnitRelatedControls();
+
+                $('.absence-calculation-unit select').on('change', function(e) {
                   toggleCalculationUnitRelatedControls();
+                });
+              }
 
-                  $('.absence-calculation-unit select').on('change', function(e) {
-                    toggleCalculationUnitRelatedControls();
-                  });
+              function toggleCalculationUnitRelatedControls() {
+                publicHolidayToggle();
+                setEntitlementLabelText();
+                toggleEntitlementHelpIcon();
+              }
+
+              function setEntitlementLabelText() {
+                $('.entitlement-label').text($('.absence-calculation-unit select option:selected').text());
+              }
+
+              function toggleEntitlementHelpIcon() {
+                if($('.public-holiday-option input[type=radio]').attr('disabled')) {
+                  $('.entitlement-help-text').show();
                 }
-
-                function toggleCalculationUnitRelatedControls() {
-                  publicHolidayToggle();
-                  setEntitlementLabelText();
-                  toggleEntitlementHelpIcon();
+                else {
+                  $('.entitlement-help-text').hide();
                 }
+              }
 
-                function setEntitlementLabelText() {
-                  $('.entitlement-label').text($('.absence-calculation-unit select option:selected').text());
+              function publicHolidayToggle() {
+                var calculation_unit = $('.absence-calculation-unit select option:selected').val();
+                var hours_unit_value = getHoursUnitValue();
+                if(calculation_unit == hours_unit_value) {
+                  $('.public-holiday-option input[type=radio]').val([0]).attr('disabled', true);
                 }
-
-                function toggleEntitlementHelpIcon() {
-                  if($('.public-holiday-option input[type=radio]').attr('disabled')) {
-                    $('.entitlement-help-text').show();
-                  }
-                  else {
-                    $('.entitlement-help-text').hide();
-                  }
+                else {
+                  $('.public-holiday-option input[type=radio]').attr('disabled', false);
                 }
+              }
 
-                function publicHolidayToggle() {
-                  var calculation_unit = $('.absence-calculation-unit select option:selected').val();
-                  var hours_unit_value = getHoursUnitValue();
-                  if(calculation_unit == hours_unit_value) {
-                    $('.public-holiday-option input[type=radio]').val([0]).attr('disabled', true);
-                  }
-                  else {
-                    $('.public-holiday-option input[type=radio]').attr('disabled', false);
-                  }
-                }
+              function getHoursUnitValue() {
+                {/literal}
+                var hours_unit_value = {$hoursUnitValue};
+                {literal}
 
-                function getHoursUnitValue() {
-                  {/literal}
-                  var hours_unit_value = {$hoursUnitValue};
-                  {literal}
+                return hours_unit_value;
+              }
 
-                  return hours_unit_value;
-                }
+              /**
+               * Supports value submission of all CRM selectors
+               * when such selectors are disabled
+               */
+              function supportValueSubmissionOfAllSelectorsIfDisabled () {
+                var $selectors = $('select.crm-select2');
 
-                /**
-                 * Supports value submission of all CRM selectors
-                 * when such selectors are disabled
-                 */
-                function supportValueSubmissionOfAllSelectorsIfDisabled () {
-                  var $selectors = $('select.crm-select2');
+                $.each($selectors, function (index, select) {
+                  supportValueSubmissionOfSelectorIfDisabled($(select));
+                });
+              }
 
-                  $.each($selectors, function (index, select) {
-                    supportValueSubmissionOfSelectorIfDisabled($(select));
-                  });
-                }
+              /**
+               * Adds <input type="hidden"> before disabled <select>
+               * with the same, watches <select> value and sets to the <input>
+               *
+               * @param {jQueryElement} $select - the selector to be amended
+               */
+              function supportValueSubmissionOfSelectorIfDisabled ($select) {
+                var $inputHidden = $('<input type="hidden" name="' +
+                  $select.attr('name') + '" value="' +
+                  $select.val() + '" />');
 
-                /**
-                 * Adds <input type="hidden"> before disabled <select>
-                 * with the same, watches <select> value and sets to the <input>
-                 *
-                 * @param {jQueryElement} $select - the selector to be amended
-                 */
-                function supportValueSubmissionOfSelectorIfDisabled ($select) {
-                  var $inputHidden = $('<input type="hidden" name="' +
-                    $select.attr('name') + '" value="' +
-                    $select.val() + '" />');
-
-                  $select.before($inputHidden);
-                  $select.removeAttr('name');
-                  $select.on('change', function () {
-                    $inputHidden.val($select.val());
-                  });
-                }
-              });
-          </script>
-        {/literal}
+                $select.before($inputHidden);
+                $select.removeAttr('name');
+                $select.on('change', function () {
+                  $inputHidden.val($select.val());
+                });
+              }
+            });
+          {/literal}
+        </script>
       {/if}
     </div>
     <div class="panel-footer clearfix">

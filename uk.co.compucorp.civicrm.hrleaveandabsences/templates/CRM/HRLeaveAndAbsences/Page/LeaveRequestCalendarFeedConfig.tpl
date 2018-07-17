@@ -53,13 +53,13 @@
         {/if}
       </div>
     </div>
-  {literal}
     <script type="text/javascript">
-      CRM.$(function () {
-        var listPage = new CRM.HRLeaveAndAbsencesApp.ListPage(CRM.$('.hrleaveandabsences-entity-list'));
-      });
+      {literal}
+        CRM.$(document).on('CRMHrleaveandabsencesScriptIsReady', function() {
+          (new CRM.HRLeaveAndAbsencesApp.ListPage(CRM.$('.hrleaveandabsences-entity-list')));
+        });
+      {/literal}
     </script>
-  {/literal}
   {else}
     <div class="alert alert-info">
       <div class="icon inform-icon"></div>

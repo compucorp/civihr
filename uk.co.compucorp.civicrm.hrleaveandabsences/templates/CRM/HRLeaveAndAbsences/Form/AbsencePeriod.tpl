@@ -25,13 +25,13 @@
         <div class="col-sm-9">{$form.weight.html}</div>
       </div>
     </div>
-    {literal}
-      <script type="text/javascript">
-        CRM.$(function () {
-          var form = new CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod();
+    <script type="text/javascript">
+      {literal}
+        CRM.$(document).on('CRMAbsencePeriodFormScriptIsReady', function () {
+          (new CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod());
         });
-      </script>
-    {/literal}
+      {/literal}
+    </script>
     <div class="panel-footer clearfix">
       <div class="pull-right">
         {include file="CRM/common/formButtons.tpl" location="bottom"}

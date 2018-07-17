@@ -147,9 +147,9 @@
 </div>
 
 <script type="text/javascript">
-{literal}
-CRM.$(function($) {
-  new CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements();
-});
-{/literal}
+  {literal}
+    CRM.$(document).on('CRMManageEntitlementsFormScriptIsReady', function() {
+      (new CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements());
+    });
+  {/literal}
 </script>
