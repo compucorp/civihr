@@ -24,37 +24,36 @@
         </div>
       </div>
     </div>
-    {literal}
-        <script type="text/javascript">
-            CRM.$(function($) {
-                function initDeleteButton() {
-                    $('.crm-button-type-delete').on('click', function(e) {
-                        e.preventDefault();
-                        CRM.confirm({
-                            title: ts('Delete Public Holiday'),
-                            message: ts('Are you sure you want to delete this Public Holiday?'),
-                            options: {
-                                yes: ts('Yes'),
-                                no: ts('No')
-                            }
-                        })
-                        .on('crmConfirm:yes', deleteCallback);
-                    });
+    <script type="text/javascript">
+      {literal}
+        CRM.$(function($) {
+          var REDIRECT_AFTER_DELETE_URL = {/literal}'{$deleteUrl}'{literal};
+
+          $(document).ready(function() {
+            initDeleteButton();
+          });
+
+          function initDeleteButton() {
+            $('.crm-button-type-delete').on('click', function(e) {
+              e.preventDefault();
+              CRM.confirm({
+                title: ts('Delete Public Holiday'),
+                message: ts('Are you sure you want to delete this Public Holiday?'),
+                options: {
+                  yes: ts('Yes'),
+                  no: ts('No')
                 }
-
-                function deleteCallback() {
-                    {/literal}
-                    window.location = "{$deleteUrl}";
-                    {literal}
-                }
-
-                $(document).ready(function() {
-                    initDeleteButton();
-                });
-
+              })
+              .on('crmConfirm:yes', REDIRECT_AFTER_DELETE_URL);
             });
-        </script>
-    {/literal}
+          }
+
+          function deleteCallback() {
+            window.location = deleteUrl;
+          }
+        });
+      {/literal}
+    </script>
     {/if}
     <div class="panel-footer clearfix">
       <div class="pull-right">

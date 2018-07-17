@@ -37,13 +37,13 @@
         {/if}
       </div>
     </div>
-  {literal}
     <script type="text/javascript">
-      CRM.$(function () {
-        var list = new CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod(CRM.$('.hrleaveandabsences-entity-list'));
-      });
-    </script>
-  {/literal}
+      {literal}
+        CRM.$(document).on('CRMListAbsencePeriodScriptIsReady', function () {
+          (new CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod(CRM.$('.hrleaveandabsences-entity-list')));
+        });
+      {/literal}
+  </script>
   {else}
     <div class="alert alert-info">
       <div class="icon inform-icon"></div>

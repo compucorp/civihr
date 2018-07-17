@@ -10,12 +10,21 @@
     { name: 'calendar-feeds-list' },
     { name: 'manager-leave' },
     { name: 'manager-notification-badge' },
-    { name: 'my-leave' }
+    { name: 'my-leave' },
+    { name: 'crm-list-absenceperiod' },
+    { name: 'crm-hrleaveandabsences' },
+    { name: 'crm-form-manage-entitlements' },
+    { name: 'crm-form-absenceperiod' },
+    { name: 'crm-form-workpattern' },
+    { name: 'spectrum' }
   ],
   mainConfigFile: 'src/leave-absences/shared/config.js',
   generateSourceMaps: true,
   paths: {
-    'common': 'empty:'
+    'common': 'empty:',
+    'inputmask': 'leave-absences/crm/vendor/inputmask/inputmask.min',
+    'inputmask.dependencyLib': 'leave-absences/crm/vendor/inputmask/dependencylib-mocked',
+    'jquery': 'leave-absences/crm/vendor/jquery-mocked'
   },
   findNestedDependencies: true
 });
