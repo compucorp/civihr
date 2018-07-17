@@ -145,6 +145,4 @@ define([
 
     return AbsencePeriod;
   })(CRM.$, ts);
-
-  CRM.$(document).trigger('CRMAbsencePeriodFormScriptIsReady');
 });

@@ -93,6 +93,4 @@ define([
 
     return ManageEntitlementAction;
   })();
-
-  CRM.$(document).trigger('CRMListAbsencePeriodScriptIsReady');
 });

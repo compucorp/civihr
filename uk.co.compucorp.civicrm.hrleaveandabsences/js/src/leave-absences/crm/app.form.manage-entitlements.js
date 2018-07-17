@@ -621,6 +621,4 @@ define([
       }
     };
   })(CRM.$);
-
-  CRM.$(document).trigger('CRMManageEntitlementsFormScriptIsReady');
 });

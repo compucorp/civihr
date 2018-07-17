@@ -572,6 +572,4 @@ define([
       (indexOfTabWithErrors !== -1) && CRM.$('.nav-tabs a').eq(indexOfTabWithErrors).click();
     });
   }
-
-  CRM.$(document).trigger('CRMWorkPatternFormScriptIsReady');
 });

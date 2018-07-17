@@ -228,7 +228,5 @@ define([
     return DeleteAction;
   })();
 
-  CRM.$(document).trigger('CRMHrleaveandabsencesScriptIsReady');
-
   return HRLeaveAndAbsencesApp;
 });
