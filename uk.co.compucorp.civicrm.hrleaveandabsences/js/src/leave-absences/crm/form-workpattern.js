@@ -1,14 +1,10 @@
 /* eslint-env amd */
+/* globals ts, Inputmask */
 
 define([
+  'leave-absences/crm/includes/hrleaveandabsences-init',
   'leave-absences/crm/vendor/inputmask/inputmask.numeric.extensions.min'
-], function () {
-  /* globals ts, Inputmask */
-
-  // Create the namespaces if they don't exist
-  CRM.HRLeaveAndAbsencesApp = CRM.HRLeaveAndAbsencesApp || {};
-  CRM.HRLeaveAndAbsencesApp.Form = CRM.HRLeaveAndAbsencesApp.Form || {};
-
+], function (HRLeaveAndAbsencesApp) {
   openTabWithErrorsIfPresented();
 
   /**
@@ -17,7 +13,7 @@ define([
    * It instantiates the Weeks objects and handles form
    * specific operations, like the delete action.
    */
-  CRM.HRLeaveAndAbsencesApp.Form.WorkPattern = (function ($) {
+  HRLeaveAndAbsencesApp.Form.WorkPattern = (function ($, ts) {
     /**
      * The maximum number of weeks in a Work Pattern
      * @type {number}
@@ -67,7 +63,7 @@ define([
     WorkPattern.prototype._instantiateWeek = function (weekIndex, weekElement) {
       var fieldName = 'weeks[' + weekIndex + '][is_visible]';
       var visibilityField = document.getElementsByName(fieldName)[0];
-      return new CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week(weekIndex, weekElement, visibilityField);
+      return new HRLeaveAndAbsencesApp.Form.WorkPattern.Week(weekIndex, weekElement, visibilityField);
     };
 
     /**
@@ -146,7 +142,7 @@ define([
     };
 
     return WorkPattern;
-  })(CRM.$);
+  })(CRM.$, ts);
 
   /**
    * This class represents a single Week on the Work Pattern form.
@@ -154,7 +150,7 @@ define([
    * It basically wraps a '.work-pattern-week' element and handles
    * the inner days.
    */
-  CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function ($) {
+  HRLeaveAndAbsencesApp.Form.WorkPattern.Week = (function ($) {
     /**
      * The number of days a Week should have
      *
@@ -205,7 +201,7 @@ define([
      */
     Week.prototype._instantiateDay = function (dayIndex) {
       var prefix = 'weeks_' + this._weekIndex + '_days_' + dayIndex + '_';
-      return new CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day(
+      return new HRLeaveAndAbsencesApp.Form.WorkPattern.Day(
         document.getElementById(prefix + 'type'),
         document.getElementById(prefix + 'time_from'),
         document.getElementById(prefix + 'time_to'),
@@ -344,7 +340,7 @@ define([
    * type.
    *
    */
-  CRM.HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function ($) {
+  HRLeaveAndAbsencesApp.Form.WorkPattern.Day = (function ($, Inputmask) {
     var NON_WORKING_DAY = 1;
     var WORKING_DAY = 2;
     var WEEKEND_DAY = 3;
@@ -561,7 +557,7 @@ define([
     };
 
     return Day;
-  })(CRM.$);
+  })(CRM.$, Inputmask);
 
   /**
    * Opens tab with form errors if they are presented

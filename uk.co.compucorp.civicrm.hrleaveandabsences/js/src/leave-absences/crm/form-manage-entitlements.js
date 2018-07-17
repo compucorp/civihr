@@ -2,17 +2,14 @@
 /* global ts Inputmask */
 
 define([
+  'leave-absences/crm/includes/hrleaveandabsences-init',
   'leave-absences/crm/vendor/inputmask/inputmask.numeric.extensions.min'
-], function () {
-  // Create the namespaces if they don't exist
-  CRM.HRLeaveAndAbsencesApp = CRM.HRLeaveAndAbsencesApp || {};
-  CRM.HRLeaveAndAbsencesApp.Form = CRM.HRLeaveAndAbsencesApp.Form || {};
-
+], function (HRLeaveAndAbsencesApp) {
   /**
    * This class represents the whole ManageEntitlements form.
    *
    */
-  CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function ($, ts) {
+  HRLeaveAndAbsencesApp.Form.ManageEntitlements = (function ($, ts) {
     /**
      * Creates a new ManageEntitlements form instance
      * @constructor
@@ -53,7 +50,7 @@ define([
       var that = this;
       this._listElement.find('.proposed-entitlement').each(function (i, element) {
         that._proposedEntitlements.push(
-          new CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement($(element))
+          new HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement($(element))
         );
       });
     };
@@ -65,7 +62,7 @@ define([
      */
     ManageEntitlements.prototype._instantiateComments = function () {
       this._listElement.find('td.comment').each(function (i, element) {
-        new CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment($(element)); // eslint-disable-line no-new
+        new HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment($(element)); // eslint-disable-line no-new
       });
     };
 
@@ -284,7 +281,7 @@ define([
    * This class wraps the small set of controls that each calculation on the ManageEntitlements
    * list has to allow the user to edit/override the proposed entitlement.
    */
-  CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (function ($, Inputmask) {
+  HRLeaveAndAbsencesApp.Form.ManageEntitlements.ProposedEntitlement = (function ($, Inputmask) {
     /**
      * Creates a new ProposedEntitlement instance
      *
@@ -470,7 +467,7 @@ define([
    * button and updates the entitlement comment in case the user add or edit it.
    *
    */
-  CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment = (function ($) {
+  HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment = (function ($) {
     /**
      * Creates a new Comment instance
      * @param {Object} commentElement - A jQuery object of the TD wrapping the comment field and button
@@ -501,7 +498,7 @@ define([
      * @private
      */
     Comment.prototype._onAddCommentClick = function () {
-      CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.CommentDialog.show(
+      HRLeaveAndAbsencesApp.Form.ManageEntitlements.CommentDialog.show(
         this._getCurrentValue(),
         function (comment) {
           this._setCurrentValue(comment);
@@ -540,7 +537,7 @@ define([
    * plain object with a single method name "show", that can be used to show the
    * dialog to user, with the given comment.
    */
-  CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements.CommentDialog = (function ($) {
+  HRLeaveAndAbsencesApp.Form.ManageEntitlements.CommentDialog = (function ($) {
     var dialogSelector = '#add-comment-dialog';
     var textAreaSelector = dialogSelector + ' .calculation_comment';
 
