@@ -2,7 +2,7 @@
 /* global ts */
 
 define([
-  'leave-absences/crm/includes/hrleaveandabsences-init'
+  'leave-absences/crm/app'
 ], function (HRLeaveAndAbsencesApp) {
   /**
    * This class represents the AbsencePeriod form.

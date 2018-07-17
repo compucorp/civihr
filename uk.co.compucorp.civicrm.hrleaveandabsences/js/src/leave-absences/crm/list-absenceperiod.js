@@ -1,7 +1,7 @@
 /* eslint-env amd */
 
 define([
-  'leave-absences/crm/hrleaveandabsences'
+  'leave-absences/crm/app'
 ], function (HRLeaveAndAbsencesApp) {
   /**
    * The AbsencePeriod list has a specific action not available on

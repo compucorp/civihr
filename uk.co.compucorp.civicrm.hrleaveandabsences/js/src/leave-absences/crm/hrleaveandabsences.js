@@ -2,7 +2,7 @@
 /* global ts */
 
 define([
-  'leave-absences/crm/includes/hrleaveandabsences-init'
+  'leave-absences/crm/app'
 ], function (HRLeaveAndAbsencesApp) {
   /**
    * A ListPage is built around a table list of entities,
