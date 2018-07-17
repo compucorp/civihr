@@ -1,10 +1,8 @@
 /* eslint-env amd */
 
-define(['leave-absences/crm/hrleaveandabsences'], function () {
-  // Create the namespaces if they don't exist
-  CRM.HRLeaveAndAbsencesApp = CRM.HRLeaveAndAbsencesApp || {};
-  CRM.HRLeaveAndAbsencesApp.List = CRM.HRLeaveAndAbsencesApp.List || {};
-
+define([
+  'leave-absences/crm/hrleaveandabsences'
+], function (HRLeaveAndAbsencesApp) {
   /**
    * The AbsencePeriod list has a specific action not available on
    * other list pages of this extension, hence we need this specialized class.
@@ -12,7 +10,7 @@ define(['leave-absences/crm/hrleaveandabsences'], function () {
    * As the ListPage class cannot be easily extended, we just wrap it and
    * add the new action needed for this list.
    */
-  CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod = (function ($) {
+  HRLeaveAndAbsencesApp.List.AbsencePeriod = (function ($) {
     /**
      * Creates a new instance of the AbsencePeriod list
      *
@@ -21,7 +19,7 @@ define(['leave-absences/crm/hrleaveandabsences'], function () {
      */
     function AbsencePeriod (listElement) {
       this._listElement = listElement;
-      this._listPage = new CRM.HRLeaveAndAbsencesApp.ListPage(listElement);
+      this._listPage = new HRLeaveAndAbsencesApp.ListPage(listElement);
       this._addEventListeners();
     }
 
@@ -48,7 +46,7 @@ define(['leave-absences/crm/hrleaveandabsences'], function () {
     AbsencePeriod.prototype._onManageEntitlementsClick = function (event) {
       event.preventDefault();
       var $target = $(event.target);
-      var action = new CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod.ManageEntitlementAction(
+      var action = new HRLeaveAndAbsencesApp.List.AbsencePeriod.ManageEntitlementAction(
         $target,
         'The system will now update the staff members leave entitlement.'
       );
@@ -65,7 +63,7 @@ define(['leave-absences/crm/hrleaveandabsences'], function () {
    * updated and, if the user confirms, redirects they to the Entitlement Calculation
    * page.
    */
-  CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod.ManageEntitlementAction = (function () {
+  HRLeaveAndAbsencesApp.List.AbsencePeriod.ManageEntitlementAction = (function () {
     /**
      * Creates a new action instance
      *
@@ -74,12 +72,12 @@ define(['leave-absences/crm/hrleaveandabsences'], function () {
      * @constructor
      */
     function ManageEntitlementAction (target, confirmationMessage) {
-      CRM.HRLeaveAndAbsencesApp.ListPage.Action.call(
+      HRLeaveAndAbsencesApp.ListPage.Action.call(
         this, target, 'Update leave entitlement?', confirmationMessage, ''
       );
     }
 
-    ManageEntitlementAction.prototype = Object.create(CRM.HRLeaveAndAbsencesApp.ListPage.Action.prototype);
+    ManageEntitlementAction.prototype = Object.create(HRLeaveAndAbsencesApp.ListPage.Action.prototype);
 
     /**
      * Executes this action by redirecting the user to the Entitlement Calculation page

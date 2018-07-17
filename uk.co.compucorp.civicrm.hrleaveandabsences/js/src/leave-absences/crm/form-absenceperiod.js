@@ -1,11 +1,9 @@
 /* eslint-env amd */
 /* global ts */
 
-define([], function () {
-  // Create the namespaces if they don't exist
-  CRM.HRLeaveAndAbsencesApp = CRM.HRLeaveAndAbsencesApp || {};
-  CRM.HRLeaveAndAbsencesApp.Form = CRM.HRLeaveAndAbsencesApp.Form || {};
-
+define([
+  'leave-absences/crm/includes/hrleaveandabsences-init'
+], function (HRLeaveAndAbsencesApp) {
   /**
    * This class represents the AbsencePeriod form.
    *
@@ -13,7 +11,7 @@ define([], function () {
    * adding event listeners to it, updating fields values, showing
    * confirmation and more.
    */
-  CRM.HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function ($, ts) {
+  HRLeaveAndAbsencesApp.Form.AbsencePeriod = (function ($, ts) {
     /**
      * Creates a new AbsencePeriod form object for the given form Element
      *

@@ -1,15 +1,15 @@
 /* eslint-env amd */
 /* global ts */
 
-define([], function () {
-  CRM.HRLeaveAndAbsencesApp = {};
-
+define([
+  'leave-absences/crm/includes/hrleaveandabsences-init'
+], function (HRLeaveAndAbsencesApp) {
   /**
    * A ListPage is built around a table list of entities,
    * and it adds actions, like "Set as Default" and "Delete",
    * to each of its items
    */
-  CRM.HRLeaveAndAbsencesApp.ListPage = (function ($) {
+  HRLeaveAndAbsencesApp.ListPage = (function ($) {
     var messages = {
       'setAsDefault': {
         'confirmation': 'Are you sure you want to set "%1" as default?',
@@ -57,7 +57,7 @@ define([], function () {
      */
     function setAsDefaultAction (event) {
       var $target = $(event.target);
-      var action = new CRM.HRLeaveAndAbsencesApp.ListPage.SetAsDefaultAction(
+      var action = new HRLeaveAndAbsencesApp.ListPage.SetAsDefaultAction(
         $target,
         messages.setAsDefault.confirmation,
         messages.setAsDefault.success
@@ -76,7 +76,7 @@ define([], function () {
      */
     function deleteAction (event) {
       var $target = $(event.target);
-      var action = new CRM.HRLeaveAndAbsencesApp.ListPage.DeleteAction(
+      var action = new HRLeaveAndAbsencesApp.ListPage.DeleteAction(
         $target,
         messages.delete.confirmation,
         messages.delete.success
@@ -102,7 +102,7 @@ define([], function () {
    * which is called when the user confirms the action
    * execution.
    */
-  CRM.HRLeaveAndAbsencesApp.ListPage.Action = (function (ts) {
+  HRLeaveAndAbsencesApp.ListPage.Action = (function (ts) {
     /**
      * Creates a new Action
      *
@@ -181,14 +181,14 @@ define([], function () {
    *
    * It will use the API to change the entity is_default to 1.
    */
-  CRM.HRLeaveAndAbsencesApp.ListPage.SetAsDefaultAction = (function () {
+  HRLeaveAndAbsencesApp.ListPage.SetAsDefaultAction = (function () {
     function SetAsDefaultAction (target, confirmationMessage, successMessage) {
-      CRM.HRLeaveAndAbsencesApp.ListPage.Action.call(
+      HRLeaveAndAbsencesApp.ListPage.Action.call(
         this, target, 'Set as default', confirmationMessage, successMessage
       );
     }
 
-    SetAsDefaultAction.prototype = Object.create(CRM.HRLeaveAndAbsencesApp.ListPage.Action.prototype);
+    SetAsDefaultAction.prototype = Object.create(HRLeaveAndAbsencesApp.ListPage.Action.prototype);
 
     SetAsDefaultAction.prototype._executeAction = function () {
       CRM.api3(
@@ -207,14 +207,14 @@ define([], function () {
    *
    * It will use the API to delete the entity.
    */
-  CRM.HRLeaveAndAbsencesApp.ListPage.DeleteAction = (function () {
+  HRLeaveAndAbsencesApp.ListPage.DeleteAction = (function () {
     function DeleteAction (target, confirmationMessage, successMessage) {
-      CRM.HRLeaveAndAbsencesApp.ListPage.Action.call(
+      HRLeaveAndAbsencesApp.ListPage.Action.call(
         this, target, 'Delete', confirmationMessage, successMessage
       );
     }
 
-    DeleteAction.prototype = Object.create(CRM.HRLeaveAndAbsencesApp.ListPage.Action.prototype);
+    DeleteAction.prototype = Object.create(HRLeaveAndAbsencesApp.ListPage.Action.prototype);
 
     DeleteAction.prototype._executeAction = function () {
       CRM.api3(
@@ -229,4 +229,6 @@ define([], function () {
   })();
 
   CRM.$(document).trigger('CRMHrleaveandabsencesScriptIsReady');
+
+  return HRLeaveAndAbsencesApp;
 });
