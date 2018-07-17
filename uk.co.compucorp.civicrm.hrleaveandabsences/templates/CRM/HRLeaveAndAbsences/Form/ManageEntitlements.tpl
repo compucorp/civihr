@@ -148,7 +148,7 @@
 
 <script type="text/javascript">
   {literal}
-    CRM.$(document).on('CRMManageEntitlementsFormScriptIsReady', function(event, app) {
+    CRM.$(document).on('hrappready.formmanageentitlements', function(event, app) {
       (new app.Form.ManageEntitlements());
     });
   {/literal}

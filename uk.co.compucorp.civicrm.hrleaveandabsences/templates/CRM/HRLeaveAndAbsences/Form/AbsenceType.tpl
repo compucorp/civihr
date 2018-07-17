@@ -142,9 +142,6 @@
                 initDeleteButton();
                 initCalculationUnitControls();
                 supportValueSubmissionOfAllSelectorsIfDisabled();
-              });
-
-              $(document).on('SpectrumLibraryLoaded', function() {
                 initColorPicker();
               });
 

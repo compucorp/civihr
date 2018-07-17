@@ -62,7 +62,7 @@ define([
      */
     ManageEntitlements.prototype._instantiateComments = function () {
       this._listElement.find('td.comment').each(function (i, element) {
-        new HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment($(element)); // eslint-disable-line no-new
+        (new HRLeaveAndAbsencesApp.Form.ManageEntitlements.Comment($(element))); // eslint-disable-line no-new
       });
     };
 

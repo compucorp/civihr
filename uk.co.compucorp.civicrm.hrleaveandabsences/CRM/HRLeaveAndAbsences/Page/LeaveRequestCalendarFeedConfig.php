@@ -47,7 +47,7 @@ class CRM_HRLeaveAndAbsences_Page_LeaveRequestCalendarFeedConfig extends CRM_Cor
     CRM_Utils_Weight::addOrder($rows, 'CRM_HRLeaveAndAbsences_DAO_LeaveRequestCalendarFeedConfig', 'id', $returnURL);
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/dist/crm-hrleaveandabsences.min.js', 1001);
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/dist/crm-app-list.min.js', 1001);
     CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/dist/calendar-feeds-list.min.js', 1002);
     CRM_Core_Resources::singleton()->addScriptFile('civicrm', 'js/jquery/jquery.crmEditable.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
     $this->assign('rows', $rows);

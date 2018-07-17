@@ -50,8 +50,8 @@
       </div>
       <script type="text/javascript">
         {literal}
-          CRM.$(document).on('CRMHrleaveandabsencesScriptIsReady', function () {
-            (new CRM.HRLeaveAndAbsencesApp.ListPage(CRM.$('.hrleaveandabsences-entity-list')));
+          CRM.$(document).on('hrappready.list', function (event, app) {
+            (new app.ListPage(CRM.$('.hrleaveandabsences-entity-list')));
           });
         {/literal}
       </script>

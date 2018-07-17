@@ -89,7 +89,7 @@ class CRM_HRLeaveAndAbsences_Form_ManageEntitlements extends CRM_Core_Form {
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
     CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.reqangular', 'dist/reqangular.min.js', 1000);
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/dist/crm-form-manage-entitlements.min.js', 1001);
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/dist/crm-app-form-manage-entitlements.min.js', 1001);
     parent::buildQuickForm();
   }
 

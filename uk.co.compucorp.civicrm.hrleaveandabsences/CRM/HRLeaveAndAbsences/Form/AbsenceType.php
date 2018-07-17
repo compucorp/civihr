@@ -58,7 +58,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
 
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
     CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/spectrum.css');
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/dist/spectrum.min.js', 1001);
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/src/leave-absences/crm/vendor/spectrum/spectrum.min.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
     parent::buildQuickForm();
   }
 

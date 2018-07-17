@@ -39,8 +39,8 @@
     </div>
     <script type="text/javascript">
       {literal}
-        CRM.$(document).on('CRMListAbsencePeriodScriptIsReady', function () {
-          (new CRM.HRLeaveAndAbsencesApp.List.AbsencePeriod(CRM.$('.hrleaveandabsences-entity-list')));
+        CRM.$(document).on('hrappready.listabsenceperiod', function (event, app) {
+          (new app.List.AbsencePeriod(CRM.$('.hrleaveandabsences-entity-list')));
         });
       {/literal}
   </script>

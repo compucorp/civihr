@@ -101,11 +101,11 @@
   {/section}
   <script type="text/javascript">
     {literal}
-      CRM.$(document).on('CRMWorkPatternFormScriptIsReady', function () {
+      CRM.$(document).on('hrappready.formworkpattern', function (event, app) {
         var deleteUrl = {/literal}'{$delete_url}'{literal};
-        var form = new CRM.HRLeaveAndAbsencesApp.Form.WorkPattern(deleteUrl);
         var editPath = 'civicrm/admin/options/hrleaveandabsences_leave_days_amounts';
 
+        (new app.Form.WorkPattern(deleteUrl));
         CRM.$("select.leave-days")
           .attr({
             'data-api-entity': 'WorkDay',
