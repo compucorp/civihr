@@ -7,6 +7,7 @@ trait CRM_HRCore_Upgrader_Steps_1021 {
    */
   public function upgrade_1021() {
     $this->up1021_setDefaultGenderOptions();
+    $this->up1021_disableDefaultGenderOptions('Prefer not to say');
 
     return TRUE;
   }
@@ -39,6 +40,14 @@ trait CRM_HRCore_Upgrader_Steps_1021 {
         'weight' => $newWeight,
       ]);
     }
+  }
+
+  private function up1021_disableDefaultGenderOptions($genderOption) {
+    civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'gender',
+      'name' => $genderOption,
+      'api.OptionValue.create' => ['id' => '$value.id', 'is_active' => 0],
+    ]);
   }
 
 }
