@@ -186,13 +186,11 @@
    * Manipulates, at the DOM level, the blocks/fields belonging to the
    * Inline Custom Data custom fields set
    */
-  if ($('.Inline_Custom_Data').length) {
-    repositionPersonalDetailsBlock('.Inline_Custom_Data');
-  }
-
-  repositionPersonalDetailsBlock('.Extended_Demographics');
-
   function manipulateDOMOfInlineCustomData () {
+    if ($('.Inline_Custom_Data').length) {
+      repositionInlineCustomDataBlockInPersonalDetailsTab();
+    }
+
     if ($('#customFields').length < 1) {
       repositionInlineCustomDataFieldsInEditContactForm();
     }
@@ -273,15 +271,14 @@
   }
 
   /**
-   * Moves the specified selector element to the personal details tab
-   *
-   * @param selector
+   * Moves the "Inline Custom Data" block towards the top of the
+   * personal details tab
    */
-  function repositionPersonalDetailsBlock (selector) {
-    $(selector)
+  function repositionInlineCustomDataBlockInPersonalDetailsTab () {
+    $('.Inline_Custom_Data')
       .removeClass('crm-collapsible collapsed')
       .addClass('crm-summary-block')
-      .appendTo('.contactTopBar .contactCardLeft')
+      .insertAfter('.crm-summary-contactinfo-block')
       .find('.collapsible-title').hide().end()
       .find('.crm-summary-block').show();
   }

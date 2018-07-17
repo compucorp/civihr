@@ -22,6 +22,9 @@ class CRM_HRSampleData_CSVProcessor_ExtendedDemographicsTest extends CRM_HRSampl
     $this->rows[] = [
       $this->testContact['id'],
       1020,
+      'Not Applicable',
+      'Not Applicable',
+      'Not Applicable',
       'Single',
     ];
 
@@ -40,6 +43,9 @@ class CRM_HRSampleData_CSVProcessor_ExtendedDemographicsTest extends CRM_HRSampl
     return [
       'entity_id',
       'Nationality',
+      'Ethnicity',
+      'Religion',
+      'Sexual_Orientation',
       'Marital_Status',
     ];
   }

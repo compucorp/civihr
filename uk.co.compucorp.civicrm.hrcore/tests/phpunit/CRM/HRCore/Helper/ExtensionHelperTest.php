@@ -10,15 +10,16 @@ class CRM_HRCore_Helper_ExtensionHelperTest extends CRM_HRCore_Test_BaseHeadless
   /**
    * @var string
    */
-  private $extensionKey = 'uk.co.compucorp.civicrm.hremails';
+  private $hrCoreKey = 'uk.co.compucorp.civicrm.hrcore';
 
   public function testCheckIsFalseAfterExtensionIsDisabled() {
-    civicrm_api3('Extension', 'disable', ['keys' => $this->extensionKey]);
-    $this->assertFalse(ExtensionHelper::isExtensionEnabled($this->extensionKey));
+    // hrcore is enabled by default in CRM_HRCore_Test_BaseHeadlessTest
+    civicrm_api3('Extension', 'disable', ['keys' => $this->hrCoreKey]);
+    $this->assertFalse(ExtensionHelper::isExtensionEnabled($this->hrCoreKey));
   }
 
   public function testCheckIsTrueAfterExtensionIsEnabled() {
-    civicrm_api3('Extension', 'enable', ['keys' => $this->extensionKey]);
-    $this->assertTrue(ExtensionHelper::isExtensionEnabled($this->extensionKey));
+    civicrm_api3('Extension', 'enable', ['keys' => $this->hrCoreKey]);
+    $this->assertTrue(ExtensionHelper::isExtensionEnabled($this->hrCoreKey));
   }
 }

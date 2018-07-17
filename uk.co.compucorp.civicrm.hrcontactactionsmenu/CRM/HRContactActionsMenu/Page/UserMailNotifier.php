@@ -14,7 +14,7 @@ class CRM_HRContactActionsMenu_Page_UserMailNotifier {
   public static function sendPasswordResetEmail() {
     $contactID = CRM_Utils_Array::value('cid', $_GET);
     $contactInfo = ContactHelper::getUserInformation($contactID);
-    $cmsUserMailNotifier = Civi::container()->get('civihr.cms.notifier');
+    $cmsUserMailNotifier = Civi::container()->get('hrcore.cms_notifier');
     $cmsUserMailNotifier->sendPasswordResetEmail($contactInfo);
 
     CRM_Core_Session::setStatus(ts('Password Reset Email sent'), 'Success', 'success');
@@ -30,7 +30,7 @@ class CRM_HRContactActionsMenu_Page_UserMailNotifier {
   public static function sendWelcomeEmail() {
     $contactID = CRM_Utils_Array::value('cid', $_GET);
     $contactInfo = ContactHelper::getUserInformation($contactID);
-    $cmsUserMailNotifier = Civi::container()->get('civihr.cms.notifier');
+    $cmsUserMailNotifier = Civi::container()->get('hrcore.cms_notifier');
     $cmsUserMailNotifier->sendWelcomeEmail($contactInfo);
 
     CRM_Core_Session::setStatus(ts('Welcome Email sent'), 'Success', 'success');

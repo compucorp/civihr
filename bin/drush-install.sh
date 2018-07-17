@@ -11,6 +11,7 @@ uk.co.compucorp.civicrm.hremails
 ## List of extensions defining basic entity types
 ENTITY_EXTS=\
 org.civicrm.hrbank,\
+org.civicrm.hrdemog,\
 org.civicrm.hrjobcontract,\
 com.civicrm.hrjobroles,\
 org.civicrm.hrmed,\
