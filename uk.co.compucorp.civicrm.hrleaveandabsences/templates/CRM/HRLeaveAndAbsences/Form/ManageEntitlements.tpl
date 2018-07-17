@@ -148,8 +148,8 @@
 
 <script type="text/javascript">
   {literal}
-    CRM.$(document).on('CRMManageEntitlementsFormScriptIsReady', function() {
-      (new CRM.HRLeaveAndAbsencesApp.Form.ManageEntitlements());
+    CRM.$(document).on('CRMManageEntitlementsFormScriptIsReady', function(event, app) {
+      (new app.Form.ManageEntitlements());
     });
   {/literal}
 </script>
