@@ -93,4 +93,6 @@ define([
 
     return ManageEntitlementAction;
   })();
+
+  return HRLeaveAndAbsencesApp;
 });

@@ -621,4 +621,6 @@ define([
       }
     };
   })(CRM.$);
+
+  return HRLeaveAndAbsencesApp;
 });

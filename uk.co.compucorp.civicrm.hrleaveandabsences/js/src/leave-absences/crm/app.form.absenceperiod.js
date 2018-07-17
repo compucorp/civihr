@@ -145,4 +145,6 @@ define([
 
     return AbsencePeriod;
   })(CRM.$, ts);
+
+  return HRLeaveAndAbsencesApp;
 });
