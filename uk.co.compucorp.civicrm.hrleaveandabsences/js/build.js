@@ -23,8 +23,8 @@
   paths: {
     'common': 'empty:',
     'inputmask': 'leave-absences/crm/vendor/inputmask/inputmask.min',
-    'inputmask.dependencyLib': 'leave-absences/crm/vendor/inputmask/dependencylib-mocked',
-    'jquery': 'leave-absences/crm/vendor/jquery-mocked'
+    'inputmask.dependencyLib': 'leave-absences/crm/vendor/mocks/inputmask.dependencyLib',
+    'jquery': 'leave-absences/crm/vendor/mocks/jquery'
   },
   findNestedDependencies: true
 });
