@@ -2,7 +2,7 @@
 /* global ts Inputmask */
 
 define([
-  'leave-absences/crm/includes/hrleaveandabsences-init',
+  'leave-absences/crm/app',
   'leave-absences/crm/vendor/inputmask/inputmask.numeric.extensions.min'
 ], function (HRLeaveAndAbsencesApp) {
   /**
@@ -622,5 +622,5 @@ define([
     };
   })(CRM.$);
 
-  CRM.$(document).trigger('CRMManageEntitlementsFormScriptIsReady');
+  return HRLeaveAndAbsencesApp;
 });

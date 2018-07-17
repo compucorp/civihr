@@ -2,7 +2,7 @@
 /* global ts */
 
 define([
-  'leave-absences/crm/includes/hrleaveandabsences-init'
+  'leave-absences/crm/app'
 ], function (HRLeaveAndAbsencesApp) {
   /**
    * This class represents the AbsencePeriod form.
@@ -146,5 +146,5 @@ define([
     return AbsencePeriod;
   })(CRM.$, ts);
 
-  CRM.$(document).trigger('CRMAbsencePeriodFormScriptIsReady');
+  return HRLeaveAndAbsencesApp;
 });

@@ -1,7 +1,7 @@
 /* eslint-env amd */
 
 define([
-  'leave-absences/crm/hrleaveandabsences'
+  'leave-absences/crm/app.list'
 ], function (HRLeaveAndAbsencesApp) {
   /**
    * The AbsencePeriod list has a specific action not available on
@@ -94,5 +94,5 @@ define([
     return ManageEntitlementAction;
   })();
 
-  CRM.$(document).trigger('CRMListAbsencePeriodScriptIsReady');
+  return HRLeaveAndAbsencesApp;
 });
