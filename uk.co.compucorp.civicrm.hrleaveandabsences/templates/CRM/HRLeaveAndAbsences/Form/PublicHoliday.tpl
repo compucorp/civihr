@@ -44,12 +44,12 @@
                   no: ts('No')
                 }
               })
-              .on('crmConfirm:yes', REDIRECT_AFTER_DELETE_URL);
+              .on('crmConfirm:yes', deleteCallback);
             });
           }
 
           function deleteCallback() {
-            window.location = deleteUrl;
+            window.location = REDIRECT_AFTER_DELETE_URL;
           }
         });
       {/literal}
