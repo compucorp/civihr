@@ -25,7 +25,6 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   use CRM_HRCore_Upgrader_Steps_1015;
   use CRM_HRCore_Upgrader_Steps_1016;
   use CRM_HRCore_Upgrader_Steps_1017;
-  use CRM_HRCore_Upgrader_Steps_1021;
   use CRM_HRCore_Upgrader_Steps_1018;
   use CRM_HRCore_Upgrader_Steps_1019;
   use CRM_HRCore_Upgrader_Steps_1020;
@@ -60,42 +59,15 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   ];
 
   /**
-   * A list of directories to be scanned for XML installation files
-   *
-   * @var array
-   */
-  private $xmlDirectories = ['CustomGroups'];
-
-  /**
    * Callback called when the extension is installed
    */
   public function install() {
-    $this->processXMLInstallationFiles();
     $this->setScheduledJobsDefaultStatus();
     $this->deleteLocationTypes();
     $this->createRequiredLocationTypes();
     $this->deleteUnneededCustomGroups();
     $this->createDefaultRelationshipTypes();
     $this->runAllUpgraders();
-  }
-
-  /**
-   * Scans all the directories in $xmlDirectories for installation files
-   * (xml files ending with _install.xml) and processes them.
-   */
-  private function processXMLInstallationFiles() {
-    foreach($this->xmlDirectories as $directory) {
-      $files = glob($this->extensionDir . "/xml/{$directory}/*_install.xml");
-      if (is_array($files)) {
-        foreach ($files as $file) {
-          $this->executeCustomDataFileByAbsPath($file);
-        }
-      }
-    }
-    // Flush the cache so that all pseudoconstants can be re-read from db
-    // This is to avoid issues when running upgraders during installation
-    // whereby some pseudoconstants were not available.
-    CRM_Core_PseudoConstant::flush();
   }
 
   /**

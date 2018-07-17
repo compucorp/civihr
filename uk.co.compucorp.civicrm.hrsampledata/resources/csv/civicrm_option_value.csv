@@ -85,6 +85,9 @@ name,phone_type,Mobile,Mobile,,0,0,0,0,,0
 name,marital_status_20130913084916,Single,Single,,0,0,0,0,,0
 name,marital_status_20130913084916,Married,Married,,0,0,0,0,,0
 name,marital_status_20130913084916,Divorced,Divorced,,0,0,0,0,,0
+name,sexual_orientation_20130725124348,Not Applicable,Not Applicable,,0,0,0,0,,0
+name,religion_20130725124132,Not Applicable,Not Applicable,,0,0,0,0,,0
+name,ethnicity_20130725123943,Not Applicable,Not Applicable,,0,0,0,0,,0
 name,hrjc_benefit_type,Fixed,Fixed,,0,0,0,0,,0
 name,hrjc_benefit_name,Bike,Bike,,0,0,0,0,,0
 name,postal_greeting,Dear {contact.first_name},Dear {contact.first_name},,1,1,0,0,,0

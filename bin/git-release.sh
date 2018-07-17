@@ -5,6 +5,7 @@ fileName=""
 ENTITY_EXTS=( hrbank \
 hrcareer \
 hrcase \
+hrdemog \
 hrim \
 hrmed \
 hrprofile \

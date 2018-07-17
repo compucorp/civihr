@@ -16,32 +16,4 @@ The [civihr-installer](https://github.com/compucorp/civihr-installer) script has
 $ civibuild create hr17
 ```
 
-Read the drush-install.sh for details.
-
-## Install (Option B: Manual)
-
-CiviHR includes over a dozen extensions. These can be activated piecemeal.
-The following extensions provide the major features and may be activated
-individually:
-
- * org.civicrm.hrbank: Bank Details
- * org.civicrm.hrcareer: Career History
- * org.civicrm.hremerg: Emergency Contacts
- * org.civicrm.hrabsence: Absences
- * org.civicrm.hrjobcontract: Job Contracts
- * org.civicrm.hrmed: Medical and Disability
- * org.civicrm.hrqual: Qualifications
- * org.civicrm.hrreport: Reporting
- * org.civicrm.hrstaffdir: Staff Directory
-  * org.civicrm.hrcase: Case
- * org.civicrm.hrcaseutils: Case Utils
- * org.civicrm.hrim: Instant messanger link
- * org.civicrm.hrrecruitment: Recruitment
- * org.civicrm.hrprofile: Profile
-
-Finally, these two extensions build on top of the others:
-
- * uk.co.compucorp.civicrm.hrsampledata: Generate random example data
- * org.civicrm.hrui: Trim/revise CiviCRM UI for CiviHR users
-
 Please check the [civibuild documentation](https://docs.civicrm.org/dev/en/latest/tools/civibuild/) for more information on all the available params. 
