@@ -1,0 +1,171 @@
+/* eslint-env amd, jasmine */
+
+(function (CRM) {
+  define([
+    'common/angular',
+    'common/lodash',
+    'leave-absences/mocks/data/option-group.data',
+    'leave-absences/mocks/data/work-pattern.data',
+    'leave-absences/mocks/apis/work-pattern-api-mock',
+    'leave-absences/absence-tab/app'
+  ], function (angular, _, optionGroupMock, workPatternData, crmAngService) {
+    'use strict';
+
+    describe('absenceTabWorkPatterns', function () {
+      var $componentController, $log, $q, $rootScope, $provide, controller,
+        OptionGroup, WorkPatternAPI;
+
+      beforeEach(module('leave-absences.templates', 'leave-absences.mocks', 'absence-tab', function (_$provide_) {
+        $provide = _$provide_;
+      }));
+
+      beforeEach(inject(function (WorkPatternAPIMock) {
+        $provide.value('WorkPatternAPI', WorkPatternAPIMock);
+      }));
+      beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_, _OptionGroup_, _WorkPatternAPI_, _crmAngService_) {
+        $componentController = _$componentController_;
+        $log = _$log_;
+        $q = _$q_;
+        $rootScope = _$rootScope_;
+        OptionGroup = _OptionGroup_;
+        crmAngService = _crmAngService_;
+
+        WorkPatternAPI = _WorkPatternAPI_;
+
+        spyOn($log, 'debug');
+        spyOn(WorkPatternAPI, 'get').and.callThrough();
+        spyOn(OptionGroup, 'valuesOf').and.callFake(function () {
+          return $q.resolve(optionGroupMock.getCollection('hrleaveandabsences_work_pattern_change_reason'));
+        });
+
+        compileComponent();
+      }));
+
+      it('is initialized', function () {
+        expect($log.debug).toHaveBeenCalled();
+      });
+
+      it('loads enabled work patterns only', function () {
+        expect(WorkPatternAPI.get).toHaveBeenCalledWith({ is_active: true });
+      });
+
+      describe('init()', function () {
+        it('fetches values of the Work Pattern Change Reason option group', function () {
+          expect(OptionGroup.valuesOf).toHaveBeenCalledWith('hrleaveandabsences_work_pattern_change_reason', true);
+        });
+
+        it('loads change reasons', function () {
+          expect(controller.changeReasons).toEqual(optionGroupMock.getCollection('hrleaveandabsences_work_pattern_change_reason'));
+        });
+
+        it('loads work patterns', function () {
+          expect(controller.workPatterns).toEqual(workPatternData.getAllWorkPattern.values);
+        });
+      });
+
+      describe('closeModal()', function () {
+        beforeEach(function () {
+          controller.closeModal();
+        });
+
+        it('closes the modal', function () {
+          expect(controller.dismiss).toHaveBeenCalledWith({ $value: 'cancel' });
+        });
+      });
+
+      describe('closeAlert()', function () {
+        beforeEach(function () {
+          controller.closeAlert();
+        });
+
+        it('error message is reset', function () {
+          expect(controller.errorMessage).toBe('');
+        });
+      });
+
+      describe('save()', function () {
+        var promise;
+
+        beforeEach(function () {
+          controller.selected.workPattern = { id: '2' };
+          controller.selected.changeReason = '3';
+          controller.selected.effectiveDate = '2017-06-15';
+          spyOn($rootScope, '$broadcast');
+          spyOn(controller, 'closeModal');
+        });
+
+        afterEach(function () {
+          $rootScope.$apply();
+        });
+
+        describe('when assignment is saved successfully', function () {
+          beforeEach(function () {
+            spyOn(WorkPatternAPI, 'assignWorkPattern').and.returnValue($q.resolve([]));
+            promise = controller.save();
+          });
+
+          it('work pattern is assigned', function () {
+            expect(WorkPatternAPI.assignWorkPattern).toHaveBeenCalledWith(
+              controller.contactId,
+              controller.selected.workPattern.id,
+              controller.selected.effectiveDate,
+              null,
+              controller.selected.changeReason);
+          });
+
+          it('broadcasts an event', function () {
+            promise.then(function () {
+              expect($rootScope.$broadcast).toHaveBeenCalledWith('CustomWorkPattern::Added');
+            });
+          });
+
+          it('modal is closed', function () {
+            promise.then(function () {
+              expect(controller.closeModal).toHaveBeenCalled();
+            });
+          });
+        });
+
+        describe('when assignment API returns error', function () {
+          var errorMessage = 'Some error';
+
+          beforeEach(function () {
+            spyOn(WorkPatternAPI, 'assignWorkPattern').and.returnValue($q.reject(errorMessage));
+            promise = controller.save();
+          });
+
+          it('error message is shown on UI', function () {
+            promise.then(function () {
+              expect(controller.errorMessage).toBe(errorMessage);
+            });
+          });
+        });
+      });
+
+      describe('when users click on the reason for change wrench icon', function () {
+        var url = '/civicrm/admin/options/hrleaveandabsences_work_pattern_change_reason?reset=1';
+
+        beforeEach(function () {
+          spyOn(crmAngService, 'loadForm').and.callFake(function () {
+            return {
+              on: function () {}
+            };
+          });
+          controller.openWorkPatternChangeReasonEditor();
+        });
+
+        it('calls the crmAngService with the requested url', function () {
+          expect(crmAngService.loadForm).toHaveBeenCalledWith(url);
+        });
+      });
+
+      function compileComponent () {
+        controller = $componentController('absenceTabCustomWorkPatternModal', null, {
+          contactId: CRM.vars.leaveAndAbsences.contactId,
+          dismiss: jasmine.createSpy('dismiss')
+        });
+        $rootScope.$digest();
+      }
+    });
+  });
+})(CRM);

@@ -4,7 +4,7 @@ var rename = require('gulp-rename');
 var path = require('path');
 
 module.exports = function () {
-  var distFolder = path.join(__dirname, '..', 'js/angular/dist/');
+  var distFolder = path.join(__dirname, '..', 'js/dist/');
 
   return {
     post: [
@@ -28,7 +28,7 @@ module.exports = function () {
             path.join(distFolder, 'mocks/'),
             '!' + path.join(distFolder, '*.min.js')
           ], {read: false})
-          .pipe(clean({ force: true }));
+            .pipe(clean({ force: true }));
         }
       }
     ]

@@ -3,61 +3,52 @@
 trait CRM_HRCore_Upgrader_Steps_1025 {
 
   /**
-   * Removes Instant Messenger options
+   * Deletes some demographics fields where they are not in use
    *
    * @return bool
    */
   public function upgrade_1025() {
-    $this->up1025_deleteOrDisableSocialAccounts([
-      'Yahoo',
-      'MSN',
-      'AIM',
-      'Jabber',
+
+    $this->up1025_deleteExtendDemographicFields([
+      'Ethnicity',
+      'Religion',
+      'Sexual_Orientation',
     ]);
 
     return TRUE;
   }
 
   /**
-   * Removes some instant messenger options if not used, and disable it if used
+   * Deletes Custom Demographic Fields only if they are not used
+   *
+   * @param array $fieldsToDelete
    */
-  private function up1025_deleteOrDisableSocialAccounts($accounts) {
-    $socialAccounts = civicrm_api3('OptionValue', 'get', [
-      'option_group_id' => 'instant_messenger_service',
-      'name' => ['IN' => $accounts],
+  private function up1025_deleteExtendDemographicFields($fieldsToDelete) {
+    $customGroup = civicrm_api3('CustomGroup', 'get', [
+      'name' => 'Extended_Demographics',
     ]);
+    $customGroup = array_shift($customGroup['values']);
+    $customFields = civicrm_api3('CustomField', 'get', [
+      'name' => ['IN' => $fieldsToDelete],
+    ]);
+    $tableName = $customGroup['table_name'];
+    foreach ($customFields['values'] as $customField) {
+      $column = $customField['column_name'];
+      $queryFormat = 'SELECT COUNT(id) FROM %s'
+        . ' WHERE %s NOT LIKE "%%Not Applicable%%"'
+        . ' AND %s IS NOT NULL'
+        . ' AND %s <> ""';
 
-    $socialAccounts = $socialAccounts['values'];
-    foreach ($socialAccounts as $optionValueId => $optionValue) {
-      $socialAccountIsUsed = civicrm_api3('Im', 'get', [
-        'provider_id' => $optionValue['name'],
+      $query = sprintf($queryFormat, $tableName, $column, $column, $column);
+      $customFieldItems = CRM_Core_DAO::singleValueQuery($query);
+      if ($customFieldItems > 0) {
+        continue;
+      }
+
+      civicrm_api3('CustomField', 'delete', [
+        'id' => $customField['id'],
       ]);
-      if ($socialAccountIsUsed['count'] == 0) {
-        $this->up1025_deleteSocialAccount($optionValueId);
-      }
-      else {
-        $this->up1025_disableSocialAccount($optionValueId);
-      }
     }
-  }
-
-  /**
-   * @param int $optionValueId
-   */
-  private function up1025_deleteSocialAccount($optionValueId) {
-    civicrm_api3('OptionValue', 'delete', [
-      'id' => $optionValueId,
-    ]);
-  }
-
-  /**
-   * @param int $optionValueId
-   */
-  private function up1025_disableSocialAccount($optionValueId) {
-    civicrm_api3('OptionValue', 'create', [
-      'id' => $optionValueId,
-      'is_active' => 0,
-    ]);
   }
 
 }

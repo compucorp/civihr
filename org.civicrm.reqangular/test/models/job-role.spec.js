@@ -16,8 +16,7 @@ define([
       module('common.models', 'common.mocks', function (_$provide_) {
         $provide = _$provide_;
       });
-      inject([
-        'api.job-role.mock', 'HR_settingsMock',
+      inject(['api.job-role.mock', 'HR_settingsMock',
         function (_jobRoleAPIMock_, HRSettingsMock) {
           $provide.value('api.job-role', _jobRoleAPIMock_);
           $provide.value('HR_settings', HRSettingsMock);
@@ -51,7 +50,7 @@ define([
               return JobRoleInstanceMock.isInstance(jobRole);
             })).toBe(true);
           })
-                    .finally(done) && $rootScope.$digest();
+            .finally(done) && $rootScope.$digest();
         });
       });
 
@@ -61,7 +60,7 @@ define([
             expect(jobRoleAPI.all).toHaveBeenCalled();
             expect(response.list.length).toEqual(jobRoles.list.length);
           })
-                    .finally(done) && $rootScope.$digest();
+            .finally(done) && $rootScope.$digest();
         });
       });
 
@@ -76,7 +75,7 @@ define([
             expect(jobRoleAPI.all).toHaveBeenCalledWith(null, pagination);
             expect(response.list.length).toEqual(2);
           })
-                    .finally(done) && $rootScope.$digest();
+            .finally(done) && $rootScope.$digest();
         });
       });
     });
@@ -90,14 +89,14 @@ define([
           expect(jobRole.id).toBe(targetId);
           expect(jobRole.title).toBe('Job Role #1');
         })
-                .finally(done) && $rootScope.$digest();
+          .finally(done) && $rootScope.$digest();
       });
 
       it('returns an instance of the model', function (done) {
         JobRole.find(targetId).then(function (jobRole) {
           expect(JobRoleInstanceMock.isInstance(jobRole)).toBe(true);
         })
-                .finally(done) && $rootScope.$digest();
+          .finally(done) && $rootScope.$digest();
       });
     });
   });

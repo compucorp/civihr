@@ -3,51 +3,25 @@
 trait CRM_HRCore_Upgrader_Steps_1021 {
 
   /**
-   * Set Default Gender Options
+   * Uninstall the hrdemog extension.
+   *
+   * This extension was already deleted from the code at this point, so this
+   * will fail if you run it from the UI (missing extension). Running
+   * upgraders from the CLI (as is done for production releases) will work
+   *
+   * @return bool
    */
   public function upgrade_1021() {
-    $this->up1021_setDefaultGenderOptions();
-    $this->up1021_disableDefaultGenderOptions('Prefer not to say');
+    $key = 'org.civicrm.hrdemog';
+
+    if (!CRM_HRCore_Helper_ExtensionHelper::isExtensionEnabled($key)) {
+      return TRUE;
+    }
+
+    civicrm_api3('Extension', 'disable', ['keys' => $key]);
+    civicrm_api3('Extension', 'uninstall', ['keys' => $key]);
 
     return TRUE;
-  }
-
-  /**
-   * Changes The Order of Individual Prefixes
-   */
-  private function up1021_setDefaultGenderOptions() {
-    $optionValues = civicrm_api3('OptionValue', 'get', [
-      'option_group_id' => 'gender',
-    ]);
-
-    $optionValues = $optionValues['values'];
-    foreach ($optionValues as $optionValueId => $optionValue) {
-      switch ($optionValue['name']) {
-        case 'Male':
-          $newWeight = 1;
-          break;
-
-        case 'Female':
-          $newWeight = 2;
-          break;
-
-        case 'Other':
-          $newWeight = 3;
-          break;
-      }
-      civicrm_api3('OptionValue', 'create', [
-        'id' => $optionValueId,
-        'weight' => $newWeight,
-      ]);
-    }
-  }
-
-  private function up1021_disableDefaultGenderOptions($genderOption) {
-    civicrm_api3('OptionValue', 'get', [
-      'option_group_id' => 'gender',
-      'name' => $genderOption,
-      'api.OptionValue.create' => ['id' => '$value.id', 'is_active' => 0],
-    ]);
   }
 
 }
