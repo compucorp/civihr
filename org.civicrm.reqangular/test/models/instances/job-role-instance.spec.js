@@ -87,10 +87,10 @@ define([
 
       it('filters out the custom data field', function () {
         expect(Object.keys(toAPIData)).toEqual(_.without(
-                    Object.keys(instance.attributes()),
-                    'contact_id',
-                    'job_contract_id'
-                ));
+          Object.keys(instance.attributes()),
+          'contact_id',
+          'job_contract_id'
+        ));
       });
 
       it('formats the dates in the YYYY-MM-DD HH:ii:ss format', function () {

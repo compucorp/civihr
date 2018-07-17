@@ -116,6 +116,7 @@ function hrcore_civicrm_buildForm($formName, &$form) {
   $listeners = [
     new CRM_HRCore_Hook_BuildForm_ActivityFilterSelectFieldsModifier(),
     new CRM_HRCore_Hook_BuildForm_ActivityLinksFilter(),
+    new CRM_HRCore_Hook_BuildForm_ContactAdvancedSearch(),
     new CRM_HRCore_Hook_BuildForm_LocalisationPageFilter(),
     new CRM_HRCore_Hook_BuildForm_OptionEditPathFilter(),
   ];
@@ -276,34 +277,27 @@ function hrcore_civicrm_apiWrappers(&$wrappers, $apiRequest) {
 }
 
 /**
- * Implementation of hook_civicrm_pre hook.
- *
- * @param string $op
- *   Operation being done
- * @param string $objectName
- *   Name of the object on which the operation is being done
- * @param int $objectId
- *   ID of the record the object instantiates
- * @param array $params
- *   Parameter array being used to call the operation
- */
-function hrcore_civicrm_pre($op, $objectName, $objectId, &$params) {
-  $listeners = [
-    new CRM_HRCore_Hook_Pre_PrimaryAddressSetter(),
-  ];
-
-  foreach ($listeners as $currentListener) {
-    $currentListener->handle($op, $objectName, $objectId, $params);
-  }
-}
-
-/**
  * Implements hrcore_civicrm_pageRun.
  *
  * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_pageRun/
  */
 function hrcore_civicrm_pageRun($page) {
   _hrcore_add_js_session_vars();
+
+  $hooks = [
+    new CRM_HRCore_Hook_PageRun_LocationTypeFilter(),
+  ];
+
+  foreach ($hooks as $hook) {
+    $hook->handle($page);
+  }
+}
+
+/**
+ * Implements hook_civicrm_coreResourceList().
+ */
+function hrcore_civicrm_coreResourceList(&$items, $region) {
+  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/hrcore.js');
 }
 
 /**
@@ -346,6 +340,7 @@ function hrcore_civicrm_permission(&$permissions) {
   $prefix = ts('CiviHR') . ': ';
   $permissions['access CiviCRM developer menu and tools'] = ts('Access CiviCRM developer menu and tools');
   $permissions['access root menu items and configurations'] = $prefix . ts('Access root menu items and configurations');
+  $permissions['view system status on footer'] = $prefix . ts('View System Status on Footer');
 }
 
 /**
@@ -356,7 +351,7 @@ function hrcore_civicrm_permission(&$permissions) {
  * @param string $newLabel
  */
 function _hrcore_renameMenuLabel(&$params, $menuName, $newLabel) {
-  $menuItemID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $menuName, 'id', 'name');
+  $menuItemID = _hrcore_getNavigationIdByName($menuName);
   $params[$menuItemID]['attributes']['label'] = $newLabel;
 }
 
@@ -377,7 +372,7 @@ function _hrcore_add_js_session_vars() {
  */
 function _hrcore_coreMenuChanges(&$params) {
   // remove search items
-  $searchNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Search...', 'id', 'name');
+  $searchNavId = _hrcore_getNavigationIdByName('Search...');
   $toRemove = [
     'Full-text search',
     'Search builder',
@@ -392,12 +387,12 @@ function _hrcore_coreMenuChanges(&$params) {
     ) {
       continue;
     }
-    $itemId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $item , 'id', 'name');
+    $itemId = _hrcore_getNavigationIdByName($item);
     unset($params[$searchNavId]['child'][$itemId]);
   }
 
   // remove contact items
-  $searchNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
+  $searchNavId = _hrcore_getNavigationIdByName('Contacts');
   $toRemove = [
     'New Tag',
     'Manage Tags (Categories)',
@@ -416,22 +411,43 @@ function _hrcore_coreMenuChanges(&$params) {
     unset($params[$searchNavId]['child'][$itemId]);
   }
 
-  // remove main Reports menu
-  $reportsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
-  unset($params[$reportsNavId]);
+  _hrcore_removeItemFromMainNavigationMenuByName('Reports', $params);
+  _hrcore_removeItemFromMainNavigationMenuByName('Mailings', $params);
+  _hrcore_removeItemFromMainNavigationMenuByName('Support', $params);
 
   // Remove Admin items
-  $adminNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
+  $adminNavId = _hrcore_getNavigationIdByName('Administer');
+  _hrcore_removeItemFromMainNavigationMenuByName('CiviReport', $params[$adminNavId]['child']);
 
-  $civiReportNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviReport', 'id', 'name');
+  $civiCaseNavId = _hrcore_getNavigationIdByName('CiviCase');
+  _hrcore_removeItemFromMainNavigationMenuByName('Redaction Rules',$params[$adminNavId]['child'][$civiCaseNavId]['child']);
+}
 
-  $civiCaseNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'CiviCase', 'id', 'name');
-  $redactionRulesNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Redaction Rules', 'id', 'name');
-  $supportNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Support', 'id', 'name');
+/**
+ * Removes the item with the given $name from the root of the given $menu
+ *
+ * @todo Either use the NavigationMenuHelper methods instead or save the navigation menu to the database.
+ *
+ * @param string $name
+ * @param array $menu
+ *   An array like the one used in hook_civicrm_navigationMenu
+ */
+function _hrcore_removeItemFromMainNavigationMenuByName($name, &$menu) {
+  $id = _hrcore_getNavigationIdByName($name);
+  unset($menu[$id]);
+}
 
-  unset($params[$supportNavId]);
-  unset($params[$adminNavId]['child'][$civiReportNavId]);
-  unset($params[$adminNavId]['child'][$civiCaseNavId]['child'][$redactionRulesNavId]);
+/**
+ * Returns the ID of the Navigation item with the given $name
+ *
+ * @todo Either use the NavigationMenuHelper methods instead or save the navigation menu to the database.
+ *
+ * @param string $name
+ *
+ * @return null|int
+ */
+function _hrcore_getNavigationIdByName($name) {
+  return CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $name, 'id', 'name');
 }
 
 /**
@@ -444,6 +460,7 @@ function _hrcore_createHelpMenu(&$menu) {
   _hrcore_civix_insert_navigation_menu($menu, '', [
     'name' => ts('Help'),
     'permission' => 'access CiviCRM',
+    'weight' => _hrcore_getMaxMenuWeight($menu) + 1,
   ]);
 
   _hrcore_civix_insert_navigation_menu($menu, 'Help', [
@@ -478,7 +495,8 @@ function _hrcore_createDeveloperMenu(&$menu) {
   _hrcore_civix_insert_navigation_menu($menu, '', [
     'name' => ts('Developer'),
     'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
-    'operator' => 'AND'
+    'operator' => 'AND',
+    'weight' => _hrcore_getMaxMenuWeight($menu) + 1,
   ]);
 
   _hrcore_civix_insert_navigation_menu($menu, 'Developer', [
@@ -506,6 +524,10 @@ function _hrcore_createDeveloperMenu(&$menu) {
   ]);
 
   // Adds sub menu under Style Guide menu
+  if(!ExtensionHelper::isExtensionEnabled('org.civicrm.styleguide')) {
+    return;
+  }
+
   foreach (Civi::service('style_guides')->getAll() as $styleGuide) {
     _hrcore_civix_insert_navigation_menu($menu, 'Developer/Style Guide', [
       'label' => $styleGuide['label'],
@@ -548,5 +570,28 @@ function _hrcore_createSelfServicePortalMenu(&$menu) {
     'name' => ts('ssp'),
     'label' => ts('Self Service Portal'),
     'url' => 'dashboard',
+    'weight' => _hrcore_getMaxMenuWeight($menu) + 1,
   ]);
+}
+
+/**
+ * Returns the maximum weight among all the menu items in the given
+ * $menu array.
+ *
+ * @param array $menu
+ *   An array in the same format as the one used by hook_civicrm_navigationMenu
+ *
+ * @return int
+ */
+function _hrcore_getMaxMenuWeight($menu) {
+  $maxWeight = 0;
+
+  foreach ($menu as $item) {
+    $itemWeight = !empty($item['attributes']['weight']) ? $item['attributes']['weight'] : 0;
+    if ($itemWeight > $maxWeight) {
+      $maxWeight = $itemWeight;
+    }
+  }
+
+  return $maxWeight;
 }

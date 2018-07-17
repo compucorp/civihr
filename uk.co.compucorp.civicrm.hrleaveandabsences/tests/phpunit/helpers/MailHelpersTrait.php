@@ -70,4 +70,17 @@ trait CRM_HRLeaveAndAbsences_MailHelpersTrait {
   private function createDefaultFromEmail($label) {
     $this->createFromEmail($label, true);
   }
+
+  /**
+   * Delete all existing from email addresses
+   */
+  private function removeAllFromEmailAddresses() {
+    $options = civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'from_email_address'
+    ]);
+
+    foreach ($options['values'] as $option) {
+      civicrm_api3('OptionValue', 'delete', ['id' => $option['id']]);
+    }
+  }
 }

@@ -10,7 +10,7 @@ use Prophecy\Argument;
 /**
  * @group headless
  */
-class StatsCacheTest extends BaseHeadlessTest {
+class CRM_HRCore_Service_Stats_StatsCacheTest extends BaseHeadlessTest {
 
   public function testWillFetchFreshIfNoneExist() {
     $gatherer = $this->prophesize(StatsGatherer::class);

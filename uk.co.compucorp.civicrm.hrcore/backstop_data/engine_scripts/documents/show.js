@@ -1,7 +1,9 @@
 'use strict';
 
-const pageObj = require('../../page-objects/documents');
+const Page = require('../../page-objects/documents');
 
 module.exports = async engine => {
-  await pageObj.init(engine);
+  const page = new Page(engine);
+
+  await page.init();
 };

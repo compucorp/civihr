@@ -4369,25 +4369,41 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     civicrm_api3('LeaveRequest', 'getattachments');
   }
 
-  public function testGetAttachments() {
-    $leaveRequestID = 1;
-    $leaveRequestID2 = 2;
+  public function testGetAttachmentsReturnsAllExpectedFields() {
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => 1,
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' =>2,
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
     $attachment1 = $this->createAttachmentForLeaveRequest([
-      'entity_id' => $leaveRequestID,
+      'entity_id' => $leaveRequest1->id,
       'name' => 'LeaveRequestSampleFile1.txt'
     ]);
 
     $attachment2 = $this->createAttachmentForLeaveRequest([
-      'entity_id' => $leaveRequestID,
+      'entity_id' => $leaveRequest1->id,
       'name' => 'LeaveRequestSampleFile2.txt'
     ]);
 
     $attachment3 = $this->createAttachmentForLeaveRequest([
-      'entity_id' => $leaveRequestID2,
+      'entity_id' => $leaveRequest2->id,
       'name' => 'LeaveRequestSampleFile3.txt'
     ]);
 
-    $params = ['leave_request_id' => $leaveRequestID, 'sequential' => 1];
+    $params = ['leave_request_id' => $leaveRequest1->id, 'sequential' => 1];
     $result = civicrm_api3('LeaveRequest', 'getAttachments', $params);
 
     $expectedResult = [
@@ -4413,6 +4429,185 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $this->assertEquals($result, $expectedResult);
+  }
+
+  public function testGetAttachmentsReturnsManageeAttachmentsOnlyForALeaveManager() {
+    $manager1 = ContactFabricator::fabricate();
+    $this->registerCurrentLoggedInContactInSession($manager1['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
+
+    $staffMember1 = ContactFabricator::fabricate();
+    $staffMember2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember1['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember2['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $this->setContactAsLeaveApproverOf($manager1, $staffMember1);
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember1['id'],
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember2['id'],
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $fileName1 = 'LeaveRequestSampleFile1.txt';
+    $fileName2 = 'LeaveRequestSampleFile2.txt';
+
+    $this->createAttachmentForLeaveRequest([
+      'entity_id' => $leaveRequest1->id,
+      'name' => $fileName1
+    ]);
+
+    $this->createAttachmentForLeaveRequest([
+      'entity_id' => $leaveRequest2->id,
+      'name' => $fileName2
+    ]);
+
+    // Manager is able to access attachments for his managee
+    $result = civicrm_api3('LeaveRequest', 'getAttachments', ['leave_request_id' => $leaveRequest1->id, 'sequential' => 1]);
+    $this->assertCount(1, $result['values']);
+    $this->assertEquals($fileName1, $result['values'][0]['name']);
+
+    // Manager is not a Leave approver for staffMember2, hence the results will be empty.
+    $result = civicrm_api3('LeaveRequest', 'getAttachments', ['leave_request_id' => $leaveRequest2->id, 'sequential' => 1]);
+    $this->assertEmpty($result['values']);
+  }
+
+  public function testGetAttachmentsShouldNotReturnAttachmentsForContactsOtherThanLoggedInUserWhenUserIsNotALeaveApproverOrAdmin() {
+    $staffMember1 = ContactFabricator::fabricate();
+    $staffMember2 = ContactFabricator::fabricate();
+
+    $this->registerCurrentLoggedInContactInSession($staffMember1['id']);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API'];
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember1['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember2['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember1['id'],
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember2['id'],
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $fileName1 = 'LeaveRequestSampleFile1.txt';
+    $fileName2 = 'LeaveRequestSampleFile2.txt';
+
+    $this->createAttachmentForLeaveRequest([
+      'entity_id' => $leaveRequest1->id,
+      'name' => $fileName1
+    ]);
+
+    $this->createAttachmentForLeaveRequest([
+      'entity_id' => $leaveRequest2->id,
+      'name' => $fileName2
+    ]);
+
+    //Staff is able to access own Leave attachments
+    $result = civicrm_api3('LeaveRequest', 'getAttachments', ['leave_request_id' => $leaveRequest1->id, 'sequential' => 1]);
+    $this->assertCount(1, $result['values']);
+    $this->assertEquals($fileName1, $result['values'][0]['name']);
+
+    //Staff is not able to access Leave attachments for other staff
+    $result = civicrm_api3('LeaveRequest', 'getAttachments', ['leave_request_id' => $leaveRequest2->id, 'sequential' => 1]);
+    $this->assertEmpty($result['values']);
+  }
+
+  public function testGetAttachmentsShouldReturnAllAttachmentsForAllContactsForAdmin() {
+    $adminID = 1;
+    $staffMember1 = ContactFabricator::fabricate();
+    $staffMember2 = ContactFabricator::fabricate();
+
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    CRM_Core_Config::singleton()->userPermissionClass->permissions = ['access AJAX API', 'administer leave and absences'];
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember1['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $staffMember2['id']],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $leaveRequest1 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember1['id'],
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $staffMember2['id'],
+      'type_id' => $this->absenceType->id,
+      'from_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'to_date' => CRM_Utils_Date::processDate('2016-01-05'),
+      'from_date_type' => 1,
+      'to_date_type' => 1
+    ]);
+
+    $fileName1 = 'LeaveRequestSampleFile1.txt';
+    $fileName2 = 'LeaveRequestSampleFile2.txt';
+
+    $this->createAttachmentForLeaveRequest([
+      'entity_id' => $leaveRequest1->id,
+      'name' => $fileName1
+    ]);
+
+    $this->createAttachmentForLeaveRequest([
+      'entity_id' => $leaveRequest2->id,
+      'name' => $fileName2
+    ]);
+
+    // Admin is able to access attachments for staffMember1
+    $result = civicrm_api3('LeaveRequest', 'getAttachments', ['leave_request_id' => $leaveRequest1->id, 'sequential' => 1]);
+    $this->assertCount(1, $result['values']);
+    $this->assertEquals($fileName1, $result['values'][0]['name']);
+
+    // Admin is able to access attachments for staffMember2
+    $result = civicrm_api3('LeaveRequest', 'getAttachments', ['leave_request_id' => $leaveRequest2->id, 'sequential' => 1]);
+    $this->assertCount(1, $result['values']);
+    $this->assertEquals($fileName2, $result['values'][0]['name']);
   }
 
   /**
@@ -4740,6 +4935,8 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testCreateReturnsFalseForFromEmailParameterWhenFromEmailIsNotConfigured() {
+    $this->removeAllFromEmailAddresses();
+
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
     $startDate = new DateTime();
@@ -5039,4 +5236,5 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
       'leave_date' => '2017-01-02']
     );
   }
+
 }

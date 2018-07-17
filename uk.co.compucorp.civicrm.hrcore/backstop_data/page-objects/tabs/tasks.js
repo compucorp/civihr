@@ -1,6 +1,10 @@
-const tab = require('./tab');
+const Tab = require('./tab');
 
-module.exports = tab.extend({
-  readySelector: '.ct-page-contact',
-  tabTitle: 'Tasks'
-});
+module.exports = class TasksTab extends Tab {
+  constructor () {
+    super(...arguments);
+
+    this.readySelector = '.ct-page-contact';
+    this.tabTitle = 'Tasks';
+  }
+};

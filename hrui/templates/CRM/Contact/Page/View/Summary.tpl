@@ -1,8 +1,8 @@
 {*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2016                                |
+ | Copyright CiviCRM LLC (c) 2004-2018                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -49,11 +49,7 @@
         {if !$isDeleted}
           {if call_user_func(array('CRM_Core_Permission','check'), 'access CiviCRM')}
             <li class="crm-contact-activity crm-summary-block">
-              {if !empty($alternativeActionsTemplate)}
-                {include file="$alternativeActionsTemplate"}
-              {else}
-                {include file="CRM/Contact/Page/Inline/Actions.tpl"}
-              {/if}
+              {include file="CRM/Contact/Page/Inline/Actions.tpl"}
             </li>
           {/if}
           {* Include Edit button if contact has 'edit contacts' permission OR user is viewing their own contact AND has 'edit my contact' permission. CRM_Contact_Page_View::checkUserPermission handles this and assigns $permission true as needed. *}
@@ -129,7 +125,7 @@
       <ul class="crm-contact-tabs-list">
         {foreach from=$allTabs key=tabName item=tabValue}
           <li id="tab_{$tabValue.id}" class="crm-tab-button ui-corner-all crm-count-{$tabValue.count}{if isset($tabValue.class)} {$tabValue.class}{/if}">
-            <a href="{$tabValue.url}" title="{$tabValue.title}">
+            <a href="{$tabValue.url}" title="{$tabValue.title|escape}">
               {$tabValue.title}
               {if empty($tabValue.hideCount)}<em>{$tabValue.count}</em>{/if}
             </a>
@@ -168,7 +164,13 @@
                         <a href="{crmURL p='civicrm/contact/view' q="reset=1&cid=$contactId&selectedChild=tag"}"
                            title="{ts}Edit Tags{/ts}">{ts}Tags{/ts}</a>
                       </div>
-                      <div class="crm-content" id="tags">{$contactTag}</div>
+                      <div class="crm-content" id="tags">
+                        {foreach from=$contactTag item=tagName key=tagId}
+                          <span class="crm-tag-item" {if !empty($allTags.$tagId.color)}style="background-color: {$allTags.$tagId.color}; color: {$allTags.$tagId.color|colorContrast};"{/if} title="{$allTags.$tagId.description|escape}">
+                            {$tagName}
+                          </span>
+                        {/foreach}
+                      </div>
                     </div>
                     <div class="crm-summary-row">
                       <div class="crm-label">{ts}Contact Type{/ts}</div>
@@ -261,6 +263,7 @@
           </div><!-- #contact_panel -->
           {if $showAddress}
             <div class="contact_panel">
+              {crmRegion name="contact-addresses"}
               {assign var='locationIndex' value=1}
               {if $address}
                 {foreach from=$address item=add key=locationIndex}
@@ -277,26 +280,30 @@
                   {include file="CRM/Contact/Page/Inline/Address.tpl"}
                 </div>
               {/if}
-
+              {/crmRegion}
               </div> <!-- end of contact panel -->
             {/if}
             <div class="contact_panel">
               {if $showCommunicationPreferences}
                 <div class="contactCardLeft">
+                  {crmRegion name="contact-comm-pref"}
                   <div class="crm-summary-comm-pref-block">
                     <div class="crm-summary-block" id="communication-pref-block" >
                       {include file="CRM/Contact/Page/Inline/CommunicationPreferences.tpl"}
                     </div>
                   </div>
+                  {/crmRegion}
                 </div> <!-- contactCardLeft -->
               {/if}
               {if $contact_type eq 'Individual' AND $showDemographics}
                 <div class="contactCardRight">
+                  {crmRegion name="contact-demographic"}
                   <div class="crm-summary-demographic-block">
                     <div class="crm-summary-block" id="demographic-block">
                       {include file="CRM/Contact/Page/Inline/Demographics.tpl"}
                     </div>
                   </div>
+                  {/crmRegion}
                 </div> <!-- contactCardRight -->
               {/if}
               <div class="clear"></div>

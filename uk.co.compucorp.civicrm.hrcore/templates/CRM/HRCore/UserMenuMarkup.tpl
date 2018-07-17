@@ -14,7 +14,7 @@
       </li>
       <li>
         <a href="{$editLink}">
-          <i class="fa fa-edit"></i>{ts}Edit Account{/ts}
+          <i class="fa fa-edit"></i>{ts}My Account{/ts}
         </a>
       </li>
       <li>

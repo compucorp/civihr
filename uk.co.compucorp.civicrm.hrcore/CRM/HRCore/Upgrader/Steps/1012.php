@@ -126,7 +126,7 @@ trait CRM_HRCore_Upgrader_Steps_1012 {
   ) {
     $params = array_merge([
       'name' => $name,
-      'label' => ts($name),
+      'label' => $name,
       'permission' => $permission,
       'parent_id' => $parentID,
       'is_active' => 1,

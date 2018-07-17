@@ -1,6 +1,6 @@
-const page = require('./page');
+const Page = require('./page');
 
-module.exports = page.extend({
+module.exports = class ContactSummary extends Page {
   /**
    * Opens the "contact access rights" modal
    *
@@ -12,7 +12,7 @@ module.exports = page.extend({
     await this.puppet.waitFor('.spinner', { hidden: true });
 
     return this.waitForModal('contact-access-rights');
-  },
+  }
 
   /**
    * Opens one of the contact summary tabs
@@ -21,12 +21,14 @@ module.exports = page.extend({
    * @return {Object} the tab page object
    */
   async openTab (tabId) {
-    const tabObj = require('./tabs/' + tabId);
+    const Tab = require('./tabs/' + tabId);
+    const tab = new Tab(this.puppet, false);
 
-    await this.puppet.click('[title="' + tabObj.tabTitle + '"]');
+    await this.puppet.click('[title="' + tab.tabTitle + '"]');
+    await tab.init();
 
-    return tabObj.init(this.puppet, false);
-  },
+    return tab;
+  }
 
   /**
    * Shows the dropdown of the "Actions" button in the contact summary page
@@ -34,7 +36,7 @@ module.exports = page.extend({
   async showActions () {
     await this.puppet.click('#crm-contact-actions-link');
     await this.puppet.waitFor('#crm-contact-actions-list');
-  },
+  }
 
   /**
    * Wait an arbitrary amount of time for the data to load, then waits
@@ -51,4 +53,4 @@ module.exports = page.extend({
       });
     });
   }
-});
+};

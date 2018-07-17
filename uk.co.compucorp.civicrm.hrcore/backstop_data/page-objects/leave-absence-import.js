@@ -1,7 +1,7 @@
 const path = require('path');
-const page = require('./page');
+const Page = require('./page');
 
-module.exports = page.extend({
+module.exports = class LeaveAbsenceImport extends Page {
   /**
    * Displays L&A Import Form Step 2 by uploading a sample import file and
    * clicking on next.
@@ -15,7 +15,7 @@ module.exports = page.extend({
     await fileInput.uploadFile(filePath);
     await this.puppet.click('[name="skipColumnHeader"]');
     await this.submitAndWaitForStep(2);
-  },
+  }
 
   /**
    * Displays L&A Import Form Step 3 by displaying step 2 and then clicking
@@ -26,7 +26,7 @@ module.exports = page.extend({
   async showStep3 () {
     await this.showStep2();
     await this.submitAndWaitForStep(3);
-  },
+  }
 
   /**
    * Displays L&A Import Form Step 4 by displaying step 3 and then clicking
@@ -37,7 +37,7 @@ module.exports = page.extend({
   async showStep4 () {
     await this.showStep3();
     await this.submitAndWaitForStep(4);
-  },
+  }
 
   /**
    * Clicks on "next" button and waits for the next step to be ready
@@ -48,7 +48,7 @@ module.exports = page.extend({
   async submitAndWaitForStep (step) {
     await this.puppet.click('.crm-leave-and-balance-import .validate');
     await this.puppet.waitFor(`.crm_wizard__title .nav-pills li.active:nth-child(${step})`);
-  },
+  }
 
   /**
    * Waits until the import form is visible.
@@ -56,4 +56,4 @@ module.exports = page.extend({
   async waitForReady () {
     await this.puppet.waitFor('.crm-leave-and-balance-import');
   }
-});
+};

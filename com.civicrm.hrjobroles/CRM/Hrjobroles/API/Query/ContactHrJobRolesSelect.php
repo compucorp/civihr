@@ -66,6 +66,7 @@ class CRM_Hrjobroles_API_Query_ContactHrJobRolesSelect {
     $customQuery = CRM_Utils_SQL_Select::from(HRJobRoles::getTableName() . ' as a');
 
     $this->addJoins($customQuery);
+    $this->addWhere($customQuery);
 
     $this->query = $this->buildSelectQuery('ContactHrJobRoles');
     $this->query->merge($customQuery);
@@ -111,6 +112,23 @@ class CRM_Hrjobroles_API_Query_ContactHrJobRolesSelect {
     $joins[] = 'INNER JOIN ' . HRJobContract::getTableName() . ' jc ON jc.id = a.job_contract_id';
 
     $query->join(null, $joins);
+  }
+
+  /**
+   * Adds where conditions to the query.
+   * The contact_id parameter is not an actual Entity field of the HRJobRoles and
+   * if passed will actually cause an error. So here, if the contact_id is present, the
+   * condition is added to filter by this field on the job contract table and then the
+   * parameter is unset.
+   *
+   * @param \CRM_Utils_SQL_Select $customQuery
+   */
+  private function addWhere(CRM_Utils_SQL_Select $customQuery) {
+    if (!empty($this->params['contact_id'])) {
+      $conditions[] = 'jc.contact_id IN (' . implode(',' , $this->params['contact_id']) . ')';
+      $customQuery->where($conditions);
+      unset($this->params['contact_id']);
+    }
   }
 
   /**

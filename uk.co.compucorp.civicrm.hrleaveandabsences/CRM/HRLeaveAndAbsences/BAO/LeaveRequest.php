@@ -1336,7 +1336,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     $leaveRequestRights = new LeaveRequestRightsService(new LeaveManagerService());
 
     $accessibleContacts = $leaveRequestRights->getLeaveContactsCurrentUserHasAccessTo();
-    $contactsAccessIN = "'" . implode(', ', $accessibleContacts) . "'";
+    $contactsAccessIN = implode(', ', $accessibleContacts);
     $notAccessibleLeaveRequestQuery = "SELECT id FROM {$leaveTable} 
       WHERE contact_id NOT IN ($contactsAccessIN) AND request_type ='" . LeaveRequest::REQUEST_TYPE_TOIL . "'";
 

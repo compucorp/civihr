@@ -1,10 +1,11 @@
-const page = require('./page');
+const SSP = require('./ssp');
 
-module.exports = page.extend({
+module.exports = class SSPLeaveAbsencesManagerLeaveBalanceReport extends SSP {
   /**
    * Wait for the page to be ready
    */
   async waitForReady () {
+    await super.waitForReady();
     await this.puppet.waitFor('.chr_leave-balance-tab', { visible: true });
     await this.puppet.waitFor(function () {
       const spinners = document.querySelectorAll('.spinner');
@@ -14,4 +15,4 @@ module.exports = page.extend({
       });
     });
   }
-});
+};

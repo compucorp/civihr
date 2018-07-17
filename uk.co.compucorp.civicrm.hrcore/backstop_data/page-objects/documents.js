@@ -1,8 +1,8 @@
-const page = require('./page');
+const Page = require('./page');
 
 const documentSelector = '.ct-table-documents > tbody > tr:nth-child(1)';
 
-module.exports = page.extend({
+module.exports = class Documents extends Page {
   /**
    * Adds a document by opening the modal
    *
@@ -12,7 +12,7 @@ module.exports = page.extend({
     await this.puppet.click('a[ng-click*="itemAdd"]');
 
     return this.waitForModal('document');
-  },
+  }
 
   /**
    * Shows the advanced filters
@@ -22,7 +22,7 @@ module.exports = page.extend({
   async advancedFilters () {
     await this.puppet.click('a[ng-click*="isCollapsed.filterAdvanced"]');
     await this.puppet.waitFor(500);
-  },
+  }
 
   /**
    * Shows the dropdown of the actions available on any given document
@@ -31,7 +31,7 @@ module.exports = page.extend({
    */
   async documentActions () {
     await this.puppet.click(documentSelector + ' .ct-context-menu-toggle');
-  },
+  }
 
   /**
    * Opens a document
@@ -43,7 +43,7 @@ module.exports = page.extend({
     await this.puppet.click(documentSelector + ' .dropdown-menu a[ng-click*="modalDocument"]');
 
     return this.waitForModal('document');
-  },
+  }
 
   /**
    * Shows the "select dates" filter
@@ -51,17 +51,13 @@ module.exports = page.extend({
   async selectDates () {
     await this.puppet.click('.ct-select-dates');
     await this.puppet.waitFor(500);
-  },
+  }
 
   /**
    * Waits until the user name in the "Staff" column and the filter dates are visible
    */
   async waitForReady () {
     await this.puppet.waitFor('.ct-filter-date', { visible: true });
-    await this.puppet.waitFor('.ct-table-documents [href^="/civicrm/contact/view"]', { visible: true });
-    // For some reason Puppetteer considers the user name visible even when it
-    // isn't really yet, this slight delay allows the element to be fully visible
-    // before taking the screenshots
-    await this.puppet.waitFor(500);
+    await this.puppet.waitFor(4000);
   }
-});
+};

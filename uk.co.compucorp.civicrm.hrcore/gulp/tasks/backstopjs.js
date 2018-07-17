@@ -1,64 +1,62 @@
-var _ = require('lodash');
-var argv = require('yargs').argv;
-var backstopjs = require('backstopjs');
-var clean = require('gulp-clean');
-var Chromy = require('chromy');
-var execSync = require('child_process').execSync;
-var file = require('gulp-file');
-var fs = require('fs');
-var gulp = require('gulp');
-var notify = require('gulp-notify');
-var path = require('path');
-var Promise = require('es6-promise').Promise;
+const _ = require('lodash');
+const argv = require('yargs').argv;
+const backstopjs = require('backstopjs');
+const clean = require('gulp-clean');
+const execSync = require('child_process').execSync;
+const file = require('gulp-file');
+const fs = require('fs');
+const gulp = require('gulp');
+const notify = require('gulp-notify');
+const path = require('path');
+const puppeteer = require('puppeteer');
+const Promise = require('es6-promise').Promise;
 
-var utils = require('../utils');
+const utils = require('../utils');
 
-var BACKSTOP_DIR = path.join(__dirname, '..', '..', 'backstop_data');
-var CHROMY_STARTING_PORT = 9222;
-var DEFAULT_USER = 'civihr_admin';
-var USERS = ['admin', 'civihr_admin', 'civihr_manager', 'civihr_staff'];
-var CONFIG_TPL = { 'url': 'http://%{site-host}' };
-var FILES = {
+const BACKSTOP_DIR = path.join(__dirname, '..', '..', 'backstop_data');
+const DEFAULT_USER = 'civihr_admin';
+const USERS = ['admin', 'civihr_admin', 'civihr_manager', 'civihr_staff'];
+const CONFIG_TPL = { 'url': 'http://%{site-host}' };
+const FILES = {
   siteConfig: path.join(BACKSTOP_DIR, 'site-config.json'),
   temp: path.join(BACKSTOP_DIR, 'backstop.temp.json'),
   tpl: path.join(BACKSTOP_DIR, 'backstop.tpl.json')
 };
 
-module.exports = ['reference', 'test', 'openReport', 'approve'].map(function (action) {
+module.exports = ['reference', 'test', 'openReport', 'approve'].map(action => {
   return {
-    name: 'backstopjs:' + action,
-    fn: function () {
-      return runBackstopJS(action);
-    }
+    name: `backstopjs:${action}`,
+    fn: () => runBackstopJS(action)
   };
 });
 
 /**
- * Concatenates all the scenarios (if no specific scenario file is specified)
+ * Returns the list of the scenarios from
+ *   a. All the different groups if `group` is == '_all_',
+ *   b. Only the given group
  *
- * @param  {Object} usersIds
+ * @param  {Array} usersIds
+ * @param  {String} groupName
  * @return {Array}
  */
-function buildScenariosList (usersIds) {
-  var config = siteConfig();
-  var dirPath = path.join(BACKSTOP_DIR, 'scenarios');
+function buildScenariosList (usersIds, groupName) {
+  const config = siteConfig();
+  const dirPath = path.join(BACKSTOP_DIR, 'scenarios');
 
   return _(fs.readdirSync(dirPath))
-    .filter(function (scenario) {
-      return argv.configFile ? scenario === argv.configFile : true && scenario.endsWith('.json');
+    .filter(scenario => {
+      return (groupName === '_all_' ? true : scenario === `${groupName}.json`) && scenario.endsWith('.json');
     })
-    .map(function (scenarioFile) {
-      var scenarioPath = path.join(dirPath, scenarioFile);
-
-      return JSON.parse(fs.readFileSync(scenarioPath)).scenarios;
+    .map(scenario => {
+      return JSON.parse(fs.readFileSync(path.join(dirPath, scenario))).scenarios;
     })
     .flatten()
-    .map(function (scenario, index, scenarios) {
-      var user = scenario.user || DEFAULT_USER;
+    .map((scenario, index, scenarios) => {
+      const user = scenario.user || DEFAULT_USER;
 
       return _.assign(scenario, {
-        cookiePath: path.join(BACKSTOP_DIR, 'cookies', user + '.json'),
-        count: '(' + (index + 1) + ' of ' + scenarios.length + ')',
+        cookiePath: path.join(BACKSTOP_DIR, 'cookies', `${user}.json`),
+        count: `(${(index + 1)} of ${scenarios.length})`,
         url: constructScenarioUrl(config.url, scenario.url, usersIds)
       });
     })
@@ -94,9 +92,7 @@ function cleanUpAndNotify (success) {
 function constructScenarioUrl (siteUrl, scenarioUrl, usersIds) {
   return scenarioUrl
     .replace('{{siteUrl}}', siteUrl)
-    .replace(/\{\{contactId:([^}]+)\}\}/g, function (fullMatch, user) {
-      return usersIds[user].civi;
-    });
+    .replace(/\{\{contactId:([^}]+)\}\}/g, (__, user) => usersIds[user].civi);
 }
 
 /**
@@ -106,16 +102,19 @@ function constructScenarioUrl (siteUrl, scenarioUrl, usersIds) {
  *
  * @return {String}
  */
-function createTempConfigFile () {
-  var content = JSON.parse(fs.readFileSync(FILES.tpl));
+function createTempConfig () {
+  const group = argv.group ? argv.group : '_all_';
+  const userIds = getUsersIds();
+  const list = buildScenariosList(userIds, group);
+  const content = JSON.parse(fs.readFileSync(FILES.tpl));
 
-  return getUsersIds()
-    .then(buildScenariosList)
-    .then(function (scenarios) {
-      content.scenarios = scenarios;
+  content.scenarios = list;
 
-      return JSON.stringify(content);
-    });
+  ['bitmaps_reference', 'bitmaps_test', 'html_report', 'ci_report'].forEach(path => {
+    content.paths[path] = content.paths[path].replace('{group}', group);
+  });
+
+  return JSON.stringify(content);
 }
 
 /**
@@ -126,9 +125,7 @@ function createTempConfigFile () {
  * @return {Object}
  */
 function findContactByDrupalId (ufMatches, drupalId) {
-  return _.find(ufMatches, function (match) {
-    return match.uf_id === drupalId;
-  });
+  return _.find(ufMatches, match => match.uf_id === drupalId);
 }
 
 /**
@@ -140,25 +137,24 @@ function findContactByDrupalId (ufMatches, drupalId) {
  * @return {Promise} resolved with {Object}, ex. { civihr_staff: { drupal: 1, civi: 2 } }
  */
 function getUsersIds () {
-  return new Promise(function (resolve, reject) {
-    var usersIds, ufMatches;
-    var userInfoCmd = 'drush user-information ' + USERS.join(',') + ' --format=json';
-    var ufMatchCmd = 'echo \'{ "uf_id": { "IN":[%{uids}] } }\' | cv api UFMatch.get sequential=1';
+  const userInfoCmd = `drush user-information ${USERS.join(',')} --format=json`;
 
-    usersIds = _.transform(JSON.parse(execSync(userInfoCmd)), function (result, user) {
-      result[user.name] = { drupal: user.uid };
-    });
+  let usersIds, ufMatches;
+  let ufMatchCmd = 'echo \'{ "uf_id": { "IN":[%{uids}] } }\' | cv api UFMatch.get sequential=1';
 
-    ufMatchCmd = ufMatchCmd.replace('%{uids}', _.map(usersIds, 'drupal').join(','));
-    ufMatches = JSON.parse(execSync(ufMatchCmd)).values;
-
-    usersIds = _.transform(usersIds, function (result, userIds, name) {
-      userIds.civi = findContactByDrupalId(ufMatches, userIds.drupal).contact_id;
-      result[name] = userIds;
-    });
-
-    resolve(usersIds);
+  usersIds = _.transform(JSON.parse(execSync(userInfoCmd)), (result, user) => {
+    result[user.name] = { drupal: user.uid };
   });
+
+  ufMatchCmd = ufMatchCmd.replace('%{uids}', _.map(usersIds, 'drupal').join(','));
+  ufMatches = JSON.parse(execSync(ufMatchCmd)).values;
+
+  usersIds = _.transform(usersIds, (result, userIds, name) => {
+    userIds.civi = findContactByDrupalId(ufMatches, userIds.drupal).contact_id;
+    result[name] = userIds;
+  });
+
+  return usersIds;
 }
 
 /**
@@ -174,37 +170,31 @@ function runBackstopJS (command) {
   if (touchSiteConfigFile()) {
     utils.throwError(
       'No site-config.json file detected!\n' +
-      '\tOne has been created for you under ' + path.basename(BACKSTOP_DIR) + '/\n' +
+      `\tOne has been created for you under ${path.basename(BACKSTOP_DIR)}/\n` +
       '\tPlease insert the real value for each placeholder and try again'
     );
   }
 
-  return writeCookies()
-    .then(createTempConfigFile)
-    .then(function (tempConfigFile) {
-      return new Promise(function (resolve, reject) {
-        var success = false;
+  return new Promise((resolve, reject) => {
+    let success = false;
 
-        gulp.src(FILES.tpl)
-          .pipe(file(path.basename(FILES.temp), tempConfigFile))
-          .pipe(gulp.dest(BACKSTOP_DIR))
-          .on('end', function () {
-            backstopjs(command, {
-              configPath: FILES.temp,
-              filter: argv.filter
-            })
-              .then(function () {
-                success = true;
-              })
-              .catch(_.noop).then(function () { // equivalent to .finally()
-                cleanUpAndNotify(success);
+    gulp.src(FILES.tpl)
+      .pipe(file(path.basename(FILES.temp), createTempConfig()))
+      .pipe(gulp.dest(BACKSTOP_DIR))
+      .on('end', async () => {
+        try {
+          (typeof argv.skipCookies === 'undefined') && await writeCookies();
+          await backstopjs(command, { configPath: FILES.temp, filter: argv.filter });
 
-                success ? resolve() : reject(new Error('BackstopJS error'));
-              });
-          });
+          success = true;
+        } finally {
+          cleanUpAndNotify(success);
+
+          success ? resolve() : reject(new Error('BackstopJS error. It may be a task error, a script error or a comparison error'));
+        }
       });
-    })
-    .catch(function (err) {
+  })
+    .catch(err => {
       utils.throwError(err.message);
     });
 }
@@ -224,7 +214,7 @@ function siteConfig () {
  * @return {Boolean} Whether the file had to be created or not
  */
 function touchSiteConfigFile () {
-  var created = false;
+  let created = false;
 
   try {
     fs.readFileSync(FILES.siteConfig);
@@ -249,38 +239,24 @@ function touchSiteConfigFile () {
  *
  * @return {Promise}
  */
-function writeCookies () {
-  var cookiesDir = path.join(BACKSTOP_DIR, 'cookies');
-  var config = siteConfig();
+async function writeCookies () {
+  const cookiesDir = path.join(BACKSTOP_DIR, 'cookies');
+  const config = siteConfig();
 
-  if (!fs.existsSync(cookiesDir)) {
-    fs.mkdirSync(cookiesDir);
-  }
+  !fs.existsSync(cookiesDir) && fs.mkdirSync(cookiesDir);
 
-  return Promise.all(USERS.map(function (user, index) {
-    return new Promise(function (resolve, reject) {
-      var chromy, loginUrl;
-      var cookieFilePath = path.join(cookiesDir, user + '.json');
+  await Promise.all(USERS.map(async user => {
+    let cookieFilePath = path.join(cookiesDir, `${user}.json`);
+    let loginUrl = execSync(`drush uli --name=${user} --uri=${config.url} --browser=0`, { encoding: 'utf8' });
 
-      if (fs.existsSync(cookieFilePath)) {
-        fs.unlinkSync(cookieFilePath);
-      }
+    let browser = await puppeteer.launch();
+    let page = await browser.newPage();
+    await page.goto(loginUrl);
+    let cookies = await page.cookies();
 
-      loginUrl = execSync('drush uli --name=' + user + ' --uri=' + config.url + ' --browser=0', { encoding: 'utf8' });
-      chromy = new Chromy({ port: CHROMY_STARTING_PORT + index, gotoTimeout: 60000 });
+    fs.existsSync(cookieFilePath) && fs.unlinkSync(cookieFilePath);
+    fs.writeFileSync(cookieFilePath, JSON.stringify(cookies));
 
-      chromy.chain()
-        .goto(config.url)
-        .goto(loginUrl)
-        .getCookies()
-        .result(function (cookies) {
-          fs.writeFileSync(cookieFilePath, JSON.stringify(cookies));
-        })
-        .end()
-        .then(function () {
-          chromy.close();
-          resolve();
-        });
-    });
+    await browser.close();
   }));
 }

@@ -1,7 +1,11 @@
-const tab = require('./tab');
+const Tab = require('./tab');
 
-module.exports = tab.extend({
-  tabTitle: 'Job Contract',
+module.exports = class JobContractTab extends Tab {
+  constructor () {
+    super(...arguments);
+
+    this.tabTitle = 'Job Contract';
+  }
 
   /**
    * Clicks on the delete button
@@ -9,7 +13,7 @@ module.exports = tab.extend({
   async attemptDelete () {
     await this.puppet.click('.hrjc-list-contract-item:nth-child(1) .btn-danger');
     await this.waitForModal();
-  },
+  }
 
   /**
    * Opens the modal of an already existing contract
@@ -23,7 +27,7 @@ module.exports = tab.extend({
     await this.puppet.click('[ng-click="modalContract(\'' + param + '\')"]');
 
     return this.waitForModal('job-contract');
-  },
+  }
 
   /**
    * Opens the modal for creating a new contract
@@ -34,7 +38,7 @@ module.exports = tab.extend({
     await this.puppet.click('.hrjc-btn-add-contract > .btn-primary');
 
     return this.waitForModal('job-contract');
-  },
+  }
 
   /**
    * Overrides the original tab's `waitForReady` method
@@ -47,7 +51,7 @@ module.exports = tab.extend({
     await this.puppet.waitFor('.hrjc-summary', { visible: true });
     await this.puppet.waitFor('.hrjc-list-contract .spinner', { hidden: true });
     await this.puppet.waitFor(500);
-  },
+  }
 
   /**
    * Shows the full history of a contract
@@ -56,4 +60,4 @@ module.exports = tab.extend({
     await this.puppet.click('[heading="Full History"] > a');
     await this.puppet.waitFor('.hrjc-context-menu-toggle');
   }
-});
+};

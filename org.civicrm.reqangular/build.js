@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 ({
   baseUrl: 'src',
   out: 'dist/reqangular.min.js',
@@ -11,6 +13,8 @@
     'common/angularAnimate': 'common/vendor/angular/angular-animate.min',
     'common/angularBootstrap': 'common/vendor/angular/ui-bootstrap',
     'common/angular-file-upload': 'common/vendor/angular/angular-file-upload',
+    'common/angulartics': 'common/vendor/angular/angulartics.min',
+    'common/angulartics-google-tag-manager': 'common/vendor/angular/angulartics-google-tag-manager.min',
     'common/angularMocks': 'common/vendor/angular/angular-mocks',
     'common/angularResource': 'common/vendor/angular/angular-resource.min',
     'common/angularRoute': 'common/vendor/angular/angular-route.min',

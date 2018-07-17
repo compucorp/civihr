@@ -74,7 +74,6 @@ trait CRM_HRCore_Upgrader_Steps_1000 {
     civicrm_api3('Setting', 'create', $settings);
 
     $currenciesToEnable = [
-      ['GBP (£)','GBP', 1],
       ['EUR (€)','EUR', 0],
     ];
 

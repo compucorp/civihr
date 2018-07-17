@@ -49,14 +49,7 @@ pipeline {
       steps {
         script {
           // Build site with CV Buildkit
-          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type drupal-clean --civi-ver 4.7.27 --url $WEBURL --admin-pass $ADMIN_PASS"
-
-          sh """
-            cd $DRUPAL_MODULES_ROOT/civicrm
-            wget -O attachments.patch https://gist.githubusercontent.com/davialexandre/199b3ebb2c69f43c07dde0f51fb02c8b/raw/0f11edad8049c6edddd7f865c801ecba5fa4c052/attachments-4.7.27.patch
-            patch -p1 -i attachments.patch
-            rm attachments.patch
-          """
+          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type drupal-clean --civi-ver 5.3.0 --url $WEBURL --admin-pass $ADMIN_PASS"
 
           // Get target and PR branches name
           def prBranch = env.CHANGE_BRANCH
@@ -72,6 +65,8 @@ pipeline {
             checkoutPrBranchInCiviHRRepos(prBranch)
             mergeEnvBranchInAllRepos(envBranch)
           }
+
+          applyCoreForkPatch()
 
           // The JS tests use the cv tool to find the path  of an extension.
           // For it to work, the extensions have to be installed on the site
@@ -379,12 +374,24 @@ def testJS(hrcoreFolder, java.util.LinkedHashMap extension) {
 def listCivihrGitRepoPath() {
   return [
     [
-      'url': 'https://github.com/civicrm/civihr.git',
+      'url': 'https://github.com/compucorp/civihr.git',
       'folder': "$CIVICRM_EXT_ROOT/civihr"
     ],
     [
       'url': 'https://github.com/compucorp/civihr-tasks-assignments.git',
       'folder': "$CIVICRM_EXT_ROOT/civihr_tasks"
+    ],
+    // These are not really dependencies for the tests, but both the shoreditch
+    // and the styleguide installation is hardcoded in drush-install.sh
+    // file and if the code cannot be found in the site, the installation will
+    // fail
+    [
+      'url': 'https://github.com/compucorp/org.civicrm.shoreditch.git',
+      'folder': "$CIVICRM_EXT_ROOT/org.civicrm.shoreditch"
+    ],
+    [
+      'url': 'https://github.com/compucorp/org.civicrm.styleguide.git',
+      'folder': "$CIVICRM_EXT_ROOT/org.civicrm.styleguide"
     ]
   ]
 }
@@ -464,7 +471,7 @@ def listCivihrExtensions() {
       name: 'Sample Data',
       folder: 'uk.co.compucorp.civicrm.hrsampledata',
       hasJSTests: false,
-      hasPHPTests: true
+      hasPHPTests: false
     ],
     hremergency: [
       name: 'Emergency Contacts ',
@@ -513,5 +520,15 @@ def installCiviHRExtensions() {
     cd $CIVICRM_EXT_ROOT/civihr
     drush cvapi extension.refresh
     ./bin/drush-install.sh
+  """
+}
+
+/**
+ * Applies changes to CiviCRM from the Compucorp fork
+ */
+def applyCoreForkPatch() {
+  sh """
+    cd ${CIVICRM_EXT_ROOT}/civihr
+    ./bin/apply-core-fork-patch.sh
   """
 }

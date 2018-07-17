@@ -1,3 +1,5 @@
+var argv = require('yargs').argv;
+
 module.exports = function (config) {
   var civicrmPath = '../../../../../';
   var civihrPath = 'tools/extensions/civihr/';
@@ -33,8 +35,8 @@ module.exports = function (config) {
       civihrPath + 'org.civicrm.reqangular/dist/reqangular.mocks.min.js',
 
       // External extensions files
-      { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/angular/src/**/*.js', included: false },
-      { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/angular/test/mocks/**/*.js', included: false },
+      { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/src/**/!(*.spec).js', included: false },
+      { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/test/mocks/**/*.js', included: false },
 
       // the application modules
       { pattern: extPath + 'js/src/job-contract/**/*.js', included: false },
@@ -73,6 +75,10 @@ module.exports = function (config) {
           '--remote-debugging-port=9222'
         ]
       }
+    },
+    reporters: argv.reporters ? argv.reporters.split(',') : ['spec'],
+    specReporter: {
+      suppressSkipped: true
     },
     junitReporter: {
       outputDir: extPath + 'test-reports',
