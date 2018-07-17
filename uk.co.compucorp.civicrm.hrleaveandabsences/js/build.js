@@ -15,8 +15,7 @@
     { name: 'crm-app-list' },
     { name: 'crm-app-form-manage-entitlements' },
     { name: 'crm-app-form-absenceperiod' },
-    { name: 'crm-app-form-workpattern' },
-    { name: 'spectrum' }
+    { name: 'crm-app-form-workpattern' }
   ],
   mainConfigFile: 'src/leave-absences/shared/config.js',
   generateSourceMaps: true,
