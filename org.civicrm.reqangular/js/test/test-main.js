@@ -1,10 +1,10 @@
 /* globals CRM */
 
-var TEST_REGEXP = /(spec|test)\.js$/i;
+var TEST_REGEXP = /spec\.js$/i;
 var allTestFiles = [];
 var extPath = '/base/tools/extensions/civihr/org.civicrm.reqangular';
-var mocksPath = extPath + '/test/mocks';
-var srcPath = extPath + '/src/common';
+var mocksPath = extPath + '/js/test/mocks';
+var srcPath = extPath + '/js/src/common';
 
 Object.keys(window.__karma__.files).forEach(function (file) {
   if (TEST_REGEXP.test(file)) {
@@ -50,7 +50,7 @@ require.config({
       ]
     },
     'common/angular-file-upload': {
-        deps: ['common/angular']
+      deps: ['common/angular']
     }
   },
   paths: {

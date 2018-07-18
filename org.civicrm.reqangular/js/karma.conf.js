@@ -1,7 +1,7 @@
 var argv = require('yargs').argv;
 
 module.exports = function (config) {
-  var civicrmPath = '../../../../';
+  var civicrmPath = '../../../../../';
   var civihrPath = 'tools/extensions/civihr/';
   var extPath = civihrPath + 'org.civicrm.reqangular/';
 
@@ -25,25 +25,25 @@ module.exports = function (config) {
       civihrPath + 'uk.co.compucorp.civicrm.hrcore/node_modules/karma-requirejs/lib/adapter.js',
 
       // load test helpers
-      { pattern: extPath + 'test/helpers/**/*.helper.js', included: true },
+      { pattern: extPath + 'js/test/helpers/**/*.helper.js', included: true },
 
       // load vendor libraries
-      { pattern: extPath + 'src/common/vendor/*.min.js', included: false },
+      { pattern: extPath + 'js/src/common/vendor/*.min.js', included: false },
 
       // load modules
-      { pattern: extPath + 'src/common/**/*.js', included: false },
+      { pattern: extPath + 'js/src/common/**/*.js', included: false },
 
       // the mocked components files
-      { pattern: extPath + 'test/mocks/**/*.js', included: false },
+      { pattern: extPath + 'js/test/mocks/**/*.js', included: false },
 
       // load tests
-      { pattern: extPath + 'test/**/*.spec.js', included: false },
+      { pattern: extPath + 'js/test/**/*.spec.js', included: false },
 
       // the requireJS config file that bootstraps the whole test suite
-      extPath + 'test/test-main.js'
+      extPath + 'js/test/test-main.js'
     ],
     exclude: [
-      extPath + 'src/common/angular-date/**/*.js'
+      extPath + 'js/src/common/angular-date/**/*.js'
     ],
     customLaunchers: {
       ChromeHeadless: {
