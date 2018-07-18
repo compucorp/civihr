@@ -709,11 +709,16 @@ function _civicrm_api3_leave_request_getattachments_spec(&$spec) {
 function civicrm_api3_leave_request_getattachments($params) {
   $params['entity_id'] = $params['leave_request_id'];
   $params['entity_table'] = CRM_HRLeaveAndAbsences_BAO_LeaveRequest::getTableName();
+  $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
+  $leaveRequestRights = new CRM_HRLeaveAndAbsences_Service_LeaveRequestRights($leaveManagerService);
+  $leaveRequestAttachmentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachment($leaveRequestRights, $leaveManagerService);
+  $result =  $leaveRequestAttachmentService->get($params);
 
-  $result =  civicrm_api3('Attachment', 'get', $params);
-
-  if ($result['count'] > 0) {
+  if (!empty($result)) {
     array_walk($result['values'], '_civicrm_api3_leave_request_filter_attachment_fields');
+  }
+  else{
+    $result = civicrm_api3_create_success([]);
   }
 
   return $result;
@@ -766,7 +771,9 @@ function _civicrm_api3_leave_request_deleteattachment_spec(&$spec) {
  * @return array
  */
 function civicrm_api3_leave_request_deleteattachment($params) {
-  $leaveRequestAttachmentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachment();
+  $leaveManagerService = new CRM_HRLeaveAndAbsences_Service_LeaveManager();
+  $leaveRequestRights = new CRM_HRLeaveAndAbsences_Service_LeaveRequestRights($leaveManagerService);
+  $leaveRequestAttachmentService = new CRM_HRLeaveAndAbsences_Service_LeaveRequestAttachment($leaveRequestRights, $leaveManagerService);
   return $leaveRequestAttachmentService->delete($params);
 }
 

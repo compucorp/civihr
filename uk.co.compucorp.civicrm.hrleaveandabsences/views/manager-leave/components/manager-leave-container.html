@@ -3,17 +3,17 @@
     <leave-request-record-actions
       contact-id="managerLeave.contactId">
     </leave-request-record-actions>
-    <div class="hidden-sm hidden-md hidden-lg chr_leave__page-selector-dropdown crm_custom-select">
-      <select
-        class="no-select2"
-        ng-model="managerLeave.tabName"
-        ng-change="managerLeave.changeTab()">
-        <option value="manager-leave.requests">Leave Requests</option>
-        <option value="manager-leave.calendar">Calendar</option>
-        <option value="manager-leave.leave-balances">Leave Balance</option>
-      </select>
-      <span class="crm_custom-select__arrow"></span>
-    </div>
+  </div>
+  <div class="hidden-sm hidden-md hidden-lg chr_leave__page-selector-dropdown crm_custom-select">
+    <select
+      class="no-select2"
+      ng-model="managerLeave.tabName"
+      ng-change="managerLeave.changeTab()">
+      <option value="manager-leave.requests">Leave Requests</option>
+      <option value="manager-leave.calendar">Calendar</option>
+      <option value="manager-leave.leave-balances">Leave Balance</option>
+    </select>
+    <span class="crm_custom-select__arrow"></span>
   </div>
   <div class="tabs-container">
     <div class="container">

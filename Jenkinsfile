@@ -49,7 +49,7 @@ pipeline {
       steps {
         script {
           // Build site with CV Buildkit
-          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type drupal-clean --civi-ver 4.7.27 --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type drupal-clean --civi-ver 5.3.0 --url $WEBURL --admin-pass $ADMIN_PASS"
 
           // Get target and PR branches name
           def prBranch = env.CHANGE_BRANCH
@@ -374,12 +374,24 @@ def testJS(hrcoreFolder, java.util.LinkedHashMap extension) {
 def listCivihrGitRepoPath() {
   return [
     [
-      'url': 'https://github.com/civicrm/civihr.git',
+      'url': 'https://github.com/compucorp/civihr.git',
       'folder': "$CIVICRM_EXT_ROOT/civihr"
     ],
     [
       'url': 'https://github.com/compucorp/civihr-tasks-assignments.git',
       'folder': "$CIVICRM_EXT_ROOT/civihr_tasks"
+    ],
+    // These are not really dependencies for the tests, but both the shoreditch
+    // and the styleguide installation is hardcoded in drush-install.sh
+    // file and if the code cannot be found in the site, the installation will
+    // fail
+    [
+      'url': 'https://github.com/compucorp/org.civicrm.shoreditch.git',
+      'folder': "$CIVICRM_EXT_ROOT/org.civicrm.shoreditch"
+    ],
+    [
+      'url': 'https://github.com/compucorp/org.civicrm.styleguide.git',
+      'folder': "$CIVICRM_EXT_ROOT/org.civicrm.styleguide"
     ]
   ]
 }
@@ -459,7 +471,7 @@ def listCivihrExtensions() {
       name: 'Sample Data',
       folder: 'uk.co.compucorp.civicrm.hrsampledata',
       hasJSTests: false,
-      hasPHPTests: true
+      hasPHPTests: false
     ],
     hremergency: [
       name: 'Emergency Contacts ',

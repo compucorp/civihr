@@ -3,25 +3,24 @@
 trait CRM_HRCore_Upgrader_Steps_1017 {
 
   /**
-   * Uninstall the hrdemog extension.
-   *
-   * This extension was already deleted from the code at this point, so this
-   * will fail if you run it from the UI (missing extension). Running
-   * upgraders from the CLI (as is done for production releases) will work
-   *
-   * @return bool
+   * Updates some site configuration
    */
   public function upgrade_1017() {
-    $key = 'org.civicrm.hrdemog';
-
-    if (!CRM_HRCore_Helper_ExtensionHelper::isExtensionEnabled($key)) {
-      return TRUE;
-    }
-
-    civicrm_api3('Extension', 'disable', ['keys' => $key]);
-    civicrm_api3('Extension', 'uninstall', ['keys' => $key]);
+    $this->up1017_setSettingValue('logging', TRUE);
+    $this->up1017_setSettingValue('max_attachments', 10);
+    $this->up1017_setSettingValue('maxFileSize', 10);
 
     return TRUE;
+  }
+
+  /**
+   * Sets a CiviCRM setting value
+   *
+   * @param string $name
+   * @param mixed $value
+   */
+  private function up1017_setSettingValue($name, $value) {
+    civicrm_api3('Setting', 'create', [$name => $value]);
   }
 
 }

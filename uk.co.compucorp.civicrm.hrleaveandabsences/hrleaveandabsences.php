@@ -108,6 +108,7 @@ function hrleaveandabsences_civicrm_permission(&$permissions) {
   $permissions['administer leave and absences'] = $prefix . ts('Administer Leave and Absences');
   $permissions['access leave and absences in ssp'] = $prefix . ts('Access Leave and Absences in SSP');
   $permissions['manage leave and absences in ssp'] = $prefix . ts('Manage Leave and Absences in SSP');
+  $permissions['can administer calendar feeds'] = $prefix . ts('Can Administer Calendar Feeds');
 }
 
 /**
@@ -118,7 +119,7 @@ function hrleaveandabsences_civicrm_permission(&$permissions) {
 function hrleaveandabsences_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $actionEntities = [
     'get' => ['absence_type', 'absence_period', 'option_group', 'option_value',
-              'leave_period_entitlement', 'public_holiday', 'leave_request', 'comment'],
+              'leave_period_entitlement', 'public_holiday', 'leave_request', 'comment', 'leave_request_calendar_feed_config'],
     'getbalancechangebyabsencetype' => ['leave_request'],
     'calculatebalancechange' => ['leave_request'],
     'create' => ['leave_request', 'comment'],
@@ -300,6 +301,12 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
     'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveBalanceChangeExpiryLog',
     'table' => 'civicrm_hrleaveandabsences_leave_balance_change_expiry_log',
   ];
+
+  $entityTypes[] = [
+    'name' => 'LeaveRequestCalendarFeedConfig',
+    'class' => 'CRM_HRLeaveAndAbsences_DAO_LeaveRequestCalendarFeedConfig',
+    'table' => 'civicrm_hrleaveandabsences_calendar_feed_config',
+  ];
 }
 
 /**
@@ -454,6 +461,7 @@ function hrleaveandabsences_civicrm_validateForm($formName, &$fields, &$files, &
 function hrleaveandabsences_civicrm_apiWrappers(&$wrappers, $apiRequest) {
   $wrappers[] = new CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestDates();
   $wrappers[] = new CRM_HRLeaveAndAbsences_API_Wrapper_LeaveRequestFieldsVisibility();
+  $wrappers[] = new CRM_HRLeaveAndAbsences_API_Wrapper_LeaveCalendarFeedFilterFields();
 }
 
 
@@ -474,6 +482,21 @@ function hrleaveandabsences_addContactMenuActions(ActionsMenu $menu){
   $leaveActionGroup = $leaveActionGroup->get();
   $leaveActionGroup->setWeight(1);
   $menu->addToMainPanel($leaveActionGroup);
+}
+
+/**
+ * Implements hrcore_civicrm_pageRun.
+ *
+ * @link https://docs.civicrm.org/dev/en/master/hooks/hook_civicrm_pageRun/
+ */
+function hrleaveandabsences_civicrm_pageRun(&$page) {
+  $hooks = [
+    new CRM_HRLeaveAndAbsences_Hook_PageRun_LeaveAndAbsencesVarsAdder(CRM_Core_Resources::singleton()),
+  ];
+
+  foreach ($hooks as $hook) {
+    $hook->handle($page);
+  }
 }
 //----------------------------------------------------------------------------//
 //                               Helper Functions                             //

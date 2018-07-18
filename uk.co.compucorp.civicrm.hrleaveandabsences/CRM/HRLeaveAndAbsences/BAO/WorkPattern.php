@@ -225,27 +225,30 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
-   * This method works like find() (it actually uses it)
-   * but it includes the number_of_weeks and number_of_hours
-   * for each pattern.
+   * Returns the number of weeks linked to this Work Pattern
    *
-   * It loads all the data with a single SQL query, giving you a
-   * better performance than loading the related information in
-   * different queries.
-   *
+   * @return int
    */
-  public function findWithNumberOfWeeksAndHours()
-  {
-    $week = new CRM_HRLeaveAndAbsences_BAO_WorkWeek();
-    $day = new CRM_HRLeaveAndAbsences_BAO_WorkDay();
-    $week->joinAdd($day, 'LEFT');
-    $this->joinAdd($week, 'LEFT');
-    $this->orderBy('weight');
-    $this->selectAdd('civicrm_hrleaveandabsences_work_pattern.*');
-    $this->selectAdd('COUNT(DISTINCT civicrm_hrleaveandabsences_work_week.id) as number_of_weeks');
-    $this->selectAdd('SUM(civicrm_hrleaveandabsences_work_day.number_of_hours) as number_of_hours');
-    $this->groupBy('civicrm_hrleaveandabsences_work_pattern.id');
-    $this->find();
+  public function getNumberOfWeeks() {
+    return count($this->getWeeks());
+  }
+
+  /**
+   * Returns the number of hours for this Work Pattern. That is, the
+   * sum of the number of hours for each Work Day of the Work Weeks
+   * linked to this Work Pattern.
+   *
+   * @return int
+   */
+  public function getNumberOfHours() {
+    $totalNumberOfHours = 0;
+    foreach ($this->getWeeks() as $week) {
+      foreach ($week['days'] as $day) {
+        $totalNumberOfHours += $day['number_of_hours'];
+      }
+    }
+
+    return $totalNumberOfHours;
   }
 
   /**

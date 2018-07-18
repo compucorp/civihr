@@ -15,7 +15,6 @@
       <table_name>civicrm_value_immigration_3</table_name>
       <is_multiple>1</is_multiple>
       <collapse_adv_display>0</collapse_adv_display>
-      <created_date>0000-00-00 00:00:00</created_date>
       <is_reserved>1</is_reserved>
     </CustomGroup>
     <CustomGroup>
@@ -29,7 +28,6 @@
       <is_active>1</is_active>
       <table_name>civicrm_value_immigration_summary_13</table_name>
       <collapse_adv_display>0</collapse_adv_display>
-      <created_date>0000-00-00 00:00:00</created_date>
       <is_reserved>1</is_reserved>
     </CustomGroup>
   </CustomGroups>

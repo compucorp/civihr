@@ -88,6 +88,7 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   allow_request_cancelation,
   allow_accruals_request,
   max_leave_accrual,
+  allow_accrue_in_the_past,
   accrual_expiration_duration,
   accrual_expiration_unit,
   is_reserved,
@@ -102,6 +103,7 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   3,
   1,
   5,
+  1,
   3,
   2, -- months
   1,
@@ -437,4 +439,27 @@ CREATE TABLE `civicrm_hrleaveandabsences_leave_balance_change_expiry_log` (
      `leave_request_id` int unsigned    COMMENT 'The Leave Request ID linked to the expired balance change (i.e If it is a leave request balance change)',
      `created_date` datetime    COMMENT 'The date and time this log was created' ,
     PRIMARY KEY (`id`)
+)  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
+
+-- /*******************************************************
+-- *
+-- * civicrm_hrleaveandabsences_calendar_feed_config
+-- *
+-- * Leave Request Calendar Feed Config
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_hrleaveandabsences_calendar_feed_config` (
+
+
+     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique LeaveRequestCalendarFeedConfig ID',
+     `title` varchar(127) NOT NULL   COMMENT 'The Calendar Feed Config Title. There cannot be more than one entity with the same title',
+     `timezone` varchar(50) NOT NULL   COMMENT 'The Calendar Feed Config Timezone',
+     `hash` varchar(32) NOT NULL   COMMENT 'The Calendar Feed Config Hash. Should be unique per config',
+     `composed_of` text NOT NULL   COMMENT 'The components of the leave request feed, e.g leave types, departments',
+     `visible_to` text NOT NULL   COMMENT 'Who gets to view the feed link e.g staff in certain departments or location',
+     `is_active` tinyint NOT NULL  DEFAULT 1 COMMENT 'Whether the feed is active or not',
+     `created_date` datetime NOT NULL   COMMENT 'The date and time this Calendar Feed Config was created',
+    PRIMARY KEY (`id`),
+    UNIQUE INDEX `unique_calendar_title`(title),
+    UNIQUE INDEX `unique_calendar_hash`(hash)
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;

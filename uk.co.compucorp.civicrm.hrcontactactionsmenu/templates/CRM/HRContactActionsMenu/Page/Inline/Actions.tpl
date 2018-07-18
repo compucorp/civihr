@@ -1,7 +1,4 @@
 <div id="crm-contact-actions-wrapper" data-edit-params='{ldelim}"cid": "{$contactId}", "class_name": "CRM_Contact_Page_Inline_Actions"{rdelim}'>
-  {crmButton id="crm-contact-actions-link" href="#" icon="bars"}
-    {ts}Actions{/ts}
-  {/crmButton}
   <div id="bootstrap-theme" data-contact-actions-modals-container>
     <div id="crm-contact-actions-list" class="crm_contact-actions">
       <div class="crm_contact-actions__wrapper">
