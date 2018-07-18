@@ -1,15 +1,15 @@
 <?php
 
-trait CRM_HRCore_Upgrader_Steps_1025 {
+trait CRM_HRCore_Upgrader_Steps_1018 {
 
   /**
    * Deletes some demographics fields where they are not in use
    *
    * @return bool
    */
-  public function upgrade_1025() {
+  public function upgrade_1018() {
 
-    $this->up1025_deleteExtendDemographicFields([
+    $this->up1018_deleteExtendDemographicFields([
       'Ethnicity',
       'Religion',
       'Sexual_Orientation',
@@ -23,7 +23,7 @@ trait CRM_HRCore_Upgrader_Steps_1025 {
    *
    * @param array $fieldsToDelete
    */
-  private function up1025_deleteExtendDemographicFields($fieldsToDelete) {
+  private function up1018_deleteExtendDemographicFields($fieldsToDelete) {
     $customGroup = civicrm_api3('CustomGroup', 'get', [
       'name' => 'Extended_Demographics',
     ]);
