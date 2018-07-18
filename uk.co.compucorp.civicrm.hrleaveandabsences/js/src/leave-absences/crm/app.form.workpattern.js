@@ -563,14 +563,10 @@ define([
    * Opens tab with form errors if they are presented
    */
   function openTabWithErrorsIfPresented () {
-    var indexOfTabWithErrors;
+    var indexOfTabWithErrors =
+      CRM.$('.tab-pane').index(CRM.$('.crm-error:first').closest('.tab-pane'));
 
-    CRM.$(document).on('ready', function () {
-      indexOfTabWithErrors =
-        CRM.$('.tab-pane').index(CRM.$('.crm-error:first').closest('.tab-pane'));
-
-      (indexOfTabWithErrors !== -1) && CRM.$('.nav-tabs a').eq(indexOfTabWithErrors).click();
-    });
+    (indexOfTabWithErrors !== -1) && CRM.$('.nav-tabs a').eq(indexOfTabWithErrors).click();
   }
 
   return HRLeaveAndAbsencesApp;
