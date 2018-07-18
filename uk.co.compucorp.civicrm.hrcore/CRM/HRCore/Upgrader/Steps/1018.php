@@ -66,6 +66,7 @@ trait CRM_HRCore_Upgrader_Steps_1018 {
       'Home' => 'Personal',
       'Main' => 'Personal',
       'Other' => 'Personal',
+      'Correspondence' => 'Personal',
     ];
     $locationTypeMap = $this->up1018_convertLocationNamesToIds($locationTypeMap);
 
