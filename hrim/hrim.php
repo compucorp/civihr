@@ -67,10 +67,10 @@ function hrim_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  */
 function hrim_civicrm_managed(&$entities) {
   return _hrim_civix_civicrm_managed($entities);
-} 
+}
 function hrim_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrim', 'js/hrim.js');
-   
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrim', 'js/dist/hrim.min.js', 1010);
+
   }
 }
