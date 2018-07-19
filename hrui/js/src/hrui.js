@@ -4,7 +4,7 @@
   require([
     'hrui/main',
     'hrui/contact',
-    'hrui/civihr-popup/attrchange.js',
-    'hrui/civihr-popup/civihr-popup.js'
+    'hrui/civihr-popup/attrchange',
+    'hrui/civihr-popup/civihr-popup'
   ]);
 })(require);
