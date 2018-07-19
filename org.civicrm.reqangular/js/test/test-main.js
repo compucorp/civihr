@@ -1,6 +1,6 @@
 /* globals CRM */
 
-var TEST_REGEXP = /spec\.js$/i;
+var TEST_REGEXP = /\.spec\.js$/i;
 var allTestFiles = [];
 var extPath = '/base/tools/extensions/civihr/org.civicrm.reqangular';
 var mocksPath = extPath + '/js/test/mocks';
