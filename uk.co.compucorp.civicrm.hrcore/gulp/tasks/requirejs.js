@@ -25,7 +25,7 @@ module.exports = [
       if (utils.canCurrentExtensionRun('requirejs')) {
         extPath = utils.getExtensionPath();
         watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
-          path.join(extPath, '**', 'src/**/*.js')
+          path.join(extPath, 'js/src/**/*.js')
         ], 'requirejs');
 
         gulp.watch(watchPatterns, ['requirejs']).on('change', function (file) {
@@ -58,7 +58,7 @@ module.exports = [
  * @param {Function} cb
  */
 function extensionDependenciesTask (cb) {
-  var buildFiles = find.fileSync(/js(\/[^/]+)?\/build\.js$/, path.join(__dirname, '../../../'));
+  var buildFiles = find.fileSync(/js\/build\.js$/, path.join(__dirname, '../../../'));
 
   var sequence = buildFiles.filter(function (buildFile) {
     var content = fs.readFileSync(buildFile, 'utf8');
@@ -130,7 +130,7 @@ function processBuildFile (buildFilePath) {
  * @param {Function} cb
  */
 function requireJsMainTask (cb) {
-  var buildFilePath, tempBuildFilePath;
+  var buildFilePath, jsFolderPath, tempBuildFilePath;
 
   if (!detectInstalled.sync('requirejs')) {
     utils.throwError('The `requirejs` package is not installed globally (http://requirejs.org/docs/optimization.html#download)');
@@ -140,8 +140,9 @@ function requireJsMainTask (cb) {
   // the execution, thus it gets saved so it can be restored later
   originalExtension = utils.getCurrentExtension();
 
-  buildFilePath = find.fileSync('build.js', utils.getExtensionPath())[0];
-  tempBuildFilePath = path.join(path.dirname(buildFilePath), 'build.tmp.js');
+  jsFolderPath = path.join(utils.getExtensionPath(), 'js');
+  buildFilePath = path.join(jsFolderPath, 'build.js');
+  tempBuildFilePath = path.join(jsFolderPath, 'build.tmp.js');
 
   fs.writeFileSync(tempBuildFilePath, processBuildFile(buildFilePath), 'utf8');
 

@@ -29,7 +29,7 @@ module.exports = function (config) {
       civihrPath + 'uk.co.compucorp.civicrm.hrcore/node_modules/karma-requirejs/lib/adapter.js',
 
       // all the common/ dependencies
-      civihrPath + 'org.civicrm.reqangular/dist/reqangular.min.js',
+      civihrPath + 'org.civicrm.reqangular/js/dist/reqangular.min.js',
 
       // the application modules
       { pattern: extPath + 'js/src/job-roles/**/*.js', included: false },
