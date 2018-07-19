@@ -184,7 +184,6 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
       'name' => ['IN' => $locationsToDelete],
       'api.LocationType.delete' => ['id' => "\$value.id"]
     ]);
-
   }
 
   /**
