@@ -189,6 +189,6 @@ function hrcareer_civicrm_pageRun($page) {
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
 
     CRM_Core_Resources::singleton()
-      ->addScriptFile('org.civicrm.hrcareer', 'js/hrcareer.js');
+      ->addScriptFile('org.civicrm.hrcareer', 'js/dist/hrcareer.min.js', 1010);
   }
 }
