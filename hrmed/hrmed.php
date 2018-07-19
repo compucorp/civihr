@@ -163,6 +163,6 @@ function hrmed_civicrm_pageRun($page) {
     CRM_Core_Resources::singleton()
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
     CRM_Core_Resources::singleton()
-      ->addScriptFile('org.civicrm.hrmed', 'js/hrmed.js');
+      ->addScriptFile('org.civicrm.hrmed', 'js/dist/hrmed.min.js', 1010);
   }
 }
