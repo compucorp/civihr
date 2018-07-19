@@ -137,7 +137,6 @@ function hrcase_civicrm_buildForm($formName, &$form) {
       ),
     ));
     }
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrcase', 'js/hrcase.js');
   }
 }
 
