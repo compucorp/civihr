@@ -23,7 +23,7 @@ define([
 
     describe('all()', function () {
       var result;
-      var additionalParams = { key: 'additionalParams' };
+      var cache = false;
       var filters = { key: 'filters' };
       var mockResponse = { count: 1, values: [ { id: 2 } ] };
       var pagination = { key: 'pagination' };
@@ -31,7 +31,7 @@ define([
 
       beforeEach(function () {
         spyOn(RelationshipAPI, 'getAll').and.returnValue($q.resolve(mockResponse));
-        RelationshipAPI.all(filters, pagination, sort, additionalParams)
+        RelationshipAPI.all(filters, pagination, sort, cache)
           .then(function (_result_) {
             result = _result_;
           });
@@ -40,7 +40,7 @@ define([
 
       it('calls getAll method', function () {
         expect(RelationshipAPI.getAll).toHaveBeenCalledWith(
-          'Relationship', filters, pagination, sort, additionalParams);
+          'Relationship', filters, pagination, sort, null, null, cache);
       });
 
       it('returns all the relationships', function () {
