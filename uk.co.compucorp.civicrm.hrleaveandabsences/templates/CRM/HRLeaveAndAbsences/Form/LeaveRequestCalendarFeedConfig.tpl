@@ -56,8 +56,8 @@
           <div class="col-sm-9">{$form.is_active.html}</div>
         </div>
       </div>
-      {literal}
-        <script type="text/javascript">
+      <script type="text/javascript">
+        {literal}
           CRM.$(function ($) {
             var REDIRECT_AFTER_DELETE_URL = '{/literal}{$deleteUrl}{literal}';
 
@@ -156,8 +156,8 @@
               setHelpText('visible_to', helpMessage);
             }
           });
-        </script>
-      {/literal}
+        {/literal}
+      </script>
     {/if}
     <div class="panel-footer clearfix">
       <div class="pull-right">
