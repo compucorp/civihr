@@ -33,7 +33,7 @@
                 <td>{$row.composed_of_display}</td>
                 <td>{$row.leave_type_display}</td>
                 <td>{$row.visible_to_display}</td>
-                <td>{$row.timezone}</td>
+                <td>{$row.timezone|escape}</td>
                 <td>{if $row.is_active eq 1} {ts}Enabled{/ts} {else} {ts}Disabled{/ts} {/if}</td>
                 <td>{$row.action|replace:'xx':$row.id}</td>
               </tr>

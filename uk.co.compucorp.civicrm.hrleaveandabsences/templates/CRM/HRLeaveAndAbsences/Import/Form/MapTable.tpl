@@ -54,7 +54,7 @@
             {section name=rows loop=$rowDisplayCount}
               {assign var="j" value=$smarty.section.rows.index}
               <td class="{if $skipColumnHeader AND $smarty.section.rows.iteration == 1}labels{/if}">
-                {$dataValues[$j][$i]}
+                {$dataValues[$j][$i]|escape}
               </td>
             {/section}
             {* Display mapper <select> field for 'Map Fields', and mapper value for 'Preview' *}

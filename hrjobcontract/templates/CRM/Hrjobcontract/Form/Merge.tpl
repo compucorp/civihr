@@ -54,7 +54,7 @@
           <li>Contract ID : {$contract_id} => conflicting with the following Main contact contracts :</li>
           {foreach from=$conflicts item=contract}
             <ol>
-              <li> Title => <b>{$contract.title}</b> , ID => <b>{$contract.contract_id}</b></li>
+              <li> Title => <b>{$contract.title|escape}</b> , ID => <b>{$contract.contract_id}</b></li>
             </ol>
           {/foreach}
         {/foreach}
