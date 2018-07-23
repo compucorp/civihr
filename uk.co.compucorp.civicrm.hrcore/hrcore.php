@@ -344,6 +344,15 @@ function hrcore_civicrm_permission(&$permissions) {
 }
 
 /**
+ * Removes system notifications for all users
+ *
+ * @param $messages
+ */
+function hrcore_civicrm_check(&$messages) {
+  $messages = [];
+}
+
+/**
  * Renames a menu with the given new label
  *
  * @param array $params
