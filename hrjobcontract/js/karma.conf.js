@@ -29,10 +29,10 @@ module.exports = function (config) {
       civihrPath + 'uk.co.compucorp.civicrm.hrcore/node_modules/karma-requirejs/lib/adapter.js',
 
       // all the common/ dependencies
-      civihrPath + 'org.civicrm.reqangular/dist/reqangular.min.js',
+      civihrPath + 'org.civicrm.reqangular/js/dist/reqangular.min.js',
 
       // all the common/ mocked dependencies
-      civihrPath + 'org.civicrm.reqangular/dist/reqangular.mocks.min.js',
+      civihrPath + 'org.civicrm.reqangular/js/dist/reqangular.mocks.min.js',
 
       // External extensions files
       { pattern: civihrPath + 'uk.co.compucorp.civicrm.hrleaveandabsences/js/src/**/!(*.spec).js', included: false },

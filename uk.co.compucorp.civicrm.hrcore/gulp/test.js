@@ -1,6 +1,4 @@
 var clean = require('gulp-clean');
-var find = require('find');
-var findUp = require('find-up');
 var fs = require('fs');
 var gulp = require('gulp');
 var karma = require('karma');
@@ -20,7 +18,7 @@ module.exports = {
  * Runs all the test of an extension, using the karma.conf.js file as is
  */
 function all (cb) {
-  var configFile = find.fileSync('karma.conf.js', utils.getExtensionPath())[0];
+  var configFile = path.join(utils.getExtensionPath(), 'js/karma.conf.js');
 
   runServer(configFile, cb);
 }
@@ -61,8 +59,8 @@ function runServer (configFile, cb) {
  * @param {String} testFile
  */
 function single (testFile) {
-  var configFilePath = findUp.sync('karma.conf.js', { cwd: testFile });
-  var jsFolderPath = path.dirname(configFilePath);
+  var jsFolderPath = path.join(utils.getExtensionPath(), 'js');
+  var configFilePath = path.join(jsFolderPath, 'karma.conf.js');
   var tempConfigFile = 'karma.' + path.basename(testFile, path.extname(testFile)) + '.conf.temp.js';
 
   gulp

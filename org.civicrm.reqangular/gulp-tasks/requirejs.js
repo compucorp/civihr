@@ -5,7 +5,7 @@ var replace = require('gulp-replace');
 var templateCache = require('gulp-angular-templatecache');
 
 module.exports = function () {
-  var commonFolder = path.join(__dirname, '..', 'src/common');
+  var commonFolder = path.join(__dirname, '..', 'js/src/common');
 
   return {
     pre: [
@@ -24,7 +24,7 @@ module.exports = function () {
       {
         name: 'requirejs:mock',
         fn: function (cb) {
-          var buildMocksPath = path.join(__dirname, '..', 'build.mocks.js');
+          var buildMocksPath = path.join(__dirname, '..', 'js/build.mocks.js');
 
           exec('r.js -o ' + buildMocksPath, function (err, stdout, stderr) {
             err && err.code && console.log(stdout);
@@ -36,7 +36,7 @@ module.exports = function () {
     watchPatterns: [
       path.join(commonFolder, '**/*.js'),
       path.join(commonFolder, 'templates/**/*.html'),
-      path.join(__dirname, '..', 'test/mocks/**/*.js'),
+      path.join(__dirname, '..', 'js/test/mocks/**/*.js'),
       '!' + path.join(commonFolder, 'modules/templates.js')
     ]
   };

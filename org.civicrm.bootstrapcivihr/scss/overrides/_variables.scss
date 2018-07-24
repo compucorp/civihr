@@ -1,10 +1,10 @@
-@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/overrides/variables";
-@import "SCSSROOT/org.civicrm.shoreditch/base/scss/overrides/variables";
-@import "SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/variables";
-@import "SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/vendor/font-awesome/variables";
-@import "SCSSROOT/org.civicrm.shoreditch/scss/civicrm/variables";
+@import 'SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/overrides/variables';
+@import 'SCSSROOT/org.civicrm.shoreditch/base/scss/overrides/variables';
+@import 'SCSSROOT/org.civicrm.shoreditch/base/scss/vendor/bootstrap/variables';
+@import 'SCSSROOT/org.civicrm.shoreditch/scss/bootstrap/vendor/font-awesome/variables';
+@import 'SCSSROOT/org.civicrm.shoreditch/scss/civicrm/variables';
 
-$outsideNamespaceMarker: '.___outside-namespace';
+$outside-namespace-marker: '.___outside-namespace';
 
 //== User Menu
 //
@@ -18,6 +18,7 @@ $chr-user-menu-dropdown-username-color: $gray-darker;
 $chr-user-menu-dropdown-link-color: $gray-darker;
 $chr-user-menu-dropdown-link-color-hover: $gray-darker;
 $chr-user-menu-dropdown-link-bg-hover: $gray-lighter;
+$chr-user-menu-logo-size: 17px;
 
 
 //== Steps
