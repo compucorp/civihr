@@ -4,19 +4,19 @@
 (function ($, _) {
   define(function () {
     $(document)
-      .on('crmLoad', function (e) {
-        addUploadFileListener("input[type='file']");
-        amendVacancyForm();
-        amendContactPageAndForm(e);
-        applyMiscChanges();
-        changeContactSourceFieldHelpText();
+      .on('crmLoad', function () {
+        miscContactPageChanges();
       })
       .ready(function () {
+        addUploadFileListener("input[type='file']");
         addUserMenuToMainMenu();
-        amendAppLogoMenuItem();
         amendApplicationForm();
-        useFontAwesomeArrowsInSubMenuItems();
+        amendAppLogoMenuItem();
+        amendContactPageAndForm();
+        amendVacancyForm();
+        changeContactSourceFieldHelpText();
         toggleActiveClassOnHoverOnAnyMainMenuItem();
+        useFontAwesomeArrowsInSubMenuItems();
       });
 
     /**
@@ -65,17 +65,15 @@
     /**
      * Amends the contact page and the contact form
      */
-    function amendContactPageAndForm (e) {
-      if (CRM.formName === 'contactForm' || CRM.pageName === 'viewSummary') {
-        // Rename "Summary" tab to "Personal Details"
-        // Hack to check contact type - This field only appears for individuals
-        if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
-          $('.crm-contact-tabs-list #tab_summary a', e.target).text('Personal Details');
-        }
-
-        manipulateDOMOfInlineCustomData(e.target);
-        miscContactPageChanges(e.target);
+    function amendContactPageAndForm () {
+      // Rename "Summary" tab to "Personal Details"
+      // Hack to check contact type - This field only appears for individuals
+      if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
+        $('.crm-contact-tabs-list #tab_summary a').text('Personal Details');
       }
+
+      manipulateDOMOfInlineCustomData();
+      applyMiscChanges();
     }
 
     /**
@@ -200,18 +198,15 @@
     /**
      * Misc changes to the page (hiding elements, inserting new ones, etc)
      */
-    function miscContactPageChanges (target) {
+    function miscContactPageChanges () {
       // Hide current employer and job title
       // Contact summary screen:
       $('div.crm-contact-current_employer, div.crm-contact-job_title', '.crm-summary-contactinfo-block').parent('div.crm-summary-row').hide();
       // Inline edit form
-      $('form#ContactInfo input#employer_id, form#ContactInfo input#job_title', target).closest('div.crm-summary-row').hide();
+      $('form#ContactInfo input#employer_id, form#ContactInfo input#job_title').closest('div.crm-summary-row').hide();
       // Contact edit screen
       $('input#employer_id, input#job_title', 'form#Contact').parent('td').hide();
 
-      /* Changes on Add Individual pages and Personal details tab for HR-358 */
-      // Move Job summary to top
-      $('.HRJobContract_Summary', target).insertBefore($('.crm-summary-contactinfo-block'));
       // changes of email block, remove bulkmail and onhold
       $('div.email-signature, td#Email-Bulkmail-html', 'form#Contact').hide();
       $('#Email-Primary', 'form#Contact').prev('td').prev('td').hide();
