@@ -1,5 +1,5 @@
 window.Drupal = {
   settings: {
-    currentCiviCRMUserId: 1
+    currentCiviCRMUserId: '1'
   }
 };

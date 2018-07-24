@@ -7,14 +7,15 @@ define([
   'common/models/contact-job-role.model',
   'common/models/group',
   'common/models/job-role',
+  'common/models/session.model',
   'common/models/instances/contact-instance',
   'common/services/api/contact'
 ], function (_, models) {
   'use strict';
 
   models.factory('Contact', [
-    '$q', 'Model', 'api.contact', 'Group', 'JobRole', 'ContactJobRole', 'ContactInstance',
-    function ($q, Model, contactAPI, Group, JobRole, ContactJobRole, instance) {
+    '$q', 'api.contact', 'ContactInstance', 'ContactJobRole', 'Group', 'JobRole', 'Model', 'Session',
+    function ($q, contactAPI, instance, ContactJobRole, Group, JobRole, Model, Session) {
       var groupFiltersKeys = ['group_id'];
       var jobRoleFiltersKeys = ['region', 'department', 'level_type', 'location'];
 
@@ -147,6 +148,18 @@ define([
           return contactAPI.find(id).then(function (contact) {
             return instance.init(contact, true);
           });
+        },
+
+        /**
+         * Resolves the instance of the currently logged in contact
+         *
+         * @return {Promise} resolves with {ContactInstance}
+         */
+        getCurrentlyLoggedIn: function () {
+          return Session.get()
+            .then(function (loggedInContact) {
+              return this.find(loggedInContact.contactId);
+            }.bind(this));
         },
 
         /**
