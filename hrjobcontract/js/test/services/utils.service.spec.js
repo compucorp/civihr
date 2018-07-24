@@ -14,13 +14,14 @@ define([
     var $httpBackend, $provide, $rootScope, $q, $uibModal, utilsService, apiService,
       AbsencePeriod, $window;
 
-    beforeEach(module('job-contract', 'leave-absences.models', function (_$provide_) {
+    beforeEach(module('job-contract', 'leave-absences.models', function (_$provide_, $qProvider) {
       $provide = _$provide_;
       $provide.value('$window', {
         location: {
           assign: jasmine.createSpy('spy')
         }
       });
+      $qProvider.errorOnUnhandledRejections(false);
     }));
 
     beforeEach(inject(function (_$httpBackend_, _$rootScope_, _$q_, _$uibModal_, _$window_, _utilsService_, _apiService_, _AbsencePeriod_) {
