@@ -52,6 +52,17 @@ class CRM_HRCore_Service_DrupalUserService {
   }
 
   /**
+   * Checks if user record exist for email
+   *
+   * @param string $email
+   *
+   * @return object | boolean
+   */
+  public function findUserByEmail($email) {
+    return user_load_by_mail($email);
+  }
+
+  /**
    * @param $email
    */
   public function sendActivationMail($email) {
@@ -64,6 +75,8 @@ class CRM_HRCore_Service_DrupalUserService {
   }
 
   /**
+   * Adds role(s) to user account
+   *
    * @param string $email
    * @param array $roles
    */

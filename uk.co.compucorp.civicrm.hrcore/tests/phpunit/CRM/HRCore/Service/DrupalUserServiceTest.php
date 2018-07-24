@@ -53,6 +53,22 @@ class CRM_HRCore_Service_DrupalUserServiceTest extends CRM_HRCore_Test_BaseHeadl
     $this->assertArrayHasKey(8, $user->roles);
   }
 
+  public function testFindUserByEmailReturnsUserObjectWhenUserEmailExist() {
+    $roleService = $this->prophesize(DrupalRoleService::class);
+    $drupalUserService = new DrupalUserService($roleService->reveal());
+    $user = $drupalUserService->findUserByEmail('johndoe@test.com');
+
+    $this->assertInstanceOf(\stdClass::class, $user);
+  }
+
+  public function testFindUserByEmailReturnsFalseWhenUserEmailDoesNotExist() {
+    $roleService = $this->prophesize(DrupalRoleService::class);
+    $drupalUserService = new DrupalUserService($roleService->reveal());
+    $userAccount = $drupalUserService->findUserByEmail('test@email.com');
+
+    $this->assertFalse($userAccount);
+  }
+
   protected function cleanup() {
     $user = user_load_by_mail($this->testEmail);
     if ($user) {
