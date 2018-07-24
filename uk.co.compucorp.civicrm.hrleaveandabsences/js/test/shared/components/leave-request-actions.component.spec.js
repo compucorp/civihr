@@ -72,224 +72,10 @@ define([
       expect($log.debug).toHaveBeenCalled();
     });
 
-    describe('when leave request status is "awaiting for approval"', function () {
-      beforeEach(function () {
-        leaveRequest = getRequest('leave', 'awaitingApproval');
-      });
-
-      describe('when the user is admin', function () {
+    describe('basic tests', function () {
+      describe('when leave request status is "awaiting for approval"', function () {
         beforeEach(function () {
-          role = 'admin';
-
-          compileComponent();
-        });
-
-        it('shows actions "Respond", "Approve", "Reject", "Cancel" and "Delete"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['respond', 'approve', 'reject', 'cancel', 'delete']);
-        });
-      });
-
-      describe('when the user is manager', function () {
-        beforeEach(function () {
-          role = 'manager';
-
-          compileComponent();
-        });
-
-        it('shows actions "Respond", "Approve", "Reject" and "Cancel"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['respond', 'approve', 'reject', 'cancel']);
-        });
-      });
-
-      describe('when the user is staff', function () {
-        beforeEach(function () {
-          role = 'staff';
-
-          compileComponent();
-        });
-
-        it('shows actions "Edit", "Cancel"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel']);
-        });
-      });
-    });
-
-    describe('when leave request status is "more information required"', function () {
-      beforeEach(function () {
-        leaveRequest = getRequest('leave', 'moreInformationRequired');
-      });
-
-      describe('when the user is admin', function () {
-        beforeEach(function () {
-          role = 'admin';
-
-          compileComponent();
-        });
-
-        it('shows actions "Edit", "Cancel" and "Delete"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel', 'delete']);
-        });
-      });
-
-      describe('when the user is manager', function () {
-        beforeEach(function () {
-          role = 'manager';
-
-          compileComponent();
-        });
-
-        it('shows actions "Edit" and "Cancel"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel']);
-        });
-      });
-
-      describe('when the user is staff', function () {
-        beforeEach(function () {
-          role = 'staff';
-
-          compileComponent();
-        });
-
-        it('shows actions "Respond" and "Cancel"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['respond', 'cancel']);
-        });
-      });
-    });
-
-    describe('when leave request status is "approved"', function () {
-      beforeEach(function () {
-        leaveRequest = getRequest('leave', 'approved');
-      });
-
-      describe('when the user is admin', function () {
-        beforeEach(function () {
-          role = 'admin';
-
-          compileComponent();
-        });
-
-        it('shows actions "Edit", "Cancel" and "Delete"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel', 'delete']);
-        });
-      });
-
-      describe('when the user is manager', function () {
-        beforeEach(function () {
-          role = 'manager';
-
-          compileComponent();
-        });
-
-        it('shows actions "Edit"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['edit']);
-        });
-      });
-
-      describe('when the user is staff', function () {
-        beforeEach(function () {
-          role = 'staff';
-
-          compileComponent();
-        });
-
-        it('shows actions "View" and "Cancel"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['view', 'cancel']);
-        });
-      });
-    });
-
-    describe('when leave request status is "rejected"', function () {
-      beforeEach(function () {
-        leaveRequest = getRequest('leave', 'rejected');
-      });
-
-      describe('when the user is admin', function () {
-        beforeEach(function () {
-          role = 'admin';
-
-          compileComponent();
-        });
-
-        it('shows actions "Edit", "Cancel" and "Delete"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel', 'delete']);
-        });
-      });
-
-      describe('when the user is manager', function () {
-        beforeEach(function () {
-          role = 'manager';
-
-          compileComponent();
-        });
-
-        it('shows actions "Edit"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['edit']);
-        });
-      });
-
-      describe('when the user is staff', function () {
-        beforeEach(function () {
-          role = 'staff';
-
-          compileComponent();
-        });
-
-        it('shows actions "View" and "Cancel"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['view', 'cancel']);
-        });
-      });
-    });
-
-    describe('when leave request status is "cancelled"', function () {
-      beforeEach(function () {
-        leaveRequest = getRequest('leave', 'cancelled');
-      });
-
-      describe('when the user is admin', function () {
-        beforeEach(function () {
-          role = 'admin';
-
-          compileComponent();
-        });
-
-        it('shows actions "Edit" and "Delete"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'delete']);
-        });
-      });
-
-      describe('when the user is manager', function () {
-        beforeEach(function () {
-          role = 'manager';
-
-          compileComponent();
-        });
-
-        it('shows actions "Edit"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['edit']);
-        });
-      });
-
-      describe('when the user is staff', function () {
-        beforeEach(function () {
-          role = 'staff';
-
-          compileComponent();
-        });
-
-        it('shows actions "View"', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(['view']);
-        });
-      });
-    });
-
-    describe('when leave request has TOIL type', function () {
-      beforeEach(function () {
-        leaveRequest = getRequest('toil', 'awaitingApproval');
-      });
-
-      describe('when not expired', function () {
-        beforeEach(function () {
-          makeRequestExpired(leaveRequest, false);
+          leaveRequest = getRequest('leave', 'awaitingApproval');
         });
 
         describe('when the user is admin', function () {
@@ -299,8 +85,8 @@ define([
             compileComponent();
           });
 
-          it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+          it('shows actions "Respond", "Approve", "Reject", "Cancel" and "Delete"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['respond', 'approve', 'reject', 'cancel', 'delete']);
           });
         });
 
@@ -311,8 +97,8 @@ define([
             compileComponent();
           });
 
-          it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+          it('shows actions "Respond", "Approve", "Reject" and "Cancel"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['respond', 'approve', 'reject', 'cancel']);
           });
         });
 
@@ -323,15 +109,15 @@ define([
             compileComponent();
           });
 
-          it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+          it('shows actions "Edit", "Cancel"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel']);
           });
         });
       });
 
-      describe('when expired', function () {
+      describe('when leave request status is "more information required"', function () {
         beforeEach(function () {
-          makeRequestExpired(leaveRequest, true);
+          leaveRequest = getRequest('leave', 'moreInformationRequired');
         });
 
         describe('when the user is admin', function () {
@@ -341,8 +127,8 @@ define([
             compileComponent();
           });
 
-          it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+          it('shows actions "Edit", "Cancel" and "Delete"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel', 'delete']);
           });
         });
 
@@ -353,8 +139,8 @@ define([
             compileComponent();
           });
 
-          it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+          it('shows actions "Edit" and "Cancel"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel']);
           });
         });
 
@@ -365,21 +151,15 @@ define([
             compileComponent();
           });
 
-          it('does not include "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(false);
+          it('shows actions "Respond" and "Cancel"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['respond', 'cancel']);
           });
         });
       });
-    });
 
-    describe('when leave request has Sickness type', function () {
-      beforeEach(function () {
-        leaveRequest = getRequest('sick', 'awaitingApproval');
-      });
-
-      describe('when not expired', function () {
+      describe('when leave request status is "approved"', function () {
         beforeEach(function () {
-          makeRequestExpired(leaveRequest, false);
+          leaveRequest = getRequest('leave', 'approved');
         });
 
         describe('when the user is admin', function () {
@@ -389,8 +169,8 @@ define([
             compileComponent();
           });
 
-          it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+          it('shows actions "Edit", "Cancel" and "Delete"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel', 'delete']);
           });
         });
 
@@ -401,8 +181,8 @@ define([
             compileComponent();
           });
 
-          it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+          it('shows actions "Edit"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['edit']);
           });
         });
 
@@ -413,15 +193,15 @@ define([
             compileComponent();
           });
 
-          it('does not include "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(false);
+          it('shows actions "View" and "Cancel"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['view', 'cancel']);
           });
         });
       });
 
-      describe('when expired', function () {
+      describe('when leave request status is "rejected"', function () {
         beforeEach(function () {
-          makeRequestExpired(leaveRequest, true);
+          leaveRequest = getRequest('leave', 'rejected');
         });
 
         describe('when the user is admin', function () {
@@ -431,8 +211,8 @@ define([
             compileComponent();
           });
 
-          it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+          it('shows actions "Edit", "Cancel" and "Delete"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'cancel', 'delete']);
           });
         });
 
@@ -443,8 +223,8 @@ define([
             compileComponent();
           });
 
-          it('includes "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+          it('shows actions "Edit"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['edit']);
           });
         });
 
@@ -455,192 +235,431 @@ define([
             compileComponent();
           });
 
-          it('does not include "Cancel" action', function () {
-            expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(false);
+          it('shows actions "View" and "Cancel"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['view', 'cancel']);
           });
         });
       });
-    });
 
-    describe('when the leave request is a public holiday', function () {
-      beforeEach(function () {
-        leaveRequest.request_type = 'public_holiday';
-      });
-
-      describe('when the user is an admin', function () {
+      describe('when leave request status is "cancelled"', function () {
         beforeEach(function () {
-          role = 'admin';
-
-          compileComponent();
+          leaveRequest = getRequest('leave', 'cancelled');
         });
 
-        it('includes the "Delete" action', function () {
-          expect(_.includes(flattenActions(controller.allowedActions), 'delete')).toBe(true);
+        describe('when the user is admin', function () {
+          beforeEach(function () {
+            role = 'admin';
+
+            compileComponent();
+          });
+
+          it('shows actions "Edit" and "Delete"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['edit', 'delete']);
+          });
+        });
+
+        describe('when the user is manager', function () {
+          beforeEach(function () {
+            role = 'manager';
+
+            compileComponent();
+          });
+
+          it('shows actions "Edit"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['edit']);
+          });
+        });
+
+        describe('when the user is staff', function () {
+          beforeEach(function () {
+            role = 'staff';
+
+            compileComponent();
+          });
+
+          it('shows actions "View"', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(['view']);
+          });
         });
       });
 
-      describe('when the user is a manager', function () {
+      describe('when leave request has TOIL type', function () {
         beforeEach(function () {
-          role = 'manager';
-
-          compileComponent();
+          leaveRequest = getRequest('toil', 'awaitingApproval');
         });
 
-        it('does not include the "Delete" action', function () {
-          expect(_.includes(flattenActions(controller.allowedActions), 'delete')).toBe(false);
-        });
-      });
+        describe('when not expired', function () {
+          beforeEach(function () {
+            makeRequestExpired(leaveRequest, false);
+          });
 
-      describe('when the user is a staff', function () {
-        beforeEach(function () {
-          role = 'staff';
-
-          compileComponent();
-        });
-
-        it('does not include the "Delete" action', function () {
-          expect(_.includes(flattenActions(controller.allowedActions), 'delete')).toBe(false);
-        });
-      });
-    });
-
-    describe('when the user wants to change status of leave request', function () {
-      // Any action, role or request could be specified here
-      var action = 'approve';
-
-      beforeEach(function () {
-        // Any role or request could be specified here
-        role = 'admin';
-        leaveRequest = getRequest();
-        compileComponent();
-        spyOn($rootScope, '$emit');
-      });
-
-      describe('basic tests', function () {
-        beforeEach(function () {
-          spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
-            .and.callThrough();
-
-          controller.action(action);
-          $rootScope.$digest();
-        });
-
-        it('checks if the balance has been changed', function () {
-          expect(controller.leaveRequest.checkIfBalanceChangeNeedsRecalculation)
-            .toHaveBeenCalled();
-        });
-      });
-
-      describe('when balance change has not been changed', function () {
-        beforeEach(function () {
-          spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
-            .and.returnValue($q.resolve(false));
-          resolveDialogWith(null);
-          controller.action(action);
-          $rootScope.$digest();
-        });
-
-        it('shows a loading confirmation dialog', function () {
-          expect(dialog.open).toHaveBeenCalledWith(jasmine.objectContaining({
-            loading: true
-          }));
-        });
-
-        it('does not emit an event', function () {
-          expect($rootScope.$emit).not.toHaveBeenCalled();
-        });
-
-        describe('when the user confirms the action', function () {
-          describe('when the action is successfully executed', function () {
+          describe('when the user is admin', function () {
             beforeEach(function () {
-              spyOn(leaveRequest, action).and.returnValue($q.resolve());
-              resolveDialogWith(true);
-              controller.action(action);
-              $rootScope.$digest();
+              role = 'admin';
+
+              compileComponent();
             });
 
-            it('emits an event', function () {
-              expect(pubSub.publish)
-                .toHaveBeenCalledWith('LeaveRequest::statusUpdate', {
-                  status: action,
-                  leaveRequest: leaveRequest
-                });
+            it('includes "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
             });
           });
 
-          describe('when the action is rejected by server', function () {
+          describe('when the user is manager', function () {
             beforeEach(function () {
-              spyOn(leaveRequest, action).and.returnValue($q.reject());
-              spyOn(notification, 'error').and.callThrough();
-              resolveDialogWith(true);
-              controller.action(action);
-              $rootScope.$digest();
+              role = 'manager';
+
+              compileComponent();
             });
 
-            it('does not emit an event', function () {
-              expect(pubSub.publish).not.toHaveBeenCalled();
+            it('includes "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+            });
+          });
+
+          describe('when the user is staff', function () {
+            beforeEach(function () {
+              role = 'staff';
+
+              compileComponent();
             });
 
-            it('shows a notification', function () {
-              expect(notification.error).toHaveBeenCalled();
+            it('includes "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+            });
+          });
+        });
+
+        describe('when expired', function () {
+          beforeEach(function () {
+            makeRequestExpired(leaveRequest, true);
+          });
+
+          describe('when the user is admin', function () {
+            beforeEach(function () {
+              role = 'admin';
+
+              compileComponent();
+            });
+
+            it('includes "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+            });
+          });
+
+          describe('when the user is manager', function () {
+            beforeEach(function () {
+              role = 'manager';
+
+              compileComponent();
+            });
+
+            it('includes "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+            });
+          });
+
+          describe('when the user is staff', function () {
+            beforeEach(function () {
+              role = 'staff';
+
+              compileComponent();
+            });
+
+            it('does not include "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(false);
             });
           });
         });
       });
 
-      describe('when balance change has been changed', function () {
-        var proceedWithBalanceChangeRecalculation;
-
+      describe('when leave request has Sickness type', function () {
         beforeEach(function () {
-          spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
-            .and.returnValue($q.resolve(true));
-          spyOn(dialog, 'open').and.callFake(function (params) {
-            params.optionsPromise().then(function (props) {
-              proceedWithBalanceChangeRecalculation = props.onCloseAfterConfirm;
+          leaveRequest = getRequest('sick', 'awaitingApproval');
+        });
+
+        describe('when not expired', function () {
+          beforeEach(function () {
+            makeRequestExpired(leaveRequest, false);
+          });
+
+          describe('when the user is admin', function () {
+            beforeEach(function () {
+              role = 'admin';
+
+              compileComponent();
+            });
+
+            it('includes "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
             });
           });
-          spyOn(LeaveRequestService,
-            'getBalanceChangeRecalculationPromptOptions').and.callThrough();
-          controller.action(action);
-          $rootScope.$digest();
+
+          describe('when the user is manager', function () {
+            beforeEach(function () {
+              role = 'manager';
+
+              compileComponent();
+            });
+
+            it('includes "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+            });
+          });
+
+          describe('when the user is staff', function () {
+            beforeEach(function () {
+              role = 'staff';
+
+              compileComponent();
+            });
+
+            it('does not include "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(false);
+            });
+          });
         });
 
-        it('prompts if user would like to proceed with balance change recalculation', function () {
-          expect(LeaveRequestService.getBalanceChangeRecalculationPromptOptions)
-            .toHaveBeenCalled();
-          expect(dialog.open).toHaveBeenCalled();
-        });
-
-        describe('when user proceeds with balance change recalculation', function () {
-          var expectedDefaultStatus = 'approved';
-
+        describe('when expired', function () {
           beforeEach(function () {
-            spyOn(LeavePopup, 'openModal');
-            proceedWithBalanceChangeRecalculation();
+            makeRequestExpired(leaveRequest, true);
+          });
+
+          describe('when the user is admin', function () {
+            beforeEach(function () {
+              role = 'admin';
+
+              compileComponent();
+            });
+
+            it('includes "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+            });
+          });
+
+          describe('when the user is manager', function () {
+            beforeEach(function () {
+              role = 'manager';
+
+              compileComponent();
+            });
+
+            it('includes "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(true);
+            });
+          });
+
+          describe('when the user is staff', function () {
+            beforeEach(function () {
+              role = 'staff';
+
+              compileComponent();
+            });
+
+            it('does not include "Cancel" action', function () {
+              expect(_.includes(flattenActions(controller.allowedActions), 'cancel')).toBe(false);
+            });
+          });
+        });
+      });
+
+      describe('when the leave request is a public holiday', function () {
+        beforeEach(function () {
+          leaveRequest.request_type = 'public_holiday';
+        });
+
+        describe('when the user is an admin', function () {
+          beforeEach(function () {
+            role = 'admin';
+
+            compileComponent();
+          });
+
+          it('includes the "Delete" action', function () {
+            expect(_.includes(flattenActions(controller.allowedActions), 'delete')).toBe(true);
+          });
+        });
+
+        describe('when the user is a manager', function () {
+          beforeEach(function () {
+            role = 'manager';
+
+            compileComponent();
+          });
+
+          it('does not include the "Delete" action', function () {
+            expect(_.includes(flattenActions(controller.allowedActions), 'delete')).toBe(false);
+          });
+        });
+
+        describe('when the user is a staff', function () {
+          beforeEach(function () {
+            role = 'staff';
+
+            compileComponent();
+          });
+
+          it('does not include the "Delete" action', function () {
+            expect(_.includes(flattenActions(controller.allowedActions), 'delete')).toBe(false);
+          });
+        });
+      });
+
+      describe('when the user wants to change status of leave request', function () {
+        // Any action, role or request could be specified here
+        var action = 'approve';
+
+        beforeEach(function () {
+          // Any role or request could be specified here
+          role = 'admin';
+          leaveRequest = getRequest();
+          compileComponent();
+          spyOn($rootScope, '$emit');
+        });
+
+        describe('basic tests', function () {
+          beforeEach(function () {
+            spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
+              .and.callThrough();
+
+            controller.action(action);
             $rootScope.$digest();
           });
 
-          it('opens a leave request modal with this request with a correct default status', function () {
-            expect(LeavePopup.openModal).toHaveBeenCalledWith({
-              leaveRequest: leaveRequest,
-              leaveType: leaveRequest.request_type,
-              selectedContactId: leaveRequest.contact_id,
-              forceRecalculateBalanceChange: true,
-              defaultStatus: expectedDefaultStatus
+          it('checks if the balance has been changed', function () {
+            expect(controller.leaveRequest.checkIfBalanceChangeNeedsRecalculation)
+              .toHaveBeenCalled();
+          });
+        });
+
+        describe('when balance change has not been changed', function () {
+          beforeEach(function () {
+            spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
+              .and.returnValue($q.resolve(false));
+            resolveDialogWith(null);
+            controller.action(action);
+            $rootScope.$digest();
+          });
+
+          it('shows a loading confirmation dialog', function () {
+            expect(dialog.open).toHaveBeenCalledWith(jasmine.objectContaining({
+              loading: true
+            }));
+          });
+
+          it('does not emit an event', function () {
+            expect($rootScope.$emit).not.toHaveBeenCalled();
+          });
+
+          describe('when the user confirms the action', function () {
+            describe('when the action is successfully executed', function () {
+              beforeEach(function () {
+                spyOn(leaveRequest, action).and.returnValue($q.resolve());
+                resolveDialogWith(true);
+                controller.action(action);
+                $rootScope.$digest();
+              });
+
+              it('emits an event', function () {
+                expect(pubSub.publish)
+                  .toHaveBeenCalledWith('LeaveRequest::statusUpdate', {
+                    status: action,
+                    leaveRequest: leaveRequest
+                  });
+              });
+            });
+
+            describe('when the action is rejected by server', function () {
+              beforeEach(function () {
+                spyOn(leaveRequest, action).and.returnValue($q.reject());
+                spyOn(notification, 'error').and.callThrough();
+                resolveDialogWith(true);
+                controller.action(action);
+                $rootScope.$digest();
+              });
+
+              it('does not emit an event', function () {
+                expect(pubSub.publish).not.toHaveBeenCalled();
+              });
+
+              it('shows a notification', function () {
+                expect(notification.error).toHaveBeenCalled();
+              });
             });
           });
         });
-      });
 
-      describe('when the user wants either to cancel, reject or delete the leave request', function () {
-        beforeEach(function () {
-          spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
-            .and.callThrough();
+        describe('when balance change has been changed', function () {
+          var proceedWithBalanceChangeRecalculation;
+
+          beforeEach(function () {
+            spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
+              .and.returnValue($q.resolve(true));
+            spyOn(dialog, 'open').and.callFake(function (params) {
+              params.optionsPromise().then(function (props) {
+                proceedWithBalanceChangeRecalculation = props.onCloseAfterConfirm;
+              });
+            });
+            spyOn(LeaveRequestService,
+              'getBalanceChangeRecalculationPromptOptions').and.callThrough();
+            controller.action(action);
+            $rootScope.$digest();
+          });
+
+          it('prompts if user would like to proceed with balance change recalculation', function () {
+            expect(LeaveRequestService.getBalanceChangeRecalculationPromptOptions)
+              .toHaveBeenCalled();
+            expect(dialog.open).toHaveBeenCalled();
+          });
+
+          describe('when user proceeds with balance change recalculation', function () {
+            var expectedDefaultStatus = 'approved';
+
+            beforeEach(function () {
+              spyOn(LeavePopup, 'openModal');
+              proceedWithBalanceChangeRecalculation();
+              $rootScope.$digest();
+            });
+
+            it('opens a leave request modal with this request with a correct default status', function () {
+              expect(LeavePopup.openModal).toHaveBeenCalledWith({
+                leaveRequest: leaveRequest,
+                leaveType: leaveRequest.request_type,
+                selectedContactId: leaveRequest.contact_id,
+                forceRecalculateBalanceChange: true,
+                defaultStatus: expectedDefaultStatus
+              });
+            });
+          });
         });
 
-        ['cancel', 'reject', 'delete'].forEach(function (action) {
+        describe('when the user wants either to cancel, reject or delete the leave request', function () {
           beforeEach(function () {
-            controller.action(action);
+            spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
+              .and.callThrough();
+          });
+
+          ['cancel', 'reject', 'delete'].forEach(function (action) {
+            beforeEach(function () {
+              controller.action(action);
+              $rootScope.$digest();
+            });
+
+            it('skips checking of the balance change', function () {
+              expect(controller.leaveRequest.checkIfBalanceChangeNeedsRecalculation)
+                .not.toHaveBeenCalled();
+            });
+          });
+        });
+
+        describe('when request is TOIL', function () {
+          beforeEach(function () {
+            leaveRequest = getRequest('toil', 'awaitingApproval');
+
+            compileComponent();
+            spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
+              .and.callThrough();
+            controller.action('approve');
             $rootScope.$digest();
           });
 
@@ -651,45 +670,28 @@ define([
         });
       });
 
-      describe('when request is TOIL', function () {
+      describe('openLeavePopup()', function () {
+        var event;
+        var params = {
+          leaveRequest: { key: 'value' },
+          leaveType: 'some_leave_type',
+          selectedContactId: '101'
+        };
+
         beforeEach(function () {
-          leaveRequest = getRequest('toil', 'awaitingApproval');
+          event = jasmine.createSpyObj('event', ['stopPropagation']);
 
-          compileComponent();
-          spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
-            .and.callThrough();
-          controller.action('approve');
-          $rootScope.$digest();
+          spyOn(LeavePopup, 'openModal');
+          controller.openLeavePopup(event, params);
         });
 
-        it('skips checking of the balance change', function () {
-          expect(controller.leaveRequest.checkIfBalanceChangeNeedsRecalculation)
-            .not.toHaveBeenCalled();
+        it('opens the leave request popup', function () {
+          expect(LeavePopup.openModal).toHaveBeenCalledWith(params);
         });
-      });
-    });
 
-    describe('openLeavePopup()', function () {
-      var event;
-      var params = {
-        leaveRequest: { key: 'value' },
-        leaveType: 'some_leave_type',
-        selectedContactId: '101'
-      };
-
-      beforeEach(function () {
-        event = jasmine.createSpyObj('event', ['stopPropagation']);
-
-        spyOn(LeavePopup, 'openModal');
-        controller.openLeavePopup(event, params);
-      });
-
-      it('opens the leave request popup', function () {
-        expect(LeavePopup.openModal).toHaveBeenCalledWith(params);
-      });
-
-      it('stops the event from propagating', function () {
-        expect(event.stopPropagation).toHaveBeenCalled();
+        it('stops the event from propagating', function () {
+          expect(event.stopPropagation).toHaveBeenCalled();
+        });
       });
     });
 
