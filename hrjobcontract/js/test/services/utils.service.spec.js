@@ -11,7 +11,8 @@ define([
   'use strict';
 
   describe('utilsService', function () {
-    var $provide, $rootScope, $q, $uibModal, utilsService, apiService, AbsencePeriod, $window;
+    var $httpBackend, $provide, $rootScope, $q, $uibModal, utilsService, apiService,
+      AbsencePeriod, $window;
 
     beforeEach(module('job-contract', 'leave-absences.models', function (_$provide_) {
       $provide = _$provide_;
@@ -22,7 +23,8 @@ define([
       });
     }));
 
-    beforeEach(inject(function (_$rootScope_, _$q_, _$uibModal_, _$window_, _utilsService_, _apiService_, _AbsencePeriod_) {
+    beforeEach(inject(function (_$httpBackend_, _$rootScope_, _$q_, _$uibModal_, _$window_, _utilsService_, _apiService_, _AbsencePeriod_) {
+      $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
       $q = _$q_;
       $uibModal = _$uibModal_;
@@ -34,6 +36,9 @@ define([
 
     beforeEach(function () {
       spyOn(apiService, 'resource').and.callFake(function () { return { get: function () {} }; });
+
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
+      $httpBackend.whenGET(/views.*/).respond({});
     });
 
     describe('getAbsenceType', function () {
