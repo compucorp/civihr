@@ -7,7 +7,7 @@ define([
 
   mocks.service('SessionMock', ['$q', function ($q) {
     var session = {
-      contactId: 999
+      contactId: '1'
     };
 
     /**

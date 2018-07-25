@@ -1,10 +1,14 @@
-<div uib-dropdown dropdown-append-to-body ng-if="actions.allowedActions.length">
+<div uib-dropdown dropdown-append-to-body>
   <a href class="btn btn-default btn-inline"
     ng-click="$event.stopPropagation()" uib-dropdown-toggle>
     <i class="fa fa-ellipsis-v"></i>
   </a>
-  <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu>
-    <li ng-repeat="action in actions.allowedActions"
+  <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu
+    ng-switch="actions.loading.component">
+    <li ng-switch-when="true">
+      <crm-loading show="!actions.loading.component"></crm-loading>
+    </li>
+    <li ng-switch-when="false" ng-repeat="action in actions.allowedActions"
       ng-switch="!action.isDirectAction">
       <a href
         ng-click="actions.openLeavePopup($event, { leaveRequest: actions.leaveRequest })"
