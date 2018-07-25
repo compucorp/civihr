@@ -14,6 +14,7 @@
         amendAppLogoMenuItem();
         amendContactPageAndForm();
         amendVacancyForm();
+        applyMiscChanges();
         changeContactSourceFieldHelpText();
         toggleActiveClassOnHoverOnAnyMainMenuItem();
         useFontAwesomeArrowsInSubMenuItems();
@@ -66,14 +67,15 @@
      * Amends the contact page and the contact form
      */
     function amendContactPageAndForm () {
-      // Rename "Summary" tab to "Personal Details"
-      // Hack to check contact type - This field only appears for individuals
-      if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
-        $('.crm-contact-tabs-list #tab_summary a').text('Personal Details');
-      }
+      if (CRM.formName === 'contactForm' || CRM.pageName === 'viewSummary') {
+        // Rename "Summary" tab to "Personal Details"
+        // Hack to check contact type - This field only appears for individuals
+        if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
+          $('.crm-contact-tabs-list #tab_summary a').text('Personal Details');
+        }
 
-      manipulateDOMOfInlineCustomData();
-      applyMiscChanges();
+        manipulateDOMOfInlineCustomData();
+      }
     }
 
     /**

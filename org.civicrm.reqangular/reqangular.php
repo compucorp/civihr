@@ -114,9 +114,7 @@ function reqangular_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  * @param CRM_Core_Form $form
  */
 function reqangular_civicrm_buildForm($formName, &$form) {
-  if(_reqangular_checkIfFormRequiresReqangular($formName)) {
-    _attach_reqangular();
-  }
+  _reqangular_inject_reqangular();
 }
 
 /**
@@ -133,7 +131,7 @@ function reqangular_civicrm_pageRun($page) {
    * figure out a better solution to avoid having our own copy of angular in CiviHR
    */
   if (!_reqangular_isAngularCorePage($page)) {
-    _attach_reqangular();
+    _reqangular_inject_reqangular();
   }
 }
 
@@ -150,21 +148,9 @@ function _reqangular_isAngularCorePage($page) {
 }
 
 /**
- * Checks if the given form requires reqangular.min.js
- *
- * @param  [string]  $formName
- * @return boolean
+ * Injects reqangular Javascript files
  */
-function _reqangular_checkIfFormRequiresReqangular($formName) {
-  $listOfFormName = ['CRM_Contact_Form_Contact', 'CRM_HRRecruitment_Form_HRVacancy', 'CRM_HRRecruitment_Form_Application'];
-
-  return in_array($formName, $listOfFormName);
-}
-
-/**
- * Adds reqangular Javascript files
- */
-function _attach_reqangular() {
+function _reqangular_inject_reqangular() {
   $url = CRM_Extension_System::singleton()->getMapper()->keyToUrl('org.civicrm.reqangular');
 
   CRM_Core_Resources::singleton()->addVars('reqAngular', array(
