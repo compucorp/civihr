@@ -4,6 +4,8 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/components',
+  'common/models/contact',
+  'common/models/session.model',
   'common/services/hr-settings',
   'common/services/notification.service',
   'common/services/pub-sub',
@@ -28,13 +30,15 @@ define([
     controller: LeaveRequestActionsController
   });
 
-  LeaveRequestActionsController.$inject = ['$log', '$rootScope', 'dialog',
-    'LeavePopup', 'LeaveRequestService', 'pubSub', 'shared-settings', 'notificationService'];
+  LeaveRequestActionsController.$inject = ['$log', '$q', '$rootScope', 'Contact',
+    'dialog', 'LeavePopup', 'LeaveRequestService', 'pubSub', 'shared-settings',
+    'notificationService', 'Session'];
 
-  function LeaveRequestActionsController ($log, $rootScope, dialog,
-    LeavePopup, LeaveRequestService, pubSub, sharedSettings, notification) {
+  function LeaveRequestActionsController ($log, $q, $rootScope, Contact, dialog,
+    LeavePopup, LeaveRequestService, pubSub, sharedSettings, notification, Session) {
     $log.debug('Component: leave-request-action-dropdown');
 
+    var currentlyLoggedInContactId;
     var vm = this;
     var statusIdBeforeAction;
     var statusNames = sharedSettings.statusNames;
@@ -116,13 +120,31 @@ define([
     };
 
     vm.allowedActions = [];
+    vm.loading = { component: true };
 
     vm.action = action;
     vm.openLeavePopup = openLeavePopup;
 
     (function init () {
-      indexSupportData();
-      setAllowedActions();
+      $q.resolve()
+        .then(indexSupportData)
+        .then(loadCurrentlyLoggedInContactId)
+        .then(function () {
+          if (!checkIfOwnLeaveRequest()) {
+            return;
+          }
+
+          return checkIfContactIsSelfLeaveApprover()
+            .then(function (isSelfLeaveApprover) {
+              if (isSelfLeaveApprover) {
+                vm.role = 'admin';
+              }
+            });
+        })
+        .then(setAllowedActions)
+        .finally(function () {
+          vm.loading.component = false;
+        });
     }());
 
     /**
@@ -216,6 +238,25 @@ define([
     }
 
     /**
+     * Checks if the currently logged in user is a leave approver
+     *
+     * @return {Promise}
+     */
+    function checkIfContactIsSelfLeaveApprover () {
+      return Contact.find(currentlyLoggedInContactId)
+        .then(function (currentlyLoggedInContact) {
+          return currentlyLoggedInContact.checkIfSelfLeaveApprover();
+        });
+    }
+
+    /**
+     * Checks if the leave request is own
+     */
+    function checkIfOwnLeaveRequest () {
+      return currentlyLoggedInContactId === vm.leaveRequest.contact_id;
+    }
+
+    /**
      * Indexes leave request statuses and absence types
      * if they are passed as arrays to the component
      */
@@ -254,6 +295,16 @@ define([
             });
         }
       };
+    }
+
+    /**
+     * Gets and sets the ID of the currently logged in contact
+     */
+    function loadCurrentlyLoggedInContactId () {
+      return Session.get()
+        .then(function (session) {
+          currentlyLoggedInContactId = session.contactId;
+        });
     }
 
     /**
@@ -313,7 +364,6 @@ define([
      *
      * Sets actions that can be performed within the
      * leave request basing on its status and user role
-     *
      */
     function setAllowedActions () {
       var leaveRequestStatus = vm.leaveRequestStatuses[vm.leaveRequest.status_id].name;

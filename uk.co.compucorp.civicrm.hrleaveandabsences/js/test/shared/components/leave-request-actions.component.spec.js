@@ -7,6 +7,7 @@ define([
   'leave-absences/mocks/data/option-group.data',
   'leave-absences/mocks/data/absence-type.data',
   'leave-absences/mocks/data/leave-request.data',
+  'common/mocks/services/api/contact-mock',
   'common/services/notification.service',
   'common/services/pub-sub',
   'leave-absences/mocks/apis/absence-type-api-mock',
@@ -19,8 +20,8 @@ define([
   'use strict';
 
   describe('leaveRequestActions', function () {
-    var $componentController, $log, $provide, $q, $rootScope, controller,
-      LeaveRequestInstance, dialog, sharedSettings, role, leaveRequest,
+    var $componentController, $log, $provide, $q, $rootScope, controller, Contact,
+      ContactInstance, LeaveRequestInstance, dialog, sharedSettings, leaveRequest,
       LeavePopup, LeaveRequestService, notification, pubSub;
     var absenceTypes = _.indexBy(absenceTypeData.all().values, 'id');
     var leaveRequestStatuses = _.indexBy(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), 'value');
@@ -28,6 +29,15 @@ define([
     beforeEach(module('leave-absences.mocks', 'manager-leave', function (_$provide_) {
       $provide = _$provide_;
     }));
+
+    beforeEach(function () {
+      inject([
+        'api.contact.mock',
+        function (contactAPIMock) {
+          $provide.value('api.contact', contactAPIMock);
+        }
+      ]);
+    });
 
     beforeEach(inject(function (_AbsenceTypeAPIMock_, _LeaveRequestAPIMock_, _OptionGroupAPIMock_) {
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
@@ -40,11 +50,14 @@ define([
     }]));
 
     beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-      _dialog_, _LeaveRequestInstance_, _LeavePopup_, _LeaveRequestService_, _notificationService_, _pubSub_) {
+      _dialog_, _Contact_, _ContactInstance_, _LeaveRequestInstance_, _LeavePopup_,
+      _LeaveRequestService_, _notificationService_, _pubSub_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
       $rootScope = _$rootScope_;
+      Contact = _Contact_;
+      ContactInstance = _ContactInstance_;
       dialog = _dialog_;
       LeaveRequestInstance = _LeaveRequestInstance_;
       LeavePopup = _LeavePopup_;
@@ -60,19 +73,38 @@ define([
       spyOn(pubSub, 'publish').and.callThrough();
     });
 
-    beforeEach(function () {
-      role = 'staff';
-      leaveRequest = getRequest();
+    describe('initiation', function () {
+      beforeEach(function () {
+        leaveRequest = getRequest();
 
-      makeRequestExpired(leaveRequest, false);
-      compileComponent();
-    });
+        compileComponent('staff');
+      });
 
-    it('is initialized', function () {
-      expect($log.debug).toHaveBeenCalled();
+      it('is initialized', function () {
+        expect($log.debug).toHaveBeenCalled();
+      });
+
+      it('shows that it is loading', function () {
+        expect(controller.loading.component).toBe(true);
+      });
     });
 
     describe('basic tests', function () {
+      beforeEach(function () {
+        makeRequestExpired(leaveRequest, false);
+        spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.returnValue(false);
+      });
+
+      describe('when the component is ready to show the actions', function () {
+        beforeEach(function () {
+          compileComponentAndDigest();
+        });
+
+        it('shows that is it loaded', function () {
+          expect(controller.loading.component).toBe(false);
+        });
+      });
+
       describe('when leave request status is "awaiting for approval"', function () {
         beforeEach(function () {
           leaveRequest = getRequest('leave', 'awaitingApproval');
@@ -80,9 +112,7 @@ define([
 
         describe('when the user is admin', function () {
           beforeEach(function () {
-            role = 'admin';
-
-            compileComponent();
+            compileComponentAndDigest('admin');
           });
 
           it('shows actions "Respond", "Approve", "Reject", "Cancel" and "Delete"', function () {
@@ -92,9 +122,7 @@ define([
 
         describe('when the user is manager', function () {
           beforeEach(function () {
-            role = 'manager';
-
-            compileComponent();
+            compileComponentAndDigest('manager');
           });
 
           it('shows actions "Respond", "Approve", "Reject" and "Cancel"', function () {
@@ -104,9 +132,7 @@ define([
 
         describe('when the user is staff', function () {
           beforeEach(function () {
-            role = 'staff';
-
-            compileComponent();
+            compileComponentAndDigest('staff');
           });
 
           it('shows actions "Edit", "Cancel"', function () {
@@ -122,9 +148,7 @@ define([
 
         describe('when the user is admin', function () {
           beforeEach(function () {
-            role = 'admin';
-
-            compileComponent();
+            compileComponentAndDigest('admin');
           });
 
           it('shows actions "Edit", "Cancel" and "Delete"', function () {
@@ -134,9 +158,7 @@ define([
 
         describe('when the user is manager', function () {
           beforeEach(function () {
-            role = 'manager';
-
-            compileComponent();
+            compileComponentAndDigest('manager');
           });
 
           it('shows actions "Edit" and "Cancel"', function () {
@@ -146,9 +168,7 @@ define([
 
         describe('when the user is staff', function () {
           beforeEach(function () {
-            role = 'staff';
-
-            compileComponent();
+            compileComponentAndDigest('staff');
           });
 
           it('shows actions "Respond" and "Cancel"', function () {
@@ -164,9 +184,7 @@ define([
 
         describe('when the user is admin', function () {
           beforeEach(function () {
-            role = 'admin';
-
-            compileComponent();
+            compileComponentAndDigest('admin');
           });
 
           it('shows actions "Edit", "Cancel" and "Delete"', function () {
@@ -176,9 +194,7 @@ define([
 
         describe('when the user is manager', function () {
           beforeEach(function () {
-            role = 'manager';
-
-            compileComponent();
+            compileComponentAndDigest('manager');
           });
 
           it('shows actions "Edit"', function () {
@@ -188,9 +204,7 @@ define([
 
         describe('when the user is staff', function () {
           beforeEach(function () {
-            role = 'staff';
-
-            compileComponent();
+            compileComponentAndDigest('staff');
           });
 
           it('shows actions "View" and "Cancel"', function () {
@@ -206,9 +220,7 @@ define([
 
         describe('when the user is admin', function () {
           beforeEach(function () {
-            role = 'admin';
-
-            compileComponent();
+            compileComponentAndDigest('admin');
           });
 
           it('shows actions "Edit", "Cancel" and "Delete"', function () {
@@ -218,9 +230,7 @@ define([
 
         describe('when the user is manager', function () {
           beforeEach(function () {
-            role = 'manager';
-
-            compileComponent();
+            compileComponentAndDigest('manager');
           });
 
           it('shows actions "Edit"', function () {
@@ -230,9 +240,7 @@ define([
 
         describe('when the user is staff', function () {
           beforeEach(function () {
-            role = 'staff';
-
-            compileComponent();
+            compileComponentAndDigest('staff');
           });
 
           it('shows actions "View" and "Cancel"', function () {
@@ -248,9 +256,7 @@ define([
 
         describe('when the user is admin', function () {
           beforeEach(function () {
-            role = 'admin';
-
-            compileComponent();
+            compileComponentAndDigest('admin');
           });
 
           it('shows actions "Edit" and "Delete"', function () {
@@ -260,9 +266,7 @@ define([
 
         describe('when the user is manager', function () {
           beforeEach(function () {
-            role = 'manager';
-
-            compileComponent();
+            compileComponentAndDigest('manager');
           });
 
           it('shows actions "Edit"', function () {
@@ -272,9 +276,7 @@ define([
 
         describe('when the user is staff', function () {
           beforeEach(function () {
-            role = 'staff';
-
-            compileComponent();
+            compileComponentAndDigest('staff');
           });
 
           it('shows actions "View"', function () {
@@ -295,9 +297,7 @@ define([
 
           describe('when the user is admin', function () {
             beforeEach(function () {
-              role = 'admin';
-
-              compileComponent();
+              compileComponentAndDigest('admin');
             });
 
             it('includes "Cancel" action', function () {
@@ -307,9 +307,7 @@ define([
 
           describe('when the user is manager', function () {
             beforeEach(function () {
-              role = 'manager';
-
-              compileComponent();
+              compileComponentAndDigest('manager');
             });
 
             it('includes "Cancel" action', function () {
@@ -319,9 +317,7 @@ define([
 
           describe('when the user is staff', function () {
             beforeEach(function () {
-              role = 'staff';
-
-              compileComponent();
+              compileComponentAndDigest('staff');
             });
 
             it('includes "Cancel" action', function () {
@@ -337,9 +333,7 @@ define([
 
           describe('when the user is admin', function () {
             beforeEach(function () {
-              role = 'admin';
-
-              compileComponent();
+              compileComponentAndDigest('admin');
             });
 
             it('includes "Cancel" action', function () {
@@ -349,9 +343,7 @@ define([
 
           describe('when the user is manager', function () {
             beforeEach(function () {
-              role = 'manager';
-
-              compileComponent();
+              compileComponentAndDigest('manager');
             });
 
             it('includes "Cancel" action', function () {
@@ -361,9 +353,7 @@ define([
 
           describe('when the user is staff', function () {
             beforeEach(function () {
-              role = 'staff';
-
-              compileComponent();
+              compileComponentAndDigest('staff');
             });
 
             it('does not include "Cancel" action', function () {
@@ -385,9 +375,7 @@ define([
 
           describe('when the user is admin', function () {
             beforeEach(function () {
-              role = 'admin';
-
-              compileComponent();
+              compileComponentAndDigest('admin');
             });
 
             it('includes "Cancel" action', function () {
@@ -397,9 +385,7 @@ define([
 
           describe('when the user is manager', function () {
             beforeEach(function () {
-              role = 'manager';
-
-              compileComponent();
+              compileComponentAndDigest('manager');
             });
 
             it('includes "Cancel" action', function () {
@@ -409,9 +395,7 @@ define([
 
           describe('when the user is staff', function () {
             beforeEach(function () {
-              role = 'staff';
-
-              compileComponent();
+              compileComponentAndDigest('staff');
             });
 
             it('does not include "Cancel" action', function () {
@@ -427,9 +411,7 @@ define([
 
           describe('when the user is admin', function () {
             beforeEach(function () {
-              role = 'admin';
-
-              compileComponent();
+              compileComponentAndDigest('admin');
             });
 
             it('includes "Cancel" action', function () {
@@ -439,9 +421,7 @@ define([
 
           describe('when the user is manager', function () {
             beforeEach(function () {
-              role = 'manager';
-
-              compileComponent();
+              compileComponentAndDigest('manager');
             });
 
             it('includes "Cancel" action', function () {
@@ -451,9 +431,7 @@ define([
 
           describe('when the user is staff', function () {
             beforeEach(function () {
-              role = 'staff';
-
-              compileComponent();
+              compileComponentAndDigest('staff');
             });
 
             it('does not include "Cancel" action', function () {
@@ -470,9 +448,7 @@ define([
 
         describe('when the user is an admin', function () {
           beforeEach(function () {
-            role = 'admin';
-
-            compileComponent();
+            compileComponentAndDigest('admin');
           });
 
           it('includes the "Delete" action', function () {
@@ -482,9 +458,7 @@ define([
 
         describe('when the user is a manager', function () {
           beforeEach(function () {
-            role = 'manager';
-
-            compileComponent();
+            compileComponentAndDigest('manager');
           });
 
           it('does not include the "Delete" action', function () {
@@ -494,9 +468,7 @@ define([
 
         describe('when the user is a staff', function () {
           beforeEach(function () {
-            role = 'staff';
-
-            compileComponent();
+            compileComponentAndDigest('staff');
           });
 
           it('does not include the "Delete" action', function () {
@@ -510,10 +482,10 @@ define([
         var action = 'approve';
 
         beforeEach(function () {
-          // Any role or request could be specified here
-          role = 'admin';
           leaveRequest = getRequest();
-          compileComponent();
+
+          // Any role or request could be specified here
+          compileComponentAndDigest('admin');
           spyOn($rootScope, '$emit');
         });
 
@@ -656,7 +628,7 @@ define([
           beforeEach(function () {
             leaveRequest = getRequest('toil', 'awaitingApproval');
 
-            compileComponent();
+            compileComponentAndDigest();
             spyOn(controller.leaveRequest, 'checkIfBalanceChangeNeedsRecalculation')
               .and.callThrough();
             controller.action('approve');
@@ -682,6 +654,7 @@ define([
           event = jasmine.createSpyObj('event', ['stopPropagation']);
 
           spyOn(LeavePopup, 'openModal');
+          compileComponentAndDigest();
           controller.openLeavePopup(event, params);
         });
 
@@ -691,6 +664,46 @@ define([
 
         it('stops the event from propagating', function () {
           expect(event.stopPropagation).toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('self approving', function () {
+      beforeEach(function () {
+        leaveRequest = getRequest('leave', 'awaitingApproval');
+
+        makeRequestExpired(leaveRequest, false);
+      });
+
+      describe('when own leave request', function () {
+        beforeEach(function () {
+          spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.returnValue(true);
+          compileComponentAndDigest();
+        });
+
+        it('shows same actions as "admin" role will see', function () {
+          expect(flattenActions(controller.allowedActions)).toEqual(
+            ['respond', 'approve', 'reject', 'cancel', 'delete']);
+        });
+      });
+
+      describe('when other contact\'s leave request', function () {
+        beforeEach(function () {
+          leaveRequest.contact_id = '112358';
+
+          spyOn(Contact, 'getCurrentlyLoggedIn').and.callThrough();
+          spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.callThrough();
+          compileComponentAndDigest();
+        });
+
+        it('does not check if the contact can approve their own requests', function () {
+          expect(Contact.getCurrentlyLoggedIn).not.toHaveBeenCalled();
+          expect(ContactInstance.checkIfSelfLeaveApprover).not.toHaveBeenCalled();
+        });
+
+        it('does not amend the actions', function () {
+          expect(flattenActions(controller.allowedActions)).toEqual(
+            ['edit', 'cancel']);
         });
       });
     });
@@ -772,13 +785,30 @@ define([
       });
     }
 
-    function compileComponent () {
+    /**
+     * Compiles the component for a specific role and sets the controller
+     *
+     * @param {String} [role] admin|manager|staff, defaults to "staff"
+     */
+    function compileComponent (role) {
+      role = role || 'staff';
+
       controller = $componentController('leaveRequestActions', null, {
         leaveRequest: leaveRequest,
         role: role,
         absenceTypes: absenceTypes,
         leaveRequestStatuses: leaveRequestStatuses
       });
+    }
+
+    /**
+     * Compiles the component for a specific role and digests the scope
+     *
+     * @param {String} [role] admin|manager|staff, defaults to "staff"
+     */
+    function compileComponentAndDigest (role) {
+      compileComponent(role);
+      $rootScope.$digest();
     }
   });
 });
