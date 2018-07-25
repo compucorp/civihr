@@ -90,6 +90,19 @@ class CRM_HRCore_Service_DrupalUserService {
   }
 
   /**
+   * Defaults user's role to supplied role(s)
+   *
+   * @param string $email
+   * @param array $roles
+   */
+  public function setRoles($email, $roles) {
+    $user = user_load_by_mail($email);
+    $roles = $this->roleService->getRoleIds($roles);
+
+    user_save($user, ['roles' => $roles]);
+  }
+
+  /**
    * @param string $name
    *
    * @return bool

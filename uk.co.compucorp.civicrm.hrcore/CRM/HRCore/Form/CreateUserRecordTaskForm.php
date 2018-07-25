@@ -225,7 +225,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
   }
 
   /**
-   * Restores user account and update roles after delete.
+   * Restores user account and set role(s) after delete.
    * Deleting user account does not remove drupal account.
    * The user account is just unlinked in the UF match civi table
    *
@@ -234,7 +234,7 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
    * @param int $contactId
    */
   public function restoreAccount($user, $roles, $contactId) {
-    $this->drupalUserService->addRoles($user->mail, $roles);
+    $this->drupalUserService->setRoles($user->mail, $roles);
 
     $ufMatch['uf_id'] = $user->uid;
     $ufMatch['contact_id'] = $contactId;
