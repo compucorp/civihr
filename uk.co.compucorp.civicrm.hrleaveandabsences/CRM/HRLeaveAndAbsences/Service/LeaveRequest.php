@@ -137,13 +137,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @return string
    */
   private function getErrorMessageForInvalidStatusTransition($params) {
-    $leaveStatuses = LeaveRequest::getStatuses();
     $leaveStatusesLabels = LeaveRequest::buildOptions('status_id');
-    $isOwnRequest = CRM_Core_Session::getLoggedInContactID() === $params['contact_id'];
-
-    if ($isOwnRequest && (int)$params['status_id'] === (int)$leaveStatuses['approved']) {
-      return "You can't approve your own leave requests";
-    }
 
     return "You can't change the Leave Request status from \"" .
       $leaveStatusesLabels[$this->getCurrentStatus($params)] . '" to "' .
