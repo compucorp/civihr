@@ -33,13 +33,14 @@ define([
     vm.requestStatus = {};
 
     vm.$onChanges = $onChanges;
+    vm.$onInit = $onInit;
 
     /**
      * Initializes the controller by emiting a child is loading event.
      */
-    (function init () {
+    function $onInit () {
       $scope.$emit('LeaveWidget::childIsLoading', childComponentName);
-    })();
+    }
 
     /**
      * Implements $onChanges method for AngularJS Components. Waits for bindings

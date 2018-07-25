@@ -23,12 +23,14 @@
 
       vm.contactId = CRM.adminId;
 
-      (function init () {
+      vm.$onInit = $onInit;
+
+      function $onInit () {
         // @NOTE this is a temporary solution that sets date format from CRM
         // to HRSettings. This should have been done in the config.js file
         // however Absence Tab has issues with routing so it isn't possible now.
         DateFormat.getDateFormat();
-      })();
+      }
     }
   });
 })(CRM);

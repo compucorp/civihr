@@ -33,13 +33,14 @@ define([
     vm.leaveRequests = [];
 
     vm.$onChanges = $onChanges;
+    vm.$onInit = $onInit;
 
     /**
      * Initializes the controller by emiting a child is loading event.
      */
-    (function init () {
+    function $onInit () {
       $scope.$emit('LeaveWidget::childIsLoading', childComponentName);
-    })();
+    }
 
     /**
      * Implements the $onChanges method for angular controllers. When bindings

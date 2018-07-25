@@ -54,15 +54,18 @@ define([
     vm.leaveRequestStatuses = [];
     vm.sicknessAbsenceTypes = [];
 
+    vm.$onInit = $onInit;
+
     /**
      * Initializes the component by watching for events, and loading
      * dependencies.
      */
-    (function init () {
+    function $onInit () {
       $log.debug('Controller: leaveWidgetController');
+
       initWatchers();
       loadDependencies();
-    })();
+    }
 
     /**
      * Increases the child component counter and sets loading child components
