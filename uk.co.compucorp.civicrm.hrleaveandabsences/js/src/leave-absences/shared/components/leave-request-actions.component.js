@@ -242,6 +242,8 @@ define([
 
     /**
      * Checks if the leave request is own
+     *
+     * @return {Boolean}
      */
     function checkIfOwnLeaveRequest () {
       return currentlyLoggedInContactId === vm.leaveRequest.contact_id;
@@ -289,7 +291,9 @@ define([
     }
 
     /**
-     * Gets and sets the ID of the currently logged in contact
+     * Loads the ID of the currently logged in contact
+     *
+     * @return {Promise}
      */
     function loadCurrentlyLoggedInContactId () {
       return Session.get()
