@@ -143,7 +143,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
     $nonPossibleTransitions = $this->allNonPossibleStatusTransitionForLeaveApprover();
 
     foreach($nonPossibleTransitions as $transition) {
-      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $adminID));
+      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo(
+        $transition[0],
+        $transition[1],
+        $adminID
+      ));
     }
   }
 
@@ -154,7 +158,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
     $possibleTransitions = $this->allPossibleStatusTransitionForLeaveApprover();
 
     foreach($possibleTransitions as $transition) {
-      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $adminID));
+      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo(
+        $transition[0],
+        $transition[1],
+        $adminID
+      ));
     }
   }
 
@@ -166,7 +174,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
     $nonPossibleTransitions = $this->allNonPossibleStatusTransitionForLeaveApprover();
 
     foreach($nonPossibleTransitions as $transition) {
-      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $manager['id']));
+      $this->assertFalse($this->leaveRequestStatusMatrix->canTransitionTo(
+        $transition[0],
+        $transition[1],
+        $manager['id']
+      ));
     }
   }
 
@@ -178,7 +190,11 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrixTest extends BaseHe
     $possibleTransitions = $this->allPossibleStatusTransitionForLeaveApprover();
 
     foreach($possibleTransitions as $transition) {
-      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo($transition[0], $transition[1], $manager['id']));
+      $this->assertTrue($this->leaveRequestStatusMatrix->canTransitionTo(
+        $transition[0],
+        $transition[1],
+        $manager['id']
+      ));
     }
   }
 
