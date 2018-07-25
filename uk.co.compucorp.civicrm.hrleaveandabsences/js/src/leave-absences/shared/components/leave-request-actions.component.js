@@ -130,16 +130,7 @@ define([
         .then(indexSupportData)
         .then(loadCurrentlyLoggedInContactId)
         .then(function () {
-          if (!checkIfOwnLeaveRequest()) {
-            return;
-          }
-
-          return checkIfContactIsSelfLeaveApprover()
-            .then(function (isSelfLeaveApprover) {
-              if (isSelfLeaveApprover) {
-                vm.role = 'admin';
-              }
-            });
+          return checkIfOwnLeaveRequest() && setRoleToAdminIfSelfLeaveApprover();
         })
         .then(setAllowedActions)
         .finally(function () {
@@ -384,6 +375,21 @@ define([
           isDirectAction: actions[action].isDirectAction
         };
       });
+    }
+
+    /**
+     * Checks if the contact is a self leave approver and, if true,
+     * sets the role to "admin"
+     *
+     * @return {Promise}
+     */
+    function setRoleToAdminIfSelfLeaveApprover () {
+      return checkIfContactIsSelfLeaveApprover()
+        .then(function (isSelfLeaveApprover) {
+          if (isSelfLeaveApprover) {
+            vm.role = 'admin';
+          }
+        });
     }
 
     /**

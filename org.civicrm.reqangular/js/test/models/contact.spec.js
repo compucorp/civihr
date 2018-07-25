@@ -62,7 +62,7 @@ define([
     ]));
 
     it('has the expected api', function () {
-      expect(Object.keys(Contact)).toEqual(['all', 'find', 'getCurrentlyLoggedIn', 'leaveManagees']);
+      expect(Object.keys(Contact)).toEqual(['all', 'find', 'getLoggedIn', 'leaveManagees']);
     });
 
     describe('all()', function () {
@@ -255,13 +255,13 @@ define([
       });
     });
 
-    describe('getCurrentlyLoggedIn()', function () {
+    describe('getLoggedIn()', function () {
       var result, loggedInContact;
 
       beforeEach(function () {
         var loggedInContactId;
 
-        Contact.getCurrentlyLoggedIn()
+        Contact.getLoggedIn()
           .then(function (_result_) {
             result = _result_;
           });

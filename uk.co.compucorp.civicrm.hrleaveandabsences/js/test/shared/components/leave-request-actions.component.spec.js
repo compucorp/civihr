@@ -691,13 +691,13 @@ define([
         beforeEach(function () {
           leaveRequest.contact_id = '112358';
 
-          spyOn(Contact, 'getCurrentlyLoggedIn').and.callThrough();
+          spyOn(Contact, 'find').and.callThrough();
           spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.callThrough();
           compileComponentAndDigest();
         });
 
         it('does not check if the contact can approve their own requests', function () {
-          expect(Contact.getCurrentlyLoggedIn).not.toHaveBeenCalled();
+          expect(Contact.find).not.toHaveBeenCalled();
           expect(ContactInstance.checkIfSelfLeaveApprover).not.toHaveBeenCalled();
         });
 

@@ -28,8 +28,8 @@ define([
          */
         checkIfSelfLeaveApprover: function () {
           return this.leaveManagees()
-            .then(function (contactManagees) {
-              return !!_.find(contactManagees, { id: this.id });
+            .then(function (contactLeaveManagees) {
+              return !!_.find(contactLeaveManagees, { id: this.id });
             }.bind(this));
         }
       });

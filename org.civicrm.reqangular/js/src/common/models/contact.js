@@ -155,7 +155,7 @@ define([
          *
          * @return {Promise} resolves with {ContactInstance}
          */
-        getCurrentlyLoggedIn: function () {
+        getLoggedIn: function () {
           return Session.get()
             .then(function (loggedInContact) {
               return this.find(loggedInContact.contactId);
