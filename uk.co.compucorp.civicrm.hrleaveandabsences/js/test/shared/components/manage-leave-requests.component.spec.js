@@ -885,6 +885,7 @@ define([
 
     function compileComponent () {
       controller = $componentController('manageLeaveRequests', null, { contactId: contactId });
+      controller.$onInit();
       $rootScope.$digest();
     }
   });

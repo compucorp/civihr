@@ -38,8 +38,10 @@
 
       beforeEach(module('common.services', 'leave-absences.templates',
         'my-leave', 'leave-absences.mocks', 'leave-absences.settings',
-        function (_$provide_) {
+        function (_$provide_, $qProvider) {
           $provide = _$provide_;
+
+          $qProvider.errorOnUnhandledRejections(false);
         }));
 
       beforeEach(inject(function (_$componentController_, _$q_, _$log_, _$rootScope_) {
@@ -892,6 +894,7 @@
 
       function compileComponent () {
         controller = $componentController('staffLeaveReport', null, { contactId: contactId });
+        controller.$onInit();
       }
 
       /**

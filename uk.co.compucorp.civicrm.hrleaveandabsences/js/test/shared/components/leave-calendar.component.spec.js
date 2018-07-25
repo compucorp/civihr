@@ -804,6 +804,7 @@
 
       function compileComponent (skipDigest, bindings) {
         controller = $componentController('leaveCalendar', null, _.assign({ contactId: currentContact.id }, bindings));
+        controller.$onInit();
         !skipDigest && $rootScope.$digest();
       }
 

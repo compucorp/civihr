@@ -26,7 +26,9 @@
       });
 
       function compileComponent () {
-        $componentController('absenceTabContainer');
+        var ctrl = $componentController('absenceTabContainer');
+
+        ctrl.$onInit();
         $rootScope.$digest();
       }
     });

@@ -184,6 +184,10 @@ define([
 
       function commonSetup (methodName) {
         instance = LeaveRequestInstance.init(helper.createRandomLeaveRequest());
+        instance.id = _.random(1, 10);
+
+        spyOn(instance, 'update').and.callThrough();
+
         promise = instance[methodName]();
       }
 
