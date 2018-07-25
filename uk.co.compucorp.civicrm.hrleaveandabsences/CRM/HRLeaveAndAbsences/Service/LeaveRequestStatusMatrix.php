@@ -149,10 +149,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix {
     $currentUserID = CRM_Core_Session::getLoggedInContactID();
     $statusMatrix = [];
 
-    if ($currentUserID == $leaveRequestContactID) {
-      $statusMatrix = $this->getStaffStatusMatrix();
-    } elseif ($this->shouldUseManagerMatrixForCurrentUser($leaveRequestContactID)) {
+    if ($this->shouldUseManagerMatrixForCurrentUser($leaveRequestContactID)) {
       $statusMatrix = $this->getManagerStatusMatrix();
+    } elseif ($currentUserID == $leaveRequestContactID) {
+      $statusMatrix = $this->getStaffStatusMatrix();
     }
 
     return $statusMatrix;

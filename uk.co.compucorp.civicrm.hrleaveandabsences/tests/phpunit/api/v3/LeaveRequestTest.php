@@ -2962,6 +2962,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testToilCanBeAccruedWhenToilIsInHoursAndToilToAccrueValueIsNotAValidToilAmountOptionValue() {
+    $this->setPermissions();
     $contactID = 1;
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -3221,6 +3222,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testCreateAlsoCreatesTheBalanceChangesForTheLeaveRequest() {
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
     $startDate = new DateTime();
     $endDate = new DateTime('+5 days');
 
@@ -4847,6 +4849,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $toDate = new DateTime('2016-01-10');
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => $fromDate->format('YmdHis'),
@@ -4895,6 +4898,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $toDate = new DateTime('2016-01-10 12:34:56');
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => $fromDate->format('YmdHis'),
@@ -4939,6 +4943,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
     $startDate = new DateTime();
     $endDate = new DateTime('+5 days');
 
@@ -4980,6 +4985,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testCreateReturnsTrueForFromEmailParameterWhenFromEmailIsConfigured() {
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
     $startDate = new DateTime();
     $endDate = new DateTime('+5 days');
 
@@ -5027,6 +5033,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $contactID = 1;
     $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => $fromDate->format('YmdHis'),
@@ -5070,6 +5077,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $toDate = new DateTime('2016-01-10 15:45:00');
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => $fromDate->format('YmdHis'),
