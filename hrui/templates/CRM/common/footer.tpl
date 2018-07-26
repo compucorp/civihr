@@ -32,7 +32,7 @@
   <div class="crm-footer" id="civicrm-footer">
     {* PCHR-1323 - Display CiviHR version info. *}
     {ts}Powered by CiviHR {/ts} {civihrVersion}.
-    {if call_user_func(array('CRM_Core_Permission','check'), 'view system status on footer')}
+    {if call_user_func(array('CRM_Core_Permission','check'), 'view system notifications')}
       {if !empty($footer_status_severity)}
         <span class="status{if $footer_status_severity gt 3} crm-error{elseif $footer_status_severity gt 2} crm-warning{else} crm-ok{/if}">
           <a target="_blank" href="{crmURL p='civicrm/a/#/status'}">{$footer_status_message}</a>.

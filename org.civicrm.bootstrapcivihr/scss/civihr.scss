@@ -13,7 +13,7 @@
 
 @import 'overrides/style/*';
 
-#{$outsideNamespaceMarker} {
+#{$outside-namespace-marker} {
   @import 'components/outside-namespace/*';
   @import 'overrides/crm/*';
 }

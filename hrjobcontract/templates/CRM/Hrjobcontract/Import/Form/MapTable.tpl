@@ -52,7 +52,7 @@
       <tr style="border-bottom: 1px solid #92B6EC;">
         {section name=rows loop=$rowDisplayCount}
           {assign var="j" value=$smarty.section.rows.index}
-          <td class="{if $skipColumnHeader AND $smarty.section.rows.iteration == 1}even-row labels{else}odd-row{/if}">{$dataValues[$j][$i]}</td>
+          <td class="{if $skipColumnHeader AND $smarty.section.rows.iteration == 1}even-row labels{else}odd-row{/if}">{$dataValues[$j][$i]|escape}</td>
         {/section}
 
         {* Display mapper <select> field for 'Map Fields', and mapper value for 'Preview' *}

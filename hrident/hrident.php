@@ -120,19 +120,6 @@ function hrident_civicrm_managed(&$entities) {
   return _hrident_civix_civicrm_managed($entities);
 }
 
-/**
- * Implementation of hook_civicrm_tabset.
- *
- * @param string $tabsetName
- * @param array &$tabs
- * @param array $context
- */
-function hrident_civicrm_tabset($tabsetName, &$tabs, $context) {
-  if ($tabsetName === 'civicrm/contact/view') {
-    CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrident', 'css/hrident.css');
-  }
-}
-
 function hrident_getCustomGroupId() {
   $groups = CRM_Core_PseudoConstant::get('CRM_Core_BAO_CustomField', 'custom_group_id', array('labelColumn' => 'name'));
   return array_search('Identify', $groups);
