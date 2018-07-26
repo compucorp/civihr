@@ -38,7 +38,7 @@ define([
     var childComponentsCount = 0;
     var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
     var listeners = [];
-    var loggedInContactId = '';
+    var loggedInContact;
     var NO_ENTITLEMENT_ERROR = 'No entitlement';
     var role = '';
     var tabs = [];
@@ -95,7 +95,7 @@ define([
       initAvailableStatusesMatrix();
       initListeners();
 
-      return loadLoggedInContactId()
+      return loadLoggedInContact()
         .then(initIsSelfRecord)
         .then(function () {
           return $q.all([
@@ -248,7 +248,7 @@ define([
      * If manager or admin have changed the status through dropdown, assign the same before calling API
      */
     function changeStatusBeforeSave () {
-      if (vm.isSelfRecord) {
+      if (vm.isSelfRecord && !vm.isSelfLeaveApprover) {
         vm.request.status_id = vm.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
       } else if (vm.canManage) {
         vm.request.status_id = vm.newStatusOnSave || vm.request.status_id;
@@ -285,6 +285,15 @@ define([
      */
     function checkIfRequestDatesAndTimesNeedToBeReverted () {
       return getLeaveType() !== 'toil' && !vm.request.change_balance;
+    }
+
+    /**
+     * Checks if the currently logged in user is a leave approver
+     *
+     * @return {Promise}
+     */
+    function checkIfContactIsSelfLeaveApprover () {
+      return loggedInContact.checkIfSelfLeaveApprover();
     }
 
     /**
@@ -530,7 +539,7 @@ define([
      */
     function initIsSelfRecord () {
       var isSectionMyLeave = $rootScope.section === 'my-leave';
-      var isMyOwnRequest = +loggedInContactId === +_.get(vm, 'leaveRequest.contact_id');
+      var isMyOwnRequest = +loggedInContact.id === +_.get(vm, 'leaveRequest.contact_id');
       var isNewRequest = !_.get(vm, 'leaveRequest.id');
 
       vm.isSelfRecord = isSectionMyLeave && (isMyOwnRequest || isNewRequest);
@@ -594,7 +603,7 @@ define([
       if (vm.request) {
         attributes = vm.request.attributes();
       } else if (!vm.canManage) {
-        attributes = { contact_id: loggedInContactId };
+        attributes = { contact_id: loggedInContact.id };
       }
 
       return attributes;
@@ -613,7 +622,16 @@ define([
       // If the user is creating or editing their own leave, they will be
       // treated as a staff regardless of their actual role.
       if (vm.isSelfRecord) {
-        return;
+        return checkIfContactIsSelfLeaveApprover()
+          .then(function (isSelfLeaveApprover) {
+            if (!isSelfLeaveApprover) {
+              return;
+            }
+
+            role = 'admin';
+            vm.isSelfLeaveApprover = true;
+            vm.canManage = true;
+          });
       }
 
       return checkPermissions(sharedSettings.permissions.admin.administer)
@@ -767,10 +785,11 @@ define([
      *
      * @return {Promise}
      */
-    function loadLoggedInContactId () {
-      return Session.get().then(function (value) {
-        loggedInContactId = value.contactId;
-      });
+    function loadLoggedInContact () {
+      return Contact.getLoggedIn()
+        .then(function (_loggedInContact_) {
+          loggedInContact = _loggedInContact_;
+        });
     }
 
     /**
@@ -791,15 +810,12 @@ define([
           .then(function (contacts) {
             vm.managedContacts = _.remove(contacts.list, function (contact) {
               // Removes the admin from the list of contacts
-              return contact.id !== loggedInContactId;
+              return contact.id !== loggedInContact.id;
             });
           });
       } else {
         // In any other case (including managing)
-        return Contact.find(loggedInContactId)
-          .then(function (contact) {
-            return contact.leaveManagees();
-          })
+        return loggedInContact.leaveManagees()
           .then(function (contacts) {
             vm.managedContacts = contacts;
           });
