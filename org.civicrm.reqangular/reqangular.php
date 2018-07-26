@@ -108,13 +108,10 @@ function reqangular_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 }
 
 /**
- * Implements hook_civicrm_buildForm().
- *
- * @param string $formName
- * @param CRM_Core_Form $form
+ * Implements hook_civicrm_coreResourceList().
  */
-function reqangular_civicrm_buildForm($formName, &$form) {
-  _reqangular_inject_reqangular();
+function reqangular_civicrm_coreResourceList(&$items, $region) {
+  CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.reqangular', 'js/src/common/vendor/require.min.js', 990);
 }
 
 /**
