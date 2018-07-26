@@ -1488,7 +1488,7 @@
                     expect(controller.request.status_id).toEqual(approvalStatus);
                   });
 
-                  it('calls corresponding API end points', function () {
+                  it('calls the corresponding API endpoint', function () {
                     expect(LeaveRequestAPI.create).toHaveBeenCalled();
                   });
                 });

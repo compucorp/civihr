@@ -99,7 +99,7 @@ define([
         .then(initIsSelfRecord)
         .then(function () {
           return $q.all([
-            initRoles(),
+            initRole(),
             loadAbsencePeriods(),
             loadStatuses()
           ]);
@@ -285,15 +285,6 @@ define([
      */
     function checkIfRequestDatesAndTimesNeedToBeReverted () {
       return getLeaveType() !== 'toil' && !vm.request.change_balance;
-    }
-
-    /**
-     * Checks if the currently logged in user is a leave approver
-     *
-     * @return {Promise}
-     */
-    function checkIfContactIsSelfLeaveApprover () {
-      return loggedInContact.checkIfSelfLeaveApprover();
     }
 
     /**
@@ -616,37 +607,51 @@ define([
      *
      * @return {Promise}
      */
-    function initRoles () {
+    function initRole () {
       role = 'staff';
 
-      // If the user is creating or editing their own leave, they will be
-      // treated as a staff regardless of their actual role.
-      if (vm.isSelfRecord) {
-        return checkIfContactIsSelfLeaveApprover()
-          .then(function (isSelfLeaveApprover) {
-            if (!isSelfLeaveApprover) {
-              return;
-            }
+      return (vm.isSelfRecord
+        ? initRoleBasedOnSelfLeaveApproverState()
+        : initRoleBasedOnPermissions())
+        .finally(function () {
+          vm.canManage = vm.isRole('manager') || vm.isRole('admin');
+        });
+    }
 
-            role = 'admin';
-            vm.isSelfLeaveApprover = true;
-            vm.canManage = true;
-          });
-      }
+    /**
+     * Initiates the user role based on their self leave approver state.
+     * If the user is creating or editing their own leave request, they will be
+     * treated as an "admin".
+     *
+     * @return {Promise}
+     */
+    function initRoleBasedOnSelfLeaveApproverState () {
+      return loggedInContact.checkIfSelfLeaveApprover()
+        .then(function (isSelfLeaveApprover) {
+          if (!isSelfLeaveApprover) {
+            return;
+          }
 
+          role = 'admin';
+          vm.isSelfLeaveApprover = true;
+        });
+    }
+
+    /**
+     * Initiates user role based on their permissions
+     *
+     * @return {Promise}
+     */
+    function initRoleBasedOnPermissions () {
       return checkPermissions(sharedSettings.permissions.admin.administer)
         .then(function (isAdmin) {
           isAdmin && (role = 'admin');
         })
         .then(function () {
-          // (role === 'staff') means it is not admin so need to check if manager
-          return (role === 'staff') && checkPermissions(sharedSettings.permissions.ssp.manage)
-            .then(function (isManager) {
-              isManager && (role = 'manager');
-            });
+          return (role !== 'admin') && checkPermissions(sharedSettings.permissions.ssp.manage);
         })
-        .finally(function () {
-          vm.canManage = vm.isRole('manager') || vm.isRole('admin');
+        .then(function (isManager) {
+          isManager && (role = 'manager');
         });
     }
 
