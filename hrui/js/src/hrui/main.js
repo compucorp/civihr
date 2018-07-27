@@ -5,18 +5,18 @@
   define(function () {
     $(document)
       .on('crmLoad', function () {
-        miscContactPageChanges();
+        hideFieldsInPersonalDetailsTab();
       })
       .ready(function () {
         addUploadFileListener("input[type='file']");
         addUserMenuToMainMenu();
         amendApplicationForm();
         amendAppLogoMenuItem();
-        amendContactPageAndForm();
+        amendPersonalDetailsTab();
+        amendContactsPage();
         amendVacancyForm();
         applyMiscChanges();
         changeContactSourceFieldHelpText();
-        miscContactPageChanges();
         toggleActiveClassOnHoverOnAnyMainMenuItem();
         useFontAwesomeArrowsInSubMenuItems();
       });
@@ -65,17 +65,29 @@
     }
 
     /**
-     * Amends the contact page and the contact form
+     * Amends Contacts Page
+     * URL: civicrm/contact/add?reset=1&ct=Individual
      */
-    function amendContactPageAndForm () {
-      if (CRM.formName === 'contactForm' || CRM.pageName === 'viewSummary') {
-        // Rename "Summary" tab to "Personal Details"
-        // Hack to check contact type - This field only appears for individuals
-        if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
-          $('.crm-contact-tabs-list #tab_summary a').text('Personal Details');
+    function amendContactsPage () {
+      if (CRM.formName === 'contactForm') {
+        // Contact edit screen
+        $('input#employer_id, input#job_title', 'form#Contact').parent('td').hide();
+
+        // changes of email block, remove bulkmail and onhold
+        $('div.email-signature, td#Email-Bulkmail-html', 'form#Contact').hide();
+        $('#Email-Primary', 'form#Contact').prev('td').prev('td').hide();
+        $('td#Email-Bulkmail-html, #Email-Primary', 'form#Contact').prev('td').hide();
+
+        // shift demographic above extended demographic
+        $('.crm-demographics-accordion', 'form#Contact').insertAfter($('.crm-contactDetails-accordion'));
+
+        if ($('tr#Phone_Block_2', 'form#Contact').length < 1) {
+          $('#addPhone').click();
         }
 
-        manipulateDOMOfInlineCustomData();
+        if ($('#customFields').length < 1) {
+          repositionInlineCustomDataFieldsInEditContactForm();
+        }
       }
     }
 
@@ -112,6 +124,24 @@
     }
 
     /**
+     * Amends the personal details page
+     * Example : /civicrm/contact/view?reset=1&cid=<contactid>#/
+     */
+    function amendPersonalDetailsTab () {
+      if (CRM.pageName === 'viewSummary') {
+        // Rename "Summary" tab to "Personal Details"
+        // Hack to check contact type - This field only appears for individuals
+        if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
+          $('.crm-contact-tabs-list #tab_summary a').text('Personal Details');
+        }
+
+        if ($('.Inline_Custom_Data').length) {
+          repositionInlineCustomDataBlockInPersonalDetailsTab();
+        }
+      }
+    }
+
+    /**
      * Changes of sorce help text
      */
     function changeContactSourceFieldHelpText () {
@@ -141,6 +171,20 @@
         .text('Home')
         .wrapInner('<span class="menumain-label">')
         .prepend($appLogo);
+    }
+
+    /**
+     * Hide fields in the personal details page
+     * Example : /civicrm/contact/view?reset=1&cid=<contactid>#/
+     */
+    function hideFieldsInPersonalDetailsTab () {
+      if (CRM.pageName === 'viewSummary') {
+        // Hide current employer and job title
+        // Contact summary screen:
+        $('div.crm-contact-current_employer, div.crm-contact-job_title', '.crm-summary-contactinfo-block').parent('div.crm-summary-row').hide();
+        // Inline edit form
+        $('form#ContactInfo input#employer_id, form#ContactInfo input#job_title').closest('div.crm-summary-row').hide();
+      }
     }
 
     /**
@@ -182,47 +226,6 @@
      */
     function linkLabelToDatepickerInput ($line) {
       $line.find('label').attr('for', $line.find('.crm-form-date').attr('id'));
-    }
-
-    /**
-     * Manipulates, at the DOM level, the blocks/fields belonging to the
-     * Inline Custom Data custom fields set
-     */
-    function manipulateDOMOfInlineCustomData () {
-      if ($('.Inline_Custom_Data').length) {
-        repositionInlineCustomDataBlockInPersonalDetailsTab();
-      }
-
-      if ($('#customFields').length < 1) {
-        repositionInlineCustomDataFieldsInEditContactForm();
-      }
-    }
-
-    /**
-     * Misc changes to the page (hiding elements, inserting new ones, etc)
-     */
-    function miscContactPageChanges () {
-      if (CRM.formName === 'contactForm' || CRM.pageName === 'viewSummary') {
-        // Hide current employer and job title
-        // Contact summary screen:
-        $('div.crm-contact-current_employer, div.crm-contact-job_title', '.crm-summary-contactinfo-block').parent('div.crm-summary-row').hide();
-        // Inline edit form
-        $('form#ContactInfo input#employer_id, form#ContactInfo input#job_title').closest('div.crm-summary-row').hide();
-        // Contact edit screen
-        $('input#employer_id, input#job_title', 'form#Contact').parent('td').hide();
-
-        // changes of email block, remove bulkmail and onhold
-        $('div.email-signature, td#Email-Bulkmail-html', 'form#Contact').hide();
-        $('#Email-Primary', 'form#Contact').prev('td').prev('td').hide();
-        $('td#Email-Bulkmail-html, #Email-Primary', 'form#Contact').prev('td').hide();
-
-        // shift demographic above extended demographic
-        $('.crm-demographics-accordion', 'form#Contact').insertAfter($('.crm-contactDetails-accordion'));
-
-        if ($('tr#Phone_Block_2', 'form#Contact').length < 1) {
-          $('#addPhone').click();
-        }
-      }
     }
 
     /**
