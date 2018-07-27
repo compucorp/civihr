@@ -1,7 +1,6 @@
 /* eslint-env amd */
 
 define([
-  'common/require',
   'common/angular',
   'common/angularAnimate',
   'common/angularBootstrap',

@@ -26,7 +26,6 @@
     'common/text-angular-setup': 'common/vendor/angular/textAngularSetup',
     'common/text-angular': 'common/vendor/angular/textAngular',
     'common/ui-select': 'common/vendor/angular/select',
-    'common/require': 'common/vendor/require.min',
     'common/d3': 'common/vendor/d3.min',
     'common/lodash': 'common/vendor/lodash.min',
     'common/moment': 'common/vendor/moment.min',
