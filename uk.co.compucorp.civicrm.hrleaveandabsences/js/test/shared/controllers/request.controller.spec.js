@@ -22,7 +22,7 @@
     describe('LeaveRequestCtrl', function () {
       var $log, $rootScope, controller, modalInstanceSpy, $scope, $q, dialog, $controller,
         $provide, sharedSettings, AbsenceTypeAPI, AbsencePeriodAPI, LeaveRequestInstance,
-        Contact, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, pubSub,
+        Contact, ContactInstance, ContactAPIMock, EntitlementAPI, LeaveRequestAPI, pubSub,
         requiredTab, WorkPatternAPI, LeaveRequestService;
       var role = 'staff'; // change this value to set other roles
 
@@ -65,7 +65,7 @@
       }]));
 
       beforeEach(inject(function (_$log_, _$controller_, _$rootScope_, _$q_, _dialog_,
-        _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _EntitlementAPI_, _Entitlement_,
+        _AbsenceTypeAPI_, _AbsencePeriodAPI_, _Contact_, _ContactInstance_, _EntitlementAPI_, _Entitlement_,
         _LeaveRequestInstance_, _LeaveRequest_, _LeaveRequestAPI_, _pubSub_,
         _WorkPatternAPI_, _LeaveRequestService_) {
         $log = _$log_;
@@ -75,6 +75,7 @@
         dialog = _dialog_;
 
         Contact = _Contact_;
+        ContactInstance = _ContactInstance_;
         EntitlementAPI = _EntitlementAPI_;
         LeaveRequestAPI = _LeaveRequestAPI_;
         WorkPatternAPI = _WorkPatternAPI_;
@@ -117,6 +118,8 @@
         beforeEach(inject(function () {
           leaveRequest = LeaveRequestInstance.init();
           leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+
+          spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.returnValue($q.resolve(false));
           initTestController({ leaveRequest: leaveRequest });
         }));
 
@@ -126,6 +129,10 @@
 
         it('getStatuses returns an array', function () {
           expect(controller.getStatuses()).toEqual(jasmine.any(Array));
+        });
+
+        it('sets the `canManage` public property to `false`', function () {
+          expect(controller.canManage).toBe(false);
         });
 
         describe('when initialized', function () {
@@ -576,6 +583,7 @@
 
                 leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
                 $rootScope.section = 'my-leave';
+
                 initTestController({ leaveRequest: leaveRequest });
 
                 expectedStatusValue = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
@@ -656,6 +664,10 @@
 
             it('sets the manager role', function () {
               expect(controller.isRole('manager')).toBeTruthy();
+            });
+
+            it('sets the `canManage` public property to `true`', function () {
+              expect(controller.canManage).toBe(true);
             });
 
             it('sets all leaverequest values', function () {
@@ -1342,33 +1354,65 @@
         });
       });
 
-      describe('user edits their own leave request popup', function () {
+      describe('when user edits their own leave request', function () {
         var leaveRequest;
 
-        ['staff', 'manager', 'admin'].forEach(function (permissionsRole) {
-          testRoleForSelfRecord(permissionsRole);
+        beforeEach(function () {
+          $rootScope.section = 'my-leave';
+          leaveRequest = LeaveRequestInstance.init();
         });
 
-        /**
-         * Tests the role for the self record and expects it to be "staff"
-         *
-         * @param {String} permissionsRole (staff|manager|admin)
-         */
-        function testRoleForSelfRecord (permissionsRole) {
-          describe('when user is ' + permissionsRole, function () {
+        describe('basic tests', function () {
+          beforeEach(function () {
+            spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.returnValue($q.resolve(false));
+          });
+
+          ['staff', 'manager', 'admin'].forEach(function (permissionsRole) {
             beforeEach(function () {
-              $rootScope.section = 'my-leave';
               role = permissionsRole;
-              leaveRequest = LeaveRequestInstance.init();
 
               initTestController({ leaveRequest: leaveRequest });
             });
 
             it('sets the staff role', function () {
-              expect(controller.isRole('staff')).toBeTruthy();
+              expect(controller.isRole('staff')).toBe(true);
+            });
+
+            it('sets the `isSelfLeaveApprover` public property to `false`', function () {
+              expect(controller.isSelfLeaveApprover).toBe(false);
+            });
+
+            it('sets the `canManage` public property to `false`', function () {
+              expect(controller.canManage).toBe(false);
             });
           });
-        }
+        });
+
+        describe('when user is a self leave approver', function () {
+          beforeEach(function () {
+            spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.returnValue($q.resolve(true));
+          });
+
+          ['staff', 'manager', 'admin'].forEach(function (permissionsRole) {
+            beforeEach(function () {
+              role = permissionsRole;
+
+              initTestController({ leaveRequest: leaveRequest });
+            });
+
+            it('sets the "admin" role', function () {
+              expect(controller.isRole('admin')).toBe(true);
+            });
+
+            it('sets the `isSelfLeaveApprover` public property to `true`', function () {
+              expect(controller.isSelfLeaveApprover).toBe(true);
+            });
+
+            it('sets the `canManage` public property to `true`', function () {
+              expect(controller.canManage).toBe(true);
+            });
+          });
+        });
       });
 
       describe('checking if it is a self record', function () {
@@ -1399,7 +1443,7 @@
             });
           });
 
-          describe('and the user is checking my own request', function () {
+          describe('and the user is checking their own leave request', function () {
             beforeEach(function () {
               leaveRequest.id = _.uniqueId();
               leaveRequest.contact_id = loggedInContactId;
@@ -1412,13 +1456,59 @@
             });
           });
 
-          describe('and the user creates a new request for themselves', function () {
-            beforeEach(function () {
-              initTestController({ mode: 'create', leaveRequest: leaveRequest });
+          describe('and the user creates a new leave request for themselves', function () {
+            describe('basic tests', function () {
+              beforeEach(function () {
+                initTestController({ mode: 'create', leaveRequest: leaveRequest });
+              });
+
+              it('sets is self record as true', function () {
+                expect(controller.isSelfRecord).toBe(true);
+              });
             });
 
-            it('sets is self record as true', function () {
-              expect(controller.isSelfRecord).toBe(true);
+            describe('when user is a self leave approver', function () {
+              beforeEach(function () {
+                spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.returnValue($q.resolve(true));
+              });
+
+              ['staff', 'manager', 'admin'].forEach(function (permissionsRole) {
+                beforeEach(function () {
+                  role = permissionsRole;
+
+                  initTestController({ mode: 'create', leaveRequest: leaveRequest });
+                });
+
+                it('sets the `isSelfLeaveApprover` public property to `true`', function () {
+                  expect(controller.isSelfLeaveApprover).toBe(true);
+                });
+
+                it('sets the `canManage` public property to `true`', function () {
+                  expect(controller.canManage).toBe(true);
+                });
+
+                describe('when the user submits a leave request with the "Approved" status', function () {
+                  var approvalStatus;
+                  beforeEach(function () {
+                    approvalStatus = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '1');
+
+                    LeaveRequestAPI.isValid.and.returnValue($q.resolve());
+                    LeaveRequestAPI.create.and.returnValue($q.resolve({ id: '1' }));
+                    controller.request.status_id = approvalStatus;
+
+                    controller.submit();
+                    $scope.$digest();
+                  });
+
+                  it('keeps the status unamended', function () {
+                    expect(controller.request.status_id).toEqual(approvalStatus);
+                  });
+
+                  it('calls the corresponding API endpoint', function () {
+                    expect(LeaveRequestAPI.create).toHaveBeenCalled();
+                  });
+                });
+              });
             });
           });
         });
