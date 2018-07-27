@@ -131,6 +131,10 @@
           expect(controller.getStatuses()).toEqual(jasmine.any(Array));
         });
 
+        it('sets the `canManage` public property to `false`', function () {
+          expect(controller.canManage).toBe(false);
+        });
+
         describe('when initialized', function () {
           describe('before date is selected', function () {
             beforeEach(function () {
@@ -660,6 +664,10 @@
 
             it('sets the manager role', function () {
               expect(controller.isRole('manager')).toBeTruthy();
+            });
+
+            it('sets the `canManage` public property to `true`', function () {
+              expect(controller.canManage).toBe(true);
             });
 
             it('sets all leaverequest values', function () {
@@ -1368,6 +1376,14 @@
 
             it('sets the staff role', function () {
               expect(controller.isRole('staff')).toBe(true);
+            });
+
+            it('sets the `isSelfLeaveApprover` public property to `false`', function () {
+              expect(controller.isSelfLeaveApprover).toBe(false);
+            });
+
+            it('sets the `canManage` public property to `false`', function () {
+              expect(controller.canManage).toBe(false);
             });
           });
         });

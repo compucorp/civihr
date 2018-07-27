@@ -6,7 +6,6 @@ define([
   'common/lodash',
   'common/moment',
   'common/models/contact',
-  'common/models/session.model',
   'common/services/api/option-group',
   'common/services/hr-settings',
   'common/services/pub-sub',
@@ -25,11 +24,11 @@ define([
   controllers.controller('RequestCtrl', RequestCtrl);
 
   RequestCtrl.$inject = ['$log', '$q', '$rootScope', '$scope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup',
-    'dialog', 'pubSub', 'directiveOptions', 'Contact', 'Session', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
+    'dialog', 'pubSub', 'directiveOptions', 'Contact', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
     'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance', 'LeaveRequestService'];
 
   function RequestCtrl ($log, $q, $rootScope, $scope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub,
-    directiveOptions, Contact, Session, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
+    directiveOptions, Contact, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
     LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance, LeaveRequestService) {
     $log.debug('RequestCtrl');
 
@@ -49,6 +48,7 @@ define([
     vm.canManage = false; // vm flag is set on initialisation of the controller
     vm.contactName = null; // contact name of the owner of leave request
     vm.errors = [];
+    vm.isSelfLeaveApprover = false;
     vm.loading = { absenceTypes: true, entitlements: true };
     vm.managedContacts = [];
     vm.mode = ''; // can be edit, create, view
@@ -104,6 +104,7 @@ define([
             loadStatuses()
           ]);
         })
+        .then(initCanManage)
         .then(initRequest)
         .then(setModalMode)
         .then(setInitialAbsencePeriod)
@@ -508,6 +509,13 @@ define([
     }
 
     /**
+     * Defines if the contact can manage the leave request
+     */
+    function initCanManage () {
+      vm.canManage = vm.isRole('manager') || vm.isRole('admin');
+    }
+
+    /**
      * Initialize contact
      *
      * {Promise}
@@ -612,10 +620,7 @@ define([
 
       return (vm.isSelfRecord
         ? initRoleBasedOnSelfLeaveApproverState()
-        : initRoleBasedOnPermissions())
-        .finally(function () {
-          vm.canManage = vm.isRole('manager') || vm.isRole('admin');
-        });
+        : initRoleBasedOnPermissions());
     }
 
     /**
