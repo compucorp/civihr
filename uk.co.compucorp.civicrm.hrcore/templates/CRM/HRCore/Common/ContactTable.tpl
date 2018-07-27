@@ -8,8 +8,8 @@
   <tbody>
     {foreach from=$contacts item=contact}
       <tr>
-        <td>{$contact.display_name}</td>
-        <td>{if $contact.email}{$contact.email}{else}-{/if}</td>
+        <td>{$contact.display_name|escape}</td>
+        <td>{if $contact.email}{$contact.email|escape}{else}-{/if}</td>
       </tr>
     {/foreach}
   </tbody>

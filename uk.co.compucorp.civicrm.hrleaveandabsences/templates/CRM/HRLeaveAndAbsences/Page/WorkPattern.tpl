@@ -48,13 +48,13 @@
         </div>
       {/if}
       </div>
-    {literal}
       <script type="text/javascript">
-        CRM.$(function() {
-          var listPage = new CRM.HRLeaveAndAbsencesApp.ListPage(CRM.$('.hrleaveandabsences-entity-list'));
-        });
+        {literal}
+          CRM.$(document).on('hrappready.list', function (event, app) {
+            (new app.ListPage(CRM.$('.hrleaveandabsences-entity-list')));
+          });
+        {/literal}
       </script>
-    {/literal}
     {else}
       <div class="messages status no-popup">
         <div class="icon inform-icon"></div>
