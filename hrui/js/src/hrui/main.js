@@ -16,6 +16,7 @@
         amendVacancyForm();
         applyMiscChanges();
         changeContactSourceFieldHelpText();
+        miscContactPageChanges();
         toggleActiveClassOnHoverOnAnyMainMenuItem();
         useFontAwesomeArrowsInSubMenuItems();
       });
@@ -201,24 +202,26 @@
      * Misc changes to the page (hiding elements, inserting new ones, etc)
      */
     function miscContactPageChanges () {
-      // Hide current employer and job title
-      // Contact summary screen:
-      $('div.crm-contact-current_employer, div.crm-contact-job_title', '.crm-summary-contactinfo-block').parent('div.crm-summary-row').hide();
-      // Inline edit form
-      $('form#ContactInfo input#employer_id, form#ContactInfo input#job_title').closest('div.crm-summary-row').hide();
-      // Contact edit screen
-      $('input#employer_id, input#job_title', 'form#Contact').parent('td').hide();
+      if (CRM.formName === 'contactForm' || CRM.pageName === 'viewSummary') {
+        // Hide current employer and job title
+        // Contact summary screen:
+        $('div.crm-contact-current_employer, div.crm-contact-job_title', '.crm-summary-contactinfo-block').parent('div.crm-summary-row').hide();
+        // Inline edit form
+        $('form#ContactInfo input#employer_id, form#ContactInfo input#job_title').closest('div.crm-summary-row').hide();
+        // Contact edit screen
+        $('input#employer_id, input#job_title', 'form#Contact').parent('td').hide();
 
-      // changes of email block, remove bulkmail and onhold
-      $('div.email-signature, td#Email-Bulkmail-html', 'form#Contact').hide();
-      $('#Email-Primary', 'form#Contact').prev('td').prev('td').hide();
-      $('td#Email-Bulkmail-html, #Email-Primary', 'form#Contact').prev('td').hide();
+        // changes of email block, remove bulkmail and onhold
+        $('div.email-signature, td#Email-Bulkmail-html', 'form#Contact').hide();
+        $('#Email-Primary', 'form#Contact').prev('td').prev('td').hide();
+        $('td#Email-Bulkmail-html, #Email-Primary', 'form#Contact').prev('td').hide();
 
-      // shift demographic above extended demographic
-      $('.crm-demographics-accordion', 'form#Contact').insertAfter($('.crm-contactDetails-accordion'));
+        // shift demographic above extended demographic
+        $('.crm-demographics-accordion', 'form#Contact').insertAfter($('.crm-contactDetails-accordion'));
 
-      if ($('tr#Phone_Block_2', 'form#Contact').length < 1) {
-        $('#addPhone').click();
+        if ($('tr#Phone_Block_2', 'form#Contact').length < 1) {
+          $('#addPhone').click();
+        }
       }
     }
 
