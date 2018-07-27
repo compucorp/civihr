@@ -39,7 +39,7 @@ define([
     vm.dateFormat = HRSettings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
     vm.selectedPeriod = null;
-    vm.role = ($rootScope.section === 'absence-tab' ? 'admin' : 'staff');
+    vm.role = null;
     vm.loading = {
       content: true,
       page: true
@@ -59,6 +59,7 @@ define([
 
     (function init () {
       $q.all([
+        initRole(),
         loadStatuses(),
         loadAbsenceTypes(),
         loadAbsencePeriods()
@@ -173,6 +174,26 @@ define([
      */
     function indexSectionData (section) {
       section.dataIndex = _.indexBy(section.data, 'id');
+    }
+
+    /**
+     * Initiates the role based on permissions.
+     * @NOTE It skips the permission check if the section is 'absence-tab'
+     * because only admins can access this section.
+     */
+    function initRole () {
+      vm.role = 'staff';
+
+      if ($rootScope.section === 'absence-tab') {
+        vm.role = 'admin';
+
+        return;
+      }
+
+      return checkPermissions(sharedSettings.permissions.admin.administer)
+        .then(function (isAdmin) {
+          isAdmin && (vm.role = 'admin');
+        });
     }
 
     /**
