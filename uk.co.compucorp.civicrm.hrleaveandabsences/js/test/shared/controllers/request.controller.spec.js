@@ -1367,14 +1367,54 @@
             spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.returnValue($q.resolve(false));
           });
 
-          ['staff', 'manager', 'admin'].forEach(function (permissionsRole) {
+          describe('when user is admin', function () {
             beforeEach(function () {
-              role = permissionsRole;
+              role = 'admin';
 
               initTestController({ leaveRequest: leaveRequest });
             });
 
-            it('sets the staff role', function () {
+            it('sets the "admin" role', function () {
+              expect(controller.isRole('admin')).toBe(true);
+            });
+
+            it('sets the `isSelfLeaveApprover` public property to `true`', function () {
+              expect(controller.isSelfLeaveApprover).toBe(true);
+            });
+
+            it('sets the `canManage` public property to `true`', function () {
+              expect(controller.canManage).toBe(true);
+            });
+          });
+
+          describe('when user is manager', function () {
+            beforeEach(function () {
+              role = 'manager';
+
+              initTestController({ leaveRequest: leaveRequest });
+            });
+
+            it('sets the "manager" role', function () {
+              expect(controller.isRole('manager')).toBe(true);
+            });
+
+            it('sets the `isSelfLeaveApprover` public property to `false`', function () {
+              expect(controller.isSelfLeaveApprover).toBe(false);
+            });
+
+            it('sets the `canManage` public property to `true`', function () {
+              expect(controller.canManage).toBe(true);
+            });
+          });
+
+          describe('when user is staff', function () {
+            beforeEach(function () {
+              role = 'staff';
+
+              initTestController({ leaveRequest: leaveRequest });
+            });
+
+            it('sets the "staff" role', function () {
               expect(controller.isRole('staff')).toBe(true);
             });
 

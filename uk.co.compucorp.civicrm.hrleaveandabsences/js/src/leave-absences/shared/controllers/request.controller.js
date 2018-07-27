@@ -105,6 +105,7 @@ define([
           ]);
         })
         .then(initCanManage)
+        .then(initIsSelfLeaveApprover)
         .then(initRequest)
         .then(setModalMode)
         .then(setInitialAbsencePeriod)
@@ -146,6 +147,24 @@ define([
      */
     function amendRequestParamsBeforeSave () {
       ['from', 'to'].forEach(amendDatesAndDateTypesBeforeSave);
+    }
+
+    /**
+     * Amends the user role based on their self leave approver state.
+     * If the user is creating or editing their own leave request
+     * and they are self approvers, they will be treated as "admins".
+     *
+     * @return {Promise}
+     */
+    function amendRoleBasedOnSelfLeaveApproverState () {
+      return loggedInContact.checkIfSelfLeaveApprover()
+        .then(function (isSelfLeaveApprover) {
+          if (!isSelfLeaveApprover) {
+            return;
+          }
+
+          role = 'admin';
+        });
     }
 
     /**
@@ -532,6 +551,17 @@ define([
     }
 
     /**
+     * Initiates the isSelfLeaveApprover public property.
+     * @NOTE Users are treated as admins if they are self leave approvers.
+     * @see initRole()
+     */
+    function initIsSelfLeaveApprover () {
+      if (vm.isRole('admin') && vm.isSelfRecord) {
+        vm.isSelfLeaveApprover = true;
+      }
+    }
+
+    /**
      * Initializes the is self record property and sets it to true when
      * on My Leave section and the user is editing their own request or creating
      * a new one for themselves.
@@ -618,28 +648,8 @@ define([
     function initRole () {
       role = 'staff';
 
-      return (vm.isSelfRecord
-        ? initRoleBasedOnSelfLeaveApproverState()
-        : initRoleBasedOnPermissions());
-    }
-
-    /**
-     * Initiates the user role based on their self leave approver state.
-     * If the user is creating or editing their own leave request, they will be
-     * treated as an "admin".
-     *
-     * @return {Promise}
-     */
-    function initRoleBasedOnSelfLeaveApproverState () {
-      return loggedInContact.checkIfSelfLeaveApprover()
-        .then(function (isSelfLeaveApprover) {
-          if (!isSelfLeaveApprover) {
-            return;
-          }
-
-          role = 'admin';
-          vm.isSelfLeaveApprover = true;
-        });
+      return initRoleBasedOnPermissions()
+        .then(vm.isSelfRecord && !vm.isRole('admin') && amendRoleBasedOnSelfLeaveApproverState);
     }
 
     /**
