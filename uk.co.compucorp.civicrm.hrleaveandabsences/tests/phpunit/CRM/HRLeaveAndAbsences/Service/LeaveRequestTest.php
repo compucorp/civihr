@@ -467,6 +467,21 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->getLeaveRequestService()->delete($leaveRequest->id);
   }
 
+  public function testDeleteDoesNotThrowAnExceptionWhenLeaveContactWhoIsOwnLeaveApproverTriesToDeleteOwnLeaveRequest() {
+    $this->registerCurrentLoggedInContactInSession($this->leaveContact);
+    $params = $this->getDefaultParams(['contact_id' => $this->leaveContact]);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->delete($leaveRequest->id);
+
+    //Check that the leave request is actually soft deleted.
+    $leaveRequestRecord = new LeaveRequest();
+    $leaveRequestRecord->id = $leaveRequest->id;
+    $leaveRequestRecord->find(true);
+    $this->assertEquals(1, $leaveRequestRecord->is_deleted);
+
+    $this->unregisterCurrentLoggedInContactFromSession();
+  }
+
   private function getLeaveRequestService($isAdmin = false, $isManager = false, $allowStatusTransition = true, $mockBalanceChangeService = false) {
     $leaveManagerService = $this->createLeaveManagerServiceMock($isAdmin, $isManager);
     $leaveRequestStatusMatrixService = $this->createLeaveRequestStatusMatrixServiceMock($allowStatusTransition);

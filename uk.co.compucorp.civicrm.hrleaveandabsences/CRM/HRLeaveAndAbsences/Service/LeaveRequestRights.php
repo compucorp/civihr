@@ -85,7 +85,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
   }
 
   /**
-   * Checks whether the current user has permissions to delete the leave request
+   * Checks whether the current user has permissions to delete the leave request.
+   * Currently only allows the admin and a user who is own leave approver and its
+   * own request to delete a leave request.
    *
    * @param int $contactID
    *   The contactID of the leave request
@@ -93,7 +95,15 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   public function canDeleteFor($contactID) {
-    return $this->currentUserIsAdmin();
+    if ($this->currentUserIsAdmin()) {
+      return TRUE;
+    }
+
+    if (!$this->currentUserIsLeaveContact($contactID)) {
+      return FALSE;
+    }
+
+    return $this->currentUserIsLeaveManagerOf($contactID);
   }
 
   /**
