@@ -85,8 +85,7 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
     CRM_Core_Resources::singleton()
       ->addScriptFile('civicrm', 'templates/CRM/common/TabHeader.js')
       ->addStyleFile('org.civicrm.hrrecruitment', 'css/casePipeline.css')
-      ->addScriptFile('org.civicrm.hrrecruitment', 'templates/CRM/HRRecruitment/Page/CasePipeline.js')
-      ->addScriptFile('org.civicrm.hrcase', 'js/hrcase.js');
+      ->addScriptFile('org.civicrm.hrrecruitment', 'templates/CRM/HRRecruitment/Page/CasePipeline.js');
 
     //Change page title to designate against which position you are viewing this page
     $position = CRM_Core_DAO::getFieldValue('CRM_HRRecruitment_DAO_HRVacancy', $this->_vid, 'position');
@@ -155,4 +154,3 @@ class CRM_HRRecruitment_Page_CasePipeline extends CRM_Core_Page {
     return $this->_statusId ? "CRM/HRRecruitment/Page/HRVacancyStage.tpl" : "CRM/common/TabHeader.tpl";
   }
 }
-
