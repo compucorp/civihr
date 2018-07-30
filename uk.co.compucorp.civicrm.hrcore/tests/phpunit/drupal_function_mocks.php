@@ -10,7 +10,14 @@ function drupal_anonymous_user() {}
 
 function user_password() {}
 
-function user_load_by_mail($email) {}
+function user_load_by_mail($email) {
+  if ($email === 'johndoe@test.com') {
+    return new stdClass();
+  }
+  else {
+    return FALSE;
+  }
+}
 
 function user_roles() {
   return [1 => 'Fake Role'];

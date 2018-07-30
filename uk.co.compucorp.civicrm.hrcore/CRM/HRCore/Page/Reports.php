@@ -6,7 +6,7 @@ class CRM_HRCore_Page_Reports extends CRM_Core_Page {
    * {@inheritdoc}
    */
   public function run() {
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/crm/vendor/iframeResizer.min.js');
+    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/src/hrcore/vendor/iframeResizer.min.js');
 
     $this->assign('reportName', $this->getReportName());
 

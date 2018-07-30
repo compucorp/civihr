@@ -297,7 +297,7 @@ function hrcore_civicrm_pageRun($page) {
  * Implements hook_civicrm_coreResourceList().
  */
 function hrcore_civicrm_coreResourceList(&$items, $region) {
-  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/hrcore.js');
+  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/dist/hrcore.min.js', 1010);
 }
 
 /**
@@ -340,7 +340,19 @@ function hrcore_civicrm_permission(&$permissions) {
   $prefix = ts('CiviHR') . ': ';
   $permissions['access CiviCRM developer menu and tools'] = ts('Access CiviCRM developer menu and tools');
   $permissions['access root menu items and configurations'] = $prefix . ts('Access root menu items and configurations');
-  $permissions['view system status on footer'] = $prefix . ts('View System Status on Footer');
+  $permissions['view system notifications'] = $prefix . ts('View System Notifications');
+}
+
+/**
+ * Removes system notifications for users without permission
+ *
+ * @param array $messages
+ */
+function hrcore_civicrm_check(&$messages) {
+  $canViewSystemNotifications = CRM_Core_Permission::check('view system notifications');
+  if (!$canViewSystemNotifications) {
+    $messages = [];
+  }
 }
 
 /**
