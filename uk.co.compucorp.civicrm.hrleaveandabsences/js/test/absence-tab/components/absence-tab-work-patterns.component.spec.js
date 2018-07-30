@@ -136,6 +136,7 @@
         contactId = CRM.vars.leaveAndAbsences.contactId;
         controller = $componentController('absenceTabWorkPatterns', null, { contactId: contactId });
 
+        controller.$onInit();
         $rootScope.$digest();
       }
     });

@@ -132,6 +132,7 @@ define([
 
     function compileComponent () {
       controller = $componentController('leaveRequestRecordActions', null, { contactId: contactId });
+      controller.$onInit();
       $rootScope.$digest();
     }
   });

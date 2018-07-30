@@ -14,7 +14,7 @@ define([
     var $httpBackend, $rootScope, $q, contractServiceMock, controller, ctrlConstructor,
       jobRoleServiceMock, pubSub;
 
-    beforeEach(module('contactsummary', 'contactsummary.mocks'));
+    beforeEach(module('contactsummary', 'contactsummary.mocks', 'contact-summary.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('contractService', function () {

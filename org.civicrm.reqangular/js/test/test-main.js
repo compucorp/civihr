@@ -66,7 +66,7 @@ require.config({
     'common/lodash': srcPath + '/vendor/lodash.min',
     'common/ui-select': srcPath + '/vendor/angular/select',
     'common/vendor/perfect-scrollbar': srcPath + '/vendor/perfect-scrollbar.min',
-    'common/text-angular-sanitize': srcPath + '/vendor/angular/textAngular-sanitize.min',
+    'common/text-angular-sanitize': srcPath + '/vendor/angular/textAngular-sanitize',
     'common/angular-file-upload': srcPath + '/vendor/angular/angular-file-upload'
   },
   callback: function () {

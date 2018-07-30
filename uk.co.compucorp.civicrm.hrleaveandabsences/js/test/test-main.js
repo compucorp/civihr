@@ -14,7 +14,6 @@ require.config({
   waitSeconds: 60,
   paths: {
     'leave-absences': srcPath,
-    'leave-absences/shared/ui-router': srcPath + '/shared/vendor/angular-ui-router.min',
     'leave-absences/mocks': mocksPath
   },
   callback: function () {

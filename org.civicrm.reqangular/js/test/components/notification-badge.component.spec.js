@@ -92,6 +92,8 @@ define([
         refreshCountEventName: eventName,
         filters: filters
       });
+
+      controller.$onInit();
       $rootScope.$digest();
     }
   });

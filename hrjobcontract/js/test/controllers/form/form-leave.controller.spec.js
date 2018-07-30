@@ -6,12 +6,13 @@ define([
   'use strict';
 
   describe('FormLeaveController', function () {
-    var ctrl, $controller, $rootScope, $scope, utilsService;
+    var ctrl, $controller, $httpBackend, $rootScope, $scope, utilsService;
 
-    beforeEach(module('job-contract'));
+    beforeEach(module('job-contract', 'job-contract.templates'));
 
-    beforeEach(inject(function (_$controller_, _$rootScope_, _utilsService_, $q) {
+    beforeEach(inject(function (_$controller_, _$httpBackend_, _$rootScope_, _utilsService_, $q) {
       $controller = _$controller_;
+      $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
       utilsService = _utilsService_;
 
@@ -23,6 +24,7 @@ define([
         return deferred.promise;
       });
 
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
       initController();
     }));
 

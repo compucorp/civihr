@@ -37,19 +37,20 @@ define([
     vm.reportCount = 0;
     vm.userRole = null;
 
+    vm.$onInit = $onInit;
     vm.loadReportCurrentPage = loadReportCurrentPage;
 
     /**
      * Initializes the component. Loads dependencies needed by the component
      * and watches for events coming from child components.
      */
-    (function init () {
+    function $onInit () {
       initWatchers();
       loadDependencies()
         .then(function () {
           vm.loading.component = false;
         });
-    })();
+    }
 
     /**
      * Loads the absence periods from the AbsencePeriod model.

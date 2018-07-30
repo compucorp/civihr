@@ -25,11 +25,13 @@ define([
     vm.absenceTypes = [];
     vm.loading = { component: true };
 
-    (function init () {
+    vm.$onInit = $onInit;
+
+    function $onInit () {
       loadAbsenceTypes().finally(function () {
         vm.loading.component = false;
       });
-    })();
+    }
 
     /**
      * Loads Absence Types and their calculation units.

@@ -43,10 +43,11 @@ define([
     vm.showOnlyWithLeaveRequests = !!vm.showOnlyWithLeaveRequests;
 
     vm.$onDestroy = onDestroy;
+    vm.$onInit = $onInit;
     vm.contactsList = contactsList;
     vm.getContactUrl = getContactUrl;
 
-    (function init () {
+    function $onInit () {
       var dateFromMonth = moment().month(vm.month.month).year(vm.month.year);
 
       indexData();
@@ -55,7 +56,7 @@ define([
       vm.month = buildMonthStructure(dateFromMonth);
 
       $rootScope.$emit('LeaveCalendar::monthInjected');
-    }());
+    }
 
     /**
      * Adds a leave request to the calendar

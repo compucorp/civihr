@@ -37,15 +37,16 @@ define([
       { label: 'AT', description: 'Accrued TOIL' }
     ];
 
+    vm.$onInit = $onInit;
     vm.checkIfAbsenceTypeIdIsDefined = checkIfAbsenceTypeIdIsDefined;
     vm.checkIfAbsenceTypeIsSelectedForFiltering = checkIfAbsenceTypeIsSelectedForFiltering;
     vm.getAbsenceTypeStyle = getAbsenceTypeStyle;
     vm.resetFilteringByAbsenceTypes = resetFilteringByAbsenceTypes;
     vm.toggleFilteringByAbsenceType = toggleFilteringByAbsenceType;
 
-    (function init () {
+    function $onInit () {
       initWatchers();
-    }());
+    }
 
     /**
      * Checks if the given absence type has a defined id or not.

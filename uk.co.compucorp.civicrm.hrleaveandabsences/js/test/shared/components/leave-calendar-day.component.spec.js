@@ -310,6 +310,7 @@ define([
           calculationUnits: calculationUnits
         }
       });
+      controller.$onInit();
     }
   });
 });

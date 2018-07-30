@@ -25,10 +25,12 @@ define([
     var vm = this;
     vm.count = 0;
 
-    (function init () {
+    vm.$onInit = $onInit;
+
+    function $onInit () {
       initListeners();
       fetchCount();
-    })();
+    }
 
     /**
      * Fetch count of records which matches the filter

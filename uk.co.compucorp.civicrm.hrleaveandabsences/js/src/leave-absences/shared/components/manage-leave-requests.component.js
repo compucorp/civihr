@@ -57,6 +57,7 @@ define([
       }
     };
 
+    vm.$onInit = $onInit;
     vm.clearStaffSelection = clearStaffSelection;
     vm.countLeaveRequestByStatus = countLeaveRequestByStatus;
     vm.getAbsenceTypeByID = getAbsenceTypeByID;
@@ -71,7 +72,7 @@ define([
     vm.refreshWithFilterByAssignee = refreshWithFilterByAssignee;
     vm.totalNoOfPages = totalNoOfPages;
 
-    (function init () {
+    function $onInit () {
       checkPermissions(sharedSettings.permissions.admin.administer)
         .then(function (isAdmin) {
           vm.isAdmin = isAdmin;
@@ -91,7 +92,7 @@ define([
 
           registerEvents();
         });
-    })();
+    }
 
     /**
      * Clears selected users and refreshes leave requests
