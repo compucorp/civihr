@@ -326,7 +326,7 @@ function hrcore_civicrm_pageRun($page) {
  * Implements hook_civicrm_coreResourceList().
  */
 function hrcore_civicrm_coreResourceList(&$items, $region) {
-  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/hrcore.js');
+  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/dist/hrcore.min.js', 1010);
 }
 
 /**
