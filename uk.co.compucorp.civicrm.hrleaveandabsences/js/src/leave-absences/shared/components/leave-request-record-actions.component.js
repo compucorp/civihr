@@ -28,13 +28,14 @@ define([
       { type: 'sickness', icon: 'stethoscope', label: 'Sickness' }
     ];
 
+    vm.$onInit = $onInit;
     vm.openLeavePopup = openLeavePopup;
 
     /**
      * Automatically opens a request modal if the `openModal` param
      * is present in the query string
      */
-    (function init () {
+    function $onInit () {
       queryParams = beforeHashQueryParams.parse();
 
       if (queryParams.openModal) {
@@ -43,7 +44,7 @@ define([
           selectedContactId: vm.selectedContactId
         });
       }
-    }());
+    }
 
     /**
      * Opens the leave request popup

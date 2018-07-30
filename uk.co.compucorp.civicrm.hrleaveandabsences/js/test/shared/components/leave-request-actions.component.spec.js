@@ -777,6 +777,7 @@ define([
         absenceTypes: absenceTypes,
         leaveRequestStatuses: leaveRequestStatuses
       });
+      controller.$onInit();
     }
   });
 });

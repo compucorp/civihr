@@ -117,13 +117,14 @@ define([
 
     vm.allowedActions = [];
 
+    vm.$onInit = $onInit;
     vm.action = action;
     vm.openLeavePopup = openLeavePopup;
 
-    (function init () {
+    function $onInit () {
       indexSupportData();
       setAllowedActions();
-    }());
+    }
 
     /**
      * Performs an action on a given leave request

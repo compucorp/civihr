@@ -108,6 +108,7 @@ define([
           request: request
         }
       );
+      controller.$onInit();
       $rootScope.$digest();
     }
   });

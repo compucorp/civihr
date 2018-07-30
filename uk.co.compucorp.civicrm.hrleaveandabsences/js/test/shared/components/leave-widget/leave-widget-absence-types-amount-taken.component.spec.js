@@ -55,6 +55,7 @@ define([
         $scope: $scope
       });
       controllerOnChanges.setupController(ctrl);
+      ctrl.$onInit();
     });
 
     it('should be defined', function () {

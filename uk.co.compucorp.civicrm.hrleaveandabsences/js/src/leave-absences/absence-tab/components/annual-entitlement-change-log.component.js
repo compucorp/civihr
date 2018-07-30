@@ -32,7 +32,9 @@ define([
     vm.changeLogRows = [];
     vm.loading = { component: true };
 
-    (function init () {
+    vm.$onInit = $onInit;
+
+    function $onInit () {
       loadAbsencePeriod()
         .then(loadAbsenceTypes)
         .then(loadChangeLog)
@@ -43,7 +45,7 @@ define([
         .finally(function () {
           vm.loading.component = false;
         });
-    })();
+    }
 
     /**
      * Appends the current entitlements for the user and period into the change

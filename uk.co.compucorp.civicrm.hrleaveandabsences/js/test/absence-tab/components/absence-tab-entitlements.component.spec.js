@@ -88,6 +88,7 @@ define([
      */
     function compileComponent () {
       controller = $componentController('absenceTabEntitlements', null, { contactId: '202' });
+      controller.$onInit();
     }
   });
 });

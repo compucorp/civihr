@@ -155,6 +155,7 @@ define([
 
     function compileComponent () {
       controller = $componentController('leaveCalendarLegend', null, { absenceTypes: mockedAbsenceTypes });
+      controller.$onInit();
     }
   });
 });
