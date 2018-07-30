@@ -460,6 +460,7 @@ define([
         params
       );
 
+      controller.$onInit();
       $rootScope.$digest();
 
       return params;

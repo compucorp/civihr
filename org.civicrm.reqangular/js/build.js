@@ -22,7 +22,7 @@
     'common/angularXeditable': 'common/vendor/angular/xeditable',
     'common/rangy-core': 'common/vendor/angular/rangy-core',
     'common/rangy-selectionsaverestore': 'common/vendor/angular/rangy-selectionsaverestore',
-    'common/text-angular-sanitize': 'common/vendor/angular/textAngular-sanitize.min',
+    'common/text-angular-sanitize': 'common/vendor/angular/textAngular-sanitize',
     'common/text-angular-setup': 'common/vendor/angular/textAngularSetup',
     'common/text-angular': 'common/vendor/angular/textAngular',
     'common/ui-select': 'common/vendor/angular/select',

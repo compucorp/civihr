@@ -27,22 +27,11 @@ define([
 
     vm.customWorkPatterns = [];
     vm.defaultWorkPattern = null;
-    vm.linkToWorkPatternListingPage = getWorkPatternListingPageURL();
     vm.loading = {
       workPattern: true
     };
 
-    (function init () {
-      refresh([
-        loadJobContractRevisionChangeReasons(),
-        getDefaultWorkPattern(),
-        DateFormat.getDateFormat()
-      ]);
-
-      $rootScope.$on('CustomWorkPattern::Added', function () {
-        refresh();
-      });
-    })();
+    vm.$onInit = $onInit;
 
     /**
      * Shows a delete work pattern confirm dialog before deleting the contact work pattern
@@ -77,6 +66,20 @@ define([
         controllerAs: '$ctrl'
       });
     };
+
+    function $onInit () {
+      vm.linkToWorkPatternListingPage = getWorkPatternListingPageURL();
+
+      refresh([
+        loadJobContractRevisionChangeReasons(),
+        getDefaultWorkPattern(),
+        DateFormat.getDateFormat()
+      ]);
+
+      $rootScope.$on('CustomWorkPattern::Added', function () {
+        refresh();
+      });
+    }
 
     /**
      * Loads the custom work patterns,

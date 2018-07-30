@@ -309,10 +309,9 @@ define([
          */
         update: function (params) {
           $log.debug('LeaveRequestAPI.update', params);
-          var deferred = $q.defer();
 
           if (!params.id) {
-            deferred.reject('id is mandatory field');
+            return $q.reject('id is mandatory field');
           }
 
           return this.sendPOST('LeaveRequest', 'create', params)

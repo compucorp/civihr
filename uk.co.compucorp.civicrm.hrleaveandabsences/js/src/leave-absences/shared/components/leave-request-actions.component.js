@@ -122,10 +122,11 @@ define([
     vm.allowedActions = [];
     vm.loading = { component: true };
 
+    vm.$onInit = $onInit;
     vm.action = action;
     vm.openLeavePopup = openLeavePopup;
 
-    (function init () {
+    function $onInit () {
       $q.resolve()
         .then(indexSupportData)
         .then(loadCurrentlyLoggedInContactId)
@@ -137,7 +138,7 @@ define([
         .finally(function () {
           vm.loading.component = false;
         });
-    }());
+    }
 
     /**
      * Performs an action on a given leave request

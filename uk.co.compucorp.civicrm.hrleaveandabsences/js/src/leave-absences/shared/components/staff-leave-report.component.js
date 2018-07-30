@@ -55,11 +55,12 @@ define([
       other: { open: false, data: [], dataIndex: {}, loading: false, loadLeaveRequests: loadOtherRequests }
     };
 
+    vm.$onInit = $onInit;
     vm.labelPeriod = labelPeriod;
     vm.refresh = refresh;
     vm.toggleSection = toggleSection;
 
-    (function init () {
+    function $onInit () {
       $q.all([
         initRole(),
         loadStatuses(),
@@ -81,7 +82,7 @@ define([
         });
 
       registerEvents();
-    })();
+    }
 
     /**
      * Adds a leave request to the provided section's data and index.

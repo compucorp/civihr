@@ -8,7 +8,7 @@ define([
   'use strict';
 
   describe('FormHourController', function () {
-    var $controller, $rootScope, $scope;
+    var $controller, $httpBackend, $rootScope, $scope;
     var entityData = {
       'hour': {
         'id': '1',
@@ -23,13 +23,14 @@ define([
       }
     };
 
-    beforeEach(module('job-contract'));
-    beforeEach(function () {
-      inject(function (_$controller_, _$rootScope_) {
-        $controller = _$controller_;
-        $rootScope = _$rootScope_;
-      });
-    });
+    beforeEach(module('job-contract', 'job-contract.templates'));
+    beforeEach(inject(function (_$controller_, _$httpBackend_, _$rootScope_) {
+      $controller = _$controller_;
+      $httpBackend = _$httpBackend_;
+      $rootScope = _$rootScope_;
+
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
+    }));
 
     describe('init', function () {
       describe('when no existing data is passed to the form', function () {

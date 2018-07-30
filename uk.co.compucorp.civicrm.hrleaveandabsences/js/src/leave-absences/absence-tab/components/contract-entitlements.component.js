@@ -30,7 +30,9 @@ define([
     vm.contracts = [];
     vm.loading = { contracts: true };
 
-    (function init () {
+    vm.$onInit = $onInit;
+
+    function $onInit () {
       DateFormat.getDateFormat()
         .then(loadContracts)
         .then(filterAbsenceTypes)
@@ -38,7 +40,7 @@ define([
         .finally(function () {
           vm.loading.contracts = false;
         });
-    })();
+    }
 
     /**
      * Filters absence types basing on loaded entitlements

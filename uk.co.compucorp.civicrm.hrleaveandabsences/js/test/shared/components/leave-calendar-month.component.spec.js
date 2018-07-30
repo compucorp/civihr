@@ -1053,6 +1053,7 @@
           },
           contactIdsToReduceTo: contactIdsToReduceTo
         });
+        controller.$onInit();
 
         !!sendSignal && sendShowMonthSignal();
       }
