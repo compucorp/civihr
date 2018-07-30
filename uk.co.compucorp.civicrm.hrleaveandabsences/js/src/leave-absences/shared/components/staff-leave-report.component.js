@@ -14,14 +14,16 @@ define([
       return settings.sharedPathTpl + 'components/staff-leave-report.html';
     }],
     controllerAs: 'report',
-    controller: [
-      '$log', '$q', '$rootScope', 'checkPermissions', 'AbsencePeriod', 'AbsenceType',
-      'Entitlement', 'LeaveRequest', 'OptionGroup', 'pubSub', 'HR_settings',
-      'shared-settings', controller
-    ]
+    controller: StaffLeaveReportController
   });
 
-  function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod,
+  StaffLeaveReportController.$inject = [
+    '$log', '$q', '$rootScope', 'checkPermissions', 'AbsencePeriod', 'AbsenceType',
+    'Entitlement', 'LeaveRequest', 'OptionGroup', 'pubSub', 'HR_settings',
+    'shared-settings'
+  ];
+
+  function StaffLeaveReportController ($log, $q, $rootScope, checkPermissions, AbsencePeriod,
     AbsenceType, Entitlement, LeaveRequest, OptionGroup, pubSub,
     HRSettings, sharedSettings) {
     $log.debug('Component: staff-leave-report');
