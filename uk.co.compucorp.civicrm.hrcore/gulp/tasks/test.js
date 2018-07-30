@@ -1,7 +1,5 @@
 var gulp = require('gulp');
-var gulpSequence = require('gulp-sequence');
 var path = require('path');
-
 var test = require('../test');
 var utils = require('../utils');
 
@@ -16,7 +14,7 @@ module.exports = [
           utils.spawnTaskForExtension('test:main', mainTask)
         ], 'test');
 
-        gulpSequence.apply(null, sequence)(cb);
+        gulp.series.apply(null, sequence)(cb);
       } else {
         console.log('Not eligible for this task, skipping...');
         cb();
