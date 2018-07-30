@@ -182,6 +182,8 @@ define([
      * Initiates the role based on permissions.
      * @NOTE It skips the permission check if the section is 'absence-tab'
      * because only admins can access this section.
+     *
+     * @return {Promise}
      */
     function initRole () {
       vm.role = 'staff';
@@ -189,7 +191,7 @@ define([
       if ($rootScope.section === 'absence-tab') {
         vm.role = 'admin';
 
-        return;
+        return $q.resolve();
       }
 
       return checkPermissions(sharedSettings.permissions.admin.administer)
@@ -616,6 +618,7 @@ define([
      */
     function toggleSection (sectionName) {
       var section = vm.sections[sectionName];
+
       section.open = !section.open;
 
       if (section.open && !section.data.length) {
