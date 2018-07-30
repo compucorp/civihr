@@ -691,8 +691,8 @@ define([
         beforeEach(function () {
           leaveRequest.contact_id = '112358';
 
-          spyOn(Contact, 'find').and.callThrough();
-          spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.callThrough();
+          spyOn(Contact, 'find');
+          spyOn(ContactInstance, 'checkIfSelfLeaveApprover');
           compileComponentAndDigest();
         });
 
@@ -704,6 +704,19 @@ define([
         it('does not amend the actions', function () {
           expect(flattenActions(controller.allowedActions)).toEqual(
             ['edit', 'cancel']);
+        });
+      });
+
+      describe('when the role is set as "admin"', function () {
+        beforeEach(function () {
+          spyOn(Contact, 'find');
+          spyOn(ContactInstance, 'checkIfSelfLeaveApprover');
+          compileComponentAndDigest('admin');
+        });
+
+        it('does not check if the contact can approve their own requests', function () {
+          expect(Contact.find).not.toHaveBeenCalled();
+          expect(ContactInstance.checkIfSelfLeaveApprover).not.toHaveBeenCalled();
         });
       });
     });

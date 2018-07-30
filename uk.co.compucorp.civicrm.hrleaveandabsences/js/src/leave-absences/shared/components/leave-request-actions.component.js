@@ -130,7 +130,8 @@ define([
         .then(indexSupportData)
         .then(loadCurrentlyLoggedInContactId)
         .then(function () {
-          return checkIfOwnLeaveRequest() && setRoleToAdminIfSelfLeaveApprover();
+          return checkIfOwnLeaveRequest() && vm.role !== 'admin' &&
+            setRoleToAdminIfSelfLeaveApprover();
         })
         .then(setAllowedActions)
         .finally(function () {
