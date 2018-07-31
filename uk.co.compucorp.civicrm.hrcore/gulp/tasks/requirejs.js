@@ -27,7 +27,7 @@ module.exports = [
           path.join(extPath, 'js/src/**/*.js')
         ], 'requirejs');
 
-        gulp.watch(watchPatterns, ['requirejs']).on('change', function (file) {
+        gulp.watch(watchPatterns, gulp.parallel('requirejs')).on('change', function (file) {
           if (utils.canCurrentExtensionRun('test')) {
             try {
               test.for(file.path);

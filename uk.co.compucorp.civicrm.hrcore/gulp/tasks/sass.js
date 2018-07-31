@@ -37,7 +37,7 @@ module.exports = [
           path.join(extPath, 'scss/**/*.scss')
         ], 'sass');
 
-        gulp.watch(watchPatterns, ['sass']);
+        gulp.watch(watchPatterns, gulp.parallel('sass'));
         cb();
       } else {
         console.log('Not eligible for this task, skipping...');
