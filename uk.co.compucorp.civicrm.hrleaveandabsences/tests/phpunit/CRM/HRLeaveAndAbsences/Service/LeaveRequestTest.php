@@ -3,6 +3,7 @@
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Service_LeaveRequest as LeaveRequestService;
@@ -1128,7 +1129,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   public function testToilRequestWithPastDatesCanNotBeCancelledWhenUserIsLeaveContactAndAbsenceTypeDoesNotAllowPastAccrual() {
     $absenceType = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => false
+      'allow_accrue_in_the_past' => false,
+      'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_ALWAYS
     ]);
 
     $leaveStatuses = LeaveRequest::getStatuses();
@@ -1216,7 +1218,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   public function testToilRequestWithPastDatesCanBeCancelledWhenAbsenceTypeAllowsPastAccrual() {
     $absenceType = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => true
+      'allow_accrue_in_the_past' => true,
+      'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_ALWAYS
     ]);
 
     $leaveStatuses = LeaveRequest::getStatuses();
