@@ -50,7 +50,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     // a 7 days leave request, from monday to sunday
     $leaveRequest = $this->getleaveRequestService()->create([
@@ -62,7 +62,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-01-10'),
       'to_date_type' => $this->getLeaveRequestDayTypes()['all_day']['value'],
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
-    ], false);
+    ], FALSE);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // Since the 40 hours work pattern was used, and it this is a week long
@@ -81,7 +81,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     // a 5 days leave request, from monday to sunday
     $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
@@ -94,7 +94,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-01-08 16:45'),
       'to_date_amount' => 2.4,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
-    ], false);
+    ], FALSE);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // Since the 40 hours work pattern was used, and it this is a week long
@@ -113,7 +113,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     // a 5 days leave request, from monday to friday
     $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
@@ -126,7 +126,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-01-08 16:45'),
       'to_date_amount' => 2.4,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
-    ], false);
+    ], FALSE);
 
     $amountInHours = 8.0;
     $expectedBreakdown = $this->getExpectedBreakdownForLeaveRequest($leaveRequest, $amountInHours);
@@ -143,7 +143,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     // a 6 days leave request, from monday to saturday
     $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
@@ -156,7 +156,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'to_date' => CRM_Utils_Date::processDate('2016-01-09 16:45'),
       'to_date_amount' => 2.4,
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
-    ], false);
+    ], FALSE);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // Since the 40 hours work pattern was used, and it this is a week long
@@ -176,7 +176,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       ['period_start_date' => '2016-01-01']
     );
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     // a 7 days leave request, from friday to thursday
     $params = [
@@ -190,7 +190,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
     ];
 
-    $leaveRequest = $this->getleaveRequestService()->create($params, false);
+    $leaveRequest = $this->getleaveRequestService()->create($params, FALSE);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // Since the 40 hours work pattern was used, and it this is a week long
@@ -205,7 +205,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     // Increase the Leave Request period by 4 days (2 weekend + 2 working days)
     $params['id'] = $leaveRequest->id;
     $params['to_date'] = CRM_Utils_Date::processDate('2016-01-11');
-    $this->getleaveRequestService()->create($params, false);
+    $this->getleaveRequestService()->create($params, FALSE);
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
     // 5 from before + 2 (from the 2 new working days)
@@ -233,7 +233,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequestRecord = new LeaveRequest();
     $leaveRequestRecord->id = $leaveRequest->id;
-    $leaveRequestRecord->find(true);
+    $leaveRequestRecord->find(TRUE);
     $this->assertEquals(1, $leaveRequestRecord->is_deleted);
   }
 
@@ -249,7 +249,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $publicHolidayLeaveRequestRecord = new LeaveRequest();
     $publicHolidayLeaveRequestRecord->id = $publicHolidayLeaveRequest->id;
-    $publicHolidayLeaveRequestRecord->find(true);
+    $publicHolidayLeaveRequestRecord->find(TRUE);
     $this->assertEquals(1, $publicHolidayLeaveRequestRecord->is_deleted);
   }
 
@@ -302,7 +302,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     //logged in user has no permissions, also a contactID different from that of the logged in user is passed
     $contactID = 2;
     $params  = $this->getDefaultParams(['contact_id' => $contactID]);
-    $this->getleaveRequestService()->create($params, false);
+    $this->getleaveRequestService()->create($params, FALSE);
   }
 
   /**
@@ -310,7 +310,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
    * @expectedExceptionMessage You can't create a Leave Request with this status
    */
   public function testCreateThrowsAnExceptionWhenTransitionStatusIsNotValidForNewLeaveRequest() {
-    $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create($this->getDefaultParams(), false);
+    $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create($this->getDefaultParams(), FALSE);
   }
 
   public function testCreateThrowsAnExceptionWhenTransitionStatusIsNotValidWhenUpdatingLeaveRequestStatus() {
@@ -326,7 +326,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['id'] = $leaveRequest->id;
     $params['status_id'] = $leaveRequestStatuses['awaiting_approval'];
 
-    $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create($params, false);
+    $this->getLeaveRequestServiceWhenStatusTransitionIsNotAllowed()->create($params, FALSE);
   }
 
   /**
@@ -342,7 +342,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['to_date'] = CRM_Utils_Date::processDate('2016-01-15');
     $params['id'] = $leaveRequest->id;
 
-    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
+    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, FALSE);
   }
 
   public function testCreateDoesNotThrowAnExceptionWhenAdminUpdatesDatesForLeaveRequest() {
@@ -354,7 +354,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
     $params['id'] = $leaveRequest->id;
 
-    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, FALSE);
     $this->assertNotNull($leaveRequest->id);
   }
 
@@ -374,7 +374,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
     $params['id'] = $leaveRequest->id;
 
-    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
+    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, FALSE);
   }
 
   /**
@@ -393,7 +393,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
     $params['id'] = $leaveRequest->id;
 
-    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, FALSE);
   }
 
   /**
@@ -414,7 +414,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['to_date'] = $toDate->modify('+10 days')->format('YmdHis');
     $params['id'] = $leaveRequest->id;
 
-    $this->getLeaveRequestService()->create($params, false);
+    $this->getLeaveRequestService()->create($params, FALSE);
   }
 
   /**
@@ -429,7 +429,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['id'] = $leaveRequest->id;
     $params['type_id'] = 2;
 
-    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, false);
+    $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create($params, FALSE);
   }
 
   /**
@@ -444,7 +444,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['id'] = $leaveRequest->id;
     $params['type_id'] = 2;
 
-    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, FALSE);
   }
 
   /**
@@ -477,13 +477,13 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     //Check that the leave request is actually soft deleted.
     $leaveRequestRecord = new LeaveRequest();
     $leaveRequestRecord->id = $leaveRequest->id;
-    $leaveRequestRecord->find(true);
+    $leaveRequestRecord->find(TRUE);
     $this->assertEquals(1, $leaveRequestRecord->is_deleted);
 
     $this->unregisterCurrentLoggedInContactFromSession();
   }
 
-  private function getLeaveRequestService($isAdmin = false, $isManager = false, $allowStatusTransition = true, $mockBalanceChangeService = false) {
+  private function getLeaveRequestService($isAdmin = FALSE, $isManager = FALSE, $allowStatusTransition = TRUE, $mockBalanceChangeService = FALSE) {
     $leaveManagerService = $this->createLeaveManagerServiceMock($isAdmin, $isManager);
     $leaveRequestStatusMatrixService = $this->createLeaveRequestStatusMatrixServiceMock($allowStatusTransition);
     $leaveRequestRightsService = new LeaveRequestRightsService($leaveManagerService);
@@ -526,23 +526,23 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'status' => 1
     ]);
 
-    $this->getLeaveRequestServiceWhenCurrentUserIsAdminWithBalanceChangeServiceMock()->create($params, false);
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdminWithBalanceChangeServiceMock()->create($params, FALSE);
   }
 
   private function getLeaveRequestServiceWhenStatusTransitionIsNotAllowed() {
-    return $this->getLeaveRequestService(false, false, false);
+    return $this->getLeaveRequestService(FALSE, FALSE, FALSE);
   }
 
   private function getLeaveRequestServiceWhenCurrentUserIsAdmin() {
-    return $this->getLeaveRequestService(true, false);
+    return $this->getLeaveRequestService(TRUE, FALSE);
   }
 
   private function getLeaveRequestServiceWhenCurrentUserIsLeaveManager() {
-    return $this->getLeaveRequestService(false, true);
+    return $this->getLeaveRequestService(FALSE, TRUE);
   }
 
   private function getLeaveRequestServiceWhenCurrentUserIsAdminWithBalanceChangeServiceMock() {
-    return $this->getLeaveRequestService(true, false, true, true);
+    return $this->getLeaveRequestService(TRUE, FALSE, TRUE, TRUE);
   }
   private function getDefaultParams($params = []) {
     $absenceType = AbsenceTypeFabricator::fabricate();
@@ -570,7 +570,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     //Leave dates on Monday to Friday, all working days
     $leaveDates = [
@@ -579,7 +579,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $params = $this->getDefaultParams($leaveDates);
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, TRUE);
 
     //Just to make sure that we have the expected balance change for the leave request
     $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
@@ -614,7 +614,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest = $this->getleaveRequestService()->create(
       $params,
-      false
+      FALSE
     );
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
@@ -632,7 +632,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     //Leave dates on Monday to Friday, all working days
     $leaveDates = [
@@ -641,7 +641,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $params = $this->getDefaultParams($leaveDates);
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, TRUE);
 
     //Just to make sure that we have the expected balance change for the leave request
     $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
@@ -676,7 +676,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest = $this->getleaveRequestService()->create(
       $params,
-      false
+      FALSE
     );
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
@@ -694,7 +694,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     //Leave dates on Monday to Friday, all working days
     $leaveDates = [
@@ -703,7 +703,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $params = $this->getDefaultParams($leaveDates);
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, TRUE);
 
     //Just to make sure that we have the expected balance change for the leave request
     $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
@@ -749,7 +749,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
       $params,
-      false
+      FALSE
     );
 
     //The leave request balance has been updated to pick from the current work pattern
@@ -768,7 +768,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     //Leave dates on Monday to Friday, all working days
     $leaveDates = [
@@ -777,7 +777,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $params = $this->getDefaultParams($leaveDates);
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, TRUE);
 
     //Just to make sure that we have the expected balance change for the leave request
     $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest);
@@ -823,7 +823,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $leaveRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
       $params,
-      false
+      FALSE
     );
 
     //The leave request balance has been updated to pick from the current work pattern
@@ -843,7 +843,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     $toilToAccrue1 = 1;
     $toilParams = [
@@ -852,7 +852,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $params = $this->getDefaultParams($toilParams);
-    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, TRUE);
 
     //Just to make sure that we have the expected balance change for the toil
     $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
@@ -866,7 +866,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
       $params,
-      false
+      FALSE
     );
 
     //Balance change is updated for the TOIL
@@ -885,7 +885,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     $toilToAccrue1 = 1;
     $toilParams = [
@@ -894,7 +894,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $params = $this->getDefaultParams($toilParams);
-    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, TRUE);
 
     //Just to make sure that we have the expected balance change for the toil
     $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
@@ -908,7 +908,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
       $params,
-      false
+      FALSE
     );
 
     //Balance change is updated for the TOIL
@@ -927,7 +927,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     $toilToAccrue1 = 1;
     $toilParams = [
@@ -938,7 +938,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $params = $this->getDefaultParams($toilParams);
-    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, TRUE);
 
     //Just to make sure that we have the expected balance change for the toil
     $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
@@ -957,7 +957,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
       $params,
-      false
+      FALSE
     );
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
@@ -978,7 +978,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     $toilToAccrue1 = 1;
     $toilParams = [
@@ -989,7 +989,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $params = $this->getDefaultParams($toilParams);
-    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, TRUE);
 
     //Just to make sure that we have the expected balance change for the toil
     $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
@@ -1008,7 +1008,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
       $params,
-      false
+      FALSE
     );
 
     $balance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
@@ -1029,7 +1029,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     $toilToAccrue1 = 1;
     $toilParams = [
@@ -1040,7 +1040,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $params = $this->getDefaultParams($toilParams);
-    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, TRUE);
 
     //Just to make sure that we have the expected balance change for the toil
     $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
@@ -1052,7 +1052,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
       $params,
-      false
+      FALSE
     );
 
     //Both the dates and balance changes remain the same.
@@ -1074,7 +1074,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'end_date'   => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
-    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => true]);
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => TRUE]);
 
     $toilToAccrue1 = 1;
     $toilParams = [
@@ -1085,7 +1085,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $params = $this->getDefaultParams($toilParams);
-    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, true);
+    $toilRequest = LeaveRequestFabricator::fabricateWithoutValidation($params, TRUE);
 
     //Just to make sure that we have the expected balance change for the toil
     $previousBalance = LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($toilRequest);
@@ -1097,7 +1097,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create(
       $params,
-      false
+      FALSE
     );
 
     //Both the dates and balance changes remain the same.
@@ -1115,14 +1115,14 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-01-02'),
-    ], true);
+    ], TRUE);
 
     $leaveRequest2 = LeaveRequestFabricator::fabricateWithoutValidation([
       'contact_id' => 1,
       'type_id' => 1,
       'from_date' => CRM_Utils_Date::processDate('2016-01-03'),
       'to_date' =>  CRM_Utils_Date::processDate('2016-01-03'),
-    ], true);
+    ], TRUE);
 
     $expectedBreakdown = $this->getExpectedBreakdownForLeaveRequest($leaveRequest1);
     $breakdown = $this->getLeaveRequestService()->getBreakdown($leaveRequest1->id);
@@ -1135,8 +1135,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testToilRequestWithPastDatesCanNotBeCancelledWhenUserIsLeaveContactAndAbsenceTypeDoesNotAllowPastAccrual() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => false,
+      'allow_accruals_request' => TRUE,
+      'allow_accrue_in_the_past' => FALSE,
       'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_ALWAYS
     ]);
 
@@ -1158,13 +1158,13 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['id'] = $toilRequest->id;
 
     $this->setExpectedException('RuntimeException', 'You may only cancel TOIL with dates in the future.');
-    $this->getLeaveRequestService()->create($params, false);
+    $this->getLeaveRequestService()->create($params, FALSE);
   }
 
   public function testToilRequestWithPastDatesCanBeCancelledWhenUserIsAdminAndAbsenceTypeDoesNotAllowPastAccrual() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => false
+      'allow_accruals_request' => TRUE,
+      'allow_accrue_in_the_past' => FALSE
     ]);
 
     $leaveStatuses = LeaveRequest::getStatuses();
@@ -1184,7 +1184,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $params['status_id'] = $leaveStatuses['cancelled'];
     $params['id'] = $toilRequest->id;
 
-    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, false);
+    $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->create($params, FALSE);
 
     $this->assertNotNull($toilRequest->id);
     $this->assertEquals($toilRequest->status_id, $leaveStatuses['cancelled']);
@@ -1192,8 +1192,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testToilRequestWithPastDatesCanBeCancelledWhenUserIsManagerAndAbsenceTypeDoesNotAllowPastAccrual() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => false
+      'allow_accruals_request' => TRUE,
+      'allow_accrue_in_the_past' => FALSE
     ]);
 
     $leaveStatuses = LeaveRequest::getStatuses();
@@ -1215,7 +1215,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $toilRequest = $this->getLeaveRequestServiceWhenCurrentUserIsLeaveManager()->create(
       $params,
-      false
+      FALSE
     );
 
     $this->assertNotNull($toilRequest->id);
@@ -1224,8 +1224,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testToilRequestWithPastDatesCanBeCancelledWhenAbsenceTypeAllowsPastAccrual() {
     $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_accruals_request' => true,
-      'allow_accrue_in_the_past' => true,
+      'allow_accruals_request' => TRUE,
+      'allow_accrue_in_the_past' => TRUE,
       'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_ALWAYS
     ]);
 
@@ -1248,7 +1248,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $toilRequest = $this->getLeaveRequestService()->create(
       $params,
-      false
+      FALSE
     );
 
     $this->assertNotNull($toilRequest->id);
@@ -1275,10 +1275,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       RuntimeException::class,
       'You cannot cancel leave requests for this Absence type'
     );
-    $leaveRequestService->create($params, false);
+    $leaveRequestService->create($params, FALSE);
   }
 
-  private function getExpectedBreakdownForLeaveRequest(LeaveRequest $leaveRequest, $amount = false) {
+  private function getExpectedBreakdownForLeaveRequest(LeaveRequest $leaveRequest, $amount = FALSE) {
     $leaveRequestDayTypes = LeaveRequest::buildOptions('from_date_type');
 
     $dates = $leaveRequest->getDates();
