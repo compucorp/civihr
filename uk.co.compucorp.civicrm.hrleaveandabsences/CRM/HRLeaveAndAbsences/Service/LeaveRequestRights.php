@@ -209,4 +209,35 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
 
     return $results;
   }
+
+  /**
+   * Checks if the current user can cancel the leave request for the given absence type,
+   * leave contact and leave from date.
+   *
+   * @param int $absenceTypeId
+   * @param int $contactId
+   * @param \DateTime $leaveFromDate
+   *
+   * @return bool
+   */
+  public function canCancelForAbsenceType($absenceTypeId, $contactId, DateTime $leaveFromDate) {
+    if ($this->currentUserIsAdmin() || $this->currentUserIsLeaveManagerOf($contactId)) {
+      return TRUE;
+    }
+
+    $absenceType = AbsenceType::findById($absenceTypeId);
+    if ($absenceType->allow_request_cancelation == AbsenceType::REQUEST_CANCELATION_ALWAYS) {
+      return TRUE;
+    }
+
+    $today = new DateTime('today');
+
+    if ($absenceType->allow_request_cancelation != AbsenceType::REQUEST_CANCELATION_NO &&
+      $leaveFromDate > $today
+    ) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
 }
