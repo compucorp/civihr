@@ -499,6 +499,18 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     );
   }
 
+  private function getLeaveRequestServiceForWhenAbsenceTypeCannotBeCancelled($typeId, $contactID, $leaveFromDate) {
+    $leaveRightsService = $this->prophesize(LeaveRequestRightsService::class);
+    $leaveRightsService->canCreateAndUpdateFor($contactID)->willReturn(TRUE);
+    $leaveRightsService->canCancelForAbsenceType($typeId, $contactID, new DateTime($leaveFromDate))->willReturn(FALSE);
+
+    return new LeaveRequestService(
+      $this->leaveBalanceChangeService,
+      $this->createLeaveRequestStatusMatrixServiceMock(TRUE),
+      $leaveRightsService->reveal()
+    );
+  }
+
   public function testLeaveRequestServiceCallsRecalculateExpiredBalanceChangesForLeaveRequestPastDatesMethodWhenALeaveRequestHasPastDates() {
     $params = $this->getDefaultParams([
       'from_date' => CRM_Utils_Date::processDate('-2 days'),
@@ -1231,6 +1243,26 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertNotNull($toilRequest->id);
     $this->assertEquals($toilRequest->status_id, $leaveStatuses['cancelled']);
+  }
+
+  public function testCreateThrowsAnExceptionWhenUserIsNotAllowedToCancelAbsenceType() {
+    $leaveRequestStatuses = LeaveRequest::getStatuses();
+    $this->registerCurrentLoggedInContactInSession($this->leaveContact);
+    $typeId = 1;
+    $params = $this->getDefaultParams([
+      'contact_id' => $this->leaveContact,
+      'type_id' => $typeId,
+    ]);
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+    $params['status_id'] = $leaveRequestStatuses['cancelled'];
+    $params['id'] = $leaveRequest->id;
+
+    $leaveRequestService = $this->getLeaveRequestServiceForWhenAbsenceTypeCannotBeCancelled(
+      $params['type_id'], $params['contact_id'], $params['from_date']);
+
+    $this->setExpectedException(RuntimeException::class, 'You cannot cancel leave requests for this Absence type');
+    $leaveRequestService->create($params, false);
   }
 
   private function getExpectedBreakdownForLeaveRequest(LeaveRequest $leaveRequest, $amount = false) {
