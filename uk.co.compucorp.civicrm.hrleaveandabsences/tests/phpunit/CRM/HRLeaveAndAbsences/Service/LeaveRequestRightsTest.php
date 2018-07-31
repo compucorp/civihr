@@ -343,7 +343,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
   }
 
   public function testCanCancelForAbsenceTypeReturnsTrueWhenAbsenceTypeAllowsCancellationForStaff() {
-    $absenceType = AbsenceTypeFabricator::fabricate(['allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_ALWAYS]);
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_ALWAYS
+    ]);
     $contactID = 2;
     $leaveDate = new DateTime();
     $leaveRequestRightsService = $this->getLeaveRightsService();

@@ -118,7 +118,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
     $isCancelledStatus = $this->isCancelledStatus($params);
 
     if ($isCancelledStatus) {
-      if(!$this->canCancelForAbsenceType($params)) {
+      if (!$this->canCancelForAbsenceType($params)) {
         throw new RuntimeException(
           'You cannot cancel leave requests for this Absence type'
         );

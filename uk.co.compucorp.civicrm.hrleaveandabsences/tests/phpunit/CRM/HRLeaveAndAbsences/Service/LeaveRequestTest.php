@@ -500,10 +500,17 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     );
   }
 
-  private function getLeaveRequestServiceForWhenAbsenceTypeCannotBeCancelled($typeId, $contactID, $leaveFromDate) {
+  private function getLeaveRequestServiceForWhenAbsenceTypeCannotBeCancelled(
+    $typeId,
+    $contactID,
+    $leaveFromDate
+  ) {
     $leaveRightsService = $this->prophesize(LeaveRequestRightsService::class);
     $leaveRightsService->canCreateAndUpdateFor($contactID)->willReturn(TRUE);
-    $leaveRightsService->canCancelForAbsenceType($typeId, $contactID, new DateTime($leaveFromDate))->willReturn(FALSE);
+    $leaveRightsService->canCancelForAbsenceType(
+      $typeId,
+      $contactID,
+      new DateTime($leaveFromDate))->willReturn(FALSE);
 
     return new LeaveRequestService(
       $this->leaveBalanceChangeService,
@@ -1264,7 +1271,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $leaveRequestService = $this->getLeaveRequestServiceForWhenAbsenceTypeCannotBeCancelled(
       $params['type_id'], $params['contact_id'], $params['from_date']);
 
-    $this->setExpectedException(RuntimeException::class, 'You cannot cancel leave requests for this Absence type');
+    $this->setExpectedException(
+      RuntimeException::class,
+      'You cannot cancel leave requests for this Absence type'
+    );
     $leaveRequestService->create($params, false);
   }
 
