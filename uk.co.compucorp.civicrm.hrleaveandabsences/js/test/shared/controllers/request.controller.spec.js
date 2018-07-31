@@ -4,6 +4,7 @@
   define([
     'common/lodash',
     'common/moment',
+    'common/mocks/data/contact.data',
     'leave-absences/mocks/data/option-group.data',
     'leave-absences/mocks/data/leave-request.data',
     'leave-absences/manager-leave/app',
@@ -16,7 +17,7 @@
     'leave-absences/mocks/apis/work-pattern-api-mock',
     'leave-absences/shared/services/leave-request.service',
     'leave-absences/manager-leave/app'
-  ], function (_, moment, optionGroupMock, mockData) {
+  ], function (_, moment, contactData, optionGroupMock, mockData) {
     'use strict';
 
     describe('LeaveRequestCtrl', function () {
@@ -645,12 +646,19 @@
           });
         });
 
-        describe('basic tests for when manager opens leave request popup in edit mode', function () {
+        describe('when manager opens someone else\'s leave request', function () {
+          var managedContact;
+
           beforeEach(function () {
             var status = optionGroupMock.specificValue('hrleaveandabsences_leave_request_status', 'value', '3');
             var leaveRequest = LeaveRequestInstance.init(mockData.findBy('status_id', status));
 
-            leaveRequest.contact_id = CRM.vars.leaveAndAbsences.contactId.toString();
+            // Anyone but the manager
+            managedContact = _.sample(
+              contactData.all.values.filter(function (contact) {
+                return contact.id !== CRM.vars.leaveAndAbsences.contactId;
+              }));
+            leaveRequest.contact_id = managedContact.id;
 
             initTestController({ leaveRequest: leaveRequest });
           });
@@ -671,7 +679,7 @@
             });
 
             it('sets all leaverequest values', function () {
-              expect(controller.request.contact_id).toEqual('' + CRM.vars.leaveAndAbsences.contactId);
+              expect(controller.request.contact_id).toEqual(managedContact.id);
               expect(controller.request.type_id).toEqual(jasmine.any(String));
               expect(controller.request.status_id).toEqual(waitingApprovalStatus.value);
               expect(controller.request.from_date).toEqual(jasmine.any(String));
@@ -1579,8 +1587,8 @@
               initTestController({ leaveRequest: leaveRequest });
             });
 
-            it('sets is self record as false', function () {
-              expect(controller.isSelfRecord).toBe(false);
+            it('sets is self record as true', function () {
+              expect(controller.isSelfRecord).toBe(true);
             });
           });
 
