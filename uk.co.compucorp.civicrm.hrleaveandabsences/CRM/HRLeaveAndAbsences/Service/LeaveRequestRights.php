@@ -232,9 +232,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
 
     $today = new DateTime('today');
 
-    $absenceTypeRequestCancellationNotNo =
-      $absenceType->allow_request_cancelation != AbsenceType::REQUEST_CANCELATION_NO;
-    if ($absenceTypeRequestCancellationNotNo && $leaveFromDate > $today) {
+    $absenceTypeAllowsFutureCancellation =
+      $absenceType->allow_request_cancelation == AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE;
+    if ($absenceTypeAllowsFutureCancellation && $leaveFromDate > $today) {
       return TRUE;
     }
 
