@@ -27,15 +27,16 @@ module.exports = [
           path.join(extPath, 'js/src/**/*.js')
         ], 'requirejs');
 
-        gulp.watch(watchPatterns, gulp.parallel('requirejs')).on('change', function (file) {
-          if (utils.canCurrentExtensionRun('test')) {
-            try {
-              test.for(file.path);
-            } catch (ex) {
-              test.all();
+        gulp.watch(watchPatterns, gulp.parallel('requirejs'))
+          .on('change', function (filePath) {
+            if (utils.canCurrentExtensionRun('test')) {
+              try {
+                test.for(filePath);
+              } catch (ex) {
+                test.all();
+              }
             }
-          }
-        });
+          });
         cb();
       } else {
         console.log('Not eligible for this task, skipping...');
