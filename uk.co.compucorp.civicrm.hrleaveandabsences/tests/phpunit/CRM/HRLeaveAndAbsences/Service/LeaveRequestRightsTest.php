@@ -181,6 +181,29 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
   }
 
   /**
+   * @dataProvider leaveRequestStatusesDataProvider
+   */
+  public function testCanChangeDatesForReturnsTrueForAnyRequestTypeWhenCurrentUserIsOwnLeaveApproverIrrespectiveOfStatusPassed($status) {
+    $contactID = 2;
+    $this->registerCurrentLoggedInContactInSession($contactID);
+    $managerRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
+
+    $this->assertTrue(
+      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_LEAVE)
+    );
+
+    $this->assertTrue(
+      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_SICKNESS)
+    );
+
+    $this->assertTrue(
+      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_TOIL)
+    );
+
+    $this->unregisterCurrentLoggedInContactFromSession();
+  }
+
+  /**
    * @dataProvider openLeaveRequestStatusesDataProvider
    */
   public function testCanChangeAbsenceTypeForReturnsTrueWhenCurrentUserIsLeaveContactAndTheLeaveRequestIsOpen($status) {
