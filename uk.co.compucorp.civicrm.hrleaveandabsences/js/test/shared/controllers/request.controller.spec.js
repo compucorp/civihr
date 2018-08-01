@@ -646,7 +646,7 @@
           });
         });
 
-        describe('when manager opens someone else\'s leave request', function () {
+        describe('when manager opens a leave request of another contact', function () {
           var managedContact;
 
           beforeEach(function () {
@@ -1478,7 +1478,7 @@
             $rootScope.section = 'my-leave';
           });
 
-          describe('and the user is checking someone else\'s request', function () {
+          describe('and the user is checking a leave request of another contact', function () {
             beforeEach(function () {
               leaveRequest.id = _.uniqueId();
               leaveRequest.contact_id = anotherContactId;
@@ -1566,7 +1566,7 @@
             $rootScope.section = 'manager-leave';
           });
 
-          describe('and the user is checking someone else\'s request', function () {
+          describe('and the user is checking a leave request of another contact', function () {
             beforeEach(function () {
               leaveRequest.id = _.uniqueId();
               leaveRequest.contact_id = anotherContactId;
