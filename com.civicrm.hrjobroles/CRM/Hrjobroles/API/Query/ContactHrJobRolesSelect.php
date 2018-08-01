@@ -126,9 +126,14 @@ class CRM_Hrjobroles_API_Query_ContactHrJobRolesSelect {
   private function addWhere(CRM_Utils_SQL_Select $customQuery) {
     if (!empty($this->params['contact_id'])) {
       $conditions[] = 'jc.contact_id IN (' . implode(',' , $this->params['contact_id']) . ')';
-      $customQuery->where($conditions);
       unset($this->params['contact_id']);
     }
+
+    $today = date('Y-m-d H:i:s');
+    $dateRestriction = 'a.start_date <= "' . $today . '"';
+    $dateRestriction .= ' AND (a.end_date >= "' . $today . '" OR a.end_date IS NULL)';
+    $conditions[] = $dateRestriction;
+    $customQuery->where($conditions);
   }
 
   /**
