@@ -23,9 +23,7 @@ gulp.task('build', gulp.series(builderPromises));
  */
 function buildTaskPromises (taskNames) {
   return taskNames.map(function (taskName) {
-    return function () {
-      return utils.spawnTaskForExtension(taskName, tasks[taskName]);
-    };
+    return utils.spawnTaskForExtension(taskName, tasks[taskName]);
   });
 }
 
