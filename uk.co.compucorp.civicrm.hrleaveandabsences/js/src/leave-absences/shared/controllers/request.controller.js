@@ -571,7 +571,7 @@ define([
       var isMyOwnRequest = +loggedInContact.id === +_.get(vm, 'leaveRequest.contact_id');
       var isNewRequest = !_.get(vm, 'leaveRequest.id');
 
-      vm.isSelfRecord = isSectionMyLeave && (isMyOwnRequest || isNewRequest);
+      vm.isSelfRecord = (isSectionMyLeave && isNewRequest) || isMyOwnRequest;
     }
 
     /**
