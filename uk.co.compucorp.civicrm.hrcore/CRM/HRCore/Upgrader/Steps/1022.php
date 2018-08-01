@@ -3,36 +3,23 @@
 trait CRM_HRCore_Upgrader_Steps_1022 {
 
   /**
-   * This task adds the default assignee option values that can be selected when
-   * creating or editing a new workflow's activity.
+   * Uninstall the hrdemog extension.
+   *
+   * This extension was already deleted from the code at this point, so this
+   * will fail if you run it from the UI (missing extension). Running
+   * upgraders from the CLI (as is done for production releases) will work
    *
    * @return bool
    */
   public function upgrade_1022() {
-    // Add option group for activity default assignees:
-    CRM_Core_BAO_OptionGroup::ensureOptionGroupExists([
-      'name' => 'activity_default_assignee',
-      'title' => ts('Activity default assignee'),
-      'is_reserved' => 1,
-    ]);
+    $key = 'org.civicrm.hrdemog';
 
-    // Add option values for activity default assignees:
-    $options = [
-      ['name' => 'NONE', 'label' => ts('None'), 'is_default' => 1],
-      ['name' => 'BY_RELATIONSHIP', 'label' => ts('By relationship to case client')],
-      ['name' => 'SPECIFIC_CONTACT', 'label' => ts('Specific contact')],
-      ['name' => 'USER_CREATING_THE_CASE', 'label' => ts('User creating the case')],
-    ];
-
-    foreach ($options as $option) {
-      CRM_Core_BAO_OptionValue::ensureOptionValueExists([
-        'option_group_id' => 'activity_default_assignee',
-        'name' => $option['name'],
-        'label' => $option['label'],
-        'is_default' => CRM_Utils_Array::value('is_default', $option, 0),
-        'is_active' => TRUE,
-      ]);
+    if (!CRM_HRCore_Helper_ExtensionHelper::isExtensionEnabled($key)) {
+      return TRUE;
     }
+
+    civicrm_api3('Extension', 'disable', ['keys' => $key]);
+    civicrm_api3('Extension', 'uninstall', ['keys' => $key]);
 
     return TRUE;
   }
