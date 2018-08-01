@@ -27,6 +27,6 @@ class CRM_HRContactActionsMenu_Component_ParagraphItem implements ActionsGroupIt
    * @return string
    */
   public function render() {
-    return "<p>{$this->text}</p>";
+    return CRM_Utils_String::purifyHTML("<p>{$this->text}</p>");
   }
 }

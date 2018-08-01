@@ -122,6 +122,7 @@ define([
         contactId: contactId
       });
 
+      controller.$onInit();
       $rootScope.$digest();
     }
 

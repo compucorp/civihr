@@ -3,25 +3,19 @@
 trait CRM_HRCore_Upgrader_Steps_1021 {
 
   /**
-   * Uninstall the hrdemog extension.
-   *
-   * This extension was already deleted from the code at this point, so this
-   * will fail if you run it from the UI (missing extension). Running
-   * upgraders from the CLI (as is done for production releases) will work
-   *
-   * @return bool
+   * Creates the Missing Log Tables after CiviCRM Upgrade
    */
   public function upgrade_1021() {
-    $key = 'org.civicrm.hrdemog';
-
-    if (!CRM_HRCore_Helper_ExtensionHelper::isExtensionEnabled($key)) {
-      return TRUE;
-    }
-
-    civicrm_api3('Extension', 'disable', ['keys' => $key]);
-    civicrm_api3('Extension', 'uninstall', ['keys' => $key]);
+    $this->up1021_fixMissingLogTables();
 
     return TRUE;
+  }
+
+  /**
+   * Fixes the Missing Log Tables
+   */
+  private function up1021_fixMissingLogTables() {
+    civicrm_api3('System', 'createmissinglogtables');
   }
 
 }

@@ -3,84 +3,49 @@
 trait CRM_HRCore_Upgrader_Steps_1029 {
 
   /**
-   * Removes social account options and reorder the remaining
+   * Deletes Default Groups
+   *
+   * @return bool
    */
   public function upgrade_1029() {
-    $this->up1029_removeSocialAccountOptions([
-      'Work',
-      'MySpace',
-      'Vine',
-      'Google+',
-      'Snapchat',
-      'Tumblr',
+    $this->up1029_deleteDefaultGroups([
+      'Advisory board',
+      'Newsletter Subscribers',
+      'Summer Program Volunteers',
+      'Administrators',
     ]);
-    $this->up1029_reorderSocialAccountOptions([
-      'LinkedIn',
-      'Twitter',
-      'Facebook',
-    ]);
+
+    $this->up1029_disableAndHideDefaultGroup('Case_Resources');
 
     return TRUE;
   }
 
   /**
-   * Removes some social account options if not used, and disable it if used
+   * Deletes the Groups passed by params
+   *
+   * @param array $groupsToDelete
    */
-  private function up1029_removeSocialAccountOptions($accounts) {
-    $socialAccounts = civicrm_api3('OptionValue', 'get', [
-      'option_group_id' => 'website_type',
-      'name' => ['IN' => $accounts],
+  private function up1029_deleteDefaultGroups($groupsToDelete) {
+    $groups = civicrm_api3('Group', 'get', [
+      'name' => ['IN' => $groupsToDelete],
+      'api.Group.delete' => ['id' => '$value.id'],
     ]);
-
-    $socialAccounts = $socialAccounts['values'];
-    foreach ($socialAccounts as $optionValueId => $optionValue) {
-      $socialAccountIsUsed = civicrm_api3('Website', 'get', [
-        'website_type_id' => $optionValue['name'],
-        'url' => ['IS NOT NULL' => 1],
-      ]);
-      if ($socialAccountIsUsed['count'] == 0) {
-        civicrm_api3('OptionValue', 'delete', [
-          'id' => $optionValueId,
-        ]);
-      }
-      else {
-        civicrm_api3('OptionValue', 'create', [
-          'id' => $optionValueId,
-          'is_active' => 0,
-        ]);
-      }
-    }
   }
 
   /**
-   * Reorder Social Accounts
+   * Disable and Hide Groups Passed By Params
+   *
+   * @param string $groupToHide
    */
-  private function up1029_reorderSocialAccountOptions($accounts) {
-    $socialAccounts = civicrm_api3('OptionValue', 'get', [
-      'option_group_id' => 'website_type',
-      'name' => ['IN' => $accounts],
+  private function up1029_disableAndHideDefaultGroup($groupToHide) {
+    $group = civicrm_api3('Group', 'get', [
+      'name' => $groupToHide,
+      'api.Group.create' => [
+        'id' => '$value.id',
+        'is_hidden' => 1,
+        'is_active' => 0,
+      ],
     ]);
-
-    $socialAccounts = $socialAccounts['values'];
-    foreach ($socialAccounts as $optionValueId => $optionValue) {
-      switch ($optionValue['name']) {
-        case 'LinkedIn':
-          $newWeight = 1;
-          break;
-
-        case 'Twitter':
-          $newWeight = 2;
-          break;
-
-        case 'Facebook':
-          $newWeight = 3;
-          break;
-      }
-      civicrm_api3('OptionValue', 'create', [
-        'id' => $optionValueId,
-        'weight' => $newWeight,
-      ]);
-    }
   }
 
 }

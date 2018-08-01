@@ -15,8 +15,8 @@ define([
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
 
-      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(MockContract.contractPayment);
-      $httpBackend.whenGET(/action=get&entity=HRJobPay/).respond({});
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
+      $httpBackend.whenGET(/action=get&entity=HRJobPay/).respond(MockContract.contractPayment);
       $httpBackend.whenGET(/views.*/).respond({});
     }));
 

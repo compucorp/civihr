@@ -396,15 +396,20 @@ define([
 
       describe('error handling', function () {
         describe('when the leave request id is not set', function () {
-          beforeEach(function () {
+          var result;
+
+          beforeEach(function (done) {
             delete requestData.id;
-            promise = LeaveRequestAPI.update(requestData);
+
+            LeaveRequestAPI.update(requestData).catch(function (_result_) {
+              result = _result_;
+            }).finally(done);
+
+            $rootScope.$digest();
           });
 
           it('rejects the promise', function () {
-            promise.catch(function (result) {
-              expect(result).toBe('id is mandatory field');
-            });
+            expect(result).toBe('id is mandatory field');
           });
         });
       });

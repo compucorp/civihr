@@ -10,10 +10,10 @@ define([
   'use strict';
 
   describe('FormGeneralController', function () {
-    var $controller, $provide, $rootScope, $scope;
+    var $controller, $httpBackend, $provide, $rootScope, $scope;
 
     beforeEach(function () {
-      module('job-contract', 'common.mocks', function (_$provide_) {
+      module('job-contract', 'job-contract.templates', 'common.mocks', function (_$provide_) {
         $provide = _$provide_;
       });
       inject(['HR_settingsMock', function (hrSettingsMock) {
@@ -21,9 +21,12 @@ define([
       }]);
     });
 
-    beforeEach(inject(function (_$controller_, _$rootScope_) {
+    beforeEach(inject(function (_$controller_, _$httpBackend_, _$rootScope_) {
       $controller = _$controller_;
+      $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
+
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
     }));
 
     describe('Min and max allowed dates', function () {

@@ -26,14 +26,14 @@ module.exports = [
   {
     name: 'test:watch',
     fn: function (cb) {
-      var extPath, watchPatterns;
+      var testFolderPath, watchPatterns;
 
       if (utils.canCurrentExtensionRun('test')) {
-        extPath = utils.getExtensionPath();
+        testFolderPath = path.join(utils.getExtensionPath(), 'js/test');
         watchPatterns = utils.addExtensionCustomWatchPatternsToDefaultList([
-          path.join(extPath, '**', 'test/**/*.spec.js'),
-          '!' + path.join(extPath, '**', 'test/mocks/**/*.js'),
-          '!' + path.join(extPath, '**', 'test/test-main.js')
+          path.join(testFolderPath, '**/*.spec.js'),
+          '!' + path.join(testFolderPath, 'test/mocks/**/*.js'),
+          '!' + path.join(testFolderPath, 'test/test-main.js')
         ], 'test');
 
         gulp.watch(watchPatterns).on('change', function (file) {

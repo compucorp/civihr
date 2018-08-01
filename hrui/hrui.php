@@ -34,7 +34,7 @@ use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
  */
 function hrui_civicrm_coreResourceList(&$items, $region) {
   if ($region == 'html-header') {
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js');
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrui', 'js/dist/hrui.min.js', 1010);
     CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.hrui', 'css/hrui.css');
   }
 }

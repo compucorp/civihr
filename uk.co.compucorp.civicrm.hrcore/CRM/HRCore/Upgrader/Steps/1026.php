@@ -3,11 +3,10 @@
 trait CRM_HRCore_Upgrader_Steps_1026 {
 
   /**
-   * Set Default Gender Options
+   * Changes the Order Of Individual Prefix
    */
   public function upgrade_1026() {
-    $this->up1026_setDefaultGenderOptions();
-    $this->up1026_disableDefaultGenderOptions('Prefer not to say');
+    $this->up1026_changeOrderOfIndividualPrefix();
 
     return TRUE;
   }
@@ -15,24 +14,32 @@ trait CRM_HRCore_Upgrader_Steps_1026 {
   /**
    * Changes The Order of Individual Prefixes
    */
-  private function up1026_setDefaultGenderOptions() {
+  private function up1026_changeOrderOfIndividualPrefix() {
     $optionValues = civicrm_api3('OptionValue', 'get', [
-      'option_group_id' => 'gender',
+      'option_group_id' => 'individual_prefix',
     ]);
 
     $optionValues = $optionValues['values'];
     foreach ($optionValues as $optionValueId => $optionValue) {
       switch ($optionValue['name']) {
-        case 'Male':
+        case 'Mr.':
           $newWeight = 1;
           break;
 
-        case 'Female':
+        case 'Mrs.':
           $newWeight = 2;
           break;
 
-        case 'Other':
+        case 'Ms.':
           $newWeight = 3;
+          break;
+
+        case 'Miss':
+          $newWeight = 4;
+          break;
+
+        case 'Dr.':
+          $newWeight = 5;
           break;
       }
       civicrm_api3('OptionValue', 'create', [
@@ -40,14 +47,6 @@ trait CRM_HRCore_Upgrader_Steps_1026 {
         'weight' => $newWeight,
       ]);
     }
-  }
-
-  private function up1026_disableDefaultGenderOptions($genderOption) {
-    civicrm_api3('OptionValue', 'get', [
-      'option_group_id' => 'gender',
-      'name' => $genderOption,
-      'api.OptionValue.create' => ['id' => '$value.id', 'is_active' => 0],
-    ]);
   }
 
 }

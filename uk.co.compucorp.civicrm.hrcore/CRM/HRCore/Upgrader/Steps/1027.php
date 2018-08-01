@@ -3,80 +3,84 @@
 trait CRM_HRCore_Upgrader_Steps_1027 {
 
   /**
-   * Hide Fields For Contact Summary
-   *
-   * @return bool
+   * Removes social account options and reorder the remaining
    */
   public function upgrade_1027() {
-    $valuesToRemove = $this->up1027_getContactEditOptionValuesToRemove();
-    $activeOptionValues = $this->up1027_getActiveContactEditOptionValues();
-
-    $activeOptionValues = array_diff($activeOptionValues, $valuesToRemove);
-    civicrm_api3('Setting', 'create', [
-      'contact_edit_options' => $activeOptionValues,
+    $this->up1027_removeSocialAccountOptions([
+      'Work',
+      'MySpace',
+      'Vine',
+      'Google+',
+      'Snapchat',
+      'Tumblr',
+    ]);
+    $this->up1027_reorderSocialAccountOptions([
+      'LinkedIn',
+      'Twitter',
+      'Facebook',
     ]);
 
     return TRUE;
   }
 
   /**
-   * Retrieves active contact edit option setting value
-   *
-   * @return array
+   * Removes some social account options if not used, and disable it if used
    */
-  private function up1027_getActiveContactEditOptionValues() {
-    $result = civicrm_api3('Setting', 'get', [
-      'return' => ['contact_edit_options'],
+  private function up1027_removeSocialAccountOptions($accounts) {
+    $socialAccounts = civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'website_type',
+      'name' => ['IN' => $accounts],
     ]);
 
-    return $result['values'][$result['id']]['contact_edit_options'];
+    $socialAccounts = $socialAccounts['values'];
+    foreach ($socialAccounts as $optionValueId => $optionValue) {
+      $socialAccountIsUsed = civicrm_api3('Website', 'get', [
+        'website_type_id' => $optionValue['name'],
+        'url' => ['IS NOT NULL' => 1],
+      ]);
+      if ($socialAccountIsUsed['count'] == 0) {
+        civicrm_api3('OptionValue', 'delete', [
+          'id' => $optionValueId,
+        ]);
+      }
+      else {
+        civicrm_api3('OptionValue', 'create', [
+          'id' => $optionValueId,
+          'is_active' => 0,
+        ]);
+      }
+    }
   }
 
   /**
-   * Retrieves value for contact edit options to be removed
-   *
-   * @return array
+   * Reorder Social Accounts
    */
-  private function up1027_getContactEditOptionValuesToRemove() {
-    $values = [];
-    $names = $this->up1027_getUnusedContactEditOptionNames();
+  private function up1027_reorderSocialAccountOptions($accounts) {
+    $socialAccounts = civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'website_type',
+      'name' => ['IN' => $accounts],
+    ]);
 
-    $params = [
-      'return' => ['value', 'name'],
-      'option_group_id' => 'contact_edit_options',
-      'is_active' => 1,
-      'name' => ['IN' => $names]
-    ];
+    $socialAccounts = $socialAccounts['values'];
+    foreach ($socialAccounts as $optionValueId => $optionValue) {
+      switch ($optionValue['name']) {
+        case 'LinkedIn':
+          $newWeight = 1;
+          break;
 
-    $results = civicrm_api3('OptionValue', 'get', $params);
-    foreach ($results['values'] as $result) {
-      array_push($values, $result['value']);
-    }
+        case 'Twitter':
+          $newWeight = 2;
+          break;
 
-    return $values;
-  }
-
-  /**
-   * Get names of contact edit options not in use
-   *
-   * @return array
-   */
-  private function up1027_getUnusedContactEditOptionNames() {
-    $names = [];
-
-    foreach (['Contact', 'IM', 'Website'] as $name) {
-      $params = ['return' => ['id']];
-      if ($name === 'Contact') {
-        $params['suffix_id'] = ['IS NOT NULL' => 1];
+        case 'Facebook':
+          $newWeight = 3;
+          break;
       }
-
-      $result = civicrm_api3($name, 'get', $params);
-      if ($result['count'] == 0) {
-        array_push($names, $name === 'Contact' ? 'Suffix' : $name);
-      }
+      civicrm_api3('OptionValue', 'create', [
+        'id' => $optionValueId,
+        'weight' => $newWeight,
+      ]);
     }
-
-    return $names;
   }
 
 }

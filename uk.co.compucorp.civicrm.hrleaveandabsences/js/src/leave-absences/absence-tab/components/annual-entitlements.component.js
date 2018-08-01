@@ -35,11 +35,12 @@
       vm.absencePeriods = [];
       vm.loading = { absencePeriods: true };
 
+      vm.$onInit = $onInit;
       vm.getEditEntitlementsPageURL = getEditEntitlementsPageURL;
       vm.openAnnualEntitlementChangeLog = openAnnualEntitlementChangeLog;
       vm.showComment = showComment;
 
-      (function init () {
+      function $onInit () {
         loadEntitlements()
           .then(loadCommentsAuthors)
           .then(loadAbsencePeriods)
@@ -49,7 +50,7 @@
           .finally(function () {
             vm.loading.absencePeriods = false;
           });
-      })();
+      }
 
       /**
        * Filters absence periods basing on loaded entitlements

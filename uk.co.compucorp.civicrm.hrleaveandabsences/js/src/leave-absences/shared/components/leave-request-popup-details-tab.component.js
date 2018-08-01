@@ -55,9 +55,9 @@ define([
     };
     vm.pagination = {
       currentPage: 1,
-      filteredbreakdown: vm.balance.change.breakdown,
+      filteredbreakdown: [],
       numPerPage: 7,
-      totalItems: vm.balance.change.breakdown.length,
+      totalItems: 0,
       pageChanged: pageChanged
     };
     vm.uiOptions = {
@@ -115,6 +115,7 @@ define([
       time_interval: 15 // 15 minutes intervals in time and deduction inputs
     };
 
+    vm.$onInit = $onInit;
     vm.convertDateFormatFromServer = convertDateFormatFromServer;
     vm.convertDateToServerFormat = convertDateToServerFormat;
     vm.dateChangeHandler = dateChangeHandler;
@@ -131,7 +132,7 @@ define([
     vm.updateEndTimeInputMinTime = updateEndTimeInputMinTime;
     vm.$onDestroy = unsubscribeFromEvents;
 
-    (function init () {
+    function $onInit () {
       $controller(
         'RequestModalDetails' + _.capitalize(getLeaveType(vm.leaveType, vm.request)) + 'Controller',
         { detailsController: vm }
@@ -166,10 +167,14 @@ define([
         .then(initFromTimeWatcher)
         .then(!vm.isMode('view') && vm.initWatchersExtended)
         .catch(handleError)
+        .then(function () {
+          vm.pagination.filteredbreakdown = vm.balance.change.breakdown;
+          vm.pagination.totalItems = vm.balance.change.breakdown.length;
+        })
         .finally(function () {
           vm.loading.tab = false;
         });
-    }());
+    }
 
     /**
      * Calculates closing balance which is opening balance minus change amount.

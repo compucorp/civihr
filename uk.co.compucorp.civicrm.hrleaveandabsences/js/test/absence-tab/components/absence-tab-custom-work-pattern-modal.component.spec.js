@@ -164,6 +164,8 @@
           contactId: CRM.vars.leaveAndAbsences.contactId,
           dismiss: jasmine.createSpy('dismiss')
         });
+
+        controller.$onInit();
         $rootScope.$digest();
       }
     });

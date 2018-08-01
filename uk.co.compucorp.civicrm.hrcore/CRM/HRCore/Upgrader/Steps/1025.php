@@ -3,52 +3,80 @@
 trait CRM_HRCore_Upgrader_Steps_1025 {
 
   /**
-   * Deletes some demographics fields where they are not in use
+   * Hide Fields For Contact Summary
    *
    * @return bool
    */
   public function upgrade_1025() {
+    $valuesToRemove = $this->up1025_getContactEditOptionValuesToRemove();
+    $activeOptionValues = $this->up1025_getActiveContactEditOptionValues();
 
-    $this->up1025_deleteExtendDemographicFields([
-      'Ethnicity',
-      'Religion',
-      'Sexual_Orientation',
+    $activeOptionValues = array_diff($activeOptionValues, $valuesToRemove);
+    civicrm_api3('Setting', 'create', [
+      'contact_edit_options' => $activeOptionValues,
     ]);
 
     return TRUE;
   }
 
   /**
-   * Deletes Custom Demographic Fields only if they are not used
+   * Retrieves active contact edit option setting value
    *
-   * @param array $fieldsToDelete
+   * @return array
    */
-  private function up1025_deleteExtendDemographicFields($fieldsToDelete) {
-    $customGroup = civicrm_api3('CustomGroup', 'get', [
-      'name' => 'Extended_Demographics',
+  private function up1025_getActiveContactEditOptionValues() {
+    $result = civicrm_api3('Setting', 'get', [
+      'return' => ['contact_edit_options'],
     ]);
-    $customGroup = array_shift($customGroup['values']);
-    $customFields = civicrm_api3('CustomField', 'get', [
-      'name' => ['IN' => $fieldsToDelete],
-    ]);
-    $tableName = $customGroup['table_name'];
-    foreach ($customFields['values'] as $customField) {
-      $column = $customField['column_name'];
-      $queryFormat = 'SELECT COUNT(id) FROM %s'
-        . ' WHERE %s NOT LIKE "%%Not Applicable%%"'
-        . ' AND %s IS NOT NULL'
-        . ' AND %s <> ""';
 
-      $query = sprintf($queryFormat, $tableName, $column, $column, $column);
-      $customFieldItems = CRM_Core_DAO::singleValueQuery($query);
-      if ($customFieldItems > 0) {
-        continue;
+    return $result['values'][$result['id']]['contact_edit_options'];
+  }
+
+  /**
+   * Retrieves value for contact edit options to be removed
+   *
+   * @return array
+   */
+  private function up1025_getContactEditOptionValuesToRemove() {
+    $values = [];
+    $names = $this->up1025_getUnusedContactEditOptionNames();
+
+    $params = [
+      'return' => ['value', 'name'],
+      'option_group_id' => 'contact_edit_options',
+      'is_active' => 1,
+      'name' => ['IN' => $names]
+    ];
+
+    $results = civicrm_api3('OptionValue', 'get', $params);
+    foreach ($results['values'] as $result) {
+      array_push($values, $result['value']);
+    }
+
+    return $values;
+  }
+
+  /**
+   * Get names of contact edit options not in use
+   *
+   * @return array
+   */
+  private function up1025_getUnusedContactEditOptionNames() {
+    $names = [];
+
+    foreach (['Contact', 'IM', 'Website'] as $name) {
+      $params = ['return' => ['id']];
+      if ($name === 'Contact') {
+        $params['suffix_id'] = ['IS NOT NULL' => 1];
       }
 
-      civicrm_api3('CustomField', 'delete', [
-        'id' => $customField['id'],
-      ]);
+      $result = civicrm_api3($name, 'get', $params);
+      if ($result['count'] == 0) {
+        array_push($names, $name === 'Contact' ? 'Suffix' : $name);
+      }
     }
+
+    return $names;
   }
 
 }

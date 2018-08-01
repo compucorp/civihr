@@ -26,11 +26,12 @@ define([
 
     var vm = this;
 
+    vm.$onInit = $onInit;
     vm.openLeavePopup = openLeavePopup;
 
-    (function init () {
+    function $onInit () {
       watchLeaveRequests();
-    })();
+    }
 
     /**
      * Opens the leave request popup
