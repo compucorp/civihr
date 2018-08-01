@@ -128,9 +128,9 @@ function contactsummary_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 function contactsummary_civicrm_pageRun($page) {
   if ($page instanceof CRM_Contact_Page_View_Summary) {
     CRM_Core_Resources::singleton()
-      ->addSetting(array(
-        'tabSettings' => array('active' => CRM_Utils_Request::retrieve('selectedChild', 'String', $this, FALSE, 'contactsummary')),
-      ))
+      ->addSetting([
+        'tabSettings' => ['active' => CRM_Utils_Request::retrieve('selectedChild', 'String') ?: 'contactsummary'],
+      ])
       ->addVars('leaveAndAbsences', [
         'baseURL' => CRM_Core_Resources::singleton()->getUrl('uk.co.compucorp.civicrm.hrleaveandabsences'),
         'attachmentToken' => CRM_Core_Page_AJAX_Attachment::createToken()
