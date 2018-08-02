@@ -1132,7 +1132,7 @@
 
       describe('admin opens leave request popup in create mode', function () {
         var leaveRequest;
-        var adminId = '206';
+        var adminId = CRM.vars.leaveAndAbsences.contactId.toString();
 
         beforeEach(function () {
           leaveRequest = LeaveRequestInstance.init();
@@ -1151,8 +1151,8 @@
             expect(controller.isRole('admin')).toBeTruthy();
           });
 
-          it('does not contain admin in the list of managees', function () {
-            expect(_.find(controller.managedContacts, { 'id': adminId })).toBeUndefined();
+          it('contains admin in the list of managees', function () {
+            expect(!!_.find(controller.managedContacts, { 'id': adminId })).toBe(true);
           });
         });
       });
