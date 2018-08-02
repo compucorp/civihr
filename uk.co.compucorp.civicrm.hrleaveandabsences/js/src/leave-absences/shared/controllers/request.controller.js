@@ -828,10 +828,7 @@ define([
         // In case of general administration
         return Contact.all()
           .then(function (contacts) {
-            vm.managedContacts = _.remove(contacts.list, function (contact) {
-              // Removes the admin from the list of contacts
-              return contact.id !== loggedInContact.id;
-            });
+            vm.managedContacts = contacts.list;
           });
       } else {
         // In any other case (including managing)
