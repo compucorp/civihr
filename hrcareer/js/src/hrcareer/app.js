@@ -1,18 +1,28 @@
 /* eslint-env amd */
 
-define(function () {
+define(function (CRM) {
   'use strict';
 
-  CRM.$(function ($) {
-    $('body').on('crmFormLoad', function (event) {
-      if (event.profileName === 'hrcareer_tab') {
-        var accessName = $('[data-crm-custom="Career:End_Date"]').attr('name');
+  CRM.$('body').on('crmFormLoad', function () {
+    var form = CRM.$('.custom-group-Career');
 
-        if ($('div#editrow-' + accessName + ' a.helpicon').length === 0) {
-          var helpIcon = $("<span class ='crm-container'><a class='helpicon' onclick='CRM.help(\"\", {\"id\":\"hrcareer-enddate\",\"file\":\"CRM/HRCareer/Page/helptext\"}); return false;' title='End Date Help'></a></span>");
-          $('div#editrow-' + accessName + ' div label').append(helpIcon);
-        }
+    if (form.length) {
+      var accessName = form.find('[data-crm-custom="Career:End_Date"]').attr('name');
+      var labelSelector = 'label[for=' + accessName + ']';
+
+      if (!form.find(labelSelector + ' .helpicon').length) {
+        var helpIcon = CRM.$('<a href class="helpicon" title="End Date Help"></a>');
+
+        form.find(labelSelector).append('&#160;').append(helpIcon);
+        helpIcon.on('click', function () {
+          CRM.help('', {
+            id: 'hrcareer-enddate',
+            file: 'CRM/HRCareer/Page/helptext'
+          });
+
+          return false;
+        });
       }
-    });
+    }
   });
-});
+}(CRM));
