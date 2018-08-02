@@ -814,6 +814,9 @@ define([
 
     /**
      * Loads the managees of currently logged in user
+     * If a contact is pre-selected, then a single managee is loaded.
+     * If user is an admin, then all contacts, including the admin, are loaded.
+     * If user is a manager, then only contacts they manage are loaded.
      *
      * @return {Promise}
      */
