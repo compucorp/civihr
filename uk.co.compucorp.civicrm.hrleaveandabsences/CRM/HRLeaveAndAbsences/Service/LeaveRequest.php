@@ -115,8 +115,17 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
         $this->getErrorMessageForInvalidStatusTransition($params));
     }
 
-    $isTOILWithPastDates = LeaveRequest::isTOILWithPastDates($params);
     $isCancelledStatus = $this->isCancelledStatus($params);
+
+    if ($isCancelledStatus) {
+      if (!$this->canCancelForAbsenceType($params)) {
+        throw new RuntimeException(
+          'You cannot cancel leave requests for this Absence type'
+        );
+      }
+    }
+
+    $isTOILWithPastDates = LeaveRequest::isTOILWithPastDates($params);
     $canCanCancelTOILWithPastDates = $this->canCanCancelTOILWithPastDates($params);
 
     if ($isTOILWithPastDates && $isCancelledStatus && !$canCanCancelTOILWithPastDates) {
@@ -129,6 +138,22 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
   }
 
   /**
+   * Whether the current user can cancel a leave request for the absence
+   * type.
+   *
+   * @param array $params
+   *
+   * @return bool
+   */
+  private function canCancelForAbsenceType($params) {
+    return $this->leaveRequestRightsService->canCancelForAbsenceType(
+      $params['type_id'],
+      $params['contact_id'],
+      new DateTime($params['from_date'])
+    );
+  }
+
+  /**
    * Return an error message either for specific invalid status transition cases
    * or a default generic message
    *
@@ -137,13 +162,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequest {
    * @return string
    */
   private function getErrorMessageForInvalidStatusTransition($params) {
-    $leaveStatuses = LeaveRequest::getStatuses();
     $leaveStatusesLabels = LeaveRequest::buildOptions('status_id');
-    $isOwnRequest = CRM_Core_Session::getLoggedInContactID() === $params['contact_id'];
-
-    if ($isOwnRequest && (int)$params['status_id'] === (int)$leaveStatuses['approved']) {
-      return "You can't approve your own leave requests";
-    }
 
     return "You can't change the Leave Request status from \"" .
       $leaveStatusesLabels[$this->getCurrentStatus($params)] . '" to "' .

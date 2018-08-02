@@ -4,6 +4,7 @@ use CRM_HRLeaveAndAbsences_Service_LeaveRequestRights as LeaveRequestRightsServi
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest
@@ -37,11 +38,20 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
   }
 
   public function testCanDeleteForReturnsFalseWhenCurrentUserIsLeaveManager() {
+    $managerId = 5;
+    $this->registerCurrentLoggedInContactInSession($managerId);
     $this->assertFalse($this->getLeaveRequestRightsForLeaveManagerAsCurrentUser()->canDeleteFor($this->leaveContact));
+    $this->unregisterCurrentLoggedInContactFromSession();
   }
 
   public function testCanDeleteForReturnsTrueWhenCurrentUserIsAdmin() {
     $this->assertTrue($this->getLeaveRequestRightsForAdminAsCurrentUser()->canDeleteFor($this->leaveContact));
+  }
+
+  public function testCanDeleteForReturnsTrueWhenCurrentUserIsOwnLeaveApproverAndIsOwnRequest() {
+    $this->registerCurrentLoggedInContactInSession($this->leaveContact);
+    $this->assertTrue($this->getLeaveRequestRightsForLeaveManagerAsCurrentUser()->canDeleteFor($this->leaveContact));
+    $this->unregisterCurrentLoggedInContactFromSession();
   }
 
   /**
@@ -168,6 +178,29 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertTrue(
       $adminRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_TOIL)
     );
+  }
+
+  /**
+   * @dataProvider leaveRequestStatusesDataProvider
+   */
+  public function testCanChangeDatesForReturnsTrueForAnyRequestTypeWhenCurrentUserIsOwnLeaveApproverIrrespectiveOfStatusPassed($status) {
+    $contactID = 2;
+    $this->registerCurrentLoggedInContactInSession($contactID);
+    $managerRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
+
+    $this->assertTrue(
+      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_LEAVE)
+    );
+
+    $this->assertTrue(
+      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_SICKNESS)
+    );
+
+    $this->assertTrue(
+      $managerRightsService->canChangeDatesFor($contactID, $status, LeaveRequest::REQUEST_TYPE_TOIL)
+    );
+
+    $this->unregisterCurrentLoggedInContactFromSession();
   }
 
   /**
@@ -312,6 +345,62 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     //In reality, An admin user has access to all contacts, but an empty array is returned in
     //this case.
     $this->assertEquals([], $accessibleContacts);
+  }
+
+  public function testCanCancelForAbsenceTypeReturnsTrueWhenUserIsAdmin() {
+    $typeId = 1;
+    $contactID = 2;
+    $leaveDate = new DateTime();
+    $leaveRequestRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
+    $result = $leaveRequestRightsService->canCancelForAbsenceType($typeId, $contactID, $leaveDate);
+    $this->assertTrue($result);
+  }
+
+  public function testCanCancelForAbsenceTypeReturnsTrueWhenUserIsLeaveManager() {
+    $typeId = 1;
+    $contactID = 2;
+    $leaveDate = new DateTime();
+    $leaveRequestRightsService = $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser();
+    $result = $leaveRequestRightsService->canCancelForAbsenceType($typeId, $contactID, $leaveDate);
+    $this->assertTrue($result);
+  }
+
+  public function testCanCancelForAbsenceTypeReturnsTrueWhenAbsenceTypeAllowsCancellationForStaff() {
+    $absenceType = AbsenceTypeFabricator::fabricate([
+      'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_ALWAYS
+    ]);
+    $contactID = 2;
+    $leaveDate = new DateTime();
+    $leaveRequestRightsService = $this->getLeaveRightsService();
+    $result = $leaveRequestRightsService->canCancelForAbsenceType($absenceType->id, $contactID, $leaveDate);
+    $this->assertTrue($result);
+  }
+
+  public function testCanCancelForAbsenceTypeReturnsFalseWhenAbsenceTypeDoesNotAllowCancellationForStaff() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_NO]);
+    $contactID = 2;
+    $leaveDate = new DateTime();
+    $leaveRequestRightsService = $this->getLeaveRightsService();
+    $result = $leaveRequestRightsService->canCancelForAbsenceType($absenceType->id, $contactID, $leaveDate);
+    $this->assertFalse($result);
+  }
+
+  public function testCanCancelForAbsenceTypeReturnsFalseWhenAbsenceTypeAllowsCancellationForFutureDateButLeaveDateIsPast() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE]);
+    $contactID = 2;
+    $leaveDate = new DateTime('yesterday');
+    $leaveRequestRightsService = $this->getLeaveRightsService();
+    $result = $leaveRequestRightsService->canCancelForAbsenceType($absenceType->id, $contactID, $leaveDate);
+    $this->assertFalse($result);
+  }
+
+  public function testCanCancelForAbsenceTypeReturnsTrueWhenAbsenceTypeAllowsCancellationForFutureDateAndLeaveDateIsInFuture() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE]);
+    $contactID = 2;
+    $leaveDate = new DateTime('tomorrow');
+    $leaveRequestRightsService = $this->getLeaveRightsService();
+    $result = $leaveRequestRightsService->canCancelForAbsenceType($absenceType->id, $contactID, $leaveDate);
+    $this->assertTrue($result);
   }
 
   private function getLeaveRightsService($isAdmin = FALSE, $isManager = FALSE) {

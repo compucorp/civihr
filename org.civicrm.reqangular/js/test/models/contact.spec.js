@@ -2,21 +2,23 @@
 
 define([
   'common/lodash',
+  'common/mocks/data/contact.data',
   'common/angularMocks',
   'common/models/contact',
   'common/models/group',
   'common/models/contact-job-role.model',
+  'common/mocks/models/instances/session-mock',
   'common/mocks/services/hr-settings-mock',
   'common/mocks/services/api/contact-mock',
   'common/mocks/services/api/contact-job-role-api.api.mock',
   'common/mocks/models/instances/contact-instance-mock'
-], function (_) {
+], function (_, contactData) {
   'use strict';
 
   describe('Contact', function () {
-    var $provide, $rootScope, Contact, ContactInstanceMock, Group,
-      ContactJobRole, contactAPI, contactAPIMock, ContactJobRoleAPI,
-      groupContactAPIMock, contacts, contactJobRoles, groupContacts;
+    var $provide, $rootScope, Contact, ContactInstanceMock, contactAPI,
+      contactAPIMock, ContactJobRole, ContactJobRoleAPI, contactJobRoles,
+      contacts, Group, groupContactAPIMock, groupContacts, SessionMock;
 
     beforeEach(function () {
       module('common.models', 'common.mocks', function (_$provide_) {
@@ -34,12 +36,12 @@ define([
     });
 
     beforeEach(inject([
-      '$rootScope', 'Contact', 'Group', 'ContactJobRole',
-      'ContactInstanceMock', 'ContactJobRoleAPI', 'api.contact',
-      'api.group-contact.mock',
-      function (_$rootScope_, _Contact_, _Group_, _ContactJobRole_,
-        _ContactInstanceMock_, _ContactJobRoleAPI_, _contactAPI_,
-        _groupContactAPIMock_) {
+      '$rootScope', 'api.contact', 'api.group-contact.mock', 'Contact',
+      'ContactInstanceMock', 'ContactJobRole', 'ContactJobRoleAPI', 'Group',
+      'SessionMock',
+      function (_$rootScope_, _contactAPI_, _groupContactAPIMock_, _Contact_,
+        _ContactInstanceMock_, _ContactJobRole_, _ContactJobRoleAPI_, _Group_,
+        _SessionMock_) {
         $rootScope = _$rootScope_;
         Contact = _Contact_;
         Group = _Group_;
@@ -48,6 +50,7 @@ define([
         contactAPI = _contactAPI_;
         ContactJobRoleAPI = _ContactJobRoleAPI_;
         groupContactAPIMock = _groupContactAPIMock_;
+        SessionMock = _SessionMock_;
 
         contactAPI.spyOnMethods();
         ContactJobRoleAPI.spyOnMethods();
@@ -59,7 +62,7 @@ define([
     ]));
 
     it('has the expected api', function () {
-      expect(Object.keys(Contact)).toEqual(['all', 'find', 'leaveManagees']);
+      expect(Object.keys(Contact)).toEqual(['all', 'find', 'getLoggedIn', 'leaveManagees']);
     });
 
     describe('all()', function () {
@@ -249,6 +252,30 @@ define([
 
       it('returns an instance of the model', function () {
         expect(ContactInstanceMock.isInstance(contact)).toBe(true);
+      });
+    });
+
+    describe('getLoggedIn()', function () {
+      var result, loggedInContact;
+
+      beforeEach(function () {
+        var loggedInContactId;
+
+        Contact.getLoggedIn()
+          .then(function (_result_) {
+            result = _result_;
+          });
+        SessionMock.get()
+          .then(function (session) {
+            loggedInContactId = session.contactId;
+          });
+        $rootScope.$digest();
+
+        loggedInContact = _.find(contactData.all.values, { id: loggedInContactId });
+      });
+
+      it('resolves with a currently logged in contact', function () {
+        expect(result).toEqual(loggedInContact);
       });
     });
 

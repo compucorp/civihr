@@ -2856,86 +2856,6 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($expectedResult, $result);
   }
 
-  public function testLeaveRequestIsValidShouldReturnErrorWhenUserCancelsOwnLeaveRequestAndAbsenceTypeDoesNotAllowIt() {
-    $contactID = 5;
-    $this->registerCurrentLoggedInContactInSession($contactID);
-
-    $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_NO
-    ]);
-
-    $fromDate = new DateTime();
-    $toDate = new DateTime('+4 days');
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => $absenceType->id,
-      'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['awaiting_approval'],
-      'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
-    ]);
-
-    //cancel leave request
-    $result = civicrm_api3('LeaveRequest', 'isvalid', [
-      'id' => $leaveRequest->id,
-      'type_id' => $absenceType->id,
-      'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['cancelled'],
-      'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1,
-      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
-    ]);
-
-    $errorMessage = 'Absence Type does not allow leave request cancellation';
-    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
-    $this->assertEquals($expectedResult, $result);
-  }
-
-  public function testLeaveRequestIsValidShouldReturnErrorWhenUserCancelsOwnLeaveRequestAndAbsenceTypeAllowsItInAdvanceOfStartDateAndLeaveRequestFromDateIsLessThanToday() {
-    $contactID = 5;
-    $this->registerCurrentLoggedInContactInSession($contactID);
-
-    $absenceType = AbsenceTypeFabricator::fabricate([
-      'allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE
-    ]);
-
-    $fromDate = new DateTime('-1 day');
-    $toDate = new DateTime('+4 days');
-    $leaveRequestStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-
-    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
-      'type_id' => $absenceType->id,
-      'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['awaiting_approval'],
-      'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1
-    ]);
-
-    //cancel leave request
-    $result = civicrm_api3('LeaveRequest', 'isvalid', [
-      'id' => $leaveRequest->id,
-      'type_id' => $absenceType->id,
-      'contact_id' => $contactID,
-      'status_id' => $leaveRequestStatuses['cancelled'],
-      'from_date' => $fromDate->format('YmdHis'),
-      'from_date_type' => 1,
-      'to_date' => $toDate->format('YmdHis'),
-      'to_date_type' => 1,
-      'request_type' => LeaveRequest::REQUEST_TYPE_LEAVE
-    ]);
-
-    $errorMessage = 'Leave Request with past days cannot be cancelled';
-    $expectedResult = $this->getExpectedArrayForIsValidError('type_id', $errorMessage);
-    $this->assertEquals($expectedResult, $result);
-  }
-
   public function testLeaveRequestIsValidShouldReturnAnErrorWhenTheToilToAccrueDoesNotHaveAValidValue() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2015-01-01'),
@@ -2962,6 +2882,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testToilCanBeAccruedWhenToilIsInHoursAndToilToAccrueValueIsNotAValidToilAmountOptionValue() {
+    $this->setPermissions();
     $contactID = 1;
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
@@ -3221,6 +3142,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testCreateAlsoCreatesTheBalanceChangesForTheLeaveRequest() {
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
     $startDate = new DateTime();
     $endDate = new DateTime('+5 days');
 
@@ -4847,6 +4769,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $toDate = new DateTime('2016-01-10');
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => $fromDate->format('YmdHis'),
@@ -4895,6 +4818,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $toDate = new DateTime('2016-01-10 12:34:56');
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => $fromDate->format('YmdHis'),
@@ -4939,6 +4863,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
 
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
     $startDate = new DateTime();
     $endDate = new DateTime('+5 days');
 
@@ -4980,6 +4905,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
   public function testCreateReturnsTrueForFromEmailParameterWhenFromEmailIsConfigured() {
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
     $startDate = new DateTime();
     $endDate = new DateTime('+5 days');
 
@@ -5027,6 +4953,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $contactID = 1;
     $absenceType = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => $fromDate->format('YmdHis'),
@@ -5070,6 +4997,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     $toDate = new DateTime('2016-01-10 15:45:00');
     $contactID = 1;
     $this->registerCurrentLoggedInContactInSession($contactID);
+    $this->setPermissions();
 
     $period = AbsencePeriodFabricator::fabricate([
       'start_date' => $fromDate->format('YmdHis'),
