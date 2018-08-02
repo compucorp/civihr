@@ -16,6 +16,10 @@ class CRM_Hrjobroles_Test_Fabricator_HrJobRoles {
    * @throws \Exception
    */
   public static function fabricate($params) {
+    if (empty($params['start_date'])) {
+      $params['start_date'] = date('Y-m-d H:i:s');
+    }
+
     $result = civicrm_api3(
       'HrJobRoles',
       'create',

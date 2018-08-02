@@ -99,9 +99,9 @@ class api_v3_ContactHRJobRoleTest extends CRM_Hrjobroles_Test_BaseHeadlessTest {
     $contact2 = ContactFabricator::fabricate();
     $contract1 = HRJobContractFabricator::fabricate(['contact_id' => $contact1['id']]);
     $contract2 = HRJobContractFabricator::fabricate(['contact_id' => $contact2['id']]);
-    $jobRole1 = HRJobRolesFabricator::fabricate(['job_contract_id' => $contract1['id'],]);
-    $jobRole2 = HRJobRolesFabricator::fabricate(['job_contract_id' => $contract1['id'],]);
-    $jobRole3 = HRJobRolesFabricator::fabricate(['job_contract_id' => $contract2['id'],]);
+    $jobRole1 = HRJobRolesFabricator::fabricate(['job_contract_id' => $contract1['id']]);
+    $jobRole2 = HRJobRolesFabricator::fabricate(['job_contract_id' => $contract1['id']]);
+    $jobRole3 = HRJobRolesFabricator::fabricate(['job_contract_id' => $contract2['id']]);
 
     $contactJobRoles = civicrm_api3($this->entity, $this->action)['values'];
 
