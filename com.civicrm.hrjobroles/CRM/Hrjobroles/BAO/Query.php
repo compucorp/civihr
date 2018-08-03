@@ -70,15 +70,26 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
     }
 
     public function where(&$query) {
-        $grouping = NULL;
-        foreach ($query->_params as $param) {
-            if ($this->isAJobRoleParam($param)) {
-                if ($query->_mode == CRM_Contact_BAO_QUERY::MODE_CONTACTS) {
-                    $query->_useDistinct = TRUE;
-                }
-                $this->whereClauseSingle($param, $query);
-            }
+      $grouping = NULL;
+      $filterJobRoleByDate = $filterJobRole = FALSE;
+      foreach ($query->_params as $param) {
+        if ($this->isAJobRoleParam($param)) {
+          $filterJobRole = TRUE;
+          $paramHasDate = strpos($param[0], 'date');
+          if (!$filterJobRoleByDate && $paramHasDate) {
+            $filterJobRoleByDate = TRUE;
+          }
+
+          if ($query->_mode == CRM_Contact_BAO_QUERY::MODE_CONTACTS) {
+              $query->_useDistinct = TRUE;
+          }
+
+          $this->whereClauseSingle($param, $query);
         }
+      }
+      if (!$filterJobRoleByDate && $filterJobRole) {
+        $this->applyJobRoleDateFiltering($query);
+      }
     }
 
     private function isAJobRoleParam($param) {
@@ -88,6 +99,18 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         }
 
         return false;
+    }
+
+  /**
+   * Applies date filtering for active job roles
+   *
+   * @param CRM_Contact_BAO_Query $query
+   */
+    private function applyJobRoleDateFiltering(&$query) {
+      $today = date('Y-m-d H:i:s');
+      $dateRestriction = 'civicrm_hrjobroles.start_date <= "' . $today . '"';
+      $dateRestriction .= ' AND (civicrm_hrjobroles.end_date >= "' . $today . '" OR civicrm_hrjobroles.end_date IS NULL)';
+      $query->_where[] = [$dateRestriction];
     }
 
     private function whereClauseSingle($values, &$query) {
