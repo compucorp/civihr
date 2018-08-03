@@ -753,10 +753,6 @@ function _hrui_contactSummaryDOMScript($data) {
   $script .= "CRM.$(function($) {";
   $script .= "$('#contactname-block.crm-summary-block').wrap('<div class=\"crm-summary-block-wrap\" />');";
 
-  if (!empty($data['contact']['image_URL'])) {
-    $script .= "$('.crm-summary-contactname-block').prepend('<img class=\"crm-summary-contactphoto\" src=" . $data['contact']['image_URL'] . " />');";
-  }
-
   if (empty($data['current_contract'])) {
     $script .= "$('.crm-summary-contactname-block').addClass('crm-summary-contactname-block-without-contract');";
   }
@@ -804,7 +800,7 @@ function _hrui_updateContactSummaryUI() {
   try {
     $contactDetails = civicrm_api3('Contact', 'getsingle', array(
       'sequential' => 1,
-      'return' => array("phone", "email", "image_URL"),
+      'return' => array("phone", "email"),
       'id' => $contact_id,
     ));
 

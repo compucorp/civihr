@@ -101,7 +101,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
     self::validateAbsenceTypeIsActiveAndValid($params, $absenceType);
     self::validateTOILRequest($params, $absenceType, $absencePeriod);
     self::validateLeaveDaysAgainstAbsenceTypeMaxConsecutiveLeaveDays($params, $absenceType);
-    self::validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params, $absenceType);
     self::validateAbsencePeriod($params, $absencePeriod);
 
     if($validationMode != self::IMPORT_VALIDATION) {
@@ -728,46 +727,6 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
         'leave_request_days_greater_than_max_consecutive_days',
         'type_id'
       );
-    }
-  }
-
-  /**
-   * This method checks if the absence type allows cancellation in advance of start date and that the leave request from_date
-   * should not be in the past in the event of a leave request cancellation by a user.
-   *
-   * Also checks that a user's leave request should not be cancelled if the absence type does not
-   * allow leave request cancellation
-   *
-   * @param array $params
-   *   The params array received by the create method
-   * @param AbsenceType $absenceType
-   *
-   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidLeaveRequestException
-   */
-  private static function validateAbsenceTypeAllowRequestCancellationForLeaveRequestCancellation($params, $absenceType) {
-    $leaveRequestStatuses = self::getStatuses();
-    $leaveRequestIsForCurrentUser = CRM_Core_Session::getLoggedInContactID() == $params['contact_id'];
-    $isACancellationRequest = ($params['status_id'] == $leaveRequestStatuses['cancelled']);
-
-    if($leaveRequestIsForCurrentUser && $isACancellationRequest) {
-      $today = new DateTime('today');
-      $fromDate = new DateTime($params['from_date']);
-
-      if($absenceType->allow_request_cancelation == AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE && $fromDate < $today) {
-        throw new InvalidLeaveRequestException(
-          'Leave Request with past days cannot be cancelled',
-          'leave_request_past_days_cannot_be_cancelled',
-          'type_id'
-        );
-      }
-
-      if($absenceType->allow_request_cancelation == AbsenceType::REQUEST_CANCELATION_NO) {
-        throw new InvalidLeaveRequestException(
-          'Absence Type does not allow leave request cancellation',
-          'leave_request_absence_type_disallows_cancellation',
-          'type_id'
-        );
-      }
     }
   }
 

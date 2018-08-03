@@ -75,7 +75,7 @@
       </div>
     </div>
     <div
-      ng-show="$ctrl.canManage && !$ctrl.isSelfRecord && $ctrl.staffMemberSelectionComplete"
+      ng-show="$ctrl.canManage && (!$ctrl.isSelfRecord || $ctrl.isSelfLeaveApprover) && $ctrl.staffMemberSelectionComplete"
       class="row chr_leave-request-modal__response">
       <div class="col-xs-12 form-horizontal">
         <div class="form-group">

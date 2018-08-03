@@ -53,19 +53,28 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   public function canChangeDatesFor($contactID, $statusID, $requestType) {
+    if ($this->currentUserIsAdmin()) {
+      return TRUE;
+    }
+
     $leaveRequestStatuses = self::getLeaveRequestStatuses();
     $openStatuses = [
       $leaveRequestStatuses['awaiting_approval'],
       $leaveRequestStatuses['more_information_required']
     ];
-    $isSicknessRequest = $requestType === LeaveRequest::REQUEST_TYPE_SICKNESS;
+
     $isOpenLeaveRequest = in_array($statusID, $openStatuses);
+    $currentUserIsLeaveContact = $this->currentUserIsLeaveContact($contactID);
 
-    $currentUserCanChangeDates = ($isSicknessRequest && $this->currentUserIsLeaveManagerOf($contactID)) ||
-                                 ($this->currentUserIsLeaveContact($contactID) && $isOpenLeaveRequest) ||
-                                  $this->currentUserIsAdmin();
+    if ($currentUserIsLeaveContact && $isOpenLeaveRequest) {
+      return TRUE;
+    }
 
-    return $currentUserCanChangeDates;
+    $currentUserIsLeaveManager = $this->currentUserIsLeaveManagerOf($contactID);
+    $isOwnLeaveApprover = $currentUserIsLeaveManager && $currentUserIsLeaveContact;
+    $isSicknessRequest = $requestType === LeaveRequest::REQUEST_TYPE_SICKNESS;
+
+    return $isOwnLeaveApprover || ($isSicknessRequest && $currentUserIsLeaveManager);
   }
 
   /**
@@ -85,7 +94,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
   }
 
   /**
-   * Checks whether the current user has permissions to delete the leave request
+   * Checks whether the current user has permissions to delete the leave request.
+   * Currently only allows the admin and a user who is own leave approver and its
+   * own request to delete a leave request.
    *
    * @param int $contactID
    *   The contactID of the leave request
@@ -93,7 +104,15 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   public function canDeleteFor($contactID) {
-    return $this->currentUserIsAdmin();
+    if ($this->currentUserIsAdmin()) {
+      return TRUE;
+    }
+
+    if (!$this->currentUserIsLeaveContact($contactID)) {
+      return FALSE;
+    }
+
+    return $this->currentUserIsLeaveManagerOf($contactID);
   }
 
   /**
@@ -198,5 +217,36 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
     }
 
     return $results;
+  }
+
+  /**
+   * Checks if the current user can cancel the leave request for the given absence type,
+   * leave contact and leave from date.
+   *
+   * @param int $absenceTypeId
+   * @param int $contactId
+   * @param \DateTime $leaveFromDate
+   *
+   * @return bool
+   */
+  public function canCancelForAbsenceType($absenceTypeId, $contactId, DateTime $leaveFromDate) {
+    if ($this->currentUserIsAdmin() || $this->currentUserIsLeaveManagerOf($contactId)) {
+      return TRUE;
+    }
+
+    $absenceType = AbsenceType::findById($absenceTypeId);
+    if ($absenceType->allow_request_cancelation == AbsenceType::REQUEST_CANCELATION_ALWAYS) {
+      return TRUE;
+    }
+
+    $today = new DateTime('today');
+
+    $absenceTypeAllowsFutureCancellation =
+      $absenceType->allow_request_cancelation == AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE;
+    if ($absenceTypeAllowsFutureCancellation && $leaveFromDate > $today) {
+      return TRUE;
+    }
+
+    return FALSE;
   }
 }
