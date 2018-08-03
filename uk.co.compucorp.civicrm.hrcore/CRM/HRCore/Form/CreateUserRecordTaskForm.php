@@ -44,7 +44,13 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
     $contactsToCreate = $this->getValidContactsForCreation();
 
     foreach ($contactsToCreate as $contact) {
-      $this->createAccount($contact, $roles);
+      $user = $this->drupalUserService->findUserByEmail($contact['email']);
+      if (!$user) {
+        $this->createAccount($contact, $roles);
+      }
+      else {
+        $this->restoreAccount($user, $roles, $contact['id']);
+      }
     }
 
     $haveAccount = $this->getContactsWithAccount();
@@ -218,4 +224,21 @@ class CRM_HRCore_Form_CreateUserRecordTaskForm extends AbstractDrupalInteraction
     return empty($errors) ? TRUE : $errors;
   }
 
+  /**
+   * Restores user account and set role(s) after delete.
+   * Deleting user account does not remove drupal account.
+   * The user account is just unlinked in the UF match civi table
+   *
+   * @param object $user
+   * @param array $roles
+   * @param int $contactId
+   */
+  public function restoreAccount($user, $roles, $contactId) {
+    $this->drupalUserService->setRoles($user->mail, $roles);
+
+    $ufMatch['uf_id'] = $user->uid;
+    $ufMatch['contact_id'] = $contactId;
+    $ufMatch['uf_name'] = $user->mail;
+    civicrm_api3('UFMatch', 'create', $ufMatch);
+  }
 }

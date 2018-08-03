@@ -78,6 +78,7 @@ define([
      * Mocks back-end API calls
      */
     function mockBackendCalls () {
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
       $httpBackend.whenGET(/action=get&entity=HRJobLeave/).respond(MockContract.contractLeaves);
       $httpBackend.whenGET(/action=getfields&entity=HRJobLeave/).respond({ values: [] });
       $httpBackend.whenGET(/views.*/).respond({});

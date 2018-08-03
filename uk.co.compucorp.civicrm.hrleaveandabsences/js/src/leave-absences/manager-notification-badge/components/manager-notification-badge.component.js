@@ -25,14 +25,16 @@ define([
 
     vm.refreshCountEventName = 'ManagerBadge:: Update Count';
 
-    (function init () {
+    vm.$onInit = $onInit;
+
+    function $onInit () {
       $q.all([
         getManagerId(),
         getStatusId()
       ]).then(function () {
         vm.filters = [leaveRequestFilters];
       });
-    })();
+    }
 
     /**
      * Get the logged in contact id and save it as manager id

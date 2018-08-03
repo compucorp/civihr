@@ -26,12 +26,13 @@ define([], function () {
       feeds: false
     };
 
+    vm.$onInit = $onInit;
     vm.openLinkModal = openLinkModal;
 
-    (function init () {
+    function $onInit () {
       loadFeeds();
       defineIfCanCreateFeeds();
-    }());
+    }
 
     /**
      * Defines if user can create feeds based on permissions

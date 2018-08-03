@@ -6,7 +6,7 @@
  */
 @mixin spinner($force-size: 'false', $speed: 1.5s, $size: 32px) {
   animation: spin $speed linear infinite;
-  background: url(../img/spinner.svg) no-repeat center center !important;
+  background: url($crm-image-path + 'spinner.svg') no-repeat center center !important;
   display: block;
   height: if($force-size == 'true', $size !important, $size);
   margin: auto;

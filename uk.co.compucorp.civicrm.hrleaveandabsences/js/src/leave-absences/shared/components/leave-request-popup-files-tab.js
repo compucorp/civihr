@@ -38,6 +38,7 @@ define([
     vm.userDateFormat = HRSettings.DATE_FORMAT;
 
     vm.$onDestroy = unsubscribeFromEvents;
+    vm.$onInit = $onInit;
     vm.canRemoveAttachment = canRemoveAttachment;
     vm.canSubmit = canSubmit;
     vm.canUploadMore = canUploadMore;
@@ -46,7 +47,7 @@ define([
     vm.getFilesAmount = getFilesAmount;
     vm.listFileTypes = listFileTypes;
 
-    (function init () {
+    function $onInit () {
       $rootScope.$broadcast('LeaveRequestPopup::childComponent::register');
       $scope.$emit('LeaveRequestPopup::addTab', vm);
       initListeners();
@@ -59,7 +60,7 @@ define([
         .finally(function () {
           vm.filesLoaded = true;
         });
-    }());
+    }
 
     /**
      * Allows the user to submit the request if files are waiting to be uploaded.

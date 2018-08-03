@@ -32,6 +32,7 @@ define([
       contacts: {}
     };
 
+    vm.$onInit = $onInit;
     vm.addComment = addComment;
     vm.canRemoveComment = canRemoveComment;
     vm.canSubmit = canSubmit;
@@ -41,11 +42,11 @@ define([
     vm.isMode = isMode;
     vm.onBeforeSubmit = onBeforeSubmit;
 
-    (function init () {
+    function $onInit () {
       $scope.$emit('LeaveRequestPopup::addTab', vm);
       loadCommentsAndContactNames();
       loadLoggedInContactId();
-    }());
+    }
 
     /**
      * Adds a comment into comments array and also clears the comments textbox

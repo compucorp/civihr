@@ -42,6 +42,8 @@ define([
 
     function compileComponent () {
       controller = $componentController('managerNotificationBadge', null, {});
+
+      controller.$onInit();
       $rootScope.$digest();
     }
   });

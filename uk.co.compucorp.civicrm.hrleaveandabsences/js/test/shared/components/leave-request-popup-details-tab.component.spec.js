@@ -34,9 +34,11 @@ define([
     var date2017ToInServerFormat = moment(date2017To, 'D/MM/YYYY').format('YYYY-MM-D'); // Must match the date of `date2017To`
 
     beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'manager-leave',
-      function (_$controllerProvider_, _$provide_) {
+      function (_$controllerProvider_, _$provide_, $qProvider) {
         $controllerProvider = _$controllerProvider_;
         $provide = _$provide_;
+
+        $qProvider.errorOnUnhandledRejections(false);
       }));
 
     beforeEach(inject(function (_AbsenceTypeAPIMock_, _LeaveRequestAPIMock_, _PublicHolidayAPIMock_, _OptionGroupAPIMock_, _WorkPatternAPIMock_) {
@@ -1674,6 +1676,7 @@ define([
         { $scope: $scope },
         params
       );
+      controller.$onInit();
 
       $rootScope.$digest();
 

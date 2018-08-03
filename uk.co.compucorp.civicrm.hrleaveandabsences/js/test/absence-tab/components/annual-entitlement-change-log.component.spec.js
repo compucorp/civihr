@@ -298,6 +298,8 @@ define([
         contactId: contactId,
         periodId: periodId
       });
+
+      ctrl.$onInit();
     }
   });
 });
