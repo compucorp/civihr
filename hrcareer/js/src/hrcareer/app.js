@@ -1,16 +1,25 @@
 /* eslint-env amd */
 
-(function (CRM) {
-  define(['hrcore/helpers/help-icon-injector'], function (injectHelpIcon) {
+(function ($) {
+  define([
+    'hrcore/helpers'
+  ], function (helpers) {
     'use strict';
 
-    CRM.$('body').on('crmFormLoad', function () {
-      injectHelpIcon(
-        'custom-group-Career',
-        'Career:End_Date',
+    $('body').on('crmFormLoad', function () {
+      var $label = helpers.getCiviCRMFormLabel(
+        'custom-group-Career', 'Career:End_Date');
+
+      if (!$label.length || $label.find('.helpicon').length) {
+        return;
+      }
+
+      $label.append('&#160;'); // Populates a space before the icon
+      helpers.appendHelpIcon(
+        $label,
         'End Date Help',
         'hrcareer-enddate',
         'CRM/HRCareer/Page/helptext');
     });
   });
-}(CRM));
+}(CRM.$));

@@ -5,7 +5,9 @@
   define(function () {
     'use strict';
 
-    return trackContactTabVirtualPageviews;
+    return {
+      trackContactTabVirtualPageviews: trackContactTabVirtualPageviews
+    };
 
     /**
      * Sends a virtual pageview to Google Analytics whenever the user clicks on
