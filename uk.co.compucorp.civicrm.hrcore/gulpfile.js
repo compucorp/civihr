@@ -5,25 +5,31 @@ var gulp = require('gulp');
 var utils = require('./gulp/utils');
 var tasks = getMainTasks();
 
-var watcherPromises = buildTaskPromises(['sass:watch', 'requirejs:watch', 'test:watch']);
-var builderPromises = buildTaskPromises(['sass', 'requirejs', 'test']);
+var watcherTasks = createTasksArray(['sass:watch', 'requirejs:watch', 'test:watch']);
+var builderTasks = createTasksArray(['sass', 'requirejs', 'test']);
 
 _.each(tasks, function (fn, name) {
   gulp.task(name, fn);
 });
 
-gulp.task('watch', gulp.series(watcherPromises));
-gulp.task('build', gulp.series(builderPromises));
+gulp.task('watch', gulp.parallel(watcherTasks));
+gulp.task('build', gulp.series(builderTasks));
 
 /**
- * Builds extension tasks promises
+ * Builds extension tasks functions collection
  *
  * @param  {Array} taskNames
- * @return {Array} of task promises
+ * @return {Array} of task functions
  */
-function buildTaskPromises (taskNames) {
+function createTasksArray (taskNames) {
   return taskNames.map(function (taskName) {
-    return utils.spawnTaskForExtension(taskName, tasks[taskName]);
+    var fn = function (cb) {
+      utils.spawnTaskForExtension(taskName, tasks[taskName], null, cb);
+    };
+
+    fn.displayName = taskName;
+
+    return fn;
   });
 }
 

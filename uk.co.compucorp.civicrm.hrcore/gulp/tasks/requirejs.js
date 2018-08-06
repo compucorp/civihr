@@ -71,7 +71,7 @@ function extensionDependenciesTask (cb) {
       return utils.spawnTaskForExtension('requirejs', requireJsTask, extension);
     });
 
-  sequence.length ? gulp.series.apply(null, sequence)(function () {
+  sequence.length ? gulp.series(sequence)(function () {
     // Restore the original extension (used in the CLI) as the current extension
     // before marking the task as done
     utils.setCurrentExtension(originalExtension);
@@ -205,7 +205,7 @@ function requireJsTask (cb) {
       );
     }
 
-    gulp.series.apply(null, sequence)(cb);
+    gulp.series(sequence)(cb);
   } else {
     console.log('Not eligible for this task, skipping...');
     cb();

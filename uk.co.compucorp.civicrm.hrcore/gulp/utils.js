@@ -306,11 +306,15 @@ function setCurrentExtension (extension) {
  * Spawns a task for an extension on the fly, using the name and function provided
  * The extension specified is set as the current extension before executing the task fn
  *
- * @param {String} taskName
- * @param {Function} taskFn
- * @param {String} extension If undefined, the current extension is used
+ * @param  {String} taskName
+ * @param  {Function} taskFn
+ * @param  {String} [extension] if omitted, the current extension is used
+ * @param  {Function} [callback] if ommited, no callback will be called
+ * @return {String} updated task name as per the selected extension
  */
-function spawnTaskForExtension (taskName, taskFn, extension) {
+function spawnTaskForExtension (taskName, taskFn, extension, callback) {
+  var taskExecution;
+
   extension = extension || getCurrentExtension();
   taskName += ' (' + extension + ')';
 
@@ -319,6 +323,10 @@ function spawnTaskForExtension (taskName, taskFn, extension) {
 
     return taskFn(cb);
   });
+
+  taskExecution = gulp.series([taskName]);
+
+  (callback) && taskExecution(callback);
 
   return taskName;
 }
