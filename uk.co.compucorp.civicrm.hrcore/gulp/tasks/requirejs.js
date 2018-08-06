@@ -3,7 +3,6 @@ var exec = require('child_process').exec;
 var find = require('find');
 var fs = require('fs');
 var gulp = require('gulp');
-var gulpSequence = require('gulp-sequence');
 var path = require('path');
 var replace = require('gulp-replace');
 
@@ -28,15 +27,16 @@ module.exports = [
           path.join(extPath, 'js/src/**/*.js')
         ], 'requirejs');
 
-        gulp.watch(watchPatterns, ['requirejs']).on('change', function (file) {
-          if (utils.canCurrentExtensionRun('test')) {
-            try {
-              test.for(file.path);
-            } catch (ex) {
-              test.all();
+        gulp.watch(watchPatterns, gulp.parallel('requirejs'))
+          .on('change', function (filePath) {
+            if (utils.canCurrentExtensionRun('test')) {
+              try {
+                test.for(filePath);
+              } catch (ex) {
+                test.all();
+              }
             }
-          }
-        });
+          });
         cb();
       } else {
         console.log('Not eligible for this task, skipping...');
@@ -71,7 +71,7 @@ function extensionDependenciesTask (cb) {
       return utils.spawnTaskForExtension('requirejs', requireJsTask, extension);
     });
 
-  sequence.length ? gulpSequence.apply(null, sequence)(function () {
+  sequence.length ? gulp.series.apply(null, sequence)(function () {
     // Restore the original extension (used in the CLI) as the current extension
     // before marking the task as done
     utils.setCurrentExtension(originalExtension);
@@ -205,7 +205,7 @@ function requireJsTask (cb) {
       );
     }
 
-    gulpSequence.apply(null, sequence)(cb);
+    gulp.series.apply(null, sequence)(cb);
   } else {
     console.log('Not eligible for this task, skipping...');
     cb();

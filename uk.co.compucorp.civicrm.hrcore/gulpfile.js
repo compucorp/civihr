@@ -1,30 +1,31 @@
 var _ = require('lodash');
 var find = require('find');
 var gulp = require('gulp');
-var gulpSequence = require('gulp-sequence');
 
 var utils = require('./gulp/utils');
 var tasks = getMainTasks();
+
+var watcherPromises = buildTaskPromises(['sass:watch', 'requirejs:watch', 'test:watch']);
+var builderPromises = buildTaskPromises(['sass', 'requirejs', 'test']);
 
 _.each(tasks, function (fn, name) {
   gulp.task(name, fn);
 });
 
-gulp.task('watch', function (cb) {
-  gulpSequence(
-    utils.spawnTaskForExtension('sass:watch', tasks['sass:watch']),
-    utils.spawnTaskForExtension('requirejs:watch', tasks['requirejs:watch']),
-    utils.spawnTaskForExtension('test:watch', tasks['test:watch'])
-  )(cb);
-});
+gulp.task('watch', gulp.series(watcherPromises));
+gulp.task('build', gulp.series(builderPromises));
 
-gulp.task('build', function (cb) {
-  gulpSequence(
-    utils.spawnTaskForExtension('sass', tasks['sass']),
-    utils.spawnTaskForExtension('requirejs', tasks['requirejs']),
-    utils.spawnTaskForExtension('test', tasks['test'])
-  )(cb);
-});
+/**
+ * Builds extension tasks promises
+ *
+ * @param  {Array} taskNames
+ * @return {Array} of task promises
+ */
+function buildTaskPromises (taskNames) {
+  return taskNames.map(function (taskName) {
+    return utils.spawnTaskForExtension(taskName, tasks[taskName]);
+  });
+}
 
 /**
  * Gets all the task listed in the files under the gulp/task folder
