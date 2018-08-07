@@ -5,5 +5,8 @@
   out: 'dist/hrmed.min.js',
   name: 'hrmed',
   skipModuleInsertion: true,
-  generateSourceMaps: true
+  generateSourceMaps: true,
+  paths: {
+    'hrcore': 'empty:'
+  }
 })

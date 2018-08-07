@@ -1,18 +1,25 @@
 /* eslint-env amd */
 
-define(function () {
-  'use strict';
+(function ($) {
+  define([
+    'hrcore/helpers'
+  ], function (helpers) {
+    'use strict';
 
-  CRM.$(function ($) {
-    $('body').on('crmFormLoad', function (event) {
-      if (event.profileName === 'hrcareer_tab') {
-        var accessName = $('[data-crm-custom="Career:End_Date"]').attr('name');
+    $('body').on('crmFormLoad', function () {
+      var $label = helpers.getCiviCRMFormLabel(
+        'custom-group-Career', 'Career:End_Date');
 
-        if ($('div#editrow-' + accessName + ' a.helpicon').length === 0) {
-          var helpIcon = $("<span class ='crm-container'><a class='helpicon' onclick='CRM.help(\"\", {\"id\":\"hrcareer-enddate\",\"file\":\"CRM/HRCareer/Page/helptext\"}); return false;' title='End Date Help'></a></span>");
-          $('div#editrow-' + accessName + ' div label').append(helpIcon);
-        }
+      if (!$label.length || $label.find('.helpicon').length) {
+        return;
       }
+
+      $label.append('&#160;'); // Populates a space before the icon
+      helpers.appendHelpIcon(
+        $label,
+        'End Date Help',
+        'hrcareer-enddate',
+        'CRM/HRCareer/Page/helptext');
     });
   });
-});
+}(CRM.$));
