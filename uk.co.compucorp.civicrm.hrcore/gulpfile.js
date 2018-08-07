@@ -5,33 +5,20 @@ var gulp = require('gulp');
 var utils = require('./gulp/utils');
 var tasks = getMainTasks();
 
-var watcherTasks = createTasksArray(['sass:watch', 'requirejs:watch', 'test:watch']);
-var builderTasks = createTasksArray(['sass', 'requirejs', 'test']);
-
 _.each(tasks, function (fn, name) {
   gulp.task(name, fn);
 });
 
-gulp.task('watch', gulp.parallel(watcherTasks));
-gulp.task('build', gulp.series(builderTasks));
+gulp.task('watch', function (cb) {
+  var watchTasksNames = spawnTasks(['sass:watch', 'requirejs:watch', 'test:watch']);
 
-/**
- * Builds extension tasks functions collection
- *
- * @param  {Array} taskNames
- * @return {Array} of task functions
- */
-function createTasksArray (taskNames) {
-  return taskNames.map(function (taskName) {
-    var fn = function (cb) {
-      utils.spawnTaskForExtension(taskName, tasks[taskName], null, cb);
-    };
+  gulp.parallel(watchTasksNames)(cb);
+});
+gulp.task('build', function (cb) {
+  var buildTasksNames = spawnTasks(['sass', 'requirejs', 'test']);
 
-    fn.displayName = taskName;
-
-    return fn;
-  });
-}
+  gulp.series(buildTasksNames)(cb);
+});
 
 /**
  * Gets all the task listed in the files under the gulp/task folder
@@ -49,4 +36,16 @@ function getMainTasks () {
     })
     .fromPairs()
     .value();
+}
+
+/**
+ * Spawns tasks for the selected extension
+ *
+ * @param  {Array} taskNames
+ * @return {Array} of updated tasks names as per the selected extension
+ */
+function spawnTasks (taskNames) {
+  return taskNames.map(function (taskName) {
+    return utils.spawnTaskForExtension(taskName, tasks[taskName]);
+  });
 }

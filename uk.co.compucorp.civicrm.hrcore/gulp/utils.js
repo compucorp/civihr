@@ -309,12 +309,9 @@ function setCurrentExtension (extension) {
  * @param  {String} taskName
  * @param  {Function} taskFn
  * @param  {String} [extension] if omitted, the current extension is used
- * @param  {Function} [callback] if ommited, no callback will be called
  * @return {String} updated task name as per the selected extension
  */
-function spawnTaskForExtension (taskName, taskFn, extension, callback) {
-  var taskExecution;
-
+function spawnTaskForExtension (taskName, taskFn, extension) {
   extension = extension || getCurrentExtension();
   taskName += ' (' + extension + ')';
 
@@ -323,10 +320,6 @@ function spawnTaskForExtension (taskName, taskFn, extension, callback) {
 
     return taskFn(cb);
   });
-
-  taskExecution = gulp.series([taskName]);
-
-  (callback) && taskExecution(callback);
 
   return taskName;
 }
