@@ -19,7 +19,7 @@ module.exports = [
           utils.spawnTaskForExtension('sass:main', mainTask)
         ], 'sass');
 
-        gulp.series.apply(null, sequence)(cb);
+        gulp.series(sequence)(cb);
       } else {
         console.log('Not eligible for this task, skipping...');
         cb();

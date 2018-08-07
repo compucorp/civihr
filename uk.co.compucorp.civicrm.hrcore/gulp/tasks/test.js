@@ -14,7 +14,7 @@ module.exports = [
           utils.spawnTaskForExtension('test:main', mainTask)
         ], 'test');
 
-        gulp.series.apply(null, sequence)(cb);
+        gulp.series(sequence)(cb);
       } else {
         console.log('Not eligible for this task, skipping...');
         cb();
