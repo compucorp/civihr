@@ -6,7 +6,7 @@ module.exports = class SSPMyDetails extends SSP {
    *
    */
   async showEditMyDetailsPopup () {
-    await this.puppet.click('[href="/my_details/nojs/view"]');
+    await this.puppet.click('[href="/edit-my-personal-details/js/view"]');
     await this.puppet.waitFor('.modal-civihr-custom__section', { visible: true });
   }
 };
