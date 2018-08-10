@@ -3,130 +3,44 @@
 trait CRM_HRCore_Upgrader_Steps_1031 {
 
   /**
-   * Sets up option values, custom group and custom field
-   * for case type categorization
+   * This task adds the default assignee option values that can be selected when
+   * creating or editing a new workflow's activity.
    *
    * @return bool
    */
   public function upgrade_1031() {
-    $optionValues = civicrm_api3('OptionValue', 'get', [
-      'option_group_id' => 'cg_extend_objects',
-      'name' => 'civicrm_case_type'
+    // Add option group for activity default assignees:
+    CRM_Core_BAO_OptionGroup::ensureOptionGroupExists([
+      'name' => 'activity_default_assignee',
+      'title' => ts('Activity default assignee'),
+      'is_reserved' => 1,
     ]);
-    if ($optionValues['count'] == 0) {
-      $params = [
-        'option_group_id' => 'cg_extend_objects',
-        'name' => 'civicrm_case_type',
-        'label' => ts('Case Type'),
-        'value' => 'CaseType',
-      ];
-      $this->createOptionValue($params);
-    }
 
-    $customGroups = civicrm_api3('CustomGroup', 'get', [
-      'extends' => 'CaseType',
-      'name' => 'case_type_category',
-    ]);
-    if ($customGroups['count'] == 0) {
-      $this->createCaseTypeCategoryCustomGroup();
-    }
+    // Add option values for activity default assignees:
+    $options = [
+      ['name' => 'NONE', 'label' => ts('None'), 'is_default' => 1],
+      [
+        'name' => 'BY_RELATIONSHIP',
+        'label' => ts('By relationship to case client')
+      ],
+      ['name' => 'SPECIFIC_CONTACT', 'label' => ts('Specific contact')],
+      [
+        'name' => 'USER_CREATING_THE_CASE',
+        'label' => ts('User creating the case')
+      ],
+    ];
 
-    $customFields = civicrm_api3('CustomField', 'get', [
-      'custom_group_id' => 'case_type_category',
-    ]);
-    if ($customFields['count'] == 0) {
-      $optionGroupId = $this->createCaseTypeCategoryOptionValues();
-      if ($optionGroupId == null) {
-        return FALSE;
-      }
-
-      $this->createCaseTypeCategoryCustomField($optionGroupId);
+    foreach ($options as $option) {
+      CRM_Core_BAO_OptionValue::ensureOptionValueExists([
+        'option_group_id' => 'activity_default_assignee',
+        'name' => $option['name'],
+        'label' => $option['label'],
+        'is_default' => CRM_Utils_Array::value('is_default', $option, 0),
+        'is_active' => TRUE,
+      ]);
     }
 
     return TRUE;
-  }
-
-  /**
-   * Creates option group
-   *
-   * @param array $params
-   *
-   * @return array
-   */
-  private function createOptionGroup($params) {
-    return civicrm_api3('OptionGroup', 'create', $params);
-  }
-
-  /**
-   * Creates option value
-   *
-   * @param array $params
-   */
-  private function createOptionValue($params) {
-    civicrm_api3('OptionValue', 'create', $params);
-  }
-
-  /**
-   * Creates case type category custom group
-   */
-  private function createCaseTypeCategoryCustomGroup() {
-    civicrm_api3('CustomGroup', 'create', [
-      'title' => ts('Case Type Category'),
-      'extends' => 'CaseType',
-      'name' => 'case_type_category',
-      'table_name' => 'civicrm_value_case_type_category'
-    ]);
-  }
-
-  /**
-   * Sets up option group and values used for case type category custom field
-   *
-   * @return null
-   */
-  private function createCaseTypeCategoryOptionValues() {
-    $result = civicrm_api3('OptionGroup', 'get', [
-      'name' => 'case_type_category',
-    ]);
-    if ($result['count'] == 0) {
-      $optionValues = ['Workflow', 'Vacancy'];
-      $groupParams = [
-        'name' => 'case_type_category',
-        'title' => 'Category',
-      ];
-
-      $optionGroupResult = $this->createOptionGroup($groupParams);
-      foreach ($optionValues as $optionValue) {
-        $valueParams = [
-          'option_group_id' => 'case_type_category',
-          'label' => $optionValue,
-          'name' => $optionValue,
-          'value' => $optionValue
-        ];
-        $this->createOptionValue($valueParams);
-      }
-
-      return $optionGroupResult['id'];
-    }
-
-    return null;
-  }
-
-  /**
-   * Creates category custom field for case type category custom group
-   *
-   * @param int $optionGroupId
-   */
-  private function createCaseTypeCategoryCustomField($optionGroupId) {
-    civicrm_api3('CustomField', 'create', [
-      'custom_group_id' => 'case_type_category',
-      'label' => 'Category',
-      'name' => 'category',
-      'data_type' => 'String',
-      'html_type' => 'Select',
-      'is_required' => 1,
-      'column_name' => 'category',
-      'option_group_id' => $optionGroupId,
-    ]);
   }
 
 }
