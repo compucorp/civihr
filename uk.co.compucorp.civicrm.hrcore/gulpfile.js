@@ -1,7 +1,6 @@
 var _ = require('lodash');
 var find = require('find');
 var gulp = require('gulp');
-var gulpSequence = require('gulp-sequence');
 
 var utils = require('./gulp/utils');
 var tasks = getMainTasks();
@@ -11,19 +10,14 @@ _.each(tasks, function (fn, name) {
 });
 
 gulp.task('watch', function (cb) {
-  gulpSequence(
-    utils.spawnTaskForExtension('sass:watch', tasks['sass:watch']),
-    utils.spawnTaskForExtension('requirejs:watch', tasks['requirejs:watch']),
-    utils.spawnTaskForExtension('test:watch', tasks['test:watch'])
-  )(cb);
-});
+  var watchTasksNames = spawnTasks(['sass:watch', 'requirejs:watch', 'test:watch']);
 
+  gulp.parallel(watchTasksNames)(cb);
+});
 gulp.task('build', function (cb) {
-  gulpSequence(
-    utils.spawnTaskForExtension('sass', tasks['sass']),
-    utils.spawnTaskForExtension('requirejs', tasks['requirejs']),
-    utils.spawnTaskForExtension('test', tasks['test'])
-  )(cb);
+  var buildTasksNames = spawnTasks(['sass', 'requirejs', 'test']);
+
+  gulp.series(buildTasksNames)(cb);
 });
 
 /**
@@ -42,4 +36,16 @@ function getMainTasks () {
     })
     .fromPairs()
     .value();
+}
+
+/**
+ * Spawns tasks for the selected extension
+ *
+ * @param  {Array} taskNames
+ * @return {Array} of updated tasks names as per the selected extension
+ */
+function spawnTasks (taskNames) {
+  return taskNames.map(function (taskName) {
+    return utils.spawnTaskForExtension(taskName, tasks[taskName]);
+  });
 }

@@ -315,6 +315,7 @@ function hrcore_civicrm_pageRun($page) {
 
   $hooks = [
     new CRM_HRCore_Hook_PageRun_LocationTypeFilter(),
+    new CRM_HRCore_Hook_PageRun_RelationshipTypesFilter(),
   ];
 
   foreach ($hooks as $hook) {
@@ -326,7 +327,7 @@ function hrcore_civicrm_pageRun($page) {
  * Implements hook_civicrm_coreResourceList().
  */
 function hrcore_civicrm_coreResourceList(&$items, $region) {
-  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/dist/hrcore.min.js', 1010);
+  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/dist/hrcore.min.js', 1000);
 }
 
 /**

@@ -32,6 +32,13 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   use CRM_HRCore_Upgrader_Steps_1022;
   use CRM_HRCore_Upgrader_Steps_1023;
   use CRM_HRCore_Upgrader_Steps_1024;
+  use CRM_HRCore_Upgrader_Steps_1025;
+  use CRM_HRCore_Upgrader_Steps_1026;
+  use CRM_HRCore_Upgrader_Steps_1027;
+  use CRM_HRCore_Upgrader_Steps_1028;
+  use CRM_HRCore_Upgrader_Steps_1029;
+  use CRM_HRCore_Upgrader_Steps_1030;
+  use CRM_HRCore_Upgrader_Steps_1031;
 
   /**
    * @var array
@@ -79,6 +86,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     $this->createRequiredLocationTypes();
     $this->deleteUnneededCustomGroups();
     $this->createDefaultRelationshipTypes();
+    $this->makeAllCurrenciesAvailable();
     $this->runAllUpgraders();
   }
 
@@ -247,6 +255,29 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
         'is_reserved' => 0,
         'is_active' => 1,
       ]);
+    }
+  }
+
+  /**
+   * Making All Currencies Available for new installations
+   */
+  private function makeAllCurrenciesAvailable() {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'return' => ['value'],
+      'option_group_id' => 'currencies_enabled',
+    ]);
+    $enabledCurrencies = array_column($result['values'], 'value');
+
+    $dao = CRM_Core_DAO::executeQuery('SELECT * from civicrm_currency');
+    while ($dao->fetch()) {
+      if (!in_array($dao->name, $enabledCurrencies)) {
+        civicrm_api3('OptionValue', 'create', [
+          'option_group_id' => 'currencies_enabled',
+          'label' => $dao->name . ' (' . $dao->symbol . ')',
+          'value' => $dao->name,
+          'name' => $dao->name . ' (' . $dao->symbol . ')',
+        ]);
+      }
     }
   }
 

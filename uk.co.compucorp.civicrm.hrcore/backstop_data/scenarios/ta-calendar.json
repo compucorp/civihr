@@ -2,7 +2,7 @@
   "scenarios": [
     {
       "label": "T&A / Calendar",
-      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#/calendar"
+      "url": "{{siteUrl}}/civicrm/tasksassignments/dashboard#!/calendar"
     }
   ]
 }
