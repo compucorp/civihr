@@ -507,7 +507,7 @@ function _hrcore_createHelpMenu(&$menu) {
 
   _hrcore_civix_insert_navigation_menu($menu, 'Help', [
     'name' => ts('User Guide'),
-    'url' => 'https://sprt.freshdesk.com/support/home',
+    'url' => 'http://userguide.civihr.org/en/latest/',
     'target' => '_blank',
     'permission' => 'access CiviCRM'
   ]);
