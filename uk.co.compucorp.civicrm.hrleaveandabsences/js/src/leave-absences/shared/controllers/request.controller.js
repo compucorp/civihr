@@ -6,7 +6,6 @@ define([
   'common/lodash',
   'common/moment',
   'common/models/contact',
-  'common/models/session.model',
   'common/services/api/option-group',
   'common/services/hr-settings',
   'common/services/pub-sub',
@@ -25,11 +24,11 @@ define([
   controllers.controller('RequestCtrl', RequestCtrl);
 
   RequestCtrl.$inject = ['$log', '$q', '$rootScope', '$scope', '$uibModalInstance', 'checkPermissions', 'api.optionGroup',
-    'dialog', 'pubSub', 'directiveOptions', 'Contact', 'Session', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
+    'dialog', 'pubSub', 'directiveOptions', 'Contact', 'AbsencePeriod', 'AbsenceType', 'Entitlement',
     'LeaveRequest', 'LeaveRequestInstance', 'shared-settings', 'SicknessRequestInstance', 'TOILRequestInstance', 'LeaveRequestService'];
 
   function RequestCtrl ($log, $q, $rootScope, $scope, $modalInstance, checkPermissions, OptionGroup, dialog, pubSub,
-    directiveOptions, Contact, Session, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
+    directiveOptions, Contact, AbsencePeriod, AbsenceType, Entitlement, LeaveRequest,
     LeaveRequestInstance, sharedSettings, SicknessRequestInstance, TOILRequestInstance, LeaveRequestService) {
     $log.debug('RequestCtrl');
 
@@ -38,7 +37,7 @@ define([
     var childComponentsCount = 0;
     var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
     var listeners = [];
-    var loggedInContactId = '';
+    var loggedInContact;
     var NO_ENTITLEMENT_ERROR = 'No entitlement';
     var role = '';
     var tabs = [];
@@ -49,6 +48,7 @@ define([
     vm.canManage = false; // vm flag is set on initialisation of the controller
     vm.contactName = null; // contact name of the owner of leave request
     vm.errors = [];
+    vm.isSelfLeaveApprover = false;
     vm.loading = { absenceTypes: true, entitlements: true };
     vm.managedContacts = [];
     vm.mode = ''; // can be edit, create, view
@@ -95,15 +95,17 @@ define([
       initAvailableStatusesMatrix();
       initListeners();
 
-      return loadLoggedInContactId()
+      return loadLoggedInContact()
         .then(initIsSelfRecord)
         .then(function () {
           return $q.all([
-            initRoles(),
+            initRole(),
             loadAbsencePeriods(),
             loadStatuses()
           ]);
         })
+        .then(initCanManage)
+        .then(initIsSelfLeaveApprover)
         .then(initRequest)
         .then(setModalMode)
         .then(setInitialAbsencePeriod)
@@ -145,6 +147,24 @@ define([
      */
     function amendRequestParamsBeforeSave () {
       ['from', 'to'].forEach(amendDatesAndDateTypesBeforeSave);
+    }
+
+    /**
+     * Amends the user role based on their self leave approver state.
+     * If the user is creating or editing their own leave request
+     * and they are self approvers, they will be treated as "admins".
+     *
+     * @return {Promise}
+     */
+    function amendRoleBasedOnSelfLeaveApproverState () {
+      return loggedInContact.checkIfSelfLeaveApprover()
+        .then(function (isSelfLeaveApprover) {
+          if (!isSelfLeaveApprover) {
+            return;
+          }
+
+          role = 'admin';
+        });
     }
 
     /**
@@ -248,7 +268,7 @@ define([
      * If manager or admin have changed the status through dropdown, assign the same before calling API
      */
     function changeStatusBeforeSave () {
-      if (vm.isSelfRecord) {
+      if (vm.isSelfRecord && !vm.isSelfLeaveApprover) {
         vm.request.status_id = vm.requestStatuses[sharedSettings.statusNames.awaitingApproval].value;
       } else if (vm.canManage) {
         vm.request.status_id = vm.newStatusOnSave || vm.request.status_id;
@@ -508,6 +528,13 @@ define([
     }
 
     /**
+     * Defines if the contact can manage the leave request
+     */
+    function initCanManage () {
+      vm.canManage = vm.isRole('manager') || vm.isRole('admin');
+    }
+
+    /**
      * Initialize contact
      *
      * {Promise}
@@ -524,16 +551,27 @@ define([
     }
 
     /**
+     * Initiates the isSelfLeaveApprover public property.
+     * @NOTE Users are treated as admins if they are self leave approvers.
+     * @see initRole()
+     */
+    function initIsSelfLeaveApprover () {
+      if (vm.isRole('admin') && vm.isSelfRecord) {
+        vm.isSelfLeaveApprover = true;
+      }
+    }
+
+    /**
      * Initializes the is self record property and sets it to true when
      * on My Leave section and the user is editing their own request or creating
      * a new one for themselves.
      */
     function initIsSelfRecord () {
       var isSectionMyLeave = $rootScope.section === 'my-leave';
-      var isMyOwnRequest = +loggedInContactId === +_.get(vm, 'leaveRequest.contact_id');
+      var isMyOwnRequest = +loggedInContact.id === +_.get(vm, 'leaveRequest.contact_id');
       var isNewRequest = !_.get(vm, 'leaveRequest.id');
 
-      vm.isSelfRecord = isSectionMyLeave && (isMyOwnRequest || isNewRequest);
+      vm.isSelfRecord = (isSectionMyLeave && isNewRequest) || isMyOwnRequest;
     }
 
     /**
@@ -594,7 +632,7 @@ define([
       if (vm.request) {
         attributes = vm.request.attributes();
       } else if (!vm.canManage) {
-        attributes = { contact_id: loggedInContactId };
+        attributes = { contact_id: loggedInContact.id };
       }
 
       return attributes;
@@ -607,28 +645,28 @@ define([
      *
      * @return {Promise}
      */
-    function initRoles () {
+    function initRole () {
       role = 'staff';
 
-      // If the user is creating or editing their own leave, they will be
-      // treated as a staff regardless of their actual role.
-      if (vm.isSelfRecord) {
-        return;
-      }
+      return initRoleBasedOnPermissions()
+        .then(vm.isSelfRecord && !vm.isRole('admin') && amendRoleBasedOnSelfLeaveApproverState);
+    }
 
+    /**
+     * Initiates user role based on their permissions
+     *
+     * @return {Promise}
+     */
+    function initRoleBasedOnPermissions () {
       return checkPermissions(sharedSettings.permissions.admin.administer)
         .then(function (isAdmin) {
           isAdmin && (role = 'admin');
         })
         .then(function () {
-          // (role === 'staff') means it is not admin so need to check if manager
-          return (role === 'staff') && checkPermissions(sharedSettings.permissions.ssp.manage)
-            .then(function (isManager) {
-              isManager && (role = 'manager');
-            });
+          return (role !== 'admin') && checkPermissions(sharedSettings.permissions.ssp.manage);
         })
-        .finally(function () {
-          vm.canManage = vm.isRole('manager') || vm.isRole('admin');
+        .then(function (isManager) {
+          isManager && (role = 'manager');
         });
     }
 
@@ -767,14 +805,18 @@ define([
      *
      * @return {Promise}
      */
-    function loadLoggedInContactId () {
-      return Session.get().then(function (value) {
-        loggedInContactId = value.contactId;
-      });
+    function loadLoggedInContact () {
+      return Contact.getLoggedIn()
+        .then(function (_loggedInContact_) {
+          loggedInContact = _loggedInContact_;
+        });
     }
 
     /**
      * Loads the managees of currently logged in user
+     * If a contact is pre-selected, then a single managee is loaded.
+     * If user is an admin, then all contacts, including the admin, are loaded.
+     * If user is a manager, then only contacts they manage are loaded.
      *
      * @return {Promise}
      */
@@ -789,17 +831,11 @@ define([
         // In case of general administration
         return Contact.all()
           .then(function (contacts) {
-            vm.managedContacts = _.remove(contacts.list, function (contact) {
-              // Removes the admin from the list of contacts
-              return contact.id !== loggedInContactId;
-            });
+            vm.managedContacts = contacts.list;
           });
       } else {
         // In any other case (including managing)
-        return Contact.find(loggedInContactId)
-          .then(function (contact) {
-            return contact.leaveManagees();
-          })
+        return loggedInContact.leaveManagees()
           .then(function (contacts) {
             vm.managedContacts = contacts;
           });

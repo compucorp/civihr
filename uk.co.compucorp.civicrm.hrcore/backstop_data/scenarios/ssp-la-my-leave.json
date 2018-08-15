@@ -2,43 +2,43 @@
   "scenarios": [
     {
       "label": "SSP / My Leave / Report",
-      "url": "{{siteUrl}}/my-leave#/my-leave/report",
+      "url": "{{siteUrl}}/my-leave#!/my-leave/report",
       "onReadyScript": "ssp/my-leave/report.js",
       "user": "civihr_staff"
     },
     {
       "label": "SSP / My Leave / Report / Modal / Show comments",
-      "url": "{{siteUrl}}/my-leave#/my-leave/report",
+      "url": "{{siteUrl}}/my-leave#!/my-leave/report",
       "onReadyScript": "ssp/my-leave/report-pending-show-comments.js",
       "user": "civihr_staff"
     },
     {
       "label": "SSP / My Leave / Report / Modal / Show absence in hours",
-      "url": "{{siteUrl}}/my-leave#/my-leave/report",
+      "url": "{{siteUrl}}/my-leave#!/my-leave/report",
       "onReadyScript": "ssp/my-leave/report-show-absence-in-hours.js",
       "user": "civihr_staff"
     },
     {
       "label": "SSP / My Leave / Report / Modal / Show deductions fields",
-      "url": "{{siteUrl}}/my-leave#/my-leave/report",
+      "url": "{{siteUrl}}/my-leave#!/my-leave/report",
       "onReadyScript": "ssp/my-leave/modal-show-deduction-fields.js",
       "user": "civihr_staff"
     },
     {
       "label": "SSP / My Leave / Report / Modal / Show deductions fields expanded",
-      "url": "{{siteUrl}}/my-leave#/my-leave/report",
+      "url": "{{siteUrl}}/my-leave#!/my-leave/report",
       "onReadyScript": "ssp/my-leave/modal-show-deduction-fields-expanded.js",
       "user": "civihr_staff"
     },
     {
       "label": "SSP / My Leave / Calendar / Current Month",
-      "url": "{{siteUrl}}/my-leave#/my-leave/calendar",
+      "url": "{{siteUrl}}/my-leave#!/my-leave/calendar",
       "onReadyScript": "ssp/my-leave/calendar-current-month-visible.js",
       "user": "civihr_staff"
     },
     {
       "label": "SSP / My Leave / Calendar / Tooltip",
-      "url": "{{siteUrl}}/my-leave#/my-leave/calendar",
+      "url": "{{siteUrl}}/my-leave#!/my-leave/calendar",
       "onReadyScript": "ssp/my-leave/calendar-tooltip.js",
       "user": "civihr_staff"
     }
