@@ -2,7 +2,8 @@
 
 set -e
 
-BASE_URL="https://github.com/compucorp/civicrm-core"
+API_URL_BASE="https://api.github.com/repos/compucorp/civicrm-core"
+REPO_BASE_URL="https://github.com/compucorp/civicrm-core"
 LAST_COMMIT_PATCHED_FILE="core-fork-last-commit-patched.txt"
 PATCH_FILE="fork-patch.diff"
 
@@ -27,7 +28,7 @@ applyPatch () {
 # Creates a diff patch file by sending a request to the given GitHub API url
 #
 # Globals:
-#   $BASE_URL
+#   $REPO_BASE_URL
 #   $civiRoot
 #   $PATCH_FILE
 # Arguments:
@@ -37,7 +38,7 @@ applyPatch () {
 #   None
 #######################################
 createPatch () {
-  curl "$BASE_URL/compare/$1...$2.diff" -s -H "Accept: application/vnd.github.v3.diff" > "$civiRoot/$PATCH_FILE"
+  curl "$REPO_BASE_URL/compare/$1...$2.diff" -s > "$civiRoot/$PATCH_FILE"
 }
 
 #######################################
@@ -97,7 +98,7 @@ setCivicrmRootPath () {
 #######################################
 updateLastCommitPatched () {
   # It uses the same file as temporary recipient of the full commit data
-  curl "$BASE_URL/commits/$1" -s > "$LAST_COMMIT_PATCHED_FILE"
+  curl "$API_URL_BASE/commits/$1" -s > "$LAST_COMMIT_PATCHED_FILE"
   sha=$(JSONValue "$LAST_COMMIT_PATCHED_FILE" "sha")
 
   echo "$sha" > "$LAST_COMMIT_PATCHED_FILE"
