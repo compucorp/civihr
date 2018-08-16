@@ -10,7 +10,7 @@ define([
     bindings: {
       showTheseContacts: '<',
       contacts: '<',
-      contactIdsToReduceTo: '<',
+      jobContracts: '<',
       month: '<',
       period: '<',
       showContactName: '<',
@@ -22,12 +22,14 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-calendar-month.html';
     }],
     controllerAs: 'month',
-    controller: ['$log', '$q', '$rootScope', 'Calendar', 'LeaveRequest',
-      'pubSub', 'shared-settings', controller]
+    controller: LeaveCalendarMonthController
   });
 
-  function controller ($log, $q, $rootScope, Calendar, LeaveRequest, pubSub,
-    sharedSettings) {
+  LeaveCalendarMonthController.$inject = ['$log', '$q', '$rootScope', 'Calendar',
+    'LeaveRequest', 'pubSub', 'shared-settings'];
+
+  function LeaveCalendarMonthController ($log, $q, $rootScope, Calendar,
+    LeaveRequest, pubSub, sharedSettings) {
     $log.debug('Component: leave-calendar-month');
 
     var dataLoaded = false;
@@ -160,6 +162,31 @@ define([
 
       removeLeaveRequestFromIndexedList(indexedLeaveRequest);
       updateLeaveRequestDaysContactData(indexedLeaveRequest);
+    }
+
+    /**
+     * Excludes contacts who do not have a job contract covering the selected month
+     *
+     * @return {Promise}
+     */
+    function excludeInactiveContacts () {
+      var jobContractsInMonthPeriod = vm.jobContracts.filter(function (jobContract) {
+        var details = jobContract.info.details;
+
+        return (
+          moment(details.period_start_date).isSameOrBefore(_.last(vm.month.days).date) &&
+          (moment(details.period_end_date).isSameOrAfter(_.first(vm.month.days).date) ||
+            !details.period_end_date));
+      });
+      var contactsWithJobContract = _.uniq(jobContractsInMonthPeriod.map(function (jobContract) {
+        return jobContract.contact_id;
+      }));
+
+      vm.contacts = vm.contacts.filter(function (contact) {
+        return _.includes(contactsWithJobContract, contact.contact_id);
+      });
+
+      return $q.resolve();
     }
 
     /**
@@ -438,7 +465,7 @@ define([
         loadMonthWorkPatternCalendars(),
         loadMonthLeaveRequests()
       ])
-        .then(reduceContacts)
+        .then(excludeInactiveContacts)
         .then(setMonthDaysContactData)
         .then(function () {
           dataLoaded = true;
@@ -496,25 +523,6 @@ define([
         .then(function (monthCalendars) {
           calendars = _.keyBy(monthCalendars, 'contact_id');
         });
-    }
-
-    /**
-     * If there are contacts to reduce to, reduces contacts to the list provided,
-     * plus leaves those who have leave requests at the given month period
-     *
-     * @return {Promise}
-     */
-    function reduceContacts () {
-      if (vm.contactIdsToReduceTo) {
-        vm.contacts = vm.contacts.filter(function (contact) {
-          return (_.includes(vm.contactIdsToReduceTo, contact.contact_id) ||
-            _.find(leaveRequests, function (leaveRequest) {
-              return leaveRequest.contact_id === contact.contact_id;
-            }));
-        });
-      }
-
-      return $q.resolve();
     }
 
     /**

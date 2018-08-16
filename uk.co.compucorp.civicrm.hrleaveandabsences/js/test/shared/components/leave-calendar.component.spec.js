@@ -5,6 +5,7 @@
     'common/angular',
     'common/moment',
     'common/lodash',
+    'common/mocks/data/contract.data',
     'leave-absences/mocks/helpers/helper',
     'leave-absences/mocks/data/absence-period.data',
     'leave-absences/mocks/data/absence-type.data',
@@ -12,13 +13,14 @@
     'leave-absences/mocks/data/public-holiday.data',
     'common/mocks/services/api/contact-mock',
     'common/mocks/services/api/contract-mock',
+    'common/models/contract',
     'leave-absences/mocks/apis/absence-period-api-mock',
     'leave-absences/mocks/apis/absence-type-api-mock',
     'leave-absences/mocks/apis/public-holiday-api-mock',
     'leave-absences/mocks/apis/option-group-api-mock',
     'leave-absences/shared/config',
     'leave-absences/my-leave/app'
-  ], function (angular, moment, _, helper, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData) {
+  ], function (angular, moment, _, JobContractData, helper, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData) {
     'use strict';
 
     describe('leaveCalendar', function () {
@@ -125,12 +127,27 @@
       });
 
       describe('on init', function () {
+        var allContracts;
+
+        beforeEach(function (done) {
+          Contract.all()
+            .then(function (contracts) {
+              allContracts = contracts;
+            })
+            .finally(done);
+
+          $rootScope.$digest();
+        });
         it('hides the loader for the whole page', function () {
           expect(controller.loading.page).toBe(false);
         });
 
         it('loads the public holidays', function () {
           expect(PublicHoliday.all).toHaveBeenCalled();
+        });
+
+        it('loads all contracts', function () {
+          expect(controller.jobContracts).toEqual(allContracts);
         });
 
         it('loads the OptionValues of the leave request statuses, day types, and calculation units', function () {
@@ -367,38 +384,6 @@
 
               compileComponent();
             });
-
-            describe('when filter by assignee is set to "Me"', function () {
-              beforeEach(function () {
-                selectFilterByAssignee('me');
-              });
-
-              it('does *not* load additional contacts IDs to filter', function () {
-                expect(controller.contactIdsToReduceTo).toEqual(null);
-              });
-            });
-
-            describe('when filter by assignee is *not* set to "Me"', function () {
-              beforeEach(function () {
-                selectFilterByAssignee('all');
-              });
-
-              it('loads additional contacts IDs to filter', function () {
-                expect(controller.contactIdsToReduceTo).toEqual(jasmine.any(Array));
-              });
-            });
-          });
-
-          describe('when the user is a manager', function () {
-            beforeEach(function () {
-              currentContact.role = 'manager';
-
-              compileComponent();
-            });
-
-            it('does not load additional contacts IDs to filter', function () {
-              expect(controller.contactIdsToReduceTo).toBe(null);
-            });
           });
 
           afterEach(function () {
@@ -572,21 +557,6 @@
             });
           });
         });
-
-        /**
-         * Selects a filter by assignee
-         *
-         * @param {String} type (me|unassigned|all)
-         */
-        function selectFilterByAssignee (type) {
-          controller.filters.userSettings.assignedTo =
-            _.find(controller.filtersByAssignee, { type: type });
-
-          controller.refresh('contacts');
-          $rootScope.$digest();
-
-          simulateMonthWithSignal('destroyed', controller.months.length);
-        }
       });
 
       describe('canManageRequests()', function () {
