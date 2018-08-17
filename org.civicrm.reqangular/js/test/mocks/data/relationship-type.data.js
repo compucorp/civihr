@@ -101,6 +101,18 @@ define([
           'contact_type_b': 'Individual',
           'is_reserved': '1',
           'is_active': '1'
+        },
+        {
+          'id': '15',
+          'name_a_b': 'Spouse of',
+          'label_a_b': 'Spouse of',
+          'name_b_a': 'Spouse of',
+          'label_b_a': 'Spouse of',
+          'description': 'Spouse of',
+          'contact_type_a': 'Individual',
+          'contact_type_b': 'Individual',
+          'is_reserved': '1',
+          'is_active': '0'
         }
       ]
     }
