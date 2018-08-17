@@ -11,12 +11,14 @@ define([
   'common/models/option-group',
   'common/models/session.model',
   'common/models/relationship.model',
+  'common/models/relationship-type.model',
   'common/models/instances/instance',
   'common/models/instances/contact-instance',
   'common/models/instances/contract-instance',
   'common/models/instances/group-instance',
   'common/models/instances/job-role-instance',
-  'common/models/instances/relationship.instance'
+  'common/models/instances/relationship.instance',
+  'common/models/instances/relationship-type.instance'
 ], function () {
 
 });
