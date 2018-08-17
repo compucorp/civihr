@@ -38,32 +38,29 @@ define([
     });
 
     describe('all()', function () {
-      var RelationshipTypePromise;
-      var params = { id: _.uniqueId() };
+      var relationshipTypes;
+      var cache = false;
+      var filters = { id: _.uniqueId() };
+      var pagination = { page: 1, size: 10 };
+      var sort = 'id DESC';
 
       beforeEach(function () {
-        RelationshipTypePromise = RelationshipType.all();
-        $rootScope.$apply();
+        RelationshipType.all(filters, pagination, sort, cache)
+          .then(function (relationshipTypeResponse) {
+            relationshipTypes = relationshipTypeResponse.list;
+          });
+
+        $rootScope.$digest();
       });
 
       it('returns model instances', function () {
-        RelationshipTypePromise.then(function (response) {
-          expect(response.every(function (modelInstance) {
-            return 'init' in modelInstance;
-          })).toBe(true);
-        });
+        expect(relationshipTypes.every(function (modelInstance) {
+          return 'init' in modelInstance;
+        })).toBe(true);
       });
 
-      it('calls according method', function () {
-        RelationshipTypePromise.then(function (response) {
-          expect(relationshipTypeApi.all).toHaveBeenCalled();
-        });
-      });
-
-      it('accepts params', function () {
-        RelationshipType.all(params).then(function (response) {
-          expect(relationshipTypeApi.all).toHaveBeenCalledWith(params);
-        });
+      it('calls corresponding API methods with expected params', function () {
+        expect(relationshipTypeApi.all).toHaveBeenCalledWith(filters, pagination, sort, cache);
       });
     });
   });

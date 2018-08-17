@@ -46,7 +46,7 @@ define([
         });
       });
 
-      it('calls getAll method', function () {
+      it('calls getAll method with expected params', function () {
         expect(RelationshipTypeAPI.getAll).toHaveBeenCalledWith('RelationshipType', filters, pagination, sort, null, null, cache);
       });
     });
