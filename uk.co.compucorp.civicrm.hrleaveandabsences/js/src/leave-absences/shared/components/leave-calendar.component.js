@@ -4,6 +4,7 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/components',
+  'common/models/contract',
   'leave-absences/shared/controllers/sub-controllers/leave-calendar-admin.controller',
   'leave-absences/shared/controllers/sub-controllers/leave-calendar-manager.controller',
   'leave-absences/shared/controllers/sub-controllers/leave-calendar-staff.controller'
