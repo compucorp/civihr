@@ -7,13 +7,14 @@ define([
   'use strict';
 
   describe('FormPensionController', function () {
-    var $controller, $rootScope, $scope, $q, contactService, response, params;
+    var $controller, $httpBackend, $rootScope, $scope, $q, contactService, response, params;
 
-    beforeEach(module('job-contract'));
+    beforeEach(module('job-contract', 'job-contract.templates'));
 
     beforeEach(function () {
-      inject(function (_$controller_, _$rootScope_, _$q_, _contactService_) {
+      inject(function (_$controller_, _$httpBackend_, _$rootScope_, _$q_, _contactService_) {
         $controller = _$controller_;
+        $httpBackend = _$httpBackend_;
         $rootScope = _$rootScope_;
         contactService = _contactService_;
         $q = _$q_;
@@ -21,6 +22,8 @@ define([
           contact_type: 'Organization',
           contact_sub_type: 'Life_Insurance_Provider'
         };
+
+        $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
         contactServiceSpy();
       });
     });

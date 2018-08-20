@@ -8,14 +8,17 @@ define([
   'use strict';
 
   describe('contractRevisionListService', function () {
-    var $rootScope, $httpBackend, contractRevisionListService, promise;
+    var $rootScope, $httpBackend, contractFilesService, contractRevisionListService, promise;
 
     beforeEach(module('job-contract'));
 
-    beforeEach(inject(function (_$rootScope_, _$httpBackend_, _contractRevisionListService_) {
+    beforeEach(inject(function (_$rootScope_, _$httpBackend_, _contractFilesService_, _contractRevisionListService_) {
       $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
+      contractFilesService = _contractFilesService_;
       contractRevisionListService = _contractRevisionListService_;
+
+      spyOn(contractFilesService, 'get').and.returnValue([]);
 
       $httpBackend.whenGET(/action=get&entity=HRJobContractRevision/).respond(MockContract.contractRevisionData);
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});

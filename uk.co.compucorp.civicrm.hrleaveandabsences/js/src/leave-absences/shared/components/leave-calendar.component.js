@@ -69,13 +69,14 @@ define([
       absenceTypesToFilterBy: []
     };
 
+    vm.$onInit = $onInit;
     vm.canManageRequests = canManageRequests;
     vm.labelPeriod = labelPeriod;
     vm.navigateToCurrentMonth = navigateToCurrentMonth;
     vm.paginateMonth = paginateMonth;
     vm.refresh = refresh;
 
-    (function init () {
+    function $onInit () {
       setUserRole()
         .then(initWatchers)
         .then(initListeners)
@@ -97,7 +98,7 @@ define([
         .then(function () {
           vm.loading.page = false;
         });
-    }());
+    }
 
     /**
      * Appends a generic absence type that can be used for private

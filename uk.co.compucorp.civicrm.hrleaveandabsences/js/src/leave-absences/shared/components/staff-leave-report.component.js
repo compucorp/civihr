@@ -14,14 +14,16 @@ define([
       return settings.sharedPathTpl + 'components/staff-leave-report.html';
     }],
     controllerAs: 'report',
-    controller: [
-      '$log', '$q', '$rootScope', 'checkPermissions', 'AbsencePeriod', 'AbsenceType',
-      'Entitlement', 'LeaveRequest', 'OptionGroup', 'pubSub', 'HR_settings',
-      'shared-settings', controller
-    ]
+    controller: StaffLeaveReportController
   });
 
-  function controller ($log, $q, $rootScope, checkPermissions, AbsencePeriod,
+  StaffLeaveReportController.$inject = [
+    '$log', '$q', '$rootScope', 'checkPermissions', 'AbsencePeriod', 'AbsenceType',
+    'Entitlement', 'LeaveRequest', 'OptionGroup', 'pubSub', 'HR_settings',
+    'shared-settings'
+  ];
+
+  function StaffLeaveReportController ($log, $q, $rootScope, checkPermissions, AbsencePeriod,
     AbsenceType, Entitlement, LeaveRequest, OptionGroup, pubSub,
     HRSettings, sharedSettings) {
     $log.debug('Component: staff-leave-report');
@@ -39,7 +41,7 @@ define([
     vm.dateFormat = HRSettings.DATE_FORMAT;
     vm.leaveRequestStatuses = {};
     vm.selectedPeriod = null;
-    vm.role = ($rootScope.section === 'absence-tab' ? 'admin' : 'staff');
+    vm.role = null;
     vm.loading = {
       content: true,
       page: true
@@ -53,12 +55,14 @@ define([
       other: { open: false, data: [], dataIndex: {}, loading: false, loadLeaveRequests: loadOtherRequests }
     };
 
+    vm.$onInit = $onInit;
     vm.labelPeriod = labelPeriod;
     vm.refresh = refresh;
     vm.toggleSection = toggleSection;
 
-    (function init () {
+    function $onInit () {
       $q.all([
+        initRole(),
         loadStatuses(),
         loadAbsenceTypes(),
         loadAbsencePeriods()
@@ -78,7 +82,7 @@ define([
         });
 
       registerEvents();
-    })();
+    }
 
     /**
      * Adds a leave request to the provided section's data and index.
@@ -173,6 +177,28 @@ define([
      */
     function indexSectionData (section) {
       section.dataIndex = _.indexBy(section.data, 'id');
+    }
+
+    /**
+     * Initiates the role based on permissions.
+     * @NOTE It skips the permission check if the section is 'absence-tab'
+     * because only admins can access this section.
+     *
+     * @return {Promise}
+     */
+    function initRole () {
+      vm.role = 'staff';
+
+      if ($rootScope.section === 'absence-tab') {
+        vm.role = 'admin';
+
+        return $q.resolve();
+      }
+
+      return checkPermissions(sharedSettings.permissions.admin.administer)
+        .then(function (isAdmin) {
+          isAdmin && (vm.role = 'admin');
+        });
     }
 
     /**
@@ -593,6 +619,7 @@ define([
      */
     function toggleSection (sectionName) {
       var section = vm.sections[sectionName];
+
       section.open = !section.open;
 
       if (section.open && !section.data.length) {

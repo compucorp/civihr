@@ -1,7 +1,6 @@
-var bulk = require('gulp-sass-bulk-import');
+var glob = require('gulp-sass-glob');
 var civicrmScssRoot = require('civicrm-scssroot')();
 var gulp = require('gulp');
-var gulpSequence = require('gulp-sequence');
 var path = require('path');
 var sass = require('gulp-sass');
 var stripCssComments = require('gulp-strip-css-comments');
@@ -20,7 +19,7 @@ module.exports = [
           utils.spawnTaskForExtension('sass:main', mainTask)
         ], 'sass');
 
-        gulpSequence.apply(null, sequence)(cb);
+        gulp.series(sequence)(cb);
       } else {
         console.log('Not eligible for this task, skipping...');
         cb();
@@ -38,7 +37,7 @@ module.exports = [
           path.join(extPath, 'scss/**/*.scss')
         ], 'sass');
 
-        gulp.watch(watchPatterns, ['sass']);
+        gulp.watch(watchPatterns, gulp.parallel('sass'));
         cb();
       } else {
         console.log('Not eligible for this task, skipping...');
@@ -58,7 +57,7 @@ function mainTask (cb) {
   var extPath = utils.getExtensionPath();
 
   return gulp.src(path.join(extPath, '/scss/*.scss'))
-    .pipe(bulk())
+    .pipe(glob())
     .pipe(sass({
       outputStyle: 'compressed',
       includePaths: civicrmScssRoot.getPath(),

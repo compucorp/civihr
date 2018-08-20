@@ -55,6 +55,7 @@ define([
         { $scope: $scope },
         { contactId: contactId }
       );
+      ctrl.$onInit();
     });
 
     it('should be defined', function () {

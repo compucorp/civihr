@@ -511,6 +511,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1039();
     $this->upgrade_1040();
     $this->upgrade_1041();
+    $this->upgrade_1042();
   }
 
   function upgrade_1001() {
@@ -1188,7 +1189,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'HRJob_Summary',
       'HRJobContract_Summary'
     ];
-    
+
     $result = civicrm_api3('CustomGroup', 'get', [
       'return' => ['id', 'name'],
       'name' => ['IN' => $customGroups],
@@ -1256,7 +1257,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
     return TRUE;
   }
-  
+
   /**
    * Changes the url of Standard Full Time Hours
    *
@@ -1270,10 +1271,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'url' => 'civicrm/standard_full_time_hours'
       ],
     ]);
-    
+
     return TRUE;
   }
-  
+
   /**
    * Renames page title from job contract benefit name to benefits
    *
@@ -1288,10 +1289,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'is_active' => 1
       ],
     ]);
-    
+
     return TRUE;
   }
-  
+
   /**
    * Renames page title from job contract deduction name to deductions
    *
@@ -1306,10 +1307,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'is_active' => 1
       ],
     ]);
-    
+
     return TRUE;
   }
-  
+
   /**
    * Renames option group title from job contract revision change reason to
    * contract revision reasons
@@ -1325,10 +1326,10 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'is_active' => 1
       ]
     ]);
-    
+
     return TRUE;
   }
-  
+
   /**
    * Renames option group title from job contract end reason
    * to contract end reasons
@@ -1344,10 +1345,29 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'is_active' => 1
       ],
     ]);
-    
+
     return TRUE;
   }
-  
+
+  /**
+   * Updates the custom field to view only and disables the custom group
+   *
+   * @return bool
+   */
+  public function upgrade_1042() {
+    civicrm_api3('CustomField', 'get', [
+      'name' => 'Length_Of_Service',
+      'api.CustomField.create' => ['id' => '$value.id', 'is_view' => 1],
+    ]);
+
+    civicrm_api3('CustomGroup', 'get', [
+      'name' => 'Contact_Length_Of_Service',
+      'api.CustomGroup.create' => ['id' => '$value.id', 'is_active' => 0],
+    ]);
+
+    return TRUE;
+  }
+
   /**
    * Creates a navigation menu item using the API
    *

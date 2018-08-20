@@ -30,8 +30,10 @@ define([
 
     beforeEach(module('common.services', 'leave-absences.mocks', 'leave-absences.models',
       'leave-absences.components',
-      function (_$provide_) {
+      function (_$provide_, $qProvider) {
         $provide = _$provide_;
+
+        $qProvider.errorOnUnhandledRejections(false);
       }
     ));
 
@@ -358,6 +360,7 @@ define([
       $scope = $rootScope.$new();
 
       ctrl = $componentController('leaveBalanceTab', { $scope: $scope });
+      ctrl.$onInit();
     }
   });
 });

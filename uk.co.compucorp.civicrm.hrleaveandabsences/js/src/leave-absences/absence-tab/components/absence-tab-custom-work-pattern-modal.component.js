@@ -40,17 +40,9 @@ define([
         }
       }
     };
-    vm.openWorkPatternChangeReasonEditor = openWorkPatternChangeReasonEditor;
 
-    (function init () {
-      return $q.all([
-        loadWorkPatterns(),
-        loadJobContractRevisionChangeReasons(true)
-      ])
-        .finally(function () {
-          vm.loading.content = false;
-        });
-    })();
+    vm.$onInit = $onInit;
+    vm.openWorkPatternChangeReasonEditor = openWorkPatternChangeReasonEditor;
 
     /**
      * Closes the Work Pattern Modal
@@ -86,6 +78,16 @@ define([
           vm.saveInProgress = false;
         });
     };
+
+    function $onInit () {
+      return $q.all([
+        loadWorkPatterns(),
+        loadJobContractRevisionChangeReasons(true)
+      ])
+        .finally(function () {
+          vm.loading.content = false;
+        });
+    }
 
     /**
      * Handles the error thrown by API

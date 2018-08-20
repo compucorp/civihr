@@ -32,8 +32,10 @@ define([
     var date2017 = '01/02/2017';
     var date2017Server = '2017-01-02';
 
-    beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_) {
+    beforeEach(module('common.mocks', 'leave-absences.templates', 'leave-absences.mocks', 'manager-leave', function (_$provide_, $qProvider) {
       $provide = _$provide_;
+
+      $qProvider.errorOnUnhandledRejections(false);
     }));
 
     beforeEach(inject(function (_AbsenceTypeAPIMock_, _WorkPatternAPIMock_, _PublicHolidayAPIMock_, _LeaveRequestAPIMock_, _OptionGroupAPIMock_) {
@@ -850,6 +852,7 @@ define([
         params
       );
 
+      controller.$onInit();
       $rootScope.$digest();
 
       return params;

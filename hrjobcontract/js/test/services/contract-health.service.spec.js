@@ -12,13 +12,14 @@ define([
 
     beforeEach(module('job-contract'));
     beforeEach(inject(function (_contractHealthService_, _$httpBackend_,
-    _$rootScope_) {
+      _$rootScope_) {
       contractHealthService = _contractHealthService_;
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
     }));
 
     beforeEach(function () {
+      $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
       $httpBackend.whenGET(/action=get&entity=HRJobHealth/).respond(ContractMock.contractRevision);
       $httpBackend.whenGET(/action=getoptions&entity=HRJobHealth/).respond(InsuranceMock);
       $httpBackend.whenGET(/views.*/).respond({});

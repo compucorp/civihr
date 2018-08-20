@@ -173,7 +173,7 @@ function hrqual_civicrm_managed(&$entities) {
  */
 function hrqual_civicrm_tabset($tabsetName, &$tabs, $context) {
   if ($tabsetName === 'civicrm/contact/view') {
-    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrqual', 'js/hrqual.js');
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.hrqual', 'js/dist/hrqual.min.js', 1010);
 
     $optionGroups = CRM_Core_OptionGroup::values('category_of_skill_20130510015438');
     foreach ($optionGroups as $name => $optionGroup) {

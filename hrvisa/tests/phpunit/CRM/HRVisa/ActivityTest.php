@@ -16,8 +16,6 @@ class CRM_HRVisa_ActivityTest extends PHPUnit_Framework_TestCase implements Head
   public function setUpHeadless() {
     return \Civi\Test::headless()
       ->installMe(__DIR__)
-      // hrdemog is necessary because it creates the Immigration fields used by the tests
-      ->install('org.civicrm.hrdemog')
       ->install('uk.co.compucorp.civicrm.hrcore')
       ->apply();
   }

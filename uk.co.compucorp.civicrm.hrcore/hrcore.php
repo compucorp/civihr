@@ -180,6 +180,14 @@ function hrcore_civicrm_postInstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function hrcore_civicrm_uninstall() {
+  $listeners = [
+    new CRM_HRCore_Hook_Uninstall_CustomGroupRemover()
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->handle();
+  }
+
   _hrcore_civix_civicrm_uninstall();
 }
 
@@ -189,6 +197,19 @@ function hrcore_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function hrcore_civicrm_enable() {
+  // _hrcore_civix_civicrm_config() will add this extension to the include path.
+  // We need to do this here because before extension is enabled the config
+  // hook is not called for it
+  _hrcore_civix_civicrm_config();
+
+  $listeners = [
+    new CRM_HRCore_Hook_Enable_CustomGroupEnabler()
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->handle();
+  }
+
   _hrcore_civix_civicrm_enable();
 }
 
@@ -198,6 +219,14 @@ function hrcore_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function hrcore_civicrm_disable() {
+  $listeners = [
+    new CRM_HRCore_Hook_Disable_CustomGroupDisabler()
+  ];
+
+  foreach ($listeners as $listener) {
+    $listener->handle();
+  }
+
   _hrcore_civix_civicrm_disable();
 }
 
@@ -286,6 +315,7 @@ function hrcore_civicrm_pageRun($page) {
 
   $hooks = [
     new CRM_HRCore_Hook_PageRun_LocationTypeFilter(),
+    new CRM_HRCore_Hook_PageRun_RelationshipTypesFilter(),
   ];
 
   foreach ($hooks as $hook) {
@@ -297,7 +327,7 @@ function hrcore_civicrm_pageRun($page) {
  * Implements hook_civicrm_coreResourceList().
  */
 function hrcore_civicrm_coreResourceList(&$items, $region) {
-  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/hrcore.js');
+  CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrcore', 'js/dist/hrcore.min.js', 1000);
 }
 
 /**
@@ -477,7 +507,7 @@ function _hrcore_createHelpMenu(&$menu) {
 
   _hrcore_civix_insert_navigation_menu($menu, 'Help', [
     'name' => ts('User Guide'),
-    'url' => 'http://civihr-documentation.readthedocs.io/en/latest/',
+    'url' => 'http://userguide.civihr.org/en/latest/',
     'target' => '_blank',
     'permission' => 'access CiviCRM'
   ]);

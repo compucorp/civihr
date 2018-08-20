@@ -127,6 +127,7 @@ define([
         $componentController('calendarFeedsDropdownButton', {}, {
           dropdownPosition: dropdownPositionParameter
         });
+      CalendarFeedsDropdownButton.$onInit();
     }
   });
 });

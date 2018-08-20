@@ -186,6 +186,7 @@ define([
         absenceTypes: absenceTypes
       });
 
+      controller.$onInit();
       $rootScope.$digest();
     }
 

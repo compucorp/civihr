@@ -38,8 +38,10 @@
 
       beforeEach(module('common.services', 'leave-absences.templates',
         'my-leave', 'leave-absences.mocks', 'leave-absences.settings',
-        function (_$provide_) {
+        function (_$provide_, $qProvider) {
           $provide = _$provide_;
+
+          $qProvider.errorOnUnhandledRejections(false);
         }));
 
       beforeEach(inject(function (_$componentController_, _$q_, _$log_, _$rootScope_) {
@@ -93,32 +95,35 @@
         });
       }));
 
-      beforeEach(function () {
-        compileComponent();
-      });
+      describe('before initialisation', function () {
+        beforeEach(function () {
+          compileComponent();
+        });
 
-      it('is initialized', function () {
-        expect($log.debug).toHaveBeenCalled();
-      });
+        it('is initialized', function () {
+          expect($log.debug).toHaveBeenCalled();
+        });
 
-      it('holds the date format', function () {
-        expect(controller.dateFormat).toBeDefined();
-        expect(controller.dateFormat).toBe(HRSettings.DATE_FORMAT);
-      });
+        it('holds the date format', function () {
+          expect(controller.dateFormat).toBeDefined();
+          expect(controller.dateFormat).toBe(HRSettings.DATE_FORMAT);
+        });
 
-      it('has all the sections collapsed', function () {
-        expect(Object.values(controller.sections).every(function (section) {
-          return section.open === false;
-        })).toBe(true);
-      });
+        it('has all the sections collapsed', function () {
+          expect(Object.values(controller.sections).every(function (section) {
+            return section.open === false;
+          })).toBe(true);
+        });
 
-      it('is in loading mode', function () {
-        expect(controller.loading.page).toBe(true);
-        expect(controller.loading.content).toBe(true);
+        it('is in loading mode', function () {
+          expect(controller.loading.page).toBe(true);
+          expect(controller.loading.content).toBe(true);
+        });
       });
 
       describe('in the middle of initialisation', function () {
         beforeEach(function () {
+          compileComponent();
           EntitlementAllSpy.and.returnValue($q.reject());
           $rootScope.$digest();
         });
@@ -134,6 +139,7 @@
 
       describe('after initialisation', function () {
         beforeEach(function () {
+          compileComponent();
           $rootScope.$digest();
         });
 
@@ -876,6 +882,49 @@
         });
       });
 
+      describe('when it is "absence-tab" section', function () {
+        beforeEach(function () {
+          $rootScope.section = 'absence-tab';
+
+          compileComponent();
+          $rootScope.$digest();
+        });
+
+        afterEach(function () {
+          delete $rootScope.section;
+        });
+
+        it('sets the role to "admin"', function () {
+          expect(controller.role).toBe('admin');
+        });
+      });
+
+      describe('when user is staff', function () {
+        beforeEach(function () {
+          isUserAdmin = false;
+
+          compileComponent();
+          $rootScope.$digest();
+        });
+
+        it('sets the role to "staff"', function () {
+          expect(controller.role).toBe('staff');
+        });
+      });
+
+      describe('when user is admin', function () {
+        beforeEach(function () {
+          isUserAdmin = true;
+
+          compileComponent();
+          $rootScope.$digest();
+        });
+
+        it('sets the role to "admin"', function () {
+          expect(controller.role).toBe('admin');
+        });
+      });
+
       /**
        * Returns the value of the given leave request status
        *
@@ -892,6 +941,7 @@
 
       function compileComponent () {
         controller = $componentController('staffLeaveReport', null, { contactId: contactId });
+        controller.$onInit();
       }
 
       /**

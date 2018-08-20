@@ -25,13 +25,14 @@ define([
     var vm = this;
 
     vm.$onChanges = $onChanges;
+    vm.$onInit = $onInit;
 
     /**
      * Initializes the component by emiting a child is loading event.
      */
-    (function init () {
+    function $onInit () {
       $scope.$emit('LeaveWidget::childIsLoading', childComponentName);
-    })();
+    }
 
     /**
      * Implements the $onChanges controller method. It watches for changes in
