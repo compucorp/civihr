@@ -13,6 +13,20 @@ $footer = $br .
   '{if $leaveComments}' . $br . $br . 'Request Comments{foreach from=$leaveComments item=value key=label}' . $br . $br . '{$value.commenter}:' . $br . '{$value.created_at|crmDate}' . $br . '{$value.text}{/foreach}{/if}'.
   '{if $leaveFiles}' . $br . $br . 'Other files recorded on this request{foreach from=$leaveFiles item=value key=label}' . $br . $br . '{$value.name}: Added on {$value.upload_date|crmDate}{/foreach}{/if}';
 
+CRM_Core_PseudoConstant::flush();
+$leaveWorkflowId = civicrm_api3('OptionValue', 'get', [
+  'option_group_id' => 'msg_tpl_workflow_leave',
+  'name' => 'civihr_leave_request_notification',
+])['id'];
+$toilWorkflowId = civicrm_api3('OptionValue', 'get', [
+  'option_group_id' => 'msg_tpl_workflow_leave',
+  'name' => 'civihr_toil_request_notification',
+])['id'];
+$sicknessWorkflowId = civicrm_api3('OptionValue', 'get', [
+  'option_group_id' => 'msg_tpl_workflow_leave',
+  'name' => 'civihr_sickness_record_notification',
+])['id'];
+
 return [
   [
     'name' => 'Email Template: Leave Request',
@@ -279,7 +293,9 @@ return [
    <div style="display:none; white-space:nowrap; font:15px courier; line-height:0;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </div>
   </body>
 </html>',
-      'is_reserved' => 1
+      'workflow_id' => (int)$leaveWorkflowId,
+      'is_default' => 1,
+      'is_reserved' => 0,
     ],
   ],
   [
@@ -560,7 +576,9 @@ return [
    <div style="display:none; white-space:nowrap; font:15px courier; line-height:0;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </div>
   </body>
 </html>',
-      'is_reserved' => 1
+      'workflow_id' => (int)$toilWorkflowId,
+      'is_default' => 1,
+      'is_reserved' => 0,
     ],
   ],
   [
@@ -869,7 +887,9 @@ return [
         'Additional Details:' . $br .
         'The Reason: {$sicknessReason}' . $br . $br .
         $footer,
-      'is_reserved' => 1
+      'workflow_id' => (int)$sicknessWorkflowId,
+      'is_default' => 1,
+      'is_reserved' => 0,
     ],
-  ]
+  ],
 ];
