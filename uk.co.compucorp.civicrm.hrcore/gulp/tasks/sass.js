@@ -1,4 +1,4 @@
-var bulk = require('gulp-sass-bulk-import');
+var glob = require('gulp-sass-glob');
 var civicrmScssRoot = require('civicrm-scssroot')();
 var gulp = require('gulp');
 var path = require('path');
@@ -57,7 +57,7 @@ function mainTask (cb) {
   var extPath = utils.getExtensionPath();
 
   return gulp.src(path.join(extPath, '/scss/*.scss'))
-    .pipe(bulk())
+    .pipe(glob())
     .pipe(sass({
       outputStyle: 'compressed',
       includePaths: civicrmScssRoot.getPath(),

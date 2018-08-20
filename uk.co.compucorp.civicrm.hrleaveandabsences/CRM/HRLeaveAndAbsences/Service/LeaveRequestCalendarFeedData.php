@@ -165,8 +165,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedData {
     $params = [
       'type_id' => ['IN' => $leaveTypes],
       'status_id' => ['IN' => ['approved', 'admin_approved']],
-      'from_date' => ['>=' => $this->startDate->format('Y-m-d H:i:s')],
-      'to_date' => ['<=' => $this->endDate->format('Y-m-d H:i:s')],
+      'from_date' => ['<=' => $this->endDate->format('Y-m-d H:i:s')],
+      'to_date' => ['>=' => $this->startDate->format('Y-m-d H:i:s')],
       'request_type' => ['!=' => LeaveRequest::REQUEST_TYPE_TOIL],
     ];
 
