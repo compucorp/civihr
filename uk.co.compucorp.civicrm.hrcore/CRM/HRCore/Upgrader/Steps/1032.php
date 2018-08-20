@@ -17,7 +17,6 @@ trait CRM_HRCore_Upgrader_Steps_1032 {
     $optionValuesNames = array_keys($optionValuesNewLabels);
     $optionValues = civicrm_api3('OptionValue', 'get', [
       'name' => ['IN' => $optionValuesNames],
-      'option' => ['limit' => 0],
     ]);
 
     foreach ($optionValues['values'] as $optionValue) {
