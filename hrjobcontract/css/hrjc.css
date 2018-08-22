@@ -139,26 +139,36 @@
 #hrjob-contract th,
 #hrjob-contract td {
   background: initial;
+  border: initial;
   margin: initial;
   padding: initial;
-  border: initial;
   vertical-align: initial;
+}
+#hrjob-contract h3 {
+  border: 0;
+  border: initial;
+  border-radius: 0;
+  border-radius: initial;
+  box-shadow: none;
+  box-shadow: initial;
 }
 #hrjob-contract ol,
 #hrjob-contract ul {
-  padding-start: 40px;
+  list-style: initial;
+  /* stylelint-disable property-no-vendor-prefix, property-no-unknown */
   -moz-padding-start: 40px;
   -webkit-padding-start: 40px;
-  list-style: initial;
+  padding-start: 40px;
+  /* stylelint-enable */
 }
 #hrjob-contract blockquote,
 #hrjob-contract q {
   quotes: initial;
 }
-#hrjob-contract blockquote:before,
-#hrjob-contract blockquote:after,
-#hrjob-contract q:before,
-#hrjob-contract q:after {
+#hrjob-contract blockquote::before,
+#hrjob-contract blockquote::after,
+#hrjob-contract q::before,
+#hrjob-contract q::after {
   content: initial;
 }
 #hrjob-contract ins {
@@ -171,7 +181,8 @@
   border-collapse: initial;
   border-spacing: initial;
 }
-#hrjob-contract table td, #hrjob-contract table th {
+#hrjob-contract table td,
+#hrjob-contract table th {
   color: inherit;
   font-size: inherit;
 }

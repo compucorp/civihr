@@ -306,9 +306,10 @@ function setCurrentExtension (extension) {
  * Spawns a task for an extension on the fly, using the name and function provided
  * The extension specified is set as the current extension before executing the task fn
  *
- * @param {String} taskName
- * @param {Function} taskFn
- * @param {String} extension If undefined, the current extension is used
+ * @param  {String} taskName
+ * @param  {Function} taskFn
+ * @param  {String} [extension] if omitted, the current extension is used
+ * @return {String} updated task name as per the selected extension
  */
 function spawnTaskForExtension (taskName, taskFn, extension) {
   extension = extension || getCurrentExtension();

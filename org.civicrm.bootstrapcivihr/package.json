@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-postcss": "^7.0.1",
     "gulp-transform-selectors": "0.0.2",
     "path": "^0.12.7",

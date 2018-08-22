@@ -391,59 +391,73 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestCalendarFeedDataTest extends Ba
 
   public function testGetWillNotReturnDataForRequestsOutsideTheDateRange() {
     $absenceType = AbsenceTypeFabricator::fabricate();
-    $contact1 = ContactFabricator::fabricate(['first_name' => 'Contact1', 'last_name' => 'LastContact1']);
+    $contact = ContactFabricator::fabricate(['first_name' => 'ContactName', 'last_name' => 'ContactLastName']);
 
     HRJobContractFabricator::fabricate(
-      ['contact_id' => $contact1['id']],
+      ['contact_id' => $contact['id']],
       ['period_start_date' => CRM_Utils_Date::processDate('yesterday')]
     );
 
-    //Leave is outside date range for feed data
-    $params[1] = [
-      'contact_id' => $contact1['id'],
-      'first_name' => $contact1['first_name'],
-      'last_name' => $contact1['last_name'],
-      'type_id' => $absenceType->id,
-      'from_date' => CRM_Utils_Date::processDate('yesterday'),
-      'to_date' => CRM_Utils_Date::processDate('yesterday'),
+    // These are test cases for different leave request dates.
+    // As a general rule, leave requests should only be included if at least
+    // one day appears in the period of [today - 3 months from today].
+    $testCases = [
+      [
+        'from_date' => CRM_Utils_Date::processDate('-3 days'),
+        'to_date' => CRM_Utils_Date::processDate('-2 days'),
+        'shouldBeIncluded' => false
+      ],
+      [
+        'from_date' => CRM_Utils_Date::processDate('-1 days'),
+        'to_date' => CRM_Utils_Date::processDate('today'),
+        'shouldBeIncluded' => true
+      ],
+      [
+        'from_date' => CRM_Utils_Date::processDate('+1 month +10 days'),
+        'to_date' => CRM_Utils_Date::processDate('+1 month +20 days'),
+        'shouldBeIncluded' => true
+      ],
+      [
+        'from_date' => CRM_Utils_Date::processDate('+3 months'),
+        'to_date' => CRM_Utils_Date::processDate('+3 months +1 day'),
+        'shouldBeIncluded' => true
+      ],
+      [
+        'from_date' => CRM_Utils_Date::processDate('+3 months +2 days'),
+        'to_date' => CRM_Utils_Date::processDate('+3 months +3 days'),
+        'shouldBeIncluded' => false
+      ]
     ];
 
-    $params[2] = [
-      'contact_id' => $contact1['id'],
-      'first_name' => $contact1['first_name'],
-      'last_name' => $contact1['last_name'],
-      'type_id' => $absenceType->id,
-      'from_date' => CRM_Utils_Date::processDate('today'),
-      'to_date' => CRM_Utils_Date::processDate('+2 days'),
-    ];
+    $expectedFeedData = [];
 
-    //Leave is outside date range for feed data
-    $params[2] = [
-      'contact_id' => $contact1['id'],
-      'first_name' => $contact1['first_name'],
-      'last_name' => $contact1['last_name'],
-      'type_id' => $absenceType->id,
-      'from_date' => CRM_Utils_Date::processDate('+4 months'),
-      'to_date' => CRM_Utils_Date::processDate('+4 months'),
-    ];
+    foreach ($testCases as $testCase) {
+      $params = [
+        'contact_id' => $contact['id'],
+        'first_name' => $contact['first_name'],
+        'last_name' => $contact['last_name'],
+        'type_id' => $absenceType->id,
+        'from_date' => $testCase['from_date'],
+        'to_date' => $testCase['to_date'],
+      ];
 
-    foreach ($params as &$param) {
-      $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($param);
-      $param['id'] =  $leaveRequest->id;
+      $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
+      $params['id'] =  $leaveRequest->id;
+
+      $testCase['shouldBeIncluded'] && array_push($expectedFeedData, $params);
     }
 
-    //feed config is for all contacts in any department/location
-    $feedConfig1 = LeaveCalendarFeedConfigFabricator::fabricate([
-      'title' => 'Feed 1',
+    // A sample feed config which is visible to everyone
+    $feedConfig = LeaveCalendarFeedConfigFabricator::fabricate([
+      'title' => 'Feed',
       'composed_of' => [
         'leave_type' => [$absenceType->id],
       ]
     ]);
 
-    $leaveFeedData = new LeaveRequestCalendarFeedData($feedConfig1->hash);
+    $leaveFeedData = new LeaveRequestCalendarFeedData($feedConfig->hash);
 
-    unset($params[1], $params[2]);
-    $this->assertEquals($this->getExpectedLeaveDataResult($params), $leaveFeedData->get());
+    $this->assertEquals($this->getExpectedLeaveDataResult($expectedFeedData), $leaveFeedData->get());
   }
 
   private function getExpectedLeaveDataResult($leaveData) {
