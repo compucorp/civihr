@@ -142,11 +142,11 @@ define([
     function getChangeLogRow (entitlements, createdDate) {
       var entitlement, indexedEntitlements, sortedEntitlements;
 
-      indexedEntitlements = _.indexBy(entitlements, 'entitlement_id.type_id');
+      indexedEntitlements = _.keyBy(entitlements, 'entitlement_id.type_id');
       sortedEntitlements = vm.absenceTypes.map(function (absenceType) {
         entitlement = indexedEntitlements[absenceType.id];
 
-        return _.extend({
+        return _.assign({
           calculation_unit: absenceType['calculation_unit_name']
         }, entitlement);
       });
@@ -189,7 +189,7 @@ define([
 
       for (var i = vm.changeLogRows.length - 1; i >= 0; i--) {
         changeLogRow = vm.changeLogRows[i];
-        entitlementComments = _.pluck(changeLogRow.entitlements, 'comment');
+        entitlementComments = _.map(changeLogRow.entitlements, 'comment');
         validEntitlementComments = _.compact(entitlementComments);
 
         if (validEntitlementComments.length === 1) {

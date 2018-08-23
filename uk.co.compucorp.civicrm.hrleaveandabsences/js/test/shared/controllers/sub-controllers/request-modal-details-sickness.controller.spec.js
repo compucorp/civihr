@@ -138,7 +138,7 @@ define([
         });
 
         it('loads the sickness reasons', function () {
-          expect(controller.sicknessReasons).toEqual(_.indexBy(sicknessReasons, 'name'));
+          expect(controller.sicknessReasons).toEqual(_.keyBy(sicknessReasons, 'name'));
         });
       });
 

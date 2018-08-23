@@ -117,10 +117,12 @@ define([
         var toilAmounts, toilAmountsSortedByWeight;
 
         beforeEach(function () {
-          toilAmountsSortedByWeight = _.pluck(controller.toilAmounts, function (amount) {
+          toilAmountsSortedByWeight = _.map(controller.toilAmounts, function (amount) {
             return +amount.weight;
-          }).sort();
-          toilAmounts = _.pluck(controller.toilAmounts, function (amount) {
+          }).sort(function (a, b) {
+            return a < b ? -1 : (a > b ? 1 : 0);
+          });
+          toilAmounts = _.map(controller.toilAmounts, function (amount) {
             return +amount.weight;
           });
         });

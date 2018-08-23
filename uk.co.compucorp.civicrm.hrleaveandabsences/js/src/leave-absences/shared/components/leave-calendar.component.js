@@ -303,7 +303,7 @@ define([
         vm.supportData.calculationUnits = results[2].hrleaveandabsences_absence_type_calculation_unit;
         vm.supportData.dayTypes = results[2].hrleaveandabsences_leave_request_day_type;
         vm.supportData.leaveRequestStatuses = results[2].hrleaveandabsences_leave_request_status;
-        vm.supportData.toilAmounts = _.indexBy(results[2].hrleaveandabsences_toil_amounts, 'value');
+        vm.supportData.toilAmounts = _.keyBy(results[2].hrleaveandabsences_toil_amounts, 'value');
       });
     }
 

@@ -23,8 +23,8 @@ define([
     var $componentController, $log, $provide, $q, $rootScope, controller, Contact,
       ContactInstance, LeaveRequestInstance, dialog, sharedSettings, leaveRequest,
       LeavePopup, LeaveRequestService, notification, pubSub;
-    var absenceTypes = _.indexBy(absenceTypeData.all().values, 'id');
-    var leaveRequestStatuses = _.indexBy(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), 'value');
+    var absenceTypes = _.keyBy(absenceTypeData.all().values, 'id');
+    var leaveRequestStatuses = _.keyBy(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), 'value');
 
     beforeEach(module('leave-absences.mocks', 'manager-leave', function (_$provide_) {
       $provide = _$provide_;
@@ -744,7 +744,7 @@ define([
       type = type || 'leave';
 
       var map = { leave: '1', toil: '2', sick: '3' };
-      var statuses = _.indexBy(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), 'name');
+      var statuses = _.keyBy(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), 'name');
       var leaveRequestMock = _.find(leaveRequestData.all().values, { type_id: map[type] });
       var leaveRequest = LeaveRequestInstance.init(leaveRequestMock, true);
 

@@ -152,7 +152,7 @@ define([
       var calculationUnits, unit;
 
       calculationUnits = OptionGroupData.getCollection('hrleaveandabsences_absence_type_calculation_unit');
-      calculationUnits = _.indexBy(calculationUnits, 'value');
+      calculationUnits = _.keyBy(calculationUnits, 'value');
 
       return this.all().values.map(function (absenceType) {
         unit = calculationUnits[absenceType.calculation_unit];

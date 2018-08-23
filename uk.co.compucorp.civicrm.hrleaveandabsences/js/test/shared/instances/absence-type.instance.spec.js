@@ -18,7 +18,7 @@ define([
     }));
 
     it('inherits from ModelInstance', function () {
-      expect(_.functions(AbsenceTypeInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
+      expect(_.functionsIn(AbsenceTypeInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
     });
 
     describe('init()', function () {

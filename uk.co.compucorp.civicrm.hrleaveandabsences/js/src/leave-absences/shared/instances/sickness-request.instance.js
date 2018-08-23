@@ -50,7 +50,7 @@ define([
           var docsArray = this.getDocumentArray();
           var index = docsArray.indexOf(documentValue);
 
-          _.contains(docsArray, documentValue) ? docsArray.splice(index, 1) : docsArray.push(documentValue);
+          _.includes(docsArray, documentValue) ? docsArray.splice(index, 1) : docsArray.push(documentValue);
           this.sickness_required_documents = docsArray.join(',');
         },
 

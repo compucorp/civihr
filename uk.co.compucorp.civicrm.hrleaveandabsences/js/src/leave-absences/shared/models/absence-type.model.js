@@ -76,7 +76,7 @@ define([
         loadCalculationUnits: function (absenceTypes) {
           return OptionGroup.valuesOf('hrleaveandabsences_absence_type_calculation_unit')
             .then(function (calculationUnits) {
-              calculationUnits = _.indexBy(calculationUnits, 'value');
+              calculationUnits = _.keyBy(calculationUnits, 'value');
 
               return _.map(absenceTypes, function (absenceType) {
                 return _.assign(absenceType, {
