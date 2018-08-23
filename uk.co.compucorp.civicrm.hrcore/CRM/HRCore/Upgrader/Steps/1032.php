@@ -22,8 +22,8 @@ trait CRM_HRCore_Upgrader_Steps_1032 {
     ]);
     $this->up1032_disableImportMenus([
       'Import Contacts',
-      'Import / Export',
-      'Import Custom Fields',
+      'import_export_job_contracts',
+      'import_custom_fields',
     ]);
 
     return TRUE;
