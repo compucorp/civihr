@@ -143,7 +143,7 @@ trait CRM_HRCore_Upgrader_Steps_1032 {
         'permission' => $menu['permission'],
         'is_active' => 1,
         'weight' => 2,
-        'url' => '/activity?reset=1&action=add&context=standalone',
+        'url' => 'civicrm/activity?reset=1&action=add&context=standalone',
       ]);
       // If we don't flush it will not recognize newly created parent_id
       CRM_Core_PseudoConstant::flush();
