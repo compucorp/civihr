@@ -101,8 +101,8 @@ define([
             'sequential': 1,
             'field': fieldName
           }).done(function (data) {
-            contractTypes.obj = _.mapValues(_.indexBy(data.values, 'key'), 'value');
-            contractTypes.arr = _.values(_.indexBy(data.values, 'key'));
+            contractTypes.obj = _.mapValues(_.keyBy(data.values, 'key'), 'value');
+            contractTypes.arr = _.values(_.keyBy(data.values, 'key'));
 
             deffered.resolve(contractTypes);
           });

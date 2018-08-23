@@ -309,7 +309,7 @@ define([
           if (fieldName === 'hrjobcontract_health_health_plan_type') {
             contractHealthService.getOptions(fieldName, true)
               .then(function (data) {
-                var healthOptions = _.mapValues(_.indexBy(data, 'key'), 'value');
+                var healthOptions = _.mapValues(_.keyBy(data, 'key'), 'value');
 
                 $rootScope.options.health.plan_type = healthOptions;
                 $rootScope.options.health.plan_type_life_insurance = healthOptions;
@@ -379,7 +379,7 @@ define([
     function loadAnnualPayOptions (optionType, optionName) {
       return OptionGroup.valuesOf(optionType, false)
         .then(function (data) {
-          $rootScope.options.pay[optionName] = _.mapValues(_.indexBy(data, 'value'), 'label');
+          $rootScope.options.pay[optionName] = _.mapValues(_.keyBy(data, 'value'), 'label');
         });
     }
   }
