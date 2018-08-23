@@ -39,7 +39,6 @@ trait CRM_HRCore_Upgrader_Steps_1032 {
         'id' => '$value.id',
         'label' => 'Add New Staff Member',
         'name' => 'Add New Staff Member',
-        'url' => 'civicrm/import/contact?reset=1&force=1',
       ],
     ]);
   }
