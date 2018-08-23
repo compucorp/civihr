@@ -16,7 +16,7 @@ define([
        * @return {boolean}
        */
       isInstance: function (object) {
-        return !!_.intersection(_.functionsIn(object), _.functions(instance)).length;
+        return _.isEqual(_.functionsIn(object), _.functionsIn(instance));
       },
 
       /**
