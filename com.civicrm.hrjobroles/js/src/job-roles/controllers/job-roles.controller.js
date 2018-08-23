@@ -452,7 +452,7 @@ define([
         return _(data.values).map(function (contact) {
           return contact;
         })
-          .indexBy('contact_id')
+          .keyBy('contact_id')
           .value();
       });
     }
@@ -1072,7 +1072,7 @@ define([
       jobRoleFunders.forEach(function (funder) {
         var funderData = funder.funder_id;
 
-        if (!_.contains(Object.keys(fundersContacts), funderData.id)) {
+        if (!_.includes(Object.keys(fundersContacts), funderData.id)) {
           fundersContacts[funderData.id] = funderData;
         }
       });
