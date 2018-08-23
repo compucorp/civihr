@@ -25,7 +25,7 @@ define([
     }));
 
     it('inherits from ModelInstance', function () {
-      expect(_.functions(JobRoleInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
+      expect(_.functionsIn(JobRoleInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
     });
 
     describe('init()', function () {
