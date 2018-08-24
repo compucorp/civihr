@@ -239,24 +239,6 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
   }
 
   /**
-   * Fetches entity counts for the recruitment entities
-   *
-   * @return array
-   */
-  private function getRecruitmentEntityCounts() {
-    $recruitmentKey = 'org.civicrm.hrrecruitment';
-    $counts = [];
-
-    if (!ExtensionHelper::isExtensionEnabled($recruitmentKey)) {
-      return $counts;
-    }
-
-    $counts['vacancy'] = $this->getEntityCount('HRVacancy');
-
-    return $counts;
-  }
-
-  /**
    * Checks if the underlying CMS system is Drupal
    *
    * @return bool
