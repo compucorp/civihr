@@ -262,8 +262,8 @@ define([
      * Indexes for easy access the data that the component needs
      */
     function indexData () {
-      vm.supportData.dayTypes = _.indexBy(vm.supportData.dayTypes, 'name');
-      vm.supportData.leaveRequestStatuses = _.indexBy(vm.supportData.leaveRequestStatuses, 'value');
+      vm.supportData.dayTypes = _.keyBy(vm.supportData.dayTypes, 'name');
+      vm.supportData.leaveRequestStatuses = _.keyBy(vm.supportData.leaveRequestStatuses, 'value');
       vm.supportData.publicHolidays = _.transform(vm.supportData.publicHolidays, function (result, publicHoliday) {
         result[dateObjectWithFormat(publicHoliday.date).valueOf()] = publicHoliday;
       }, {});
@@ -364,7 +364,7 @@ define([
     function isRequested (leaveRequest) {
       var statusName = vm.supportData.leaveRequestStatuses[leaveRequest.status_id].name;
 
-      return _.contains([
+      return _.includes([
         sharedSettings.statusNames.awaitingApproval,
         sharedSettings.statusNames.moreInformationRequired
       ], statusName);
@@ -463,7 +463,7 @@ define([
         })},
         type_id: { 'IN': isRequestFilteredByAbsenceType
           ? vm.supportData.absenceTypesToFilterBy
-          : _.pluck(vm.supportData.absenceTypes, 'id') }
+          : _.map(vm.supportData.absenceTypes, 'id') }
       };
 
       flushDays();
@@ -494,7 +494,7 @@ define([
         return contact.id;
       }), monthStartDate, monthEndDate)
         .then(function (monthCalendars) {
-          calendars = _.indexBy(monthCalendars, 'contact_id');
+          calendars = _.keyBy(monthCalendars, 'contact_id');
         });
     }
 

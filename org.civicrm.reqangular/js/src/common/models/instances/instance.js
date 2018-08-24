@@ -1,3 +1,5 @@
+/* eslint-env amd */
+
 define([
   'common/lodash',
   'common/modules/models-instances'
@@ -5,7 +7,6 @@ define([
   'use strict';
 
   instances.factory('ModelInstance', function () {
-
     return {
 
       /**
@@ -17,7 +18,7 @@ define([
       attributes: function () {
         return _.transform(this, function (result, __, key) {
           !_.isFunction(this[key]) && (result[key] = this[key]);
-        }, Object.create(null), this);
+        }.bind(this), Object.create(null));
       },
 
       /**
@@ -95,7 +96,7 @@ define([
        * @return {object} updated instance attributes object
        */
       transformAttributes: function (attributes) {
-        return attributes
+        return attributes;
       },
 
       /**
@@ -125,6 +126,6 @@ define([
       toAPIFilter: function (result, __, key) {
         result[key] = this[key];
       }
-    }
+    };
   });
 });

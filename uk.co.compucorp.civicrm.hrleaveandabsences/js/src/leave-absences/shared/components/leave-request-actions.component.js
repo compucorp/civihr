@@ -257,11 +257,11 @@ define([
      */
     function indexSupportData () {
       if (_.isArray(vm.leaveRequestStatuses)) {
-        vm.leaveRequestStatuses = _.indexBy(vm.leaveRequestStatuses, 'value');
+        vm.leaveRequestStatuses = _.keyBy(vm.leaveRequestStatuses, 'value');
       }
 
       if (_.isArray(vm.absenceTypes)) {
-        vm.absenceTypes = _.indexBy(vm.absenceTypes, 'id');
+        vm.absenceTypes = _.keyBy(vm.absenceTypes, 'id');
       }
     }
 

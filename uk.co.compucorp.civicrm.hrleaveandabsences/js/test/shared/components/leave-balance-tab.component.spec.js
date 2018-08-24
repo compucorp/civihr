@@ -287,7 +287,7 @@ define([
           expectedReport = _.values(balanceReport).map(function (record) {
             record = Object.assign({}, record);
 
-            record.absence_types = _.indexBy(record.absence_types, function (type) {
+            record.absence_types = _.keyBy(record.absence_types, function (type) {
               return type.id;
             });
 

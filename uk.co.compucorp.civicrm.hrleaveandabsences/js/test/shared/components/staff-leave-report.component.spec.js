@@ -625,7 +625,7 @@
 
                 function entitlementBreakdownEntries (entitlement) {
                   return controller.sections.entitlements.data.filter(function (entry) {
-                    return _.contains(entitlement.breakdown, entry);
+                    return _.includes(entitlement.breakdown, entry);
                   });
                 }
               });
@@ -743,7 +743,7 @@
 
             beforeEach(function () {
               controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
-              controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
+              controller.sections.pending.dataIndex = _.keyBy(controller.sections.pending.data, 'id');
               testData = {
                 leaveRequest: leaveRequest1,
                 oldBalanceChange: controller.absenceTypesIndexed[leaveRequest1.type_id].balanceChanges.pending,
@@ -803,7 +803,7 @@
 
             beforeEach(function () {
               controller.sections.approved.data = [leaveRequest1, leaveRequest2, leaveRequest3];
-              controller.sections.approved.dataIndex = _.indexBy(controller.sections.approved.data, 'id');
+              controller.sections.approved.dataIndex = _.keyBy(controller.sections.approved.data, 'id');
 
               oldRemainders = {
                 current: controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.current,
@@ -834,7 +834,7 @@
 
             beforeEach(function () {
               controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
-              controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
+              controller.sections.pending.dataIndex = _.keyBy(controller.sections.pending.data, 'id');
               oldRemainder = controller.absenceTypesIndexed[leaveRequest1.type_id].remainder.future;
 
               leaveRequest1.delete();
@@ -860,7 +860,7 @@
             leaveRequest3 = LeaveRequestInstance.init(leaveRequestMock.all().values[2], true);
 
             controller.sections.pending.data = [leaveRequest1, leaveRequest2, leaveRequest3];
-            controller.sections.pending.dataIndex = _.indexBy(controller.sections.pending.data, 'id');
+            controller.sections.pending.dataIndex = _.keyBy(controller.sections.pending.data, 'id');
             controller.sections.other.open = true;
 
             leaveRequest1.cancel();

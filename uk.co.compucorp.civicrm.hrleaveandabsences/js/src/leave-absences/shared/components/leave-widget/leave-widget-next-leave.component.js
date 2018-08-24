@@ -96,7 +96,7 @@ define([
      * @return {Array}
      */
     function getAbsenceTypeIds () {
-      return _.pluck(vm.absenceTypes, 'id');
+      return _.map(vm.absenceTypes, 'id');
     }
 
     /**
@@ -105,7 +105,7 @@ define([
      * @return {Array}
      */
     function getStatusIds () {
-      return _.pluck(vm.leaveRequestStatuses, 'value');
+      return _.map(vm.leaveRequestStatuses, 'value');
     }
 
     /**
@@ -117,7 +117,7 @@ define([
     function loadDayTypes () {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_day_type')
         .then(function (_dayTypes_) {
-          vm.dayTypes = _.indexBy(_dayTypes_, 'value');
+          vm.dayTypes = _.keyBy(_dayTypes_, 'value');
         });
     }
 
