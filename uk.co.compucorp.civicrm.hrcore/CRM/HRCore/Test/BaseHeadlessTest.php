@@ -9,7 +9,6 @@ abstract class CRM_HRCore_Test_BaseHeadlessTest extends PHPUnit_Framework_TestCa
   public function setUpHeadless() {
     $requiredExtensions = [
       'uk.co.compucorp.civicrm.tasksassignments',
-      'org.civicrm.hrrecruitment',
       'uk.co.compucorp.civicrm.hrleaveandabsences',
       'org.civicrm.hrjobcontract', // L&A depends on HRJobContract
       'uk.co.compucorp.civicrm.hrcontactactionsmenu',

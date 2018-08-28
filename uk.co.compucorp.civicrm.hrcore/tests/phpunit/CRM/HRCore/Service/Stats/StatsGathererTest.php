@@ -9,7 +9,6 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriod
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeaveRequest as LeaveRequestFabricator;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRCore_Test_Fabricator_UFMatch as UFMatchFabricator;
-use CRM_HRRecruitment_Test_Fabricator_HRVacancy as HRVacancyFabricator;
 use CRM_Tasksassignments_Test_Fabricator_Task as TaskFabricator;
 use CRM_Tasksassignments_Test_Fabricator_Document as DocumentFabricator;
 use CRM_Tasksassignments_Test_Fabricator_Assignment as AssignmentFabricator;
@@ -75,14 +74,6 @@ class CRM_HRCore_Service_Stats_StatsGathererTest extends CRM_HRCore_Test_BaseHea
   public function testCMSUserCountWillMatchExpectedCount() {
     $stats = $this->getGatherer()->gather();
     $this->assertEquals(20, $stats->getEntityCount('cmsUser'));
-  }
-
-  public function testVacancyCountWillMatchExpectedCount() {
-    HRVacancyFabricator::fabricate();
-    HRVacancyFabricator::fabricate();
-    $stats = $this->getGatherer()->gather();
-
-    $this->assertEquals(2, $stats->getEntityCount('vacancy'));
   }
 
   public function testTaskCountWillMatchExpectedCounts() {
@@ -295,9 +286,6 @@ class CRM_HRCore_Service_Stats_StatsGathererTest extends CRM_HRCore_Test_BaseHea
 
     $leaveRequest = $this->fabricateLeaveRequest($contactID);
     civicrm_api3('LeaveRequest', 'delete', ['id' => $leaveRequest->id]);
-
-    $vacancy = HRVacancyFabricator::fabricate();
-    civicrm_api3('HRVacancy', 'delete', ['id' => $vacancy['id']]);
 
     $stats = $this->getGatherer()->gather();
 
