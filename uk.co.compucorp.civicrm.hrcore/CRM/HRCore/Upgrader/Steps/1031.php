@@ -22,7 +22,9 @@ trait CRM_HRCore_Upgrader_Steps_1031 {
       'return' => ['id'],
       'name' => 'Application',
     ]);
-
+    if($caseType['count']===0){
+      return;
+    }
     $dao = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_managed where name="Application"');
     while ($dao->fetch()) {
       $managedCaseTypeId = $dao->entity_id;
@@ -39,6 +41,9 @@ trait CRM_HRCore_Upgrader_Steps_1031 {
    * disables and then Uninstalls the Recruitment Extensions
    */
   private function up1031_disableAndUninstallRecruitment() {
+    if (!ExtensionHelper::isExtensionEnabled('org.civicrm.hrrecruitment')) {
+      return;
+    }
     civicrm_api3('Extension', 'disable', [
       'keys' => 'org.civicrm.hrrecruitment',
       'api.Extension.uninstall' => ['keys' => 'org.civicrm.hrrecruitment'],
