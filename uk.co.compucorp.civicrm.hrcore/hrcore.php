@@ -345,6 +345,7 @@ function hrcore_civicrm_navigationMenu(&$params) {
   _hrcore_createDeveloperMenu($params);
   _hrcore_setDynamicMenuIcons($params);
   _hrcore_createSelfServicePortalMenu($params);
+  _hrui_customImportMenuItems($params);
 }
 
 /**
@@ -638,3 +639,44 @@ function _hrcore_getMaxMenuWeight($menu) {
 
   return $maxWeight;
 }
+
+/**
+ * Generating Custom Fields import child menu items
+ *
+ */
+function _hrui_customImportMenuItems(&$params) {
+  $navId = CRM_Core_DAO::singleValueQuery("SELECT max(id) FROM civicrm_navigation");
+
+  $customFieldsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Import', 'id', 'name');
+  $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
+
+  if ($customFieldsNavId) {
+    // Degrade gracefully on 4.4
+    if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
+      //  Get the maximum key of $params
+      $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
+
+      $multiValuedData = NULL;
+      foreach ($multipleCustomData as $key => $value) {
+        ++$navId;
+        $multiValuedData[$navId] = array (
+          'attributes' => array (
+            'label'      => $value,
+            'name'       => $value,
+            'url'        => 'civicrm/import/custom?reset=1&id='.$key,
+            'permission' => 'access CiviCRM',
+            'operator'   => null,
+            'separator'  => null,
+            'parentID'   => $customFieldsNavId,
+            'navID'      => $navId,
+            'active'     => 1
+          )
+        );
+      }
+
+      $finalMenu = array_merge($params[$contactNavId]['child'][$customFieldsNavId]['child'],$multiValuedData);
+      $params[$contactNavId]['child'][$customFieldsNavId]['child'] = $finalMenu;
+    }
+  }
+}
+
