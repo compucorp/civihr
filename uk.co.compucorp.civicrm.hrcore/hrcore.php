@@ -509,7 +509,7 @@ function _hrcore_createHelpMenu(&$menu) {
 
   _hrcore_civix_insert_navigation_menu($menu, 'Help', [
     'name' => ts('User Guide'),
-    'url' => 'http://userguide.civihr.org/en/latest/',
+    'url' => 'http://userguide.civihr.org/',
     'target' => '_blank',
     'permission' => 'access CiviCRM'
   ]);

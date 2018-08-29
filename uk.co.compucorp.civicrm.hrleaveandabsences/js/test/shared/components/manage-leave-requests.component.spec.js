@@ -648,7 +648,7 @@ define([
 
             it('not filtered by type id', function () {
               expectLeaveRequestsFilteredBy(
-                { type_id: { IN: _.pluck(controller.absenceTypes, 'id') } });
+                { type_id: { IN: _.map(controller.absenceTypes, 'id') } });
             });
           });
         });

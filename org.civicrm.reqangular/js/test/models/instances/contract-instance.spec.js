@@ -19,7 +19,7 @@ define([
       }]));
 
     it('inherits from ModelInstance', function () {
-      expect(_.functions(ContractInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
+      expect(_.functionsIn(ContractInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
     });
   });
 });

@@ -38,7 +38,7 @@ define([
     });
 
     it('inherits from ModelInstance', function () {
-      expect(_.functions(ContactInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
+      expect(_.functionsIn(ContactInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
     });
 
     describe('checkIfSelfLeaveApprover()', function () {

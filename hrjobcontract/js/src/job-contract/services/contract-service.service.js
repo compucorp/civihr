@@ -166,8 +166,8 @@ define([
             'sequential': 1,
             'field': fieldName
           }).done(function (data) {
-            revisionOptions.obj = _.mapValues(_.indexBy(data.values, 'key'), 'value');
-            revisionOptions.arr = _.values(_.indexBy(data.values, 'key'));
+            revisionOptions.obj = _.mapValues(_.keyBy(data.values, 'key'), 'value');
+            revisionOptions.arr = _.values(_.keyBy(data.values, 'key'));
 
             deffered.resolve(revisionOptions);
           });
@@ -294,7 +294,7 @@ define([
             }, function (contract) {
               contract.leave = filterOutDisabledAbsenceTypes(contract.leave, absenceTypes);
 
-              adjustAddPublicHolidaysValue(contract, _.indexBy(absenceTypes, 'id'));
+              adjustAddPublicHolidaysValue(contract, _.keyBy(absenceTypes, 'id'));
               deferred.resolve(contract);
             }, function () {
               deferred.reject('Could not fetch full details for contract ID:' + contractId);

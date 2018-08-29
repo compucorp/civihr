@@ -763,7 +763,7 @@ define([
     function loadAnnualPayOptions (optionType, optionName) {
       return OptionGroup.valuesOf(optionType, false)
         .then(function (data) {
-          $rootScope.options.pay[optionName] = _.mapValues(_.indexBy(data, 'value'), 'label');
+          $rootScope.options.pay[optionName] = _.mapValues(_.keyBy(data, 'value'), 'label');
         });
     }
   }

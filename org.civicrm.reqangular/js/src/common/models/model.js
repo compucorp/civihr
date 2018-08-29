@@ -35,7 +35,7 @@ define([
         return null;
       }
 
-      return _.pick(filters, function (value) {
+      return _.pickBy(filters, function (value) {
         return value === 0 || value === false || !!value;
       });
     }

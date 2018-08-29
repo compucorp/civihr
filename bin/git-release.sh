@@ -9,7 +9,6 @@ hrim \
 hrmed \
 hrprofile \
 hrqual \
-hrrecruitment \
 hrreport \
 uk.co.compucorp.civicrm.hrsampledata \
 hrstaffdir \

@@ -176,7 +176,7 @@ define([
      * @param {Object} section - the section object that contains data to index.
      */
     function indexSectionData (section) {
-      section.dataIndex = _.indexBy(section.data, 'id');
+      section.dataIndex = _.keyBy(section.data, 'id');
     }
 
     /**
@@ -236,7 +236,7 @@ define([
         .then(AbsenceType.loadCalculationUnits)
         .then(function (absenceTypes) {
           vm.absenceTypes = absenceTypes;
-          vm.absenceTypesIndexed = _.indexBy(absenceTypes, 'id');
+          vm.absenceTypesIndexed = _.keyBy(absenceTypes, 'id');
         });
     }
 
@@ -467,7 +467,7 @@ define([
     function loadStatuses () {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
-          vm.leaveRequestStatuses = _.indexBy(statuses, 'value');
+          vm.leaveRequestStatuses = _.keyBy(statuses, 'value');
         });
     }
 

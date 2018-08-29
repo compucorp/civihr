@@ -1247,7 +1247,7 @@
           var collectionName = 'hrleaveandabsences_leave_request_status';
           var allStatuses = optionGroupMock.getCollection(collectionName);
 
-          status = _.indexBy(allStatuses, 'name');
+          status = _.keyBy(allStatuses, 'name');
           leaveRequest = LeaveRequestInstance.init();
           leaveRequest.status_id = null;
 

@@ -84,7 +84,7 @@ define([
 
         AbsenceType.all().then(function (absenceTypes) {
           expectedAbsenceTypes = absenceTypes.map(function (absenceType) {
-            return _.extend({
+            return _.assign({
               'calculation_unit_name': jasmine.any(String),
               'calculation_unit_label': jasmine.any(String)
             }, absenceType);
@@ -150,8 +150,8 @@ define([
             var absenceTypeIds, entitlementIds;
 
             beforeEach(function () {
-              absenceTypeIds = _.pluck(ctrl.absenceTypes, 'id');
-              entitlementIds = _.pluck(ctrl.changeLogRows[0].entitlements,
+              absenceTypeIds = _.map(ctrl.absenceTypes, 'id');
+              entitlementIds = _.map(ctrl.changeLogRows[0].entitlements,
                 'entitlement_id.type_id');
             });
 
@@ -164,8 +164,8 @@ define([
             var absenceTypeCalculationUnits, entitlementCalculationUnits;
 
             beforeEach(function () {
-              absenceTypeCalculationUnits = _.pluck(ctrl.absenceTypes, 'calculation_unit_name');
-              entitlementCalculationUnits = _.pluck(ctrl.changeLogRows[0].entitlements, 'calculation_unit');
+              absenceTypeCalculationUnits = _.map(ctrl.absenceTypes, 'calculation_unit_name');
+              entitlementCalculationUnits = _.map(ctrl.changeLogRows[0].entitlements, 'calculation_unit');
             });
 
             it('stores the calculation unit name for the entitlement', function () {
@@ -273,7 +273,7 @@ define([
           var originalRowsOrder, expectedRowsOrder;
 
           beforeEach(function () {
-            originalRowsOrder = _.pluck(ctrl.changeLogRows, 'date')
+            originalRowsOrder = _.map(ctrl.changeLogRows, 'date')
               .map(function (momentDate) {
                 return momentDate.toDate();
               });

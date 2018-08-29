@@ -151,7 +151,7 @@ define([
       return leaveBalance.map(function (contactLeaveBalance) {
         contactLeaveBalance = angular.copy(contactLeaveBalance);
 
-        contactLeaveBalance.absence_types = _.indexBy(
+        contactLeaveBalance.absence_types = _.keyBy(
           contactLeaveBalance.absence_types,
           function (absenceType) {
             return absenceType.id;

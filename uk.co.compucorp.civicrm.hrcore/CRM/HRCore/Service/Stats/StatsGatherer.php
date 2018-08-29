@@ -82,7 +82,6 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
     $entityCounts['cmsUser'] = $this->siteInformation->getActiveUserCount();
     $entityCounts += $this->getTaskAndAssignmentEntityCounts();
     $entityCounts += $this->getLeaveAndAbsenceEntityCounts();
-    $entityCounts += $this->getRecruitmentEntityCounts();
     $entityCounts += $this->getJobRoleEntityCounts();
     $entityCounts += $this->getCustomDataCounts();
     $entityCounts += $this->getCaseEntityCounts();
@@ -234,24 +233,6 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
     $counts['assignment'] = $this->getEntityCount('Assignment');
     $counts['task'] = $this->getEntityCount('Task');
     $counts['document'] = $this->getEntityCount('Document');
-
-    return $counts;
-  }
-
-  /**
-   * Fetches entity counts for the recruitment entities
-   *
-   * @return array
-   */
-  private function getRecruitmentEntityCounts() {
-    $recruitmentKey = 'org.civicrm.hrrecruitment';
-    $counts = [];
-
-    if (!ExtensionHelper::isExtensionEnabled($recruitmentKey)) {
-      return $counts;
-    }
-
-    $counts['vacancy'] = $this->getEntityCount('HRVacancy');
 
     return $counts;
   }
