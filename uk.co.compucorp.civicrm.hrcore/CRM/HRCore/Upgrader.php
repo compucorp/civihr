@@ -96,7 +96,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    * (xml files ending with _install.xml) and processes them.
    */
   private function processXMLInstallationFiles() {
-    foreach($this->xmlDirectories as $directory) {
+    foreach ($this->xmlDirectories as $directory) {
       $files = glob($this->extensionDir . "/xml/{$directory}/*_install.xml");
       if (is_array($files)) {
         foreach ($files as $file) {
