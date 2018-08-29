@@ -142,14 +142,14 @@ define([
      * @return {Promise}
      */
     function loadContactNames () {
-      var contactsIndex = _.indexBy(vm.request.comments, 'contact_id');
+      var contactsIndex = _.keyBy(vm.request.comments, 'contact_id');
       var contactIDs = Object.keys(contactsIndex);
 
       return Contact.all({
         id: { IN: contactIDs }
       }, { page: 1, size: 0 })
         .then(function (contacts) {
-          vm.comment.contacts = _.indexBy(contacts.list, 'contact_id');
+          vm.comment.contacts = _.keyBy(contacts.list, 'contact_id');
         });
     }
 

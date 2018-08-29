@@ -195,7 +195,7 @@ define([
         if (hasContactFilter) {
           filters.id = { 'IN': [vm.filters.userSettings.contact.id] };
         } else if (notRequestingAllContacts || hasLookUpContactsFilter) {
-          filters.id = { 'IN': _.pluck(vm.lookupContacts, 'id') };
+          filters.id = { 'IN': _.map(vm.lookupContacts, 'id') };
         }
 
         return filters;

@@ -95,7 +95,7 @@ define([
 
             var params = _.assign({}, filters, { 'return': 'id' });
             // Removing chained calls, they are not necessary for getting the count
-            params = _.omit(params, function (__, key) { return _.startsWith(key, 'api.'); });
+            params = _.omitBy(params, function (__, key) { return _.startsWith(key, 'api.'); });
 
             return this.sendGET(entity, action, params, cache);
           }.bind(this))()

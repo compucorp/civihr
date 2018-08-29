@@ -850,7 +850,7 @@ define([
     function loadStatuses () {
       return OptionGroup.valuesOf('hrleaveandabsences_leave_request_status')
         .then(function (statuses) {
-          vm.requestStatuses = _.indexBy(statuses, 'name');
+          vm.requestStatuses = _.keyBy(statuses, 'name');
         });
     }
 

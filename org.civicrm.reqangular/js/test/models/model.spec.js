@@ -36,7 +36,7 @@ define([
       });
 
       it('retains the same basic interface', function () {
-        expect(_.functions(NewModel)).toEqual(jasmine.arrayContaining(modelInterface));
+        expect(_.functionsIn(NewModel)).toEqual(jasmine.arrayContaining(modelInterface));
       });
 
       it('contains the new properties', function () {
