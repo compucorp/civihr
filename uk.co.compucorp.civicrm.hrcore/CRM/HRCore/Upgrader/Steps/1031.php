@@ -14,7 +14,6 @@ trait CRM_HRCore_Upgrader_Steps_1031 {
       'import_job_contracts',
     ]);
     $this->up1031_renameImportContactsMenu();
-    $this->up1031_createJobRolesMenu();
     $this->up1031_adjustImportMenuWeight();
     // If we don't flush it will not recognize newly created parent_id
     CRM_Core_PseudoConstant::flush();
@@ -88,31 +87,6 @@ trait CRM_HRCore_Upgrader_Steps_1031 {
   }
 
   /**
-   * Creates a new Import Job Roles Menu
-   */
-  private function up1031_createJobRolesMenu() {
-    $menu = civicrm_api3('Navigation', 'get', [
-      'name' => 'Import',
-    ]);
-    $menu = array_shift($menu['values']);
-    $menuExists = civicrm_api3('Navigation', 'get', [
-      'name' => 'import_job_roles',
-    ]);
-    if ($menuExists['count'] === 0) {
-      civicrm_api3('Navigation', 'create', [
-        'label' => 'Import Job Roles',
-        'name' => 'import_job_roles',
-        'parent_id' => $menu['id'],
-        'domain_id' => $menu['domain_id'],
-        'permission' => $menu['permission'],
-        'url' => 'civicrm/jobroles/import',
-        'is_active' => 1,
-      ]);
-      CRM_Core_PseudoConstant::flush();
-    }
-  }
-
-  /**
    * Adjust the Import heading to be below Leave.
    */
   private function up1031_adjustImportMenuWeight() {
@@ -125,4 +99,5 @@ trait CRM_HRCore_Upgrader_Steps_1031 {
       ],
     ]);
   }
+
 }

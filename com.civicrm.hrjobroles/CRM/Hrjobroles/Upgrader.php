@@ -113,6 +113,35 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     
     return TRUE;
   }
+
+  /**
+   * Creates a new Import Job Roles Menu
+   *
+   * @return bool
+   */
+  public function upgrade_1007() {
+    $menu = civicrm_api3('Navigation', 'get', [
+      'name' => 'Import',
+    ]);
+    $menu = array_shift($menu['values']);
+    $menuExists = civicrm_api3('Navigation', 'get', [
+      'name' => 'import_job_roles',
+    ]);
+    if ($menuExists['count'] === 0) {
+      civicrm_api3('Navigation', 'create', [
+        'label' => 'Import Job Roles',
+        'name' => 'import_job_roles',
+        'parent_id' => $menu['id'],
+        'domain_id' => $menu['domain_id'],
+        'permission' => $menu['permission'],
+        'url' => 'civicrm/jobroles/import',
+        'is_active' => 1,
+      ]);
+      CRM_Core_PseudoConstant::flush();
+    }
+
+    return TRUE;
+  }
   
   /**
    * Deletes cost centre option value with name "other"
