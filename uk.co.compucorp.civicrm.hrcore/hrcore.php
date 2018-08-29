@@ -359,6 +359,7 @@ function hrcore_civicrm_navigationMenu(&$params) {
 function hrcore_civicrm_alterMenu(&$items) {
   $items['civicrm/api']['access_arguments'] = [['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
   $items['civicrm/styleguide']['access_arguments'] = [['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
+  $items['civicrm/import/contact']['title'] = 'Import Staff';
 }
 
 /**
@@ -509,7 +510,7 @@ function _hrcore_createHelpMenu(&$menu) {
 
   _hrcore_civix_insert_navigation_menu($menu, 'Help', [
     'name' => ts('User Guide'),
-    'url' => 'http://userguide.civihr.org/en/latest/',
+    'url' => 'http://userguide.civihr.org/',
     'target' => '_blank',
     'permission' => 'access CiviCRM'
   ]);

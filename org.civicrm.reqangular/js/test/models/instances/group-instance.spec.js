@@ -17,7 +17,7 @@ define([
     }));
 
     it('inherits from ModelInstance', function () {
-      expect(_.functions(GroupInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
+      expect(_.functionsIn(GroupInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
     });
 
     describe('init()', function () {

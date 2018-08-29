@@ -84,7 +84,7 @@ define([
           beforeEach(function () {
             Entitlement.all({ contact_id: contactId, period_id: absencePeriod.id }, true)
               .then(function (entitlements) {
-                var indexedEntitlements = _.indexBy(entitlements, 'type_id');
+                var indexedEntitlements = _.keyBy(entitlements, 'type_id');
 
                 expectedEntitlements = absenceTypes
                   .map(function (absenceType) {

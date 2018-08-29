@@ -86,7 +86,7 @@ define([
       $scope = $rootScope.$new();
       $scope.entity = _.assign({
         hour: {}
-      }, _.clone(entityData, true));
+      }, _.cloneDeep(entityData));
       $scope.utils = {
         hoursLocation: [
           {

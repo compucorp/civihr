@@ -114,7 +114,7 @@ define([
     function loadJobContractRevisionChangeReasons () {
       return OptionGroup.valuesOf('hrleaveandabsences_work_pattern_change_reason')
         .then(function (reasons) {
-          changeReasons = _.indexBy(reasons, 'value');
+          changeReasons = _.keyBy(reasons, 'value');
         });
     }
 

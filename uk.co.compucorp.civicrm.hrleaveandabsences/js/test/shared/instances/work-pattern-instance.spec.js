@@ -20,7 +20,7 @@ define([
     ]));
 
     it('inherits from ModelInstance', function () {
-      expect(_.functions(WorkPatternInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
+      expect(_.functionsIn(WorkPatternInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
     });
   });
 });
