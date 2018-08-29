@@ -425,12 +425,6 @@ def listCivihrExtensions() {
       hasJSTests: true,
       hasPHPTests: true
     ],
-    hrrecruitment: [
-      name: 'Recruitment',
-      folder: 'hrrecruitment',
-      hasJSTests: false,
-      hasPHPTests: true
-    ],
     hrreport: [
       name: 'Reports',
       folder: 'hrreport',
