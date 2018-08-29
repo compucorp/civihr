@@ -82,7 +82,6 @@ class CRM_HRCore_Service_Stats_StatsGatherer {
     $entityCounts['cmsUser'] = $this->siteInformation->getActiveUserCount();
     $entityCounts += $this->getTaskAndAssignmentEntityCounts();
     $entityCounts += $this->getLeaveAndAbsenceEntityCounts();
-    $entityCounts += $this->getRecruitmentEntityCounts();
     $entityCounts += $this->getJobRoleEntityCounts();
     $entityCounts += $this->getCustomDataCounts();
     $entityCounts += $this->getCaseEntityCounts();
