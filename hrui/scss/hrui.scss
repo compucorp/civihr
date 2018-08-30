@@ -40,3 +40,14 @@
 .crm-relationship-form-block-is_permission_b_a {
   display: none;
 }
+
+/*This hides some fields on the Import Page*/
+/* stylelint-disable selector-max-id */
+#crm-import-datasource-form-block-dataSource,
+.crm-import-datasource-form-block-contactType,
+.crm-import-datasource-form-block-dedupe,
+.crm-import-datasource-form-block-fieldSeparator,
+.crm-custom-import-uploadfile-from-block-contactType {
+  display: none;
+}
+/* stylelint-enable selector-max-id */
