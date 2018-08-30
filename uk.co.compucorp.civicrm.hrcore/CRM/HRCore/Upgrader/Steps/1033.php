@@ -28,7 +28,7 @@ trait CRM_HRCore_Upgrader_Steps_1033 {
   private function up1033_updateMessageTemplatePermissions($permissions) {
     civicrm_api3('Navigation', 'get', [
       'parent_id' => 'Communications',
-      'url' => 'civicrm/admin/messageTemplates?reset=1',
+      'name' => 'Message Templates',
       'api.Navigation.create' => [
         'id' => '$value.id',
         'permission' => implode(',', $permissions),
