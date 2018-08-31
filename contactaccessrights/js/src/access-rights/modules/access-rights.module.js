@@ -2,7 +2,6 @@
 
 define([
   'common/angular',
-  'access-rights/modules/access-rights.apis',
   'access-rights/modules/access-rights.config',
   'access-rights/modules/access-rights.controllers',
   'access-rights/modules/access-rights.core',
@@ -15,7 +14,6 @@ define([
     'access-rights.core',
     'access-rights.config',
     'access-rights.run',
-    'access-rights.apis',
     'access-rights.controllers',
     'access-rights.models'
   ]);
