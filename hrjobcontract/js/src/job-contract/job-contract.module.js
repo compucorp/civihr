@@ -40,7 +40,6 @@ define([
   'job-contract/services/contract-revision.service',
   'job-contract/services/contract-service.service',
   'job-contract/services/utils.service',
-  'common/services/notification.service',
   'job-contract/job-contract.config',
   'job-contract/job-contract.constants',
   'job-contract/job-contract.core',
@@ -57,7 +56,6 @@ define([
   'use strict';
 
   angular.module('job-contract', [
-    'common.services',
     'job-contract.core',
     'job-contract.config',
     'job-contract.run',
