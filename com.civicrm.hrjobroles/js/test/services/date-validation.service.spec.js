@@ -4,7 +4,7 @@ define([
   'common/angular',
   'mocks/data/job-role.data',
   'common/angularMocks',
-  'job-roles/modules/job-roles.module'
+  'job-roles/job-roles.module'
 ], function (angular, Mock) {
   'use strict';
 
@@ -51,7 +51,7 @@ define([
     });
 
     it('Check if Format is valid', function () {
-            /* Should pass */
+      /* Should pass */
       expect(function () {
         dateValidation.validate('12/11/2009', '10/01/2013');
       }).not.toThrow();
@@ -102,19 +102,19 @@ define([
     });
 
     it('Start date cannot be higher', function () {
-            /* Should pass */
+      /* Should pass */
       expect(function () {
         dateValidation.validate('12/11/2003', '10/01/2009');
       }).not.toThrow();
 
-            /*  Should NOT pass. Start date cannot be higher */
+      /*  Should NOT pass. Start date cannot be higher */
       expect(function () {
         dateValidation.validate('12/11/2009', '10/01/2003');
       }).toThrow();
     });
 
     it('Start date cannot be higher - recursive check', function () {
-            /* Should pass */
+      /* Should pass */
       expect(function () {
         dateValidation.validate('12/11/2003', '13/11/2003');
       }).not.toThrow();
@@ -139,7 +139,7 @@ define([
         dateValidation.validate('02/11/2013');
       }).not.toThrow();
 
-            /* Cannot run validate while no dates are entered */
+      /* Cannot run validate while no dates are entered */
       expect(function () {
         dateValidation.validate('', '02/11/2017');
       }).toThrow();
@@ -162,12 +162,12 @@ define([
     });
 
     it('Invalid values', function () {
-            /* valid date */
+      /* valid date */
       expect(function () {
         dateValidation.validate('20/03/2013', 'ttestowystrring');
       }).toThrow();
 
-            /* invalid dates */
+      /* invalid dates */
       expect(function () {
         dateValidation.validate('testteest', '02/11/2017');
       }).toThrow();

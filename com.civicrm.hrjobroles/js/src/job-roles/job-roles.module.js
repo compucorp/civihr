@@ -8,10 +8,10 @@ define([
   'job-roles/services/date-validation.service',
   'job-roles/services/filters.service',
   'job-roles/services/job-role.service',
-  'job-roles/modules/job-roles.config',
-  'job-roles/modules/job-roles.constants',
-  'job-roles/modules/job-roles.core',
-  'job-roles/modules/job-roles.run'
+  'job-roles/job-roles.config',
+  'job-roles/job-roles.constants',
+  'job-roles/job-roles.core',
+  'job-roles/job-roles.run'
 ], function (angular, JobRolesController, ModalDialogController, getActiveValues,
   dateValidation, filtersService, jobRoleService) {
   'use strict';

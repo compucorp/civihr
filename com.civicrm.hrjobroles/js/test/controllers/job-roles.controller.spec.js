@@ -7,7 +7,7 @@ define([
   'mocks/data/job-role.data',
   'common/angularMocks',
   'common/services/pub-sub',
-  'job-roles/modules/job-roles.module'
+  'job-roles/job-roles.module'
 ], function (angular, _, moment, JobRoleDataMock) {
   'use strict';
 
