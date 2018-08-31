@@ -5,13 +5,13 @@ define([
   'common/lodash',
   'common/angularMocks',
   'mocks/services.mock',
-  'contact-summary/modules/contact-summary.module'
+  'contact-summary/contact-summary.module'
 ], function (angular, _) {
   'use strict';
 
   describe('contractService', function () {
     var apiServiceMock, contactDetailsServiceMock, contractService,
-       modelServiceMock, $rootScope;
+      modelServiceMock, $rootScope;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks',
       'contact-summary.templates'));

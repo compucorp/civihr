@@ -14,10 +14,10 @@ define([
   'contact-summary/services/job-role.service',
   'contact-summary/services/leave.service',
   'contact-summary/services/model.service',
-  'contact-summary/modules/contact-summary.config',
-  'contact-summary/modules/contact-summary.constants',
-  'contact-summary/modules/contact-summary.core',
-  'contact-summary/modules/contact-summary.run'
+  'contact-summary/contact-summary.config',
+  'contact-summary/contact-summary.constants',
+  'contact-summary/contact-summary.core',
+  'contact-summary/contact-summary.run'
 ], function (angular, ContactSummaryController, KeyDatesController, KeyDetailsController,
   csDonutChart, apiService, contactDetailsService, contactService, contractService,
   itemService, jobRoleService, leaveService, modelService) {

@@ -6,7 +6,7 @@ define([
   'mocks/constants.mock',
   'mocks/services.mock',
   'common/services/pub-sub',
-  'contact-summary/modules/contact-summary.module'
+  'contact-summary/contact-summary.module'
 ], function (moment) {
   'use strict';
 
