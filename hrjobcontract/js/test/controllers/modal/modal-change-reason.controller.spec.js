@@ -1,10 +1,11 @@
 /* eslint-env amd, jasmine */
 
 define([
+  'common/angular',
   'common/moment',
   'common/angularMocks',
   'job-contract/modules/job-contract.module'
-], function (moment) {
+], function (angular, moment) {
   'use strict';
 
   describe('ModalChangeReasonController', function () {
@@ -13,8 +14,13 @@ define([
       ContractRevisionServiceMock, ContractRevisionServiceSpy, popupFormUrl;
 
     beforeEach(function () {
-      module('job-contract.core');
-      module('job-contract.controllers');
+      // Need to skip the whole job-contract.run module
+      // `contractService`, while mocked in this test suite, is also expected
+      // to be used in the run() method, which leads to errors. Skipping the module
+      // solves the issue
+      angular.module('job-contract.run', []);
+
+      module('job-contract');
       module(function ($provide) {
         $provide.value('contractRevisionService', ContractRevisionServiceMock);
         $provide.value('contractService', ContractServiceMock);
