@@ -2,7 +2,8 @@
 
 define([
   'common/angular',
-  'common/services/pub-sub'
+  'common/services/pub-sub',
+  'leave-absences/shared/components/leave-widget/leave-widget.component'
 ], function (angular) {
   'use strict';
 
@@ -10,6 +11,7 @@ define([
     'ngRoute',
     'ngResource',
     'ui.bootstrap',
-    'common.services'
+    'common.services',
+    'leave-absences.components.leave-widget'
   ]);
 });

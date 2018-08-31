@@ -17,8 +17,7 @@ define([
   'contact-summary/modules/contact-summary.config',
   'contact-summary/modules/contact-summary.constants',
   'contact-summary/modules/contact-summary.core',
-  'contact-summary/modules/contact-summary.run',
-  'leave-absences/shared/components/leave-widget/leave-widget.component'
+  'contact-summary/modules/contact-summary.run'
 ], function (angular, ContactSummaryController, KeyDatesController, KeyDetailsController,
   csDonutChart, apiService, contactDetailsService, contactService, contractService,
   itemService, jobRoleService, leaveService, modelService) {
@@ -26,8 +25,7 @@ define([
     'contactsummary.core',
     'contactsummary.config',
     'contactsummary.run',
-    'contactsummary.constants',
-    'leave-absences.components.leave-widget'
+    'contactsummary.constants'
   ])
     .controller(ContactSummaryController)
     .controller(KeyDatesController)
