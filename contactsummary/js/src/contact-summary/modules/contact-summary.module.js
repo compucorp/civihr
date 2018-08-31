@@ -2,23 +2,43 @@
 
 define([
   'common/angular',
+  'contact-summary/controllers/contact-summary.controller',
+  'contact-summary/controllers/key-dates.controller',
+  'contact-summary/controllers/key-details.controller',
+  'contact-summary/directives/donut-chart.directive',
+  'contact-summary/services/api.service',
+  'contact-summary/services/contact-details.service',
+  'contact-summary/services/contact.service',
+  'contact-summary/services/contract.service',
+  'contact-summary/services/item.service',
+  'contact-summary/services/job-role.service',
+  'contact-summary/services/leave.service',
+  'contact-summary/services/model.service',
   'contact-summary/modules/contact-summary.config',
   'contact-summary/modules/contact-summary.constants',
-  'contact-summary/modules/contact-summary.controllers',
   'contact-summary/modules/contact-summary.core',
-  'contact-summary/modules/contact-summary.directives',
   'contact-summary/modules/contact-summary.run',
-  'contact-summary/modules/contact-summary.services',
   'leave-absences/shared/components/leave-widget/leave-widget.component'
-], function (angular) {
+], function (angular, ContactSummaryController, KeyDatesController, KeyDetailsController,
+  csDonutChart, apiService, contactDetailsService, contactService, contractService,
+  itemService, jobRoleService, leaveService, modelService) {
   angular.module('contactsummary', [
     'contactsummary.core',
     'contactsummary.config',
     'contactsummary.run',
     'contactsummary.constants',
-    'contactsummary.controllers',
-    'contactsummary.directives',
-    'contactsummary.services',
     'leave-absences.components.leave-widget'
-  ]);
+  ])
+    .controller(ContactSummaryController)
+    .controller(KeyDatesController)
+    .controller(KeyDetailsController)
+    .directive(csDonutChart)
+    .factory(apiService)
+    .factory(contactDetailsService)
+    .factory(contactService)
+    .factory(contractService)
+    .factory(itemService)
+    .factory(jobRoleService)
+    .factory(leaveService)
+    .factory(modelService);
 });

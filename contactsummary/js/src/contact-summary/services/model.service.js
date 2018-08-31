@@ -1,9 +1,8 @@
 /* eslint-env amd */
 
 define([
-  'common/lodash',
-  'contact-summary/modules/contact-summary.services'
-], function (_, services) {
+  'common/lodash'
+], function (_) {
   'use strict';
 
   modelService.$inject = ['itemService'];
