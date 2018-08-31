@@ -39,6 +39,8 @@ trait CRM_HRCore_Upgrader_Steps_1034 {
         'is_active' => TRUE,
       ]);
     }
+
+    return TRUE;
   }
 
 }
