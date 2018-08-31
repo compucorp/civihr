@@ -3,7 +3,7 @@
 define([
   'common/angular',
   'mocks/data/contract.data',
-  'job-contract/modules/job-contract.module'
+  'job-contract/job-contract.module'
 ], function (angular, MockContract) {
   'use strict';
 

@@ -4,7 +4,7 @@ define([
   'leave-absences/mocks/data/absence-period.data',
   'common/angular',
   'common/angularMocks',
-  'job-contract/modules/job-contract.module',
+  'job-contract/job-contract.module',
   'leave-absences/shared/apis/absence-period.api',
   'leave-absences/shared/models/absence-period.model'
 ], function (absencePeriodData) {

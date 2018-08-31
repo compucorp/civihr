@@ -41,10 +41,10 @@ define([
   'job-contract/services/contract-service.service',
   'job-contract/services/utils.service',
   'common/services/notification.service',
-  'job-contract/modules/job-contract.config',
-  'job-contract/modules/job-contract.constants',
-  'job-contract/modules/job-contract.core',
-  'job-contract/modules/job-contract.run'
+  'job-contract/job-contract.config',
+  'job-contract/job-contract.constants',
+  'job-contract/job-contract.core',
+  'job-contract/job-contract.run'
 ], function (angular, ContractController, ContractListController, RevisionListController,
   FormGeneralController, FormHealthController, FormHourController, FormLeaveController,
   FormPayController, FormPensionController, ModalChangeReasonController, ModalContractNewController,

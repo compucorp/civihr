@@ -30,13 +30,13 @@ define([
       health: contractHealthService.getOptions(),
       pension: contractPensionService.getOptions()
     })
-    .then(function (results) {
-      results.pay.pay_is_auto_est = ['No', 'Yes'];
-      results.pension.is_enrolled = ['No', 'Yes', 'Opted out'];
+      .then(function (results) {
+        results.pay.pay_is_auto_est = ['No', 'Yes'];
+        results.pension.is_enrolled = ['No', 'Yes', 'Opted out'];
 
-      $log.debug('OPTIONS:');
-      $log.debug(results);
-      $rootScope.options = results;
-    });
+        $log.debug('OPTIONS:');
+        $log.debug(results);
+        $rootScope.options = results;
+      });
   }
 });

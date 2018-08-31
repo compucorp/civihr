@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'mocks/data/insurance-plan-types.data',
-  'job-contract/modules/job-contract.module'
+  'job-contract/job-contract.module'
 ], function (_, InsurancePlanTypesMock) {
   'use strict';
 
