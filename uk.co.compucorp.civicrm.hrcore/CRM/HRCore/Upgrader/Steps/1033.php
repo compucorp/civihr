@@ -52,4 +52,5 @@ trait CRM_HRCore_Upgrader_Steps_1033 {
       ],
     ]);
   }
+
 }
