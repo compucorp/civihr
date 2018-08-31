@@ -3,38 +3,52 @@
 trait CRM_HRCore_Upgrader_Steps_1023 {
 
   /**
-   * This task adds the default assignee option values that can be selected when
-   * creating or editing a new workflow's activity.
+   * Deletes some demographics fields where they are not in use
    *
    * @return bool
    */
   public function upgrade_1023() {
-    // Add option group for activity default assignees:
-    CRM_Core_BAO_OptionGroup::ensureOptionGroupExists([
-      'name' => 'activity_default_assignee',
-      'title' => ts('Activity default assignee'),
-      'is_reserved' => 1,
+
+    $this->up1023_deleteExtendDemographicFields([
+      'Ethnicity',
+      'Religion',
+      'Sexual_Orientation',
     ]);
 
-    // Add option values for activity default assignees:
-    $options = [
-      ['name' => 'NONE', 'label' => ts('None'), 'is_default' => 1],
-      ['name' => 'BY_RELATIONSHIP', 'label' => ts('By relationship to case client')],
-      ['name' => 'SPECIFIC_CONTACT', 'label' => ts('Specific contact')],
-      ['name' => 'USER_CREATING_THE_CASE', 'label' => ts('User creating the case')],
-    ];
+    return TRUE;
+  }
 
-    foreach ($options as $option) {
-      CRM_Core_BAO_OptionValue::ensureOptionValueExists([
-        'option_group_id' => 'activity_default_assignee',
-        'name' => $option['name'],
-        'label' => $option['label'],
-        'is_default' => CRM_Utils_Array::value('is_default', $option, 0),
-        'is_active' => TRUE,
+  /**
+   * Deletes Custom Demographic Fields only if they are not used
+   *
+   * @param array $fieldsToDelete
+   */
+  private function up1023_deleteExtendDemographicFields($fieldsToDelete) {
+    $customGroup = civicrm_api3('CustomGroup', 'get', [
+      'name' => 'Extended_Demographics',
+    ]);
+    $customGroup = array_shift($customGroup['values']);
+    $customFields = civicrm_api3('CustomField', 'get', [
+      'name' => ['IN' => $fieldsToDelete],
+    ]);
+    $tableName = $customGroup['table_name'];
+    foreach ($customFields['values'] as $customField) {
+      $column = $customField['column_name'];
+      $queryFormat = 'SELECT COUNT(id) FROM %s'
+        . ' WHERE %s NOT LIKE "%%Not Applicable%%"'
+        . ' AND %s IS NOT NULL'
+        . ' AND %s <> ""';
+
+      $query = sprintf($queryFormat, $tableName, $column, $column, $column);
+      $customFieldItems = CRM_Core_DAO::singleValueQuery($query);
+      if ($customFieldItems > 0) {
+        continue;
+      }
+
+      civicrm_api3('CustomField', 'delete', [
+        'id' => $customField['id'],
       ]);
     }
-
-    return TRUE;
   }
 
 }
