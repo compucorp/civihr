@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  parseInteger.__name = 'parseInteger';
   parseInteger.$inject = ['$log'];
 
   function parseInteger ($log) {
@@ -14,5 +13,5 @@ define(function () {
     };
   }
 
-  return parseInteger;
+  return { parseInteger: parseInteger };
 });

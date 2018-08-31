@@ -6,7 +6,6 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  RevisionListController.__name = 'RevisionListController';
   RevisionListController.$inject = [
     '$filter', '$log', '$q', '$rootElement', '$rootScope', '$scope', '$uibModal',
     'settings', 'contractService', 'contractDetailsService', 'contractHourService',
@@ -267,5 +266,5 @@ define([
     }
   }
 
-  return RevisionListController;
+  return { RevisionListController: RevisionListController };
 });

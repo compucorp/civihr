@@ -5,7 +5,6 @@ define([
 ], function (moment) {
   'use strict';
 
-  ModalChangeReasonController.__name = 'ModalChangeReasonController';
   ModalChangeReasonController.$inject = [
     '$log', '$scope', '$uibModalInstance', 'crmAngService', 'content', 'date', 'reasonId',
     'settings', 'contractRevisionService', 'contractService'
@@ -84,5 +83,5 @@ define([
     }
   }
 
-  return ModalChangeReasonController;
+  return { ModalChangeReasonController: ModalChangeReasonController };
 });

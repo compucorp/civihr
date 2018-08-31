@@ -6,7 +6,6 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  contractDetailsService.__name = 'contractDetailsService';
   contractDetailsService.$inject = ['$filter', '$resource', 'settings', '$q', 'utilsService', '$log'];
 
   function contractDetailsService ($filter, $resource, settings, $q, utilsService, $log) {
@@ -230,5 +229,5 @@ define([
     }
   }
 
-  return contractDetailsService;
+  return { contractDetailsService: contractDetailsService };
 });

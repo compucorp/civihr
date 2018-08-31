@@ -6,7 +6,6 @@ define([
 ], function (_, moment) {
   'use strict';
 
-  ContractController.__name = 'ContractController';
   ContractController.$inject = [
     '$filter', '$log', '$q', '$rootElement', '$route', '$scope', '$window', '$uibModal',
     'settings', 'apiService', 'contractService', 'contractDetailsService', 'contractHourService',
@@ -439,5 +438,5 @@ define([
     }
   }
 
-  return ContractController;
+  return { ContractController: ContractController };
 });

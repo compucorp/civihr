@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  hrjcNumber.__name = 'hrjcNumber';
   hrjcNumber.$inject = ['$log'];
 
   function hrjcNumber ($log) {
@@ -41,5 +40,5 @@ define(function () {
     };
   }
 
-  return hrjcNumber;
+  return { hrjcNumber: hrjcNumber };
 });

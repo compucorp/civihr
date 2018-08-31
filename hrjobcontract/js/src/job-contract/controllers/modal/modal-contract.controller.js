@@ -7,7 +7,6 @@ define([
 ], function (angular, _, moment) {
   'use strict';
 
-  ModalContractController.__name = 'ModalContractController';
   ModalContractController.$inject = [
     '$scope', '$uibModal', '$uibModalInstance', '$q', '$rootElement', '$rootScope',
     '$filter', 'crmAngService', 'contractService', 'contractRevisionService', 'contractDetailsService',
@@ -768,5 +767,5 @@ define([
     }
   }
 
-  return ModalContractController;
+  return { ModalContractController: ModalContractController };
 });

@@ -10,8 +10,8 @@ define([
   'use strict';
 
   return angular.module('job-contract.directives', [])
-    .directive(hrjcContact.__name, hrjcContact)
-    .directive(hrjcLoader.__name, hrjcLoader)
-    .directive(hrjcNumber.__name, hrjcNumber)
-    .directive(hrjcValidate.__name, hrjcValidate);
+    .directive(hrjcContact)
+    .directive(hrjcLoader)
+    .directive(hrjcNumber)
+    .directive(hrjcValidate);
 });

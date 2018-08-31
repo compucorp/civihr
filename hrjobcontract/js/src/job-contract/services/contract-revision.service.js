@@ -5,7 +5,6 @@ define([
 ], function (_) {
   'use strict';
 
-  contractRevisionService.__name = 'contractRevisionService';
   contractRevisionService.$inject = [
     '$filter', '$resource', 'settings', '$q', 'utilsService', '$log'
   ];
@@ -37,9 +36,9 @@ define([
           action: 'validateeffectivedate',
           json: params
         }, null)
-        .$promise.then(function (result) {
-          return result.values;
-        });
+          .$promise.then(function (result) {
+            return result.values;
+          });
       }
     });
 
@@ -56,5 +55,5 @@ define([
     }
   }
 
-  return contractRevisionService;
+  return { contractRevisionService: contractRevisionService };
 });

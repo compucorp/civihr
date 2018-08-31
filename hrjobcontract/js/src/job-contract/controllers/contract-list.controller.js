@@ -6,7 +6,6 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  ContractListController.__name = 'ContractListController';
   ContractListController.$inject = [
     '$filter', '$log', '$q', '$rootElement', '$rootScope', '$sce', '$scope', '$window',
     '$uibModal', 'contractList', 'contractService', 'contractDetailsService',
@@ -218,5 +217,5 @@ define([
     }
   }
 
-  return ContractListController;
+  return { ContractListController: ContractListController };
 });

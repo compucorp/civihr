@@ -5,7 +5,6 @@ define([
 ], function (angular) {
   'use strict';
 
-  hrjcValidate.__name = 'hrjcValidate';
   hrjcValidate.$inject = ['$log'];
 
   function hrjcValidate ($log) {
@@ -73,5 +72,5 @@ define([
     };
   }
 
-  return hrjcValidate;
+  return { hrjcValidate: hrjcValidate };
 });

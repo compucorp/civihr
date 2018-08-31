@@ -23,18 +23,18 @@ define([
   'use strict';
 
   return angular.module('job-contract.services', [])
-    .factory(apiService.__name, apiService)
-    .factory(contactService.__name, contactService)
-    .factory(contract.__name, contract)
-    .factory(contractDetailsService.__name, contractDetailsService)
-    .factory(contractFilesService.__name, contractFilesService)
-    .factory(contractHealthService.__name, contractHealthService)
-    .factory(contractHourService.__name, contractHourService)
-    .factory(contractLeaveService.__name, contractLeaveService)
-    .factory(contractPayService.__name, contractPayService)
-    .factory(contractPensionService.__name, contractPensionService)
-    .factory(contractRevisionListService.__name, contractRevisionListService)
-    .factory(contractRevisionService.__name, contractRevisionService)
-    .factory(contractService.__name, contractService)
-    .factory(utilsService.__name, utilsService);
+    .factory(apiService)
+    .factory(contactService)
+    .factory(contract)
+    .factory(contractDetailsService)
+    .factory(contractFilesService)
+    .factory(contractHealthService)
+    .factory(contractHourService)
+    .factory(contractLeaveService)
+    .factory(contractPayService)
+    .factory(contractPensionService)
+    .factory(contractRevisionListService)
+    .factory(contractRevisionService)
+    .factory(contractService)
+    .factory(utilsService);
 });

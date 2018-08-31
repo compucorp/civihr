@@ -7,7 +7,6 @@ define([
 ], function (angular, _, moment) {
   'use strict';
 
-  ModalContractNewController.__name = 'ModalContractNewController';
   ModalContractNewController.$inject = [
     '$log', '$q', '$rootElement', '$rootScope', '$sce', '$scope', '$uibModalInstance',
     '$uibModal', 'crmAngService', 'Contract', 'contractService', 'contractDetailsService',
@@ -384,5 +383,5 @@ define([
     }
   }
 
-  return ModalContractNewController;
+  return { ModalContractNewController: ModalContractNewController };
 });

@@ -5,7 +5,6 @@ define([
 ], function (angular) {
   'use strict';
 
-  ModalRevisionController.__name = 'ModalRevisionController';
   ModalRevisionController.$inject = [
     '$filter', '$log', '$q', '$rootScope', '$scope', '$uibModalInstance', 'settings',
     'revisionDataList', 'revisionList', 'entity', 'fields', 'model', 'modalContract',
@@ -306,5 +305,5 @@ define([
     }
   }
 
-  return ModalRevisionController;
+  return { ModalRevisionController: ModalRevisionController };
 });

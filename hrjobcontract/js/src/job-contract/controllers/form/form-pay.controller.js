@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  FormPayController.__name = 'FormPayController';
   FormPayController.$inject = ['$filter', '$log', '$scope', 'settings'];
 
   function FormPayController ($filter, $log, $scope, settings) {
@@ -197,5 +196,5 @@ define(function () {
     }
   }
 
-  return FormPayController;
+  return { FormPayController: FormPayController };
 });

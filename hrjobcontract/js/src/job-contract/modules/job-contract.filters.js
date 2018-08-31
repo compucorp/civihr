@@ -11,9 +11,9 @@ define([
   'use strict';
 
   return angular.module('job-contract.filters', [])
-    .filter(capitalize.__name, capitalize)
-    .filter(formatAmount.__name, formatAmount)
-    .filter(formatPeriod.__name, formatPeriod)
-    .filter(getObjById.__name, getObjById)
-    .filter(parseInteger.__name, parseInteger);
+    .filter(capitalize)
+    .filter(formatAmount)
+    .filter(formatPeriod)
+    .filter(getObjById)
+    .filter(parseInteger);
 });
