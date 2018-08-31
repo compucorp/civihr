@@ -8,6 +8,6 @@ define([
   'use strict';
 
   return angular.module('access-rights.controllers', [])
-    .controller(AccessRightsController.__name, AccessRightsController)
-    .controller(AccessRightsModalController.__name, AccessRightsModalController);
+    .controller(AccessRightsController)
+    .controller(AccessRightsModalController);
 });

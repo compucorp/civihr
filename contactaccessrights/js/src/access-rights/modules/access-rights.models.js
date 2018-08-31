@@ -14,7 +14,7 @@ define([
     'common.models',
     'access-rights.apis'
   ])
-  .factory(Location.__name, Location)
-  .factory(Region.__name, Region)
-  .factory(Right.__name, Right);
+    .factory(Location)
+    .factory(Region)
+    .factory(Right);
 });

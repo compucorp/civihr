@@ -8,5 +8,5 @@ define([
   'use strict';
 
   return angular.module('access-rights.apis', ['common.apis'])
-    .factory(RightsAPI.__name, RightsAPI);
+    .factory(RightsAPI);
 });

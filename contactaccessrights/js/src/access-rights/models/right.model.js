@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  Right.__name = 'Right';
   Right.$inject = ['Model', 'RightsAPI'];
 
   function Right (Model, RightsAPI) {
@@ -16,5 +15,5 @@ define(function () {
     });
   }
 
-  return Right;
+  return { Right: Right };
 });

@@ -5,7 +5,6 @@ define([
 ], function () {
   'use strict';
 
-  Location.__name = 'Location';
   Location.$inject = ['Model', 'api.optionGroup'];
 
   function Location (Model, OptionGroup) {
@@ -16,5 +15,5 @@ define([
     });
   }
 
-  return Location;
+  return { Location: Location };
 });

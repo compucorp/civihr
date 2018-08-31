@@ -5,7 +5,6 @@ define([
 ], function (_) {
   'use strict';
 
-  AccessRightsModalController.__name = 'AccessRightsModalController';
   AccessRightsModalController.$inject = ['$q', '$uibModalInstance', 'Region', 'Location', 'Right'];
 
   function AccessRightsModalController ($q, $modalInstance, Region, Location, Right) {
@@ -35,35 +34,35 @@ define([
         Region.getAll(),
         Location.getAll()
       ])
-      .then(function (values) {
-        return {
-          regions: values[0],
-          locations: values[1]
-        };
-      })
-      .then(function (values) {
-        return $q.all(_.map(values, function (value, key) {
-          vm.availableData[key] = value;
-          return Right['get' + _.capitalize(key)]();
-        }));
-      })
-      .then(function (values) {
-        return {
-          regions: values[0],
-          locations: values[1]
-        };
-      })
-      .then(function (values) {
-        Object.keys(values).forEach(function (key) {
-          vm.originalData[key] = values[key].values;
-          vm.selectedData[key] = values[key].values.map(function (entity) {
-            return entity.entity_id;
+        .then(function (values) {
+          return {
+            regions: values[0],
+            locations: values[1]
+          };
+        })
+        .then(function (values) {
+          return $q.all(_.map(values, function (value, key) {
+            vm.availableData[key] = value;
+            return Right['get' + _.capitalize(key)]();
+          }));
+        })
+        .then(function (values) {
+          return {
+            regions: values[0],
+            locations: values[1]
+          };
+        })
+        .then(function (values) {
+          Object.keys(values).forEach(function (key) {
+            vm.originalData[key] = values[key].values;
+            vm.selectedData[key] = values[key].values.map(function (entity) {
+              return entity.entity_id;
+            });
           });
+        })
+        .then(function () {
+          vm.dataLoaded = true;
         });
-      })
-      .then(function () {
-        vm.dataLoaded = true;
-      });
     }());
 
     /**
@@ -125,5 +124,5 @@ define([
     }
   }
 
-  return AccessRightsModalController;
+  return { AccessRightsModalController: AccessRightsModalController };
 });

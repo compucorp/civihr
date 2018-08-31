@@ -5,7 +5,6 @@ define([
 ], function (angular) {
   'use strict';
 
-  AccessRightsController.__name = 'AccessRightsController';
   AccessRightsController.$inject = ['$rootElement', '$uibModal'];
 
   function AccessRightsController ($rootElement, $modal) {
@@ -27,5 +26,5 @@ define([
     }
   }
 
-  return AccessRightsController;
+  return { AccessRightsController: AccessRightsController };
 });

@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  RightsAPI.__name = 'RightsAPI';
   RightsAPI.$inject = ['api', '$q', 'beforeHashQueryParams'];
 
   function RightsAPI (api, $q, beforeHashQueryParams) {
@@ -48,5 +47,5 @@ define(function () {
     });
   }
 
-  return RightsAPI;
+  return { RightsAPI: RightsAPI };
 });

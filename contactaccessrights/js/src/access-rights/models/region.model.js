@@ -5,7 +5,6 @@ define([
 ], function () {
   'use strict';
 
-  Region.__name = 'Region';
   Region.$inject = ['Model', 'api.optionGroup'];
 
   function Region (Model, OptionGroup) {
@@ -16,5 +15,5 @@ define([
     });
   }
 
-  return Region;
+  return { Region: Region };
 });
