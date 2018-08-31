@@ -8,7 +8,6 @@ define([
 
   var promiseCache = {};
 
-  contractService.__name = 'contractService';
   contractService.$inject = ['$q', '$log', 'settings', 'apiService', 'modelService', 'contactDetailsService'];
 
   function contractService ($q, $log, settings, Api, Model, ContactDetails) {
@@ -301,5 +300,5 @@ define([
     }
   }
 
-  return contractService;
+  return { contractService: contractService };
 });

@@ -6,7 +6,6 @@ define([
 ], function (_, moment) {
   'use strict';
 
-  KeyDetailsController.__name = 'KeyDetailsController';
   KeyDetailsController.$inject = ['$log', 'contactDetailsService', 'contractService', 'pubSub'];
 
   function KeyDetailsController ($log, ContactDetails, Contract, pubSub) {
@@ -75,5 +74,5 @@ define([
     }
   }
 
-  return KeyDetailsController;
+  return { KeyDetailsController: KeyDetailsController };
 });

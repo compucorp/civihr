@@ -9,7 +9,7 @@ define([
   'use strict';
 
   angular.module('contactsummary.controllers', [])
-    .controller(ContactSummaryController.__name, ContactSummaryController)
-    .controller(KeyDatesController.__name, KeyDatesController)
-    .controller(KeyDetailsController.__name, KeyDetailsController);
+    .controller(ContactSummaryController)
+    .controller(KeyDatesController)
+    .controller(KeyDetailsController);
 });

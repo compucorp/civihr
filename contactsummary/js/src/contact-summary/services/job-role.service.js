@@ -62,28 +62,28 @@ define([
         }
 
         Api.post('HrJobRoles', {job_contract_id: {'IN': contractIds}}, 'get')
-        .then(function (response) {
-          var roles = response.values.map(function (role) {
-            return {
-              id: role.id,
-              title: role.title,
-              department: role.department,
-              status: role.status,
-              start_date: role.start_date,
-              end_date: role.end_date
-            };
-          });
+          .then(function (response) {
+            var roles = response.values.map(function (role) {
+              return {
+                id: role.id,
+                title: role.title,
+                department: role.department,
+                status: role.status,
+                start_date: role.start_date,
+                end_date: role.end_date
+              };
+            });
 
-          factory.collection.set(roles);
-        })
-        .finally(function () {
-          deferred.resolve();
-        });
+            factory.collection.set(roles);
+          })
+          .finally(function () {
+            deferred.resolve();
+          });
       });
 
       return deferred.promise;
     }
   }
 
-  return jobRoleService;
+  return { jobRoleService: jobRoleService };
 });

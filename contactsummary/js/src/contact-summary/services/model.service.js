@@ -6,7 +6,6 @@ define([
 ], function (_, services) {
   'use strict';
 
-  modelService.__name = 'modelService';
   modelService.$inject = ['itemService'];
 
   function modelService (Item) {
@@ -53,5 +52,5 @@ define([
     }
   }
 
-  return modelService;
+  return { modelService: modelService };
 });

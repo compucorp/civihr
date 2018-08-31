@@ -7,5 +7,5 @@ define([
   'use strict';
 
   angular.module('contactsummary.directives', [])
-    .directive(csDonutChart.__name, csDonutChart);
+    .directive(csDonutChart);
 });

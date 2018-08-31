@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  ContactSummaryController.__name = 'ContactSummaryController';
   ContactSummaryController.$inject = ['$log', 'settings'];
 
   function ContactSummaryController ($log, settings) {
@@ -20,5 +19,5 @@ define(function () {
     };
   }
 
-  return ContactSummaryController;
+  return { ContactSummaryController: ContactSummaryController };
 });
