@@ -3,32 +3,42 @@
 trait CRM_HRCore_Upgrader_Steps_1034 {
 
   /**
-   * This upgrader changes the labels for the default assignee options used in
-   * case type management.
+   * This task adds the default assignee option values that can be selected when
+   * creating or editing a new workflow's activity.
    *
    * @return bool
    */
   public function upgrade_1034() {
-    $optionValuesNewLabels = [
-      'BY_RELATIONSHIP' => 'By relationship to target staff member',
-      'USER_CREATING_THE_CASE' => 'User who starts the workflow',
-    ];
-
-    $optionValuesNames = array_keys($optionValuesNewLabels);
-    $optionValues = civicrm_api3('OptionValue', 'get', [
-      'name' => ['IN' => $optionValuesNames],
+    // Add option group for activity default assignees:
+    CRM_Core_BAO_OptionGroup::ensureOptionGroupExists([
+      'name' => 'activity_default_assignee',
+      'title' => ts('Activity default assignee'),
+      'is_reserved' => 1,
     ]);
 
-    foreach ($optionValues['values'] as $optionValue) {
-      $newLabel = $optionValuesNewLabels[$optionValue['name']];
+    // Add option values for activity default assignees:
+    $options = [
+      ['name' => 'NONE', 'label' => ts('None'), 'is_default' => 1],
+      [
+        'name' => 'BY_RELATIONSHIP',
+        'label' => ts('By relationship to case client')
+      ],
+      ['name' => 'SPECIFIC_CONTACT', 'label' => ts('Specific contact')],
+      [
+        'name' => 'USER_CREATING_THE_CASE',
+        'label' => ts('User creating the case')
+      ],
+    ];
 
-      civicrm_api3('OptionValue', 'create', [
-        'id' => $optionValue['id'],
-        'label' => $newLabel,
+    foreach ($options as $option) {
+      CRM_Core_BAO_OptionValue::ensureOptionValueExists([
+        'option_group_id' => 'activity_default_assignee',
+        'name' => $option['name'],
+        'label' => $option['label'],
+        'is_default' => CRM_Utils_Array::value('is_default', $option, 0),
+        'is_active' => TRUE,
       ]);
     }
-
-    return TRUE;
   }
 
 }

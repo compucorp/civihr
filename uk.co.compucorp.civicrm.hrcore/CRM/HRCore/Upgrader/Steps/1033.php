@@ -1,46 +1,56 @@
 <?php
 
-trait CRM_HRCore_Upgrader_Steps_1031 {
+trait CRM_HRCore_Upgrader_Steps_1033 {
 
   /**
-   * This task adds the default assignee option values that can be selected when
-   * creating or editing a new workflow's activity.
+   * Updates menu permissions
    *
    * @return bool
    */
-  public function upgrade_1031() {
-    // Add option group for activity default assignees:
-    CRM_Core_BAO_OptionGroup::ensureOptionGroupExists([
-      'name' => 'activity_default_assignee',
-      'title' => ts('Activity default assignee'),
-      'is_reserved' => 1,
-    ]);
-
-    // Add option values for activity default assignees:
-    $options = [
-      ['name' => 'NONE', 'label' => ts('None'), 'is_default' => 1],
-      [
-        'name' => 'BY_RELATIONSHIP',
-        'label' => ts('By relationship to case client')
-      ],
-      ['name' => 'SPECIFIC_CONTACT', 'label' => ts('Specific contact')],
-      [
-        'name' => 'USER_CREATING_THE_CASE',
-        'label' => ts('User creating the case')
-      ],
+  public function upgrade_1033() {
+    $permissions = [
+      'access root menu items and configurations',
+      'edit system workflow message templates',
+      'edit user-driven message templates'
     ];
 
-    foreach ($options as $option) {
-      CRM_Core_BAO_OptionValue::ensureOptionValueExists([
-        'option_group_id' => 'activity_default_assignee',
-        'name' => $option['name'],
-        'label' => $option['label'],
-        'is_default' => CRM_Utils_Array::value('is_default', $option, 0),
-        'is_active' => TRUE,
-      ]);
-    }
+    $this->up1033_updateMessageTemplatePermissions($permissions);
+    $this->up1033_updateCommunicationsPermissions($permissions);
 
     return TRUE;
+  }
+
+  /**
+   * Updates message template permissions
+   *
+   * @param array $permissions
+   */
+  private function up1033_updateMessageTemplatePermissions($permissions) {
+    civicrm_api3('Navigation', 'get', [
+      'parent_id' => 'Communications',
+      'name' => 'Message Templates',
+      'api.Navigation.create' => [
+        'id' => '$value.id',
+        'permission' => implode(',', $permissions),
+        'permission_operator' => 'OR'
+      ],
+    ]);
+  }
+
+  /**
+   * Updates communications permissions
+   *
+   * @param array $permissions
+   */
+  private function up1033_updateCommunicationsPermissions($permissions) {
+    civicrm_api3('Navigation', 'get', [
+      'name' => 'Communications',
+      'api.Navigation.create' => [
+        'id' => '$value.id',
+        'permission' => implode(',', $permissions),
+        'permission_operator' => 'OR'
+      ],
+    ]);
   }
 
 }
