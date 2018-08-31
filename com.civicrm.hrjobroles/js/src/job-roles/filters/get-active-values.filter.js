@@ -5,7 +5,6 @@ define([
 ], function (_) {
   'use strict';
 
-  getActiveValues.__name = 'getActiveValues';
   getActiveValues.$inject = ['$log'];
 
   function getActiveValues ($log) {
@@ -24,5 +23,5 @@ define([
     };
   }
 
-  return getActiveValues;
+  return { getActiveValues: getActiveValues };
 });

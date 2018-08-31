@@ -3,8 +3,6 @@
 define(function () {
   'use strict';
 
-  filtersService.__name = 'filtersService';
-
   function filtersService () {
     return {
       /**
@@ -77,5 +75,5 @@ define(function () {
     };
   }
 
-  return filtersService;
+  return { filtersService: filtersService };
 });
