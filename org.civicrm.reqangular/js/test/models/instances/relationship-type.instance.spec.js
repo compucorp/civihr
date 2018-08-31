@@ -3,7 +3,7 @@
 define([
   'common/lodash',
   'common/angularMocks',
-  'common/models/instances/contract-instance'
+  'common/models/instances/relationship-type.instance'
 ], function (_) {
   'use strict';
 
@@ -19,7 +19,7 @@ define([
       }]));
 
     it('inherits from ModelInstance', function () {
-      expect(_.functions(RelationshipTypeInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
+      expect(_.functionsIn(RelationshipTypeInstance)).toEqual(jasmine.arrayContaining(_.functionsIn(ModelInstance)));
     });
   });
 });

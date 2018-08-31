@@ -40,7 +40,7 @@ define([
         });
 
         it('retains the same interface', function () {
-          expect(_.functions(instance)).toEqual(instanceInterface);
+          expect(_.functionsIn(instance)).toEqual(instanceInterface);
         });
 
         it('contains the attributes passed to it', function () {
@@ -61,7 +61,7 @@ define([
           bar: 'bar',
           fn: function () {}
         })
-        .attributes();
+          .attributes();
       });
 
       it('returns only the attributes, without the methods', function () {

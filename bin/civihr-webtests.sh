@@ -9,7 +9,6 @@ hrjob \
 hrmed \
 hrqual \
 hrstaffdir \
-hrrecruitment \
 )
 
 CONF=`dirname $0`/setup.conf

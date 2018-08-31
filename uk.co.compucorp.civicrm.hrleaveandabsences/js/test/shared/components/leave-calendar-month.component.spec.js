@@ -123,7 +123,7 @@
             });
 
             it('loads only the work pattern calendars of the currently loaded contacts', function () {
-              expect(calendarCallRecentsArgs[0]).toEqual(_.pluck(controller.contacts, 'id'));
+              expect(calendarCallRecentsArgs[0]).toEqual(_.map(controller.contacts, 'id'));
             });
 
             it("uses the selected months' first and last day as date delimiters", function () {
@@ -158,13 +158,13 @@
 
             it('loads leave requests for *enabled* absence types only', function () {
               expect(requestRecentCallFirstArg).toEqual(jasmine.objectContaining({
-                type_id: { 'IN': _.pluck(controller.supportData.absenceTypes, 'id') }
+                type_id: { 'IN': _.map(controller.supportData.absenceTypes, 'id') }
               }));
             });
 
             it('loads only the leave requests belonging to the loaded contacts', function () {
               expect(requestRecentCallFirstArg).toEqual(jasmine.objectContaining({
-                contact_id: { 'IN': _.pluck(controller.contacts, 'id') }
+                contact_id: { 'IN': _.map(controller.contacts, 'id') }
               }));
             });
 
@@ -305,8 +305,11 @@
 
                 // Gets private requests assigned to the contact and stored in
                 // the calendar month controller:
-                privateLeaveRequests = _.chain(controller.month.days).pluck('contactsData')
-                  .pluck(contactId).pluck('leaveRequests').flatten()
+                privateLeaveRequests = _.chain(controller.month.days)
+                  .map('contactsData')
+                  .map(contactId)
+                  .map('leaveRequests')
+                  .flatten()
                   .filter(function (leaveRequest) {
                     return leaveRequest.type_id === '';
                   }).value();
@@ -483,7 +486,7 @@
         it('is indexed by contact id', function () {
           var indexes = Object.keys(getDayWithType('working_day').contactsData);
 
-          expect(indexes).toEqual(_.pluck(controller.contacts, 'id'));
+          expect(indexes).toEqual(_.map(controller.contacts, 'id'));
         });
 
         describe('when the day is a weekend for a contact', function () {

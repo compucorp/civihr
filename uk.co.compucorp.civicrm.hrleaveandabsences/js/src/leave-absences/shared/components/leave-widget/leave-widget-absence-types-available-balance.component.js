@@ -49,7 +49,7 @@ define([
 
       loadEntitlements()
         .then(function (entitlements) {
-          return _.indexBy(entitlements, 'type_id');
+          return _.keyBy(entitlements, 'type_id');
         })
         .then(mapAbsenceTypesWithTheirEntitlements)
         .then(filterAbsenceTypesThatCanBeEntitled)

@@ -78,8 +78,8 @@ define([
       var leaveRequestAbsenceTypeIds, leaveRequestStatusIds;
 
       beforeEach(function () {
-        leaveRequestAbsenceTypeIds = _.pluck(absenceTypes, 'id');
-        leaveRequestStatusIds = _.pluck(leaveRequestStatuses, 'value');
+        leaveRequestAbsenceTypeIds = _.map(absenceTypes, 'id');
+        leaveRequestStatusIds = _.map(leaveRequestStatuses, 'value');
         controllerOnChanges.mockChange('absenceTypes', absenceTypes);
         controllerOnChanges.mockChange('contactId', contactId);
         controllerOnChanges.mockChange('leaveRequestStatuses',
@@ -106,7 +106,7 @@ define([
         var absenceType, expectedDayTypes, expectedNextLeave, expectedRequestStatus;
 
         beforeEach(function () {
-          expectedDayTypes = _.indexBy(OptionGroupData.getCollection(
+          expectedDayTypes = _.keyBy(OptionGroupData.getCollection(
             'hrleaveandabsences_leave_request_day_type'), 'value');
 
           LeaveRequest.all({

@@ -14,7 +14,7 @@
             return CRM.alert(body, title, type, options);
           }];
         })
-        .zipObject()
+        .fromPairs()
         .value();
     });
   });

@@ -1,8 +1,0 @@
-{
-  "scenarios": [
-    {
-      "label": "SSP / Dashboard",
-      "url": "{{siteUrl}}/dashboard"
-    }
-  ]
-}

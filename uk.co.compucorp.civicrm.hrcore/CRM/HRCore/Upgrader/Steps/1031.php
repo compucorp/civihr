@@ -3,44 +3,54 @@
 trait CRM_HRCore_Upgrader_Steps_1031 {
 
   /**
-   * This task adds the default assignee option values that can be selected when
-   * creating or editing a new workflow's activity.
+   * Disables and Uninstall the Recruitment Extension
    *
    * @return bool
    */
   public function upgrade_1031() {
-    // Add option group for activity default assignees:
-    CRM_Core_BAO_OptionGroup::ensureOptionGroupExists([
-      'name' => 'activity_default_assignee',
-      'title' => ts('Activity default assignee'),
-      'is_reserved' => 1,
-    ]);
-
-    // Add option values for activity default assignees:
-    $options = [
-      ['name' => 'NONE', 'label' => ts('None'), 'is_default' => 1],
-      [
-        'name' => 'BY_RELATIONSHIP',
-        'label' => ts('By relationship to case client')
-      ],
-      ['name' => 'SPECIFIC_CONTACT', 'label' => ts('Specific contact')],
-      [
-        'name' => 'USER_CREATING_THE_CASE',
-        'label' => ts('User creating the case')
-      ],
-    ];
-
-    foreach ($options as $option) {
-      CRM_Core_BAO_OptionValue::ensureOptionValueExists([
-        'option_group_id' => 'activity_default_assignee',
-        'name' => $option['name'],
-        'label' => $option['label'],
-        'is_default' => CRM_Utils_Array::value('is_default', $option, 0),
-        'is_active' => TRUE,
-      ]);
-    }
+    $this->up1031_updateManagedEntitiesTable();
+    $this->up1031_disableAndUninstallRecruitment();
 
     return TRUE;
+  }
+
+  /**
+   * Making sure that the entity_id of CaseType and Managed are equal
+   */
+  private function up1031_updateManagedEntitiesTable() {
+    $caseType = civicrm_api3('CaseType', 'get', [
+      'return' => ['id'],
+      'name' => 'Application',
+    ]);
+
+    if ($caseType['count'] === 0) {
+      return;
+    }
+
+    $dao = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_managed where name="Application"');
+    while ($dao->fetch()) {
+      $managedCaseTypeId = $dao->entity_id;
+    }
+
+    if ($managedCaseTypeId === $caseType['id']) {
+      return;
+    }
+
+    $params = [1 => [$caseType['id'], 'Integer']];
+    $updateSql = 'UPDATE civicrm_managed SET entity_id = %1 where name="Application"';
+    CRM_Core_DAO::executeQuery($updateSql, $params);
+  }
+
+  /**
+   * disables and then Uninstalls the Recruitment Extensions
+   */
+  private function up1031_disableAndUninstallRecruitment() {
+    if (CRM_HRCore_Helper_ExtensionHelper::isExtensionEnabled('org.civicrm.hrrecruitment')) {
+      civicrm_api3('Extension', 'disable', [
+        'keys' => 'org.civicrm.hrrecruitment',
+        'api.Extension.uninstall' => ['keys' => 'org.civicrm.hrrecruitment'],
+      ]);
+    }
   }
 
 }

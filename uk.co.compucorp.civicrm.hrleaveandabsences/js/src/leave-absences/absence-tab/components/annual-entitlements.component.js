@@ -125,7 +125,7 @@
 
         return Contact.all({ id: { 'IN': authorsIDs } })
           .then(function (data) {
-            contacts = _.indexBy(data.list, 'contact_id');
+            contacts = _.keyBy(data.list, 'contact_id');
           });
       }
 
