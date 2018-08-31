@@ -13,7 +13,7 @@
   });
 
   require([
-    'access-rights/modules/access-rights.module'
+    'access-rights/access-rights.module'
   ], function (angular) {
     document.dispatchEvent(new Event('accessRightsReady'));
   });

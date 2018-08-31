@@ -2,7 +2,7 @@
 
 define([
   'common/angularMocks',
-  'access-rights/modules/access-rights.models'
+  'access-rights/access-rights.models'
 ], function () {
   'use strict';
 

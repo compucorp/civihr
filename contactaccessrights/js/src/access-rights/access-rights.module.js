@@ -4,10 +4,10 @@ define([
   'common/angular',
   'access-rights/controllers/access-rights.controller',
   'access-rights/controllers/access-rights-modal.controller',
-  'access-rights/modules/access-rights.config',
-  'access-rights/modules/access-rights.core',
-  'access-rights/modules/access-rights.models',
-  'access-rights/modules/access-rights.run'
+  'access-rights/access-rights.config',
+  'access-rights/access-rights.core',
+  'access-rights/access-rights.models',
+  'access-rights/access-rights.run'
 ], function (angular, AccessRightsController, AccessRightsModalController) {
   'use strict';
 
