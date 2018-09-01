@@ -23,7 +23,7 @@ define([
         }]
       })
       .when('/', {
-        templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html?v=1',
+        templateUrl: settings.pathBaseUrl + 'controllers/job-roles.html',
         resolve: {},
         controller: 'JobRolesController',
         controllerAs: 'jobroles'

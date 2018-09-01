@@ -13,7 +13,7 @@ define([
       debug: true,
       pathApp: CRM.vars.hrjobroles.path,
       pathRest: CRM.url('civicrm/ajax/rest'),
-      pathBaseUrl: CRM.vars.hrjobroles.baseURL + '/',
+      pathBaseUrl: CRM.vars.hrjobroles.baseURL + '/js/src/job-roles/',
       pathTpl: 'views/',
       pathIncludeTpl: 'views/include/'
     });
