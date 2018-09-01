@@ -10,8 +10,7 @@ define([
     classNamePrefix: 'contactSummary-',
     contactId: decodeURIComponent((new RegExp('[?|&]cid=([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null,
     debug: +CRM.debug,
-    pathBaseUrl: CRM.vars.contactsummary.baseURL + '/',
-    pathTpl: 'views/',
+    baseUrl: CRM.vars.contactsummary.baseURL + '/js/src/contact-summary/',
     CRM: {
       options: CRM.FieldOptions || {}
     }

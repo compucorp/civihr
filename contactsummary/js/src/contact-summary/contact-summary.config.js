@@ -20,7 +20,7 @@ define([
       .when('/', {
         controller: 'ContactSummaryController',
         controllerAs: 'ContactSummaryCtrl',
-        templateUrl: settings.pathBaseUrl + settings.pathTpl + 'mainTemplate.html',
+        templateUrl: settings.baseUrl + 'controllers/contact-summary.html',
         resolve: {}
       })
       .otherwise({redirectTo: '/'});
