@@ -15,9 +15,6 @@ define([
 
     // Pass the values from our settings
     $rootScope.contactId = settings.contactId;
-    $rootScope.pathBaseUrl = settings.pathBaseUrl;
-    $rootScope.pathTpl = settings.pathTpl;
-    $rootScope.pathIncludeTpl = settings.pathIncludeTpl;
     $rootScope.prefix = settings.classNamePrefix;
   }
 });
