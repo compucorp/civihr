@@ -16,15 +16,13 @@ define([
   'contact-summary/services/model.service',
   'contact-summary/contact-summary.config',
   'contact-summary/contact-summary.constants',
-  'contact-summary/contact-summary.core',
-  'contact-summary/contact-summary.run'
+  'contact-summary/contact-summary.core'
 ], function (angular, ContactSummaryController, KeyDatesController, KeyDetailsController,
   csDonutChart, apiService, contactDetailsService, contactService, contractService,
   itemService, jobRoleService, leaveService, modelService) {
   angular.module('contactsummary', [
     'contactsummary.core',
     'contactsummary.config',
-    'contactsummary.run',
     'contactsummary.constants'
   ])
     .controller(ContactSummaryController)
