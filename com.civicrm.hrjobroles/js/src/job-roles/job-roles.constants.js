@@ -10,6 +10,7 @@ define([
     .constant('settings', {
       classNamePrefix: 'hrjobroles-',
       contactId: decodeURIComponent((new RegExp('[?|&]cid=([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null,
+      debug: +CRM.debug,
       pathBaseUrl: CRM.vars.hrjobroles.baseURL + '/js/src/job-roles/'
     });
 });
