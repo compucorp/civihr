@@ -40,8 +40,8 @@ define([
     vm.LocationsData = {}; // Store the location types
     vm.RegionsData = {}; // Store the region types
     // Define the add new role URL
-    vm.addNewRoleUrl = settings.pathBaseUrl + 'controllers/add-new-role.html';
-    vm.jobRolePanelUrl = settings.pathBaseUrl + 'controllers/job-role-panel.html';
+    vm.addNewRoleUrl = settings.baseUrl + 'controllers/add-new-role.html';
+    vm.jobRolePanelUrl = settings.baseUrl + 'controllers/job-role-panel.html';
     // Select list for Row Types (used for Funders and Cost Centers)
     vm.rowTypes = {};
     vm.rowTypes[0] = { id: 0, name: 'Fixed' };
@@ -893,7 +893,7 @@ define([
       var modalInstance = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
         template: '',
-        templateUrl: settings.pathBaseUrl + 'controllers/modal-dialog.html',
+        templateUrl: settings.baseUrl + 'controllers/modal-dialog.html',
         size: 'sm',
         controller: 'ModalDialogController',
         controllerAs: 'dialog',
