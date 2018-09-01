@@ -15,7 +15,7 @@ define([
     var settingsMock = {};
 
     beforeEach(module('contactsummary', 'contactsummary.mocks',
-      'contact-summary.templates'));
+      'contactsummary.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('apiService', function () {

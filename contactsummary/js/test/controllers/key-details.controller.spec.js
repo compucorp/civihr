@@ -12,7 +12,7 @@ define([
     var ctrlConstructor,
       PubSubMock, contractServiceMock, contactDetailsServiceMock;
 
-    beforeEach(module('contactsummary', 'contactsummary.mocks'));
+    beforeEach(module('contactsummary', 'contactsummary.mocks', 'contactsummary.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('pubSub', function () {

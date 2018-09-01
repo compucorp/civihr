@@ -11,7 +11,7 @@ define([
   describe('ContactSummaryCtrl', function () {
     var $provide, ctrl, settingsMock;
 
-    beforeEach(module('contactsummary', 'contactsummary.mocks',
+    beforeEach(module('contactsummary', 'contactsummary.mocks', 'contactsummary.templates',
       function (_$provide_) {
         $provide = _$provide_;
       }));
