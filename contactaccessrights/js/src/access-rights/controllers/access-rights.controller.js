@@ -5,9 +5,9 @@ define([
 ], function (angular) {
   'use strict';
 
-  AccessRightsController.$inject = ['$rootElement', '$uibModal'];
+  AccessRightsController.$inject = ['$rootElement', '$uibModal', 'settings'];
 
-  function AccessRightsController ($rootElement, $modal) {
+  function AccessRightsController ($rootElement, $modal, settings) {
     var vm = this;
 
     vm.openModal = openModal;
@@ -21,7 +21,7 @@ define([
         controller: 'AccessRightsModalController',
         controllerAs: 'modalCtrl',
         bindToController: true,
-        templateUrl: CRM.vars.contactAccessRights.baseURL + '/js/src/access-rights/controllers/access-rights-modal.html'
+        templateUrl: settings.baseUrl + 'controllers/access-rights-modal.html'
       });
     }
   }
