@@ -184,6 +184,32 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   }
 
   /**
+   * Updates current case types so they have a category assigned. All case types
+   * are assigned the Workflow category by default except for the Application case
+   * type, which gets the Vacancy category.
+   *
+   * @return bool
+   */
+  public function upgrade_1432() {
+    $categoryFieldId = CRM_Core_BAO_CustomField::getCustomFieldID('category', 'case_type_category');
+    $categoryFieldName = 'custom_' . $categoryFieldId;
+    $caseTypes = civicrm_api3('CaseType', 'get', [
+      'options' => [ 'limit' => 0 ]
+    ]);
+
+    foreach ($caseTypes['values'] as $caseType) {
+      $category = $caseType['name'] === 'Application' ? 'Vacancy' : 'Workflow';
+
+      civicrm_api3('CaseType', 'create', [
+        'id' => $caseType['id'],
+        $categoryFieldName => $category,
+      ]);
+    }
+
+    return TRUE;
+  }
+
+  /**
    * Replaces (Case) keyword and (Open Case) keyword with (Assignment) keyword
    * and (Created New Assignment) keyword respectively and vise versa for
    * civicrm default activity types labels when installing/uninstalling the extension.

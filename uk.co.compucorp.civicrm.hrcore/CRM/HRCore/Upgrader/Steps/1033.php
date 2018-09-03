@@ -3,23 +3,53 @@
 trait CRM_HRCore_Upgrader_Steps_1033 {
 
   /**
-   * Removes the Search Menu heading
+   * Updates menu permissions
    *
    * @return bool
    */
   public function upgrade_1033() {
-    $this->up1033_removeSearchMenuHeading();
+    $permissions = [
+      'access root menu items and configurations',
+      'edit system workflow message templates',
+      'edit user-driven message templates'
+    ];
+
+    $this->up1033_updateMessageTemplatePermissions($permissions);
+    $this->up1033_updateCommunicationsPermissions($permissions);
 
     return TRUE;
   }
 
   /**
-   * Removes the Search Menu Heading in Admin Portal
+   * Updates message template permissions
+   *
+   * @param array $permissions
    */
-  private function up1033_removeSearchMenuHeading() {
+  private function up1033_updateMessageTemplatePermissions($permissions) {
     civicrm_api3('Navigation', 'get', [
-      'label' => 'Search',
-      'api.Navigation.delete' => ['id' => '$value.id'],
+      'parent_id' => 'Communications',
+      'name' => 'Message Templates',
+      'api.Navigation.create' => [
+        'id' => '$value.id',
+        'permission' => implode(',', $permissions),
+        'permission_operator' => 'OR'
+      ],
+    ]);
+  }
+
+  /**
+   * Updates communications permissions
+   *
+   * @param array $permissions
+   */
+  private function up1033_updateCommunicationsPermissions($permissions) {
+    civicrm_api3('Navigation', 'get', [
+      'name' => 'Communications',
+      'api.Navigation.create' => [
+        'id' => '$value.id',
+        'permission' => implode(',', $permissions),
+        'permission_operator' => 'OR'
+      ],
     ]);
   }
 

@@ -26,7 +26,7 @@ trait CRM_HRCore_Upgrader_Steps_1031 {
     if ($caseType['count'] === 0) {
       return;
     }
-    
+
     $dao = CRM_Core_DAO::executeQuery('SELECT * FROM civicrm_managed where name="Application"');
     while ($dao->fetch()) {
       $managedCaseTypeId = $dao->entity_id;
