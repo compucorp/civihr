@@ -7,19 +7,18 @@ define([
 
   angular.module('job-contract.constants', []).constant('settings', {
     classNamePrefix: 'hrjc-',
-    contactId: CRM.jobContractTabApp.contactId,
+    contactId: CRM.vars.hrjobcontract.contactId,
     debug: +CRM.debug,
-    baseUrl: CRM.jobContractTabApp.path + 'js/src/job-contract/',
+    baseUrl: CRM.vars.hrjobcontract.baseURL + 'js/src/job-contract/',
     pathFile: CRM.url('civicrm/hrjobcontract/file/'),
     pathReport: CRM.url('civicrm/report/hrjobcontract/summary'),
     pathRest: CRM.url('civicrm/ajax/rest'),
-    pathTpl: CRM.jobContractTabApp.path + 'views/',
     CRM: {
       options: CRM.FieldOptions || {},
-      defaultCurrency: CRM.jobContractTabApp.defaultCurrency,
+      defaultCurrency: CRM.vars.hrjobcontract.defaultCurrency,
       apiTsFmt: 'YYYY-MM-DD HH:mm:ss',
-      fields: CRM.jobContractTabApp.fields,
-      maxFileSize: CRM.jobContractTabApp.maxFileSize
+      fields: CRM.vars.hrjobcontract.fields,
+      maxFileSize: CRM.vars.hrjobcontract.maxFileSize
     }
   });
 });

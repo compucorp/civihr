@@ -1,7 +1,7 @@
 /* eslint-env amd */
 
 (function (CRM, require) {
-  var extPath = CRM.jobContractTabApp.path + 'js/src/job-contract';
+  var extPath = CRM.vars.hrjobcontract.baseURL + 'js/src/job-contract';
 
   require.config({
     urlArgs: 'bust=' + (new Date()).getTime(),
