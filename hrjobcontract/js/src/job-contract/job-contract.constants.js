@@ -9,7 +9,7 @@ define([
     classNamePrefix: 'hrjc-',
     contactId: CRM.jobContractTabApp.contactId,
     debug: +CRM.debug,
-    pathApp: CRM.jobContractTabApp.path,
+    baseUrl: CRM.jobContractTabApp.path + 'js/src/job-contract/',
     pathFile: CRM.url('civicrm/hrjobcontract/file/'),
     pathReport: CRM.url('civicrm/report/hrjobcontract/summary'),
     pathRest: CRM.url('civicrm/ajax/rest'),

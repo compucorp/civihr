@@ -191,7 +191,7 @@ define([
       var modalUpdateEntitlements = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
         size: 'sm',
-        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
+        templateUrl: settings.baseUrl + 'controllers/modal-dialog.html',
         controller: 'ModalDialogController',
         resolve: {
           content: {

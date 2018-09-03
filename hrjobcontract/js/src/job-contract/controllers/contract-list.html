@@ -51,7 +51,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-12"><hr></div>
+        <div class="col-xs-12"><hr /></div>
       </div>
       <div class="row  {{prefix}}row-info form-horizontal">
         <div class="col-xs-3">
@@ -87,10 +87,10 @@
             <div class="col-xs-12">
               <uib-tabset>
                 <uib-tab heading="Summary">
-                  <div ng-include src="pathTpl + 'contractSummary.html?v=446466'"></div>
+                  <div ng-include src="baseUrl + 'controllers/contract-summary.html'"></div>
                 </uib-tab>
                 <uib-tab select="showRevisions()" heading="Full History" disabled="!revisionDataList.length">
-                  <div ng-if="revisionsShown" ng-include src="pathTpl + 'contractRevisionList.html?v=87654354'"></div>
+                  <div ng-if="revisionsShown" ng-include src="baseUrl + 'controllers/revision-list.html'"></div>
                 </uib-tab>
               </uib-tabset>
             </div>

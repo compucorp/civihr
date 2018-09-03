@@ -18,7 +18,7 @@ define([
     contractPensionService) {
     $log.debug('app.run');
 
-    $rootScope.pathTpl = settings.pathTpl;
+    $rootScope.baseUrl = settings.baseUrl;
     $rootScope.prefix = settings.classNamePrefix;
 
     $q.all({

@@ -125,7 +125,7 @@ define([
 
       var modalInstance = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
-        templateUrl: settings.pathApp + 'views/modalDialog.html',
+        templateUrl: settings.baseUrl + 'controllers/modal/modal-dialog.html',
         size: 'sm',
         controller: 'ModalDialogController',
         resolve: {
@@ -162,7 +162,7 @@ define([
       var modalInstance;
       var options = {
         appendTo: $rootElement.find('div').eq(0),
-        templateUrl: settings.pathApp + 'views/modalForm.html?v=2222',
+        templateUrl: settings.baseUrl + 'controllers/modal/modal-contract.html',
         size: 'lg',
         controller: 'ModalContractNewController',
         windowClass: 'modal-contract',

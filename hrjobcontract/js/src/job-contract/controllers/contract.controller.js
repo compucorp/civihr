@@ -152,7 +152,7 @@ define([
       var options = {
         controller: 'ModalContractController',
         appendTo: $rootElement.find('div').eq(0),
-        templateUrl: settings.pathApp + 'views/modalForm.html?v=4448',
+        templateUrl: settings.baseUrl + 'controllers/modal/modal-contract.html',
         windowClass: 'modal-contract',
         size: 'lg',
         resolve: {
@@ -322,7 +322,7 @@ define([
         appendTo: $rootElement.find('div').eq(0),
         size: 'lg',
         controller: 'ModalRevisionController',
-        templateUrl: settings.pathApp + 'views/modalRevision.html?v=1234',
+        templateUrl: settings.baseUrl + 'controllers/modal/modal-revision.html',
         windowClass: 'modal-revision',
         resolve: {
           entity: function () {

@@ -103,7 +103,7 @@ define([
 
       var modalInstance = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
-        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
+        templateUrl: settings.baseUrl + 'controllers/modal/modal-dialog.html',
         size: 'sm',
         controller: 'ModalDialogController',
         resolve: {
@@ -134,7 +134,7 @@ define([
     function changeReason () {
       var modalChangeReason = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
-        templateUrl: settings.pathApp + 'views/modalChangeReason.html?v=' + (new Date()).getTime(),
+        templateUrl: settings.baseUrl + 'controllers/modal/modal-change-reason.html',
         controller: 'ModalChangeReasonController',
         resolve: {
           content: function () {
@@ -176,7 +176,7 @@ define([
     function confirmEdit () {
       var modalConfirmEdit = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
-        templateUrl: settings.pathApp + 'views/modalConfirmEdit.html?v=' + (new Date()).getTime(),
+        templateUrl: settings.baseUrl + 'controllers/modal/modal-dialog-edit.html',
         controller: 'ModalDialogController',
         resolve: {
           content: function () {
@@ -283,7 +283,7 @@ define([
         if (promiseFilesEditUpload.length) {
           modalInstance = $modal.open({
             appendTo: $rootElement.find('div').eq(0),
-            templateUrl: settings.pathApp + 'views/modalProgress.html?v=' + (new Date()).getTime(),
+            templateUrl: settings.baseUrl + 'controllers/modal/modal-progress.html',
             size: 'sm',
             controller: 'ModalProgressController',
             resolve: {
@@ -640,7 +640,7 @@ define([
           if (promiseFilesChangeUpload.length) {
             modalInstance = $modal.open({
               appendTo: $rootElement.find('div').eq(0),
-              templateUrl: settings.pathApp + 'views/modalProgress.html',
+              templateUrl: settings.baseUrl + 'controllers/modal/modal-progress.html',
               size: 'sm',
               controller: 'ModalProgressController',
               resolve: {

@@ -79,7 +79,7 @@ define([
 
       var modalInstance = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
-        templateUrl: settings.pathApp + 'views/modalDialog.html',
+        templateUrl: settings.baseUrl + 'controllers/modal/modal-dialog.html',
         size: 'sm',
         controller: 'ModalDialogController',
         resolve: {
@@ -142,7 +142,7 @@ define([
       var reasonId = revisionEntityIdObj.change_reason;
       var modalChangeReason = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
-        templateUrl: settings.pathApp + 'views/modalChangeReason.html?v=' + (new Date()).getTime(),
+        templateUrl: settings.baseUrl + 'controllers/modal/modal-change-reason.html',
         controller: 'ModalChangeReasonController',
         resolve: {
           content: function () {

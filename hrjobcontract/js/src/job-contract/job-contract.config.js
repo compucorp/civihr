@@ -24,7 +24,7 @@ define([
       })
       .when('/', {
         controller: 'ContractListController',
-        templateUrl: settings.pathApp + 'views/contractList.html',
+        templateUrl: settings.baseUrl + 'controllers/contract-list.html',
         resolve: {
           contractList: ['contractService', function (contractService) {
             return contractService.get();
