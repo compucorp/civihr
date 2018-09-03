@@ -9,7 +9,7 @@ define([
   describe('contractHourService', function () {
     var $httpBackend, $rootScope, contractHourService;
 
-    beforeEach(module('job-contract'));
+    beforeEach(module('job-contract', 'job-contract.templates'));
     beforeEach(inject(function (_contractHourService_, _$httpBackend_, _$rootScope_) {
       contractHourService = _contractHourService_;
       $httpBackend = _$httpBackend_;
@@ -17,7 +17,6 @@ define([
 
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
       $httpBackend.whenGET(/action=get&entity=HRJobHour/).respond(MockContract.contractHour);
-      $httpBackend.whenGET(/views.*/).respond({});
     }));
 
     afterEach(function () {

@@ -10,7 +10,7 @@ define([
   describe('contractRevisionListService', function () {
     var $rootScope, $httpBackend, contractFilesService, contractRevisionListService, promise;
 
-    beforeEach(module('job-contract'));
+    beforeEach(module('job-contract', 'job-contract.templates'));
 
     beforeEach(inject(function (_$rootScope_, _$httpBackend_, _contractFilesService_, _contractRevisionListService_) {
       $rootScope = _$rootScope_;
@@ -24,7 +24,6 @@ define([
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond({});
       $httpBackend.whenGET(/list&entityID=159&entityTable=civicrm_hrjobcontract_details/).respond({});
       $httpBackend.whenGET(/action=getsingle&entity=HRJobContractRevision/).respond({});
-      $httpBackend.whenGET(/views.*/).respond({});
     }));
 
     describe('fetchRevisions()', function () {

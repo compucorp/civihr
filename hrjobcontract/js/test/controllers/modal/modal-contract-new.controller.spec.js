@@ -12,7 +12,7 @@ define([
       contractHealthService, locationUrl, popupLists, payScaleGradeUrl,
       annualBenefitUrl, annualDeductionUrl;
 
-    beforeEach(module('job-contract'));
+    beforeEach(module('job-contract', 'job-contract.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('contractHealthService', function () {
@@ -43,7 +43,6 @@ define([
       $httpBackend.whenGET(/action=getfields&entity=HRJobHealth/).respond({});
       $httpBackend.whenGET(/action=getfields&entity=HRJobPension/).respond({});
       $httpBackend.whenGET(/action=getoptions&entity=HRJobHealth/).respond({});
-      $httpBackend.whenGET(/views.*/).respond({});
     });
 
     beforeEach(function () {
