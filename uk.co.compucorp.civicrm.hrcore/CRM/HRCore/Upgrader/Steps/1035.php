@@ -29,11 +29,9 @@ trait CRM_HRCore_Upgrader_Steps_1035 {
       'name' => 'leave_and_absences',
     ]);
 
-    $menu = array_shift($menu['values']);
-    $menuExists = civicrm_api3('Navigation', 'get', [
-      'name' => 'Import',
-    ]);
-    if ($menuExists['count'] === 0) {
+    try {
+      civicrm_api3('Navigation', 'getsingle', ['name' => 'Import']);
+    } catch (CiviCRM_API3_Exception $e) {
       civicrm_api3('Navigation', 'create', [
         'label' => 'Import',
         'name' => 'Import',
@@ -43,9 +41,10 @@ trait CRM_HRCore_Upgrader_Steps_1035 {
         'is_active' => 1,
         'weight' => $menu['weight'],
       ]);
+      CRM_Core_PseudoConstant::flush();
     }
-    CRM_Core_PseudoConstant::flush();
 
+    return TRUE;
   }
 
   /**
@@ -54,23 +53,22 @@ trait CRM_HRCore_Upgrader_Steps_1035 {
    * @param array $menus
    */
   private function up1035_moveImportMenus($menus) {
-    $menu = civicrm_api3('Navigation', 'get', [
+    $menu = civicrm_api3('Navigation', 'getsingle', [
       'name' => 'Import',
     ]);
-    $menu = array_shift($menu['values']);
+
     foreach ($menus as $menuName) {
-      $menuExists = civicrm_api3('Navigation', 'get', [
-        'name' => $menuName,
-      ]);
-      if ($menuExists['count'] === 0) {
-        continue;
+      try {
+        $menuToMove = civicrm_api3('Navigation', 'getsingle', ['name' => $menuName]);
+        civicrm_api3('Navigation', 'create', [
+          'id' => $menuToMove['id'],
+          'parent_id' => $menu['id'],
+          'is_active' => 1,
+        ]);
+      } catch (CiviCRM_API3_Exception $e) {
       }
-      $menuExists = array_shift($menuExists['values']);
-      civicrm_api3('Navigation', 'create', [
-        'id' => $menuExists['id'],
-        'parent_id' => $menu['id'],
-      ]);
     }
+    return TRUE;
   }
 
   /**
@@ -82,6 +80,7 @@ trait CRM_HRCore_Upgrader_Steps_1035 {
       'api.Navigation.create' => [
         'id' => '$value.id',
         'label' => 'Import Staff',
+        'name' => 'Import Staff',
       ],
     ]);
   }

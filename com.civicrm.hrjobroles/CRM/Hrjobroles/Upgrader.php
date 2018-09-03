@@ -12,7 +12,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
    * Example: Run an external SQL script when the module is installed
    */
   public function install() {
-//    $this->executeSqlFile('sql/myinstall.sql');
+    //    $this->executeSqlFile('sql/myinstall.sql');
     $this->installCostCentreTypes();
   }
 
@@ -30,7 +30,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     return TRUE;
   }
 
-  public function upgrade_1002(){
+  public function upgrade_1002() {
     $this->installCostCentreTypes();
 
     return TRUE;
@@ -52,7 +52,11 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
    */
   public function upgrade_1005() {
     $domain = CRM_Core_Config::domainID();
-    $params = ['return' => 'id', 'name' => 'Administer', 'domain_id' => $domain];
+    $params = [
+      'return' => 'id',
+      'name' => 'Administer',
+      'domain_id' => $domain,
+    ];
     $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
 
     $permission = 'access CiviCRM';
@@ -80,7 +84,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
 
     return TRUE;
   }
-  
+
   /**
    * Deletes cost centre "other" option value if not in use
    *
@@ -92,9 +96,9 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
       $this->deleteCostCentreOther();
       return TRUE;
     }
-    
+
     $otherId = $this->retrieveCostCentreOtherId();
-    if ($otherId == null) {
+    if ($otherId == NULL) {
       return TRUE;
     }
     $inUse = FALSE;
@@ -106,11 +110,11 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
         break;
       }
     }
-    
+
     if (!$inUse) {
       $this->deleteCostCentreOther();
     }
-    
+
     return TRUE;
   }
 
@@ -120,20 +124,36 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
    * @return bool
    */
   public function upgrade_1007() {
-    $menu = civicrm_api3('Navigation', 'get', [
-      'name' => 'Import',
+    $leaveAndAbsensesMenu = civicrm_api3('Navigation', 'get', [
+      'name' => 'leave_and_absences',
     ]);
-    $menu = array_shift($menu['values']);
-    $menuExists = civicrm_api3('Navigation', 'get', [
-      'name' => 'import_job_roles',
-    ]);
-    if ($menuExists['count'] === 0) {
+
+    try {
+      $importMenu = civicrm_api3('Navigation', 'getsingle', ['name' => 'Import']);
+    } catch (CiviCRM_API3_Exception $e) {
+      $leaveAndAbsensesMenu = array_shift($leaveAndAbsensesMenu['values']);
+      $importMenu = civicrm_api3('Navigation', 'create', [
+        'label' => 'Import',
+        'name' => 'Import',
+        'parent_id' => $leaveAndAbsensesMenu['parent_id'],
+        'domain_id' => $leaveAndAbsensesMenu['domain_id'],
+        'permission' => $leaveAndAbsensesMenu['permission'],
+        'is_active' => 1,
+        'weight' => $leaveAndAbsensesMenu['weight'],
+      ]);
+      CRM_Core_PseudoConstant::flush();
+      $importMenu = array_shift($importMenu['values']);
+    }
+
+    try {
+      civicrm_api3('Navigation', 'getsingle', ['name' => 'import_job_roles']);
+    } catch (Exception $e) {
       civicrm_api3('Navigation', 'create', [
         'label' => 'Import Job Roles',
         'name' => 'import_job_roles',
-        'parent_id' => $menu['id'],
-        'domain_id' => $menu['domain_id'],
-        'permission' => $menu['permission'],
+        'parent_id' => $importMenu['id'],
+        'domain_id' => $importMenu['domain_id'],
+        'permission' => $importMenu['permission'],
         'url' => 'civicrm/jobroles/import',
         'is_active' => 1,
       ]);
@@ -142,7 +162,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
 
     return TRUE;
   }
-  
+
   /**
    * Deletes cost centre option value with name "other"
    */
@@ -153,7 +173,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
       'api.OptionValue.delete' => ['id' => '$value.id'],
     ]);
   }
-  
+
   /**
    * Fetches the id of cost center "other" option value
    *
@@ -164,8 +184,8 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
       'option_group_id' => 'cost_centres',
       'name' => 'Other',
     ]);
-    
-    return isset($result['id']) ? $result['id'] : null;
+
+    return isset($result['id']) ? $result['id'] : NULL;
   }
 
   /**
@@ -200,12 +220,12 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
    * Creates new Option Group for Cost Centres
    */
   public function installCostCentreTypes() {
-    try{
+    try {
       $result = civicrm_api3('OptionGroup', 'create', [
-          'sequential' => 1,
-          'name' => "cost_centres",
-          'title' => "Cost Centres",
-          'is_active' => 1
+        'sequential' => 1,
+        'name' => "cost_centres",
+        'title' => "Cost Centres",
+        'is_active' => 1,
       ]);
 
       $id = $result['id'];
@@ -219,7 +239,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
         'name' => $val,
       ]);
 
-    } catch(Exception $e){
+    } catch (Exception $e) {
       // OptionGroup already exists
       // Skip this
     }
