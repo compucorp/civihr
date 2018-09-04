@@ -313,12 +313,7 @@ function hrleaveandabsences_civicrm_entityTypes(&$entityTypes) {
  * Implementation of hook_civicrm_searchTasks
  */
 function hrleaveandabsences_civicrm_searchTasks($objectType, &$tasks) {
-  if($objectType == 'contact' && CRM_Core_Permission::check('administer leave and absences')) {
-    $tasks[] = [
-      'title' => ts('Manage leave entitlements'),
-      'class' => 'CRM_HRLeaveAndAbsences_Form_Task_ManageEntitlements'
-    ];
-  }
+
 }
 
 /**
