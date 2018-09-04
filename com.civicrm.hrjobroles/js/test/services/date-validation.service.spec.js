@@ -51,7 +51,6 @@ define([
     });
 
     it('Check if Format is valid', function () {
-      /* Should pass */
       expect(function () {
         dateValidation.validate('12/11/2009', '10/01/2013');
       }).not.toThrow();
@@ -102,19 +101,16 @@ define([
     });
 
     it('Start date cannot be higher', function () {
-      /* Should pass */
       expect(function () {
         dateValidation.validate('12/11/2003', '10/01/2009');
       }).not.toThrow();
 
-      /*  Should NOT pass. Start date cannot be higher */
       expect(function () {
         dateValidation.validate('12/11/2009', '10/01/2003');
       }).toThrow();
     });
 
     it('Start date cannot be higher - recursive check', function () {
-      /* Should pass */
       expect(function () {
         dateValidation.validate('12/11/2003', '13/11/2003');
       }).not.toThrow();

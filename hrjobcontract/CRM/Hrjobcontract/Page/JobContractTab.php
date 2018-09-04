@@ -23,7 +23,7 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
       'baseURL' => CRM_Core_Resources::singleton()->getUrl('org.civicrm.hrjobcontract'),
       'contactId' => CRM_Utils_Request::retrieve('cid', 'Integer'),
       'domainId' => CRM_Core_Config::domainID(),
-      'isLogEnabled'    => (bool) $config->logging,
+      'isLogEnabled' => (bool) $config->logging,
       'loggingReportId' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
       'currencies' => CRM_Hrjobcontract_Page_JobContractTab::getCurrencyFormats(),
       'defaultCurrency' => $config->defaultCurrency,
