@@ -407,21 +407,21 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
       $form->addElement('text', 'hrjobcontract_details_notice_amount', ts('Notice Period from Employer (Amount)'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HRJobDetails', 'notice_amount'));
       $form->add('select', 'hrjobcontract_details_notice_unit', ts('Notice Period from Employer (Amount)'), CRM_Hrjobcontract_SelectValues::commonUnit(), FALSE,
-        array('id' => 'hrjobcontract_details_notice_unit', 'multiple' => true)
+        array('id' => 'hrjobcontract_details_notice_unit', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
       $form->addElement('text', 'hrjobcontract_details_notice_amount_employee', ts('Notice Period from Employee (Amount)'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HRJobDetails', 'notice_amount_employee'));
       $form->add('select', 'hrjobcontract_details_notice_unit_employee', ts('Notice Period from Employer (Amount)'), CRM_Hrjobcontract_SelectValues::commonUnit(), FALSE,
-        array('id' => 'hrjobcontract_details_notice_unit_employee', 'multiple' => true)
+        array('id' => 'hrjobcontract_details_notice_unit_employee', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
 
       $hrjcLocation = CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobDetails', 'hrjobcontract_details_location');
       $form->add('select', 'hrjobcontract_details_location', ts('Normal Place of Work'), $hrjcLocation, FALSE,
-        array('id' => 'hrjobcontract_details_location', 'multiple' => true)
+        array('id' => 'hrjobcontract_details_location', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
 
       $form->add('select', 'hrjobcontract_details_contract_type', ts('Contract Type'),
         CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobDetails', 'hrjobcontract_details_contract_type'), FALSE,
-        array('id' => 'hrjobcontract_details_contract_type', 'multiple' => true)
+        array('id' => 'hrjobcontract_details_contract_type', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
       CRM_Core_Form_Date::buildDateRange($form, 'hrjobcontract_details_period_start_date', 1, '_low', '_high', ts('From:'), FALSE, FALSE);
       CRM_Core_Form_Date::buildDateRange($form, 'hrjobcontract_details_period_end_date', 1, '_low', '_high', ts('From:'), FALSE, FALSE);
@@ -435,14 +435,14 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
       $form->addElement('text', 'hrjobcontract_health_health_provider', ts('Healthcare Provider (Complete OR Partial Name)'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HRJobHealth', 'provider'));
       $form->add('select', 'hrjobcontract_health_health_plan_type', ts('Healthcare Plan Type'), CRM_Hrjobcontract_SelectValues::planType(), FALSE,
-        array('id' => 'hrjobcontract_health_health_plan_type', 'multiple' => true)
+        array('id' => 'hrjobcontract_health_health_plan_type', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
       $form->addElement('text', 'hrjobcontract_health_description', ts('Description Health Insurance'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HRJobHealth', 'description'));
       $form->addElement('text', 'hrjobcontract_health_dependents', ts('Healthcare Dependents'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HRJobHealth', 'dependents'));
 
       $form->addElement('text', 'hrjobcontract_health_health_provider_life_insurance', ts('Life insurance Provider (Complete OR Partial Name)'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HRJobHealth', 'provider_life_insurance'));
       $form->add('select', 'hrjobcontract_health_life_insurance_plan_type', ts('Life insurance Plan Type'), CRM_Hrjobcontract_SelectValues::planTypeLifeInsurance(), FALSE,
-        array('id' => 'hrjobcontract_health_life_insurance_plan_type', 'multiple' => true)
+        array('id' => 'hrjobcontract_health_life_insurance_plan_type', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
       $form->addElement('text', 'hrjobcontract_health_description_life_insurance', ts('Description Life Insurance'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HRJobHealth', 'description_life_insurance'));
       $form->addElement('text', 'hrjobcontract_health_dependents_life_insurance', ts('Life Insurance Dependents'), CRM_Core_DAO::getAttribute('CRM_Hrjobcontract_DAO_HRJobHealth', 'dependents_life_insurance'));
@@ -458,17 +458,17 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
           $hoursLocationOptions[$hoursLocation->id] = $hoursLocation->location;
       }
       $form->add('select', 'hrjobcontract_hour_location_standard_hours', ts('Location/Standard hours'), $hoursLocationOptions, FALSE,
-        array('id' => 'hrjobcontract_hour_location_standard_hours', 'multiple' => true)
+        array('id' => 'hrjobcontract_hour_location_standard_hours', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
 
       $hoursType = CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobHour', 'hrjobcontract_hour_hours_type');
       $form->add('select', 'hrjobcontract_hour_hours_type', ts('Hours Types'), $hoursType, FALSE,
-        array('id' => 'hrjobcontract_hour_hours_type', 'multiple' => true)
+        array('id' => 'hrjobcontract_hour_hours_type', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
 
       $form->add('text', 'hrjobcontract_hour_hours_amount', ts('Actual Hours (Amount)'), array('size' => 8, 'maxlength' => 8));
       $form->add('select', 'hrjobcontract_hour_hours_unit', ts('Actual Hours (Unit)'), CRM_Hrjobcontract_SelectValues::commonUnit(), FALSE,
-        array('id' => 'hrjobcontract_hour_hours_unit', 'multiple' => true)
+        array('id' => 'hrjobcontract_hour_hours_unit', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
 
       $form->add('text', 'hrjobcontract_hour_hours_fte', ts('Full-Time Equivalence'), array('size' => 8, 'maxlength' => 8));
@@ -501,7 +501,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
         ts('Leave Type'),
         $leaveTypeOptions,
         FALSE,
-        ['id' => 'hrjobcontract_leave_leave_type', 'multiple' => true]
+        ['id' => 'hrjobcontract_leave_leave_type', 'multiple' => true, 'class' => 'crm-select2 select2']
       );
     }
 
@@ -521,12 +521,12 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
           }
       }
       $form->add('select', 'hrjobcontract_pay_pay_scale', ts('Pay Scale'), $payScaleOptions, FALSE,
-        array('id' => 'hrjobcontract_pay_pay_scale', 'multiple' => true)
+        array('id' => 'hrjobcontract_pay_pay_scale', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
 
       $form->add('select', 'hrjobcontract_pay_is_paid', ts('Paid / Unpaid'),
         CRM_Core_PseudoConstant::get('CRM_Hrjobcontract_DAO_HRJobPay', 'is_paid'), FALSE,
-        array('id' => 'hrjobcontract_pay_is_paid', 'multiple' => 'multiple', 'title' => ts('- select -'))
+        array('id' => 'hrjobcontract_pay_is_paid', 'multiple' => 'multiple', 'class' => 'crm-select2 select2' ,'title' => ts('- select -'))
       );
 
       $form->add('text', 'hrjobcontract_pay_pay_amount', ts('Pay Amount'), array('size' => 8, 'maxlength' => 8));
@@ -537,10 +537,10 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $form->addRule('hrjobcontract_pay_pay_amount_high', ts('Please enter a valid money value (e.g. %1).', array(1 => CRM_Utils_Money::format('99.99', ' '))), 'money');
 
       $form->add('select', 'hrjobcontract_pay_pay_unit', ts('Pay Unit'), CRM_Hrjobcontract_SelectValues::payUnit(), FALSE,
-        array('id' => 'hrjobcontract_pay_pay_unit', 'multiple' => true)
+        array('id' => 'hrjobcontract_pay_pay_unit', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
       $form->add('select', 'hrjobcontract_pay_pay_currency', ts('Pay Currency'), array_keys(CRM_Hrjobcontract_Page_JobContractTab::getCurrencyFormats()), FALSE,
-        array('id' => 'hrjobcontract_pay_pay_currency', 'multiple' => true)
+        array('id' => 'hrjobcontract_pay_pay_currency', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
 
       $form->add('text', 'hrjobcontract_pay_pay_annualized_est', ts('Estimated Annual Pay'), array('size' => 8, 'maxlength' => 8));
@@ -563,7 +563,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
           $payCycleOptions[$payCycle['value']] = $payCycle['label'];
       }
       $form->add('select', 'hrjobcontract_pay_pay_cycle', ts('Pay Cycle'), $payCycleOptions, FALSE,
-        array('id' => 'hrjobcontract_pay_pay_cycle', 'multiple' => true)
+        array('id' => 'hrjobcontract_pay_pay_cycle', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
 
       $form->add('text', 'hrjobcontract_pay_pay_per_cycle_gross', ts('Pay Per Cycle Gross'), array('size' => 8, 'maxlength' => 8));
@@ -585,7 +585,7 @@ class CRM_Hrjobcontract_BAO_Query extends CRM_Contact_BAO_Query_Interface {
       $form->add('hidden', 'hidden_hrjobcontract_pension', 1);
 
       $form->add('select', 'hrjobcontract_pension_is_enrolled', ts('Is Enrolled'), array(0 => 'No', 1 => 'Yes', 2 => 'Opted out'), FALSE,
-        array('id' => 'hrjobcontract_pension_is_enrolled', 'multiple' => true)
+        array('id' => 'hrjobcontract_pension_is_enrolled', 'multiple' => true, 'class' => 'crm-select2 select2')
       );
 
       $form->add('text', 'hrjobcontract_pension_ee_contrib_pct_low', ts('From'), array('size' => 8, 'maxlength' => 8));

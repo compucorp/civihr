@@ -245,22 +245,22 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
             $locations = $this->getLocationOptions();
             $form->add('select', 'hrjobroles_location', ts('Location'), $locations, FALSE,
-                array('id' => 'hrjobroles_location', 'multiple' => true)
+                array('id' => 'hrjobroles_location', 'multiple' => true, 'class' => 'crm-select2 select2' )
             );
 
             $regions = $this->getRegionOptions();
             $form->add('select', 'hrjobroles_region', ts('Region'), $regions, FALSE,
-                array('id' => 'hrjobroles_region', 'multiple' => true)
+                array('id' => 'hrjobroles_region', 'multiple' => true, 'class' => 'crm-select2 select2' )
             );
 
             $departments = $this->getDepartmentOptions();
             $form->add('select', 'hrjobroles_department', ts('Department'), $departments, FALSE,
-                array('id' => 'hrjobroles_department', 'multiple' => true)
+                array('id' => 'hrjobroles_department', 'multiple' => true, 'class' => 'crm-select2 select2' )
             );
 
             $levels = $this->getLevelTypeOptions();
             $form->add('select', 'hrjobroles_level_type', ts('Level'), $levels, FALSE,
-                array('id' => 'hrjobroles_level_type', 'multiple' => true)
+                array('id' => 'hrjobroles_level_type', 'multiple' => true, 'class' => 'crm-select2 select2' )
             );
 
             $form->addElement('text', 'hrjobroles_funder', ts('Funder (Complete OR Partial Name)'), CRM_Core_DAO::getAttribute('CRM_Hrjobroles_DAO_HRJobRoles', 'funder'));
@@ -274,7 +274,7 @@ class CRM_Hrjobroles_BAO_Query extends CRM_Contact_BAO_Query_Interface {
 
             $costCentreOptions = $this->getCostCentreOptions();
             $form->add('select', 'hrjobroles_cost_center', ts('Cost Centre'), $costCentreOptions, FALSE,
-                array('id' => 'hrjobroles_cost_center', 'multiple' => true)
+                array('id' => 'hrjobroles_cost_center', 'multiple' => true, 'class' => 'crm-select2 select2' )
             );
 
             $form->add('select', 'hrjobroles_cost_center_val_type', ts('Cost Centre Value Type'), $this->fundindAndCostCentresOptions, FALSE,
