@@ -1,4 +1,4 @@
-var TEST_REGEXP = /spec\.js$/i;
+var TEST_REGEXP = /\.spec\.js$/i;
 var allTestFiles = [];
 var mocksPath = CRM.vars.hrjobroles.baseURL + '/js/test/mocks';
 var srcPath = CRM.vars.hrjobroles.baseURL + '/js/src/job-roles';

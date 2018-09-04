@@ -1,6 +1,6 @@
 /* globals CRM */
 
-var TEST_REGEXP = /spec\.js$/i;
+var TEST_REGEXP = /\.spec\.js$/i;
 var allTestFiles = [];
 var mocksPath = CRM.vars.contactsummary.baseURL + '/js/test/mocks';
 var srcPath = CRM.vars.contactsummary.baseURL + '/js/src/contact-summary';

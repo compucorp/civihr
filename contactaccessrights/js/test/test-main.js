@@ -1,4 +1,4 @@
-var TEST_REGEXP = /spec\.js$/i;
+var TEST_REGEXP = /\.spec\.js$/i;
 var allTestFiles = [];
 var srcPath = '/base/tools/extensions/civihr/contactaccessrights/js/src/access-rights';
 
