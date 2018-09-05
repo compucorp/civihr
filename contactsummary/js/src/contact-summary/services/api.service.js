@@ -6,7 +6,6 @@
   ], function (angular) {
     'use strict';
 
-    apiService.__name = 'apiService';
     apiService.$inject = ['$http', '$q'];
 
     function apiService ($http, $q) {
@@ -90,6 +89,6 @@
       }
     }
 
-    return apiService;
+    return { apiService: apiService };
   });
 }(CRM.$));

@@ -6,7 +6,6 @@ define([
 ], function (_, moment) {
   'use strict';
 
-  contactDetailsService.__name = 'contactDetailsService';
   contactDetailsService.$inject = ['$q', '$log', 'apiService', 'modelService', 'settings'];
 
   function contactDetailsService ($q, $log, Api, Model, settings) {
@@ -57,8 +56,8 @@ define([
 
             var dob = response.values[0].birth_date;
             var age = moment(dob, 'YYYY-MM-DD').isValid()
-            ? calculateAge(dob)
-            : '';
+              ? calculateAge(dob)
+              : '';
 
             factory.setDataKey('id', contactId);
             factory.setDataKey('dateOfBirth', dob);
@@ -77,5 +76,5 @@ define([
     }
   }
 
-  return contactDetailsService;
+  return { contactDetailsService: contactDetailsService };
 });

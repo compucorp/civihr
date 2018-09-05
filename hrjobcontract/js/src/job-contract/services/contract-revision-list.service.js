@@ -5,7 +5,6 @@ define([
 ], function (_) {
   'use strict';
 
-  contractRevisionListService.__name = 'contractRevisionListService';
   contractRevisionListService.$inject = [
     '$filter', '$q', '$log', 'contractService', 'contractFilesService',
     'contractRevisionService'
@@ -74,16 +73,16 @@ define([
             ]
           }
         })
-         .$promise.then(function (aggregated) {
-           return aggregated;
-         })
+          .$promise.then(function (aggregated) {
+            return aggregated;
+          })
       })
-       .then(function (results) {
-         return _.assign({
-           revisionEntityIdObj: revision,
-           files: results.files
-         }, expandAggregatedRevisionDetails(results.aggregated));
-       });
+        .then(function (results) {
+          return _.assign({
+            revisionEntityIdObj: revision,
+            files: results.files
+          }, expandAggregatedRevisionDetails(results.aggregated));
+        });
     }
 
     /**
@@ -113,5 +112,5 @@ define([
     }
   }
 
-  return contractRevisionListService;
+  return { contractRevisionListService: contractRevisionListService };
 });

@@ -12,10 +12,10 @@
     }
   });
 
-  require(['job-roles/modules/job-roles.module'], function (app) {
+  require(['job-roles/job-roles.module'], function (app) {
     'use strict';
 
-    document.dispatchEvent(typeof window.CustomEvent == "function" ? new CustomEvent('hrjobrolesReady') : (function () {
+    document.dispatchEvent(typeof window.CustomEvent === 'function' ? new CustomEvent('hrjobrolesReady') : (function () {
       var e = document.createEvent('Event');
       e.initEvent('hrjobrolesReady', true, true);
       return e;

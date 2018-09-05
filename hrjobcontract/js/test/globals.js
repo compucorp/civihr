@@ -1,10 +1,10 @@
-
 (function (CRM) {
-  CRM.jobContractTabApp = {
-    path: '/base/tools/extensions/civihr/hrjobcontract/'
+  CRM.vars = {
+    hrjobcontract: {
+      baseURL: '/base/tools/extensions/civihr/hrjobcontract/'
+    },
+    leaveAndAbsences: {}
   };
-
-  CRM.vars = { leaveAndAbsences: {} };
 
   CRM.url({
     back: '/index.php?q=*path*&*query*',

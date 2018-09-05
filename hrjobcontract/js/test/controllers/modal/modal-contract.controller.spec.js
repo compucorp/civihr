@@ -6,7 +6,7 @@ define([
   'common/moment',
   'mocks/data/contract.data',
   'mocks/data/insurance-plan-types.data',
-  'job-contract/modules/job-contract.module'
+  'job-contract/job-contract.module'
 ], function (angular, _, moment, MockContract, InsurancePlanTypesMock) {
   'use strict';
 
@@ -19,7 +19,7 @@ define([
       annualBenefitUrl, annualDeductionUrl;
     var today = moment().format('YYYY-MM-DD');
 
-    beforeEach(module('job-contract'));
+    beforeEach(module('job-contract', 'job-contract.templates'));
 
     beforeEach(module(function ($provide) {
       contractRevisionService = {
@@ -74,7 +74,6 @@ define([
       $httpBackend.whenGET(/action=getfields&entity=HRJobHealth/).respond({});
       $httpBackend.whenGET(/action=getfields&entity=HRJobPension/).respond({});
       $httpBackend.whenGET(/action=getoptions&entity=HRJobHealth/).respond({});
-      $httpBackend.whenGET(/views.*/).respond({});
     });
 
     beforeEach(function () {

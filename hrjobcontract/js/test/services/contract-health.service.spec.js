@@ -3,14 +3,14 @@
 define([
   'mocks/data/contract-revision.data',
   'mocks/data/insurance-plan-types.data',
-  'job-contract/modules/job-contract.module'
+  'job-contract/job-contract.module'
 ], function (ContractMock, InsuranceMock) {
   'use strict';
 
   describe('contractHealthService', function () {
     var $httpBackend, $rootScope, promise, contractHealthService;
 
-    beforeEach(module('job-contract'));
+    beforeEach(module('job-contract', 'job-contract.templates'));
     beforeEach(inject(function (_contractHealthService_, _$httpBackend_,
       _$rootScope_) {
       contractHealthService = _contractHealthService_;
@@ -22,7 +22,6 @@ define([
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
       $httpBackend.whenGET(/action=get&entity=HRJobHealth/).respond(ContractMock.contractRevision);
       $httpBackend.whenGET(/action=getoptions&entity=HRJobHealth/).respond(InsuranceMock);
-      $httpBackend.whenGET(/views.*/).respond({});
     });
 
     describe('getOne()', function () {

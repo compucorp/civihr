@@ -8,7 +8,6 @@ define([
    * @constructor
    */
 
-  dateValidation.__name = 'dateValidation';
   dateValidation.$inject = ['HR_settings'];
 
   function dateValidation (hrSettings) {
@@ -146,5 +145,5 @@ define([
     }
   }
 
-  return dateValidation;
+  return { dateValidation: dateValidation };
 });

@@ -3,8 +3,7 @@
 define([
   'common/angularMocks',
   'mocks/services.mock',
-  'contact-summary/modules/contact-summary.module',
-  'contact-summary/services/contact.service'
+  'contact-summary/contact-summary.module'
 ], function () {
   'use strict';
 
@@ -13,7 +12,7 @@ define([
       modelServiceMock, rootScope;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks',
-      'contact-summary.templates'));
+      'contactsummary.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('modelService', function () {

@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  contactService.__name = 'contactService';
   contactService.$inject = ['$resource', 'settings', '$q', 'utilsService', '$log'];
 
   function contactService ($resource, settings, $q, utilsService, $log) {
@@ -69,5 +68,5 @@ define(function () {
     };
   }
 
-  return contactService;
+  return { contactService: contactService };
 });

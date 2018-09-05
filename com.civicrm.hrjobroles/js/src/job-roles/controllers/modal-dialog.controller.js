@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  ModalDialogController.__name = 'ModalDialogController';
   ModalDialogController.$inject = ['$uibModalInstance', '$log', '$timeout', 'content'];
 
   function ModalDialogController ($modalInstance, $log, $timeout, content) {
@@ -36,5 +35,5 @@ define(function () {
     }
   }
 
-  return ModalDialogController;
+  return { ModalDialogController: ModalDialogController };
 });

@@ -4,7 +4,7 @@ define([
   'common/angularMocks',
   'mocks/constants.mock',
   'mocks/services.mock',
-  'contact-summary/modules/contact-summary.module'
+  'contact-summary/contact-summary.module'
 ], function () {
   'use strict';
 
@@ -12,7 +12,7 @@ define([
     var ctrlConstructor,
       PubSubMock, contractServiceMock, contactDetailsServiceMock;
 
-    beforeEach(module('contactsummary', 'contactsummary.mocks'));
+    beforeEach(module('contactsummary', 'contactsummary.mocks', 'contactsummary.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('pubSub', function () {

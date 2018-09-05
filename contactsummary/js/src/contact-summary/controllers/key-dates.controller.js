@@ -7,7 +7,6 @@ define([
 ], function (angular, _, moment) {
   'use strict';
 
-  KeyDatesController.__name = 'KeyDatesController';
   KeyDatesController.$inject = ['$log', 'contractService', 'jobRoleService', 'pubSub'];
 
   function KeyDatesController ($log, Contract, JobRole, pubSub) {
@@ -123,5 +122,5 @@ define([
     }
   }
 
-  return KeyDatesController;
+  return { KeyDatesController: KeyDatesController };
 });

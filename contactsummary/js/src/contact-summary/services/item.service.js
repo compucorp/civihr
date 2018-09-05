@@ -7,8 +7,6 @@ define([
 ], function (angular, _, moment) {
   'use strict';
 
-  itemService.__name = 'itemService';
-
   function itemService () {
     var factory = {};
 
@@ -56,5 +54,5 @@ define([
     }
   }
 
-  return itemService;
+  return { itemService: itemService };
 });

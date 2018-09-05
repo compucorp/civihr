@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  FormHealthController.__name = 'FormHealthController';
   FormHealthController.$inject = ['$log', '$scope', 'contactService'];
 
   function FormHealthController ($log, $scope, contactService) {
@@ -44,5 +43,5 @@ define(function () {
     }
   }
 
-  return FormHealthController;
+  return { FormHealthController: FormHealthController };
 });

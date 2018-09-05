@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  capitalize.__name = 'capitalize';
   capitalize.$inject = ['$log'];
 
   function capitalize ($log) {
@@ -14,5 +13,5 @@ define(function () {
     };
   }
 
-  return capitalize;
+  return { capitalize: capitalize };
 });

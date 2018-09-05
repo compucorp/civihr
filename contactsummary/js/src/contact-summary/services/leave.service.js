@@ -9,7 +9,6 @@ define([
 
   var promiseCache = {};
 
-  leaveService.__name = 'leaveService';
   leaveService.$inject = ['$q', '$log', '$filter', 'apiService', 'modelService', 'contactDetailsService'];
 
   function leaveService ($q, $log, $filter, Api, Model, ContactDetails) {
@@ -414,5 +413,5 @@ define([
     }
   }
 
-  return leaveService;
+  return { leaveService: leaveService };
 });

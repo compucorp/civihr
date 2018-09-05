@@ -5,7 +5,6 @@ define([
 ], function (_) {
   'use strict';
 
-  contactService.__name = 'contactService';
   contactService.$inject = ['$log', '$q', 'modelService', 'contactDetailsService', 'contractService'];
 
   function contactService ($log, $q, Model, ContactDetails, Contract) {
@@ -54,11 +53,11 @@ define([
 
     function initContract () {
       return Contract.get()
-      .then(function (response) {
-        factory.setDataKey('contract', response);
-      });
+        .then(function (response) {
+          factory.setDataKey('contract', response);
+        });
     }
   }
 
-  return contactService;
+  return { contactService: contactService };
 });

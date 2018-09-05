@@ -5,7 +5,6 @@ define([
 ], function (_) {
   'use strict';
 
-  contractService.__name = 'contractService';
   contractService.$inject = [
     '$log', '$q', 'Contract', 'contractRevisionService', 'settings', 'utilsService',
     'DOMEventTrigger', 'AbsenceType'
@@ -337,5 +336,5 @@ define([
     }
   }
 
-  return contractService;
+  return { contractService: contractService };
 });

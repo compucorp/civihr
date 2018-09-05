@@ -7,7 +7,7 @@ define([
   'mocks/data/job-role.data',
   'common/angularMocks',
   'common/services/pub-sub',
-  'job-roles/modules/job-roles.module'
+  'job-roles/job-roles.module'
 ], function (angular, _, moment, JobRoleDataMock) {
   'use strict';
 
@@ -15,7 +15,7 @@ define([
     var $controller, $filter, $q, $rootScope, crmAngService, dateValidation, jobRoleService, ctrl, pubSub, scope, settingsData;
     var contactId = '123';
 
-    beforeEach(module('hrjobroles'));
+    beforeEach(module('hrjobroles', 'hrjobroles.templates'));
     beforeEach(inject(function (_$controller_, _$filter_, $httpBackend, _$q_, _$rootScope_, _crmAngService_, _pubSub_, _dateValidation_, _jobRoleService_) {
       $controller = _$controller_;
       $filter = _$filter_;
@@ -26,9 +26,6 @@ define([
       pubSub = _pubSub_;
       dateValidation = _dateValidation_;
       jobRoleService = _jobRoleService_;
-
-      // Ignores any request for templates
-      $httpBackend.expectGET(/\/views\//).respond(200);
 
       // Mock data from CiviCRM settings
       dateValidation.dateFormats.push('DD/MM/YYYY');

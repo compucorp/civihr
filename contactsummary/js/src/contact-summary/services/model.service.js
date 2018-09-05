@@ -1,12 +1,10 @@
 /* eslint-env amd */
 
 define([
-  'common/lodash',
-  'contact-summary/modules/contact-summary.services'
-], function (_, services) {
+  'common/lodash'
+], function (_) {
   'use strict';
 
-  modelService.__name = 'modelService';
   modelService.$inject = ['itemService'];
 
   function modelService (Item) {
@@ -53,5 +51,5 @@ define([
     }
   }
 
-  return modelService;
+  return { modelService: modelService };
 });
