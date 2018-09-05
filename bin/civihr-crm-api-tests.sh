@@ -62,10 +62,9 @@ if [ "${DSNDBNAME}" == "${CIVIDBNAME}" ]; then
   fi
 fi
 
-runTest hrreport org.civicrm.hrabsence,org.civicrm.hrjob,org.civicrm.hrreport CRM_AllTests
+runTest hrreport org.civicrm.hrjob,org.civicrm.hrreport CRM_AllTests
 runTest hrjob org.civicrm.hrjob api_v3_AllTests
 runTest hrjob org.civicrm.hrjob CRM_AllTests
-runTest hrabsence org.civicrm.hrabsence api_v3_AllTests
 
 if [ -f "${SQLDUMP}" ] ; then
   rm "${SQLDUMP}"
