@@ -191,7 +191,7 @@ define([
       var modalUpdateEntitlements = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
         size: 'sm',
-        templateUrl: settings.baseUrl + 'controllers/modal-dialog.html',
+        templateUrl: settings.baseUrl + 'controllers/modal/modal-dialog.html',
         controller: 'ModalDialogController',
         resolve: {
           content: {
