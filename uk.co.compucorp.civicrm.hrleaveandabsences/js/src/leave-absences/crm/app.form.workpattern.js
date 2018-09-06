@@ -2,9 +2,15 @@
 /* globals ts, Inputmask */
 
 define([
+  'common/moment',
   'leave-absences/crm/app',
   'leave-absences/crm/vendor/inputmask/inputmask.numeric.extensions.min'
-], function (HRLeaveAndAbsencesApp) {
+], function (moment, HRLeaveAndAbsencesApp) {
+  'use strict';
+
+  var timeFormat = 'HH:mm';
+  var timeBaseInMinutes = 15;
+
   openTabWithErrorsIfPresented();
 
   /**
@@ -417,26 +423,106 @@ define([
      * @private
      */
     Day.prototype._setFieldsMasks = function () {
-      var hourMask = Inputmask({
-        'mask': '99:99',
-        'oncomplete': this._calculateNumberOfHours.bind(this)
+      var self = this;
+
+      var timeFromMask = Inputmask({
+        mask: '99:99',
+        oncomplete: function () {
+          self._onTimeChange('From');
+        }
+      });
+
+      var timeToMask = Inputmask({
+        mask: '99:99',
+        oncomplete: function () {
+          self._onTimeChange('To');
+        }
       });
 
       var breakMask = Inputmask({
-        'alias': 'decimal',
-        'rightAlign': false,
-        'oncomplete': this._calculateNumberOfHours.bind(this)}
-      );
-
-      var numberOfHoursMask = Inputmask({
-        'alias': 'decimal',
-        'rightAlign': false
+        alias: 'decimal',
+        rightAlign: false,
+        oncomplete: function () {
+          self._calculateNumberOfHours();
+        }
       });
 
-      hourMask.mask(this._timeFromField);
-      hourMask.mask(this._timeToField);
+      var numberOfHoursMask = Inputmask({
+        alias: 'decimal',
+        rightAlign: false,
+        oncomplete: this._onNumberOfHoursChange.bind(this)
+      });
+
+      timeFromMask.mask(this._timeFromField);
+      timeToMask.mask(this._timeToField);
       breakMask.mask(this._breakField);
       numberOfHoursMask.mask(this._numberOfHoursField);
+    };
+
+    /**
+     * Reacts to the change of a time input of a given type.
+     * Adjusts the time value, the range between times, rounds the value
+     * and finally calculates the number of hours.
+     *
+     * @param {String} timeType From|To
+     */
+    Day.prototype._onTimeChange = function (timeType) {
+      this._adjustTimeValue(timeType);
+      this._adjustTimesRange(timeType);
+      this._roundTimeValue(timeType);
+      this._calculateNumberOfHours();
+    };
+
+    /**
+     * Gets the time input by a type
+     *
+     * @param  {String} timeType From|To
+     * @return {jQuery}
+     */
+    Day.prototype._getTimeInputOfType = function (timeType) {
+      return $(this['_time' + timeType + 'Field']);
+    };
+
+    /**
+     * Reacts to the change of number of hours.
+     * If the amount is greater than the range between times, sets to that range.
+     */
+    Day.prototype._onNumberOfHoursChange = function () {
+      var $numberOfHoursField = $(this._numberOfHoursField);
+      var rangeInHours = moment.duration(
+        moment(this._timeToField.value, timeFormat)
+          .diff(moment(this._timeFromField.value, timeFormat))).asHours();
+
+      if ($numberOfHoursField.val() > rangeInHours) {
+        this._calculateNumberOfHours(true);
+      }
+    };
+
+    /**
+     * Adjusts the range between times.
+     * If the range is less than 0, then adjusts the time input that was changed.
+     *
+     * @param {String} timeType From|To
+     */
+    Day.prototype._adjustTimesRange = function (timeType) {
+      var $inputs = {
+        From: $(this._timeFromField),
+        To: $(this._timeToField)
+      };
+      var timesMoment = {
+        From: moment($inputs.From.val(), timeFormat),
+        To: moment($inputs.To.val(), timeFormat)
+      };
+
+      if (timesMoment.To.diff(timesMoment.From) <= 0) {
+        if (timeType === 'From') {
+          $inputs.From.val(timesMoment.To
+            .subtract(timeBaseInMinutes, 'minutes').format(timeFormat));
+        } else {
+          $inputs.To.val(timesMoment.From
+            .add(timeBaseInMinutes, 'minutes').format(timeFormat));
+        }
+      }
     };
 
     /**
@@ -447,7 +533,7 @@ define([
      *
      * @private
      */
-    Day.prototype._calculateNumberOfHours = function () {
+    Day.prototype._calculateNumberOfHours = function (ignoreBreak) {
       var secondsInPeriod = 0;
       var secondsInBreak = 0;
       var numberOfHours = 0;
@@ -460,7 +546,7 @@ define([
 
       var timeFrom = Date.parse('2016-01-01 ' + this._timeFromField.value);
       var timeTo = Date.parse('2016-01-01 ' + this._timeToField.value);
-      var breakHours = parseFloat(this._breakField.value);
+      var breakHours = ignoreBreak ? 0 : parseFloat(this._breakField.value);
 
       if (!isNaN(timeFrom) && !isNaN(timeTo) && !isNaN(breakHours)) {
         secondsInPeriod = (timeTo - timeFrom) / 1000;
@@ -471,6 +557,53 @@ define([
         this._roundNumberOfHours();
         this._emitter.trigger('numberofhourschange');
       }
+    };
+
+    /**
+     * Adjusts the time value for the specified type.
+     * It allows to select only times in the specific range:
+     * - "from" time 00:00 to 23:30
+     * - "to" time 00:15 to 23:45
+     *
+     * @param {String} timeType From|To
+     */
+    Day.prototype._adjustTimeValue = function (timeType) {
+      var $input = this._getTimeInputOfType(timeType);
+      var time = $input.val();
+      var momentTime = moment(time, timeFormat);
+      var minTime = moment('00:00', timeFormat);
+      var maxTime = moment('23:45', timeFormat);
+
+      (timeType === 'To') && minTime.add(timeBaseInMinutes, 'minutes');
+      (timeType === 'From') && maxTime.subtract(timeBaseInMinutes, 'minutes');
+
+      if ((!momentTime.isValid() && timeType === 'From') || momentTime.isBefore(minTime)) {
+        momentTime = minTime;
+      } else if ((!momentTime.isValid() && timeType === 'To') || momentTime.isAfter(maxTime)) {
+        momentTime = maxTime;
+      }
+
+      time = momentTime.format(timeFormat);
+
+      $input.val(time);
+    };
+
+    /**
+     * Rounds time value to a set base for a specified time type,
+     * then sets the value back to the input.
+     *
+     * @param {String} timeType From|To
+     */
+    Day.prototype._roundTimeValue = function (timeType) {
+      var $input = this._getTimeInputOfType(timeType);
+      var time = $input.val();
+      var base = timeBaseInMinutes * 60;
+      var unix = moment(time, timeFormat).unix();
+      var updatedUnix = Math[timeType === 'To' ? 'ceil' : 'floor'](unix / base) * base;
+
+      time = moment.unix(updatedUnix).format(timeFormat);
+
+      $input.val(time);
     };
 
     /**
