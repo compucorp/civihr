@@ -40,6 +40,7 @@ define([
     var originalOpeningBalance = null;
     var listeners = [];
     var vm = this;
+    var timeFormat = 'HH:mm';
 
     vm.canManage = false;
     vm.calendar = {};
@@ -783,7 +784,13 @@ define([
      * @param {String} time - start time in HH:mm format
      */
     function updateEndTimeInputMinTime (time) {
-      var timeToMin = getMomentDateWithGivenTime(time)
+      var timeToMin;
+      var base = sharedSettings.timeBaseInMinutes * 60;
+
+      time = moment.unix(
+        Math.ceil(moment(time, timeFormat).unix() / base) * base)
+        .format(timeFormat);
+      timeToMin = getMomentDateWithGivenTime(time)
         .add(vm.uiOptions.time_interval, 'minutes');
 
       if (timeToMin.isAfter(getMomentDateWithGivenTime(vm.uiOptions.times.to.max))) {

@@ -7,9 +7,10 @@ define([
 ], function (_, moment, controllers) {
   controllers.controller('RequestModalDetailsLeaveController', RequestModalDetailsLeaveController);
 
-  RequestModalDetailsLeaveController.$inject = ['$controller', '$log', '$q', '$rootScope', 'detailsController', 'PublicHoliday', 'LeaveRequest'];
+  RequestModalDetailsLeaveController.$inject = ['$controller', '$log', '$q', '$rootScope', 'detailsController', 'PublicHoliday', 'LeaveRequest', 'shared-settings'];
 
-  function RequestModalDetailsLeaveController ($controller, $log, $q, $rootScope, detailsController, PublicHoliday, LeaveRequest) {
+  function RequestModalDetailsLeaveController ($controller, $log, $q, $rootScope, detailsController, PublicHoliday, LeaveRequest, sharedSettings) {
+    var timeFormat = 'HH:mm';
     var workDays = {};
 
     $log.debug('RequestModalDetailsLeaveController');
@@ -363,6 +364,8 @@ define([
 
       return detailsController.request.getWorkDayForDate(detailsController.convertDateToServerFormat(date))
         .then(function (workDay) {
+          roundWorkDayTimes(workDay);
+
           workDays[dateType] = workDay;
 
           enableAndSetDataToTimeInput(dateType, workDay);
@@ -394,6 +397,28 @@ define([
       timeObject.max = '00:00';
       timeObject.amount = '0';
       timeObject.maxAmount = '0';
+    }
+
+    /**
+     * Rounds work day times according to the base, if times exist.
+     *
+     * @param {Object} workDay object resolved by leaveRequest.getWorkDayForDate()
+     */
+    function roundWorkDayTimes (workDay) {
+      var unix, updatedUnix;
+      var base = sharedSettings.timeBaseInMinutes * 60;
+
+      ['from', 'to'].forEach(function (timeType) {
+        var timeKey = ['time_' + timeType];
+
+        if (!workDay[timeKey]) {
+          return;
+        }
+
+        unix = moment(workDay[timeKey], timeFormat).unix();
+        updatedUnix = Math[timeType === 'to' ? 'ceil' : 'floor'](unix / base) * base;
+        workDay[timeKey] = moment.unix(updatedUnix).format(timeFormat);
+      });
     }
 
     /**

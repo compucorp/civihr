@@ -178,13 +178,31 @@ define([
             controller.absenceTypes[1].calculation_unit_name = 'hours';
             controller.request.type_id = controller.absenceTypes[1].id;
 
-            spyOn(controller.request, 'getWorkDayForDate');
+            spyOn(controller.request, 'getWorkDayForDate').and.returnValue($q.resolve({
+              time_from: '09:01',
+              time_to: '14:29'
+            }));
             $rootScope.$broadcast('LeaveRequestPopup::absenceTypeChanged');
             $rootScope.$digest();
           });
 
           it('does not yet fetch work pattern details for "from" date', function () {
             expect(controller.request.getWorkDayForDate).not.toHaveBeenCalled();
+          });
+
+          describe('when from date is set', function () {
+            beforeEach(function () {
+              controller.uiOptions.fromDate = date2016;
+              controller.onDateChangeExtended('from');
+              $rootScope.$digest();
+            });
+
+            it('rounds the minimum and maximum times', function () {
+              expect(controller.uiOptions.times.from.min).toBe('09:00');
+              expect(controller.uiOptions.times.from.max).toBe('14:15');
+              expect(controller.uiOptions.times.to.min).toBe('09:15');
+              expect(controller.uiOptions.times.to.max).toBe('14:30');
+            });
           });
         });
       });
