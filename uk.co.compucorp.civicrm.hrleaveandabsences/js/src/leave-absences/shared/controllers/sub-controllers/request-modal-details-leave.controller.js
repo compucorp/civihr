@@ -400,14 +400,30 @@ define([
     }
 
     /**
+     * Rounds time according to the time type and time interval.
+     * For example, if the time type is "from", the time given is 12:44
+     * and the interval is 15 minutes, then it will round down to 12:30.
+     * If the time type is "to", it will round up to 12:45.
+     *
+     * @param  {String} time
+     * @param  {String} timeType from|to
+     * @return {String} rounded time
+     */
+    function roundTimeAccordingToTheTimeInterval (time, timeType) {
+      var base = sharedSettings.timeBaseInMinutes * 60;
+
+      time = moment(time, timeFormat).unix();
+      time = Math[timeType === 'to' ? 'ceil' : 'floor'](time / base) * base;
+
+      return moment.unix(time).format(timeFormat);
+    }
+
+    /**
      * Rounds work day times according to the base, if times exist.
      *
      * @param {Object} workDay object resolved by leaveRequest.getWorkDayForDate()
      */
     function roundWorkDayTimes (workDay) {
-      var unix, updatedUnix;
-      var base = sharedSettings.timeBaseInMinutes * 60;
-
       ['from', 'to'].forEach(function (timeType) {
         var timeKey = ['time_' + timeType];
 
@@ -415,9 +431,7 @@ define([
           return;
         }
 
-        unix = moment(workDay[timeKey], timeFormat).unix();
-        updatedUnix = Math[timeType === 'to' ? 'ceil' : 'floor'](unix / base) * base;
-        workDay[timeKey] = moment.unix(updatedUnix).format(timeFormat);
+        workDay[timeKey] = roundTimeAccordingToTheTimeInterval(workDay[timeKey], timeType);
       });
     }
 

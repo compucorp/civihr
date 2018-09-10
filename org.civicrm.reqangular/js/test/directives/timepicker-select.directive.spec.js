@@ -128,7 +128,7 @@ define([
         });
       });
 
-      describe('when a default value specified and it is not a part of listed options', function () {
+      describe('when a default value is specified and it is not a part of listed options', function () {
         var initialCustomValue = '08:51';
 
         beforeEach(function () {

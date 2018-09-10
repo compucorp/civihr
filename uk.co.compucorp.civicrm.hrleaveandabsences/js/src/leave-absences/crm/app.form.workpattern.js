@@ -468,7 +468,7 @@ define([
      */
     Day.prototype._onTimeChange = function (timeType) {
       this._adjustTimeValue(timeType);
-      this._adjustTimesRange(timeType);
+      this._adjustTimeIfRangeIsInvalid(timeType);
       this._roundTimeValue(timeType);
       this._calculateNumberOfHours();
     };
@@ -499,12 +499,15 @@ define([
     };
 
     /**
-     * Adjusts the range between times.
-     * If the range is less than 0, then adjusts the time input that was changed.
+     * Adjusts the time if the range is less or equal to zero.
+     * For example, if the start time is 10:00 and the end time was set to 9:00,
+     * then the range is less than 0. We then set the end time
+     * to 10:00 + time inteval (15 minutes) which results 10:15.
+     * Symmetric logic is applied for the start time.
      *
      * @param {String} timeType From|To
      */
-    Day.prototype._adjustTimesRange = function (timeType) {
+    Day.prototype._adjustTimeIfRangeIsInvalid = function (timeType) {
       var $inputs = {
         From: $(this._timeFromField),
         To: $(this._timeToField)
@@ -531,6 +534,7 @@ define([
      *
      * If any of this fields are empty, the number of hours will also be empty.
      *
+     * @param {Boolean} [ignoreBreak] do not take the break into account
      * @private
      */
     Day.prototype._calculateNumberOfHours = function (ignoreBreak) {
@@ -573,13 +577,15 @@ define([
       var momentTime = moment(time, timeFormat);
       var minTime = moment('00:00', timeFormat);
       var maxTime = moment('23:45', timeFormat);
+      var fromTimeIsBeforeMinTime = (!momentTime.isValid() && timeType === 'From') || momentTime.isBefore(minTime);
+      var toTimeIsAfterMaxTime = (!momentTime.isValid() && timeType === 'To') || momentTime.isAfter(maxTime);
 
       (timeType === 'To') && minTime.add(timeBaseInMinutes, 'minutes');
       (timeType === 'From') && maxTime.subtract(timeBaseInMinutes, 'minutes');
 
-      if ((!momentTime.isValid() && timeType === 'From') || momentTime.isBefore(minTime)) {
+      if (fromTimeIsBeforeMinTime) {
         momentTime = minTime;
-      } else if ((!momentTime.isValid() && timeType === 'To') || momentTime.isAfter(maxTime)) {
+      } else if (toTimeIsAfterMaxTime) {
         momentTime = maxTime;
       }
 
@@ -597,11 +603,8 @@ define([
     Day.prototype._roundTimeValue = function (timeType) {
       var $input = this._getTimeInputOfType(timeType);
       var time = $input.val();
-      var base = timeBaseInMinutes * 60;
-      var unix = moment(time, timeFormat).unix();
-      var updatedUnix = Math[timeType === 'To' ? 'ceil' : 'floor'](unix / base) * base;
 
-      time = moment.unix(updatedUnix).format(timeFormat);
+      time = roundTimeAccordingToTheTimeInterval(time, timeType);
 
       $input.val(time);
     };
@@ -700,6 +703,25 @@ define([
       CRM.$('.tab-pane').index(CRM.$('.crm-error:first').closest('.tab-pane'));
 
     (indexOfTabWithErrors !== -1) && CRM.$('.nav-tabs a').eq(indexOfTabWithErrors).click();
+  }
+
+  /**
+   * Rounds time according to the time type and time interval.
+   * For example, if the time type is "from", the time given is 12:44
+   * and the interval is 15 minutes, then it will round down to 12:30.
+   * If the time type is "to", it will round up to 12:45.
+   *
+   * @param  {String} time
+   * @param  {String} timeType from|to
+   * @return {String} rounded time
+   */
+  function roundTimeAccordingToTheTimeInterval (time, timeType) {
+    var base = timeBaseInMinutes * 60;
+
+    time = moment(time, timeFormat).unix();
+    time = Math[timeType === 'to' ? 'ceil' : 'floor'](time / base) * base;
+
+    return moment.unix(time).format(timeFormat);
   }
 
   return HRLeaveAndAbsencesApp;
