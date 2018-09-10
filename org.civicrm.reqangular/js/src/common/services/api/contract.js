@@ -43,6 +43,15 @@ define([
 
             return contracts;
           });
+      },
+      getContactsWithContractsInPeriod: function (startDate, endDate) {
+        return this.sendGET('HRJobContract', 'getcontactswithcontractsinperiod', {
+          start_date: startDate,
+          end_date: endDate
+        })
+          .then(function (response) {
+            return response.values;
+          });
       }
     });
 

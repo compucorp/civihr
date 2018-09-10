@@ -15,6 +15,10 @@ define([
         });
       },
 
+      getContactsWithContractsInPeriod: function () {
+        return $q.resolve(_.first(_.map(ContractData.all.values, 'id')));
+      },
+
       /**
        * Returns mocked contracts
        *
