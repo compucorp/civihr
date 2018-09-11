@@ -572,16 +572,18 @@ define([
      * @param {String} timeType From|To
      */
     Day.prototype._adjustTimeValue = function (timeType) {
+      var fromTimeIsBeforeMinTime, toTimeIsAfterMaxTime;
       var $input = this._getTimeInputOfType(timeType);
       var time = $input.val();
       var momentTime = moment(time, timeFormat);
       var minTime = moment('00:00', timeFormat);
       var maxTime = moment('23:45', timeFormat);
-      var fromTimeIsBeforeMinTime = (!momentTime.isValid() && timeType === 'From') || momentTime.isBefore(minTime);
-      var toTimeIsAfterMaxTime = (!momentTime.isValid() && timeType === 'To') || momentTime.isAfter(maxTime);
 
       (timeType === 'To') && minTime.add(timeBaseInMinutes, 'minutes');
       (timeType === 'From') && maxTime.subtract(timeBaseInMinutes, 'minutes');
+
+      fromTimeIsBeforeMinTime = (!momentTime.isValid() && timeType === 'From') || momentTime.isBefore(minTime);
+      toTimeIsAfterMaxTime = (!momentTime.isValid() && timeType === 'To') || momentTime.isAfter(maxTime);
 
       if (fromTimeIsBeforeMinTime) {
         momentTime = minTime;
