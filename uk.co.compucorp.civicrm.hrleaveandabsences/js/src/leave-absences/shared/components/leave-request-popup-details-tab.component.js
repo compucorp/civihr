@@ -196,13 +196,21 @@ define([
     }
 
     /**
-     * Converts given date to server format
+     * Converts given date to server format.
+     * At first, it attempts to parse the date from the timepicker format,
+     * if it fails, then it falls back to format auto-detection.
      *
-     * @param {Date} date
+     * @param  {Date} date
      * @return {String} date converted to server format
      */
     function convertDateToServerFormat (date) {
-      return moment(date).format(sharedSettings.serverDateFormat);
+      var parsedDate = moment(date, sharedSettings.timepickerDateFormat, true);
+
+      if (!parsedDate.isValid()) {
+        parsedDate = moment(date);
+      }
+
+      return parsedDate.format(sharedSettings.serverDateFormat);
     }
 
     /**

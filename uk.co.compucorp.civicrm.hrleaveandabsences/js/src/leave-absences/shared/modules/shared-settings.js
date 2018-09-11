@@ -11,6 +11,7 @@
       sharedPathTpl: CRM.vars.leaveAndAbsences.baseURL + '/views/shared/',
       sourcePath: CRM.vars.leaveAndAbsences.baseURL + '/js/src/leave-absences/',
       timeBaseInMinutes: 15,
+      timepickerDateFormat: 'DD/MM/YYYY',
       serverDateFormat: 'YYYY-MM-DD',
       serverDateTimeFormat: 'YYYY-MM-DD HH:mm:ss',
       permissions: {
