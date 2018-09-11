@@ -16,7 +16,7 @@ define([
       },
 
       getContactsWithContractsInPeriod: function () {
-        return $q.resolve(_.first(_.map(ContractData.all.values, 'id')));
+        return $q.resolve(ContractData.contactsWithContractsInPeriod.values);
       },
 
       /**

@@ -9,13 +9,14 @@ define([
   'common/models/job-role',
   'common/models/session.model',
   'common/models/instances/contact-instance',
-  'common/services/api/contact'
+  'common/services/api/contact',
+  'common/services/api/contract'
 ], function (_, models) {
   'use strict';
 
   models.factory('Contact', [
-    '$q', 'api.contact', 'ContactInstance', 'ContactJobRole', 'Group', 'JobRole', 'Model', 'Session',
-    function ($q, contactAPI, instance, ContactJobRole, Group, JobRole, Model, Session) {
+    '$q', 'api.contact', 'api.contract', 'ContactInstance', 'ContactJobRole', 'Group', 'JobRole', 'Model', 'Session',
+    function ($q, contactAPI, jobContractAPI, instance, ContactJobRole, Group, JobRole, Model, Session) {
       var groupFiltersKeys = ['group_id'];
       var jobRoleFiltersKeys = ['region', 'department', 'level_type', 'location'];
 
@@ -120,8 +121,18 @@ define([
          * @return {Promise}
          */
         all: function (filters, pagination, sort, additionalParams) {
+          var response;
+          var extraFilters = {};
+
+          if (filters && filters.with_contract_in_period) {
+            extraFilters.with_contract_in_period =
+              _.clone(filters.with_contract_in_period);
+
+            delete filters.with_contract_in_period;
+          }
+
           return processContactFilters.call(this, filters)
-            .then(function (filters) {
+            .then(function (filters, extraFilters) {
               // if ID is empty array directly resolve the promise without calling the API
               if (filters && filters.id && !filters.id.IN.length) {
                 return {list: []};
@@ -129,7 +140,24 @@ define([
                 return contactAPI.all(filters, pagination, sort, additionalParams);
               }
             })
-            .then(function (response) {
+            .then(function (_response_) {
+              response = _response_;
+            })
+            .then(function () {
+              if (!extraFilters.with_contract_in_period) {
+                return;
+              }
+
+              return jobContractAPI.getContactsWithContractsInPeriod(
+                extraFilters.with_contract_in_period[0],
+                extraFilters.with_contract_in_period[1])
+                .then(function (contactsWithContracts) {
+                  response.list = response.list.filter(function (contact) {
+                    return _.includes(_.map(contactsWithContracts, 'id'), contact.id);
+                  });
+                });
+            })
+            .then(function () {
               response.list = response.list.map(function (contact) {
                 return instance.init(contact, true);
               });
