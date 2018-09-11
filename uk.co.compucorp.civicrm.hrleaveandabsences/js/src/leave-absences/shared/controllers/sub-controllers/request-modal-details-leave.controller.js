@@ -28,6 +28,52 @@ define([
     detailsController.setDaysSelectionModeExtended = setDaysSelectionModeExtended;
 
     /**
+     * Adjusts the time for a work patterns day depending on the day type.
+     * It allows values accoring to the logic below:
+     * - "start" day time 00:00 to 23:30
+     * - "end" day time 00:15 to 23:45
+     *
+     * @param  {String} time
+     * @param  {String} timeType from|to
+     * @return {String} adjusted time
+     */
+    function adjustWorkPatternTime (time, timeType) {
+      var timeBaseInMinutes = sharedSettings.timeBaseInMinutes;
+      var momentTime = moment(time, timeFormat);
+      var minTime = moment('00:00', timeFormat);
+      var maxTime = moment('23:45', timeFormat);
+
+      (timeType === 'to') && minTime.add(timeBaseInMinutes, 'minutes');
+      (timeType === 'from') && maxTime.subtract(timeBaseInMinutes, 'minutes');
+
+      if (momentTime.isBefore(minTime)) {
+        momentTime = minTime;
+      } else if (momentTime.isAfter(maxTime)) {
+        momentTime = maxTime;
+      }
+
+      return momentTime.format(timeFormat);
+    }
+
+    /**
+     * Rounds work day times according to the base, if times exist.
+     *
+     * @param {Object} workDay object resolved by leaveRequest.getWorkDayForDate()
+     */
+    function adjustWorkPatternTimes (workDay) {
+      ['from', 'to'].forEach(function (timeType) {
+        var timeKey = ['time_' + timeType];
+
+        if (!workDay[timeKey]) {
+          return;
+        }
+
+        workDay[timeKey] = adjustWorkPatternTime(workDay[timeKey], timeType);
+        workDay[timeKey] = roundWorkPatternTime(workDay[timeKey], timeType);
+      });
+    }
+
+    /**
      * Calculates balance change by fetching the balance breakdown via the API
      *
      * @return {Promise}
@@ -364,7 +410,7 @@ define([
 
       return detailsController.request.getWorkDayForDate(detailsController.convertDateToServerFormat(date))
         .then(function (workDay) {
-          roundWorkDayTimes(workDay);
+          adjustWorkPatternTimes(workDay);
 
           workDays[dateType] = workDay;
 
@@ -409,30 +455,13 @@ define([
      * @param  {String} timeType from|to
      * @return {String} rounded time
      */
-    function roundTimeAccordingToTheTimeInterval (time, timeType) {
+    function roundWorkPatternTime (time, timeType) {
       var base = sharedSettings.timeBaseInMinutes * 60;
 
       time = moment(time, timeFormat).unix();
       time = Math[timeType === 'to' ? 'ceil' : 'floor'](time / base) * base;
 
       return moment.unix(time).format(timeFormat);
-    }
-
-    /**
-     * Rounds work day times according to the base, if times exist.
-     *
-     * @param {Object} workDay object resolved by leaveRequest.getWorkDayForDate()
-     */
-    function roundWorkDayTimes (workDay) {
-      ['from', 'to'].forEach(function (timeType) {
-        var timeKey = ['time_' + timeType];
-
-        if (!workDay[timeKey]) {
-          return;
-        }
-
-        workDay[timeKey] = roundTimeAccordingToTheTimeInterval(workDay[timeKey], timeType);
-      });
     }
 
     /**
