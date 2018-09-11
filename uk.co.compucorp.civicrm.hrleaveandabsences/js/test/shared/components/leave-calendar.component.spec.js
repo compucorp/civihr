@@ -24,8 +24,8 @@
 
     describe('leaveCalendar', function () {
       var $componentController, $controller, $controllerProvider, $log, $q,
-        $rootScope, controller, $provide, AbsencePeriod, Contact, ContactAPIMock, Contract, OptionGroup,
-        PublicHoliday, sharedSettings, notification;
+        $rootScope, controller, $provide, AbsencePeriod, Contact, ContactAPIMock,
+        OptionGroup, PublicHoliday, sharedSettings, notification;
       var mockedCheckPermissions = mockCheckPermissionService();
       var currentContact = {
         id: CRM.vars.leaveAndAbsences.contactId,
@@ -55,10 +55,10 @@
 
       beforeEach(inject([
         '$componentController', '$controller', '$log', '$q', '$rootScope',
-        'AbsencePeriod', 'Contact', 'Contract', 'OptionGroup', 'PublicHoliday',
+        'AbsencePeriod', 'Contact', 'OptionGroup', 'PublicHoliday',
         'shared-settings', 'notificationService', 'OptionGroupAPIMock',
         function (_$componentController_, _$controller_, _$log_, _$q_, _$rootScope_,
-          _AbsencePeriod_, _Contact_, _Contract_, _OptionGroup_, _PublicHoliday_,
+          _AbsencePeriod_, _Contact_, _OptionGroup_, _PublicHoliday_,
           _sharedSettings_, _notificationService_, OptionGroupAPIMock) {
           $componentController = _$componentController_;
           $controller = _$controller_;
@@ -67,7 +67,6 @@
           $rootScope = _$rootScope_;
           AbsencePeriod = _AbsencePeriod_;
           Contact = _Contact_;
-          Contract = _Contract_;
           PublicHoliday = _PublicHoliday_;
           OptionGroup = _OptionGroup_;
           sharedSettings = _sharedSettings_;
@@ -81,7 +80,6 @@
           spyOn(Contact, 'leaveManagees').and.callFake(function () {
             return ContactAPIMock.leaveManagees();
           });
-          spyOn(Contract, 'all').and.callThrough();
           spyOn(PublicHoliday, 'all').and.callThrough();
           spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
             return OptionGroupAPIMock.valuesOf(name);
@@ -126,27 +124,12 @@
       });
 
       describe('on init', function () {
-        var allContracts;
-
-        beforeEach(function (done) {
-          Contract.all()
-            .then(function (contracts) {
-              allContracts = contracts;
-            })
-            .finally(done);
-
-          $rootScope.$digest();
-        });
         it('hides the loader for the whole page', function () {
           expect(controller.loading.page).toBe(false);
         });
 
         it('loads the public holidays', function () {
           expect(PublicHoliday.all).toHaveBeenCalled();
-        });
-
-        it('loads all contracts', function () {
-          expect(controller.jobContracts).toEqual(allContracts);
         });
 
         it('loads the OptionValues of the leave request statuses, day types, and calculation units', function () {

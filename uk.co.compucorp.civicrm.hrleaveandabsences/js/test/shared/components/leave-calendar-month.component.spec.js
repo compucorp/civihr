@@ -23,9 +23,10 @@
     'use strict';
 
     describe('leaveCalendarMonth', function () {
-      var $componentController, $log, $provide, $q, $rootScope, allContracts, Calendar, Contract,
-        LeaveRequest, OptionGroup, controller, daysInFebruary, february, leaveRequestInFebruary,
-        period2016, publicHolidays, pubSub, contactData, leaveRequest, leaveRequestAttributes;
+      var $componentController, $log, $provide, $q, $rootScope, allContracts,
+        Contact, Calendar, LeaveRequest, OptionGroup, controller,
+        daysInFebruary, february, leaveRequestInFebruary, period2016,
+        publicHolidays, pubSub, contactData, leaveRequest, leaveRequestAttributes;
       var currentContactId = CRM.vars.leaveAndAbsences.contactId;
       var serverDateFormat = 'YYYY-MM-DD';
 
@@ -39,18 +40,20 @@
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
 
-      beforeEach(inject(['api.contract.mock', function (JobContractAPIMock) {
-        $provide.value('api.contract', JobContractAPIMock);
-      }]));
+      beforeEach(inject(['api.contact.mock', 'api.contract.mock',
+        function (ContactAPIMock, JobContractAPIMock) {
+          $provide.value('api.contact', ContactAPIMock);
+          $provide.value('api.contract', JobContractAPIMock);
+        }]));
 
       beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-        _Calendar_, _Contract_, _LeaveRequest_, _OptionGroup_, OptionGroupAPIMock, _pubSub_) {
+        _Calendar_, _Contact_, _LeaveRequest_, _OptionGroup_, OptionGroupAPIMock, _pubSub_) {
         $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         Calendar = _Calendar_;
-        Contract = _Contract_;
+        Contact = _Contact_;
         LeaveRequest = _LeaveRequest_;
         OptionGroup = _OptionGroup_;
 
@@ -69,10 +72,15 @@
         spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
           return OptionGroupAPIMock.valuesOf(name);
         });
+        // The contact list will not be reduced for testing purposes
+        spyOn(Contact, 'all').and.returnValue($q.resolve({
+          list: ContactData.all.values.map(function (contact) {
+            return { id: contact.id };
+          })
+        }));
       }));
 
-      beforeEach(function (done) {
-        prepareJobContracts(done);
+      beforeEach(function () {
         compileComponent();
       });
 
@@ -191,7 +199,11 @@
 
             describe('when leave requests are reloaded', function () {
               beforeEach(function () {
+                // Flush contacts otherwise it is impossible to test
+                controller.contacts = [];
+
                 $rootScope.$emit('LeaveCalendar::showMonth', true);
+                $rootScope.$digest();
               });
 
               it('flushes days data before populating it', function () {
@@ -200,55 +212,21 @@
                 })).toBe(true);
               });
             });
-          });
 
-          describe('contacts', function () {
-            describe('when there are contacts with inactive contracts', function () {
-              var allContractsButAllExipredExceptFirst;
+            describe('when month has been paginated', function () {
+              var sampleContact = _.sample(ContactData.all.values);
 
               beforeEach(function () {
-                allContractsButAllExipredExceptFirst =
-                  allContracts.map(function (contract, index) {
-                    contract = _.cloneDeep(contract);
+                Contact.all.and.returnValue($q.resolve({
+                  list: [{ id: sampleContact.id }]
+                }));
 
-                    if (index === 0) {
-                      return contract;
-                    }
-
-                    contract.info.details.period_start_date =
-                    moment().year(february.year).month(february.month - 3)
-                      .date(1).format(serverDateFormat);
-                    contract.info.details.period_end_date =
-                    moment().year(february.year).month(february.month - 2)
-                      .date(1).format(serverDateFormat);
-
-                    return contract;
-                  });
-
-                compileComponent(true, {
-                  jobContracts: allContractsButAllExipredExceptFirst });
+                $rootScope.$emit('LeaveCalendar::showMonth', true);
+                $rootScope.$digest();
               });
 
-              it('removes contacts with inactive contracts', function () {
-                expect(controller.contacts.length).toEqual(1);
-                expect(_.first(controller.contacts).id).toEqual(
-                  _.first(allContractsButAllExipredExceptFirst).contact_id);
-              });
-            });
-
-            describe('when there are contacts without contracts', function () {
-              var onlyFirstContract;
-
-              beforeEach(function () {
-                onlyFirstContract = _.cloneDeep(_.first(allContracts));
-
-                compileComponent(true, {
-                  jobContracts: [onlyFirstContract] });
-              });
-
-              it('removes contacts without contracts', function () {
-                expect(controller.contacts.length).toEqual(1);
-                expect(_.first(controller.contacts).id).toEqual(onlyFirstContract.contact_id);
+              it('reduces contacts to those who has a job contract for the selected month', function () {
+                expect(controller.contacts).toEqual([sampleContact]);
               });
             });
           });
@@ -1101,35 +1079,6 @@
           'hrleaveandabsences_leave_request_day_type'), function (dayType) {
           return dayType.name === dayTypeName;
         }).value;
-      }
-
-      /**
-       * Creates active job contracts for each contact
-       * by ensuring that contracts' dates will cover any reasonable use-case.
-       *
-       * @param {Function} done callback
-       */
-      function prepareJobContracts (done) {
-        Contract.all()
-          .then(function (contracts) {
-            allContracts = ContactData.all.values.map(function (contact) {
-              var contract = _.clone(_.sample(contracts));
-
-              contract.id = _.uniqueId();
-              contract.info.details.period_start_date =
-                moment().year(february.year).month(february.month)
-                  .date(1).format(serverDateFormat);
-              contract.info.details.period_end_date =
-                moment().year(february.year).month(february.month + 1)
-                  .date(1).format(serverDateFormat);
-              contract.contact_id = contact.id;
-
-              return contract;
-            });
-          })
-          .finally(done);
-
-        $rootScope.$digest();
       }
 
       /**

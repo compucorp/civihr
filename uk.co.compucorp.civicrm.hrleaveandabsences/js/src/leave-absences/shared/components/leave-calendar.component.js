@@ -33,7 +33,6 @@ define([
     vm.absencePeriods = [];
     vm.contacts = [];
     vm.injectMonth = false;
-    vm.jobContracts = [];
     vm.months = [];
     vm.selectedMonth = {};
     vm.selectedMonthIndex = '';
@@ -86,7 +85,6 @@ define([
           return $q.all([
             loadAbsencePeriods(),
             loadContacts(),
-            loadJobContracts(),
             loadSupportData(),
             vm.showFilters ? loadFiltersOptionValues() : _.noop
           ]);
@@ -277,18 +275,6 @@ define([
         vm.filters.optionValues.levelTypes = data.hrjc_level_type;
         vm.filters.optionValues.departments = data.hrjc_department;
       });
-    }
-
-    /**
-     * Loads all job contracts
-     *
-     * @return {Promise}
-     */
-    function loadJobContracts () {
-      return Contract.all()
-        .then(function (jobContracts) {
-          vm.jobContracts = jobContracts;
-        });
     }
 
     /**
