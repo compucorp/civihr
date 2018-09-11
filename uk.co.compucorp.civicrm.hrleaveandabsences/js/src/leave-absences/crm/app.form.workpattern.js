@@ -721,7 +721,7 @@ define([
     var base = timeBaseInMinutes * 60;
 
     time = moment(time, timeFormat).unix();
-    time = Math[timeType === 'to' ? 'ceil' : 'floor'](time / base) * base;
+    time = Math[timeType === 'To' ? 'ceil' : 'floor'](time / base) * base;
 
     return moment.unix(time).format(timeFormat);
   }
