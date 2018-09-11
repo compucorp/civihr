@@ -28,34 +28,6 @@ define([
     detailsController.setDaysSelectionModeExtended = setDaysSelectionModeExtended;
 
     /**
-     * Adjusts the time for a work patterns day depending on the day type.
-     * It allows values accoring to the logic below:
-     * - "start" day time 00:00 to 23:30
-     * - "end" day time 00:15 to 23:45
-     *
-     * @param  {String} time
-     * @param  {String} timeType from|to
-     * @return {String} adjusted time
-     */
-    function adjustWorkPatternTime (time, timeType) {
-      var timeBaseInMinutes = sharedSettings.timeBaseInMinutes;
-      var momentTime = moment(time, timeFormat);
-      var minTime = moment('00:00', timeFormat);
-      var maxTime = moment('23:45', timeFormat);
-
-      (timeType === 'to') && minTime.add(timeBaseInMinutes, 'minutes');
-      (timeType === 'from') && maxTime.subtract(timeBaseInMinutes, 'minutes');
-
-      if (momentTime.isBefore(minTime)) {
-        momentTime = minTime;
-      } else if (momentTime.isAfter(maxTime)) {
-        momentTime = maxTime;
-      }
-
-      return momentTime.format(timeFormat);
-    }
-
-    /**
      * Rounds work day times according to the base, if times exist.
      *
      * @param {Object} workDay object resolved by leaveRequest.getWorkDayForDate()
@@ -68,7 +40,7 @@ define([
           return;
         }
 
-        workDay[timeKey] = adjustWorkPatternTime(workDay[timeKey], timeType);
+        workDay[timeKey] = limitWorkPatternTimeToMinMaxRange(workDay[timeKey], timeType);
         workDay[timeKey] = roundWorkPatternTime(workDay[timeKey], timeType);
       });
     }
@@ -364,6 +336,34 @@ define([
 
         setDeductionMaximumBoundary(dateType, true);
       });
+    }
+
+    /**
+     * Limits the time for a work patterns day depending on the time type.
+     * It adjusts values accoring to the logic below:
+     * - "start" day time 00:00 to 23:30
+     * - "end" day time 00:15 to 23:45
+     *
+     * @param  {String} time
+     * @param  {String} timeType from|to
+     * @return {String} adjusted time
+     */
+    function limitWorkPatternTimeToMinMaxRange (time, timeType) {
+      var timeBaseInMinutes = sharedSettings.timeBaseInMinutes;
+      var momentTime = moment(time, timeFormat);
+      var minTime = moment('00:00', timeFormat);
+      var maxTime = moment('23:45', timeFormat);
+
+      (timeType === 'to') && minTime.add(timeBaseInMinutes, 'minutes');
+      (timeType === 'from') && maxTime.subtract(timeBaseInMinutes, 'minutes');
+
+      if (momentTime.isBefore(minTime)) {
+        momentTime = minTime;
+      } else if (momentTime.isAfter(maxTime)) {
+        momentTime = maxTime;
+      }
+
+      return momentTime.format(timeFormat);
     }
 
     /**
