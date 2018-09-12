@@ -40,6 +40,7 @@ define([
     var originalOpeningBalance = null;
     var listeners = [];
     var vm = this;
+    var timeFormat = 'HH:mm';
 
     vm.canManage = false;
     vm.calendar = {};
@@ -195,13 +196,21 @@ define([
     }
 
     /**
-     * Converts given date to server format
+     * Converts given date to server format.
+     * At first, it attempts to parse the date from the timepicker format,
+     * if it fails, then it falls back to format auto-detection.
      *
-     * @param {Date} date
+     * @param  {Date} date
      * @return {String} date converted to server format
      */
     function convertDateToServerFormat (date) {
-      return moment(date).format(sharedSettings.serverDateFormat);
+      var parsedDate = moment(date, sharedSettings.timepickerDateFormat, true);
+
+      if (!parsedDate.isValid()) {
+        parsedDate = moment(date);
+      }
+
+      return parsedDate.format(sharedSettings.serverDateFormat);
     }
 
     /**
@@ -612,6 +621,21 @@ define([
     }
 
     /**
+     * Rounds time down according to the time interval.
+     * For example, if the time given is 12:44 and the interval is 15 minutes,
+     * then it will round the time down to 12:30.
+     *
+     * @param  {String} time
+     * @return {String} rounded down time
+     */
+    function roundTimeDownAccordingToTheTimeInterval (time) {
+      var base = sharedSettings.timeBaseInMinutes * 60;
+
+      return moment.unix(Math.ceil(moment(time, timeFormat).unix() / base) * base)
+        .format(timeFormat);
+    }
+
+    /**
      * Sets balance change breakdown after it was retrieved or calculated
      *
      * @param {Object} balanceChange
@@ -783,7 +807,10 @@ define([
      * @param {String} time - start time in HH:mm format
      */
     function updateEndTimeInputMinTime (time) {
-      var timeToMin = getMomentDateWithGivenTime(time)
+      var timeToMin;
+
+      time = roundTimeDownAccordingToTheTimeInterval(time);
+      timeToMin = getMomentDateWithGivenTime(time)
         .add(vm.uiOptions.time_interval, 'minutes');
 
       if (timeToMin.isAfter(getMomentDateWithGivenTime(vm.uiOptions.times.to.max))) {

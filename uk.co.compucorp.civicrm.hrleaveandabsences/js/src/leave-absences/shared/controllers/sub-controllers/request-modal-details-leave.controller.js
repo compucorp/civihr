@@ -7,9 +7,10 @@ define([
 ], function (_, moment, controllers) {
   controllers.controller('RequestModalDetailsLeaveController', RequestModalDetailsLeaveController);
 
-  RequestModalDetailsLeaveController.$inject = ['$controller', '$log', '$q', '$rootScope', 'detailsController', 'PublicHoliday', 'LeaveRequest'];
+  RequestModalDetailsLeaveController.$inject = ['$controller', '$log', '$q', '$rootScope', 'detailsController', 'PublicHoliday', 'LeaveRequest', 'shared-settings'];
 
-  function RequestModalDetailsLeaveController ($controller, $log, $q, $rootScope, detailsController, PublicHoliday, LeaveRequest) {
+  function RequestModalDetailsLeaveController ($controller, $log, $q, $rootScope, detailsController, PublicHoliday, LeaveRequest, sharedSettings) {
+    var timeFormat = 'HH:mm';
     var workDays = {};
 
     $log.debug('RequestModalDetailsLeaveController');
@@ -25,6 +26,24 @@ define([
     detailsController.onDateChangeExtended = loadDayTypesTimeRangesAndSetDeductionBoundaries;
     detailsController.resetUIInputsExtended = resetUITimesDayTypesAndDeductions;
     detailsController.setDaysSelectionModeExtended = setDaysSelectionModeExtended;
+
+    /**
+     * Rounds work day times according to the base, if times exist.
+     *
+     * @param {Object} workDay object resolved by leaveRequest.getWorkDayForDate()
+     */
+    function adjustWorkPatternTimes (workDay) {
+      ['from', 'to'].forEach(function (timeType) {
+        var timeKey = ['time_' + timeType];
+
+        if (!workDay[timeKey]) {
+          return;
+        }
+
+        workDay[timeKey] = limitWorkPatternTimeToMinMaxRange(workDay[timeKey], timeType);
+        workDay[timeKey] = roundWorkPatternTime(workDay[timeKey], timeType);
+      });
+    }
 
     /**
      * Calculates balance change by fetching the balance breakdown via the API
@@ -320,6 +339,34 @@ define([
     }
 
     /**
+     * Limits the time for a work patterns day depending on the time type.
+     * It adjusts values accoring to the logic below:
+     * - "start" day time 00:00 to 23:30
+     * - "end" day time 00:15 to 23:45
+     *
+     * @param  {String} time
+     * @param  {String} timeType from|to
+     * @return {String} adjusted time
+     */
+    function limitWorkPatternTimeToMinMaxRange (time, timeType) {
+      var timeBaseInMinutes = sharedSettings.timeBaseInMinutes;
+      var momentTime = moment(time, timeFormat);
+      var minTime = moment('00:00', timeFormat);
+      var maxTime = moment('23:45', timeFormat);
+
+      (timeType === 'to') && minTime.add(timeBaseInMinutes, 'minutes');
+      (timeType === 'from') && maxTime.subtract(timeBaseInMinutes, 'minutes');
+
+      if (momentTime.isBefore(minTime)) {
+        momentTime = minTime;
+      } else if (momentTime.isAfter(maxTime)) {
+        momentTime = maxTime;
+      }
+
+      return momentTime.format(timeFormat);
+    }
+
+    /**
      * Loads absence types and calendar data on component initialization and
      * when they need to be updated.
      *
@@ -363,6 +410,8 @@ define([
 
       return detailsController.request.getWorkDayForDate(detailsController.convertDateToServerFormat(date))
         .then(function (workDay) {
+          adjustWorkPatternTimes(workDay);
+
           workDays[dateType] = workDay;
 
           enableAndSetDataToTimeInput(dateType, workDay);
@@ -394,6 +443,25 @@ define([
       timeObject.max = '00:00';
       timeObject.amount = '0';
       timeObject.maxAmount = '0';
+    }
+
+    /**
+     * Rounds time according to the time type and time interval.
+     * For example, if the time type is "from", the time given is 12:44
+     * and the interval is 15 minutes, then it will round down to 12:30.
+     * If the time type is "to", it will round up to 12:45.
+     *
+     * @param  {String} time
+     * @param  {String} timeType from|to
+     * @return {String} rounded time
+     */
+    function roundWorkPatternTime (time, timeType) {
+      var base = sharedSettings.timeBaseInMinutes * 60;
+
+      time = moment(time, timeFormat).unix();
+      time = Math[timeType === 'to' ? 'ceil' : 'floor'](time / base) * base;
+
+      return moment.unix(time).format(timeFormat);
     }
 
     /**

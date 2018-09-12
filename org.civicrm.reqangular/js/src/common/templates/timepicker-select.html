@@ -1,2 +1,3 @@
-<option ng-if="selector.placeholder" value="">{{ selector.placeholder }}</option>
-<option ng-repeat="option in selector.options" value="{{ option }}">{{ option }}</option>
+<option ng-if="selector.placeholder" value="">{{selector.placeholder}}</option>
+<option ng-if="selector.initialCustomValue" value="{{selector.initialCustomValue}}" disabled="disabled">{{selector.initialCustomValue}}</option>
+<option ng-repeat="option in selector.options" value="{{option}}">{{option}}</option>

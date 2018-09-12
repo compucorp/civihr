@@ -3,16 +3,16 @@
     <div class="form-group">
       <label for="number_of_weeks">{ts}No. of Weeks{/ts}: </label>
       <select name="number_of_weeks" id="number_of_weeks" class="crm-form-select no-select2">
-        {section name=i start=1 loop="`$max_number_of_weeks+1`" step=1}
-          <option value="{$smarty.section.i.index}" {if $smarty.section.i.index eq $number_of_visible_weeks}selected{/if}>{$smarty.section.i.index}</option>
+        {section name=week start=1 loop="`$max_number_of_weeks+1`"}
+          <option value="{$smarty.section.week.index}" {if $smarty.section.week.index eq $number_of_visible_weeks}selected{/if}>{$smarty.section.week.index}</option>
         {/section}
       </select>
     </div>
   </div>
-  {section name=i start=0 loop=$max_number_of_weeks step=1}
-    <div class="work-pattern-week{if $weeks_visibility[$smarty.section.i.index] eq false} hidden-week{/if}" >
-      <div class="week-number">Week {"`$smarty.section.i.index+1`"}{$form.weeks[$smarty.section.i.index].is_visible.html}</div>
-      <div class="week-hours">Total hours: <span class="number-of-hours">{$weeks_hours[$smarty.section.i.index]}</span></div>
+  {section name=week loop=$max_number_of_weeks}
+    <div class="work-pattern-week{if $weeks_visibility[$smarty.section.week.index] eq false} hidden-week{/if}" >
+      <div class="week-number">Week {"`$smarty.section.week.index+1`"}{$form.weeks[$smarty.section.week.index].is_visible.html}</div>
+      <div class="week-hours">Total hours: <span class="number-of-hours">{$weeks_hours[$smarty.section.week.index]}</span></div>
       <table class="week-days table table-condensed table-responsive">
         <thead>
           <tr>
@@ -29,53 +29,33 @@
         <tbody>
           <tr>
             <td>{ts}Working Day?{/ts}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.0.type.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.1.type.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.2.type.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.3.type.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.4.type.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.5.type.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.6.type.html}</td>
+            {section name=day loop=7}
+              <td>{$form.weeks[$smarty.section.week.index].days[$smarty.section.day.index].type.html}</td>
+            {/section}
           </tr>
           <tr>
             <td>{ts}Time from{/ts}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.0.time_from.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.1.time_from.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.2.time_from.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.3.time_from.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.4.time_from.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.5.time_from.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.6.time_from.html}</td>
+            {section name=day loop=7}
+              <td>{$form.weeks[$smarty.section.week.index].days[$smarty.section.day.index].time_from.html}</td>
+            {/section}
           </tr>
           <tr>
             <td>{ts}Time to{/ts}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.0.time_to.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.1.time_to.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.2.time_to.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.3.time_to.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.4.time_to.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.5.time_to.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.6.time_to.html}</td>
+            {section name=day loop=7}
+              <td>{$form.weeks[$smarty.section.week.index].days[$smarty.section.day.index].time_to.html}</td>
+            {/section}
           </tr>
           <tr>
             <td>{ts}Break (h){/ts}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.0.break.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.1.break.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.2.break.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.3.break.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.4.break.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.5.break.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.6.break.html}</td>
+            {section name=day loop=7}
+              <td>{$form.weeks[$smarty.section.week.index].days[$smarty.section.day.index].break.html}</td>
+            {/section}
           </tr>
           <tr class="hours-row">
             <td>{ts}Hours{/ts}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.0.number_of_hours.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.1.number_of_hours.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.2.number_of_hours.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.3.number_of_hours.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.4.number_of_hours.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.5.number_of_hours.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.6.number_of_hours.html}</td>
+            {section name=day loop=7}
+              <td>{$form.weeks[$smarty.section.week.index].days[$smarty.section.day.index].number_of_hours.html}</td>
+            {/section}
           </tr>
           <tr>
             <td>
@@ -87,13 +67,9 @@
                 <i class="crm-i fa-wrench"></i>
               </a>
             </td>
-            <td>{$form.weeks[$smarty.section.i.index].days.0.leave_days.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.1.leave_days.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.2.leave_days.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.3.leave_days.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.4.leave_days.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.5.leave_days.html}</td>
-            <td>{$form.weeks[$smarty.section.i.index].days.6.leave_days.html}</td>
+            {section name=day loop=7}
+              <td>{$form.weeks[$smarty.section.week.index].days[$smarty.section.day.index].leave_days.html}</td>
+            {/section}
           </tr>
         </tbody>
       </table>
