@@ -36,10 +36,10 @@ function hrvisa_civicrm_buildProfile($name) {
     $smarty = CRM_Core_Smarty::singleton();
     $smarty->assign('urlIsPublic', FALSE);
 
-    $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
+    $contactID = CRM_Utils_Request::retrieve('id', 'Positive');
 
     $config = CRM_Core_Config::singleton();
-    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
+    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String')) {
       CRM_Core_Region::instance('profile-form-hrvisa_tab')->add(array(
         'template' => 'CRM/common/logButton.tpl',
         'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),

@@ -140,8 +140,8 @@ function hrident_civicrm_buildProfile($name) {
     $smarty->assign('urlIsPublic', FALSE);
 
     $config = CRM_Core_Config::singleton();
-    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
-      $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
+    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String')) {
+      $contactID = CRM_Utils_Request::retrieve('id', 'Positive');
       CRM_Core_Region::instance('profile-form-hrident_tab')->add(array(
         'template' => 'CRM/common/logButton.tpl',
         'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
