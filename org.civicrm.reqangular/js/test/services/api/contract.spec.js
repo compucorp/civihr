@@ -36,9 +36,7 @@ define([
           .then(function (_result_) {
             result = _result_;
           })
-          .finally(function () {
-            done();
-          });
+          .finally(done);
         $rootScope.$digest();
       });
 

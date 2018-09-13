@@ -180,16 +180,13 @@ define([
         });
 
         describe('when filter includes a period for contracts', function () {
-          var result, sampleContact;
+          var result;
           var sampleDates = {
             from: '2018-01-01 00:00:00',
             to: '2018-12-31 23:59:59'
           };
 
           beforeEach(function (done) {
-            sampleContact = _.find(contactData.all.values, {
-              id: _.first(jobContractData.contactsWithContractsInPeriod.values).id });
-
             spyOn(jobContractAPI, 'getContactsWithContractsInPeriod').and.callThrough();
             Contact.all({
               with_contract_in_period: [
@@ -199,21 +196,21 @@ define([
             })
               .then(function (_result_) {
                 result = _result_;
-
-                done();
-              });
+              })
+              .finally(done);
             $rootScope.$digest();
           });
 
           it('calls the job contract API', function () {
             expect(jobContractAPI.getContactsWithContractsInPeriod)
-              .toHaveBeenCalledWith(
-                sampleDates.from,
-                sampleDates.to
-              );
+              .toHaveBeenCalledWith(sampleDates.from, sampleDates.to);
           });
 
           it('returns only the contacts with job contracts', function () {
+            var sampleContact = _.find(contactData.all.values, {
+              id: _.first(jobContractData.contactsWithContractsInPeriod.values).id
+            });
+
             expect(result.list).toEqual([sampleContact]);
           });
         });
