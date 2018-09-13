@@ -306,25 +306,26 @@ FROM civicrm_navigation WHERE domain_id = $domainID";
    * @return string
    */
   public static function buildNavigation() {
-    $navigations = self::buildNavigationTree();
+//    $navigations = self::buildNavigationTree();
     $navigationString = '';
 
-    // run the Navigation  through a hook so users can modify it
-    CRM_Utils_Hook::navigationMenu($navigations);
-    self::fixNavigationMenu($navigations);
-
-    // Hooks have added menu items in an arbitrary order. We need to order by
-    // weight again. I would put this function directly after
-    // CRM_Utils_Hook::navigationMenu but for some reason, fixNavigationMenu is
-    // moving items added by hooks on the end of the menu. Hence I do it
-    // afterwards
-    self::orderByWeight($navigations);
+//    // run the Navigation  through a hook so users can modify it
+//    CRM_Utils_Hook::navigationMenu($navigations);
+//    self::fixNavigationMenu($navigations);
+//
+//    // Hooks have added menu items in an arbitrary order. We need to order by
+//    // weight again. I would put this function directly after
+//    // CRM_Utils_Hook::navigationMenu but for some reason, fixNavigationMenu is
+//    // moving items added by hooks on the end of the menu. Hence I do it
+//    // afterwards
+//    self::orderByWeight($navigations);
+    $navigations = CRM_HRCore_Menu_Main::getItems();
 
     //skip children menu item if user don't have access to parent menu item
     $skipMenuItems = array();
     foreach ($navigations as $key => $value) {
       // Home is a special case
-      if ($value['attributes']['name'] != 'Home') {
+      if ($value['attributes']['label'] != 'Home') {
         $name = self::getMenuName($value, $skipMenuItems);
         if ($name) {
           //separator before
@@ -486,7 +487,7 @@ FROM civicrm_navigation WHERE domain_id = $domainID";
     $menuName = CRM_Utils_Array::value('name', $value['attributes']);
     $target = CRM_Utils_Array::value('target', $value['attributes']);
 
-    if (in_array($parentID, $skipMenuItems) || !$active) {
+    if (in_array($parentID, $skipMenuItems) && $navID !== NULL) {
       $skipMenuItems[] = $navID;
       return FALSE;
     }
