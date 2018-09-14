@@ -10,7 +10,6 @@ define([
     bindings: {
       showTheseContacts: '<',
       contacts: '<',
-      contactIdsToReduceTo: '<',
       month: '<',
       period: '<',
       showContactName: '<',
@@ -22,12 +21,14 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-calendar-month.html';
     }],
     controllerAs: 'month',
-    controller: ['$log', '$q', '$rootScope', 'Calendar', 'LeaveRequest',
-      'pubSub', 'shared-settings', controller]
+    controller: LeaveCalendarMonthController
   });
 
-  function controller ($log, $q, $rootScope, Calendar, LeaveRequest, pubSub,
-    sharedSettings) {
+  LeaveCalendarMonthController.$inject = ['$log', '$q', '$rootScope', 'Calendar',
+    'LeaveRequest', 'pubSub', 'shared-settings', 'Contact'];
+
+  function LeaveCalendarMonthController ($log, $q, $rootScope, Calendar,
+    LeaveRequest, pubSub, sharedSettings, Contact) {
     $log.debug('Component: leave-calendar-month');
 
     var dataLoaded = false;
@@ -434,11 +435,13 @@ define([
     function loadMonthData () {
       vm.month.loading = true;
 
-      return $q.all([
-        loadMonthWorkPatternCalendars(),
-        loadMonthLeaveRequests()
-      ])
-        .then(reduceContacts)
+      return reduceContactsToOnlyThoseWhoHaveJobContracts()
+        .then(function () {
+          return $q.all([
+            loadMonthWorkPatternCalendars(),
+            loadMonthLeaveRequests()
+          ]);
+        })
         .then(setMonthDaysContactData)
         .then(function () {
           dataLoaded = true;
@@ -499,22 +502,25 @@ define([
     }
 
     /**
-     * If there are contacts to reduce to, reduces contacts to the list provided,
-     * plus leaves those who have leave requests at the given month period
+     * Loads contacts who have job contracts for the given month
+     * and filters out contacts passed from the parent component.
      *
      * @return {Promise}
      */
-    function reduceContacts () {
-      if (vm.contactIdsToReduceTo) {
-        vm.contacts = vm.contacts.filter(function (contact) {
-          return (_.includes(vm.contactIdsToReduceTo, contact.contact_id) ||
-            _.find(leaveRequests, function (leaveRequest) {
-              return leaveRequest.contact_id === contact.contact_id;
-            }));
-        });
-      }
+    function reduceContactsToOnlyThoseWhoHaveJobContracts () {
+      return Contact.all({
+        with_contract_in_period: [
+          vm.month.days[0].date + ' 00:00:00',
+          vm.month.days[vm.month.days.length - 1].date + ' 23:59:59'
+        ]
+      })
+        .then(function (result) {
+          var contactIds = _.map(_.values(result.list), 'id');
 
-      return $q.resolve();
+          vm.contacts = vm.contacts.filter(function (contact) {
+            return _.includes(contactIds, contact.id);
+          });
+        });
     }
 
     /**

@@ -43,6 +43,22 @@ define([
 
             return contracts;
           });
+      },
+      /**
+       * Gets IDs and display names of contacts who has job contracts for the given period
+       *
+       * @param  {String} startDate YYYY-MM-DD
+       * @param  {String} endDate YYYY-MM-DD
+       * @return {Promise} resolves to an {Array} collection of `id` and `display_name`
+       */
+      getContactsWithContractsInPeriod: function (startDate, endDate) {
+        return this.sendGET('HRJobContract', 'getcontactswithcontractsinperiod', {
+          start_date: startDate,
+          end_date: endDate
+        })
+          .then(function (response) {
+            return response.values;
+          });
       }
     });
 

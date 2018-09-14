@@ -17,7 +17,7 @@ define([
         if (filters) {
           list = list.filter(function (contact) {
             return Object.keys(filters).every(function (key) {
-              if (filters[key] === null) {
+              if (filters[key] === null || key === 'with_contract_in_period') {
                 return true;
               } else if (key === 'display_name') {
                 return (new RegExp(filters[key], 'i')).test(contact[key]);

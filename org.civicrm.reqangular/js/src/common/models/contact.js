@@ -9,35 +9,51 @@ define([
   'common/models/job-role',
   'common/models/session.model',
   'common/models/instances/contact-instance',
-  'common/services/api/contact'
+  'common/services/api/contact',
+  'common/services/api/contract'
 ], function (_, models) {
   'use strict';
 
   models.factory('Contact', [
-    '$q', 'api.contact', 'ContactInstance', 'ContactJobRole', 'Group', 'JobRole', 'Model', 'Session',
-    function ($q, contactAPI, instance, ContactJobRole, Group, JobRole, Model, Session) {
+    '$q', 'api.contact', 'api.contract', 'ContactInstance', 'ContactJobRole', 'Group', 'JobRole', 'Model', 'Session',
+    function ($q, contactAPI, jobContractAPI, instance, ContactJobRole, Group, JobRole, Model, Session) {
       var groupFiltersKeys = ['group_id'];
       var jobRoleFiltersKeys = ['region', 'department', 'level_type', 'location'];
+      var jobContractFiltersKeys = ['with_contract_in_period'];
 
       /**
        * Checks if the given filters object contains filters
        * related to the foreign models
        *
-       * @param {object} filters
-       * @param {Array} foreignKeys - The keys that are for foreign models
-       * @return {boolean}
+       * @param  {Object} filters
+       * @param  {Array} foreignKeys the keys that are for foreign models
+       * @return {Boolean}
        */
       function containsForeignFilters (filters, foreignKeys) {
         return !_.isEmpty(_.intersection(_.keys(filters), foreignKeys));
       }
 
       /**
-       * Returns the contact ids of the job roles that match the given filters
+       * Returns IDs of contacts who have a job contract for the given period
        *
-       * @param {object} filters
-       * @return {Promise} resolve to an array of contact ids
+       * @param  {Array} period [startDate, endDate]
+       * @return {Promise} resolves to {Array} of contact IDs
        */
-      function jobRoleContactids (filters) {
+      function getContactIdsWithContractsInPeriod (period) {
+        return jobContractAPI.getContactsWithContractsInPeriod(
+          period[0], period[1])
+          .then(function (contactsWithContracts) {
+            return _.map(contactsWithContracts, 'id');
+          });
+      }
+
+      /**
+       * Returns contact IDs of job roles that match the given filters
+       *
+       * @param  {Object} filters
+       * @return {Promise} resolves to an array of contact IDs
+       */
+      function jobRoleContactIds (filters) {
         return ContactJobRole.all(filters)
           .then(function (contactJobRoles) {
             return contactJobRoles.map(function (contactJobRole) {
@@ -47,22 +63,23 @@ define([
       }
 
       /**
-       * Adds the contact ids list to the filters, removing also all foreign
-       * filters belonging to other models
+       * Adds a contact IDs list to the filters,
+       * also removes all foreign filters belonging to other models.
        *
-       * The final contact ids list is the intersection (that is, an `AND`)
-       * of all the contact ids returned by the foreign models
+       * The final contact IDs list is the intersection (that is, an `AND`)
+       * of all the contact IDs returned by the foreign models.
        *
-       * @param {object} filters
-       * @param {Array} contactIds
+       * @param  {Object} filters
+       * @param  {Array} contactIds
        *   Coming from different promises (different models), this is
        *   an array of arrays
-       * @return {object}
+       * @return {Object}
        */
       function injectContactIdsInFilters (filters, contactIds) {
         return _(filters)
           .omit(groupFiltersKeys)
           .omit(jobRoleFiltersKeys)
+          .omit(jobContractFiltersKeys)
           .assign({
             id: {in: _.intersection.apply(null, contactIds)}
           })
@@ -70,13 +87,13 @@ define([
       }
 
       /**
-       * Processes the filters
+       * Processes the filters.
        *
        * It extracts any given foreign model specific filters, gets the
-       * ids of the contacts linked to models that match those filters,
-       * and then use those ids as an additional filter
+       * IDs of the contacts linked to models that match those filters,
+       * and then uses those IDs as an additional filter.
        *
-       * @param {object} filters
+       * @param  {Object} filters
        * @return {Promise} resolves to the processed filters
        */
       function processContactFilters (filters) {
@@ -86,11 +103,19 @@ define([
         filters = this.compactFilters(filters);
 
         if (containsForeignFilters(filters, jobRoleFiltersKeys)) {
-          promises.push(jobRoleContactids(_.pick(filters, jobRoleFiltersKeys)));
+          promises.push(jobRoleContactIds(_.pick(filters, jobRoleFiltersKeys)));
         }
 
         if (containsForeignFilters(filters, groupFiltersKeys)) {
-          promises.push(Group.contactIdsOf(filters.group_id));
+          if (filters.group_id) {
+            promises.push(Group.contactIdsOf(filters.group_id));
+          }
+        }
+
+        if (containsForeignFilters(filters, jobContractFiltersKeys)) {
+          if (filters.with_contract_in_period) {
+            promises.push(getContactIdsWithContractsInPeriod(filters.with_contract_in_period));
+          }
         }
 
         if (!_.isEmpty(promises)) {
@@ -112,17 +137,18 @@ define([
         /**
          * Returns a list of contacts, each converted to a model instance
          *
-         * @param {object} filters - Values the full list should be filtered by
-         * @param {object} pagination
-         *   `page` for the current page, `size` for number of items per page
-         * @param {string} sort
-         * @param {object} additionalParams
+         * @param  {Object} filters values the full list should be filtered by
+         * @param  {Object} pagination
+         * @param  {String} pagination.page for the current page
+         * @param  {String} pagination.size for the number of items per page
+         * @param  {String} sort
+         * @param  {Object} additionalParams
          * @return {Promise}
          */
         all: function (filters, pagination, sort, additionalParams) {
           return processContactFilters.call(this, filters)
             .then(function (filters) {
-              // if ID is empty array directly resolve the promise without calling the API
+              // In case of an empty array directly resolve the promise without calling the API
               if (filters && filters.id && !filters.id.IN.length) {
                 return {list: []};
               } else {
@@ -139,10 +165,10 @@ define([
         },
 
         /**
-         * Finds a contact by id
+         * Finds a contact by ID
          *
-         * @param {string} id
-         * @return {Promise} - Resolves with found contact
+         * @param  {String} id
+         * @return {Promise} resolves to {ContactInstance}
          */
         find: function (id) {
           return contactAPI.find(id).then(function (contact) {
@@ -151,9 +177,9 @@ define([
         },
 
         /**
-         * Resolves the instance of the currently logged in contact
+         * Gets the currently logged in contact
          *
-         * @return {Promise} resolves with {ContactInstance}
+         * @return {Promise} resolves to {ContactInstance}
          */
         getLoggedIn: function () {
           return Session.get()
@@ -163,11 +189,11 @@ define([
         },
 
         /**
-         * Finds all the contacts managed by the sent contact id
+         * Finds all the contacts managed by the passed contact ID
          *
-         * @param {string} id - contact id
-         * @param {object} filters
-         * @return {Promise} - Resolves with found contacts/API Errors
+         * @param  {String} id contact ID
+         * @param  {Object} filters
+         * @return {Promise} resolves to found contacts or API errors
          */
         leaveManagees: function (id, filters) {
           return processContactFilters.call(this, filters)
