@@ -328,7 +328,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   private function up1402_removedUnusedManagedEntities($caseTypes, $activityTypes) {
     $entitiesToRemove['civicase:act:Background Check'] = 'OptionValue';
 
-    foreach (array_merge($caseTypes, ['Appraisal', 'Probation']) as $caseType) {
+    foreach (array_merge($caseTypes, ['Probation']) as $caseType) {
       $entitiesToRemove[$caseType] = 'CaseType';
     }
 
@@ -352,12 +352,10 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    * Removes unused ( or unneeded ) case types
    */
   private function up1402_removeUnusedCaseTypes() {
-    // Remove (Appraisal) & (Probation) case types
-    $caseTypesToRemove = ['Appraisal', 'Probation'];
+    // Remove (Probation) case types
+    $caseType = 'Probation';
 
-    foreach($caseTypesToRemove as $caseType) {
-      $this->removeUnusedCaseType($caseType);
-    }
+    $this->removeUnusedCaseType($caseType);
   }
 
   /**
