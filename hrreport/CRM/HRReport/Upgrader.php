@@ -236,7 +236,7 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
   }
 
   /**
-   * Removes unused absence report
+   * Removes unused absence reports and their instances
    *
    * @return bool
    */
@@ -258,10 +258,34 @@ class CRM_HRReport_Upgrader extends CRM_HRReport_Upgrader_Base {
         civicrm_api3('OptionValue', 'delete', ['id' => $templateId]);
       }
 
-      $sql = "DELETE FROM `civicrm_managed` WHERE `entity_id` IN ('" . implode("','", $templateIds) . "')";
+      $sql = "DELETE FROM `civicrm_managed` WHERE `entity_type` = 'ReportTemplate'";
+      $sql .= " AND `entity_id` IN ('" . implode("','", $templateIds) . "')";
+
       CRM_Core_DAO::executeQuery($sql);
     }
 
+    $this->removeReportInstances();
+
     return TRUE;
+  }
+
+  /**
+   * Removes absence report instances
+   */
+  private function removeReportInstances() {
+    $reportInstances = [
+      'CiviHR Absence Report',
+      'CiviHR Absence Calendar Report',
+      'CiviHR Absence Dates Report'
+    ];
+
+    civicrm_api3('ReportInstance', 'get', [
+      'title' => ['IN' => $reportInstances],
+      'api.ReportInstance.delete' => ['id' => '$value.id'],
+    ]);
+
+    $sql = "DELETE FROM `civicrm_managed` WHERE `entity_type` = 'ReportInstance'";
+    $sql .= " AND name IN  ('" . implode("','", $reportInstances) . "')";
+    CRM_Core_DAO::executeQuery($sql);
   }
 }

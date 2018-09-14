@@ -3,10 +3,8 @@
 **/.sass-cache
 **/node_modules
 .DS_Store
-hrabsence/build
 hrjob/build
 bin/setup.conf
-hrabsence/build
 /nbproject/private/
 core-fork-last-commit-patched.txt
 
