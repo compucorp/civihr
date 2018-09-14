@@ -353,9 +353,7 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
    */
   private function up1402_removeUnusedCaseTypes() {
     // Remove (Probation) case types
-    $caseType = 'Probation';
-
-    $this->removeUnusedCaseType($caseType);
+    $this->removeUnusedCaseType('Probation');
   }
 
   /**
