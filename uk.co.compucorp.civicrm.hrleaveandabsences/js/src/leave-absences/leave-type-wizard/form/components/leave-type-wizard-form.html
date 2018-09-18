@@ -1,3 +1,24 @@
 <div>
   <h1>Create leave/absence type</h1>
+
+  <div class="panel-group">
+    <div class="panel panel-default"
+      ng-repeat="section in form.sections">
+      <div class="panel-heading"
+        ng-class="{ pointer: !section.expanded}"
+        ng-click="form.openSection(section.name)">
+        <h4 class="panel-title">
+          <small>
+            <i class="fa fa-chevron-{{section.expanded ? 'down' : 'right'}}"></i>
+          </small>
+          {{section.title}}
+        </h4>
+      </div>
+      <div class="panel-body" ng-show="section.expanded">
+        <ng-include
+          src="form.sectionsTemplatesPath + '/leave-type-wizard-form-' + section.name + '.html'">
+        </ng-include>
+      </div>
+    </div>
+  </div>
 </div>
