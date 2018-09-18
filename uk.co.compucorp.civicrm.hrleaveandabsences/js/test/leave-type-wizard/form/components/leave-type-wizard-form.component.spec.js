@@ -31,10 +31,10 @@ define([
     });
 
     describe('on init', function () {
-      var basicSection, settingsSection;
+      var generalSection, settingsSection;
 
       beforeEach(function () {
-        basicSection = _.find(controller.sections, { name: 'basic' });
+        generalSection = _.find(controller.sections, { name: 'general' });
         settingsSection = _.find(controller.sections, { name: 'settings' });
 
         controller.$onInit();
@@ -45,12 +45,20 @@ define([
           controller.sectionsTemplatesPath)).toBe(true);
       });
 
-      it('has the "basic" section expanded', function () {
-        expect(basicSection.expanded).toBe(true);
+      it('has the General section expanded', function () {
+        expect(generalSection.expanded).toBe(true);
       });
 
-      it('has the "settings" section collapsed', function () {
+      it('has the Settings section collapsed', function () {
         expect(settingsSection.expanded).toBe(false);
+      });
+
+      it('has Settings sections tabs defined', function () {
+        expect(controller.settingsTabs.length).toBe(4);
+        expect(_.sample(controller.settingsTabs)).toEqual(jasmine.objectContaining({
+          name: jasmine.any(String),
+          title: jasmine.any(String)
+        }));
       });
 
       describe('when user clicks the Settings section header', function () {
@@ -58,11 +66,11 @@ define([
           controller.openSection('settings');
         });
 
-        it('collapses the "basic" section', function () {
-          expect(basicSection.expanded).toBe(false);
+        it('collapses the General section', function () {
+          expect(generalSection.expanded).toBe(false);
         });
 
-        it('expands the "settings" section ', function () {
+        it('expands the Settings section ', function () {
           expect(settingsSection.expanded).toBe(true);
         });
       });

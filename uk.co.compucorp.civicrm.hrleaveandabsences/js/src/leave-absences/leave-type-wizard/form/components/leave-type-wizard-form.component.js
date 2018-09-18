@@ -21,7 +21,7 @@ define([
 
     vm.sections = [
       {
-        name: 'basic',
+        name: 'general',
         title: 'Leave Category'
       },
       {
@@ -31,6 +31,24 @@ define([
     ];
     vm.sectionsTemplatesPath =
       sharedSettings.sourcePath + 'leave-type-wizard/form/components/form-sections';
+    vm.settingsTabs = [
+      {
+        name: 'basic-details',
+        title: 'Basic'
+      },
+      {
+        name: 'leave-requests',
+        title: 'Leave Requests'
+      },
+      {
+        name: 'public-holidays',
+        title: 'Public Holidays'
+      },
+      {
+        name: 'carry-forwards',
+        title: 'Carry Forwards'
+      }
+    ];
 
     vm.$onInit = $onInit;
     vm.openSection = openSection;
@@ -51,10 +69,10 @@ define([
 
     /**
      * Initiates sections.
-     * Expands the Basic section and leaves the Settings section collapsed.
+     * Expands the General section and leaves the Settings section collapsed.
      */
     function initSections () {
-      openSection('basic');
+      openSection('general');
     }
 
     /**
