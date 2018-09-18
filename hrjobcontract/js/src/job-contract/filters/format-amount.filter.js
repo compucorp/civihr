@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  formatAmount.__name = 'formatAmount';
   formatAmount.$inject = ['$log'];
 
   function formatAmount ($log) {
@@ -14,5 +13,5 @@ define(function () {
     };
   }
 
-  return formatAmount;
+  return { formatAmount: formatAmount };
 });

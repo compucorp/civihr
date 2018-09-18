@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  contractFilesService.__name = 'contractFilesService';
   contractFilesService.$inject = [
     '$resource', 'settings', '$q', 'utilsService', 'FileUploader', '$log'
   ];
@@ -133,5 +132,5 @@ define(function () {
     };
   }
 
-  return contractFilesService;
+  return { contractFilesService: contractFilesService };
 });

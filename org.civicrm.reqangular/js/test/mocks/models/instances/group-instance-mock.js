@@ -16,7 +16,7 @@ define([
        * @return {boolean}
        */
       isInstance: function (object) {
-        return _.isEqual(_.functions(object), _.functions(instance));
+        return _.isEqual(_.functionsIn(object), _.functionsIn(instance));
       },
 
       /**

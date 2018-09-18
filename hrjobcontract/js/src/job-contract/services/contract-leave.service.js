@@ -5,7 +5,6 @@ define([
 ], function (_) {
   'use strict';
 
-  contractLeaveService.__name = 'contractLeaveService';
   contractLeaveService.$inject = [
     '$resource', '$q', 'settings', 'utilsService', '$log', 'AbsenceType'
   ];
@@ -241,5 +240,5 @@ define([
     }
   }
 
-  return contractLeaveService;
+  return { contractLeaveService: contractLeaveService };
 });

@@ -91,7 +91,7 @@ define([
     function loadReasons (cache) {
       return OptionGroup.valuesOf('hrleaveandabsences_sickness_reason', cache)
         .then(function (reasons) {
-          detailsController.sicknessReasons = _.indexBy(reasons, 'name');
+          detailsController.sicknessReasons = _.keyBy(reasons, 'name');
         });
     }
 

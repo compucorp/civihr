@@ -178,13 +178,80 @@ define([
             controller.absenceTypes[1].calculation_unit_name = 'hours';
             controller.request.type_id = controller.absenceTypes[1].id;
 
-            spyOn(controller.request, 'getWorkDayForDate');
             $rootScope.$broadcast('LeaveRequestPopup::absenceTypeChanged');
-            $rootScope.$digest();
           });
 
-          it('does not yet fetch work pattern details for "from" date', function () {
-            expect(controller.request.getWorkDayForDate).not.toHaveBeenCalled();
+          describe('basic tests', function () {
+            beforeEach(function () {
+              spyOn(controller.request, 'getWorkDayForDate').and.callThrough();
+              $rootScope.$digest();
+            });
+
+            it('does not yet fetch work pattern details for "from" date', function () {
+              expect(controller.request.getWorkDayForDate).not.toHaveBeenCalled();
+            });
+          });
+
+          describe('when work pattern times are not divisible to 15 minutes base', function () {
+            beforeEach(function () {
+              controller.uiOptions.fromDate = date2016;
+
+              spyOn(controller.request, 'getWorkDayForDate').and.returnValue($q.resolve({
+                time_from: '09:01',
+                time_to: '14:29'
+              }));
+              controller.onDateChangeExtended('from');
+              $rootScope.$digest();
+            });
+
+            it('rounds the minimum and maximum times', function () {
+              expect(controller.uiOptions.times.from.min).toBe('09:00');
+              expect(controller.uiOptions.times.from.max).toBe('14:15');
+              expect(controller.uiOptions.times.to.min).toBe('09:15');
+              expect(controller.uiOptions.times.to.max).toBe('14:30');
+            });
+          });
+
+          describe('when work pattern times are set out of bounds of allowed values', function () {
+            describe('when times are greater than allowed values', function () {
+              beforeEach(function () {
+                controller.uiOptions.fromDate = date2016;
+
+                spyOn(controller.request, 'getWorkDayForDate').and.returnValue($q.resolve({
+                  time_from: '23:58',
+                  time_to: '23:59'
+                }));
+                controller.onDateChangeExtended('from');
+                $rootScope.$digest();
+              });
+
+              it('adjusts the times according to allowed values range', function () {
+                expect(controller.uiOptions.times.from.min).toBe('23:30');
+                expect(controller.uiOptions.times.from.max).toBe('23:30');
+                expect(controller.uiOptions.times.to.min).toBe('23:45');
+                expect(controller.uiOptions.times.to.max).toBe('23:45');
+              });
+            });
+          });
+
+          describe('when times are less than allowed values', function () {
+            beforeEach(function () {
+              controller.uiOptions.fromDate = date2016;
+
+              spyOn(controller.request, 'getWorkDayForDate').and.returnValue($q.resolve({
+                time_from: '00:01',
+                time_to: '00:02'
+              }));
+              controller.onDateChangeExtended('from');
+              $rootScope.$digest();
+            });
+
+            it('adjusts the times according to allowed values range', function () {
+              expect(controller.uiOptions.times.from.min).toBe('00:00');
+              expect(controller.uiOptions.times.from.max).toBe('00:00');
+              expect(controller.uiOptions.times.to.min).toBe('00:15');
+              expect(controller.uiOptions.times.to.max).toBe('00:15');
+            });
           });
         });
       });

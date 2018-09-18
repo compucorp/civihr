@@ -6,7 +6,6 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  contractDetailsService.__name = 'contractDetailsService';
   contractDetailsService.$inject = ['$filter', '$resource', 'settings', '$q', 'utilsService', '$log'];
 
   function contractDetailsService ($filter, $resource, settings, $q, utilsService, $log) {
@@ -101,8 +100,8 @@ define([
             'sequential': 1,
             'field': fieldName
           }).done(function (data) {
-            contractTypes.obj = _.mapValues(_.indexBy(data.values, 'key'), 'value');
-            contractTypes.arr = _.values(_.indexBy(data.values, 'key'));
+            contractTypes.obj = _.mapValues(_.keyBy(data.values, 'key'), 'value');
+            contractTypes.arr = _.values(_.keyBy(data.values, 'key'));
 
             deffered.resolve(contractTypes);
           });
@@ -230,5 +229,5 @@ define([
     }
   }
 
-  return contractDetailsService;
+  return { contractDetailsService: contractDetailsService };
 });

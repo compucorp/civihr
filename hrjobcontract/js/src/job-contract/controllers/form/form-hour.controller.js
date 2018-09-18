@@ -6,7 +6,6 @@ define([
 ], function (_, Fraction) {
   'use strict';
 
-  FormHourController.__name = 'FormHourController';
   FormHourController.$inject = ['$log', '$filter', '$rootScope', '$scope'];
 
   function FormHourController ($log, $filter, $rootScope, $scope) {
@@ -98,5 +97,5 @@ define([
     }
   }
 
-  return FormHourController;
+  return { FormHourController: FormHourController };
 });

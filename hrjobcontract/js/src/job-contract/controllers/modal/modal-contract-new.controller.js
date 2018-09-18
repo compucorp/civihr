@@ -7,7 +7,6 @@ define([
 ], function (angular, _, moment) {
   'use strict';
 
-  ModalContractNewController.__name = 'ModalContractNewController';
   ModalContractNewController.$inject = [
     '$log', '$q', '$rootElement', '$rootScope', '$sce', '$scope', '$uibModalInstance',
     '$uibModal', 'crmAngService', 'Contract', 'contractService', 'contractDetailsService',
@@ -196,7 +195,7 @@ define([
           if (promiseUpload.length) {
             modalInstance = $modal.open({
               appendTo: $rootElement.find('div').eq(0),
-              templateUrl: settings.pathApp + 'views/modalProgress.html',
+              templateUrl: settings.baseUrl + 'controllers/modal/modal-progress.html',
               size: 'sm',
               controller: 'ModalProgressController',
               resolve: {
@@ -309,7 +308,7 @@ define([
           if (fieldName === 'hrjobcontract_health_health_plan_type') {
             contractHealthService.getOptions(fieldName, true)
               .then(function (data) {
-                var healthOptions = _.mapValues(_.indexBy(data, 'key'), 'value');
+                var healthOptions = _.mapValues(_.keyBy(data, 'key'), 'value');
 
                 $rootScope.options.health.plan_type = healthOptions;
                 $rootScope.options.health.plan_type_life_insurance = healthOptions;
@@ -379,10 +378,10 @@ define([
     function loadAnnualPayOptions (optionType, optionName) {
       return OptionGroup.valuesOf(optionType, false)
         .then(function (data) {
-          $rootScope.options.pay[optionName] = _.mapValues(_.indexBy(data, 'value'), 'label');
+          $rootScope.options.pay[optionName] = _.mapValues(_.keyBy(data, 'value'), 'label');
         });
     }
   }
 
-  return ModalContractNewController;
+  return { ModalContractNewController: ModalContractNewController };
 });

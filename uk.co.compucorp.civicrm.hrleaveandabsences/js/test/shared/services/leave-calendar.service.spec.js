@@ -117,42 +117,6 @@ define([
           expect(vm.lookupContacts).toEqual(mockData.lookupContacts);
         });
       });
-
-      describe('populating the contact ids to reduce to', function () {
-        var expectedContactIdsToReduceTo;
-
-        describe('when all the contracts are covered by the period filters', function () {
-          beforeEach(function (done) {
-            expectedContactIdsToReduceTo = _.pluck(customContractValues, 'contact_id');
-            vm.selectedPeriod = {
-              start_date: customContractValues[0].period_start_date,
-              end_date: customContractValues[2].period_end_date
-            };
-
-            loadContactsForAdmin(done);
-          });
-
-          it('returns all the contact ids with contracts within the selected period', function () {
-            expect(vm.contactIdsToReduceTo).toEqual(expectedContactIdsToReduceTo);
-          });
-        });
-
-        describe('when only some of the contracts are covered by the period filters', function () {
-          beforeEach(function (done) {
-            expectedContactIdsToReduceTo = _.pluck(customContractValues, 'contact_id').slice(1, 3);
-            vm.selectedPeriod = {
-              start_date: customContractValues[1].period_start_date,
-              end_date: customContractValues[2].period_end_date
-            };
-
-            loadContactsForAdmin(done);
-          });
-
-          it('returns all the contact ids with contracts within the selected period', function () {
-            expect(vm.contactIdsToReduceTo).toEqual(expectedContactIdsToReduceTo);
-          });
-        });
-      });
     });
 
     describe('loadFilteredContacts()', function () {
@@ -207,7 +171,7 @@ define([
 
         beforeEach(function () {
           vm.lookupContacts = _.shuffle(mockData.contacts).slice(0, 2);
-          expectedContactIds = _.pluck(vm.lookupContacts, 'id');
+          expectedContactIds = _.map(vm.lookupContacts, 'id');
           expectedFilters.id = { IN: expectedContactIds };
 
           leaveCalendar.loadFilteredContacts();
@@ -271,7 +235,7 @@ define([
 
       it('requests a list of filtered contacts using the look ups', function () {
         expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
-          id: { 'IN': _.pluck(vm.lookupContacts, 'id') }
+          id: { 'IN': _.map(vm.lookupContacts, 'id') }
         }), null, 'display_name');
       });
 

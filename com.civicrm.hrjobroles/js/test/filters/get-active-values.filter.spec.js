@@ -3,14 +3,14 @@
 define([
   'common/angular',
   'common/angularMocks',
-  'job-roles/modules/job-roles.filters'
+  'job-roles/job-roles.module'
 ], function (angular, moment) {
   'use strict';
 
   describe('getActiveValues', function () {
     var $filter, locations, getActiveValues;
 
-    beforeEach(module('hrjobroles.filters'));
+    beforeEach(module('hrjobroles'));
     beforeEach(inject(['$filter', function (_$filter_) {
       $filter = _$filter_;
       getActiveValues = $filter('getActiveValues');

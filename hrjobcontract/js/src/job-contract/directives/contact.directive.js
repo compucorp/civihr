@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  hrjcContact.__name = 'hrjcContact';
   hrjcContact.$inject = ['$compile', '$log', 'settings', 'contactService'];
 
   function hrjcContact ($compile, $log, settings, contactService) {
@@ -35,5 +34,5 @@ define(function () {
     };
   }
 
-  return hrjcContact;
+  return { hrjcContact: hrjcContact };
 });

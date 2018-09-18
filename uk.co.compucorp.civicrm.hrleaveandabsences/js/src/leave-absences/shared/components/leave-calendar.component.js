@@ -4,6 +4,7 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/components',
+  'common/models/contract',
   'leave-absences/shared/controllers/sub-controllers/leave-calendar-admin.controller',
   'leave-absences/shared/controllers/sub-controllers/leave-calendar-manager.controller',
   'leave-absences/shared/controllers/sub-controllers/leave-calendar-staff.controller'
@@ -18,13 +19,12 @@ define([
       return sharedSettings.sharedPathTpl + 'components/leave-calendar.html';
     }],
     controllerAs: 'calendar',
-    controller: ['$controller', '$q', '$log', '$rootScope',
-      'shared-settings', 'AbsencePeriod', 'AbsenceType',
-      'PublicHoliday', 'OptionGroup', 'checkPermissions',
-      controller]
+    controller: ['$controller', '$q', '$log', '$rootScope', 'shared-settings',
+      'AbsencePeriod', 'AbsenceType', 'Contract', 'PublicHoliday', 'OptionGroup',
+      'checkPermissions', controller]
   });
 
-  function controller ($controller, $q, $log, $rootScope, sharedSettings, AbsencePeriod, AbsenceType, PublicHoliday, OptionGroup, checkPermissions) {
+  function controller ($controller, $q, $log, $rootScope, sharedSettings, AbsencePeriod, AbsenceType, Contract, PublicHoliday, OptionGroup, checkPermissions) {
     $log.debug('Component: leave-calendar');
 
     var subController, userRole;
@@ -32,7 +32,6 @@ define([
 
     vm.absencePeriods = [];
     vm.contacts = [];
-    vm.contactIdsToReduceTo = null;
     vm.injectMonth = false;
     vm.months = [];
     vm.selectedMonth = {};
@@ -303,7 +302,7 @@ define([
         vm.supportData.calculationUnits = results[2].hrleaveandabsences_absence_type_calculation_unit;
         vm.supportData.dayTypes = results[2].hrleaveandabsences_leave_request_day_type;
         vm.supportData.leaveRequestStatuses = results[2].hrleaveandabsences_leave_request_status;
-        vm.supportData.toilAmounts = _.indexBy(results[2].hrleaveandabsences_toil_amounts, 'value');
+        vm.supportData.toilAmounts = _.keyBy(results[2].hrleaveandabsences_toil_amounts, 'value');
       });
     }
 

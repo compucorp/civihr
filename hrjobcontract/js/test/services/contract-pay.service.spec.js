@@ -2,14 +2,14 @@
 
 define([
   'mocks/data/contract.data',
-  'job-contract/modules/job-contract.module'
+  'job-contract/job-contract.module'
 ], function (MockContract) {
   'use strict';
 
   describe('contractPayService', function () {
     var $httpBackend, $rootScope, contractPayService;
 
-    beforeEach(module('job-contract'));
+    beforeEach(module('job-contract', 'job-contract.templates'));
     beforeEach(inject(function (_contractPayService_, _$httpBackend_, _$rootScope_) {
       contractPayService = _contractPayService_;
       $httpBackend = _$httpBackend_;
@@ -17,7 +17,6 @@ define([
 
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
       $httpBackend.whenGET(/action=get&entity=HRJobPay/).respond(MockContract.contractPayment);
-      $httpBackend.whenGET(/views.*/).respond({});
     }));
 
     afterEach(function () {

@@ -5,7 +5,6 @@ define([
 ], function (_) {
   'use strict';
 
-  FormLeaveController.__name = 'FormLeaveController';
   FormLeaveController.$inject = ['$log', '$scope', 'utilsService'];
 
   function FormLeaveController ($log, $scope, utilsService) {
@@ -67,5 +66,5 @@ define([
     return vm;
   }
 
-  return FormLeaveController;
+  return { FormLeaveController: FormLeaveController };
 });

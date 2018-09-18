@@ -367,23 +367,12 @@ function hrjobcontract_civicrm_entityTypes(&$entityTypes) {
  * @param $permissions
  * @return void
  */
-function hrjobcontract_civicrm_alterAPIPermissions_($entity, $action, &$params, &$permissions) {
-  $session = CRM_Core_Session::singleton();
-  $cid = $session->get('userID');
+function hrjobcontract_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  if ($entity !== 'h_r_job_contract') {
+    return;
+  }
 
-  if (substr($entity, 0, 7) == 'h_r_job' && $cid == $params['contact_id'] && $action == 'get') {
-    $permissions[$entity]['get'] = array('access CiviCRM', array('access own HRJobs', 'access HRJobs'));
-   } elseif (substr($entity, 0, 7) == 'h_r_job' && $action == 'get') {
-    $permissions[$entity]['get'] = array('access CiviCRM', 'access HRJobs');
-  }
-  if (substr($entity, 0, 7) == 'h_r_job') {
-    $permissions[$entity]['create'] = array('access CiviCRM', 'edit HRJobs');
-    $permissions[$entity]['update'] = array('access CiviCRM', 'edit HRJobs');
-    $permissions[$entity]['replace'] = array('access CiviCRM', 'edit HRJobs');
-    $permissions[$entity]['duplicate'] = array('access CiviCRM', 'edit HRJobs');
-    $permissions[$entity]['delete'] = array('access CiviCRM', 'delete HRJobs');
-  }
-  $permissions['CiviHRJobContract'] = $permissions['h_r_job'];
+  $permissions[$entity]['getcontactswithcontractsinperiod'] = ['access AJAX API'];
 }
 
 /**

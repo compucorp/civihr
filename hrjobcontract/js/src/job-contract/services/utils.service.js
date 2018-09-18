@@ -5,7 +5,6 @@ define([
 ], function (angular) {
   'use strict';
 
-  utilsService.__name = 'utilsService';
   utilsService.$inject = ['apiService', 'settings', '$q', '$log', '$rootElement', '$timeout', '$uibModal', '$window', 'AbsencePeriod'];
 
   function utilsService (API, settings, $q, $log, $rootElement, $timeout, $modal, $window, AbsencePeriod) {
@@ -192,7 +191,7 @@ define([
       var modalUpdateEntitlements = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
         size: 'sm',
-        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
+        templateUrl: settings.baseUrl + 'controllers/modal/modal-dialog.html',
         controller: 'ModalDialogController',
         resolve: {
           content: {
@@ -219,5 +218,5 @@ define([
     }
   }
 
-  return utilsService;
+  return { utilsService: utilsService };
 });

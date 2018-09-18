@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  hrjcLoader.__name = 'hrjcLoader';
   hrjcLoader.$inject = ['$log', '$rootScope'];
 
   function hrjcLoader ($log, $rootScope) {
@@ -56,5 +55,5 @@ define(function () {
     };
   }
 
-  return hrjcLoader;
+  return { hrjcLoader: hrjcLoader };
 });

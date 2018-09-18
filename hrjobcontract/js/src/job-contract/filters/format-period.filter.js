@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  formatPeriod.__name = 'formatPeriod';
   formatPeriod.$inject = ['$filter', '$log'];
 
   function formatPeriod ($filter, $log) {
@@ -14,5 +13,5 @@ define(function () {
     };
   }
 
-  return formatPeriod;
+  return { formatPeriod: formatPeriod };
 });

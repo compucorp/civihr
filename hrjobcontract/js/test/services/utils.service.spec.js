@@ -4,7 +4,7 @@ define([
   'leave-absences/mocks/data/absence-period.data',
   'common/angular',
   'common/angularMocks',
-  'job-contract/modules/job-contract.module',
+  'job-contract/job-contract.module',
   'leave-absences/shared/apis/absence-period.api',
   'leave-absences/shared/models/absence-period.model'
 ], function (absencePeriodData) {
@@ -14,7 +14,7 @@ define([
     var $httpBackend, $provide, $rootScope, $q, $uibModal, utilsService, apiService,
       AbsencePeriod, $window;
 
-    beforeEach(module('job-contract', 'leave-absences.models', function (_$provide_, $qProvider) {
+    beforeEach(module('job-contract', 'job-contract.templates', 'leave-absences.models', function (_$provide_, $qProvider) {
       $provide = _$provide_;
       $provide.value('$window', {
         location: {
@@ -39,7 +39,6 @@ define([
       spyOn(apiService, 'resource').and.callFake(function () { return { get: function () {} }; });
 
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
-      $httpBackend.whenGET(/views.*/).respond({});
     });
 
     describe('getAbsenceType', function () {

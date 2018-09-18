@@ -38,13 +38,13 @@ define([
         });
 
         it('contains expected options', function () {
-          expect(_.contains(vm.options, '23:50')).toBeTruthy();
-          expect(_.contains(vm.options, '23:55')).toBeTruthy();
-          expect(_.contains(vm.options, '23:59')).toBeTruthy();
+          expect(_.includes(vm.options, '23:50')).toBeTruthy();
+          expect(_.includes(vm.options, '23:55')).toBeTruthy();
+          expect(_.includes(vm.options, '23:59')).toBeTruthy();
         });
 
         it('does not contain unexpected options', function () {
-          expect(_.contains(vm.options, '23:49')).toBeFalsy();
+          expect(_.includes(vm.options, '23:49')).toBeFalsy();
         });
 
         it('contains expected amount of options', function () {
@@ -59,13 +59,13 @@ define([
         });
 
         it('contains expected options', function () {
-          expect(_.contains(vm.options, '00:00')).toBeTruthy();
-          expect(_.contains(vm.options, '00:05')).toBeTruthy();
-          expect(_.contains(vm.options, '00:09')).toBeTruthy();
+          expect(_.includes(vm.options, '00:00')).toBeTruthy();
+          expect(_.includes(vm.options, '00:05')).toBeTruthy();
+          expect(_.includes(vm.options, '00:09')).toBeTruthy();
         });
 
         it('does not contain unexpected options', function () {
-          expect(_.contains(vm.options, '00:10')).toBeFalsy();
+          expect(_.includes(vm.options, '00:10')).toBeFalsy();
         });
 
         it('contains expected amount of options', function () {
@@ -80,15 +80,15 @@ define([
         });
 
         it('contains expected options', function () {
-          expect(_.contains(vm.options, '00:00')).toBeTruthy();
-          expect(_.contains(vm.options, '15:15')).toBeTruthy();
-          expect(_.contains(vm.options, '20:30')).toBeTruthy();
-          expect(_.contains(vm.options, '23:45')).toBeTruthy();
+          expect(_.includes(vm.options, '00:00')).toBeTruthy();
+          expect(_.includes(vm.options, '15:15')).toBeTruthy();
+          expect(_.includes(vm.options, '20:30')).toBeTruthy();
+          expect(_.includes(vm.options, '23:45')).toBeTruthy();
         });
 
         it('does not contain unexpected options', function () {
-          expect(_.contains(vm.options, '00:01')).toBeFalsy();
-          expect(_.contains(vm.options, '23:50')).toBeFalsy();
+          expect(_.includes(vm.options, '00:01')).toBeFalsy();
+          expect(_.includes(vm.options, '23:50')).toBeFalsy();
         });
 
         it('contains expected amount of options', function () {
@@ -102,10 +102,10 @@ define([
           });
 
           it('contains expected options', function () {
-            expect(_.contains(vm.options, '00:00')).toBeTruthy();
-            expect(_.contains(vm.options, '00:17')).toBeTruthy();
-            expect(_.contains(vm.options, '23:31')).toBeTruthy();
-            expect(_.contains(vm.options, '23:48')).toBeTruthy();
+            expect(_.includes(vm.options, '00:00')).toBeTruthy();
+            expect(_.includes(vm.options, '00:17')).toBeTruthy();
+            expect(_.includes(vm.options, '23:31')).toBeTruthy();
+            expect(_.includes(vm.options, '23:48')).toBeTruthy();
           });
 
           it('contains expected amount of options', function () {
@@ -125,6 +125,23 @@ define([
         it('sets the placeholder', function () {
           // need to add '"' because the binder is "@"
           expect(vm.placeholder).toBe(placeholder);
+        });
+      });
+
+      describe('when a default value is specified and it is not a part of listed options', function () {
+        var initialCustomValue = '08:51';
+
+        beforeEach(function () {
+          buildDirective([
+            { key: 'timepicker-select-time-from', value: '08:00', bind: '<' },
+            { key: 'timepicker-select-time-to', value: '10:00', bind: '<' },
+            { key: 'timepicker-select-interval', value: '15', bind: '<' },
+            { key: 'timepicker-select-initial-value', value: initialCustomValue, bind: '<' }
+          ]);
+        });
+
+        it('populates the initial value to the start of the options list', function () {
+          expect(vm.initialCustomValue).toBe(initialCustomValue);
         });
       });
     });

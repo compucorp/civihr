@@ -4,7 +4,7 @@ define([
   'common/lodash',
   'common/angular',
   'mocks/data/contract.data',
-  'job-contract/modules/job-contract.module'
+  'job-contract/job-contract.module'
 ], function (_, angular, contractMock) {
   'use strict';
 
@@ -15,7 +15,7 @@ define([
       return { id: leave.leave_type, calculation_unit: _.sample(calculationUnitsMock).value };
     });
 
-    beforeEach(module('job-contract'));
+    beforeEach(module('job-contract', 'job-contract.templates'));
 
     beforeEach(inject(function (_$httpBackend_, _$q_, _$rootScope_, _AbsenceType_, _Contract_, _contractService_) {
       $httpBackend = _$httpBackend_;
@@ -63,7 +63,6 @@ define([
      */
     function mockBackendCalls () {
       $httpBackend.whenGET(/action=get&entity=HRJobLeave/).respond(contractMock.contractLeaves);
-      $httpBackend.whenGET(/views.*/).respond({});
       // @NOTE This is a temporary solution until we can import mocks
       // from other extensions such as Leave and Absence extension
       $httpBackend.whenGET(/action=get&entity=AbsenceType/).respond({ 'values': absenceTypesMock });

@@ -5,6 +5,7 @@
     'common/angular',
     'common/moment',
     'common/lodash',
+    'common/mocks/data/contract.data',
     'leave-absences/mocks/helpers/helper',
     'leave-absences/mocks/data/absence-period.data',
     'leave-absences/mocks/data/absence-type.data',
@@ -18,13 +19,13 @@
     'leave-absences/mocks/apis/option-group-api-mock',
     'leave-absences/shared/config',
     'leave-absences/my-leave/app'
-  ], function (angular, moment, _, helper, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData) {
+  ], function (angular, moment, _, JobContractData, helper, absencePeriodData, absenceTypeData, optionGroupMock, publicHolidayData) {
     'use strict';
 
     describe('leaveCalendar', function () {
       var $componentController, $controller, $controllerProvider, $log, $q,
-        $rootScope, controller, $provide, AbsencePeriod, Contact, ContactAPIMock, Contract, OptionGroup,
-        PublicHoliday, sharedSettings, notification;
+        $rootScope, controller, $provide, AbsencePeriod, Contact, ContactAPIMock,
+        OptionGroup, PublicHoliday, sharedSettings, notification;
       var mockedCheckPermissions = mockCheckPermissionService();
       var currentContact = {
         id: CRM.vars.leaveAndAbsences.contactId,
@@ -54,10 +55,10 @@
 
       beforeEach(inject([
         '$componentController', '$controller', '$log', '$q', '$rootScope',
-        'AbsencePeriod', 'Contact', 'Contract', 'OptionGroup', 'PublicHoliday',
+        'AbsencePeriod', 'Contact', 'OptionGroup', 'PublicHoliday',
         'shared-settings', 'notificationService', 'OptionGroupAPIMock',
         function (_$componentController_, _$controller_, _$log_, _$q_, _$rootScope_,
-          _AbsencePeriod_, _Contact_, _Contract_, _OptionGroup_, _PublicHoliday_,
+          _AbsencePeriod_, _Contact_, _OptionGroup_, _PublicHoliday_,
           _sharedSettings_, _notificationService_, OptionGroupAPIMock) {
           $componentController = _$componentController_;
           $controller = _$controller_;
@@ -66,7 +67,6 @@
           $rootScope = _$rootScope_;
           AbsencePeriod = _AbsencePeriod_;
           Contact = _Contact_;
-          Contract = _Contract_;
           PublicHoliday = _PublicHoliday_;
           OptionGroup = _OptionGroup_;
           sharedSettings = _sharedSettings_;
@@ -80,7 +80,6 @@
           spyOn(Contact, 'leaveManagees').and.callFake(function () {
             return ContactAPIMock.leaveManagees();
           });
-          spyOn(Contract, 'all').and.callThrough();
           spyOn(PublicHoliday, 'all').and.callThrough();
           spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
             return OptionGroupAPIMock.valuesOf(name);
@@ -367,38 +366,6 @@
 
               compileComponent();
             });
-
-            describe('when filter by assignee is set to "Me"', function () {
-              beforeEach(function () {
-                selectFilterByAssignee('me');
-              });
-
-              it('does *not* load additional contacts IDs to filter', function () {
-                expect(controller.contactIdsToReduceTo).toEqual(null);
-              });
-            });
-
-            describe('when filter by assignee is *not* set to "Me"', function () {
-              beforeEach(function () {
-                selectFilterByAssignee('all');
-              });
-
-              it('loads additional contacts IDs to filter', function () {
-                expect(controller.contactIdsToReduceTo).toEqual(jasmine.any(Array));
-              });
-            });
-          });
-
-          describe('when the user is a manager', function () {
-            beforeEach(function () {
-              currentContact.role = 'manager';
-
-              compileComponent();
-            });
-
-            it('does not load additional contacts IDs to filter', function () {
-              expect(controller.contactIdsToReduceTo).toBe(null);
-            });
           });
 
           afterEach(function () {
@@ -572,21 +539,6 @@
             });
           });
         });
-
-        /**
-         * Selects a filter by assignee
-         *
-         * @param {String} type (me|unassigned|all)
-         */
-        function selectFilterByAssignee (type) {
-          controller.filters.userSettings.assignedTo =
-            _.find(controller.filtersByAssignee, { type: type });
-
-          controller.refresh('contacts');
-          $rootScope.$digest();
-
-          simulateMonthWithSignal('destroyed', controller.months.length);
-        }
       });
 
       describe('canManageRequests()', function () {

@@ -10,7 +10,6 @@ define([
     'loadContactsForAdmin', 'loadFilteredContacts', 'loadLookUpContacts',
     'loadLookUpAndFilteredContacts']);
   var data = {
-    contactIdsToReduceTo: [_.uniqueId(), _.uniqueId(), _.uniqueId()],
     filteredContacts: _.clone(contactsMockData.all.values.slice(0, 2)),
     lookedUpContacts: _.clone(contactsMockData.all.values)
   };
@@ -36,8 +35,6 @@ define([
    * @return {Promise} resolves to a list of contacts.
    */
   function loadContactsForAdmin () {
-    vm.contactIdsToReduceTo = data.contactIdsToReduceTo;
-
     return loadLookUpAndFilteredContacts();
   }
 

@@ -3,7 +3,7 @@
 define([
   'common/angularMocks',
   'common/lodash',
-  'job-contract/modules/job-contract.module'
+  'job-contract/job-contract.module'
 ], function (angular, _) {
   'use strict';
 
@@ -86,7 +86,7 @@ define([
       $scope = $rootScope.$new();
       $scope.entity = _.assign({
         hour: {}
-      }, _.clone(entityData, true));
+      }, _.cloneDeep(entityData));
       $scope.utils = {
         hoursLocation: [
           {

@@ -5,7 +5,6 @@ define([
 ], function (angular) {
   'use strict';
 
-  contractHourService.__name = 'contractHourService';
   contractHourService.$inject = [
     '$resource', 'settings', '$q', 'utilsService', '$log'
   ];
@@ -170,5 +169,5 @@ define([
     };
   }
 
-  return contractHourService;
+  return { contractHourService: contractHourService };
 });

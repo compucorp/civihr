@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  FormPensionController.__name = 'FormPensionController';
   FormPensionController.$inject = ['$log', '$scope', 'settings', 'contactService'];
 
   function FormPensionController ($log, $scope, settings, contactService) {
@@ -37,5 +36,5 @@ define(function () {
     }
   }
 
-  return FormPensionController;
+  return { FormPensionController: FormPensionController };
 });

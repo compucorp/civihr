@@ -7,7 +7,6 @@ define([
 ], function (angular, _, moment) {
   'use strict';
 
-  JobRolesController.__name = 'JobRolesController';
   JobRolesController.$inject = [
     '$filter', '$log', '$q', '$rootElement', '$route', '$routeParams', '$scope',
     '$timeout', '$uibModal', 'DOMEventTrigger', 'settings', 'HR_settings',
@@ -41,8 +40,8 @@ define([
     vm.LocationsData = {}; // Store the location types
     vm.RegionsData = {}; // Store the region types
     // Define the add new role URL
-    vm.addNewRoleUrl = settings.pathBaseUrl + settings.pathIncludeTpl + 'add_new_role.html';
-    vm.jobRolePanelUrl = settings.pathBaseUrl + settings.pathIncludeTpl + 'job_role_panel.html';
+    vm.addNewRoleUrl = settings.baseUrl + 'controllers/add-new-role.html';
+    vm.jobRolePanelUrl = settings.baseUrl + 'controllers/job-role-panel.html';
     // Select list for Row Types (used for Funders and Cost Centers)
     vm.rowTypes = {};
     vm.rowTypes[0] = { id: 0, name: 'Fixed' };
@@ -452,7 +451,7 @@ define([
         return _(data.values).map(function (contact) {
           return contact;
         })
-          .indexBy('contact_id')
+          .keyBy('contact_id')
           .value();
       });
     }
@@ -894,7 +893,7 @@ define([
       var modalInstance = $modal.open({
         appendTo: $rootElement.find('div').eq(0),
         template: '',
-        templateUrl: settings.pathApp + 'views/modalDialog.html?v=' + (new Date()).getTime(),
+        templateUrl: settings.baseUrl + 'controllers/modal-dialog.html',
         size: 'sm',
         controller: 'ModalDialogController',
         controllerAs: 'dialog',
@@ -1072,7 +1071,7 @@ define([
       jobRoleFunders.forEach(function (funder) {
         var funderData = funder.funder_id;
 
-        if (!_.contains(Object.keys(fundersContacts), funderData.id)) {
+        if (!_.includes(Object.keys(fundersContacts), funderData.id)) {
           fundersContacts[funderData.id] = funderData;
         }
       });
@@ -1275,5 +1274,5 @@ define([
     }
   }
 
-  return JobRolesController;
+  return { JobRolesController: JobRolesController };
 });

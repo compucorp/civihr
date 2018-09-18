@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  getObjById.__name = 'getObjById';
   getObjById.$inject = ['$log'];
 
   function getObjById ($log) {
@@ -26,5 +25,5 @@ define(function () {
     };
   }
 
-  return getObjById;
+  return { getObjById: getObjById };
 });

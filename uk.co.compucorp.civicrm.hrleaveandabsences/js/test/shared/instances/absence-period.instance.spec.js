@@ -30,7 +30,7 @@ define([
     });
 
     it('inherits from ModelInstance', function () {
-      expect(_.functions(AbsencePeriodInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
+      expect(_.functionsIn(AbsencePeriodInstance)).toEqual(jasmine.arrayContaining(_.functions(ModelInstance)));
     });
 
     describe('defaultCustomData()', function () {

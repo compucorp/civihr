@@ -5,7 +5,6 @@ define([
 ], function (_) {
   'use strict';
 
-  jobRoleService.__name = 'jobRoleService';
   jobRoleService.$inject = ['$filter', '$log', '$q'];
 
   function jobRoleService ($filter, $log, $q) {
@@ -32,13 +31,13 @@ define([
             }
           }
         })
-        .done(function (contracts) {
-          contracts.values.forEach(processContractRevisions);
-          deferred.resolve(contracts);
-        })
-        .error(function () {
-          deferred.reject('An error occured while fetching items');
-        });
+          .done(function (contracts) {
+            contracts.values.forEach(processContractRevisions);
+            deferred.resolve(contracts);
+          })
+          .error(function () {
+            deferred.reject('An error occured while fetching items');
+          });
 
         return deferred.promise;
       },
@@ -292,22 +291,22 @@ define([
             'sort': 'id'
           }
         })
-        .done(function (result) {
-          result.optionGroupData = _(result.values)
-            .map(function (optionValue) {
-              return [
-                optionValue['option_group_id.name'],
-                optionValue.option_group_id
-              ];
-            })
-            .zipObject()
-            .value();
+          .done(function (result) {
+            result.optionGroupData = _(result.values)
+              .map(function (optionValue) {
+                return [
+                  optionValue['option_group_id.name'],
+                  optionValue.option_group_id
+                ];
+              })
+              .fromPairs()
+              .value();
 
-          deferred.resolve(result);
-        })
-        .error(function (result) {
-          deferred.reject('An error occured while fetching items');
-        });
+            deferred.resolve(result);
+          })
+          .error(function (result) {
+            deferred.reject('An error occured while fetching items');
+          });
 
         return deferred.promise;
       },
@@ -332,9 +331,9 @@ define([
           'sequential': 1,
           'job_contract_id': contractId
         })
-        .then(function (result) {
-          return result.values;
-        });
+          .then(function (result) {
+            return result.values;
+          });
       }
     };
 
@@ -365,5 +364,5 @@ define([
     }
   }
 
-  return jobRoleService;
+  return { jobRoleService: jobRoleService };
 });

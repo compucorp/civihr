@@ -6,7 +6,6 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  contractPayService.__name = 'contractPayService';
   contractPayService.$inject = [
     '$resource', 'settings', '$q', 'utilsService', '$log'
   ];
@@ -72,8 +71,8 @@ define([
             'sequential': 1,
             'field': fieldName
           }).done(function (data) {
-            jobPayOptions.obj = _.mapValues(_.indexBy(data.values, 'key'), 'value');
-            jobPayOptions.arr = _.values(_.indexBy(data.values, 'key'));
+            jobPayOptions.obj = _.mapValues(_.keyBy(data.values, 'key'), 'value');
+            jobPayOptions.arr = _.values(_.keyBy(data.values, 'key'));
 
             deffered.resolve(jobPayOptions);
           });
@@ -191,5 +190,5 @@ define([
     };
   }
 
-  return contractPayService;
+  return { contractPayService: contractPayService };
 });
