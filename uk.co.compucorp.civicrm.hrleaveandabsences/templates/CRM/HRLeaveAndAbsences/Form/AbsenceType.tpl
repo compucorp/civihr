@@ -1,4 +1,5 @@
-<div id="bootstrap-theme">
+<div id="bootstrap-theme" data-leave-absences-leave-type-wizard-form>
+  <leave-type-wizard-form></leave-type-wizard-form>
   <div class="panel panel-default crm-form-block crm-absence_type-form-block crm-leave-and-absences-form-block">
     <div class="panel-heading">
       <h1 class="panel-title">
