@@ -1,1 +1,31 @@
-[General form]
+<div class="row form-group">
+  <div class="col-md-2">
+    <label>Title</label>
+  </div>
+  <div class="col-md-4">
+    <input type="text" class="form-control"/>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <label>What kind of absence type are you looking to create?</label>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-2"
+    ng-repeat="leaveTypeCategory in form.leaveTypeCategories">
+    <div class="well pointer text-center"
+      ng-click="form.leaveTypeCategory = leaveTypeCategory.value">
+      <i class="fa fa-{{leaveTypeCategory.icon}}"></i>
+      <div class="radio">
+        <label>
+          <input type="radio"
+            ng-model="form.leaveTypeCategory"
+            checked="{{form.leaveTypeCategory === leaveTypeCategory.value}}"
+            value="{{leaveTypeCategory.value}}"/>
+          {{leaveTypeCategory.label}}
+        </label>
+      </div>
+    </div>
+  </div>
+</div>

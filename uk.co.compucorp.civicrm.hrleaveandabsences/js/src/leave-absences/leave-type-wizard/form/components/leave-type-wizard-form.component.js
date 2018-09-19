@@ -19,6 +19,15 @@ define([
 
     var vm = this;
 
+    vm.leaveTypeCategory = '';
+    vm.leaveTypeCategories = [
+      {
+        value: 'leave',
+        label: 'Leave',
+        icon: 'plane'
+      }
+    ];
+    vm.leaveTypeTitle = '';
     vm.sections = [
       {
         name: 'general',
@@ -78,9 +87,10 @@ define([
     vm.getSettingsTabFields = getSettingsTabFields;
     vm.openSection = openSection;
     vm.openSettingsTab = openSettingsTab;
+    vm.selectLeaveTypeCategory = selectLeaveTypeCategory;
 
     function $onInit () {
-      initSections();
+      initDefaultView();
     }
 
     /**
@@ -113,11 +123,14 @@ define([
     }
 
     /**
-     * Initiates sections.
-     * Expands the General section and leaves the Settings section collapsed.
-     * Selects Basic Details settings tab.
+     * Initiates the default view:
+     * - selects Leave category;
+     * - expands the General section and leaves the Settings section collapsed;
+     * - selects Basic Details settings tab.
      */
-    function initSections () {
+    function initDefaultView () {
+      vm.leaveTypeCategory = 'leave';
+
       openSection('general');
       openSettingsTab('basic-details');
     }
@@ -146,6 +159,19 @@ define([
       });
 
       findSettingsTab(settingsTabName).opened = true;
+    }
+
+    /**
+     * Selects a leave type category.
+     *
+     * @param {String} value
+     */
+    function selectLeaveTypeCategory (value) {
+      vm.leaveTypeCategories.forEach(function (category) {
+        category.selected = false;
+      });
+
+      _.find(vm.leaveTypeCategories, { value: value }).selected = true;
     }
   }
 });

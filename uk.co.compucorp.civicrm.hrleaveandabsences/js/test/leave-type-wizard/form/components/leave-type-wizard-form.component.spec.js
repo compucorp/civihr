@@ -75,6 +75,19 @@ define([
         expect(basicSettingsTab.opened).toBe(true);
       });
 
+      it('has leave type categories defined', function () {
+        expect(controller.leaveTypeCategories.length).toBe(1);
+        expect(_.sample(controller.leaveTypeCategories)).toEqual(jasmine.objectContaining({
+          value: jasmine.any(String),
+          label: jasmine.any(String),
+          icon: jasmine.any(String)
+        }));
+      });
+
+      it('has the Leave leave type category selected', function () {
+        expect(controller.leaveTypeCategory).toBe('leave');
+      });
+
       describe('when user clicks the Settings section header', function () {
         beforeEach(function () {
           controller.openSection('settings');
