@@ -31,11 +31,13 @@ define([
     });
 
     describe('on init', function () {
-      var generalSection, settingsSection;
+      var generalSection, settingsSection, basicSettingsTab, leaveRequestsSettingsTab;
 
       beforeEach(function () {
         generalSection = _.find(controller.sections, { name: 'general' });
         settingsSection = _.find(controller.sections, { name: 'settings' });
+        basicSettingsTab = _.find(controller.settingsTabs, { name: 'basic-details' });
+        leaveRequestsSettingsTab = _.find(controller.settingsTabs, { name: 'leave-requests' });
 
         controller.$onInit();
       });
@@ -61,6 +63,10 @@ define([
         }));
       });
 
+      it('has the Basic settings tab selected', function () {
+        expect(basicSettingsTab.opened).toBe(true);
+      });
+
       describe('when user clicks the Settings section header', function () {
         beforeEach(function () {
           controller.openSection('settings');
@@ -72,6 +78,20 @@ define([
 
         it('expands the Settings section ', function () {
           expect(settingsSection.expanded).toBe(true);
+        });
+
+        describe('when user selects the Leave Requests settings tab', function () {
+          beforeEach(function () {
+            controller.openSettingsTab('leave-requests');
+          });
+
+          it('collapses the Basic Details settings tab', function () {
+            expect(basicSettingsTab.opened).toBe(false);
+          });
+
+          it('expands the Leave Requests settings tab', function () {
+            expect(leaveRequestsSettingsTab.opened).toBe(true);
+          });
         });
       });
     });

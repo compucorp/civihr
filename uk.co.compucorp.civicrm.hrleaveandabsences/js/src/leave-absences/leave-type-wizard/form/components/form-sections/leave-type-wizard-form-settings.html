@@ -1,7 +1,9 @@
 <div class="row">
   <div class="col-md-3">
     <ul class="nav nav-pills nav-stacked">
-      <li ng-repeat="settingsTab in form.settingsTabs">
+      <li ng-repeat="settingsTab in form.settingsTabs"
+        ng-class="{ active: settingsTab.opened }"
+        ng-click="form.openSettingsTab(settingsTab.name)">
         <a href="#">
           {{settingsTab.title}}
         </a>

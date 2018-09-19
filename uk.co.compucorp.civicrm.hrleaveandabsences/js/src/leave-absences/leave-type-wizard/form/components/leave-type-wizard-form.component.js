@@ -52,6 +52,7 @@ define([
 
     vm.$onInit = $onInit;
     vm.openSection = openSection;
+    vm.openSettingsTab = openSettingsTab;
 
     function $onInit () {
       initSections();
@@ -68,11 +69,23 @@ define([
     }
 
     /**
+     * Finds a settings tab by its name
+     *
+     * @param  {String} settingsTabName
+     * @return {Object}
+     */
+    function findSettingsTab (settingsTabName) {
+      return _.find(vm.settingsTabs, { name: settingsTabName });
+    }
+
+    /**
      * Initiates sections.
      * Expands the General section and leaves the Settings section collapsed.
+     * Selects Basic Details settings tab.
      */
     function initSections () {
       openSection('general');
+      openSettingsTab('basic-details');
     }
 
     /**
@@ -86,6 +99,19 @@ define([
       });
 
       findSection(sectionName).expanded = true;
+    }
+
+    /**
+     * Opens a settings tab by its name and collapses all other settings tabs
+     *
+     * @param {String} settingsTabName
+     */
+    function openSettingsTab (settingsTabName) {
+      vm.settingsTabs.forEach(function (settingsTab) {
+        settingsTab.opened = false;
+      });
+
+      findSettingsTab(settingsTabName).opened = true;
     }
   }
 });
