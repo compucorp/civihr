@@ -63,6 +63,14 @@ define([
         }));
       });
 
+      it('has fields defined in Settings sections tabs', function () {
+        expect(controller.settingsTabs.length).toBe(4);
+        expect(_.sample(_.sample(controller.settingsTabs).fields)).toEqual(jasmine.objectContaining({
+          name: jasmine.any(String),
+          title: jasmine.any(String)
+        }));
+      });
+
       it('has the Basic settings tab selected', function () {
         expect(basicSettingsTab.opened).toBe(true);
       });

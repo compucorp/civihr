@@ -34,19 +34,43 @@ define([
     vm.settingsTabs = [
       {
         name: 'basic-details',
-        title: 'Basic'
+        title: 'Basic',
+        fields: [
+          {
+            name: 'hide_label',
+            title: 'Hide leave type label on public calendars and feeds?'
+          }
+        ]
       },
       {
         name: 'leave-requests',
-        title: 'Leave Requests'
+        title: 'Leave Requests',
+        fields: [
+          {
+            name: 'max_consecutive_leave_days',
+            title: 'Max consecutive duration (Leave blank for unlimited)'
+          }
+        ]
       },
       {
         name: 'public-holidays',
-        title: 'Public Holidays'
+        title: 'Public Holidays',
+        fields: [
+          {
+            name: 'must_take_public_holiday_as_leave',
+            title: 'Do staff work on public holidays?'
+          }
+        ]
       },
       {
         name: 'carry-forwards',
-        title: 'Carry Forwards'
+        title: 'Carry Forwards',
+        fields: [
+          {
+            name: 'allow_carry_forward',
+            title: 'Allow carry forward?'
+          }
+        ]
       }
     ];
 
