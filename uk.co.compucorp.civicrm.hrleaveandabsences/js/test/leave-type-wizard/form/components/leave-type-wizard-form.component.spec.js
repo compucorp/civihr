@@ -59,7 +59,7 @@ define([
         expect(controller.settingsTabs.length).toBe(4);
         expect(_.sample(controller.settingsTabs)).toEqual(jasmine.objectContaining({
           name: jasmine.any(String),
-          title: jasmine.any(String)
+          label: jasmine.any(String)
         }));
       });
 
@@ -67,7 +67,7 @@ define([
         expect(controller.settingsTabs.length).toBe(4);
         expect(_.sample(_.sample(controller.settingsTabs).fields)).toEqual(jasmine.objectContaining({
           name: jasmine.any(String),
-          title: jasmine.any(String)
+          label: jasmine.any(String)
         }));
       });
 

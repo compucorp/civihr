@@ -22,11 +22,11 @@ define([
     vm.sections = [
       {
         name: 'general',
-        title: 'Leave Category'
+        label: 'Leave Category'
       },
       {
         name: 'settings',
-        title: 'Leave Category Settings'
+        label: 'Leave Category Settings'
       }
     ];
     vm.sectionsTemplatesPath =
@@ -34,41 +34,41 @@ define([
     vm.settingsTabs = [
       {
         name: 'basic-details',
-        title: 'Basic',
+        label: 'Basic',
         fields: [
           {
             name: 'hide_label',
-            title: 'Hide leave type label on public calendars and feeds?'
+            label: 'Hide leave type label on public calendars and feeds?'
           }
         ]
       },
       {
         name: 'leave-requests',
-        title: 'Leave Requests',
+        label: 'Leave Requests',
         fields: [
           {
             name: 'max_consecutive_leave_days',
-            title: 'Max consecutive duration (Leave blank for unlimited)'
+            label: 'Max consecutive duration (Leave blank for unlimited)'
           }
         ]
       },
       {
         name: 'public-holidays',
-        title: 'Public Holidays',
+        label: 'Public Holidays',
         fields: [
           {
             name: 'must_take_public_holiday_as_leave',
-            title: 'Do staff work on public holidays?'
+            label: 'Do staff work on public holidays?'
           }
         ]
       },
       {
         name: 'carry-forwards',
-        title: 'Carry Forwards',
+        label: 'Carry Forwards',
         fields: [
           {
             name: 'allow_carry_forward',
-            title: 'Allow carry forward?'
+            label: 'Allow carry forward?'
           }
         ]
       }
