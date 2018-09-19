@@ -75,11 +75,21 @@ define([
     ];
 
     vm.$onInit = $onInit;
+    vm.getSettingsTabFields = getSettingsTabFields;
     vm.openSection = openSection;
     vm.openSettingsTab = openSettingsTab;
 
     function $onInit () {
       initSections();
+    }
+
+    /**
+     *
+     */
+    function getSettingsTabFields () {
+      var openedTab = _.find(vm.settingsTabs, { opened: true });
+
+      return openedTab.fields;
     }
 
     /**
