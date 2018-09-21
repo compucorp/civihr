@@ -192,6 +192,11 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO {
    */
   public $hide_label;
   /**
+   *
+   * @var string
+   */
+  public $category;
+  /**
    * Class constructor.
    */
   function __construct() {
@@ -474,6 +479,19 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO {
           'name' => 'hide_label',
           'type' => CRM_Utils_Type::T_BOOLEAN,
           'title' => ts('This controls the visibility of the Leave Type label in the calendar and feeds.') ,
+          'table_name' => 'civicrm_hrleaveandabsences_absence_type',
+          'entity' => 'AbsenceType',
+          'bao' => 'CRM_HRLeaveAndAbsences_DAO_AbsenceType',
+          'localizable' => 0,
+        ) ,
+        'category' => array(
+          'name' => 'category',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Category') ,
+          'description' => 'This is used for grouping leave types.',
+          'required' => true,
+          'maxlength' => 10,
+          'size' => CRM_Utils_Type::TWELVE,
           'table_name' => 'civicrm_hrleaveandabsences_absence_type',
           'entity' => 'AbsenceType',
           'bao' => 'CRM_HRLeaveAndAbsences_DAO_AbsenceType',
