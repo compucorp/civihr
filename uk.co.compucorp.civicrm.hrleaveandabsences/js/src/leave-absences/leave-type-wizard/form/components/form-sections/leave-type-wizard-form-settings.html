@@ -19,5 +19,29 @@
         [template of the field]
       </div>
     </div>
+    <hr/>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="btn btn-secondary pull-right"
+          ng-if="form.openedSettingsTabIndex !== form.settingsTabs.length - 1"
+          ng-click="form.openSettingsTab(form.settingsTabs[form.openedSettingsTabIndex + 1].name)">
+          Next
+        </div>
+        <div class="btn btn-primary pull-right"
+          ng-if="form.openedSettingsTabIndex === form.settingsTabs.length - 1">
+          Save
+        </div>
+        <div class="btn btn-secondary"
+          ng-if="form.openedSettingsTabIndex === 0"
+          ng-click="form.openSection('general')">
+          Choose another category
+        </div>
+        <div class="btn btn-secondary"
+          ng-if="form.openedSettingsTabIndex !== 0"
+          ng-click="form.openSettingsTab(form.settingsTabs[form.openedSettingsTabIndex - 1].name)">
+          Back
+        </div>
+      </div>
+    </div>
   </div>
 </div>

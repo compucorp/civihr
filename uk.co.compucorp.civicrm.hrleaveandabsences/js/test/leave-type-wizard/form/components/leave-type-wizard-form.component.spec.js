@@ -105,6 +105,10 @@ define([
           expect(_.first(controller.getSettingsTabFields()).name).toBe('hide_label');
         });
 
+        it('stores the index for the currently opened settings tab', function () {
+          expect(controller.openedSettingsTabIndex).toBe(0);
+        });
+
         describe('when user selects the Leave Requests settings tab', function () {
           beforeEach(function () {
             controller.openSettingsTab('leave-requests');
@@ -120,6 +124,10 @@ define([
 
           it('renders the fields related to the Leave Requests settings tab', function () {
             expect(_.first(controller.getSettingsTabFields()).name).toBe('max_consecutive_leave_days');
+          });
+
+          it('updates the index for the currently opened settings tab', function () {
+            expect(controller.openedSettingsTabIndex).toBe(1);
           });
         });
       });

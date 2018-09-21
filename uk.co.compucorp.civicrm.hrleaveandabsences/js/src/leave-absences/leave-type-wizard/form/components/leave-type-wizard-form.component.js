@@ -28,6 +28,7 @@ define([
       }
     ];
     vm.leaveTypeTitle = '';
+    vm.openedSettingsTabIndex = null;
     vm.sections = [
       {
         name: 'general',
@@ -94,32 +95,14 @@ define([
     }
 
     /**
+     * Gets fields for the currently opened settings tab
      *
+     * @return {Array} collection of fields
      */
     function getSettingsTabFields () {
       var openedTab = _.find(vm.settingsTabs, { opened: true });
 
       return openedTab.fields;
-    }
-
-    /**
-     * Finds a sections by its name
-     *
-     * @param  {String} sectionName
-     * @return {Object}
-     */
-    function findSection (sectionName) {
-      return _.find(vm.sections, { name: sectionName });
-    }
-
-    /**
-     * Finds a settings tab by its name
-     *
-     * @param  {String} settingsTabName
-     * @return {Object}
-     */
-    function findSettingsTab (settingsTabName) {
-      return _.find(vm.settingsTabs, { name: settingsTabName });
     }
 
     /**
@@ -145,7 +128,7 @@ define([
         section.expanded = false;
       });
 
-      findSection(sectionName).expanded = true;
+      _.find(vm.sections, { name: sectionName }).expanded = true;
     }
 
     /**
@@ -158,7 +141,8 @@ define([
         settingsTab.opened = false;
       });
 
-      findSettingsTab(settingsTabName).opened = true;
+      vm.openedSettingsTabIndex = _.findIndex(vm.settingsTabs, { name: settingsTabName });
+      vm.settingsTabs[vm.openedSettingsTabIndex].opened = true;
     }
 
     /**
