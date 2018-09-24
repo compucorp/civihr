@@ -73,7 +73,7 @@ class CRM_HRCore_Menu_CiviAdapter {
 
       if ($hasChildren) {
         $navID++;
-        $menuItem['child'] = self::buildMenuTree($menuObject->getChildren(), $attributes['navID'], $navID);
+        $menuItem['child'] = $this->buildNavigationTree($menuObject->getChildren(), $attributes['navID'], $navID);
       }
 
       $navigationTree[] = $menuItem;
