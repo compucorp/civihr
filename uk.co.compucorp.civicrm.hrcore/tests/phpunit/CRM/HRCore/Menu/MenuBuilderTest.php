@@ -7,13 +7,70 @@ use CRM_HRCore_Menu_Item as MenuItem;
 /**
  * @group headless
  */
-class CRM_HRCore_Helper_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadlessTest {
+class CRM_HRCore_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
-  public function testGetMenuItems() {
+  public function testMenuConfigItemKeyIsSetAsMenuItemLabel() {
+    $menuConfigItem = [
+      'Staff' => []
+    ];
+
+    $menuConfig = $this->prophesize(MenuConfig::class);
+    $menuConfig->getItems()->willReturn($menuConfigItem);
+    $menuBuilder = new MenuBuilder();
+
+    $menuObject = $menuBuilder->getMenuItems($menuConfig->reveal());
+    $children = $menuObject->getChildren();
+    $this->assertCount(1, $children);
+    //'Staff' which is the Item key is set as the MenuItem label
+    $this->assertEquals('Staff', $children[0]->getLabel());
+  }
+
+  public function testMenuConfigItemValueWillBeSetAsMenuItemUrlIfItIsAString() {
+    $url = 'civcrm/staff';
+    $menuConfigItem = [
+      'Staff' => $url
+    ];
+
+    $menuConfig = $this->prophesize(MenuConfig::class);
+    $menuConfig->getItems()->willReturn($menuConfigItem);
+    $menuBuilder = new MenuBuilder();
+
+    $menuObject = $menuBuilder->getMenuItems($menuConfig->reveal());
+    $children = $menuObject->getChildren();
+    $this->assertCount(1, $children);
+    $this->assertEquals($url, $children[0]->getUrl());
+  }
+
+  public function testOtherMenuItemPropertiesWillBeNullWhenNotProvidedInMenuConfigItemValue() {
+    $menuConfigItem = [
+      'Staff' => [
+        'icon' => 'fa -block'
+      ]
+    ];
+
+    $menuConfig = $this->prophesize(MenuConfig::class);
+    $menuConfig->getItems()->willReturn($menuConfigItem);
+    $menuBuilder = new MenuBuilder();
+
+    $menuObject = $menuBuilder->getMenuItems($menuConfig->reveal());
+    $children = $menuObject->getChildren();
+
+    $this->assertCount(1, $children);
+
+    // Verify that other menu Item properties are set to NULL except for
+    // label and Icon
+    $this->verifyMenuItemProperties($children[0], [
+      'label' => 'Staff',
+      'icon' => 'fa -block'
+    ]);
+  }
+
+  public function testGetMenuItemsReturnsCorrectlyForDeeplyNestedMenuConfigItems() {
     $menuConfig = $this->prophesize(MenuConfig::class);
     $menuConfig->getItems()->willReturn($this->getMenuConfigItems());
     $menuBuilder = new MenuBuilder();
-    $menuItemObjects = $menuBuilder->getMenuItems($menuConfig->reveal());
+    $menuObject = $menuBuilder->getMenuItems($menuConfig->reveal());
+    $menuItemObjects = $menuObject->getChildren();
 
     //Two top menu item levels
     $this->assertCount(2, $menuItemObjects);
@@ -25,9 +82,6 @@ class CRM_HRCore_Helper_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadles
     $topLevelMenu1Children = $topLevelMenu1->getChildren();
     $this->assertCount(1, $topLevelMenu1Children);
     $topLevelMenu1Child1 = $topLevelMenu1Children[0];
-
-    //verify that it points to the right parent.
-    $this->assertEquals($topLevelMenu1, $topLevelMenu1Child1->getParent());
 
     $this->verifyMenuItemProperties($topLevelMenu1Child1, [
       'label' => 'New Individual',
@@ -43,10 +97,6 @@ class CRM_HRCore_Helper_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadles
     $topLevelMenu2Child1 = $topLevelMenu2Children[0];
     $topLevelMenu2Child2 = $topLevelMenu2Children[1];
 
-    //verify that they point to the right parent.
-    $this->assertEquals($topLevelMenu2, $topLevelMenu2Child1->getParent());
-    $this->assertEquals($topLevelMenu2, $topLevelMenu2Child2->getParent());
-
     $this->verifyMenuItemProperties($topLevelMenu2Child1, [
       'label' => 'New Life Insurance Provider',
       'url' => 'civicrm/provider',
@@ -60,9 +110,6 @@ class CRM_HRCore_Helper_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadles
     $secondLevelChildren = $topLevelMenu2Child2->getChildren();
     $this->assertCount(1, $secondLevelChildren);
     $secondLevelChild = $secondLevelChildren[0];
-
-    //verify parent
-    $this->assertEquals($topLevelMenu2Child2, $secondLevelChild->getParent());
 
     $this->verifyMenuItemProperties($secondLevelChild, [
       'label' => 'Custom Records',

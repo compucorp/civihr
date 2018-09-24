@@ -10,31 +10,16 @@ use CRM_HRCore_Menu_CiviAdapter as CiviAdapter;
  *
  * @group headless
  */
-class CRM_HRCore_Helper_Menu_CiviAdapterTest extends BaseHeadlessTest {
+class CRM_HRCore_Menu_CiviAdapterTest extends BaseHeadlessTest {
 
   public function testGetNavigationTreeReturnsMenuItemsInFormatCiviExpects() {
     $menuConfig = $this->prophesize(MenuConfig::class);
     $menuConfig->getItems()->willReturn($this->getMenuConfigItems());
     $menuBuilder = new MenuBuilder;
-    $civiHRMenuItems = $menuBuilder->getMenuItems($menuConfig->reveal());
-    $civiNavigationItems = CiviAdapter::getNavigationTree($civiHRMenuItems);
+    $menuObject = $menuBuilder->getMenuItems($menuConfig->reveal());
+    $civiAdapter = new CiviAdapter();
+    $civiNavigationItems = $civiAdapter->getNavigationTree($menuObject);
     $this->assertEquals($this->getExpectedMenuItems(), $civiNavigationItems);
-  }
-
-  public function testGetNavigationTreeThrowsAnExceptionWhenItemsProvidedAreNotMenuItemObjects() {
-    $civiHRMenuItems = [
-      [
-        'name' => 'Sample Name',
-        'label' => 'Sample Label',
-        'icon' => 'test'
-      ]
-    ];
-    $this->setExpectedException(
-      RuntimeException::class,
-      'Menu Item should be an instance of '.  CRM_HRCore_Menu_Item::class
-    );
-
-    CiviAdapter::getNavigationTree($civiHRMenuItems);
   }
 
   private function getMenuConfigItems() {
@@ -63,6 +48,14 @@ class CRM_HRCore_Helper_Menu_CiviAdapterTest extends BaseHeadlessTest {
   }
 
   private function getExpectedMenuItems() {
+    // The weight is expected to be in incremental order (+1) for each navigation level
+    // starting at 1.
+    // Top level navigation menu items are expected to have a parentID of 0 while inner level
+    // navigation items/children will have their parentID to be equal to the navID of their
+    // parent.
+    // The navID increases sequentially for each menu item by 1, starting from the first
+    // top level menu down to its children, and then on to the next top level menu down to its
+    // children and so on.
     return [
       [
         'attributes' => [
