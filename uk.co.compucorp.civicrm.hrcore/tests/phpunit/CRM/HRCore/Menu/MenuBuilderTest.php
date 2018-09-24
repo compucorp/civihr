@@ -9,16 +9,18 @@ use CRM_HRCore_Menu_Item as MenuItem;
  */
 class CRM_HRCore_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
+  private $menuBuilder;
+
+  public function setUp() {
+    $this->menuBuilder = new MenuBuilder();
+  }
+
   public function testMenuConfigItemKeyIsSetAsMenuItemLabel() {
     $menuConfigItem = [
       'Staff' => []
     ];
 
-    $menuConfig = $this->prophesize(MenuConfig::class);
-    $menuConfig->getItems()->willReturn($menuConfigItem);
-    $menuBuilder = new MenuBuilder();
-
-    $menuObject = $menuBuilder->getMenuItems($menuConfig->reveal());
+    $menuObject = $this->menuBuilder->getMenuItems($this->getMenuConfigMock($menuConfigItem));
     $children = $menuObject->getChildren();
     $this->assertCount(1, $children);
     //'Staff' which is the Item key is set as the MenuItem label
@@ -31,11 +33,7 @@ class CRM_HRCore_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadlessTest {
       'Staff' => $url
     ];
 
-    $menuConfig = $this->prophesize(MenuConfig::class);
-    $menuConfig->getItems()->willReturn($menuConfigItem);
-    $menuBuilder = new MenuBuilder();
-
-    $menuObject = $menuBuilder->getMenuItems($menuConfig->reveal());
+    $menuObject = $this->menuBuilder->getMenuItems($this->getMenuConfigMock($menuConfigItem));
     $children = $menuObject->getChildren();
     $this->assertCount(1, $children);
     $this->assertEquals($url, $children[0]->getUrl());
@@ -48,11 +46,7 @@ class CRM_HRCore_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadlessTest {
       ]
     ];
 
-    $menuConfig = $this->prophesize(MenuConfig::class);
-    $menuConfig->getItems()->willReturn($menuConfigItem);
-    $menuBuilder = new MenuBuilder();
-
-    $menuObject = $menuBuilder->getMenuItems($menuConfig->reveal());
+    $menuObject = $this->menuBuilder->getMenuItems($this->getMenuConfigMock($menuConfigItem));
     $children = $menuObject->getChildren();
 
     $this->assertCount(1, $children);
@@ -66,10 +60,7 @@ class CRM_HRCore_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadlessTest {
   }
 
   public function testGetMenuItemsReturnsCorrectlyForDeeplyNestedMenuConfigItems() {
-    $menuConfig = $this->prophesize(MenuConfig::class);
-    $menuConfig->getItems()->willReturn($this->getMenuConfigItems());
-    $menuBuilder = new MenuBuilder();
-    $menuObject = $menuBuilder->getMenuItems($menuConfig->reveal());
+    $menuObject = $this->menuBuilder->getMenuItems($this->getMenuConfigMock($this->getMenuConfigItems()));
     $menuItemObjects = $menuObject->getChildren();
 
     //Two top menu item levels
@@ -115,6 +106,13 @@ class CRM_HRCore_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadlessTest {
       'label' => 'Custom Records',
       'url' => 'civicrm/sample/bla',
     ]);
+  }
+
+  private function getMenuConfigMock($menuConfigItems) {
+    $menuConfig = $this->prophesize(MenuConfig::class);
+    $menuConfig->getItems()->willReturn($menuConfigItems);
+
+    return $menuConfig->reveal();
   }
 
   private function verifyMenuItemProperties(MenuItem $menuItem, $properties) {

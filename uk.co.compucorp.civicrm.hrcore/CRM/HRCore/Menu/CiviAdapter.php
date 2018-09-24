@@ -28,7 +28,7 @@ class CRM_HRCore_Menu_CiviAdapter {
     //The parentId is zero here to indicate that the top level navigation items
     //has no parents. Also the navID is incremented by 1 for each menu item generated
     //in the returning array, it starts at 1 and is passed by reference here.
-    return self::buildMenuTree($menuItem->getChildren(), 0, $navID);
+    return $this->buildNavigationTree($menuItem->getChildren(), 0, $navID);
   }
 
   /**
@@ -48,7 +48,7 @@ class CRM_HRCore_Menu_CiviAdapter {
    *
    * @return array
    */
-  private function buildMenuTree(array $items, $parentID = 0, &$navID) {
+  private function buildNavigationTree(array $items, $parentID = 0, &$navID) {
     $weight = 1;
     $navigationTree = [];
 

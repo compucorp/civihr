@@ -47,15 +47,19 @@ class CRM_HRCore_Menu_CiviAdapterTest extends BaseHeadlessTest {
     ];
   }
 
+  /**
+   * The weight is expected to be in incremental order (+1) for each navigation level
+   * starting at 1.
+   * Top level navigation menu items are expected to have a parentID of 0 while inner level
+   * navigation items/children will have their parentID to be equal to the navID of their
+   * parent.
+   * The navID increases sequentially for each menu item by 1, starting from the first
+   * top level menu down to its children, and then on to the next top level menu down to its
+   * children and so on.
+   *
+   * @return array
+   */
   private function getExpectedMenuItems() {
-    // The weight is expected to be in incremental order (+1) for each navigation level
-    // starting at 1.
-    // Top level navigation menu items are expected to have a parentID of 0 while inner level
-    // navigation items/children will have their parentID to be equal to the navID of their
-    // parent.
-    // The navID increases sequentially for each menu item by 1, starting from the first
-    // top level menu down to its children, and then on to the next top level menu down to its
-    // children and so on.
     return [
       [
         'attributes' => [
