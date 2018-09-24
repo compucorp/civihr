@@ -15,12 +15,21 @@ class CRM_HRCore_Menu_MenuBuilder {
    *
    * @param MenuConfig $menuConfig
    *
-   * @return MenuItem[]
+   * @return MenuItem
    */
   public function getMenuItems(MenuConfig $menuConfig) {
    $items = $menuConfig->getItems();
+   $menuObjects = $this->generateMenuObjects($items);
 
-   return $this->generateMenuObjects($items);
+   // The parent menu is a blank menu item that has the top level
+   // navigation menu items as children.
+   $parentMenu = new MenuItem('');
+
+   foreach($menuObjects as $item) {
+     $parentMenu->addChild($item);
+   }
+
+   return $parentMenu;
   }
 
   /**

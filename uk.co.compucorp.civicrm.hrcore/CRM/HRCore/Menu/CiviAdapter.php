@@ -6,11 +6,10 @@ class CRM_HRCore_Menu_CiviAdapter {
 
   /**
    * Builds the navigation menu tree and returns in a format expected
-   * by Civi in order to generate the navigation menu. It accepts an
-   * array of MenuItem objects
+   * by Civi in order to generate the navigation menu. It accepts a
+   * Menu Item instance
    *
-   * @param array $menuObjects
-   *   An array of MenuItem Objects
+   * @param MenuItem $menuItem
    *
    * @return array
    *  Sample return format:
@@ -24,9 +23,12 @@ class CRM_HRCore_Menu_CiviAdapter {
    *      ],
    *   ],
    */
-  public static function getNavigationTree(array $menuObjects) {
+  public function getNavigationTree(MenuItem $menuItem) {
     $navID = 1;
-    return self::buildMenuTree($menuObjects, 0, $navID);
+    //The parentId is zero here to indicate that the top level navigation items
+    //has no parents. Also the navID is incremented by 1 for each menu item generated
+    //in the returning array, it starts at 1 and is passed by reference here.
+    return self::buildMenuTree($menuItem->getChildren(), 0, $navID);
   }
 
   /**
@@ -37,19 +39,20 @@ class CRM_HRCore_Menu_CiviAdapter {
    * @param array $items
    *   An array of MenuItem Objects.
    * @param int $parentID
+   *   The parent id of the navigation menu items
+   *   supplied.
    * @param int $navID
+   *   The navigation id is incremented in the function and
+   *   its last value is passed here by reference in order to
+   *   continue the increment (by 1).
    *
    * @return array
    */
-  private static function buildMenuTree(array $items, $parentID = 0, &$navID) {
+  private function buildMenuTree(array $items, $parentID = 0, &$navID) {
     $weight = 1;
     $navigationTree = [];
 
     foreach ($items as $menuObject) {
-      if(!$menuObject instanceof MenuItem) {
-        throw new RuntimeException('Menu Item should be an instance of '.  MenuItem::class);
-      }
-
       $attributes = [
         'label' => $menuObject->getLabel(),
         'name' => $menuObject->getLabel(),
