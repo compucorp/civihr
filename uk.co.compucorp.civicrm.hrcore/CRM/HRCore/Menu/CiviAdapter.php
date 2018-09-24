@@ -2,7 +2,7 @@
 
 use CRM_HRCore_Menu_Item as MenuItem;
 
-class CRM_HRCore_Helper_Menu_Parser {
+class CRM_HRCore_Menu_CiviAdapter {
 
   /**
    * Builds the navigation menu tree and returns in a format expected
@@ -25,7 +25,7 @@ class CRM_HRCore_Helper_Menu_Parser {
    *   ],
    */
   public static function getNavigationTree(array $menuObjects) {
-    $navID =1;
+    $navID = 1;
     return self::buildMenuTree($menuObjects, 0, $navID);
   }
 

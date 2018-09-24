@@ -4,7 +4,7 @@ use CRM_HRCore_Menu_Config as MenuConfig;
 use CRM_HRCore_Menu_Item as MenuItem;
 
 
-class CRM_HRCore_Helper_Menu_CiviHr {
+class CRM_HRCore_Menu_MenuBuilder {
 
   /**
    * This function reads the items from a menu config class

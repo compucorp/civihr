@@ -2,22 +2,22 @@
 
 use CRM_HRCore_Test_BaseHeadlessTest as BaseHeadlessTest;
 use CRM_HRCore_Menu_Config as MenuConfig;
-use CRM_HRCore_Helper_Menu_CiviHr as CiviHrMenuHelper;
-use CRM_HRCore_Helper_Menu_Parser as MenuParser;
+use CRM_HRCore_Menu_MenuBuilder as MenuBuilder;
+use CRM_HRCore_Menu_CiviAdapter as CiviAdapter;
 
 /**
  * Class CRM_HRCore_Helper_Menu_ParserTest
  *
  * @group headless
  */
-class CRM_HRCore_Helper_Menu_ParserTest extends BaseHeadlessTest {
+class CRM_HRCore_Helper_Menu_CiviAdapterTest extends BaseHeadlessTest {
 
   public function testGetNavigationTreeReturnsMenuItemsInFormatCiviExpects() {
     $menuConfig = $this->prophesize(MenuConfig::class);
     $menuConfig->getItems()->willReturn($this->getMenuConfigItems());
-    $civiHRMenu = new CiviHrMenuHelper;
-    $civiHRMenuItems = $civiHRMenu->getMenuItems($menuConfig->reveal());
-    $civiNavigationItems = MenuParser::getNavigationTree($civiHRMenuItems);
+    $menuBuilder = new MenuBuilder;
+    $civiHRMenuItems = $menuBuilder->getMenuItems($menuConfig->reveal());
+    $civiNavigationItems = CiviAdapter::getNavigationTree($civiHRMenuItems);
     $this->assertEquals($this->getExpectedMenuItems(), $civiNavigationItems);
   }
 
@@ -34,7 +34,7 @@ class CRM_HRCore_Helper_Menu_ParserTest extends BaseHeadlessTest {
       'Menu Item should be an instance of '.  CRM_HRCore_Menu_Item::class
     );
 
-    MenuParser::getNavigationTree($civiHRMenuItems);
+    CiviAdapter::getNavigationTree($civiHRMenuItems);
   }
 
   private function getMenuConfigItems() {

@@ -1,19 +1,19 @@
 <?php
 
 use CRM_HRCore_Menu_Config as MenuConfig;
-use CRM_HRCore_Helper_Menu_CiviHr as CiviHrMenuHelper;
+use CRM_HRCore_Menu_MenuBuilder as MenuBuilder;
 use CRM_HRCore_Menu_Item as MenuItem;
 
 /**
  * @group headless
  */
-class CRM_HRCore_Helper_Menu_CiviHrTest extends CRM_HRCore_Test_BaseHeadlessTest {
+class CRM_HRCore_Helper_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadlessTest {
 
   public function testGetMenuItems() {
     $menuConfig = $this->prophesize(MenuConfig::class);
     $menuConfig->getItems()->willReturn($this->getMenuConfigItems());
-    $civiHrMenuHelper = new CiviHrMenuHelper();
-    $menuItemObjects = $civiHrMenuHelper->getMenuItems($menuConfig->reveal());
+    $menuBuilder = new MenuBuilder();
+    $menuItemObjects = $menuBuilder->getMenuItems($menuConfig->reveal());
 
     //Two top menu item levels
     $this->assertCount(2, $menuItemObjects);
