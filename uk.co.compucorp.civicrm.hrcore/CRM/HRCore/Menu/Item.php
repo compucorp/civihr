@@ -38,11 +38,6 @@ class CRM_HRCore_Menu_Item {
   protected $children = [];
 
   /**
-   * @var CRM_HRCore_Menu_Item
-   */
-  protected $parent = NULL;
-
-  /**
    * CRM_HRCore_Menu_Item constructor.
    *
    * @param string $label
@@ -180,25 +175,6 @@ class CRM_HRCore_Menu_Item {
    * @param CRM_HRCore_Menu_Item $child
    */
   public function addChild(CRM_HRCore_Menu_Item $child) {
-    $child->setParent($this);
     $this->children[] = $child;
-  }
-
-  /**
-   * Returns the parent for the menu item.
-   *
-   * @return CRM_HRCore_Menu_Item
-   */
-  public function getParent() {
-    return $this->parent;
-  }
-
-  /**
-   * Sets the menu item's parent.
-   *
-   * @param CRM_HRCore_Menu_Item $parent
-   */
-  public function setParent($parent) {
-    $this->parent = $parent;
   }
 }

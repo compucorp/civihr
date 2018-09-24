@@ -60,12 +60,4 @@ class CRM_HRCore_Menu_ItemTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $expectedChildren = [$childMenuItem1, $childMenuItem2];
     $this->assertEquals($expectedChildren, $children);
   }
-
-  public function testSetAndGetParent() {
-    $parentItem = new MenuItem('Parent');
-    $childItem = new MenuItem('Child');
-    $childItem->setParent($parentItem);
-
-    $this->assertEquals($parentItem, $childItem->getParent());
-  }
 }

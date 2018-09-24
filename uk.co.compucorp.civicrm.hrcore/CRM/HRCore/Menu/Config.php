@@ -3,10 +3,8 @@
 interface CRM_HRCore_Menu_Config {
 
   /**
-   * Returns Navigation menu items in a format understood by CiviHR
-   * This format will eventually be parsed by the CRM_HRCore_Helper_Menu_Parser
-   * in order to be translated to a format understood by CIVI for building
-   * the site navigation menu.
+   * Returns Navigation menu items in a format understood by the
+   * CRM_HRCore_Helper_Menu_MenuBuilder class.
    *
    * @return array
    *   Sample return format:
@@ -15,8 +13,8 @@ interface CRM_HRCore_Menu_Config {
    *      'Search' => [
    *        'icon' => 'crm-i fa-search',
    *        'children' => [
-   *        'Find Contacts' => 'civicrm/search/contacts',
-   *        'Advanced Search' => 'civicrm/search/advanced'
+   *          'Find Contacts' => 'civicrm/search/contacts',
+   *          'Advanced Search' => 'civicrm/search/advanced'
    *      ]
    *   ]
    */
