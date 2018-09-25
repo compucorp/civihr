@@ -13,6 +13,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   const REQUEST_CANCELATION_ALWAYS = 2;
   const REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE = 3;
 
+  const CATEGORY_LEAVE = 'leave';
+  const CATEGORY_SICKNESS = 'sickness';
+  const CATEGORY_TOIL = 'toil';
+  const CATEGORY_CUSTOM = 'custom';
+
   /**
    * The list of colors that can be selected for an AbsenceType
    * @var array
@@ -213,6 +218,20 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
+   * Provides list of absence type category options
+   *
+   * @return array
+   */
+  public static function getCategoryOptions() {
+    return [
+      self::CATEGORY_LEAVE,
+      self::CATEGORY_SICKNESS,
+      self::CATEGORY_TOIL,
+      self::CATEGORY_CUSTOM,
+    ];
+  }
+
+  /**
    * Unset the is_default flag for every AbsenceType that has it
    */
   private static function unsetDefaultTypes() {
@@ -243,6 +262,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       );
     }
     self::validateAbsenceTypeTitle($params);
+    self::validateAbsenceTypeCategory($params);
     self::validateTOIL($params);
     self::validateCarryForward($params);
     self::validateCalculationUnit($params);
@@ -357,6 +377,22 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     if ($absenceType->id) {
       throw new InvalidAbsenceTypeException(
         'Absence Type with same title already exists!'
+      );
+    }
+  }
+
+  /**
+   * Checks if leave type category is specified
+   *
+   * @param $params
+   * @throws CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   */
+  public static function validateAbsenceTypeCategory($params) {
+    if (empty($params['category']) ||
+      !in_array($params['category'], self::getCategoryOptions())
+    ) {
+      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
+        'Invalid absence type category.'
       );
     }
   }
