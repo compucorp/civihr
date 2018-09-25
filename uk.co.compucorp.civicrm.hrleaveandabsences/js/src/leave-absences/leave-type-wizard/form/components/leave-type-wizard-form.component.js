@@ -18,6 +18,7 @@ define([
     $log.debug('Controller: LeaveTypeWizardFormController');
 
     var vm = this;
+    var lineBreak = '\n\n';
 
     vm.leaveTypeCategory = '';
     vm.leaveTypeCategories = [
@@ -48,7 +49,16 @@ define([
         fields: [
           {
             name: 'hide_label',
-            label: 'Hide leave type label on public calendars and feeds?'
+            label: 'Hide leave type label on public calendars and feeds?',
+            helpText: [
+              'The CiviHR self service portal has an all staff calendar.',
+              'You can also create calendar feeds that can be integrated with your calendar app.',
+              lineBreak,
+              'If you enable this option the leave type will simply be given the title "Leave".',
+              'Managers and administrators will continue to see the actual leave title of the request.',
+              lineBreak,
+              'This may be helpful if the leave type title is sensitive - i.e. Unpaid leave or Compassionate leave.'
+            ].join('')
           }
         ]
       },
@@ -58,7 +68,11 @@ define([
         fields: [
           {
             name: 'max_consecutive_leave_days',
-            label: 'Max consecutive duration (Leave blank for unlimited)'
+            label: 'Max consecutive duration (Leave blank for unlimited)',
+            helpText: [
+              'Configure the maximum duration of consecutive leave permitted to be selected in a single leave request.',
+              'You can leave this field blank for unlimited duration of leave.'
+            ].join('')
           }
         ]
       },

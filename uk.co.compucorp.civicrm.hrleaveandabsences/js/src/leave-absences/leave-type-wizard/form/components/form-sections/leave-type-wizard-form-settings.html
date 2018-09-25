@@ -13,7 +13,12 @@
   <div class="col-md-9">
     <div class="row" ng-repeat="field in form.getSettingsTabFields()">
       <div class="col-md-3">
-        <label>{{field.label}}</label>
+        <label>
+          {{field.label}}
+          <help-text ng-if="field.helpText">
+            <p class="respect-line-breaks">{{field.helpText}}</p>
+          </help-text>
+        </label>
       </div>
       <div class="col-md-9">
         [template of the field]
