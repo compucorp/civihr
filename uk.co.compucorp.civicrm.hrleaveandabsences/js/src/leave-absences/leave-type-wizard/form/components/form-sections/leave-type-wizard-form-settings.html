@@ -4,22 +4,20 @@
       <li ng-repeat="settingsTab in form.settingsTabs"
         ng-class="{ active: settingsTab.active }"
         ng-click="form.openSettingsTab(settingsTab.name)">
-        <a href="#">
+        <a href>
           {{settingsTab.label}}
         </a>
       </li>
     </ul>
   </div>
-  <div class="col-md-9">
-    <div class="row" ng-repeat="field in form.getSettingsTabFields()">
-      <div class="col-md-3">
-        <label>
-          {{field.label}}
-          <help-text ng-if="field.helpText">
-            <p class="respect-line-breaks">{{field.helpText}}</p>
-          </help-text>
-        </label>
-      </div>
+  <div class="col-md-9 form-horizontal">
+    <div class="form-group" ng-repeat="field in form.getFieldsForActiveSettingsTab()">
+      <label class="col-md-3 control-label">
+        {{field.label}}
+        <help-text ng-if="field.helpText">
+          <p class="respect-line-breaks">{{field.helpText}}</p>
+        </help-text>
+      </label>
       <div class="col-md-9">
         [template of the field]
       </div>
@@ -27,25 +25,25 @@
     <hr/>
     <div class="row">
       <div class="col-md-12">
-        <div class="btn btn-secondary pull-right"
+        <button class="btn btn-secondary pull-right"
           ng-if="!form.isOnLastSettingsTab"
-          ng-click="form.openSettingsTab(form.settingsTabs[form.activeSettingsTabIndex + 1].name)">
+          ng-click="form.openNextSettingsTab()">
           Next
-        </div>
-        <div class="btn btn-primary pull-right"
+        </button>
+        <button class="btn btn-primary pull-right"
           ng-if="form.isOnLastSettingsTab">
           Save
-        </div>
-        <div class="btn btn-secondary"
+        </button>
+        <button class="btn btn-secondary"
           ng-if="form.isOnFirstSettingsTab"
           ng-click="form.openSection('general')">
           Choose another category
-        </div>
-        <div class="btn btn-secondary"
+        </button>
+        <button class="btn btn-secondary"
           ng-if="!form.isOnFirstSettingsTab"
-          ng-click="form.openSettingsTab(form.settingsTabs[form.activeSettingsTabIndex - 1].name)">
+          ng-click="form.openPreviousSettingsTab()">
           Back
-        </div>
+        </button>
       </div>
     </div>
   </div>

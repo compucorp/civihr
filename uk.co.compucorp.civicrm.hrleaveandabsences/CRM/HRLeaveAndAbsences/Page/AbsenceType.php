@@ -37,9 +37,14 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
     $returnURL = CRM_Utils_System::url('civicrm/admin/leaveandabsences/types', 'reset=1');
     CRM_Utils_Weight::addOrder($rows, 'CRM_HRLeaveAndAbsences_DAO_AbsenceType', 'id', $returnURL);
 
-    CRM_Core_Resources::singleton()->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css');
-    CRM_Core_Resources::singleton()->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/dist/crm-app-list.min.js', 1001);
-    CRM_Core_Resources::singleton()->addScriptFile('civicrm', 'js/jquery/jquery.crmEditable.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
+    CRM_Core_Resources::singleton()
+      ->addStyleFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'css/leaveandabsence.css')
+      ->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/dist/crm-app-list.min.js', 1001)
+      ->addScriptFile('civicrm', 'js/jquery/jquery.crmEditable.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header')
+      ->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/dist/leave-type-wizard-form.min.js', 1001)
+      ->addVars('leaveAndAbsences', [
+        'baseURL' => CRM_Core_Resources::singleton()->getUrl('uk.co.compucorp.civicrm.hrleaveandabsences')
+      ]);
     $this->assign('rows', $rows);
   }
 

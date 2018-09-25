@@ -111,7 +111,7 @@ define([
         });
 
         it('renders the fields related to the Basic Details settings tab', function () {
-          expect(_.first(controller.getSettingsTabFields()).name).toBe('hide_label');
+          expect(_.first(controller.getFieldsForActiveSettingsTab()).name).toBe('hide_label');
         });
 
         describe('when user selects the middle settings tab', function () {
@@ -129,7 +129,7 @@ define([
           });
 
           it('renders the fields related to the Leave Requests settings tab', function () {
-            expect(_.first(controller.getSettingsTabFields()).name).toBe('max_consecutive_leave_days');
+            expect(_.first(controller.getFieldsForActiveSettingsTab()).name).toBe('max_consecutive_leave_days');
           });
 
           it('updates the reference to the active settings tab', function () {
@@ -143,6 +143,26 @@ define([
 
           it('updates the index of the active settings tab', function () {
             expect(controller.activeSettingsTabIndex).toEqual(1);
+          });
+        });
+
+        describe('when opens the next section', function () {
+          beforeEach(function () {
+            controller.openNextSettingsTab();
+          });
+
+          it('updates the index of the active settings tab', function () {
+            expect(controller.activeSettingsTabIndex).toEqual(1);
+          });
+
+          describe('when opens the previous section', function () {
+            beforeEach(function () {
+              controller.openPreviousSettingsTab();
+            });
+
+            it('updates the index of the active settings tab', function () {
+              expect(controller.activeSettingsTabIndex).toEqual(0);
+            });
           });
         });
 
