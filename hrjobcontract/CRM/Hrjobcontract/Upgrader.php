@@ -307,179 +307,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract` ADD `deleted` INT(2) UNSIGNED NOT NULL DEFAULT '0'");
     CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_hrjobcontract_revision` ADD `deleted` INT(2) UNSIGNED NOT NULL DEFAULT '0'");
 
-
-    // Navigation items:
-    CRM_Core_DAO::executeQuery("DELETE FROM `civicrm_navigation` WHERE name IN ('hoursType', 'pay_scale', 'hours_location', 'hrjc_contract_type', 'hrjc_location', 'hrjc_pay_cycle', 'hrjc_benefit_name', 'hrjc_benefit_type', 'hrjc_deduction_name', 'hrjc_deduction_type', 'hrjc_health_provider', 'hrjc_life_provider', 'hrjc_pension_type', 'hrjc_revision_change_reason')");
-    // Add administer options
-    $administerNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Dropdown Options', 'id', 'name');
-
-    $jobContractOptionsMenuTree = array(
-      array(
-        'label'      => ts('Hours Types'),
-        'name'       => 'hoursType',
-        'url'        => 'civicrm/hour/editoption',
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      ),
-      array(
-        'label'      => ts('Job Contract Pay Scale'),
-        'name'       => 'pay_scale',
-        'url'        => 'civicrm/pay_scale',
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      ),
-      array(
-        'label'      => ts('Job Contract Hours/Location'),
-        'name'       => 'hours_location',
-        'url'        => 'civicrm/hours_location',
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      ),
-    );
-
-    // hrjc_contract_type:
-    $result = civicrm_api3('OptionGroup', 'get', array(
-      'sequential' => 1,
-      'name' => "hrjc_contract_type",
-    ));
-    if (!empty($result['id'])) {
-      $jobContractOptionsMenuTree[] = array(
-        'label'      => ts('Contract Type'),
-        'name'       => 'hrjc_contract_type',
-        'url'        => 'civicrm/admin/options?gid=' . $result['id'],
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      );
-    }
-
-    // hrjc_location:
-    $result = civicrm_api3('OptionGroup', 'get', array(
-      'sequential' => 1,
-      'name' => "hrjc_location",
-    ));
-    if (!empty($result['id'])) {
-        $jobContractOptionsMenuTree[] = array(
-          'label'      => ts('Normal place of work'),
-          'name'       => 'hrjc_location',
-          'url'        => 'civicrm/admin/options?gid=' . $result['id'],
-          'permission' => 'administer CiviCRM',
-          'parent_id'  => $administerNavId,
-        );
-
-    }
-
-    // hrjc_pay_cycle:
-    $result = civicrm_api3('OptionGroup', 'get', array(
-      'sequential' => 1,
-      'name' => "hrjc_pay_cycle",
-    ));
-    if (!empty($result['id'])) {
-      $jobContractOptionsMenuTree[] = array(
-        'label'      => ts('Pay cycle'),
-        'name'       => 'hrjc_pay_cycle',
-        'url'        => 'civicrm/admin/options?gid=' . $result['id'],
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      );
-    }
-
-    // hrjc_benefit_name:
-    $result = civicrm_api3('OptionGroup', 'get', array(
-      'sequential' => 1,
-      'name' => "hrjc_benefit_name",
-    ));
-    if (!empty($result['id'])) {
-      $jobContractOptionsMenuTree[] = array(
-        'label'      => ts('Benefits'),
-        'name'       => 'hrjc_benefit_name',
-        'url'        => 'civicrm/admin/options?gid=' . $result['id'],
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      );
-    }
-
-    // hrjc_benefit_type:
-    $result = civicrm_api3('OptionGroup', 'get', array(
-      'sequential' => 1,
-      'name' => "hrjc_benefit_type",
-    ));
-    if (!empty($result['id'])) {
-      $jobContractOptionsMenuTree[] = array(
-        'label'      => ts('Benefit type'),
-        'name'       => 'hrjc_benefit_type',
-        'url'        => 'civicrm/admin/options?gid=' . $result['id'],
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      );
-    }
-
-    // hrjc_deduction_name:
-    $result = civicrm_api3('OptionGroup', 'get', array(
-      'sequential' => 1,
-      'name' => "hrjc_deduction_name",
-    ));
-    if (!empty($result['id'])) {
-      $jobContractOptionsMenuTree[] = array(
-        'label'      => ts('Deductions'),
-        'name'       => 'hrjc_deduction_name',
-        'url'        => 'civicrm/admin/options?gid=' . $result['id'],
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      );
-    }
-
-    // hrjc_deduction_type:
-    $result = civicrm_api3('OptionGroup', 'get', array(
-      'sequential' => 1,
-      'name' => "hrjc_deduction_type",
-    ));
-    if (!empty($result['id'])) {
-      $jobContractOptionsMenuTree[] = array(
-        'label'      => ts('Deduction type'),
-        'name'       => 'hrjc_deduction_type',
-        'url'        => 'civicrm/admin/options?gid=' . $result['id'],
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      );
-    }
-
-    // hrjc_pension_type:
-    $result = civicrm_api3('OptionGroup', 'get', array(
-      'sequential' => 1,
-      'name' => "hrjc_pension_type",
-    ));
-    if (!empty($result['id'])) {
-      $jobContractOptionsMenuTree[] = array(
-        'label'      => ts('Pension provider type'),
-        'name'       => 'hrjc_pension_type',
-        'url'        => 'civicrm/admin/options?gid=' . $result['id'],
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      );
-    }
-
-    // hrjc_revision_change_reason:
-    $result = civicrm_api3('OptionGroup', 'get', array(
-      'sequential' => 1,
-      'name' => "hrjc_revision_change_reason",
-    ));
-    if (!empty($result['id'])) {
-      $jobContractOptionsMenuTree[] = array(
-        'label'      => ts('Reason for change'),
-        'name'       => 'hrjc_revision_change_reason',
-        'url'        => 'civicrm/admin/options?gid=' . $result['id'],
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      );
-    }
-
-    foreach ($jobContractOptionsMenuTree as $key => $menuItems) {
-      $menuItems['is_active'] = 1;
-      CRM_Core_BAO_Navigation::add($menuItems);
-    }
-
-    CRM_Core_BAO_Navigation::resetNavigation();
-
     $this->upgrade_1001();
     $this->upgrade_1002();
     $this->upgrade_1003();
@@ -493,7 +320,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1014();
     $this->upgrade_1015();
     $this->upgrade_1016();
-    $this->upgrade_1017();
     $this->upgrade_1020();
     $this->upgrade_1025();
     $this->upgrade_1026();
@@ -502,11 +328,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1029();
     $this->upgrade_1030();
     $this->upgrade_1032();
-    $this->upgrade_1033();
     $this->upgrade_1034();
     $this->upgrade_1035();
-    $this->upgrade_1036();
-    $this->upgrade_1037();
     $this->upgrade_1038();
     $this->upgrade_1039();
     $this->upgrade_1040();
@@ -714,30 +537,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         }
     }
 
-    // Adding newly created Option Group into the Administration Menu (Dropdown Options).
-    $administerNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Dropdown Options', 'id', 'name');
-    $jobContractOptionsMenuTree = array();
-    $result = civicrm_api3('OptionGroup', 'get', array(
-      'sequential' => 1,
-      'name' => "hrjc_contract_end_reason",
-    ));
-    if (!empty($result['id'])) {
-      $jobContractOptionsMenuTree[] = array(
-        'label'      => ts('Reason for Job Contract end'),
-        'name'       => 'hrjc_contract_end_reason',
-        'url'        => 'civicrm/admin/options?gid=' . $result['id'],
-        'permission' => 'administer CiviCRM',
-        'parent_id'  => $administerNavId,
-      );
-    }
-    foreach ($jobContractOptionsMenuTree as $key => $menuItems) {
-      $menuItems['is_active'] = 1;
-      CRM_Core_BAO_Navigation::add($menuItems);
-    }
-
-    // Refreshing the Navigation menu.
-    CRM_Core_BAO_Navigation::resetNavigation();
-
     return TRUE;
   }
 
@@ -833,61 +632,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         'is_reserved' => 1,
       ));
     }
-    return true;
-  }
-
-  /**
-   * Create job contract import/export navigation menus
-   *
-   */
-  function upgrade_1017() {
-    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('job_contracts', 'import_export_job_contracts')");
-
-    $contactsNavID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
-    $importContactWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Import Contacts', 'weight', 'name');
-    $params = [
-      'name' => 'import_export_job_contracts',
-      'label' => ts('Import / Export'),
-      'url' => NULL,
-      'parent_id' => $contactsNavID,
-      'is_active' => TRUE,
-      'weight' => $importContactWeight,
-      'permission' => 'access HRJobs',
-      'domain_id' => CRM_Core_Config::domainID(),
-    ];
-    $navigation = new CRM_Core_DAO_Navigation();
-    $navigation->copyValues($params);
-    $importExportMenu = $navigation->save();
-
-    if (!empty($importExportMenu->id)) {
-      $toCreate = [
-        [
-          'name' => 'import_job_contracts',
-          'label' => ts('Import Job Contracts'),
-          'url' => "civicrm/job/import",
-          'parent_id' => $importExportMenu->id,
-          'is_active' => TRUE,
-          'permission' => [
-            'access HRJobs',
-          ]
-        ]
-      ];
-      foreach($toCreate as $item) {
-        CRM_Core_BAO_Navigation::add($item);
-      }
-    }
-
-    return true;
-  }
-
-  /**
-   * Remove (Job Contract Report) menu item if exist
-   *
-   */
-  function upgrade_1018() {
-    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('export_job_contracts')");
-    CRM_Core_BAO_Navigation::resetNavigation();
-
     return true;
   }
 
@@ -1145,19 +889,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
   }
 
   /**
-   * Removes menu link pointing to an nonexistent option group and update
-   * dropdown links to use option group names instead of IDs.
-   *
-   * @return bool
-   */
-  public function upgrade_1033() {
-    $this->deletePensionTypeDropdownMenu();
-    $this->updateDropdownMenuItemsLinkToUseOptionGroupName();
-
-    return TRUE;
-  }
-
-  /**
    * Update CustomGroup, setting Contact_Length_Of_Service is_reserved to Yes
    *
    * @return bool
@@ -1210,67 +941,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         civicrm_api3('CustomGroup', 'create', $params);
       }
     }
-
-    return TRUE;
-  }
-
-  /**
-   * Adds a submenu containing links to edit job contract option groups
-   *
-   * @return bool
-   */
-  public function upgrade_1036() {
-    $domain = CRM_Core_Config::domainID();
-    $params = ['return' => 'id', 'name' => 'Administer', 'domain_id' => $domain];
-    $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
-
-    $permission = 'access CiviCRM';
-    $parent = $this->createNavItem('Job Contract', $permission, $administerId);
-    $parentId = $parent['id'];
-
-    // Weight cannot be set when creating for the first time
-    civicrm_api3('Navigation', 'create', ['id' => $parentId, 'weight' => -100]);
-
-    // If we don't flush it will not recognize newly created parent_id
-    CRM_Core_PseudoConstant::flush();
-
-    // returns the link to an option group edit page
-    $optGroupLinker = function ($groupName) {
-      return 'civicrm/admin/options/' . $groupName . '?reset=1';
-    };
-
-    $childLinks = [
-      'Contract Types' => $optGroupLinker('hrjc_contract_type'),
-      'Normal Places of Work' => $optGroupLinker('hrjc_location'),
-      'Contract End Reasons' => $optGroupLinker('hrjc_contract_end_reason'),
-      'Contract Revision Reasons' => $optGroupLinker('hrjc_revision_change_reason'),
-      'Standard Full Time Hours' => 'civicrm/hours_location',
-      'Pay Scales' => 'civicrm/pay_scale',
-      'Benefits' => $optGroupLinker('hrjc_benefit_name'),
-      'Deductions' => $optGroupLinker('hrjc_deduction_name'),
-      'Insurance Plan Types' => $optGroupLinker('hrjc_insurance_plantype'),
-    ];
-
-    foreach ($childLinks as $itemName => $link) {
-      $this->createNavItem($itemName, $permission, $parentId, ['url' => $link]);
-    }
-
-    return TRUE;
-  }
-
-  /**
-   * Changes the url of Standard Full Time Hours
-   *
-   * @return bool
-   */
-  public function upgrade_1037() {
-    civicrm_api3('Navigation', 'get', [
-      'name' => 'Standard Full Time Hours',
-      'api.Navigation.create' => [
-        'id' => '$value.id',
-        'url' => 'civicrm/standard_full_time_hours'
-      ],
-    ]);
 
     return TRUE;
   }
@@ -1366,87 +1036,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     ]);
 
     return TRUE;
-  }
-
-  /**
-   * Creates a navigation menu item using the API
-   *
-   * @param string $name
-   * @param string $permission
-   * @param int $parentID
-   * @param array $params
-   *
-   * @return array
-   */
-  private function createNavItem($name, $permission, $parentID, $params = []) {
-    $params = array_merge([
-      'name' => $name,
-      'label' => ts($name),
-      'permission' => $permission,
-      'parent_id' => $parentID,
-      'is_active' => 1,
-    ], $params);
-
-    $existing = civicrm_api3('Navigation', 'get', $params);
-
-    if ($existing['count'] > 0) {
-      return array_shift($existing['values']);
-    }
-
-    return civicrm_api3('Navigation', 'create', $params);
-  }
-
-  /**
-   * Removes the "Pension Type" item from the
-   *  "Administer -> Customize Data and Screens -> Dropdowns" menu
-   *
-   * The option group this menu item links to has been removed by PCHR-1820,
-   * but the menu item itself wasn't, so we're deleting it now.
-   *
-   * @return bool
-   */
-  private function deletePensionTypeDropdownMenu() {
-    civicrm_api3('Navigation', 'get', [
-      'name' => 'hrjc_pension_type',
-      'url' => ['LIKE' => 'civicrm/admin/options?gid%'],
-      'api.Navigation.delete' => ['id' => '$value.id'],
-    ]);
-
-    CRM_Core_BAO_Navigation::resetNavigation();
-  }
-
-  /**
-   * Update the URLs of all menu items pointing to Job Contracts options under
-   * the "Administer -> Customize Data and Screens -> Dropdowns" menu to have
-   * the option group name instead of its ID
-   *
-   * @return bool
-   */
-  private function updateDropdownMenuItemsLinkToUseOptionGroupName() {
-    $dropdownMenuItems = [
-      'hrjc_contract_type',
-      'hrjc_location',
-      'hrjc_pay_cycle',
-      'hrjc_benefit_name',
-      'hrjc_benefit_type',
-      'hrjc_deduction_name',
-      'hrjc_deduction_type',
-      'hrjc_revision_change_reason',
-      'hrjc_contract_end_reason',
-    ];
-
-    foreach ($dropdownMenuItems as $menuItem) {
-      civicrm_api3('Navigation', 'get', [
-        'name' => $menuItem,
-        'url' => ['LIKE' => 'civicrm/admin/options?gid%'],
-        'api.Navigation.create' => [
-          'id' => '$value.id',
-          'url' => "civicrm/admin/options/{$menuItem}?reset=1"
-        ],
-      ]);
-    }
-
-    CRM_Core_BAO_Navigation::resetNavigation();
   }
 
   /**

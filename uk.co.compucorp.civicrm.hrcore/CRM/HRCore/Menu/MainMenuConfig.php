@@ -14,7 +14,7 @@ class CRM_HRCore_Menu_MainMenuConfig implements CRM_HRCore_Menu_Config {
               'Advanced Search' => 'civicrm/contact/search/advanced?reset=1',
             ],
         ],
-      'Staff' =>
+      'Staffer' =>
         [
           'icon' => 'crm-i fa-users',
           'children' =>
