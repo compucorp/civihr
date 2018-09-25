@@ -29,7 +29,7 @@ define([
       }
     ];
     vm.leaveTypeTitle = '';
-    vm.openedSettingsTabIndex = null;
+    vm.activeSettingsTabIndex = null;
     vm.sections = [
       {
         name: 'general',
@@ -109,14 +109,14 @@ define([
     }
 
     /**
-     * Gets fields for the currently opened settings tab
+     * Gets fields for the currently active settings tab
      *
      * @return {Array} collection of fields
      */
     function getSettingsTabFields () {
-      var openedTab = _.find(vm.settingsTabs, { opened: true });
+      var activeTab = _.find(vm.settingsTabs, { active: true });
 
-      return openedTab.fields;
+      return activeTab.fields;
     }
 
     /**
@@ -139,10 +139,10 @@ define([
      */
     function openSection (sectionName) {
       vm.sections.forEach(function (section) {
-        section.expanded = false;
+        section.active = false;
       });
 
-      _.find(vm.sections, { name: sectionName }).expanded = true;
+      _.find(vm.sections, { name: sectionName }).active = true;
     }
 
     /**
@@ -152,11 +152,14 @@ define([
      */
     function openSettingsTab (settingsTabName) {
       vm.settingsTabs.forEach(function (settingsTab) {
-        settingsTab.opened = false;
+        settingsTab.active = false;
       });
 
-      vm.openedSettingsTabIndex = _.findIndex(vm.settingsTabs, { name: settingsTabName });
-      vm.settingsTabs[vm.openedSettingsTabIndex].opened = true;
+      vm.activeSettingsTabIndex = _.findIndex(vm.settingsTabs, { name: settingsTabName });
+      vm.activeSettingsTab = vm.settingsTabs[vm.activeSettingsTabIndex];
+      vm.activeSettingsTab.active = true;
+      vm.isOnLastSettingsTab = vm.activeSettingsTabIndex === vm.settingsTabs.length - 1;
+      vm.isOnFirstSettingsTab = vm.activeSettingsTabIndex === 0;
     }
 
     /**

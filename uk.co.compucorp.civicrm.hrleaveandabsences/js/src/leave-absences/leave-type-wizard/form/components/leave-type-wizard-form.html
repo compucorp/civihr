@@ -5,16 +5,16 @@
     <div class="panel panel-default"
       ng-repeat="section in form.sections">
       <div class="panel-heading"
-        ng-class="{ pointer: !section.expanded}"
+        ng-class="{ pointer: !section.active }"
         ng-click="form.openSection(section.name)">
         <h4 class="panel-title">
           <small>
-            <i class="fa fa-chevron-{{section.expanded ? 'down' : 'right'}}"></i>
+            <i class="fa fa-chevron-{{section.active ? 'down' : 'right'}}"></i>
           </small>
           {{section.label}}
         </h4>
       </div>
-      <div class="panel-body" ng-show="section.expanded">
+      <div class="panel-body" ng-show="section.active">
         <ng-include
           src="form.sectionsTemplatesPath + '/leave-type-wizard-form-' + section.name + '.html'">
         </ng-include>

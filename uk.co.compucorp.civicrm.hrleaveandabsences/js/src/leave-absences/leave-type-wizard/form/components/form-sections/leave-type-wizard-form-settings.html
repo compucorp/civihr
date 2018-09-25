@@ -2,7 +2,7 @@
   <div class="col-md-3">
     <ul class="nav nav-pills nav-stacked">
       <li ng-repeat="settingsTab in form.settingsTabs"
-        ng-class="{ active: settingsTab.opened }"
+        ng-class="{ active: settingsTab.active }"
         ng-click="form.openSettingsTab(settingsTab.name)">
         <a href="#">
           {{settingsTab.label}}
@@ -28,22 +28,22 @@
     <div class="row">
       <div class="col-md-12">
         <div class="btn btn-secondary pull-right"
-          ng-if="form.openedSettingsTabIndex !== form.settingsTabs.length - 1"
-          ng-click="form.openSettingsTab(form.settingsTabs[form.openedSettingsTabIndex + 1].name)">
+          ng-if="!form.isOnLastSettingsTab"
+          ng-click="form.openSettingsTab(form.settingsTabs[form.activeSettingsTabIndex + 1].name)">
           Next
         </div>
         <div class="btn btn-primary pull-right"
-          ng-if="form.openedSettingsTabIndex === form.settingsTabs.length - 1">
+          ng-if="form.isOnLastSettingsTab">
           Save
         </div>
         <div class="btn btn-secondary"
-          ng-if="form.openedSettingsTabIndex === 0"
+          ng-if="form.isOnFirstSettingsTab"
           ng-click="form.openSection('general')">
           Choose another category
         </div>
         <div class="btn btn-secondary"
-          ng-if="form.openedSettingsTabIndex !== 0"
-          ng-click="form.openSettingsTab(form.settingsTabs[form.openedSettingsTabIndex - 1].name)">
+          ng-if="!form.isOnFirstSettingsTab"
+          ng-click="form.openSettingsTab(form.settingsTabs[form.activeSettingsTabIndex - 1].name)">
           Back
         </div>
       </div>

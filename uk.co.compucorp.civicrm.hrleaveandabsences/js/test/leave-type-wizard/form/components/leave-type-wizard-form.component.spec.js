@@ -31,13 +31,13 @@ define([
     });
 
     describe('on init', function () {
-      var generalSection, settingsSection, basicSettingsTab, leaveRequestsSettingsTab;
+      var sections, firstSettingsTab, middleSettingsTab, lastSettingsTab;
 
       beforeEach(function () {
-        generalSection = _.find(controller.sections, { name: 'general' });
-        settingsSection = _.find(controller.sections, { name: 'settings' });
-        basicSettingsTab = _.find(controller.settingsTabs, { name: 'basic-details' });
-        leaveRequestsSettingsTab = _.find(controller.settingsTabs, { name: 'leave-requests' });
+        sections = _.keyBy(controller.sections, 'name');
+        firstSettingsTab = _.first(controller.settingsTabs);
+        middleSettingsTab = controller.settingsTabs[1];
+        lastSettingsTab = _.last(controller.settingsTabs);
 
         controller.$onInit();
       });
@@ -47,12 +47,12 @@ define([
           controller.sectionsTemplatesPath)).toBe(true);
       });
 
-      it('has the General section expanded', function () {
-        expect(generalSection.expanded).toBe(true);
+      it('has the General section active', function () {
+        expect(sections.general.active).toBe(true);
       });
 
       it('has the Settings section collapsed', function () {
-        expect(settingsSection.expanded).toBe(false);
+        expect(sections.settings.active).toBe(false);
       });
 
       it('has Settings sections tabs defined', function () {
@@ -71,8 +71,17 @@ define([
         }));
       });
 
-      it('has the Basic settings tab selected', function () {
-        expect(basicSettingsTab.opened).toBe(true);
+      it('has the first settings tab selected', function () {
+        expect(firstSettingsTab.active).toBe(true);
+        expect(controller.activeSettingsTab).toBe(firstSettingsTab);
+      });
+
+      it('tells that the user is on the first settings tab', function () {
+        expect(controller.isOnFirstSettingsTab).toEqual(true);
+      });
+
+      it('stores an index of the active settings tab', function () {
+        expect(controller.activeSettingsTabIndex).toEqual(0);
       });
 
       it('has leave type categories defined', function () {
@@ -94,40 +103,56 @@ define([
         });
 
         it('collapses the General section', function () {
-          expect(generalSection.expanded).toBe(false);
+          expect(sections.general.active).toBe(false);
         });
 
         it('expands the Settings section ', function () {
-          expect(settingsSection.expanded).toBe(true);
+          expect(sections.settings.active).toBe(true);
         });
 
         it('renders the fields related to the Basic Details settings tab', function () {
           expect(_.first(controller.getSettingsTabFields()).name).toBe('hide_label');
         });
 
-        it('stores the index for the currently opened settings tab', function () {
-          expect(controller.openedSettingsTabIndex).toBe(0);
-        });
-
-        describe('when user selects the Leave Requests settings tab', function () {
+        describe('when user selects the middle settings tab', function () {
           beforeEach(function () {
-            controller.openSettingsTab('leave-requests');
+            controller.openSettingsTab(middleSettingsTab.name);
           });
 
-          it('collapses the Basic Details settings tab', function () {
-            expect(basicSettingsTab.opened).toBe(false);
+          it('collapses the first settings tab', function () {
+            expect(firstSettingsTab.active).toBe(false);
           });
 
-          it('expands the Leave Requests settings tab', function () {
-            expect(leaveRequestsSettingsTab.opened).toBe(true);
+          it('expands the middle settings tab', function () {
+            expect(controller.activeSettingsTab).toEqual(middleSettingsTab);
+            expect(middleSettingsTab.active).toBe(true);
           });
 
           it('renders the fields related to the Leave Requests settings tab', function () {
             expect(_.first(controller.getSettingsTabFields()).name).toBe('max_consecutive_leave_days');
           });
 
-          it('updates the index for the currently opened settings tab', function () {
-            expect(controller.openedSettingsTabIndex).toBe(1);
+          it('updates the reference to the active settings tab', function () {
+            expect(controller.activeSettingsTab).toEqual(middleSettingsTab);
+          });
+
+          it('tells that the user is neither on the first settings tab nor on the last one', function () {
+            expect(controller.isOnLastSettingsTab).toEqual(false);
+            expect(controller.isOnFirstSettingsTab).toEqual(false);
+          });
+
+          it('updates the index of the active settings tab', function () {
+            expect(controller.activeSettingsTabIndex).toEqual(1);
+          });
+        });
+
+        describe('when user selects the last settings tab', function () {
+          beforeEach(function () {
+            controller.openSettingsTab(lastSettingsTab.name);
+          });
+
+          it('tells that the user is on the last settings tab', function () {
+            expect(controller.isOnLastSettingsTab).toEqual(true);
           });
         });
       });
