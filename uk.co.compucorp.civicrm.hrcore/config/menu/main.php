@@ -110,7 +110,7 @@ return [
   'Configure' => [
     'icon' => 'crm-i fa-cog',
     'permission' => 'administer CiviCRM',
-    'children' => include 'Configure.php',
+    'children' => include 'configure.php',
   ],
 
   'Help' => [
@@ -139,7 +139,7 @@ return [
     'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
     'operator' => 'AND',
     'icon' => 'crm-i fa-code',
-    'children' => include 'Developer.php',
+    'children' => include 'developer.php',
   ],
 
   'Self Service Portal' => 'dashboard',

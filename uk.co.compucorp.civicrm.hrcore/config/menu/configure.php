@@ -204,7 +204,7 @@ return [
 
   'Customize Data and Screens' => [
     'permission' => 'access root menu items and configurations',
-    'children' => include 'CustomizeData.php',
+    'children' => include 'customizedata.php',
   ],
 
   'Communications' => [
@@ -297,7 +297,7 @@ return [
 
   'System Settings' => [
     'permission' => 'access root menu items and configurations',
-    'children' => include 'SystemSettings.php',
+    'children' => include 'systemsettings.php',
   ],
 ];
 
