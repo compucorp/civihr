@@ -30,7 +30,7 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
 
   public function uninstall() {
     set_time_limit(self::EXTENSION_INSTALLATION_TIMEOUT);
-    
+
     $this->cleanTablesData();
   }
 
@@ -104,7 +104,6 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
    */
   private function cleanSampleDataValues() {
     $filesToClean = [
-      'AbsenceType' => 'civicrm_hrabsence_type',
       'HRHoursLocation' => 'civicrm_hrhours_location',
       'HRPayScale' => 'civicrm_hrpay_scale',
       'LocationType' => 'civicrm_location_type',
@@ -138,8 +137,6 @@ class CRM_HRSampleData_Upgrader extends CRM_HRSampleData_Upgrader_Base {
       'Relationships' => 'civicrm_relationship',
       'HRHoursLocation' => 'civicrm_hrhours_location',
       'HRPayScale' => 'civicrm_hrpay_scale',
-      'AbsencePeriod' => 'civicrm_hrabsence_period',
-      'AbsenceType' => 'civicrm_hrabsence_type',
       'Vacancy' => 'civicrm_hrvacancy',
       'VacancyStage' => 'civicrm_hrvacancy_stage',
       'JobContract' => 'civicrm_hrjobcontract',
