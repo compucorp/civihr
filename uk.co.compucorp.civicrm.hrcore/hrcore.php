@@ -325,9 +325,9 @@ function hrcore_civicrm_pageRun($page) {
 
 /**
  * The implementation of this hook is to ensure that the menu navigation
- * Items supplied by civiHR overrides the one civi pulls from the database.
- * The menu items from the civiHR menu config file replaces the navigation
- * menu items civi stores in the db.
+ * Items supplied by CiviHR overrides the one Civi pulls from the database.
+ * The menu items from the CiviHR menu config file replaces the navigation
+ * menu items Civi stores in the db.
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu/
  */
