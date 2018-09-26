@@ -2,6 +2,11 @@
 
 class CRM_HRCore_Menu_Child_Developer {
 
+  /**
+   * Returns menu Items for Developer Menu.
+   *
+   * @return array
+   */
   public static function getItems() {
     return [
       'API Explorer' =>
@@ -24,27 +29,7 @@ class CRM_HRCore_Menu_Child_Developer {
           'url' => 'https://www.civihr.org/support',
           'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
           'operator' => 'AND',
-          'children' =>
-            [
-              'crm-*' =>
-                [
-                  'url' => 'civicrm/styleguide/crm-star',
-                  'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
-                  'operator' => 'AND',
-                ],
-              'Bootstrap' =>
-                [
-                  'url' => 'civicrm/styleguide/bootstrap',
-                  'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
-                  'operator' => 'AND',
-                ],
-              'Bootstrap-CiviHR' =>
-                [
-                  'url' => 'civicrm/styleguide/bootstrap-civihr',
-                  'permission' => 'access CiviCRM,access CiviCRM developer menu and tools',
-                  'operator' => 'AND',
-                ],
-            ],
+          'children' => CRM_HRCore_Menu_Child_StyleGuide::getItems(),
         ],
     ];
   }

@@ -2,6 +2,11 @@
 
 class CRM_HRCore_Menu_Child_CustomizeData {
 
+  /**
+   * Returns menu Items for Custom Data and Screens Menu.
+   *
+   * @return array
+   */
   public static function getItems() {
     return [
       'Custom Fields' =>

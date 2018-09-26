@@ -2,6 +2,11 @@
 
 class CRM_HRCore_Menu_Child_Configure {
 
+  /**
+   * Returns menu Items for Configure Menu.
+   *
+   * @return array
+   */
   public static function getItems() {
     return [
       'Localise CiviCRM' =>

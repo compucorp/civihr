@@ -2,6 +2,11 @@
 
 class CRM_HRCore_Menu_MainMenuConfig implements CRM_HRCore_Menu_Config {
 
+  /**
+   * Returns menu Items for Main navigation menu Items.
+   *
+   * @return array
+   */
   public function getItems() {
     return [
       'Home' => 'civicrm/tasksassignments/dashboard#/tasks',
@@ -14,7 +19,7 @@ class CRM_HRCore_Menu_MainMenuConfig implements CRM_HRCore_Menu_Config {
               'Advanced Search' => 'civicrm/contact/search/advanced?reset=1',
             ],
         ],
-      'Staffer' =>
+      'Staff' =>
         [
           'icon' => 'crm-i fa-users',
           'children' =>
@@ -79,29 +84,7 @@ class CRM_HRCore_Menu_MainMenuConfig implements CRM_HRCore_Menu_Config {
                 [
                   'url' => 'civicrm/import/custom?reset=1',
                   'permission' => 'access CiviCRM',
-                  'children' =>
-                    [
-                      'Medical & Disability' =>
-                        [
-                          'url' => 'civicrm/import/custom?reset=1&id=8',
-                          'permission' => 'access CiviCRM',
-                        ],
-                      'Qualifications' =>
-                        [
-                          'url' => 'civicrm/import/custom?reset=1&id=9',
-                          'permission' => 'access CiviCRM',
-                        ],
-                      'Career History' =>
-                        [
-                          'url' => 'civicrm/import/custom?reset=1&id=11',
-                          'permission' => 'access CiviCRM',
-                        ],
-                      'Emergency Contacts' =>
-                        [
-                          'url' => 'civicrm/import/custom?reset=1&id=99999',
-                          'permission' => 'access CiviCRM',
-                        ],
-                    ],
+                  'children' => CRM_HRCore_Menu_Child_CustomFields::getItems()
                 ],
               'New Group' =>
                 [

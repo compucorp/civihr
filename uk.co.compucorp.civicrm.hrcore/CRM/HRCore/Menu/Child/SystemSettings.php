@@ -2,6 +2,11 @@
 
 class CRM_HRCore_Menu_Child_SystemSettings {
 
+  /**
+   * Returns menu Items for System Settings Menu.
+   *
+   * @return array
+   */
   public static function getItems() {
     return [
       'Components' =>
