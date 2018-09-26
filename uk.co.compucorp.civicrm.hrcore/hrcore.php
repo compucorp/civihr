@@ -324,6 +324,24 @@ function hrcore_civicrm_pageRun($page) {
 }
 
 /**
+ * The implementation of this hook is to ensure that the menu navigation
+ * Items supplied by civiHR overrides the one civi pulls from the database.
+ * The menu items from the civiHR menu config file replaces the navigation
+ * menu items civi stores in the db.
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu/
+ */
+function hrcore_civicrm_navigationMenu(&$params) {
+  $mainMenuConfig = new CRM_HRCore_Menu_MainMenuConfig();
+  $menuBuilder = new CRM_HRCore_Menu_MenuBuilder();
+  $civiAdapter = new CRM_HRCore_Menu_CiviAdapter();
+
+  $menuObject = $menuBuilder->getMenuItems($mainMenuConfig);
+  $params = $civiAdapter->getNavigationTree($menuObject);
+}
+
+
+/**
  * Implements hook_civicrm_coreResourceList().
  */
 function hrcore_civicrm_coreResourceList(&$items, $region) {
