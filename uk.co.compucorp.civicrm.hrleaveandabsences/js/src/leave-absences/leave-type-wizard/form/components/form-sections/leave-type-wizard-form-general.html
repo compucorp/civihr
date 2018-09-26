@@ -33,7 +33,6 @@
         <label>
           <input type="radio"
             ng-model="form.leaveTypeCategory"
-            checked="{{form.leaveTypeCategory === leaveTypeCategory.value}}"
             value="{{leaveTypeCategory.value}}"/>
           {{leaveTypeCategory.label}}
         </label>
@@ -45,7 +44,7 @@
   <div class="col-md-12">
     <button class="btn btn-secondary">Cancel</button>
     <button class="btn btn-primary pull-right"
-      ng-click="form.openSection('settings')">Settings
+      ng-click="form.openSection(1)">Settings
       <i class="fa fa-chevron-right"></i>
     </button>
   </div>

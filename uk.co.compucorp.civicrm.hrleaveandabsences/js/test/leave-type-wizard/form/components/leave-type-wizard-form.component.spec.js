@@ -31,57 +31,40 @@ define([
     });
 
     describe('on init', function () {
-      var sections, firstSettingsTab, middleSettingsTab, lastSettingsTab;
+      var settingsSection, settingsSectionFirstTab;
 
       beforeEach(function () {
-        sections = _.keyBy(controller.sections, 'name');
-        firstSettingsTab = _.first(controller.settingsTabs);
-        middleSettingsTab = controller.settingsTabs[1];
-        lastSettingsTab = _.last(controller.settingsTabs);
+        settingsSection = controller.sections[1];
+        settingsSectionFirstTab = _.first(settingsSection.tabs);
 
         controller.$onInit();
       });
 
-      it('exports the absolute path to the form sections templates folder', function () {
-        expect(/leave-type-wizard\/form\/components\/form-sections$/.test(
-          controller.sectionsTemplatesPath)).toBe(true);
+      it('exports the absolute path to the components folder', function () {
+        expect(/leave-type-wizard\/form\/components$/.test(
+          controller.componentsPath)).toBe(true);
       });
 
       it('has the General section active', function () {
-        expect(sections.general.active).toBe(true);
+        expect(controller.sections[0].active).toBe(true);
       });
 
       it('has the Settings section collapsed', function () {
-        expect(sections.settings.active).toBe(false);
+        expect(settingsSection.active).toBe(false);
       });
 
       it('has Settings sections tabs defined', function () {
-        expect(controller.settingsTabs.length).toBe(4);
-        expect(_.sample(controller.settingsTabs)).toEqual(jasmine.objectContaining({
-          name: jasmine.any(String),
+        expect(settingsSection.tabs.length).toBe(4);
+        expect(_.sample(settingsSection.tabs)).toEqual(jasmine.objectContaining({
           label: jasmine.any(String)
         }));
       });
 
       it('has fields defined in Settings sections tabs', function () {
-        expect(controller.settingsTabs.length).toBe(4);
-        expect(_.sample(_.sample(controller.settingsTabs).fields)).toEqual(jasmine.objectContaining({
+        expect(_.sample(_.sample(settingsSection.tabs).fields)).toEqual(jasmine.objectContaining({
           name: jasmine.any(String),
           label: jasmine.any(String)
         }));
-      });
-
-      it('has the first settings tab selected', function () {
-        expect(firstSettingsTab.active).toBe(true);
-        expect(controller.activeSettingsTab).toBe(firstSettingsTab);
-      });
-
-      it('tells that the user is on the first settings tab', function () {
-        expect(controller.isOnFirstSettingsTab).toEqual(true);
-      });
-
-      it('stores an index of the active settings tab', function () {
-        expect(controller.activeSettingsTabIndex).toEqual(0);
       });
 
       it('has leave type categories defined', function () {
@@ -99,80 +82,83 @@ define([
 
       describe('when user clicks the Settings section header', function () {
         beforeEach(function () {
-          controller.openSection('settings');
+          controller.openSection(1);
         });
 
-        it('collapses the General section', function () {
-          expect(sections.general.active).toBe(false);
+        it('collapses the first section', function () {
+          expect(controller.sections[0].active).toBe(false);
         });
 
-        it('expands the Settings section ', function () {
-          expect(sections.settings.active).toBe(true);
+        it('expands the second section ', function () {
+          expect(settingsSection.active).toBe(true);
         });
 
-        it('renders the fields related to the Basic Details settings tab', function () {
-          expect(_.first(controller.getFieldsForActiveSettingsTab()).name).toBe('hide_label');
+        it('renders tabs for the active section', function () {
+          expect(controller.getTabsForActiveSection()).toEqual(settingsSection.tabs);
+        });
+
+        it('has the first Settings section tab selected', function () {
+          expect(settingsSectionFirstTab.active).toBe(true);
+        });
+
+        it('tells that the user is on the first settings tab', function () {
+          expect(controller.isOnSectionFirstTab).toEqual(true);
+        });
+
+        it('renders the fields for the active tab', function () {
+          expect(_.first(controller.getFieldsForActiveTab()).name).toBe('hide_label');
         });
 
         describe('when user selects the middle settings tab', function () {
           beforeEach(function () {
-            controller.openSettingsTab(middleSettingsTab.name);
+            controller.openActiveSectionTab(1);
           });
 
           it('collapses the first settings tab', function () {
-            expect(firstSettingsTab.active).toBe(false);
+            expect(settingsSectionFirstTab.active).toBe(false);
           });
 
           it('expands the middle settings tab', function () {
-            expect(controller.activeSettingsTab).toEqual(middleSettingsTab);
-            expect(middleSettingsTab.active).toBe(true);
+            expect(settingsSection.tabs[1].active).toBe(true);
           });
 
           it('renders the fields related to the Leave Requests settings tab', function () {
-            expect(_.first(controller.getFieldsForActiveSettingsTab()).name).toBe('max_consecutive_leave_days');
-          });
-
-          it('updates the reference to the active settings tab', function () {
-            expect(controller.activeSettingsTab).toEqual(middleSettingsTab);
+            expect(_.first(controller.getFieldsForActiveTab()).name).toBe('max_consecutive_leave_days');
           });
 
           it('tells that the user is neither on the first settings tab nor on the last one', function () {
-            expect(controller.isOnLastSettingsTab).toEqual(false);
-            expect(controller.isOnFirstSettingsTab).toEqual(false);
-          });
-
-          it('updates the index of the active settings tab', function () {
-            expect(controller.activeSettingsTabIndex).toEqual(1);
+            expect(controller.isOnSectionLastTab).toEqual(false);
+            expect(controller.isOnSectionFirstTab).toEqual(false);
           });
         });
 
-        describe('when opens the next section', function () {
+        describe('when opens the next section tab', function () {
           beforeEach(function () {
-            controller.openNextSettingsTab();
+            controller.openNextActiveSectionTab();
           });
 
-          it('updates the index of the active settings tab', function () {
-            expect(controller.activeSettingsTabIndex).toEqual(1);
+          it('opens the second tab', function () {
+            expect(settingsSection.tabs[1].active).toEqual(true);
           });
 
-          describe('when opens the previous section', function () {
+          describe('when opens the previous section tab', function () {
             beforeEach(function () {
-              controller.openPreviousSettingsTab();
+              controller.openPreviousActiveSectionTab();
             });
 
-            it('updates the index of the active settings tab', function () {
-              expect(controller.activeSettingsTabIndex).toEqual(0);
+            it('opens the first tab', function () {
+              expect(settingsSection.tabs[0].active).toEqual(true);
             });
           });
         });
 
         describe('when user selects the last settings tab', function () {
           beforeEach(function () {
-            controller.openSettingsTab(lastSettingsTab.name);
+            controller.openActiveSectionTab(settingsSection.tabs.length - 1);
           });
 
-          it('tells that the user is on the last settings tab', function () {
-            expect(controller.isOnLastSettingsTab).toEqual(true);
+          it('tells that the user is on the last tab', function () {
+            expect(controller.isOnSectionLastTab).toEqual(true);
           });
         });
       });

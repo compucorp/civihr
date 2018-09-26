@@ -3,10 +3,10 @@
 
   <div class="panel-group">
     <div class="panel panel-default"
-      ng-repeat="section in form.sections">
+      ng-repeat="(sectionIndex, section) in form.sections">
       <div class="panel-heading"
         ng-class="{ pointer: !section.active }"
-        ng-click="form.openSection(section.name)">
+        ng-click="form.openSection(sectionIndex)">
         <h3 class="panel-title">
           <span role="button" ng-class="{ collapsed: !section.active }"
             data-toggle="collapse">
@@ -16,7 +16,7 @@
       </div>
       <div class="panel-body" ng-show="section.active">
         <ng-include
-          src="form.sectionsTemplatesPath + '/leave-type-wizard-form-' + section.name + '.html'">
+          src="form.componentsPath + '/form-sections/leave-type-wizard-form-' + section.name + '.html'">
         </ng-include>
       </div>
     </div>

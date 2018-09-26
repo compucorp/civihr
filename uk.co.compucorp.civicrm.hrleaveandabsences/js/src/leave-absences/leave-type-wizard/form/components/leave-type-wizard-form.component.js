@@ -4,7 +4,7 @@ define([
   'common/lodash'
 ], function (_) {
   LeaveTypeWizardFormController.$inject = ['$log', 'shared-settings',
-    'form-settings-tabs', 'form-sections', 'form-leave-type-categories'];
+    'form-sections', 'form-leave-type-categories'];
 
   return {
     __name: 'leaveTypeWizardForm',
@@ -16,25 +16,24 @@ define([
   };
 
   function LeaveTypeWizardFormController ($log, sharedSettings,
-    formSettingsTabs, formSections, formLeaveTypeCategories) {
+    formSections, formLeaveTypeCategories) {
     $log.debug('Controller: LeaveTypeWizardFormController');
 
     var vm = this;
 
+    vm.componentsPath =
+      sharedSettings.sourcePath + 'leave-type-wizard/form/components';
     vm.leaveTypeCategory = '';
     vm.leaveTypeCategories = formLeaveTypeCategories;
-    vm.activeSettingsTabIndex = null;
     vm.sections = formSections;
-    vm.sectionsTemplatesPath =
-      sharedSettings.sourcePath + 'leave-type-wizard/form/components/form-sections';
-    vm.settingsTabs = formSettingsTabs;
 
     vm.$onInit = $onInit;
-    vm.getFieldsForActiveSettingsTab = getFieldsForActiveSettingsTab;
-    vm.openNextSettingsTab = openNextSettingsTab;
-    vm.openPreviousSettingsTab = openPreviousSettingsTab;
+    vm.getFieldsForActiveTab = getFieldsForActiveTab;
+    vm.getTabsForActiveSection = getTabsForActiveSection;
+    vm.openNextActiveSectionTab = openNextActiveSectionTab;
+    vm.openPreviousActiveSectionTab = openPreviousActiveSectionTab;
     vm.openSection = openSection;
-    vm.openSettingsTab = openSettingsTab;
+    vm.openActiveSectionTab = openActiveSectionTab;
     vm.selectLeaveTypeCategory = selectLeaveTypeCategory;
 
     function $onInit () {
@@ -42,14 +41,24 @@ define([
     }
 
     /**
-     * Gets fields for the currently active settings tab
+     * Gets fields for the active tab of the active section
      *
      * @return {Array} collection of fields
      */
-    function getFieldsForActiveSettingsTab () {
-      var activeTab = _.find(vm.settingsTabs, { active: true });
+    function getFieldsForActiveTab () {
+      var activeSectionTabs = vm.getTabsForActiveSection();
+      var activeTab = _.find(activeSectionTabs, { active: true });
 
       return activeTab.fields;
+    }
+
+    /**
+     * Gets tabs for the active section
+     *
+     * @return {Array} collection of tabs
+     */
+    function getTabsForActiveSection () {
+      return _.find(vm.sections, { active: true }).tabs;
     }
 
     /**
@@ -61,56 +70,67 @@ define([
     function initDefaultView () {
       vm.leaveTypeCategory = 'leave';
 
-      openSection('general');
-      openSettingsTab('basic-details');
+      openSection(0);
     }
 
     /**
-     * Opens the next settings tab
+     * Opens the next tab in the active section
      */
-    function openNextSettingsTab () {
-      vm.openSettingsTab(vm.settingsTabs[vm.activeSettingsTabIndex + 1].name);
+    function openNextActiveSectionTab () {
+      var activeSection = _.find(vm.sections, { active: true });
+      var activeTabIndex = _.findIndex(activeSection.tabs, { active: true });
+
+      vm.openActiveSectionTab(activeTabIndex + 1);
     }
 
     /**
-     * Opens the previous settings tab
+     * Opens the previous tab in the active section
      */
-    function openPreviousSettingsTab () {
-      vm.openSettingsTab(vm.settingsTabs[vm.activeSettingsTabIndex - 1].name);
+    function openPreviousActiveSectionTab () {
+      var activeSection = _.find(vm.sections, { active: true });
+      var activeTabIndex = _.findIndex(activeSection.tabs, { active: true });
+
+      vm.openActiveSectionTab(activeTabIndex - 1);
     }
 
     /**
-     * Opens a section by its name and collapses all other sections
+     * Opens a section by its index, collapses all other sections and,
+     * if there are any tabs, opens the first tab.
      *
-     * @param {String} sectionName
+     * @param {Number} sectionIndex
      */
-    function openSection (sectionName) {
+    function openSection (sectionIndex) {
+      var section = vm.sections[sectionIndex];
+
       vm.sections.forEach(function (section) {
         section.active = false;
       });
 
-      _.find(vm.sections, { name: sectionName }).active = true;
+      section.active = true;
+
+      section.tabs && openActiveSectionTab(0);
     }
 
     /**
-     * Opens a settings tab by its name and collapses all other settings tabs
+     * Opens a section tab by its index and collapses all other section tabs
      *
-     * @param {String} settingsTabName
+     * @param {Number} tabIndex
      */
-    function openSettingsTab (settingsTabName) {
-      vm.settingsTabs.forEach(function (settingsTab) {
-        settingsTab.active = false;
+    function openActiveSectionTab (tabIndex) {
+      var activeSection = _.find(vm.sections, { active: true });
+      var tabs = activeSection.tabs;
+
+      tabs.forEach(function (tab) {
+        tab.active = false;
       });
 
-      vm.activeSettingsTabIndex = _.findIndex(vm.settingsTabs, { name: settingsTabName });
-      vm.activeSettingsTab = vm.settingsTabs[vm.activeSettingsTabIndex];
-      vm.activeSettingsTab.active = true;
-      vm.isOnLastSettingsTab = vm.activeSettingsTabIndex === vm.settingsTabs.length - 1;
-      vm.isOnFirstSettingsTab = vm.activeSettingsTabIndex === 0;
+      tabs[tabIndex].active = true;
+      vm.isOnSectionLastTab = tabIndex === tabs.length - 1;
+      vm.isOnSectionFirstTab = tabIndex === 0;
     }
 
     /**
-     * Selects a leave type category.
+     * Selects a leave type category
      *
      * @param {String} value
      */
