@@ -2,7 +2,7 @@
 
 use CRM_HRCore_Helper_ExtensionHelper as ExtensionHelper;
 
-class CRM_HRCore_Menu_Child_StyleGuide {
+class CRM_HRCore_Menu_Config_StyleGuide {
 
   /**
    * Returns menu Items for Style guide Menu.

@@ -1,7 +1,7 @@
 
 <?php
 
-class CRM_HRCore_Menu_Child_CustomFields {
+class CRM_HRCore_Menu_Config_CustomFields {
 
   /**
    *  Returns menu Items for Custom fields Menu.
