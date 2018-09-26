@@ -362,10 +362,6 @@ function hrui_civicrm_uninstall() {
   CRM_Core_BAO_OptionValue::create($defaults);
   _hrui_wordReplacement(TRUE);
 
-  // Remove 'Import Custom Fields' Navigation item and reset the menu
-  CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name = 'import_custom_fields'");
-  CRM_Core_BAO_Navigation::resetNavigation();
-
   return _hrui_civix_civicrm_uninstall();
 }
 
@@ -431,7 +427,6 @@ function hrui_civicrm_summary($contactId, &$content, &$contentPlacement) {
 function hrui_civicrm_enable() {
   _hrui_setActiveFields(FALSE);
   _hrui_wordReplacement(FALSE);
-  _hrui_menuSetActive(1);
 
   return _hrui_civix_civicrm_enable();
 }
@@ -442,7 +437,6 @@ function hrui_civicrm_enable() {
 function hrui_civicrm_disable() {
   _hrui_setActiveFields(TRUE);
   _hrui_wordReplacement(TRUE);
-  _hrui_menuSetActive(0);
 
   return _hrui_civix_civicrm_disable();
 }
@@ -564,16 +558,6 @@ function hrui_civicrm_tabset($tabsetName, &$tabs, $contactID) {
  */
 function hrui_civicrm_managed(&$entities) {
   return _hrui_civix_civicrm_managed($entities);
-}
-
-/**
- * Implements hook_civicrm_navigationMenu().
- *
- * @param Array $params List of menu items
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
- */
-function hrui_civicrm_navigationMenu(&$params) {
-  _hrui_customImportMenuItems($params);
 }
 
 /**
@@ -815,51 +799,4 @@ function _hrui_updateContactSummaryUI() {
   }
 
   return $content;
-}
-
-/**
- * Generating Custom Fields import child menu items
- *
- */
-function _hrui_customImportMenuItems(&$params) {
-  $navId = CRM_Core_DAO::singleValueQuery("SELECT max(id) FROM civicrm_navigation");
-
-  $customFieldsNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'import_custom_fields', 'id', 'name');
-  $contactNavId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Contacts', 'id', 'name');
-
-  if ($customFieldsNavId) {
-    // Degrade gracefully on 4.4
-    if (is_callable(array('CRM_Core_BAO_CustomGroup', 'getMultipleFieldGroup'))) {
-      //  Get the maximum key of $params
-      $multipleCustomData = CRM_Core_BAO_CustomGroup::getMultipleFieldGroup();
-
-      $multiValuedData = NULL;
-      foreach ($multipleCustomData as $key => $value) {
-        ++$navId;
-        $multiValuedData[$navId] = array (
-          'attributes' => array (
-            'label'      => $value,
-            'name'       => $value,
-            'url'        => 'civicrm/import/custom?reset=1&id='.$key,
-            'permission' => 'access CiviCRM',
-            'operator'   => null,
-            'separator'  => null,
-            'parentID'   => $customFieldsNavId,
-            'navID'      => $navId,
-            'active'     => 1
-          )
-        );
-      }
-      $params[$contactNavId]['child'][$customFieldsNavId]['child'] = $multiValuedData;
-    }
-  }
-}
-
-/**
- * Enable/Disable Menu items created by hrui extension
- *
- */
-function _hrui_menuSetActive($isActive) {
-  CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active = {$isActive} WHERE name = 'import_custom_fields'");
-  CRM_Core_BAO_Navigation::resetNavigation();
 }

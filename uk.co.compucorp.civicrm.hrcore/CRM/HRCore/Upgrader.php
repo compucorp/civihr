@@ -14,20 +14,16 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   use CRM_HRCore_Upgrader_Steps_1004;
   use CRM_HRCore_Upgrader_Steps_1005;
   use CRM_HRCore_Upgrader_Steps_1006;
-  use CRM_HRCore_Upgrader_Steps_1007;
   use CRM_HRCore_Upgrader_Steps_1008;
   use CRM_HRCore_Upgrader_Steps_1009;
   use CRM_HRCore_Upgrader_Steps_1010;
   use CRM_HRCore_Upgrader_Steps_1011;
-  use CRM_HRCore_Upgrader_Steps_1012;
-  use CRM_HRCore_Upgrader_Steps_1013;
   use CRM_HRCore_Upgrader_Steps_1014;
   use CRM_HRCore_Upgrader_Steps_1015;
   use CRM_HRCore_Upgrader_Steps_1016;
   use CRM_HRCore_Upgrader_Steps_1017;
   use CRM_HRCore_Upgrader_Steps_1018;
   use CRM_HRCore_Upgrader_Steps_1019;
-  use CRM_HRCore_Upgrader_Steps_1020;
   use CRM_HRCore_Upgrader_Steps_1021;
   use CRM_HRCore_Upgrader_Steps_1022;
   use CRM_HRCore_Upgrader_Steps_1023;
@@ -39,8 +35,6 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   use CRM_HRCore_Upgrader_Steps_1029;
   use CRM_HRCore_Upgrader_Steps_1030;
   use CRM_HRCore_Upgrader_Steps_1031;
-  use CRM_HRCore_Upgrader_Steps_1032;
-  use CRM_HRCore_Upgrader_Steps_1033;
   use CRM_HRCore_Upgrader_Steps_1034;
   use CRM_HRCore_Upgrader_Steps_1035;
 

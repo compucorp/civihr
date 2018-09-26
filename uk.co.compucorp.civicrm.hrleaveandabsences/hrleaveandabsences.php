@@ -54,8 +54,6 @@ function hrleaveandabsences_civicrm_xmlMenu(&$files) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
  */
 function hrleaveandabsences_civicrm_install() {
-  _hrleavesandabsences_create_main_menu();
-  _hrleaveandabsences_create_administer_menu();
   _hrleaveandabsences_create_has_leave_approved_by_relationship_type();
 
   _hrleaveandabsences_civix_civicrm_install();
@@ -79,7 +77,6 @@ function hrleaveandabsences_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function hrleaveandabsences_civicrm_enable() {
-  _hrleaveandabsences_update_extension_is_active_flag(true);
   _hrleaveandabsences_update_has_leave_approved_by_relationship_type_is_active_flag(true);
 
   _hrleaveandabsences_civix_civicrm_enable();
@@ -91,7 +88,6 @@ function hrleaveandabsences_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function hrleaveandabsences_civicrm_disable() {
-  _hrleaveandabsences_update_extension_is_active_flag(false);
   _hrleaveandabsences_update_has_leave_approved_by_relationship_type_is_active_flag(false);
 
   _hrleaveandabsences_civix_civicrm_disable();
@@ -484,152 +480,12 @@ function hrleaveandabsences_civicrm_pageRun(&$page) {
 //                               Helper Functions                             //
 //----------------------------------------------------------------------------//
 
-/**
- * Creates the "Leave and Absences" menu item under Civi's "Administer" menu
- */
-function _hrleaveandabsences_create_administer_menu() {
-  $administerMenuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Administer', 'id', 'name');
-  $maxWeightOfAdminMenuItems = _hrleaveandabsences_get_max_child_weight_for_menu($administerMenuId);
-
-  $params = [
-    'label'      => ts('Leave'),
-    'name'       => 'leave_and_absences',
-    'url'        => null,
-    'operator'   => null,
-    'is_active'  => 1,
-    'parent_id'  => $administerMenuId,
-    'weight'     => $maxWeightOfAdminMenuItems + 1,
-    'permission' => 'administer leave and absences'
-  ];
-
-  $leaveAndAbsencesAdminNavigation = _hrleaveandabsences_add_navigation_menu($params);
-
-  _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminNavigation);
-}
-
-/**
- * @param $leaveAndAbsencesAdminNavigation
- */
-function _hrleaveandabsences_create_administer_menu_tree($leaveAndAbsencesAdminNavigation) {
-  $leaveAndAbsencesAdministerMenuTree = [
-    [
-      'label' => ts('Leave/Absence Types'),
-      'name' => 'leave_and_absence_types',
-      'url' => 'civicrm/admin/leaveandabsences/types?action=browse&reset=1',
-      'permission' => 'administer leave and absences',
-    ],
-    [
-      'label' => ts('Leave/Absence Periods'),
-      'name' => 'leave_and_absence_periods',
-      'url' => 'civicrm/admin/leaveandabsences/periods?action=browse&reset=1',
-      'permission' => 'administer leave and absences',
-    ],
-    [
-      'label' => ts('Public Holidays'),
-      'name' => 'leave_and_absence_public_holidays',
-      'url' => 'civicrm/admin/leaveandabsences/public_holidays?action=browse&reset=1',
-      'permission' => 'administer leave and absences',
-    ],
-    [
-      'label' => ts('Manage Work Patterns'),
-      'name' => 'leave_and_absence_manage_work_patterns',
-      'url' => 'civicrm/admin/leaveandabsences/work_patterns?action=browse&reset=1',
-      'permission' => 'administer leave and absences',
-    ],
-    [
-      'label' => ts('General Settings'),
-      'name' => 'leave_and_absence_general_settings',
-      'url' => 'civicrm/admin/leaveandabsences/general_settings',
-      'permission' => 'administer leave and absences',
-    ]
-  ];
-
-  foreach ($leaveAndAbsencesAdministerMenuTree as $i => $item) {
-    $item['weight']    = $i;
-    $item['parent_id'] = $leaveAndAbsencesAdminNavigation->id;
-    $item['is_active'] = 1;
-    CRM_Core_BAO_Navigation::add($item);
-  }
-}
-
-/**
- * Returns the maximum weight for a child item of the given parent menu.
- * If theres no child for this menu, 0 is returned
- *
- * @param $menu_id
- *
- * @return int
- */
-function _hrleaveandabsences_get_max_child_weight_for_menu($menu_id) {
-  $query = "SELECT MAX(weight) AS max FROM civicrm_navigation WHERE parent_id = %1";
-  $params = [
-    1 => [$menu_id, 'Integer']
-  ];
-  $dao = CRM_Core_DAO::executeQuery($query, $params);
-  $dao->fetch();
-  if($dao->max) {
-    return $dao->max;
-  }
-
-  return 0;
-}
-
-/**
- * Creates the extension's menu item on the main navigation
- */
-function _hrleavesandabsences_create_main_menu() {
-  $vacanciesWeight = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Vacancies', 'weight', 'name');
-
-  $params = [
-    'label'      => ts('Leave'),
-    'name'       => 'leave_and_absences',
-    'url'        => 'civicrm/leaveandabsences/dashboard',
-    'operator'   => null,
-    'weight'     => $vacanciesWeight + 1,
-    'is_active'  => 1,
-    'permission' => 'access leave and absences'
-  ];
-
-  _hrleaveandabsences_add_navigation_menu($params);
-}
-
-/**
- * Creates a new navigation menu with the given parameters
- *
- * @param array $params
- *
- * @return array
- */
-function _hrleaveandabsences_add_navigation_menu($params) {
-  $navigationMenu = new CRM_Core_DAO_Navigation();
-  if(!isset($params['domain_id'])) {
-    $params['domain_id'] = CRM_Core_Config::domainID();
-  }
-  $navigationMenu->copyValues($params);
-  $navigationMenu->save();
-
-  return $navigationMenu;
-}
 
 /**
  * Deletes from the database all the menus created by this extension
  */
 function _hrleaveandabsences_delete_extension_menus() {
   $query = "DELETE FROM civicrm_navigation WHERE name LIKE 'leave_and_absence%'";
-  CRM_Core_DAO::executeQuery($query);
-  CRM_Core_BAO_Navigation::resetNavigation();
-}
-
-/**
- * Updates the is_active flag for this extension menus, according to the given
- * param.
- *
- * @param bool $active
- */
-function _hrleaveandabsences_update_extension_is_active_flag($active = true) {
-  $value = $active ? '1' : '0';
-
-  $query = "UPDATE civicrm_navigation SET is_active = {$value} WHERE name LIKE 'leave_and_absence%'";
   CRM_Core_DAO::executeQuery($query);
   CRM_Core_BAO_Navigation::resetNavigation();
 }
