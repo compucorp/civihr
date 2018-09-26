@@ -186,5 +186,12 @@
     <required>true</required>
     <comment>This is used for grouping leave types.</comment>
   </field>
+  <field>
+    <name>subtype</name>
+    <title>Subtype</title>
+    <type>varchar</type>
+    <length>10</length>
+    <comment>This helps to further group custom leave type.</comment>
+  </field>
 
 </table>

@@ -197,6 +197,11 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO {
    */
   public $category;
   /**
+   *
+   * @var string
+   */
+  public $subtype;
+  /**
    * Class constructor.
    */
   function __construct() {
@@ -490,6 +495,18 @@ class CRM_HRLeaveAndAbsences_DAO_AbsenceType extends CRM_Core_DAO {
           'title' => ts('Category') ,
           'description' => 'This is used for grouping leave types.',
           'required' => true,
+          'maxlength' => 10,
+          'size' => CRM_Utils_Type::TWELVE,
+          'table_name' => 'civicrm_hrleaveandabsences_absence_type',
+          'entity' => 'AbsenceType',
+          'bao' => 'CRM_HRLeaveAndAbsences_DAO_AbsenceType',
+          'localizable' => 0,
+        ) ,
+        'subtype' => array(
+          'name' => 'subtype',
+          'type' => CRM_Utils_Type::T_STRING,
+          'title' => ts('Subtype') ,
+          'description' => 'This helps to further group custom leave type.',
           'maxlength' => 10,
           'size' => CRM_Utils_Type::TWELVE,
           'table_name' => 'civicrm_hrleaveandabsences_absence_type',

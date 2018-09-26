@@ -32,6 +32,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `calculation_unit` varchar(512) NOT NULL   COMMENT 'One of the values of the Absence type calculation units option group',
      `hide_label` tinyint   DEFAULT 0 COMMENT 'This controls the visibility of the Leave Type label in the calendar and feeds.',
       `category` varchar(10) NOT NULL COMMENT 'This is used for grouping leave types',
+      `subtype` varchar(10)  COMMENT 'This helps to further group custom leave type.',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `hrleaveandabsences_absence_type_title`(title)
 
