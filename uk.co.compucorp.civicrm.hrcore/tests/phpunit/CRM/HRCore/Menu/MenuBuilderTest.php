@@ -123,6 +123,7 @@ class CRM_HRCore_Menu_MenuBuilderTest extends CRM_HRCore_Test_BaseHeadlessTest {
       'operator' => NULL,
       'icon' => NULL,
       'separator' => FALSE,
+      'target' => NULL
     ];
 
     $properties = array_merge($defaults, $properties);

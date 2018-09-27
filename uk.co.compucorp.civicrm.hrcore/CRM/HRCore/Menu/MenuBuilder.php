@@ -54,6 +54,7 @@ class CRM_HRCore_Menu_MenuBuilder {
       $menu->setUrl(CRM_Utils_Array::value('url', $attributes))
            ->setPermission(CRM_Utils_Array::value('permission', $attributes))
            ->setOperator(CRM_Utils_Array::value('operator', $attributes))
+           ->setTarget(CRM_Utils_Array::value('target', $attributes))
            ->setIcon(CRM_Utils_Array::value('icon', $attributes));
 
       if (!empty($attributes['separator'])) {
