@@ -57,6 +57,7 @@ class CRM_HRCore_Menu_CiviAdapter {
         'label' => $menuObject->getLabel(),
         'name' => $menuObject->getLabel(),
         'url' => $menuObject->getUrl(),
+        'target' => $menuObject->getTarget(),
         'icon' => $menuObject->getIcon(),
         'weight' => $weight,
         'permission' => $menuObject->getPermission(),

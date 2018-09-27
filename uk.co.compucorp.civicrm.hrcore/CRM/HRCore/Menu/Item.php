@@ -33,6 +33,11 @@ class CRM_HRCore_Menu_Item {
   protected $separator = FALSE;
 
   /**
+   * @var string
+   */
+  protected $target = NULL;
+
+  /**
    * @var CRM_HRCore_Menu_Item[]
    */
   protected $children = [];
@@ -158,6 +163,28 @@ class CRM_HRCore_Menu_Item {
    */
   public function addSeparator() {
     $this->separator = TRUE;
+  }
+
+  /**
+   * Returns the menu item link target
+   *
+   * @return string
+   */
+  public function getTarget() {
+    return $this->target;
+  }
+
+  /**
+   * Sets the menu item link target
+   *
+   * @param string $target
+   *
+   * @return CRM_HRCore_Menu_Item
+   */
+  public function setTarget($target) {
+    $this->target = $target;
+
+    return $this;
   }
 
   /**

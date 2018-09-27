@@ -60,4 +60,11 @@ class CRM_HRCore_Menu_ItemTest extends CRM_HRCore_Test_BaseHeadlessTest {
     $expectedChildren = [$childMenuItem1, $childMenuItem2];
     $this->assertEquals($expectedChildren, $children);
   }
+
+  public function testSetAndGetTarget() {
+    $target = '_blank';
+    $menuItem = new MenuItem('Test Label');
+    $menuItem->setTarget($target);
+    $this->assertEquals($target, $menuItem->getTarget());
+  }
 }
