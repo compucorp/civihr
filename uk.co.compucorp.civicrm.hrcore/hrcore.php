@@ -119,6 +119,7 @@ function hrcore_civicrm_buildForm($formName, &$form) {
     new CRM_HRCore_Hook_BuildForm_ContactAdvancedSearch(),
     new CRM_HRCore_Hook_BuildForm_LocalisationPageFilter(),
     new CRM_HRCore_Hook_BuildForm_OptionEditPathFilter(),
+    new CRM_HRCore_Hook_BuildForm_ContactFormCustomGroupFilter()
   ];
 
   foreach ($listeners as $currentListener) {
@@ -316,6 +317,7 @@ function hrcore_civicrm_pageRun($page) {
   $hooks = [
     new CRM_HRCore_Hook_PageRun_LocationTypeFilter(),
     new CRM_HRCore_Hook_PageRun_RelationshipTypesFilter(),
+    new CRM_HRCore_Hook_PageRun_ContactSummaryCustomGroupFilter()
   ];
 
   foreach ($hooks as $hook) {
