@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */
+
 ({
   baseUrl: 'test',
   out: 'dist/reqangular.mocks.min.js',
@@ -12,8 +14,6 @@
   include: [
     'common/mocks/models/instances/session-mock',
     'common/mocks/services/hr-settings-mock',
-    'common/mocks/services/api/appraisal-mock',
-    'common/mocks/services/api/appraisal-cycle-mock',
     'common/mocks/services/api/contact-mock',
     'common/mocks/services/api/contract-mock',
     'common/mocks/services/api/contact-job-role-api.api.mock',
