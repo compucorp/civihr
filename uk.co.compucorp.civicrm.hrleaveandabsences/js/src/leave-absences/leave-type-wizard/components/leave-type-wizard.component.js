@@ -4,7 +4,7 @@ define([
   'common/lodash'
 ], function (_) {
   LeaveTypeWizardController.$inject = ['$log', 'shared-settings',
-    'form-sections', 'form-leave-type-categories'];
+    'form-sections'];
 
   return {
     __name: 'leaveTypeWizard',

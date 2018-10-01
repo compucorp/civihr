@@ -8,13 +8,6 @@ define([
   var LINE_BREAK = '\n\n';
 
   angular.module('leave-type-wizard.constants', [])
-    .constant('form-leave-type-categories', [
-      {
-        value: 'leave',
-        label: 'Leave',
-        icon: 'plane'
-      }
-    ])
     .constant('form-sections', [
       {
         name: 'general',
