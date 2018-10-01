@@ -225,11 +225,24 @@ function hrui_civicrm_install() {
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_tag WHERE name IN ('Non-profit', 'Company', 'Government Entity', 'Major Donor', 'Volunteer')");
 
   // make sure only relevant components are enabled
-  $params = array(
+//  $params = array(
+//    'domain_id' => CRM_Core_Config::domainID(),
+//    'enable_components' => array('CiviReport','CiviCase'),
+//  );
+
+  $getResult = civicrm_api3('setting', 'getsingle', array(
     'domain_id' => CRM_Core_Config::domainID(),
-    'enable_components' => array('CiviReport','CiviCase'),
-  );
-  $result = civicrm_api3('setting', 'create', $params);
+    'return' => array('enable_components'),
+  ));
+  $enableComponents = $getResult['enable_components'];
+  $enableComponents = array_merge($enableComponents,array('CiviReport','CiviCase'));
+
+  $result = civicrm_api3('setting', 'create', array(
+    'domain_id' => CRM_Core_Config::domainID(),
+    'enable_components' => array_unique($enableComponents),
+  ));
+
+//  $result = civicrm_api3('setting', 'create', $params);
   if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
     CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
     throw new CRM_Core_Exception('Failed to create settings for enable_components');
