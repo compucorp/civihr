@@ -3,26 +3,26 @@
 define([
   'common/lodash'
 ], function (_) {
-  LeaveTypeWizardFormController.$inject = ['$log', 'shared-settings',
+  LeaveTypeWizardController.$inject = ['$log', 'shared-settings',
     'form-sections', 'form-leave-type-categories'];
 
   return {
-    __name: 'leaveTypeWizardForm',
-    controller: LeaveTypeWizardFormController,
+    __name: 'leaveTypeWizard',
+    controller: LeaveTypeWizardController,
     controllerAs: 'form',
     templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sourcePath + 'leave-type-wizard/form/components/leave-type-wizard-form.html';
+      return sharedSettings.sourcePath + 'leave-type-wizard/components/leave-type-wizard.html';
     }]
   };
 
-  function LeaveTypeWizardFormController ($log, sharedSettings,
+  function LeaveTypeWizardController ($log, sharedSettings,
     formSections, formLeaveTypeCategories) {
     $log.debug('Controller: LeaveTypeWizardFormController');
 
     var vm = this;
 
     vm.componentsPath =
-      sharedSettings.sourcePath + 'leave-type-wizard/form/components';
+      sharedSettings.sourcePath + 'leave-type-wizard/components';
     vm.leaveTypeCategory = '';
     vm.leaveTypeCategories = formLeaveTypeCategories;
     vm.sections = formSections;

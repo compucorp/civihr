@@ -3,8 +3,8 @@
 {else}
   {if $rows}
     <div id="bootstrap-theme" class="crm-leave-and-absences-list-block"
-      data-leave-absences-leave-type-wizard-form>
-      <leave-type-wizard-form></leave-type-wizard-form>
+      data-leave-absences-leave-type-wizard>
+      <leave-type-wizard></leave-type-wizard>
       <div class="alert alert-info">
         {ts}Some leave/absence types cannot be deleted because there are existing absences of that type.{/ts}
       </div>

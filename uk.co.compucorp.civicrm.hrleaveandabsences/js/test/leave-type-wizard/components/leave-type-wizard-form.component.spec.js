@@ -4,14 +4,14 @@ define([
   'common/angular',
   'common/lodash',
   'common/angularMocks',
-  'leave-absences/leave-type-wizard/form/form.module'
+  'leave-absences/leave-type-wizard/leave-type-wizard.module'
 ], function (angular, _) {
   'use strict';
 
-  describe('LeaveTypeWizardForm', function () {
+  describe('LeaveTypeWizard', function () {
     var $componentController, $log, controller;
 
-    beforeEach(angular.mock.module('leave-type-wizard.form'));
+    beforeEach(angular.mock.module('leave-type-wizard'));
 
     beforeEach(inject(function (_$componentController_, _$log_) {
       $componentController = _$componentController_;
@@ -26,8 +26,8 @@ define([
       initComponent();
     });
 
-    it('loads the form controller', function () {
-      expect($log.debug).toHaveBeenCalledWith('Controller: LeaveTypeWizardFormController');
+    it('loads the wizard controller', function () {
+      expect($log.debug).toHaveBeenCalledWith('Controller: LeaveTypeWizardController');
     });
 
     describe('on init', function () {
@@ -41,7 +41,7 @@ define([
       });
 
       it('exports the absolute path to the components folder', function () {
-        expect(/leave-type-wizard\/form\/components$/.test(
+        expect(/leave-type-wizard\/components$/.test(
           controller.componentsPath)).toBe(true);
       });
 
@@ -168,7 +168,7 @@ define([
      * Initiates the component and stores it for tests
      */
     function initComponent () {
-      controller = $componentController('leaveTypeWizardForm');
+      controller = $componentController('leaveTypeWizard');
     }
   });
 });
