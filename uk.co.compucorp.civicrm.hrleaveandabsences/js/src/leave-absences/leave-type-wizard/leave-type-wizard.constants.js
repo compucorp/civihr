@@ -28,7 +28,7 @@ define([
                   'Other examples: "Annual Leave Full-time" , "Annual Leave Part-time" , "Paid Sick Leave", "Unpaid Sick Leave", "Compensatory Off".' +
                   LINE_BREAK +
                   'The Leave Type Title is also displayed in the Staff Calendar, but can be made private later in this wizard.'
-                ]
+                ].join(' ')
               },
               {
                 name: 'leave_category',

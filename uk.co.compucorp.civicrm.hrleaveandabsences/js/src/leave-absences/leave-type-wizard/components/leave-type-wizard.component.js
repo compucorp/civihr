@@ -17,7 +17,7 @@ define([
 
   function LeaveTypeWizardController ($log, sharedSettings,
     formSections, formLeaveTypeCategories) {
-    $log.debug('Controller: LeaveTypeWizardFormController');
+    $log.debug('Controller: LeaveTypeWizardController');
 
     var vm = this;
 
@@ -32,6 +32,8 @@ define([
     vm.getTabsForActiveSection = getTabsForActiveSection;
     vm.openNextActiveSectionTab = openNextActiveSectionTab;
     vm.openPreviousActiveSectionTab = openPreviousActiveSectionTab;
+    vm.openNextSection = openNextSection;
+    vm.openPreviousSection = openPreviousSection;
     vm.openSection = openSection;
     vm.openActiveSectionTab = openActiveSectionTab;
     vm.selectLeaveTypeCategory = selectLeaveTypeCategory;
@@ -84,6 +86,15 @@ define([
     }
 
     /**
+     * Opens next section
+     */
+    function openNextSection () {
+      var activeSectionIndex = _.findIndex(vm.sections, { active: true });
+
+      vm.openSection(activeSectionIndex + 1);
+    }
+
+    /**
      * Opens the previous tab in the active section
      */
     function openPreviousActiveSectionTab () {
@@ -91,6 +102,15 @@ define([
       var activeTabIndex = _.findIndex(activeSection.tabs, { active: true });
 
       vm.openActiveSectionTab(activeTabIndex - 1);
+    }
+
+    /**
+     * Opens previous section
+     */
+    function openPreviousSection () {
+      var activeSectionIndex = _.findIndex(vm.sections, { active: true });
+
+      vm.openSection(activeSectionIndex - 1);
     }
 
     /**
@@ -108,7 +128,7 @@ define([
 
       section.active = true;
 
-      section.tabs && openActiveSectionTab(0);
+      openActiveSectionTab(0);
     }
 
     /**
