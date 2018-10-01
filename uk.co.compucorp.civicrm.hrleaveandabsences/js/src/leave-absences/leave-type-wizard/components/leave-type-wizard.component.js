@@ -40,12 +40,41 @@ define([
     }
 
     /**
+     * Returns the index of the active tab
+     *
+     * @return {Number}
+     */
+    function getActiveTabIndex () {
+      var activeSection = getActiveSection();
+
+      return _.findIndex(activeSection.tabs, { active: true });
+    }
+
+    /**
+     * Returns the active section
+     *
+     * @return {Object}
+     */
+    function getActiveSection () {
+      return _.find(vm.sections, { active: true });
+    }
+
+    /**
+     * Returns the index of the active section
+     *
+     * @return {Number}
+     */
+    function getActiveSectionIndex () {
+      return _.findIndex(vm.sections, { active: true });
+    }
+
+    /**
      * Gets fields for the active tab of the active section
      *
      * @return {Array} collection of fields
      */
     function getFieldsForActiveTab () {
-      var activeSection = _.find(vm.sections, { active: true });
+      var activeSection = getActiveSection();
       var activeTab = _.find(activeSection.tabs, { active: true });
 
       return activeTab.fields;
@@ -67,8 +96,7 @@ define([
      * Opens the next tab in the active section
      */
     function openNextActiveSectionTab () {
-      var activeSection = _.find(vm.sections, { active: true });
-      var activeTabIndex = _.findIndex(activeSection.tabs, { active: true });
+      var activeTabIndex = getActiveTabIndex();
 
       openActiveSectionTab(activeTabIndex + 1);
     }
@@ -76,8 +104,8 @@ define([
     /**
      * Opens next section
      */
-    function openNextSection () {
-      var activeSectionIndex = _.findIndex(vm.sections, { active: true });
+    function openNextSection (currentIndex) {
+      var activeSectionIndex = getActiveSectionIndex();
 
       openSection(activeSectionIndex + 1);
     }
@@ -86,8 +114,7 @@ define([
      * Opens the previous tab in the active section
      */
     function openPreviousActiveSectionTab () {
-      var activeSection = _.find(vm.sections, { active: true });
-      var activeTabIndex = _.findIndex(activeSection.tabs, { active: true });
+      var activeTabIndex = getActiveTabIndex();
 
       openActiveSectionTab(activeTabIndex - 1);
     }
@@ -96,7 +123,7 @@ define([
      * Opens previous section
      */
     function openPreviousSection () {
-      var activeSectionIndex = _.findIndex(vm.sections, { active: true });
+      var activeSectionIndex = getActiveSectionIndex();
 
       openSection(activeSectionIndex - 1);
     }
@@ -123,7 +150,7 @@ define([
      * @param {Number} tabIndex
      */
     function openActiveSectionTab (tabIndex) {
-      var activeSection = _.find(vm.sections, { active: true });
+      var activeSection = getActiveSection();
       var tabs = activeSection.tabs;
 
       tabs.forEach(function (tab) {
