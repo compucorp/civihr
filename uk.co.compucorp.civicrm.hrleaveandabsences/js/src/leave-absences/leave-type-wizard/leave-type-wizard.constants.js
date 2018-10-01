@@ -18,11 +18,39 @@ define([
     .constant('form-sections', [
       {
         name: 'general',
-        label: 'Leave Category'
+        label: 'Leave Category',
+        nextSectionButtonCustomText: 'Settings',
+        nextSectionButtonChevron: true,
+        previousSectionButtonCustomText: 'Cancel',
+        tabs: [
+          {
+            fields: [
+              {
+                name: 'title',
+                label: 'Title',
+                helpText: [
+                  'The Leave Type Title is displayed for everyone on all leave reports and request forms.' +
+                  'For example, if you enter "Annual Leave" here, all your staff will see a Leave Type called "Annual Leave" in their Self Service Portal screens.' +
+                  'Use a term that is familiar to them, and a part of your organisation"s leave policies.' +
+                  'Other examples: "Annual Leave Full-time" , "Annual Leave Part-time" , "Paid Sick Leave", "Unpaid Sick Leave", "Compensatory Off".' +
+                  LINE_BREAK +
+                  'The Leave Type Title is also displayed in the Staff Calendar, but can be made private later in this wizard.'
+                ]
+              },
+              {
+                name: 'leave_category',
+                labelLayout: 'horizontal',
+                label: 'What kind of absence type are you looking to create?'
+              }
+            ]
+          }
+        ]
       },
       {
         name: 'settings',
         label: 'Leave Category Settings',
+        nextSectionButtonCustomText: 'Save',
+        previousSectionButtonCustomText: 'Choose another category',
         tabs: [
           {
             label: 'Basic',
@@ -38,7 +66,7 @@ define([
                   'Managers and administrators will continue to see the actual leave title of the request.',
                   LINE_BREAK,
                   'This may be helpful if the leave type title is sensitive - i.e. Unpaid leave or Compassionate leave.'
-                ].join('')
+                ].join(' ')
               }
             ]
           },
@@ -51,7 +79,7 @@ define([
                 helpText: [
                   'Configure the maximum duration of consecutive leave permitted to be selected in a single leave request.',
                   'You can leave this field blank for unlimited duration of leave.'
-                ].join('')
+                ].join(' ')
               }
             ]
           },

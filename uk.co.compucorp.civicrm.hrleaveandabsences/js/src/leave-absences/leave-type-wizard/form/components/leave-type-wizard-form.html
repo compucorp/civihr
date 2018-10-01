@@ -15,9 +15,61 @@
         </h3>
       </div>
       <div class="panel-body" ng-show="section.active">
-        <ng-include
-          src="form.componentsPath + '/form-sections/leave-type-wizard-form-' + section.name + '.html'">
-        </ng-include>
+        <div class="row">
+          <div class="col-md-3" ng-if="form.getTabsForActiveSection().length > 1">
+            <ul class="nav nav-pills nav-stacked">
+              <li ng-repeat="(tabIndex, tab) in form.getTabsForActiveSection()"
+                ng-class="{ active: tab.active }"
+                ng-click="form.openActiveSectionTab(tabIndex)">
+                <a href>
+                  {{tab.label}}
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="form-horizontal"
+            ng-class="{ 'col-md-9': form.getTabsForActiveSection().length > 1, 'col-md-12': form.getTabsForActiveSection().length === 1 }">
+            <div class="form-group" ng-repeat="field in form.getFieldsForActiveTab()">
+              <label class="control-label"
+                ng-class="{ 'col-md-3': !field.labelLayout, 'col-md-12': field.labelLayout === 'horizontal' }">
+                {{field.label}}
+                <help-text ng-if="field.helpText">
+                  <p class="respect-line-breaks">{{field.helpText}}</p>
+                </help-text>
+              </label>
+              <div ng-class="{ 'col-md-9': !field.labelLayout, 'col-md-12': field.labelLayout === 'horizontal' }">
+                [template of the field]
+              </div>
+            </div>
+            <hr ng-if="form.getTabsForActiveSection().length > 1"/>
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-secondary pull-right"
+                  ng-if="!form.isOnSectionLastTab"
+                  ng-click="form.openNextActiveSectionTab()">
+                  Next
+                </button>
+                <button class="btn btn-primary pull-right"
+                  ng-if="form.isOnSectionLastTab"
+                  ng-click="form.openSection(sectionIndex + 1)">
+                  {{section.nextSectionButtonCustomText || 'Next section'}}
+                  <i class="fa fa-chevron-right"
+                    ng-if="section.nextSectionButtonChevron"></i>
+                </button>
+                <button class="btn btn-secondary"
+                  ng-if="form.isOnSectionFirstTab"
+                  ng-click="form.openSection(sectionIndex - 1)">
+                  {{section.previousSectionButtonCustomText || 'Previous section'}}
+                </button>
+                <button class="btn btn-secondary"
+                  ng-if="!form.isOnSectionFirstTab"
+                  ng-click="form.openPreviousActiveSectionTab()">
+                  Back
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
