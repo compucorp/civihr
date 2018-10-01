@@ -96,6 +96,5 @@ define([
           }
         ]
       }
-    ])
-    .constant('form-settings-tabs');
+    ]);
 });

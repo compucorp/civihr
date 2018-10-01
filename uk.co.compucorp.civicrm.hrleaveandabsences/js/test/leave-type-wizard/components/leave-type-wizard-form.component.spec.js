@@ -112,10 +112,6 @@ define([
           expect(secondSection.active).toBe(true);
         });
 
-        it('renders tabs for the active section', function () {
-          expect(controller.getTabsForActiveSection()).toEqual(secondSection.tabs);
-        });
-
         it('has the first tab selected', function () {
           expect(secondSectionFirstTab.active).toBe(true);
         });

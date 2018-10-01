@@ -16,20 +16,17 @@ define([
   };
 
   function LeaveTypeWizardController ($log, sharedSettings,
-    formSections, formLeaveTypeCategories) {
+    formSections) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var vm = this;
 
     vm.componentsPath =
       sharedSettings.sourcePath + 'leave-type-wizard/components';
-    vm.leaveTypeCategory = '';
-    vm.leaveTypeCategories = formLeaveTypeCategories;
     vm.sections = formSections;
 
     vm.$onInit = $onInit;
     vm.getFieldsForActiveTab = getFieldsForActiveTab;
-    vm.getTabsForActiveSection = getTabsForActiveSection;
     vm.openNextActiveSectionTab = openNextActiveSectionTab;
     vm.openPreviousActiveSectionTab = openPreviousActiveSectionTab;
     vm.openNextSection = openNextSection;
@@ -48,19 +45,10 @@ define([
      * @return {Array} collection of fields
      */
     function getFieldsForActiveTab () {
-      var activeSectionTabs = vm.getTabsForActiveSection();
-      var activeTab = _.find(activeSectionTabs, { active: true });
+      var activeSection = _.find(vm.sections, { active: true });
+      var activeTab = _.find(activeSection.tabs, { active: true });
 
       return activeTab.fields;
-    }
-
-    /**
-     * Gets tabs for the active section
-     *
-     * @return {Array} collection of tabs
-     */
-    function getTabsForActiveSection () {
-      return _.find(vm.sections, { active: true }).tabs;
     }
 
     /**
@@ -82,7 +70,7 @@ define([
       var activeSection = _.find(vm.sections, { active: true });
       var activeTabIndex = _.findIndex(activeSection.tabs, { active: true });
 
-      vm.openActiveSectionTab(activeTabIndex + 1);
+      openActiveSectionTab(activeTabIndex + 1);
     }
 
     /**
@@ -91,7 +79,7 @@ define([
     function openNextSection () {
       var activeSectionIndex = _.findIndex(vm.sections, { active: true });
 
-      vm.openSection(activeSectionIndex + 1);
+      openSection(activeSectionIndex + 1);
     }
 
     /**
@@ -101,7 +89,7 @@ define([
       var activeSection = _.find(vm.sections, { active: true });
       var activeTabIndex = _.findIndex(activeSection.tabs, { active: true });
 
-      vm.openActiveSectionTab(activeTabIndex - 1);
+      openActiveSectionTab(activeTabIndex - 1);
     }
 
     /**
@@ -110,7 +98,7 @@ define([
     function openPreviousSection () {
       var activeSectionIndex = _.findIndex(vm.sections, { active: true });
 
-      vm.openSection(activeSectionIndex - 1);
+      openSection(activeSectionIndex - 1);
     }
 
     /**
@@ -120,13 +108,11 @@ define([
      * @param {Number} sectionIndex
      */
     function openSection (sectionIndex) {
-      var section = vm.sections[sectionIndex];
-
       vm.sections.forEach(function (section) {
         section.active = false;
       });
 
-      section.active = true;
+      vm.sections[sectionIndex].active = true;
 
       openActiveSectionTab(0);
     }

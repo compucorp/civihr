@@ -2,23 +2,18 @@
   <h1>Create leave/absence type</h1>
 
   <div class="panel-group">
-    <div class="panel panel-default"
-      ng-repeat="(sectionIndex, section) in form.sections">
-      <div class="panel-heading"
-        ng-class="{ pointer: !section.active }"
+    <uib-accordion>
+      <div uib-accordion-group class="panel-default"
+        ng-repeat="(sectionIndex, section) in form.sections"
+        is-open="section.active"
         ng-click="form.openSection(sectionIndex)">
-        <h3 class="panel-title">
-          <span role="button" ng-class="{ collapsed: !section.active }"
-            data-toggle="collapse">
-            {{section.label}}
-          </span>
-        </h3>
-      </div>
-      <div class="panel-body" ng-show="section.active">
-        <div class="row">
-          <div class="col-md-3" ng-if="form.getTabsForActiveSection().length > 1">
+        <uib-accordion-heading>
+          {{section.label}}
+        </uib-accordion-heading>
+        <div class="row" ng-click="$event.stopPropagation()">
+          <div class="col-md-3" ng-if="section.tabs.length > 1">
             <ul class="nav nav-pills nav-stacked">
-              <li ng-repeat="(tabIndex, tab) in form.getTabsForActiveSection()"
+              <li ng-repeat="(tabIndex, tab) in section.tabs"
                 ng-class="{ active: tab.active }"
                 ng-click="form.openActiveSectionTab(tabIndex)">
                 <a href>
@@ -28,7 +23,7 @@
             </ul>
           </div>
           <div class="form-horizontal"
-            ng-class="{ 'col-md-9': form.getTabsForActiveSection().length > 1, 'col-md-12': form.getTabsForActiveSection().length === 1 }">
+            ng-class="{ 'col-md-9': section.tabs.length > 1, 'col-md-12': section.tabs.length === 1 }">
             <div class="form-group" ng-repeat="field in form.getFieldsForActiveTab()">
               <label class="control-label"
                 ng-class="{ 'col-md-3': !field.labelLayout, 'col-md-12': field.labelLayout === 'horizontal' }">
@@ -41,7 +36,7 @@
                 [template of the field]
               </div>
             </div>
-            <hr ng-if="form.getTabsForActiveSection().length > 1"/>
+            <hr ng-if="section.tabs.length > 1"/>
             <div class="row">
               <div class="col-md-12">
                 <button class="btn btn-secondary pull-right"
@@ -71,6 +66,6 @@
           </div>
         </div>
       </div>
-    </div>
+    </uib-accordion>
   </div>
 </div>
