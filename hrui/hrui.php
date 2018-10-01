@@ -230,12 +230,15 @@ function hrui_civicrm_install() {
 //    'enable_components' => array('CiviReport','CiviCase'),
 //  );
 
+  $defaultCoreComponents = Civi::settings()->getDefault('enable_components');
+  $unwantedComponents = array_diff($defaultCoreComponents, array('CiviReport','CiviCase'));
+
   $getResult = civicrm_api3('setting', 'getsingle', array(
     'domain_id' => CRM_Core_Config::domainID(),
     'return' => array('enable_components'),
   ));
   $enableComponents = $getResult['enable_components'];
-  $enableComponents = array_merge($enableComponents,array('CiviReport','CiviCase'));
+  $enableComponents = array_diff($enableComponents,$unwantedComponents);
 
   $result = civicrm_api3('setting', 'create', array(
     'domain_id' => CRM_Core_Config::domainID(),
