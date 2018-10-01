@@ -335,6 +335,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1040();
     $this->upgrade_1041();
     $this->upgrade_1042();
+    $this->upgrade_1043();
   }
 
   function upgrade_1001() {
@@ -1033,6 +1034,20 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     civicrm_api3('CustomGroup', 'get', [
       'name' => 'Contact_Length_Of_Service',
       'api.CustomGroup.create' => ['id' => '$value.id', 'is_active' => 0],
+    ]);
+
+    return TRUE;
+  }
+
+  /**
+   * Sets the Contact_Length_Of_Service custom group active
+   *
+   * @return bool
+   */
+  public function upgrade_1043() {
+    civicrm_api3('CustomGroup', 'get', [
+      'name' => 'Contact_Length_Of_Service',
+      'api.CustomGroup.create' => ['id' => '$value.id', 'is_active' => 1],
     ]);
 
     return TRUE;
