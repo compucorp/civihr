@@ -33,7 +33,6 @@ define([
     vm.openPreviousSection = openPreviousSection;
     vm.openSection = openSection;
     vm.openActiveSectionTab = openActiveSectionTab;
-    vm.selectLeaveTypeCategory = selectLeaveTypeCategory;
 
     function $onInit () {
       initDefaultView();
@@ -160,19 +159,6 @@ define([
       tabs[tabIndex].active = true;
       vm.isOnSectionLastTab = tabIndex === tabs.length - 1;
       vm.isOnSectionFirstTab = tabIndex === 0;
-    }
-
-    /**
-     * Selects a leave type category
-     *
-     * @param {String} value
-     */
-    function selectLeaveTypeCategory (value) {
-      vm.leaveTypeCategories.forEach(function (category) {
-        category.selected = false;
-      });
-
-      _.find(vm.leaveTypeCategories, { value: value }).selected = true;
     }
   }
 });
