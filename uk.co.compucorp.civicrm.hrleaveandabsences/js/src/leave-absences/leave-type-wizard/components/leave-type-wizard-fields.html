@@ -1,0 +1,43 @@
+<div class="row form-horizontal">
+  <div class="col-md-12">
+    <div class="form-group" ng-repeat="field in form.getFieldsForActiveTab()">
+      <label class="control-label"
+        ng-class="{ 'col-md-3': !field.labelLayout, 'col-md-12': field.labelLayout === 'horizontal' }">
+        {{field.label}}
+        <help-text ng-if="field.helpText">
+          <p class="respect-line-breaks">{{field.helpText}}</p>
+        </help-text>
+      </label>
+      <div ng-class="{ 'col-md-9': !field.labelLayout, 'col-md-12': field.labelLayout === 'horizontal' }">
+        [template of the field]
+      </div>
+    </div>
+    <hr ng-if="section.tabs.length > 1"/>
+    <div class="row">
+      <div class="col-md-12">
+        <button class="btn btn-secondary pull-right"
+          ng-if="!form.isOnSectionLastTab"
+          ng-click="form.openNextActiveSectionTab()">
+          Next
+        </button>
+        <button class="btn btn-primary pull-right"
+          ng-if="form.isOnSectionLastTab"
+          ng-click="form.openNextSection()">
+          {{section.nextSectionButtonCustomText || 'Next section'}}
+          <i class="fa fa-chevron-right"
+            ng-if="section.nextSectionButtonChevron"></i>
+        </button>
+        <button class="btn btn-secondary"
+          ng-if="form.isOnSectionFirstTab"
+          ng-click="form.openPreviousSection()">
+          {{section.previousSectionButtonCustomText || 'Previous section'}}
+        </button>
+        <button class="btn btn-secondary"
+          ng-if="!form.isOnSectionFirstTab"
+          ng-click="form.openPreviousActiveSectionTab()">
+          Back
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
