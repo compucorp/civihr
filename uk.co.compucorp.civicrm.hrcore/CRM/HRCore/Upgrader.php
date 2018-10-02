@@ -81,6 +81,90 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   private $xmlDirectories = ['CustomGroups'];
 
   /**
+   * Determine if there are any pending revisions.
+   *
+   * @return bool
+   */
+  public function hasPendingRevisions() {
+    $revisions = $this->getRevisions();
+    $currentRevisionNum = $this->getCurrentRevision();
+
+    if (empty($revisions)) {
+      return FALSE;
+    }
+    if (empty($currentRevisionNum)) {
+      return TRUE;
+    }
+
+    return ($currentRevisionNum < max(array_keys($revisions)));
+  }
+
+  public function enqueuePendingRevisions(CRM_Queue_Queue $queue) {
+    $currentRevisionNum = (int) $this->getCurrentRevision();
+
+    foreach ($this->getRevisions() as $revisionNum => $revisionClass) {
+      if ($revisionNum > $currentRevisionNum) {
+        $title = ts('Upgrade %1 to revision %2', [
+          1 => $this->extensionName,
+          2 => $revisionNum,
+        ]);
+
+        $task = new CRM_Queue_Task(
+          [get_class($this), 'queueStepUpgrade'],
+          [(new $revisionClass()), 'apply'],
+          $title
+        );
+        $queue->createItem($task);
+
+        $task = new CRM_Queue_Task(
+          [get_class($this), '_queueAdapter'],
+          ['setCurrentRevision', $revisionNum],
+          $title
+        );
+        $queue->createItem($task);
+      }
+    }
+  }
+
+
+  /**
+   * Adapter that lets you add normal (non-static) member functions to the queue.
+   *
+   * Note: Each upgrader instance should only be associated with one
+   * task-context; otherwise, this will be non-reentrant.
+   *
+   * @code
+   * CRM_HRCore_Upgrader_Base::_queueAdapter($ctx, 'methodName', 'arg1', 'arg2');
+   * @endcode
+   */
+  static public function queueStepUpgrade() {
+    $args = func_get_args();
+    $instance = $args[1];
+    $method = $args[2];
+
+    return call_user_func_array(array($instance, $method), $args);
+  }
+
+  /**
+   * Get a list of revisions.
+   *
+   * @return array(revisionNumbers) sorted numerically
+   */
+  public function getRevisions() {
+    $extensionRoot = __DIR__;
+    $stepClasses = glob($extensionRoot . '/Upgrader/Step/Step*.php');
+    $sortedKeyedClasses = [];
+    foreach ($stepClasses as $class) {
+      $class = $this->getUpgraderClassnameFromFile($class);
+      $revisionNum = (int) substr($class, strpos($class, 'Step_Step') + 9);
+      $sortedKeyedClasses[$revisionNum] = $class;
+    }
+    ksort($sortedKeyedClasses, SORT_NUMERIC);
+
+    return $sortedKeyedClasses;
+  }
+
+  /**
    * Callback called when the extension is installed
    */
   public function install() {
@@ -340,6 +424,19 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     }
 
     return $list;
+  }
+
+  /**
+   * @param $file
+   *
+   * @return string
+   */
+  private function getUpgraderClassnameFromFile($file) {
+    $file = str_replace(realpath(__DIR__ . '/../../'), '', $file);
+    $file = str_replace('.php', '', $file);
+    $file = str_replace('/', '_', $file);
+
+    return ltrim($file, '_');
   }
 
 }
