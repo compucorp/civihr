@@ -14,11 +14,6 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   // upgrade tasks. They are executed in order (like Drupal's hook_update_N).
 
   public function install() {
-    // Enable CiviCase component
-    $this->setComponentStatuses([
-      'CiviCase' => true,
-    ]);
-
     // Execute upgrader methods during extension installation
     $revisions = $this->getRevisions();
     foreach ($revisions as $revision) {
@@ -47,41 +42,6 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
     self::toggleCaseTypes(DefaultCaseAndActivityTypes::getDefaultCiviCRMCaseTypes(), 1);
     self::toggleActivityTypes(DefaultCaseAndActivityTypes::getDefaultActivityTypes(), 0);
     $this->changeActivityTypeComponent('Open Case', 'CiviTask', 'CiviCase');
-  }
-
-  /**
-   * Set components as enabled or disabled. Leave any other
-   * components unmodified.
-   *
-   * @param array $components
-   *   keys are component names (e.g. "CiviMail"); values are booleans
-   *
-   * @throws CRM_Core_Exception
-   *
-   * @return bool
-   */
-  public function setComponentStatuses($components) {
-    $getResult = civicrm_api3('setting', 'getsingle', [
-      'domain_id' => CRM_Core_Config::domainID(),
-      'return' => ['enable_components'],
-    ]);
-    if (!is_array($getResult['enable_components'])) {
-      throw new CRM_Core_Exception("Failed to determine component statuses");
-    }
-    // Merge $components with existing list
-    $enableComponents = $getResult['enable_components'];
-    foreach ($components as $component => $status) {
-      if ($status) {
-        $enableComponents = array_merge($enableComponents, [$component]);
-      } else {
-        $enableComponents = array_diff($enableComponents, [$component]);
-      }
-    }
-    civicrm_api3('setting', 'create', [
-      'domain_id' => CRM_Core_Config::domainID(),
-      'enable_components' => array_unique($enableComponents),
-    ]);
-    CRM_Core_Component::flushEnabledComponents();
   }
 
   /**

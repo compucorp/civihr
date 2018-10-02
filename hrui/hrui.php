@@ -224,28 +224,6 @@ function hrui_civicrm_install() {
   //delete default tag of civicrm
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_tag WHERE name IN ('Non-profit', 'Company', 'Government Entity', 'Major Donor', 'Volunteer')");
 
-  // make sure only relevant core components are enabled
-  $defaultCoreComponents = Civi::settings()->getDefault('enable_components');
-  $unwantedCoreComponents = array_diff($defaultCoreComponents, ['CiviReport','CiviCase']);
-
-  $getResult = civicrm_api3('setting', 'getsingle', [
-    'domain_id' => CRM_Core_Config::domainID(),
-    'return' => ['enable_components'],
-  ]);
-
-  $enabledComponents = $getResult['enable_components'];
-  $enableComponents = array_diff($enabledComponents, $unwantedCoreComponents);
-
-  $result = civicrm_api3('setting', 'create', [
-    'domain_id' => CRM_Core_Config::domainID(),
-    'enable_components' => array_unique($enableComponents),
-  ]);
-
-  if (CRM_Utils_Array::value('is_error', $result, FALSE)) {
-    CRM_Core_Error::debug_var('setting-create result for enable_components', $result);
-    throw new CRM_Core_Exception('Failed to create settings for enable_components');
-  }
-
   // Disable Household contact type
   $contactTypeId = CRM_Core_DAO::getFieldValue(
     'CRM_Contact_DAO_ContactType',
