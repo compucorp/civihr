@@ -74,6 +74,16 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    */
   private $xmlDirectories = ['CustomGroups'];
 
+  public function install() {
+    $steps = [
+      new CRM_HRCore_Setup_DisableConfigureMenu(),
+    ];
+
+    foreach ($steps as $step) {
+      $step->apply();
+    }
+  }
+
   /**
    * Callback called when the extension is installed
    */
