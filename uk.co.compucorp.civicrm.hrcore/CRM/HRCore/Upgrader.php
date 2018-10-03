@@ -86,67 +86,83 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     $this->deleteUnneededCustomGroups();
     $this->createDefaultRelationshipTypes();
     $this->makeAllCurrenciesAvailable();
-    $this->enableComponentsAndFilterDefaultComponents();
+    $this->enableRequiredComponents();
+    $this->disableNonRequiredDefaultComponents();
     $this->runAllUpgraders();
-  }
-
-  /**
-   * Enables required components and remove unwanted core components
-   * from the default components list.
-   */
-  public function enableComponentsAndFilterDefaultComponents() {
-    $this->setComponentsStatus();
   }
 
   /**
    * Enables required components.
    */
-  public function enableComponents() {
-    $this->setComponentsStatus(TRUE, FALSE);
+  public function enableRequiredComponents() {
+    $this->setComponentStatuses([
+      'CiviCase' => TRUE,
+      'CiviReport' => TRUE,
+      'CiviTask' => TRUE,
+      'CiviDocument' => TRUE
+    ]);
+  }
+
+  /**
+   * Disable unwanted default core Civi components from the
+   * enabled components list.
+   */
+  public function disableNonRequiredDefaultComponents() {
+    $requiredComponents = ['CiviReport','CiviCase'];
+    $defaultCoreComponents = Civi::settings()->getDefault('enable_components');
+    $nonRequiredCoreComponents = array_diff($defaultCoreComponents, $requiredComponents);
+
+    $componentsList = [];
+    foreach ($nonRequiredCoreComponents as $component) {
+      $componentsList[$component] = FALSE;
+    }
+
+    $this->setComponentStatuses($componentsList);
   }
 
   /**
    * Disables required components.
    */
-  public function disableComponents() {
-    $this->setComponentsStatus(FALSE, FALSE);
+  public function disableRequiredComponents() {
+    $this->setComponentStatuses([
+      'CiviCase' => FALSE,
+      'CiviReport' => FALSE,
+      'CiviTask' => FALSE,
+      'CiviDocument' => FALSE
+    ]);
   }
 
-  /**
-   * This function enables/disables the required components.
-   *
-   * @param bool $status
-   * @param bool $filterCoreComponents
-   *   Whether to remove unwanted core Civi components
-   *   or not from the enabled components list.
-   */
-  private function setComponentsStatus($status = TRUE, $filterCoreComponents = TRUE) {
-    $coreComponents = ['CiviReport','CiviCase'];
-    $civiHRComponents = ['CiviTask', 'CiviDocument'];
 
+  /**
+   * Set components as enabled or disabled. Leave any other
+   * components unmodified.
+   *
+   * @param array $components
+   *   keys are component names (e.g. "CiviMail"); values are booleans
+   *
+   * @return bool
+   */
+  public function setComponentStatuses($components) {
     $getResult = civicrm_api3('setting', 'getsingle', [
       'return' => ['enable_components'],
     ]);
 
-    $enabledComponents = $getResult['enable_components'];
-
-    if ($status) {
-      //Some core components such as CiviCase are not enabled by default
-      $enabledComponents = array_merge($enabledComponents, $civiHRComponents, $coreComponents);
+    if (!is_array($getResult['enable_components'])) {
+      throw new CRM_Core_Exception('Failed to determine component statuses');
     }
 
-    if (!$status) {
-      $enabledComponents = array_diff($enabledComponents, $civiHRComponents, $coreComponents);
-    }
+    $enableComponents = $getResult['enable_components'];
 
-    if ($filterCoreComponents) {
-      $defaultCoreComponents = Civi::settings()->getDefault('enable_components');
-      $unwantedCoreComponents = array_diff($defaultCoreComponents, $coreComponents);
-      $enabledComponents = array_diff($enabledComponents, $unwantedCoreComponents);
+    foreach ($components as $component => $status) {
+      if ($status) {
+        $enableComponents = array_merge($enableComponents, [$component]);
+      } else {
+        $enableComponents = array_diff($enableComponents, [$component]);
+      }
     }
 
     civicrm_api3('setting', 'create', [
-      'enable_components' => array_unique($enabledComponents),
+      'enable_components' => array_unique($enableComponents),
     ]);
 
     CRM_Core_Component::flushEnabledComponents();
@@ -189,7 +205,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    */
   public function disable() {
     $this->toggleRelationshipTypes(0);
-    $this->disableComponents();
+    $this->disableRequiredComponents();
   }
 
   /**
@@ -197,7 +213,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    */
   public function enable() {
     $this->toggleRelationshipTypes(1);
-    $this->enableComponents();
+    $this->enableRequiredComponents();
   }
 
   /**
