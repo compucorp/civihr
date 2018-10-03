@@ -181,8 +181,7 @@
   <field>
     <name>category</name>
     <title>Category</title>
-    <type>varchar</type>
-    <length>10</length>
+    <type>int unsigned</type>
     <required>true</required>
     <comment>This is used for grouping leave types.</comment>
   </field>
