@@ -465,7 +465,7 @@ def listCivihrExtensions() {
       name: 'Sample Data',
       folder: 'uk.co.compucorp.civicrm.hrsampledata',
       hasJSTests: false,
-      hasPHPTests: false
+      hasPHPTests: true
     ],
     hremergency: [
       name: 'Emergency Contacts ',
