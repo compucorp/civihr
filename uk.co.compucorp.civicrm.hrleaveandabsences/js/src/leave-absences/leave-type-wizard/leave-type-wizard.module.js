@@ -11,5 +11,5 @@ define([
     'common.services',
     'leave-type-wizard.core'
   ])
-    .component(LeaveTypeWizardComponent.__name, LeaveTypeWizardComponent);
+    .component(LeaveTypeWizardComponent);
 });

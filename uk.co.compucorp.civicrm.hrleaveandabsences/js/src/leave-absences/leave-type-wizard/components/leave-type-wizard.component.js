@@ -7,12 +7,13 @@ define([
     'form-sections'];
 
   return {
-    __name: 'leaveTypeWizard',
-    controller: LeaveTypeWizardController,
-    controllerAs: 'form',
-    templateUrl: ['shared-settings', function (sharedSettings) {
-      return sharedSettings.sourcePath + 'leave-type-wizard/components/leave-type-wizard.html';
-    }]
+    leaveTypeWizard: {
+      controller: LeaveTypeWizardController,
+      controllerAs: 'form',
+      templateUrl: ['shared-settings', function (sharedSettings) {
+        return sharedSettings.sourcePath + 'leave-type-wizard/components/leave-type-wizard.html';
+      }]
+    }
   };
 
   function LeaveTypeWizardController ($log, sharedSettings,
