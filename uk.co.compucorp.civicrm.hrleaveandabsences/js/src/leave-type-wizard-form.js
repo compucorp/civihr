@@ -1,12 +1,12 @@
 (function (require) {
   require([
     'common/angular',
-    'leave-absences/leave-type-wizard/form/form.module'
+    'leave-absences/leave-type-wizard/leave-type-wizard.module'
   ],
   function (angular) {
     angular.bootstrap(
-      document.querySelector('[data-leave-absences-leave-type-wizard-form]'),
-      ['leave-type-wizard.form']
+      document.querySelector('[data-leave-absences-leave-type-wizard]'),
+      ['leave-type-wizard']
     );
   });
 })(require);
