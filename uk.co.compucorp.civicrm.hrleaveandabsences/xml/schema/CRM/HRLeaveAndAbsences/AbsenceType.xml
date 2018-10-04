@@ -181,9 +181,13 @@
   <field>
     <name>category</name>
     <title>Category</title>
-    <type>int unsigned</type>
+    <type>varchar</type>
+    <length>10</length>
     <required>true</required>
     <comment>This is used for grouping leave types.</comment>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_absence_type_category</optionGroupName>
+    </pseudoconstant>
   </field>
 
 </table>
