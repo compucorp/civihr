@@ -47,50 +47,6 @@ function hrreport_civicrm_xmlMenu(&$files) {
  * Implementation of hook_civicrm_install
  */
 function hrreport_civicrm_install() {
-  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
-  $absenceReport = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'absenceReport', 'id', 'name');
-  if ($isEnabled && !$absenceReport) {
-    $reportParentId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Reports', 'id', 'name');
-    $params = array(
-      'domain_id' => CRM_Core_Config::domainID(),
-      'label'     => 'Absence Report',
-      'name'      => 'absenceReport',
-      'url'       => 'civicrm/report/list?grp=absence&reset=1',
-      'permission'=> 'access HRReport',
-      'parent_id' => $reportParentId,
-      'is_active' => 1,
-    );
-    CRM_Core_BAO_Navigation::add($params);
-    $absenceParentId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'Absences', 'id', 'name');
-    $calendarId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'calendar', 'id', 'name');
-    if (empty($calendarId)) {
-      $params = array(
-        'domain_id' => CRM_Core_Config::domainID(),
-        'label'     => 'Calendar',
-        'name'      => 'calendar',
-        'url'       => null,
-        'permission'=> 'access HRReport',
-        'parent_id' => $absenceParentId,
-        'is_active' => 1,
-        'weight'    => 2,
-      );
-      CRM_Core_BAO_Navigation::add($params);
-    }
-    $absenceReportId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'absence_report', 'id', 'name');
-    if (empty($absenceReportId)) {
-      $params = array(
-        'domain_id' => CRM_Core_Config::domainID(),
-        'label'     => 'Absence Report',
-        'name'      => 'absence_report',
-        'url'       => 'civicrm/report/list?grp=absence&reset=1',
-        'permission'=> 'access HRReport',
-        'parent_id' => $absenceParentId,
-        'is_active' => 1,
-        'weight'    => 7,
-      );
-      CRM_Core_BAO_Navigation::add($params);
-    }
-  }
   return _hrreport_civix_civicrm_install();
 }
 
@@ -126,11 +82,6 @@ function hrreport_civicrm_uninstall() {
   $caseDashlet = civicrm_api3('Dashboard', 'getsingle', array('return' => array("id"), 'name' => 'casedashboard',));
   CRM_Core_DAO::executeQuery("DELETE FROM civicrm_dashboard_contact WHERE dashboard_id = {$caseDashlet['id']}");
 
-  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
-  if ($isEnabled) {
-    CRM_Core_DAO::executeQuery("DELETE FROM civicrm_navigation WHERE name IN ('absence_report', 'absenceReport','calendar')");
-    CRM_Core_BAO_Navigation::resetNavigation();
-  }
   return _hrreport_civix_civicrm_uninstall();
 }
 
@@ -156,12 +107,6 @@ function _hrreport_setActiveFields($setActive) {
   $sql = "UPDATE civicrm_dashboard_contact JOIN civicrm_dashboard on civicrm_dashboard.id =  civicrm_dashboard_contact.dashboard_id  SET civicrm_dashboard_contact.is_active = {$setActive} WHERE civicrm_dashboard.name IN ('report/{$report_ids}') OR civicrm_dashboard.name = 'casedashboard'";
   CRM_Core_DAO::executeQuery($sql);
   CRM_Core_DAO::executeQuery("UPDATE civicrm_dashboard SET is_active = {$setActive} WHERE name IN ('report/{$report_ids}') OR name = 'casedashboard'");
-
-  $isEnabled = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Extension', 'org.civicrm.hrabsence', 'is_active', 'full_name');
-  if ($isEnabled) {
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_navigation SET is_active= {$setActive} WHERE name IN ('absence_report', 'absenceReport','calendar')");
-    CRM_Core_BAO_Navigation::resetNavigation();
-  }
 }
 
 /**
@@ -295,7 +240,7 @@ function _hrreport_createDashlet($dashboardContact, $setactive) {
 }
 
 function _hrreport_getId () {
-  $sql = "SELECT * FROM  civicrm_managed WHERE  entity_type = 'ReportInstance' AND name IN ('CiviHR FTE Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report','CiviHR Absence Report') ";
+  $sql = "SELECT * FROM  civicrm_managed WHERE  entity_type = 'ReportInstance' AND name IN ('CiviHR FTE Report', 'CiviHR Annual and Monthly Cost Equivalents Report', 'CiviHR Public Holiday Report') ";
   $dao = CRM_Core_DAO::executeQuery($sql);
   $report_id = array();
   while ($dao->fetch()) {

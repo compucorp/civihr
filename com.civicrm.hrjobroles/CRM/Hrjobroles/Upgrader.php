@@ -46,42 +46,6 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
   }
 
   /**
-   * Adds a submenu containing links to edit job role option groups
-   *
-   * @return bool
-   */
-  public function upgrade_1005() {
-    $domain = CRM_Core_Config::domainID();
-    $params = ['return' => 'id', 'name' => 'Administer', 'domain_id' => $domain];
-    $administerId = (int) civicrm_api3('Navigation', 'getvalue', $params);
-
-    $permission = 'access CiviCRM';
-    $parent = $this->createNavItem('Job Roles', $permission, $administerId);
-    $parentId = $parent['id'];
-
-    // Weight cannot be set when creating for the first time
-    civicrm_api3('Navigation', 'create', ['id' => $parentId, 'weight' => -99]);
-
-    // If we don't flush it will not recognize newly created parent_id
-    CRM_Core_PseudoConstant::flush();
-
-    $optionGroupLinks = [
-      'Locations' => 'hrjc_location',
-      'Regions' => 'hrjc_region',
-      'Departments' => 'hrjc_department',
-      'Levels' => 'hrjc_level_type',
-      'Cost Centres' => 'cost_centres',
-    ];
-
-    foreach ($optionGroupLinks as $itemName => $optionGroup) {
-      $link = 'civicrm/admin/options/' . $optionGroup . '?reset=1';
-      $this->createNavItem($itemName, $permission, $parentId, ['url' => $link]);
-    }
-
-    return TRUE;
-  }
-  
-  /**
    * Deletes cost centre "other" option value if not in use
    *
    * @return bool
@@ -92,7 +56,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
       $this->deleteCostCentreOther();
       return TRUE;
     }
-    
+
     $otherId = $this->retrieveCostCentreOtherId();
     if ($otherId == null) {
       return TRUE;
@@ -106,14 +70,14 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
         break;
       }
     }
-    
+
     if (!$inUse) {
       $this->deleteCostCentreOther();
     }
-    
+
     return TRUE;
   }
-  
+
   /**
    * Deletes cost centre option value with name "other"
    */
@@ -124,7 +88,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
       'api.OptionValue.delete' => ['id' => '$value.id'],
     ]);
   }
-  
+
   /**
    * Fetches the id of cost center "other" option value
    *
@@ -135,36 +99,8 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
       'option_group_id' => 'cost_centres',
       'name' => 'Other',
     ]);
-    
+
     return isset($result['id']) ? $result['id'] : null;
-  }
-
-  /**
-   * Creates a navigation menu item using the API
-   *
-   * @param string $name
-   * @param string $permission
-   * @param int $parentID
-   * @param array $params
-   *
-   * @return array
-   */
-  private function createNavItem($name, $permission, $parentID, $params = []) {
-    $params = array_merge([
-      'name' => $name,
-      'label' => ts($name),
-      'permission' => $permission,
-      'parent_id' => $parentID,
-      'is_active' => 1,
-    ], $params);
-
-    $existing = civicrm_api3('Navigation', 'get', $params);
-
-    if ($existing['count'] > 0) {
-      return array_shift($existing['values']);
-    }
-
-    return civicrm_api3('Navigation', 'create', $params);
   }
 
   /**

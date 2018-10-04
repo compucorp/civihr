@@ -8,7 +8,6 @@ TRUNCATE TABLE civicrm_case_contact;
 TRUNCATE TABLE civicrm_contactaccessrights_rights;
 TRUNCATE TABLE civicrm_group_contact;
 TRUNCATE TABLE civicrm_group_organization;
-TRUNCATE TABLE civicrm_hrabsence_entitlement;
 TRUNCATE TABLE civicrm_hrjobcontract;
 TRUNCATE TABLE civicrm_hrjobcontract_details;
 TRUNCATE TABLE civicrm_hrjobcontract_health;

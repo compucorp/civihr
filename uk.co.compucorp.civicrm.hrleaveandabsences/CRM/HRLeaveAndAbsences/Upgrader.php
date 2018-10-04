@@ -6,14 +6,9 @@
 class CRM_HRLeaveAndAbsences_Upgrader extends CRM_HRLeaveAndAbsences_Upgrader_Base {
 
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1000;
-  use CRM_HRLeaveAndAbsences_Upgrader_Step_1001;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1002;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1003;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1004;
-  use CRM_HRLeaveAndAbsences_Upgrader_Step_1005;
-  use CRM_HRLeaveAndAbsences_Upgrader_Step_1006;
-  use CRM_HRLeaveAndAbsences_Upgrader_Step_1007;
-  use CRM_HRLeaveAndAbsences_Upgrader_Step_1008;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1009;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1010;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1011;
@@ -21,7 +16,6 @@ class CRM_HRLeaveAndAbsences_Upgrader extends CRM_HRLeaveAndAbsences_Upgrader_Ba
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1013;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1014;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1015;
-  use CRM_HRLeaveAndAbsences_Upgrader_Step_1016;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1017;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1018;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1019;
@@ -31,13 +25,11 @@ class CRM_HRLeaveAndAbsences_Upgrader extends CRM_HRLeaveAndAbsences_Upgrader_Ba
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1023;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1024;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1025;
-  use CRM_HRLeaveAndAbsences_Upgrader_Step_1026;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1027;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1028;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1029;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1030;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1031;
-  use CRM_HRLeaveAndAbsences_Upgrader_Step_1032;
   use CRM_HRLeaveAndAbsences_Upgrader_Step_1033;
 
   /**
