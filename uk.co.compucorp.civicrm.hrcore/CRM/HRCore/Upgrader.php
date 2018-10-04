@@ -37,6 +37,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
   use CRM_HRCore_Upgrader_Steps_1031;
   use CRM_HRCore_Upgrader_Steps_1034;
   use CRM_HRCore_Upgrader_Steps_1035;
+  use CRM_HRCore_Upgrader_Steps_1036;
 
   /**
    * @var array
@@ -85,7 +86,86 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
     $this->deleteUnneededCustomGroups();
     $this->createDefaultRelationshipTypes();
     $this->makeAllCurrenciesAvailable();
+    $this->enableRequiredComponents();
+    $this->disableNonRequiredDefaultComponents();
     $this->runAllUpgraders();
+  }
+
+  /**
+   * Enables required components.
+   */
+  public function enableRequiredComponents() {
+    $this->setComponentStatuses([
+      'CiviCase' => TRUE,
+      'CiviReport' => TRUE,
+      'CiviTask' => TRUE,
+      'CiviDocument' => TRUE
+    ]);
+  }
+
+  /**
+   * Disable unwanted default core Civi components from the
+   * enabled components list.
+   */
+  public function disableNonRequiredDefaultComponents() {
+    $requiredComponents = ['CiviReport','CiviCase'];
+    $defaultCoreComponents = Civi::settings()->getDefault('enable_components');
+    $nonRequiredCoreComponents = array_diff($defaultCoreComponents, $requiredComponents);
+
+    $componentsList = [];
+    foreach ($nonRequiredCoreComponents as $component) {
+      $componentsList[$component] = FALSE;
+    }
+
+    $this->setComponentStatuses($componentsList);
+  }
+
+  /**
+   * Disables required components.
+   */
+  public function disableRequiredComponents() {
+    $this->setComponentStatuses([
+      'CiviCase' => FALSE,
+      'CiviReport' => FALSE,
+      'CiviTask' => FALSE,
+      'CiviDocument' => FALSE
+    ]);
+  }
+
+
+  /**
+   * Set components as enabled or disabled. Leave any other
+   * components unmodified.
+   *
+   * @param array $components
+   *   keys are component names (e.g. "CiviMail"); values are booleans
+   *
+   * @return bool
+   */
+  public function setComponentStatuses($components) {
+    $getResult = civicrm_api3('setting', 'getsingle', [
+      'return' => ['enable_components'],
+    ]);
+
+    if (!is_array($getResult['enable_components'])) {
+      throw new CRM_Core_Exception('Failed to determine component statuses');
+    }
+
+    $enableComponents = $getResult['enable_components'];
+
+    foreach ($components as $component => $status) {
+      if ($status) {
+        $enableComponents = array_merge($enableComponents, [$component]);
+      } else {
+        $enableComponents = array_diff($enableComponents, [$component]);
+      }
+    }
+
+    civicrm_api3('setting', 'create', [
+      'enable_components' => array_unique($enableComponents),
+    ]);
+
+    CRM_Core_Component::flushEnabledComponents();
   }
 
   /**
@@ -125,6 +205,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    */
   public function disable() {
     $this->toggleRelationshipTypes(0);
+    $this->disableRequiredComponents();
   }
 
   /**
@@ -132,6 +213,7 @@ class CRM_HRCore_Upgrader extends CRM_HRCore_Upgrader_Base {
    */
   public function enable() {
     $this->toggleRelationshipTypes(1);
+    $this->enableRequiredComponents();
   }
 
   /**
