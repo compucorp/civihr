@@ -228,6 +228,34 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
   }
 
   /**
+   * @dataProvider openLeaveRequestStatusesDataProvider
+   */
+  public function testCanChangeAbsenceTypeForReturnsTrueWhenCurrentUserIsAdminAndTheLeaveRequestIsOpen($status) {
+    $contactID = 2;
+
+    $this->assertTrue(
+      $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeAbsenceTypeFor(
+        $contactID,
+        $status
+      )
+    );
+  }
+
+  /**
+   * @dataProvider closedLeaveRequestStatusesDataProvider
+   */
+  public function testCanChangeAbsenceTypeForReturnsFalseWhenCurrentUserIsAdminAndTheLeaveRequestIsClosed($status) {
+    $contactID = 2;
+
+    $this->assertFalse(
+      $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeAbsenceTypeFor(
+        $contactID,
+        $status
+      )
+    );
+  }
+
+  /**
    * @dataProvider leaveRequestStatusesDataProvider
    */
   public function testCanChangeAbsenceTypeForReturnsFalseWhenCurrentUserNotLeaveContactIrrespectiveOfStatusPassed($status) {
@@ -235,13 +263,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
 
     $this->assertFalse(
       $this->getLeaveRequestRightsForLeaveManagerAsCurrentUser()->canChangeAbsenceTypeFor(
-        $contactID,
-        $status
-      )
-    );
-
-    $this->assertFalse(
-      $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeAbsenceTypeFor(
         $contactID,
         $status
       )
