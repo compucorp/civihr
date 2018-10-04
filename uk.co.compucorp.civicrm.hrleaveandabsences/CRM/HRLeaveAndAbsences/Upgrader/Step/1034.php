@@ -27,7 +27,7 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1034 {
     if (!SchemaHandler::checkIfFieldExists($absenceTypeTable, 'category')) {
       CRM_Core_DAO::executeQuery("
         ALTER TABLE {$absenceTypeTable}
-        ADD category int unsigned NOT NULL COMMENT 'This is used for grouping leave types.'
+        ADD category varchar(512) NOT NULL  COMMENT 'This is used for grouping leave types.'
       ");
     }
   }

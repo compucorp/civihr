@@ -182,7 +182,7 @@
     <name>category</name>
     <title>Category</title>
     <type>varchar</type>
-    <length>10</length>
+    <length>512</length>
     <required>true</required>
     <comment>This is used for grouping leave types.</comment>
     <pseudoconstant>
