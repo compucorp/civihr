@@ -14,12 +14,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
   private $leaveManagerService;
 
   /**
-   * @var array|null
-   *   Stores the list of option values for the LeaveRequest status_id field.
-   */
-  private static $leaveStatuses;
-
-  /**
    * CRM_HRLeaveAndAbsences_Service_LeaveRequestRights constructor.
    *
    * @param \CRM_HRLeaveAndAbsences_Service_LeaveManager $leaveManagerService
@@ -57,13 +51,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
       return TRUE;
     }
 
-    $leaveRequestStatuses = self::getLeaveRequestStatuses();
-    $openStatuses = [
-      $leaveRequestStatuses['awaiting_approval'],
-      $leaveRequestStatuses['more_information_required']
-    ];
-
-    $isOpenLeaveRequest = in_array($statusID, $openStatuses);
+    $isOpenLeaveRequest = in_array($statusID, LeaveRequest::getOpenStatuses());
     $currentUserIsLeaveContact = $this->currentUserIsLeaveContact($contactID);
 
     if ($currentUserIsLeaveContact && $isOpenLeaveRequest) {
@@ -88,9 +76,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   public function canChangeAbsenceTypeFor($contactID, $statusID) {
-    $leaveRequestStatuses = self::getLeaveRequestStatuses();
-    return $this->currentUserIsLeaveContact($contactID) &&
-           in_array($statusID, [$leaveRequestStatuses['awaiting_approval'], $leaveRequestStatuses['more_information_required']]);
+    $isOpenLeaveRequest = in_array($statusID, LeaveRequest::getOpenStatuses());
+
+    return $this->currentUserIsLeaveContact($contactID) && $isOpenLeaveRequest;
   }
 
   /**
@@ -159,19 +147,6 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    */
   private function currentUserIsLeaveContact($contactID) {
     return CRM_Core_Session::getLoggedInContactID() == $contactID;
-  }
-
-  /**
-   * Returns the array of the option values for the LeaveRequest status_id field.
-   *
-   * @return array
-   */
-  private static function getLeaveRequestStatuses() {
-    if (is_null(self::$leaveStatuses)) {
-      self::$leaveStatuses = array_flip(LeaveRequest::buildOptions('status_id', 'validate'));
-    }
-
-    return self::$leaveStatuses;
   }
 
   /**
