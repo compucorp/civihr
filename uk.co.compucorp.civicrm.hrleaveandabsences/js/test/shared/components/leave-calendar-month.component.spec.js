@@ -12,6 +12,8 @@
     'leave-absences/mocks/data/option-group.data',
     'leave-absences/mocks/data/public-holiday.data',
     'leave-absences/mocks/data/work-pattern.data',
+    'common/mocks/services/api/contract-mock',
+    'common/models/contract',
     'leave-absences/mocks/apis/leave-request-api-mock',
     'leave-absences/mocks/apis/option-group-api-mock',
     'leave-absences/mocks/apis/work-pattern-api-mock',
@@ -21,11 +23,12 @@
     'use strict';
 
     describe('leaveCalendarMonth', function () {
-      var $componentController, $log, $provide, $q, $rootScope, Calendar,
-        LeaveRequest, OptionGroup, controller, daysInFebruary, february, leaveRequestInFebruary,
-        period2016, publicHolidays, pubSub, contactData, leaveRequest, leaveRequestAttributes;
+      var $componentController, $log, $provide, $q, $rootScope, allContracts,
+        Contact, Calendar, LeaveRequest, OptionGroup, controller,
+        daysInFebruary, february, leaveRequestInFebruary, period2016,
+        publicHolidays, pubSub, contactData, leaveRequest, leaveRequestAttributes;
       var currentContactId = CRM.vars.leaveAndAbsences.contactId;
-      var contactIdsToReduceTo = null;
+      var serverDateFormat = 'YYYY-MM-DD';
 
       beforeEach(module('common.services', 'leave-absences.templates',
         'leave-absences.mocks', 'my-leave', function (_$provide_) {
@@ -37,13 +40,20 @@
         $provide.value('WorkPatternAPI', WorkPatternAPIMock);
       }));
 
+      beforeEach(inject(['api.contact.mock', 'api.contract.mock',
+        function (ContactAPIMock, JobContractAPIMock) {
+          $provide.value('api.contact', ContactAPIMock);
+          $provide.value('api.contract', JobContractAPIMock);
+        }]));
+
       beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-        _Calendar_, _LeaveRequest_, _OptionGroup_, OptionGroupAPIMock, _pubSub_) {
+        _Calendar_, _Contact_, _LeaveRequest_, _OptionGroup_, OptionGroupAPIMock, _pubSub_) {
         $componentController = _$componentController_;
         $log = _$log_;
         $q = _$q_;
         $rootScope = _$rootScope_;
         Calendar = _Calendar_;
+        Contact = _Contact_;
         LeaveRequest = _LeaveRequest_;
         OptionGroup = _OptionGroup_;
 
@@ -62,9 +72,17 @@
         spyOn(OptionGroup, 'valuesOf').and.callFake(function (name) {
           return OptionGroupAPIMock.valuesOf(name);
         });
-
-        compileComponent();
+        // The contact list will not be reduced for testing purposes
+        spyOn(Contact, 'all').and.returnValue($q.resolve({
+          list: ContactData.all.values.map(function (contact) {
+            return { id: contact.id };
+          })
+        }));
       }));
+
+      beforeEach(function () {
+        compileComponent();
+      });
 
       it('is initialized', function () {
         expect($log.debug).toHaveBeenCalled();
@@ -181,7 +199,11 @@
 
             describe('when leave requests are reloaded', function () {
               beforeEach(function () {
+                // Flush contacts otherwise it is impossible to test
+                controller.contacts = [];
+
                 $rootScope.$emit('LeaveCalendar::showMonth', true);
+                $rootScope.$digest();
               });
 
               it('flushes days data before populating it', function () {
@@ -190,37 +212,21 @@
                 })).toBe(true);
               });
             });
-          });
 
-          describe('contacts', function () {
-            describe('when there are contacts to reduce to', function () {
-              var randomContactIds = [_.sample(ContactData.all.values).contact_id];
+            describe('when month has been paginated', function () {
+              var sampleContact = _.sample(ContactData.all.values);
 
               beforeEach(function () {
-                contactIdsToReduceTo = randomContactIds;
+                Contact.all.and.returnValue($q.resolve({
+                  list: [{ id: sampleContact.id }]
+                }));
 
-                compileComponent();
-                sendShowMonthSignal();
+                $rootScope.$emit('LeaveCalendar::showMonth', true);
                 $rootScope.$digest();
               });
 
-              it('reduces the list of contacts', function () {
-                expect(controller.contacts.length).toEqual(randomContactIds.length);
-                expect(controller.contacts[0].contact_id).toEqual(randomContactIds[0]);
-              });
-            });
-
-            describe('when there are no contacts to reduce to', function () {
-              beforeEach(function () {
-                contactIdsToReduceTo = null;
-
-                compileComponent();
-                sendShowMonthSignal();
-                $rootScope.$digest();
-              });
-
-              it('does not reduce the list of contacts', function () {
-                expect(controller.contacts).toEqual(ContactData.all.values);
+              it('reduces contacts to those who has a job contract for the selected month', function () {
+                expect(controller.contacts).toEqual([sampleContact]);
               });
             });
           });
@@ -330,10 +336,10 @@
 
             leaveRequestInFebruary.from_date =
               moment(leaveRequestInFebruary.from_date).hour(11).minute(0)
-                .format('YYYY-MM-DD HH:mm');
+                .format(serverDateFormat + ' HH:mm');
             leaveRequestInFebruary.to_date =
               moment(leaveRequestInFebruary.to_date).hour(9).minute(0)
-                .format('YYYY-MM-DD HH:mm');
+                .format(serverDateFormat + ' HH:mm');
             sendShowMonthSignal();
           });
 
@@ -891,7 +897,7 @@
 
           while (pointerDate.isSameOrBefore(toDate)) {
             days.push(_.find(controller.month.days, function (day) {
-              return day.date === pointerDate.format('YYYY-MM-DD');
+              return day.date === pointerDate.format(serverDateFormat);
             }));
 
             pointerDate.add(1, 'day');
@@ -1032,9 +1038,10 @@
       /**
        * Compiles component
        *
-       * @param {Boolean} sendSignal - if to send a month signal or not
+       * @param {Boolean} sendSignal if to send a month signal or not
+       * @param {Object} [params] bindings to override
        */
-      function compileComponent (sendSignal) {
+      function compileComponent (sendSignal, params) {
         var absenceTypes = _.clone(AbsenceTypeData.all().values);
 
         // append generic absence type:
@@ -1043,8 +1050,9 @@
           label: 'Leave'
         });
 
-        controller = $componentController('leaveCalendarMonth', null, {
+        controller = $componentController('leaveCalendarMonth', null, _.assign({
           contacts: _.clone(ContactData.all.values),
+          jobContracts: _.clone(allContracts),
           month: february,
           period: period2016,
           supportData: {
@@ -1053,9 +1061,8 @@
             dayTypes: OptionGroupData.getCollection('hrleaveandabsences_leave_request_day_type'),
             leaveRequestStatuses: OptionGroupData.getCollection('hrleaveandabsences_leave_request_status'),
             publicHolidays: publicHolidays
-          },
-          contactIdsToReduceTo: contactIdsToReduceTo
-        });
+          }
+        }, params));
         controller.$onInit();
 
         !!sendSignal && sendShowMonthSignal();

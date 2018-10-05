@@ -96,10 +96,10 @@ pipeline {
                 thresholds: [
                   [
                     $class: 'FailedThreshold',
-                    failureNewThreshold: '1',
-                    failureThreshold: '1',
-                    unstableNewThreshold: '1',
-                    unstableThreshold: '1'
+                    failureNewThreshold: '0',
+                    failureThreshold: '0',
+                    unstableNewThreshold: '0',
+                    unstableThreshold: '0'
                   ]
                 ],
                 tools: [
@@ -142,10 +142,10 @@ pipeline {
                 thresholds: [
                   [
                     $class: 'FailedThreshold',
-                    failureNewThreshold: '1',
-                    failureThreshold: '1',
-                    unstableNewThreshold: '1',
-                    unstableThreshold: '1'
+                    failureNewThreshold: '0',
+                    failureThreshold: '0',
+                    unstableNewThreshold: '0',
+                    unstableThreshold: '0'
                   ]
                 ],
                 tools: [
@@ -465,7 +465,7 @@ def listCivihrExtensions() {
       name: 'Sample Data',
       folder: 'uk.co.compucorp.civicrm.hrsampledata',
       hasJSTests: false,
-      hasPHPTests: false
+      hasPHPTests: true
     ],
     hremergency: [
       name: 'Emergency Contacts ',

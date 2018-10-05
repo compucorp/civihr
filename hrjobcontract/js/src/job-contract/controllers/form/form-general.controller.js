@@ -5,7 +5,6 @@ define([
 ], function (moment) {
   'use strict';
 
-  FormGeneralController.__name = 'FormGeneralController';
   FormGeneralController.$inject = ['$log', '$scope', 'HR_settings'];
 
   function FormGeneralController ($log, $scope, hrSettings) {
@@ -153,5 +152,5 @@ define([
     }
   }
 
-  return FormGeneralController;
+  return { FormGeneralController: FormGeneralController };
 });

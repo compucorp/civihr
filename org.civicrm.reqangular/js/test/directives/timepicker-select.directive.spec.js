@@ -127,6 +127,23 @@ define([
           expect(vm.placeholder).toBe(placeholder);
         });
       });
+
+      describe('when a default value is specified and it is not a part of listed options', function () {
+        var initialCustomValue = '08:51';
+
+        beforeEach(function () {
+          buildDirective([
+            { key: 'timepicker-select-time-from', value: '08:00', bind: '<' },
+            { key: 'timepicker-select-time-to', value: '10:00', bind: '<' },
+            { key: 'timepicker-select-interval', value: '15', bind: '<' },
+            { key: 'timepicker-select-initial-value', value: initialCustomValue, bind: '<' }
+          ]);
+        });
+
+        it('populates the initial value to the start of the options list', function () {
+          expect(vm.initialCustomValue).toBe(initialCustomValue);
+        });
+      });
     });
 
     describe('when "timepicker-select-time-from" attribute is greater than "timepicker-select-time-to"', function () {

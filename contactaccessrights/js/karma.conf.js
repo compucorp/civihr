@@ -47,7 +47,7 @@ module.exports = function (config) {
       },
 
       // angular templates
-      extPath + 'views/**/*.html',
+      extPath + 'js/src/access-rights/**/*.html',
 
       // the requireJS config file that bootstraps the whole test suite
       extPath + 'js/test/test-main.js'
@@ -57,7 +57,7 @@ module.exports = function (config) {
     ],
     // Used to transform angular templates in JS strings
     preprocessors: (function (obj) {
-      obj[extPath + 'views/**/*.html'] = ['ng-html2js'];
+      obj[extPath + 'js/src/access-rights/**/*.html'] = ['ng-html2js'];
       return obj;
     })({}),
     customLaunchers: {

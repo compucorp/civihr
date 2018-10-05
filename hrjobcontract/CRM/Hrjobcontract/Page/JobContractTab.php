@@ -19,6 +19,19 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
 
     $loaded = TRUE;
 
+    CRM_Core_Resources::singleton()->addVars('hrjobcontract', array(
+      'baseURL' => CRM_Core_Resources::singleton()->getUrl('org.civicrm.hrjobcontract'),
+      'contactId' => CRM_Utils_Request::retrieve('cid', 'Integer'),
+      'domainId' => CRM_Core_Config::domainID(),
+      'isLogEnabled' => (bool) $config->logging,
+      'loggingReportId' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
+      'currencies' => CRM_Hrjobcontract_Page_JobContractTab::getCurrencyFormats(),
+      'defaultCurrency' => $config->defaultCurrency,
+      'fields' => CRM_Hrjobcontract_Page_JobContractTab::getFields(),
+      'contractList' => CRM_Hrjobcontract_Page_JobContractTab::getContractList(),
+      'maxFileSize' => file_upload_max_size(),
+    ));
+
     CRM_Core_Resources::singleton()
       ->addStyleFile('org.civicrm.hrjobcontract', 'css/hrjc.css')
       ->addScriptFile('org.civicrm.hrjobcontract', 'js/dist/job-contract.min.js', 1010)
@@ -32,19 +45,7 @@ class CRM_Hrjobcontract_Page_JobContractTab extends CRM_Core_Page {
             'job_hours_time' => CRM_Hrjobcontract_Page_JobContractTab::getJobHoursTime(),
             'working_days' => CRM_Hrjobcontract_Page_JobContractTab::getDaysPerTime(),
           ),
-          'FieldOptions' => CRM_Hrjobcontract_Page_JobContractTab::getFieldOptions(),
-          'jobContractTabApp' => array(
-            'contactId' => CRM_Utils_Request::retrieve('cid', 'Integer'),
-            'domainId' => CRM_Core_Config::domainID(),
-            'isLogEnabled'    => (bool) $config->logging,
-            'loggingReportId' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
-            'currencies' => CRM_Hrjobcontract_Page_JobContractTab::getCurrencyFormats(),
-            'defaultCurrency' => $config->defaultCurrency,
-            'path' => CRM_Core_Resources::singleton()->getUrl('org.civicrm.hrjobcontract'),
-            'fields' => CRM_Hrjobcontract_Page_JobContractTab::getFields(),
-            'contractList' => CRM_Hrjobcontract_Page_JobContractTab::getContractList(),
-            'maxFileSize' => file_upload_max_size(),
-          )
+          'FieldOptions' => CRM_Hrjobcontract_Page_JobContractTab::getFieldOptions()
         );
       });
   }

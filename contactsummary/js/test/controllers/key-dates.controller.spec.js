@@ -6,7 +6,7 @@ define([
   'mocks/constants.mock',
   'mocks/services.mock',
   'common/services/pub-sub',
-  'contact-summary/modules/contact-summary.module'
+  'contact-summary/contact-summary.module'
 ], function (moment) {
   'use strict';
 
@@ -14,7 +14,7 @@ define([
     var $httpBackend, $rootScope, $q, contractServiceMock, controller, ctrlConstructor,
       jobRoleServiceMock, pubSub;
 
-    beforeEach(module('contactsummary', 'contactsummary.mocks', 'contact-summary.templates'));
+    beforeEach(module('contactsummary', 'contactsummary.mocks', 'contactsummary.templates'));
 
     beforeEach(module(function ($provide) {
       $provide.factory('contractService', function () {

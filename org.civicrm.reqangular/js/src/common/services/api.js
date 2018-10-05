@@ -140,7 +140,7 @@ define([
       /**
        * Sends a GET request to the backend endpoint
        *
-       * @param  {String} entity - The entity the request is asking for (Contact, Appraisal, etc)
+       * @param  {String} entity - The entity the request is asking for (e.g. Contact)
        * @param  {String} action - The action to perform
        * @param  {Object} params - Any additional parameters to pass in the request
        * @param  {Boolean} returnCachedData
@@ -173,7 +173,7 @@ define([
       /**
        * Sends a POST request to the backend endpoint
        *
-       * @param {string} entity - The entity the request is asking for (Contact, Appraisal, etc)
+       * @param {string} entity - The entity the request is asking for (e.g. Contact)
        * @param {string} action - The action to perform
        * @param {object} params - Any additional parameters to pass in the request
        * @return {Promise}

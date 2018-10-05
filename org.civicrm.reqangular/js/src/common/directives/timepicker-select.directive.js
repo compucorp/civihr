@@ -1,9 +1,10 @@
 /* eslint-env amd */
 
 define([
+  'common/lodash',
   'common/moment',
   'common/modules/directives'
-], function (moment, directives) {
+], function (_, moment, directives) {
   'use strict';
 
   directives.directive('timepickerSelect', ['$templateCache', function ($templateCache) {
@@ -12,7 +13,8 @@ define([
         timepickerSelectPlaceholder: '@',
         timepickerSelectTimeFrom: '<',
         timepickerSelectTimeTo: '<',
-        timepickerSelectInterval: '<'
+        timepickerSelectInterval: '<',
+        timepickerSelectInitialValue: '<'
       },
       restrict: 'A',
       controllerAs: 'selector',
@@ -26,6 +28,7 @@ define([
   function timepickerSelectController ($scope) {
     var vm = this;
 
+    vm.initialCustomValue = null;
     vm.placeholder = $scope.timepickerSelectPlaceholder;
     vm.options = [];
 
@@ -45,12 +48,18 @@ define([
         vm.options.push(time.format('HH:mm'));
         timeFrom.add(interval, 'minutes');
       }
+
+      if ($scope.timepickerSelectInitialValue &&
+        !_.includes(vm.options, $scope.timepickerSelectInitialValue)) {
+        vm.initialCustomValue = $scope.timepickerSelectInitialValue;
+      }
     }
 
     $scope.$watchGroup([
       'timepickerSelectTimeFrom',
       'timepickerSelectTimeTo',
-      'timepickerSelectInterval'
+      'timepickerSelectInterval',
+      'timepickerSelectInitialValue'
     ], function () {
       buildOptions();
     });

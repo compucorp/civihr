@@ -7,7 +7,6 @@ define([
 ], function (angular, _, moment) {
   'use strict';
 
-  ModalContractNewController.__name = 'ModalContractNewController';
   ModalContractNewController.$inject = [
     '$log', '$q', '$rootElement', '$rootScope', '$sce', '$scope', '$uibModalInstance',
     '$uibModal', 'crmAngService', 'Contract', 'contractService', 'contractDetailsService',
@@ -196,7 +195,7 @@ define([
           if (promiseUpload.length) {
             modalInstance = $modal.open({
               appendTo: $rootElement.find('div').eq(0),
-              templateUrl: settings.pathApp + 'views/modalProgress.html',
+              templateUrl: settings.baseUrl + 'controllers/modal/modal-progress.html',
               size: 'sm',
               controller: 'ModalProgressController',
               resolve: {
@@ -384,5 +383,5 @@ define([
     }
   }
 
-  return ModalContractNewController;
+  return { ModalContractNewController: ModalContractNewController };
 });

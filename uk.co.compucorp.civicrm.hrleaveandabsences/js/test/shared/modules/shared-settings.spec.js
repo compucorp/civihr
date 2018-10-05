@@ -40,5 +40,11 @@ define([
         expect(sharedSettings.statusNames).toBeDefined();
       });
     });
+
+    describe('time base in minutes', function () {
+      it('contains the time base in minutes', function () {
+        expect(sharedSettings.timeBaseInMinutes).toBe(15);
+      });
+    });
   });
 });

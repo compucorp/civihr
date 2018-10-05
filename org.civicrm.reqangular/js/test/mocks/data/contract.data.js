@@ -307,6 +307,17 @@ define([
           }
         }
       ]
+    },
+    contactsWithContractsInPeriod: {
+      is_error: 0,
+      version: 3,
+      count: 3,
+      values: [
+        {
+          id: '1',
+          display_name: 'Dr. Kiara Jensen-Parker'
+        }
+      ]
     }
   };
 });

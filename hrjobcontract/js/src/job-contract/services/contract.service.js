@@ -3,7 +3,6 @@
 define(function () {
   'use strict';
 
-  Contract.__name = 'Contract';
   Contract.$inject = ['$resource', 'settings', '$log'];
 
   function Contract ($resource, settings, $log) {
@@ -16,5 +15,5 @@ define(function () {
     });
   }
 
-  return Contract;
+  return { Contract: Contract };
 });

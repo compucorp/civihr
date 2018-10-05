@@ -3,6 +3,7 @@
 define([
   'common/lodash',
   'common/mocks/data/contact.data',
+  'common/mocks/data/contract.data',
   'common/angularMocks',
   'common/models/contact',
   'common/models/group',
@@ -10,14 +11,16 @@ define([
   'common/mocks/models/instances/session-mock',
   'common/mocks/services/hr-settings-mock',
   'common/mocks/services/api/contact-mock',
+  'common/mocks/services/api/contract-mock',
   'common/mocks/services/api/contact-job-role-api.api.mock',
-  'common/mocks/models/instances/contact-instance-mock'
-], function (_, contactData) {
+  'common/mocks/models/instances/contact-instance-mock',
+  'common/services/api/contract'
+], function (_, contactData, jobContractData) {
   'use strict';
 
   describe('Contact', function () {
     var $provide, $rootScope, Contact, ContactInstanceMock, contactAPI,
-      contactAPIMock, ContactJobRole, ContactJobRoleAPI, contactJobRoles,
+      contactAPIMock, jobContractAPI, ContactJobRole, ContactJobRoleAPI, contactJobRoles,
       contacts, Group, groupContactAPIMock, groupContacts, SessionMock;
 
     beforeEach(function () {
@@ -25,10 +28,11 @@ define([
         $provide = _$provide_;
       });
       inject([
-        'api.contact.mock', 'ContactJobRoleAPIMock', 'HR_settingsMock',
-        function (_contactAPIMock_, ContactJobRoleAPIMock, HRSettingsMock) {
+        'api.contact.mock', 'api.contract.mock', 'ContactJobRoleAPIMock', 'HR_settingsMock',
+        function (_contactAPIMock_, jobContractAPIMock, ContactJobRoleAPIMock, HRSettingsMock) {
           contactAPIMock = _contactAPIMock_;
           $provide.value('api.contact', contactAPIMock);
+          $provide.value('api.contract', jobContractAPIMock);
           $provide.value('ContactJobRoleAPI', ContactJobRoleAPIMock);
           $provide.value('HR_settings', HRSettingsMock);
         }
@@ -36,10 +40,10 @@ define([
     });
 
     beforeEach(inject([
-      '$rootScope', 'api.contact', 'api.group-contact.mock', 'Contact',
-      'ContactInstanceMock', 'ContactJobRole', 'ContactJobRoleAPI', 'Group',
-      'SessionMock',
-      function (_$rootScope_, _contactAPI_, _groupContactAPIMock_, _Contact_,
+      '$rootScope', 'api.contact', 'api.contract', 'api.group-contact.mock',
+      'Contact', 'ContactInstanceMock', 'ContactJobRole', 'ContactJobRoleAPI',
+      'Group', 'SessionMock',
+      function (_$rootScope_, _contactAPI_, _jobContractAPI_, _groupContactAPIMock_, _Contact_,
         _ContactInstanceMock_, _ContactJobRole_, _ContactJobRoleAPI_, _Group_,
         _SessionMock_) {
         $rootScope = _$rootScope_;
@@ -48,6 +52,7 @@ define([
         ContactJobRole = _ContactJobRole_;
         ContactInstanceMock = _ContactInstanceMock_;
         contactAPI = _contactAPI_;
+        jobContractAPI = _jobContractAPI_;
         ContactJobRoleAPI = _ContactJobRoleAPI_;
         groupContactAPIMock = _groupContactAPIMock_;
         SessionMock = _SessionMock_;
@@ -171,6 +176,42 @@ define([
               display_name: 'foo',
               id: {'IN': jasmine.any(Array)}
             }), undefined, undefined, undefined);
+          });
+        });
+
+        describe('when filter includes a period for contracts', function () {
+          var result;
+          var sampleDates = {
+            from: '2018-01-01 00:00:00',
+            to: '2018-12-31 23:59:59'
+          };
+
+          beforeEach(function (done) {
+            spyOn(jobContractAPI, 'getContactsWithContractsInPeriod').and.callThrough();
+            Contact.all({
+              with_contract_in_period: [
+                sampleDates.from,
+                sampleDates.to
+              ]
+            })
+              .then(function (_result_) {
+                result = _result_;
+              })
+              .finally(done);
+            $rootScope.$digest();
+          });
+
+          it('calls the job contract API', function () {
+            expect(jobContractAPI.getContactsWithContractsInPeriod)
+              .toHaveBeenCalledWith(sampleDates.from, sampleDates.to);
+          });
+
+          it('returns only the contacts with job contracts', function () {
+            var sampleContact = _.find(contactData.all.values, {
+              id: _.first(jobContractData.contactsWithContractsInPeriod.values).id
+            });
+
+            expect(result.list).toEqual([sampleContact]);
           });
         });
 

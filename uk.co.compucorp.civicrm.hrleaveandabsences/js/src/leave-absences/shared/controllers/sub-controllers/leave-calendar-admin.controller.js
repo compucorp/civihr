@@ -4,14 +4,13 @@ define([
   'common/lodash',
   'common/moment',
   'leave-absences/shared/modules/controllers',
-  'common/models/contract',
   'common/services/notification.service'
 ], function (_, moment, controllers) {
   controllers.controller('LeaveCalendarAdminController', ['$log', '$q',
-    'Contact', 'ContactInstance', 'Contract', 'notificationService',
+    'Contact', 'ContactInstance', 'notificationService',
     'LeaveCalendarService', controller]);
 
-  function controller ($log, $q, Contact, ContactInstance, Contract, notification,
+  function controller ($log, $q, Contact, ContactInstance, notification,
     LeaveCalendarService) {
     $log.debug('LeaveCalendarAdminController');
 

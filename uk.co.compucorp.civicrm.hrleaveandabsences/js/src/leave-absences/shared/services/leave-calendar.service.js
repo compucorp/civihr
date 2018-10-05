@@ -24,7 +24,6 @@ define([
      * @return {Object} a collection of functions.
      */
     function init (vm) {
-      var contracts;
       var contactsLookUpStrategies = {
         all: loadAllContacts,
         me: loadMyManagees,
@@ -63,67 +62,17 @@ define([
       }
 
       /**
-       * Returns contacts depending on the selected assignation type (my assignees,
-       * unnassigned contacts, or all contacts) and stores a list of lookup contact
-       * ids to based on contacts with active contracts.
+       * Returns all contacts and stores a list of contacts to look up
        *
        * @return {Promise} resolves to an array of contacts.
        */
       function loadContactsForAdmin () {
-        var filterByAssignee = _.get(vm, 'filters.userSettings.assignedTo.type', 'all');
-
         return loadLookUpContacts()
           .then(function (contacts) {
             vm.lookupContacts = contacts;
 
-            return $q.all([
-              loadFilteredContacts(),
-              filterByAssignee !== 'me'
-                ? loadContactIdsToReduceTo()
-                : $q.resolve(null)
-            ]);
-          })
-          .then(function (results) {
-            var contacts = results[0];
-
-            vm.contactIdsToReduceTo = results[1];
-
-            return contacts;
+            return loadFilteredContacts();
           });
-      }
-
-      /**
-       * Returns a promise of a list of contact ids for contacts with contracts
-       * that are valid for the selected period's start and end dates.
-       *
-       * @return {Promise} resolves to an array of contact ids.
-       */
-      function loadContactIdsToReduceTo () {
-        return loadContracts()
-          .then(function (contracts) {
-            var contractsInAbsencePeriod = contracts.filter(function (contract) {
-              var details = contract.info.details;
-
-              return (
-                moment(details.period_start_date).isSameOrBefore(vm.selectedPeriod.end_date) &&
-                (moment(details.period_end_date).isSameOrAfter(vm.selectedPeriod.start_date) ||
-                  !details.period_end_date)
-              );
-            });
-
-            return _.uniq(contractsInAbsencePeriod.map(function (contract) {
-              return contract.contact_id;
-            }));
-          });
-      }
-
-      /**
-       * Returns a list of all contracts. The result is cached locally.
-       *
-       * @return {Promise} resolves to an array of contracts.
-       */
-      function loadContracts () {
-        return contracts ? $q.resolve(contracts) : Contract.all();
       }
 
       /**

@@ -1,4 +1,4 @@
-var TEST_REGEXP = /(spec|test)\.js$/i;
+var TEST_REGEXP = /\.spec\.js$/i;
 var allTestFiles = [];
 var srcPath = '/base/tools/extensions/civihr/contactaccessrights/js/src/access-rights';
 
@@ -12,7 +12,7 @@ require.config({
   deps: allTestFiles,
   waitSeconds: 60,
   paths: {
-    'access-rights': srcPath,
+    'access-rights': srcPath
   },
   callback: function () {
     window.__karma__.start();

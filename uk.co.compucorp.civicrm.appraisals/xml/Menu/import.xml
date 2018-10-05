@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<menu>
-  <item>
-    <path>civicrm/appraisals/import</path>
-    <page_callback>CRM_Appraisals_Import_Controller</page_callback>
-    <title>Appraisals Import</title>
-    <access_arguments>administer CiviCRM</access_arguments>
-  </item>
-</menu>

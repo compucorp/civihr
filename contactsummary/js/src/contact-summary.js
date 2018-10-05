@@ -8,7 +8,7 @@
     }
   });
 
-  require(['contact-summary/modules/contact-summary.module'], function () {
+  require(['contact-summary/contact-summary.module'], function () {
     'use strict';
 
     document.dispatchEvent(typeof window.CustomEvent === 'function' ? new window.CustomEvent('contactsummaryReady') : (function () {
