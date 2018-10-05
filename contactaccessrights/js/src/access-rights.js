@@ -1,5 +1,4 @@
 /* eslint-env amd */
-/* global Event */
 
 (function () {
   'use strict';
@@ -15,6 +14,6 @@
   require([
     'access-rights/access-rights.module'
   ], function (angular) {
-    document.dispatchEvent(new Event('accessRightsReady'));
+    angular.bootstrap('[data-contact-access-rights]', ['access-rights']);
   });
 })(require);
