@@ -31,6 +31,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `is_sick` tinyint   DEFAULT 0 COMMENT 'A flag which is used to determine if this Absence Type can be used for a Sickness Request',
      `calculation_unit` varchar(512) NOT NULL   COMMENT 'One of the values of the Absence type calculation units option group',
      `hide_label` tinyint   DEFAULT 0 COMMENT 'This controls the visibility of the Leave Type label in the calendar and feeds.',
+     `category` varchar(512) NOT NULL   COMMENT 'This is used for grouping leave types.',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `hrleaveandabsences_absence_type_title`(title)
 
@@ -59,7 +60,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   is_reserved,
   is_default,
   weight,
-  calculation_unit
+  calculation_unit,
+  category
 ) VALUES (
   1,
   'Holiday / Vacation',
@@ -73,6 +75,7 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   5,
   12,
   2, -- Months
+  1,
   1,
   1,
   1,
@@ -93,7 +96,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   accrual_expiration_unit,
   is_reserved,
   weight,
-  calculation_unit
+  calculation_unit,
+  category
 ) VALUES (
   2,
   'TOIL',
@@ -108,7 +112,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   2, -- months
   1,
   2,
-  1
+  1,
+  3
 );
 
 INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
@@ -122,7 +127,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   is_reserved,
   weight,
   is_sick,
-  calculation_unit
+  calculation_unit,
+  category
 ) VALUES (
   3,
   'Sick',
@@ -134,7 +140,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   1,
   3,
   1,
-  1
+  1,
+  2
 );
 
 -- /*******************************************************

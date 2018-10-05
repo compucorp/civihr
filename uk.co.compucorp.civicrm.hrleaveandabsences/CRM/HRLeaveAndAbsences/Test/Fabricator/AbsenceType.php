@@ -20,6 +20,10 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType extends
       $params['title'] = static::nextSequentialTitle();
     }
 
+    if (empty($params['category'])) {
+      $params['category'] = 1;
+    }
+
     return AbsenceType::create($params);
   }
 

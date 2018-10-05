@@ -178,5 +178,16 @@
     <type>boolean</type>
     <default>0</default>
   </field>
+  <field>
+    <name>category</name>
+    <title>Category</title>
+    <type>varchar</type>
+    <length>512</length>
+    <required>true</required>
+    <comment>This is used for grouping leave types.</comment>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_absence_type_category</optionGroupName>
+    </pseudoconstant>
+  </field>
 
 </table>
