@@ -16,7 +16,6 @@
             <thead class="sticky">
               <th>{ts}Title{/ts}</th>
               <th>{ts}Allow Accruals?{/ts}</th>
-              <th>{ts}Is default?{/ts}</th>
               <th>{ts}Category{/ts}</th>
               <th>{ts}Order{/ts}</th>
               <th>{ts}Enabled/Disabled{/ts}</th>
@@ -26,7 +25,6 @@
               <tr id="AbsenceType-{$row.id}" class="crm-entity {if NOT $row.is_active} disabled{/if}">
                 <td data-field="title">{$row.title|escape}</td>
                 <td>{if $row.allow_accruals_request eq 1} {ts}Yes{/ts} {else} {ts}No{/ts} {/if}</td>
-                <td>{if $row.is_default eq 1}<i class="fa fa-check"></i>{/if}</td>
                 <td>{$row.category}</td>
                 <td>{$row.weight}</td>
                 <td>{if $row.is_active eq 1} {ts}Enabled{/ts} {else} {ts}Disabled{/ts} {/if}</td>
