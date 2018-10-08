@@ -396,12 +396,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
       ['type' => 'cancel', 'name' => ts('Cancel')],
     ];
 
-    $defaultValues = $this->setDefaultValues();
-    $is_reserved   = empty($defaultValues['is_reserved']) ? FALSE : TRUE;
-    if (($this->_action & CRM_Core_Action::UPDATE) && !$is_reserved) {
-      $buttons[] = ['type' => 'delete', 'name' => ts('Delete')];
-    }
-
     return $buttons;
   }
 
