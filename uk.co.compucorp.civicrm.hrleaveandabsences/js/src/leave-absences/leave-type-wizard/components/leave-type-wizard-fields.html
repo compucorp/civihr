@@ -9,7 +9,8 @@
         </help-text>
       </label>
       <div ng-class="{ 'col-md-9': !field.labelLayout, 'col-md-12': field.labelLayout === 'horizontal' }">
-        [template of the field]
+        <ng-include
+          src="form.componentsPath + '/fields-templates/leave-type-wizard-field-' + field.name + '.html'"></ng-include>
       </div>
     </div>
     <hr ng-if="section.tabs.length > 1"/>

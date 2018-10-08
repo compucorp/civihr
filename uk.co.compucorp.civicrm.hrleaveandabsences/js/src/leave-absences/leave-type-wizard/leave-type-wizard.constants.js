@@ -32,7 +32,7 @@ define([
                 ].join(' ')
               },
               {
-                name: 'leave_category',
+                name: 'category',
                 labelLayout: 'horizontal',
                 label: 'What kind of absence type are you looking to create?'
               }

@@ -24,6 +24,13 @@ define([
 
     vm.componentsPath =
       sharedSettings.sourcePath + 'leave-type-wizard/components';
+    vm.leaveTypeCategories = [
+      {
+        value: 'leave',
+        label: 'Leave',
+        icon: 'plane'
+      }
+    ];
     vm.sections = formSections;
 
     vm.$onInit = $onInit;

@@ -1,0 +1,16 @@
+<div class="row form-horizontal">
+  <div class="col-md-2"
+    ng-repeat="leaveTypeCategory in form.leaveTypeCategories">
+    <div class="well pointer text-center">
+      <i class="leave-type-wizard__category-selector_icon fa fa-{{leaveTypeCategory.icon}}"></i>
+      <div class="radio">
+        <label>
+          <input type="radio"
+            ng-model="field.value"
+            value="{{leaveTypeCategory.value}}"/>
+          {{leaveTypeCategory.label}}
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
