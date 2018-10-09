@@ -865,4 +865,16 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
     $this->assertFalse($absenceType->isCalculationUnitInHours());
   }
+
+  public function testGetCategories() {
+    $categoryOptions = [
+      '1' => 'Leave',
+      '2' => 'Sickness',
+      '3' => 'TOIL',
+      '4' => 'Custom'
+    ];
+    $categories = AbsenceType::getCategories();
+
+    $this->assertEquals($categories, $categoryOptions);
+  }
 }
