@@ -213,6 +213,15 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
+   * Returns a list of all possible categories for absence type
+   *
+   * @return array|bool
+   */
+  public static function getCategories() {
+    return self::buildOptions('category');
+  }
+
+  /**
    * Unset the is_default flag for every AbsenceType that has it
    */
   private static function unsetDefaultTypes() {

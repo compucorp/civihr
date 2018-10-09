@@ -1,10 +1,12 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_Service_AbsenceType as AbsenceTypeService;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 
 class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
 
-  private $links = array();
+  private $links = [];
+  private $categories = [];
 
   /**
    * @var \CRM_HRLeaveAndAbsences_Service_AbsenceType
@@ -32,6 +34,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
           $this->calculateLinksMask($object),
           ['id' => $object->id]
       );
+      $rows[$object->id]['category'] = $this->getCategoryLabel($rows[$object->id]['category']);
     }
 
     $returnURL = CRM_Utils_System::url('civicrm/admin/leaveandabsences/types', 'reset=1');
@@ -182,5 +185,22 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
   private function canNotDelete($absenceType) {
     return $this->absenceTypeService->absenceTypeHasEverBeenUsed($absenceType->id)
            || $absenceType->is_reserved;
+  }
+
+  /**
+   * Retrieves the category label from option value
+   *
+   * @param int $categoryId
+   *
+   * @return mixed
+   */
+  private function getCategoryLabel($categoryId) {
+    if (empty($this->categories)) {
+      $this->categories = AbsenceType::getCategories();
+    }
+
+    if (array_key_exists($categoryId, $this->categories)) {
+      return $this->categories[$categoryId];
+    }
   }
 }
