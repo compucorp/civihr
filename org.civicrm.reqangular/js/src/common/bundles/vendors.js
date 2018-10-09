@@ -15,7 +15,8 @@ define([
   'common/ui-select',
   'common/d3',
   'common/lodash',
-  'common/moment'
+  'common/moment',
+  'angular-spectrum-colorpicker'
 ], function () {
 
 });
