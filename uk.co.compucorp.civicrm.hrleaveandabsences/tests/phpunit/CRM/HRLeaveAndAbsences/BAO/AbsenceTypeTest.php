@@ -46,39 +46,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     AbsenceTypeFabricator::fabricate(['title' => 'Type 1']);
   }
 
-  public function testThereShouldBeOnlyOneDefaultTypeOnCreate() {
-    $basicEntity = AbsenceTypeFabricator::fabricate(['is_default' => true]);
-    $entity1 = AbsenceType::findById($basicEntity->id);
-    $this->assertEquals(1, $entity1->is_default);
-
-    $basicEntity = AbsenceTypeFabricator::fabricate(['is_default' => true]);
-    $entity2 = AbsenceType::findById($basicEntity->id);
-    $entity1 = AbsenceType::findById($entity1->id);
-    $this->assertEquals(0,  $entity1->is_default);
-    $this->assertEquals(1, $entity2->is_default);
-  }
-
-  public function testThereShouldBeOnlyOneDefaultTypeOnUpdate() {
-    $basicEntity1 = AbsenceTypeFabricator::fabricate(['is_default' => false]);
-    $basicEntity2 = AbsenceTypeFabricator::fabricate(['is_default' => false]);
-    $entity1 = AbsenceType::findById($basicEntity1->id);
-    $entity2 = AbsenceType::findById($basicEntity2->id);
-    $this->assertEquals(0,  $entity1->is_default);
-    $this->assertEquals(0,  $entity2->is_default);
-
-    $this->updateBasicType($basicEntity1->id, ['is_default' => true]);
-    $entity1 = AbsenceType::findById($basicEntity1->id);
-    $entity2 = AbsenceType::findById($basicEntity2->id);
-    $this->assertEquals(1, $entity1->is_default);
-    $this->assertEquals(0,  $entity2->is_default);
-
-    $this->updateBasicType($basicEntity2->id, ['is_default' => true]);
-    $entity1 = AbsenceType::findById($basicEntity1->id);
-    $entity2 = AbsenceType::findById($basicEntity2->id);
-    $this->assertEquals(0,  $entity1->is_default);
-    $this->assertEquals(1, $entity2->is_default);
-  }
-
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    * @expectedExceptionMessage There is already one Absence Type where public holidays should be added to it
@@ -359,7 +326,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'default_entitlement' => 10.6,
       'allow_request_cancelation' => 1,
       'is_active' => 1,
-      'is_default' => 1,
       'allow_carry_forward' => 1,
       'max_number_of_days_to_carry_forward' => 5.5,
     ];

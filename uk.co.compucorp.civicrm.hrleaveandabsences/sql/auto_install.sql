@@ -10,7 +10,6 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `title` varchar(127) NOT NULL   COMMENT 'The AbsenceType title. There cant be more than one entity with the same title',
      `weight` int unsigned NOT NULL   COMMENT 'The weight value is used to order the types on a list',
      `color` varchar(7) NOT NULL   COMMENT 'The color hex value (including the #) used to display this type on a calendar',
-     `is_default` tinyint   DEFAULT 0 COMMENT 'There can only be one default entity at any given time',
      `is_reserved` tinyint   DEFAULT 0 COMMENT 'Reserved entities are used by internal calculations and cannot be deleted.',
      `max_consecutive_leave_days` decimal(20,2)    ,
      `allow_request_cancelation` int unsigned NOT NULL   COMMENT 'Can only be one of the values defined in AbsenceType::REQUEST_CANCELATION_OPTIONS',
@@ -58,7 +57,6 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   carry_forward_expiration_duration,
   carry_forward_expiration_unit,
   is_reserved,
-  is_default,
   weight,
   calculation_unit,
   category
@@ -75,7 +73,6 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   5,
   12,
   2, -- Months
-  1,
   1,
   1,
   1,

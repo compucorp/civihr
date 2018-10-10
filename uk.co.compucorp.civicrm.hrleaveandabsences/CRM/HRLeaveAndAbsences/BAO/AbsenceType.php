@@ -66,9 +66,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
 
     CRM_Utils_Hook::pre($hook, $entityName, CRM_Utils_Array::value('id', $params), $params);
     self::validateParams($params);
-    if(isset($params['is_default']) && $params['is_default']) {
-      self::unsetDefaultTypes();
-    }
 
     if(empty($params['id'])) {
       $params['weight'] = self::getMaxWeight() + 1;
@@ -219,15 +216,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   public static function getCategories() {
     return self::buildOptions('category');
-  }
-
-  /**
-   * Unset the is_default flag for every AbsenceType that has it
-   */
-  private static function unsetDefaultTypes() {
-    $tableName = self::getTableName();
-    $query = "UPDATE {$tableName} SET is_default = 0 WHERE is_default = 1";
-    CRM_Core_DAO::executeQuery($query);
   }
 
   /**

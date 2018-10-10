@@ -21,7 +21,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
 
   public function browse() {
     $object = new CRM_HRLeaveAndAbsences_BAO_AbsenceType();
-    $object->orderBy('category');
+    $object->orderBy('weight');
     $object->find();
     $rows = [];
     while($object->fetch()) {
