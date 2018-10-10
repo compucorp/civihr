@@ -45,13 +45,6 @@
     <comment>The color hex value (including the #) used to display this type on a calendar</comment>
   </field>
   <field>
-    <name>is_default</name>
-    <title>Is default?</title>
-    <type>boolean</type>
-    <default>0</default>
-    <comment>There can only be one default entity at any given time</comment>
-  </field>
-  <field>
     <name>is_reserved</name>
     <title>Is reserved?</title>
     <type>boolean</type>
