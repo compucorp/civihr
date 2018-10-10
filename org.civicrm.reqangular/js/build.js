@@ -31,7 +31,7 @@
     'common/moment': 'common/vendor/moment.min',
     'common/mocks': '../test/mocks',
     'common/vendor/perfect-scrollbar': 'common/vendor/perfect-scrollbar.min',
-    'angular-spectrum-colorpicker': '../../node_modules/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker.min'
+    'common/angular-spectrum-colorpicker': '../../node_modules/angular-spectrum-colorpicker/dist/angular-spectrum-colorpicker.min'
   },
   shim: {
     'common/angular': {
@@ -69,7 +69,7 @@
     'common/ui-select': {
       deps: ['common/angular']
     },
-    'angular-spectrum-colorpicker': {
+    'common/angular-spectrum-colorpicker': {
       deps: ['common/angular']
     },
   },
