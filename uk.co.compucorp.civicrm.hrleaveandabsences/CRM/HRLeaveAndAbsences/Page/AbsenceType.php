@@ -163,10 +163,6 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page_Basic {
       $mask -= CRM_Core_Action::DISABLE;
     }
 
-    if($absenceType->is_default) {
-      $mask -= CRM_Core_Action::BASIC;
-    }
-
     return $mask;
   }
 

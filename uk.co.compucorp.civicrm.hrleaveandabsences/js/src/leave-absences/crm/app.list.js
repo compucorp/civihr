@@ -11,10 +11,6 @@ define([
    */
   HRLeaveAndAbsencesApp.ListPage = (function ($) {
     var messages = {
-      'setAsDefault': {
-        'confirmation': 'Are you sure you want to set "%1" as default?',
-        'success': '"%1" is now the default item'
-      },
       'delete': {
         'confirmation': 'Are you sure you want to delete "%1"?',
         'success': '"%1" was deleted'
@@ -42,29 +38,8 @@ define([
      */
     function attachEventListeners (listElement) {
       listElement
-        .off('click.civihrSetAsDefault')
-        .on('click.civihrSetAsDefault', '.action-item.civihr-set-as-default', setAsDefaultAction)
         .off('click.civihrDelete')
         .on('click.civihrDelete', '.action-item.civihr-delete', deleteAction);
-    }
-
-    /**
-     * This is the "Set As Default" event handler.
-     *
-     * It instantiates a new SerAsDefaultAction and execute it.
-     *
-     * @param {Object} event
-     */
-    function setAsDefaultAction (event) {
-      var $target = $(event.target);
-      var action = new HRLeaveAndAbsencesApp.ListPage.SetAsDefaultAction(
-        $target,
-        messages.setAsDefault.confirmation,
-        messages.setAsDefault.success
-      );
-      action.execute();
-
-      event.preventDefault();
     }
 
     /**
@@ -175,32 +150,6 @@ define([
 
     return Action;
   })(ts);
-
-  /**
-   * This is the Action implementation to set an item as default.
-   *
-   * It will use the API to change the entity is_default to 1.
-   */
-  HRLeaveAndAbsencesApp.ListPage.SetAsDefaultAction = (function () {
-    function SetAsDefaultAction (target, confirmationMessage, successMessage) {
-      HRLeaveAndAbsencesApp.ListPage.Action.call(
-        this, target, 'Set as default', confirmationMessage, successMessage
-      );
-    }
-
-    SetAsDefaultAction.prototype = Object.create(HRLeaveAndAbsencesApp.ListPage.Action.prototype);
-
-    SetAsDefaultAction.prototype._executeAction = function () {
-      CRM.api3(
-        this._entity.entity,
-        'create',
-        { id: this._entity.id, is_default: 1 },
-        { success: this._getSuccessMessage.bind(this) }
-      ).done(this._refresh.bind(this));
-    };
-
-    return SetAsDefaultAction;
-  })();
 
   /**
    * This is the Action implementation to delete an item.
