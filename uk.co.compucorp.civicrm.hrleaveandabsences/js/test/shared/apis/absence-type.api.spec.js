@@ -62,7 +62,6 @@ define([
           expect(firstAbsenceType.title).toBeDefined();
           expect(firstAbsenceType.weight).toBeDefined();
           expect(firstAbsenceType.color).toBeDefined();
-          expect(firstAbsenceType.is_default).toBeDefined();
           expect(firstAbsenceType.is_reserved).toBeDefined();
           expect(firstAbsenceType.allow_request_cancelation).toBeDefined();
           expect(firstAbsenceType.allow_overuse).toBeDefined();
