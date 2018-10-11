@@ -11,8 +11,8 @@ define([
   'use strict';
 
   models.factory('AbsenceType', [
-    '$log', '$q', 'Model', 'OptionGroup', 'AbsenceTypeAPI', 'AbsenceTypeInstance',
-    function ($log, $q, Model, OptionGroup, absenceTypeAPI, instance) {
+    '$log', '$q', 'Model', 'OptionGroup', 'absence-type-colours', 'AbsenceTypeAPI', 'AbsenceTypeInstance',
+    function ($log, $q, Model, OptionGroup, absenceTypeColours, absenceTypeAPI, instance) {
       $log.debug('AbsenceType');
 
       return Model.extend({
@@ -66,6 +66,22 @@ define([
               return results.length > 0;
             });
         },
+
+        /**
+         * Retrieves yet unused absence type colours
+         *
+         * @return {Promise} resolves with {Array}
+         */
+        getUnusedColours: function () {
+          return absenceTypeAPI.all(null, { return: ['color'] })
+            .then(function (absenceTypes) {
+              var usedColours = _.map(absenceTypes, 'color');
+              var unusedColours = _.difference(absenceTypeColours, usedColours);
+
+              return unusedColours;
+            });
+        },
+
         /**
          * Retrieves calculation units
          * and sets units symbols to provided absence types accordingly

@@ -172,9 +172,8 @@
             });
 
             it('gets absence types with false sick param', function () {
-              expect(AbsenceTypeAPI.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                is_sick: false
-              }));
+              expect(AbsenceTypeAPI.all.calls.mostRecent().args[0])
+                .toEqual({ is_sick: false });
             });
 
             it('allows to change absence type', function () {

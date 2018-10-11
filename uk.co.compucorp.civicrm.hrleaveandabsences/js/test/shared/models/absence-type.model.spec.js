@@ -3,26 +3,32 @@
 define([
   'common/lodash',
   'common/moment',
+  'leave-absences/mocks/data/absence-type.data',
   'common/mocks/services/api/option-group-mock',
   'leave-absences/shared/models/absence-type.model',
   'leave-absences/mocks/apis/absence-type-api-mock'
-], function (_, moment) {
+], function (_, moment, absenceTypeData) {
   'use strict';
 
   describe('AbsenceType', function () {
-    var $provide, $q, $rootScope, AbsenceType, AbsenceTypeAPI, OptionGroup;
+    var $provide, $q, $rootScope, AbsenceType, AbsenceTypeAPI,
+      absenceTypeColours, OptionGroup;
 
-    beforeEach(module('leave-absences.models', 'leave-absences.mocks', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(module('leave-absences.models', 'leave-absences.mocks',
+      'leave-absences.constants', function (_$provide_) {
+        $provide = _$provide_;
+      }));
 
     beforeEach(inject(function (_AbsenceTypeAPIMock_) {
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
     }));
 
-    beforeEach(inject(['api.optionGroup.mock', function (_OptionGroupAPIMock_) {
-      $provide.value('api.optionGroup', _OptionGroupAPIMock_);
-    }]));
+    beforeEach(inject(['api.optionGroup.mock', 'absence-type-colours',
+      function (_OptionGroupAPIMock_, _absenceTypeColours_) {
+        $provide.value('api.optionGroup', _OptionGroupAPIMock_);
+
+        absenceTypeColours = _absenceTypeColours_;
+      }]));
 
     beforeEach(inject(function (_$q_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_, _OptionGroup_) {
       $q = _$q_;
@@ -41,6 +47,7 @@ define([
         'all',
         'calculateToilExpiryDate',
         'canExpire',
+        'getUnusedColours',
         'loadCalculationUnits'
       ]);
     });
@@ -168,6 +175,38 @@ define([
             expect(expires).toBe(false);
           });
         });
+      });
+    });
+
+    describe('getUnusedColours()', function () {
+      var usedColours;
+      var unusedColours;
+
+      beforeEach(function (done) {
+        usedColours = _.map(absenceTypeData.all().values, 'color');
+
+        AbsenceType.getUnusedColours()
+          .then(function (_unusedColours_) {
+            unusedColours = _unusedColours_;
+          })
+          .finally(done);
+        $rootScope.$digest();
+      });
+
+      it('fetches only colours from absence types', function () {
+        expect(AbsenceTypeAPI.all.calls.mostRecent().args[1].return).toEqual(['color']);
+      });
+
+      it('returns allowed colours', function () {
+        expect(unusedColours.every(function (color) {
+          return _.includes(absenceTypeColours, color);
+        })).toBeTruthy();
+      });
+
+      it('does not return used colours', function () {
+        expect(unusedColours.every(function (color) {
+          return !_.includes(usedColours, color);
+        })).toBeTruthy();
       });
     });
 
