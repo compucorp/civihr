@@ -14,41 +14,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   const REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE = 3;
 
   /**
-   * The list of colors that can be selected for an AbsenceType
-   * @var array
-   */
-  private static $allColors = [
-      '#5A6779',
-      '#3D4A5E',
-      '#263345',
-      '#151D2C',
-      '#E5807F',
-      '#E56A6A',
-      '#CC4A49',
-      '#B32E2E',
-      '#ECA67F',
-      '#FA8F55',
-      '#D97038',
-      '#BF561D',
-      '#8EC68A',
-      '#6DAD68',
-      '#4F944A',
-      '#377A31',
-      '#C096AA',
-      '#B37995',
-      '#995978',
-      '#803D5E',
-      '#9579A8',
-      '#84619C',
-      '#5F3D76',
-      '#47275C',
-      '#42B0CB',
-      '#2997B3',
-      '#147E99',
-      '#056780',
-  ];
-
-  /**
    * The absence type object before it gets updated.
    * @var CRM_HRLeaveAndAbsences_BAO_AbsenceType
    */
@@ -142,31 +107,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
         self::EXPIRATION_UNIT_DAYS   => ts('Days'),
         self::EXPIRATION_UNIT_MONTHS => ts('Months'),
     ];
-  }
-
-  /**
-   * Returns a list of colors that are available to be selected for an
-   * AbsenceType.
-   *
-   * First it will return only the colors that haven't been used yet. When all
-   * the colors have been used once, it will return all the colors.
-   *
-   * @return array
-   */
-  public static function getAvailableColors() {
-    $colorsInUse = self::getColorsInUse();
-    if(count(self::$allColors) == count($colorsInUse)) {
-      return self::$allColors;
-    }
-
-    $availableColors = [];
-    foreach(self::$allColors as $color) {
-      if(!in_array($color, $colorsInUse)) {
-        $availableColors[] = $color;
-      }
-    }
-
-    return $availableColors;
   }
 
   /**
@@ -484,26 +424,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     }
 
     return 0;
-  }
-
-
-  /**
-   * Gets a list of all the colors in AbsenceType::allColors
-   * that have already been used in leave/absence types.
-   *
-   * @return array The list of colors already used
-   */
-  private static function getColorsInUse()
-  {
-    $colors = [];
-    $tableName = self::getTableName();
-    $query = "SELECT DISTINCT(color) as color FROM {$tableName}";
-    $dao = CRM_Core_DAO::executeQuery($query);
-    while($dao->fetch()) {
-      $colors[] = $dao->color;
-    }
-
-    return $colors;
   }
 
   /**
