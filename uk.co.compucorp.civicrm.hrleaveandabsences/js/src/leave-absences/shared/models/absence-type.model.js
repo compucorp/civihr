@@ -72,13 +72,13 @@ define([
          *
          * @return {Promise} resolves with {Array}
          */
-        getUnusedColours: function () {
+        getAvailableColours: function () {
           return absenceTypeAPI.all(null, { return: ['color'] })
             .then(function (absenceTypes) {
               var usedColours = _.map(absenceTypes, 'color');
-              var unusedColours = _.difference(absenceTypeColours, usedColours);
+              var availableColours = _.difference(absenceTypeColours, usedColours);
 
-              return unusedColours;
+              return availableColours.length ? availableColours : absenceTypeColours;
             });
         },
 

@@ -47,7 +47,7 @@ define([
         'all',
         'calculateToilExpiryDate',
         'canExpire',
-        'getUnusedColours',
+        'getAvailableColours',
         'loadCalculationUnits'
       ]);
     });
@@ -178,36 +178,63 @@ define([
       });
     });
 
-    describe('getUnusedColours()', function () {
-      var usedColours;
-      var unusedColours;
+    describe('getAvailableColours()', function () {
+      var availableColours;
 
-      beforeEach(function (done) {
-        usedColours = _.map(absenceTypeData.all().values, 'color');
+      describe('basic tests', function () {
+        var usedColours;
 
-        AbsenceType.getUnusedColours()
-          .then(function (_unusedColours_) {
-            unusedColours = _unusedColours_;
+        beforeEach(function (done) {
+          usedColours = _.map(absenceTypeData.all().values, 'color');
+
+          loadAvailableColours(done);
+        });
+
+        it('fetches only colours from absence types', function () {
+          expect(AbsenceTypeAPI.all.calls.mostRecent().args[1].return).toEqual(['color']);
+        });
+
+        it('returns allowed colours', function () {
+          expect(availableColours.every(function (color) {
+            return _.includes(absenceTypeColours, color);
+          })).toBeTruthy();
+        });
+
+        it('does not return used colours', function () {
+          expect(availableColours.every(function (color) {
+            return !_.includes(usedColours, color);
+          })).toBeTruthy();
+        });
+      });
+
+      describe('when all colours have been used', function () {
+        beforeEach(function (done) {
+          AbsenceTypeAPI.all.and.returnValue(
+            $q.resolve(absenceTypeColours.map(
+              function (colour) {
+                return { color: colour };
+              })));
+          loadAvailableColours(done);
+        });
+
+        it('returns all colours in order to allow to create more absence types', function () {
+          expect(availableColours).toBe(absenceTypeColours);
+        });
+      });
+
+      /**
+       * Loads available absence types colours
+       *
+       * @param {Function} done async callback
+       */
+      function loadAvailableColours (done) {
+        AbsenceType.getAvailableColours()
+          .then(function (_availableColours_) {
+            availableColours = _availableColours_;
           })
           .finally(done);
         $rootScope.$digest();
-      });
-
-      it('fetches only colours from absence types', function () {
-        expect(AbsenceTypeAPI.all.calls.mostRecent().args[1].return).toEqual(['color']);
-      });
-
-      it('returns allowed colours', function () {
-        expect(unusedColours.every(function (color) {
-          return _.includes(absenceTypeColours, color);
-        })).toBeTruthy();
-      });
-
-      it('does not return used colours', function () {
-        expect(unusedColours.every(function (color) {
-          return !_.includes(usedColours, color);
-        })).toBeTruthy();
-      });
+      }
     });
 
     describe('loadCalculationUnits()', function () {
