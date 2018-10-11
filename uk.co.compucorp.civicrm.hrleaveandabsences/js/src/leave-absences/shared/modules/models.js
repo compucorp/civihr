@@ -5,6 +5,7 @@ define([
   'common/modules/models',
   'common/modules/services',
   'leave-absences/shared/modules/apis',
+  'leave-absences/shared/modules/constants',
   'leave-absences/shared/modules/models-instances',
   'leave-absences/shared/modules/shared-settings'
 ], function (angular) {
@@ -14,6 +15,7 @@ define([
     'common.models',
     'common.services',
     'leave-absences.apis',
+    'leave-absences.constants',
     'leave-absences.models.instances',
     'leave-absences.settings'
   ]);
