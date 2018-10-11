@@ -6,7 +6,7 @@ define([
   'use strict';
 
   angular.module('leave-absences.constants', [])
-    .constant('absence-type-colours', [
+    .constant('ABSENCE_TYPE_COLOURS', [
       '#5A6779',
       '#3D4A5E',
       '#263345',

@@ -11,8 +11,8 @@ define([
   'use strict';
 
   models.factory('AbsenceType', [
-    '$log', '$q', 'Model', 'OptionGroup', 'absence-type-colours', 'AbsenceTypeAPI', 'AbsenceTypeInstance',
-    function ($log, $q, Model, OptionGroup, absenceTypeColours, absenceTypeAPI, instance) {
+    '$log', '$q', 'Model', 'OptionGroup', 'ABSENCE_TYPE_COLOURS', 'AbsenceTypeAPI', 'AbsenceTypeInstance',
+    function ($log, $q, Model, OptionGroup, ABSENCE_TYPE_COLOURS, absenceTypeAPI, instance) {
       $log.debug('AbsenceType');
 
       return Model.extend({
@@ -76,9 +76,9 @@ define([
           return absenceTypeAPI.all(null, { return: ['color'] })
             .then(function (absenceTypes) {
               var usedColours = _.map(absenceTypes, 'color');
-              var availableColours = _.difference(absenceTypeColours, usedColours);
+              var availableColours = _.difference(ABSENCE_TYPE_COLOURS, usedColours);
 
-              return availableColours.length ? availableColours : absenceTypeColours;
+              return availableColours.length ? availableColours : ABSENCE_TYPE_COLOURS;
             });
         },
 

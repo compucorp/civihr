@@ -12,7 +12,7 @@ define([
 
   describe('AbsenceType', function () {
     var $provide, $q, $rootScope, AbsenceType, AbsenceTypeAPI,
-      absenceTypeColours, OptionGroup;
+      ABSENCE_TYPE_COLOURS, OptionGroup;
 
     beforeEach(module('leave-absences.models', 'leave-absences.mocks',
       'leave-absences.constants', function (_$provide_) {
@@ -23,18 +23,17 @@ define([
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
     }));
 
-    beforeEach(inject(['api.optionGroup.mock', 'absence-type-colours',
-      function (_OptionGroupAPIMock_, _absenceTypeColours_) {
-        $provide.value('api.optionGroup', _OptionGroupAPIMock_);
+    beforeEach(inject(['api.optionGroup.mock', function (_OptionGroupAPIMock_) {
+      $provide.value('api.optionGroup', _OptionGroupAPIMock_);
+    }]));
 
-        absenceTypeColours = _absenceTypeColours_;
-      }]));
-
-    beforeEach(inject(function (_$q_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_, _OptionGroup_) {
+    beforeEach(inject(function (_$q_, _$rootScope_, _AbsenceType_,
+      _AbsenceTypeAPI_, _ABSENCE_TYPE_COLOURS_, _OptionGroup_) {
       $q = _$q_;
       $rootScope = _$rootScope_;
       AbsenceType = _AbsenceType_;
       AbsenceTypeAPI = _AbsenceTypeAPI_;
+      ABSENCE_TYPE_COLOURS = _ABSENCE_TYPE_COLOURS_;
       OptionGroup = _OptionGroup_;
 
       spyOn(AbsenceTypeAPI, 'all').and.callThrough();
@@ -198,7 +197,7 @@ define([
 
         it('returns allowed colours', function () {
           expect(availableColours.every(function (color) {
-            return _.includes(absenceTypeColours, color);
+            return _.includes(ABSENCE_TYPE_COLOURS, color);
           })).toBeTruthy();
         });
 
@@ -212,7 +211,7 @@ define([
       describe('when all colours have been used', function () {
         beforeEach(function (done) {
           AbsenceTypeAPI.all.and.returnValue(
-            $q.resolve(absenceTypeColours.map(
+            $q.resolve(ABSENCE_TYPE_COLOURS.map(
               function (colour) {
                 return { color: colour };
               })));
@@ -220,7 +219,7 @@ define([
         });
 
         it('returns all colours in order to allow to create more absence types', function () {
-          expect(availableColours).toBe(absenceTypeColours);
+          expect(availableColours).toBe(ABSENCE_TYPE_COLOURS);
         });
       });
 
