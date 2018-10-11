@@ -17,15 +17,20 @@ define([
        * This method returns all the active AbsenceTypes unless specified in param.
        *
        * @param  {Object} params  matches the api endpoint params (title, weight etc)
+       * @param  {Object} additionalParams
        * @return {Promise}
        */
-      all: function (params) {
+      all: function (params, additionalParams) {
         $log.debug('AbsenceTypeAPI.all');
 
-        return this.sendGET('AbsenceType', 'get', _.defaultsDeep(params || {},
-          { is_active: true, options: { sort: 'weight ASC' } }))
+        var sort;
+
+        params = _.defaults({}, params, { is_active: true });
+        sort = _.get(params, 'options.sort') || 'weight ASC';
+
+        return this.getAll('AbsenceType', params, undefined, sort, additionalParams)
           .then(function (data) {
-            return data.values;
+            return data.list;
           });
       },
 
