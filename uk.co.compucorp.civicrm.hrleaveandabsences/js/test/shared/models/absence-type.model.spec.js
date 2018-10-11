@@ -46,30 +46,60 @@ define([
     });
 
     describe('all()', function () {
-      var absenceTypePromise;
+      var results;
+      var params = { any: 'param' };
 
-      beforeEach(function () {
-        absenceTypePromise = AbsenceType.all();
-      });
+      describe('basic tests', function () {
+        beforeEach(function () {
+          loadAllAbsenceTypes();
+        });
 
-      afterEach(function () {
-        // to excute the promise force an digest
-        $rootScope.$apply();
-      });
-
-      it('calls equivalent API method', function () {
-        absenceTypePromise.then(function (response) {
+        it('calls equivalent API method', function () {
           expect(AbsenceTypeAPI.all).toHaveBeenCalled();
         });
-      });
 
-      it('returns model instances', function () {
-        absenceTypePromise.then(function (response) {
-          expect(response.every(function (modelInstance) {
+        it('returns model instances', function () {
+          expect(results.every(function (modelInstance) {
             return 'init' in modelInstance;
           })).toBe(true);
         });
       });
+
+      describe('when params are passed', function () {
+        beforeEach(function () {
+          loadAllAbsenceTypes(params);
+        });
+
+        it('calls equivalent API method with params argument', function () {
+          expect(AbsenceTypeAPI.all).toHaveBeenCalledWith(params, undefined);
+        });
+      });
+
+      describe('when additional params are passed', function () {
+        var additionalParams = { other: 'param' };
+
+        beforeEach(function () {
+          loadAllAbsenceTypes(undefined, additionalParams);
+        });
+
+        it('calls equivalent API method with params argument', function () {
+          expect(AbsenceTypeAPI.all).toHaveBeenCalledWith(undefined, additionalParams);
+        });
+      });
+
+      /**
+       * Gets absence types and stores them in a results variable
+       *
+       * @param {Object} params
+       * @param {Object} additionalParams
+       */
+      function loadAllAbsenceTypes (params, additionalParams) {
+        AbsenceType.all(params, additionalParams)
+          .then(function (_results_) {
+            results = _results_;
+          });
+        $rootScope.$digest();
+      }
     });
 
     describe('calculateToilExpiryDate()', function () {

@@ -22,14 +22,16 @@ define([
          * optionGroupAPI.valuesOf() to retrieve and set calculation units
          *
          * @param  {Object} params  matches the api endpoint params (title, weight etc)
+         * @param  {Object} additionalParams
          * @return {Promise}
          */
-        all: function (params) {
-          return absenceTypeAPI.all(params).then(function (absenceTypes) {
-            return absenceTypes.map(function (absenceType) {
-              return instance.init(absenceType, true);
+        all: function (params, additionalParams) {
+          return absenceTypeAPI.all(params, additionalParams)
+            .then(function (absenceTypes) {
+              return absenceTypes.map(function (absenceType) {
+                return instance.init(absenceType, true);
+              });
             });
-          });
         },
 
         /**
