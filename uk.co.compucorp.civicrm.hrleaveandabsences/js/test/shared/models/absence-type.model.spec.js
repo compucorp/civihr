@@ -57,8 +57,8 @@ define([
       var params = { any: 'param' };
 
       describe('basic tests', function () {
-        beforeEach(function () {
-          loadAllAbsenceTypes();
+        beforeEach(function (done) {
+          loadAllAbsenceTypes(undefined, undefined, done);
         });
 
         it('calls equivalent API method', function () {
@@ -73,8 +73,8 @@ define([
       });
 
       describe('when params are passed', function () {
-        beforeEach(function () {
-          loadAllAbsenceTypes(params);
+        beforeEach(function (done) {
+          loadAllAbsenceTypes(params, undefined, done);
         });
 
         it('calls equivalent API method with params argument', function () {
@@ -85,8 +85,8 @@ define([
       describe('when additional params are passed', function () {
         var additionalParams = { other: 'param' };
 
-        beforeEach(function () {
-          loadAllAbsenceTypes(undefined, additionalParams);
+        beforeEach(function (done) {
+          loadAllAbsenceTypes(undefined, additionalParams, done);
         });
 
         it('calls equivalent API method with params argument', function () {
@@ -98,13 +98,15 @@ define([
        * Gets absence types and stores them in a results variable
        *
        * @param {Object} params
-       * @param {Object} additionalParams
+       * @param {Object} additionalParams]
+       * @param {Function} done async callback
        */
-      function loadAllAbsenceTypes (params, additionalParams) {
+      function loadAllAbsenceTypes (params, additionalParams, done) {
         AbsenceType.all(params, additionalParams)
           .then(function (_results_) {
             results = _results_;
-          });
+          })
+          .finally(done);
         $rootScope.$digest();
       }
     });
