@@ -53,7 +53,6 @@ class CRM_HRLeaveAndAbsences_Form_AbsenceType extends CRM_Core_Form {
     $this->addButtons($this->getAvailableButtons());
     $this->assign('canDeleteType', $this->canDelete());
     $this->assign('deleteUrl', $this->getDeleteUrl());
-    $this->assign('availableColors', json_encode(CRM_HRLeaveAndAbsences_BAO_AbsenceType::getAvailableColors()));
     $this->assign('hoursUnitValue', $this->getHoursCalculationUnitValue());
 
     CRM_Core_Resources::singleton()

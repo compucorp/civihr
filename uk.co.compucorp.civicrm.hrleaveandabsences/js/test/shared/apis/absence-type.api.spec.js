@@ -45,12 +45,22 @@ define([
 
       it('sends GET request with correct parameters and default values', function () {
         expect(AbsenceTypeAPI.sendGET).toHaveBeenCalledWith('AbsenceType', 'get',
-          { is_active: true, options: { sort: 'weight ASC' } });
+          { is_active: true, options: { sort: 'weight ASC' } }, undefined);
       });
 
       it('with expected length', function () {
         absenceTypePromise.then(function (result) {
           expect(result.length).toEqual(totalAbsenceTypes);
+        });
+      });
+
+      describe('when passing no parameters', function () {
+        beforeEach(function () {
+          AbsenceTypeAPI.all();
+        });
+
+        it('handles the case gracefully', function () {
+          expect(AbsenceTypeAPI.sendGET).toHaveBeenCalled();
         });
       });
 

@@ -3,18 +3,21 @@
 define([
   'common/lodash',
   'common/moment',
+  'leave-absences/mocks/data/absence-type.data',
   'common/mocks/services/api/option-group-mock',
   'leave-absences/shared/models/absence-type.model',
   'leave-absences/mocks/apis/absence-type-api-mock'
-], function (_, moment) {
+], function (_, moment, absenceTypeData) {
   'use strict';
 
   describe('AbsenceType', function () {
-    var $provide, $q, $rootScope, AbsenceType, AbsenceTypeAPI, OptionGroup;
+    var $provide, $q, $rootScope, AbsenceType, AbsenceTypeAPI,
+      ABSENCE_TYPE_COLOURS, OptionGroup;
 
-    beforeEach(module('leave-absences.models', 'leave-absences.mocks', function (_$provide_) {
-      $provide = _$provide_;
-    }));
+    beforeEach(module('leave-absences.models', 'leave-absences.mocks',
+      'leave-absences.constants', function (_$provide_) {
+        $provide = _$provide_;
+      }));
 
     beforeEach(inject(function (_AbsenceTypeAPIMock_) {
       $provide.value('AbsenceTypeAPI', _AbsenceTypeAPIMock_);
@@ -24,11 +27,13 @@ define([
       $provide.value('api.optionGroup', _OptionGroupAPIMock_);
     }]));
 
-    beforeEach(inject(function (_$q_, _$rootScope_, _AbsenceType_, _AbsenceTypeAPI_, _OptionGroup_) {
+    beforeEach(inject(function (_$q_, _$rootScope_, _AbsenceType_,
+      _AbsenceTypeAPI_, _ABSENCE_TYPE_COLOURS_, _OptionGroup_) {
       $q = _$q_;
       $rootScope = _$rootScope_;
       AbsenceType = _AbsenceType_;
       AbsenceTypeAPI = _AbsenceTypeAPI_;
+      ABSENCE_TYPE_COLOURS = _ABSENCE_TYPE_COLOURS_;
       OptionGroup = _OptionGroup_;
 
       spyOn(AbsenceTypeAPI, 'all').and.callThrough();
@@ -41,35 +46,68 @@ define([
         'all',
         'calculateToilExpiryDate',
         'canExpire',
+        'getAvailableColours',
         'loadCalculationUnits'
       ]);
     });
 
     describe('all()', function () {
-      var absenceTypePromise;
+      var results;
+      var params = { any: 'param' };
 
-      beforeEach(function () {
-        absenceTypePromise = AbsenceType.all();
-      });
+      describe('basic tests', function () {
+        beforeEach(function (done) {
+          loadAllAbsenceTypes(undefined, undefined, done);
+        });
 
-      afterEach(function () {
-        // to excute the promise force an digest
-        $rootScope.$apply();
-      });
-
-      it('calls equivalent API method', function () {
-        absenceTypePromise.then(function (response) {
+        it('calls equivalent API method', function () {
           expect(AbsenceTypeAPI.all).toHaveBeenCalled();
         });
-      });
 
-      it('returns model instances', function () {
-        absenceTypePromise.then(function (response) {
-          expect(response.every(function (modelInstance) {
+        it('returns model instances', function () {
+          expect(results.every(function (modelInstance) {
             return 'init' in modelInstance;
           })).toBe(true);
         });
       });
+
+      describe('when params are passed', function () {
+        beforeEach(function (done) {
+          loadAllAbsenceTypes(params, undefined, done);
+        });
+
+        it('calls equivalent API method with params argument', function () {
+          expect(AbsenceTypeAPI.all).toHaveBeenCalledWith(params, undefined);
+        });
+      });
+
+      describe('when additional params are passed', function () {
+        var additionalParams = { other: 'param' };
+
+        beforeEach(function (done) {
+          loadAllAbsenceTypes(undefined, additionalParams, done);
+        });
+
+        it('calls equivalent API method with params argument', function () {
+          expect(AbsenceTypeAPI.all).toHaveBeenCalledWith(undefined, additionalParams);
+        });
+      });
+
+      /**
+       * Gets absence types and stores them in a results variable
+       *
+       * @param {Object} params
+       * @param {Object} additionalParams]
+       * @param {Function} done async callback
+       */
+      function loadAllAbsenceTypes (params, additionalParams, done) {
+        AbsenceType.all(params, additionalParams)
+          .then(function (_results_) {
+            results = _results_;
+          })
+          .finally(done);
+        $rootScope.$digest();
+      }
     });
 
     describe('calculateToilExpiryDate()', function () {
@@ -139,6 +177,65 @@ define([
           });
         });
       });
+    });
+
+    describe('getAvailableColours()', function () {
+      var availableColours;
+
+      describe('basic tests', function () {
+        var usedColours;
+
+        beforeEach(function (done) {
+          usedColours = _.map(absenceTypeData.all().values, 'color');
+
+          loadAvailableColours(done);
+        });
+
+        it('fetches only colours from absence types', function () {
+          expect(AbsenceTypeAPI.all.calls.mostRecent().args[1].return).toEqual(['color']);
+        });
+
+        it('returns allowed colours', function () {
+          expect(availableColours.every(function (color) {
+            return _.includes(ABSENCE_TYPE_COLOURS, color);
+          })).toBeTruthy();
+        });
+
+        it('does not return used colours', function () {
+          expect(availableColours.every(function (color) {
+            return !_.includes(usedColours, color);
+          })).toBeTruthy();
+        });
+      });
+
+      describe('when all colours have been used', function () {
+        beforeEach(function (done) {
+          AbsenceTypeAPI.all.and.returnValue(
+            $q.resolve(ABSENCE_TYPE_COLOURS.map(
+              function (colour) {
+                return { color: colour };
+              })));
+          loadAvailableColours(done);
+        });
+
+        it('returns all colours in order to allow to create more absence types', function () {
+          expect(availableColours).toBe(ABSENCE_TYPE_COLOURS);
+        });
+      });
+
+      /**
+       * Loads available absence types colours
+       *
+       * @param {Function} done async callback
+       */
+      function loadAvailableColours (done) {
+        AbsenceType.getAvailableColours()
+          .then(function (_availableColours_) {
+            availableColours = _availableColours_;
+          })
+          .finally(done);
+        $rootScope.$digest();
+      }
     });
 
     describe('loadCalculationUnits()', function () {

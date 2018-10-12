@@ -11,8 +11,8 @@ define([
   'use strict';
 
   models.factory('AbsenceType', [
-    '$log', '$q', 'Model', 'OptionGroup', 'AbsenceTypeAPI', 'AbsenceTypeInstance',
-    function ($log, $q, Model, OptionGroup, absenceTypeAPI, instance) {
+    '$log', '$q', 'Model', 'OptionGroup', 'ABSENCE_TYPE_COLOURS', 'AbsenceTypeAPI', 'AbsenceTypeInstance',
+    function ($log, $q, Model, OptionGroup, ABSENCE_TYPE_COLOURS, absenceTypeAPI, instance) {
       $log.debug('AbsenceType');
 
       return Model.extend({
@@ -22,14 +22,16 @@ define([
          * optionGroupAPI.valuesOf() to retrieve and set calculation units
          *
          * @param  {Object} params  matches the api endpoint params (title, weight etc)
+         * @param  {Object} additionalParams
          * @return {Promise}
          */
-        all: function (params) {
-          return absenceTypeAPI.all(params).then(function (absenceTypes) {
-            return absenceTypes.map(function (absenceType) {
-              return instance.init(absenceType, true);
+        all: function (params, additionalParams) {
+          return absenceTypeAPI.all(params, additionalParams)
+            .then(function (absenceTypes) {
+              return absenceTypes.map(function (absenceType) {
+                return instance.init(absenceType, true);
+              });
             });
-          });
         },
 
         /**
@@ -64,6 +66,22 @@ define([
               return results.length > 0;
             });
         },
+
+        /**
+         * Retrieves yet unused absence type colours
+         *
+         * @return {Promise} resolves with {Array}
+         */
+        getAvailableColours: function () {
+          return absenceTypeAPI.all(null, { return: ['color'] })
+            .then(function (absenceTypes) {
+              var usedColours = _.map(absenceTypes, 'color');
+              var availableColours = _.difference(ABSENCE_TYPE_COLOURS, usedColours);
+
+              return availableColours.length ? availableColours : ABSENCE_TYPE_COLOURS;
+            });
+        },
+
         /**
          * Retrieves calculation units
          * and sets units symbols to provided absence types accordingly

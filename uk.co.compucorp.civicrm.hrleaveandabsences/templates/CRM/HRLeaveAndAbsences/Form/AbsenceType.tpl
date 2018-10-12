@@ -247,10 +247,7 @@
                   preferredFormat: "hex3",
                   allowEmpty:true,
                   showPaletteOnly: true,
-                  showPalette:true,
-                  {/literal}
-                  palette: {$availableColors}
-                  {literal}
+                  showPalette:true
                 });
               }
 
