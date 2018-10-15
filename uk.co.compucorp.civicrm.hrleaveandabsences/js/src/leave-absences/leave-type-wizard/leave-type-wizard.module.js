@@ -15,5 +15,8 @@ define([
     'leave-type-wizard.core',
     'angularSpectrumColorpicker'
   ])
-    .component(LeaveTypeWizardComponent);
+    .component(LeaveTypeWizardComponent)
+    .config(['$httpProvider', function ($httpProvider) {
+      $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    }]);
 });
