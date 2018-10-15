@@ -3,7 +3,7 @@
 define([
   'common/lodash'
 ], function (_) {
-  LeaveTypeWizardController.$inject = ['$log', 'shared-settings',
+  LeaveTypeWizardController.$inject = ['$log', 'AbsenceType', 'shared-settings',
     'form-sections'];
 
   return {
@@ -16,12 +16,13 @@ define([
     }
   };
 
-  function LeaveTypeWizardController ($log, sharedSettings,
+  function LeaveTypeWizardController ($log, AbsenceType, sharedSettings,
     formSections) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var vm = this;
 
+    vm.availableColours = [];
     vm.componentsPath =
       sharedSettings.sourcePath + 'leave-type-wizard/components';
     vm.leaveTypeCategories = [
@@ -44,6 +45,7 @@ define([
 
     function $onInit () {
       initDefaultView();
+      loadAvailableColours();
     }
 
     /**
@@ -97,6 +99,18 @@ define([
       vm.leaveTypeCategory = 'leave';
 
       openSection(0);
+    }
+
+    /**
+     * Fetches available colours and sets them to the component
+     *
+     * @return {Promise}
+     */
+    function loadAvailableColours () {
+      return AbsenceType.getAvailableColours()
+        .then(function (availableColours) {
+          vm.availableColours = availableColours;
+        });
     }
 
     /**

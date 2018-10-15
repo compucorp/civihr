@@ -9,16 +9,22 @@ define([
   'use strict';
 
   describe('LeaveTypeWizard', function () {
-    var $componentController, $log, controller;
+    var $componentController, $log, $q, $rootScope, AbsenceType, controller;
+    var sampleAvailableColours = ['#FFFFFF', '#000000'];
 
     beforeEach(angular.mock.module('leave-type-wizard'));
 
-    beforeEach(inject(function (_$componentController_, _$log_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
+      _AbsenceType_) {
+      AbsenceType = _AbsenceType_;
       $componentController = _$componentController_;
       $log = _$log_;
+      $q = _$q_;
+      $rootScope = _$rootScope_;
     }));
 
     beforeEach(function () {
+      spyOn(AbsenceType, 'getAvailableColours').and.returnValue($q.resolve(sampleAvailableColours));
       spyOn($log, 'debug').and.callThrough();
     });
 
@@ -38,6 +44,7 @@ define([
         secondSectionFirstTab = _.first(secondSection.tabs);
 
         controller.$onInit();
+        $rootScope.$digest();
       });
 
       it('exports the absolute path to the components folder', function () {
@@ -69,6 +76,11 @@ define([
 
       it('has the Leave leave type category selected', function () {
         expect(controller.leaveTypeCategory).toBe('leave');
+      });
+
+      it('loads available colours', function () {
+        expect(AbsenceType.getAvailableColours).toHaveBeenCalledWith();
+        expect(controller.availableColours).toEqual(sampleAvailableColours);
       });
 
       describe('when user clicks the "next section" button', function () {
