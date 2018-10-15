@@ -1,10 +1,11 @@
-{if $action eq 1 or $action eq 2 or $action eq 8}
-  {include file="CRM/HRLeaveAndAbsences/Form/AbsenceType.tpl"}
+{if in_array($action, array(1,2))}
+  <div id="bootstrap-theme" class="crm-leave-and-absences-list-block"
+    data-leave-absences-leave-type-wizard>
+    <leave-type-wizard></leave-type-wizard>
+  </div>
 {else}
   {if $rows}
-    <div id="bootstrap-theme" class="crm-leave-and-absences-list-block"
-      data-leave-absences-leave-type-wizard>
-      <leave-type-wizard></leave-type-wizard>
+    <div id="bootstrap-theme" class="crm-leave-and-absences-list-block">
       <div class="alert alert-info">
         {ts}Some leave/absence types cannot be deleted because there are existing absences of that type.{/ts}
       </div>
