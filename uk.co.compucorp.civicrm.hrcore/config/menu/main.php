@@ -3,14 +3,6 @@
 return [
   'Home' => 'civicrm/tasksassignments/dashboard#/tasks',
 
-  'Search' => [
-    'icon' => 'crm-i fa-search',
-    'children' => [
-      'Find Contacts' => 'civicrm/contact/search?reset=1',
-      'Advanced Search' => 'civicrm/contact/search/advanced?reset=1',
-    ],
-  ],
-
   'Staff' => [
     'icon' => 'crm-i fa-users',
     'children' => [
