@@ -128,6 +128,22 @@ function hrcore_civicrm_buildForm($formName, &$form) {
 }
 
 /**
+ * Implements hook_civicrm_preProcess().
+ *
+ * @param string $formName
+ * @param CRM_Core_Form $form
+ */
+function hrcore_civicrm_preProcess($formName, &$form) {
+  $listeners = [
+    new CRM_HRCore_Hook_PreProcess_ContactForm()
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($formName, $form);
+  }
+}
+
+/**
  * Implements hook_civicrm_validateForm().
  *
  * @param string $formName

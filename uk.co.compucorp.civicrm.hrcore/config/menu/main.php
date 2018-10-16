@@ -6,68 +6,19 @@ return [
   'Staff' => [
     'icon' => 'crm-i fa-users',
     'children' => [
-      'New Individual' => [
+      'Add New Staff Member' => [
         'url' => 'civicrm/contact/add?reset=1&ct=Individual',
         'permission' => 'add contacts',
       ],
-      'New Organization' => [
-        'url' => 'civicrm/contact/add?reset=1&ct=Organization',
-        'permission' => 'add contacts',
-        'separator' => '1',
+      'Staff Directory' => [
+        'url' => '/civicrm/contact/search/advanced?reset=1',
+        'separator' => 1
+      ],
+      'Record Communication' => [
         'children' => [
-          'New Health Insurance Provider' => [
-            'url' => 'civicrm/contact/add?ct=Organization&cst=Health_Insurance_Provider&reset=1',
-            'permission' => 'add contacts',
-          ],
-          'New Life Insurance Provider' => [
-            'url' => 'civicrm/contact/add?ct=Organization&cst=Life_Insurance_Provider&reset=1',
-            'permission' => 'add contacts',
-          ],
-          'New Pension Provider' => [
-            'url' => 'civicrm/contact/add?ct=Organization&cst=Pension_Provider&reset=1',
-            'permission' => 'add contacts',
-          ],
-        ],
-      ],
-      'New Email' => [
-        'url' => 'civicrm/activity/email/add?atype=3&action=add&reset=1&context=standalone',
-        'separator' => '1',
-      ],
-      'Import Contacts' => [
-        'url' => 'civicrm/import/contact?reset=1',
-        'permission' => 'import contacts',
-      ],
-      'Import / Export' => [
-        'permission' => 'access HRJobs',
-        'children' => [
-          'Import Job Contracts' => [
-            'url' => 'civicrm/job/import',
-            'permission' => 'access HRJobs',
-          ],
-          'Import Job Roles' => [
-            'url' => 'civicrm/jobroles/import',
-            'separator' => true,
-          ],
-        ],
-      ],
-      'Import Custom Fields' => [
-        'url' => 'civicrm/import/custom?reset=1',
-        'permission' => 'access CiviCRM',
-        'children' => CRM_HRCore_Menu_Config_CustomFields::getItems()
-      ],
-      'New Group' => [
-        'url' => 'civicrm/group/add?reset=1',
-        'permission' => 'edit groups',
-      ],
-      'Manage Groups' => [
-        'url' => 'civicrm/group?reset=1',
-        'permission' => 'access CiviCRM',
-        'separator' => '1',
-      ],
-      'Find and Merge Duplicate Contacts' => [
-        'url' => 'civicrm/contact/deduperules?reset=1',
-        'permission' => 'administer dedupe rules,merge duplicate contacts',
-        'operator' => 'OR',
+          'New Email' => 'civicrm/activity/email/add?atype=3&action=add&reset=1&context=standalone',
+          'New Meeting' => 'civicrm/activity?reset=1&action=add&context=standalone',
+        ]
       ],
     ],
   ],
