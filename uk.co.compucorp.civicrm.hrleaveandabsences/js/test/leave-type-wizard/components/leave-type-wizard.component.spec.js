@@ -99,6 +99,12 @@ define([
         expect(controller.fieldsIndexed[firstIndex]).toBe(controller.sections[0].tabs[0].fields[0]);
       });
 
+      it('sets default values', function () {
+        expect(_.every(controller.fieldsIndexed, function (field) {
+          return field.value === field.defaultValue;
+        }));
+      });
+
       describe('when user clicks the "next section" button', function () {
         beforeEach(function () {
           controller.openNextSection();
@@ -202,6 +208,34 @@ define([
 
           it('tells that the user is on the last tab', function () {
             expect(controller.isOnSectionLastTab).toEqual(true);
+          });
+        });
+      });
+
+      describe('fields watchers', function () {
+        describe('on default values', function () {
+          it('hides the "Maximum carry forward" field', function () {
+            expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(true);
+          });
+
+          it('hides the "Carry forward expiry" field', function () {
+            expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(true);
+          });
+        });
+
+        describe('when user changes "Allow carry forward" to "Yes"', function () {
+          beforeEach(function () {
+            controller.fieldsIndexed.allow_carry_forward.value = true;
+
+            $rootScope.$digest();
+          });
+
+          it('shows the "Maximum carry forward" field', function () {
+            expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(false);
+          });
+
+          it('shows the "Carry forward expiry" field', function () {
+            expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(false);
           });
         });
       });

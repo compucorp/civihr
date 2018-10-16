@@ -47,6 +47,8 @@ define([
     function $onInit () {
       initDefaultView();
       indexFields();
+      initFieldsWatchers();
+      initDefaultValues();
       $q.all([
         loadContacts(),
         loadAvailableColours()
@@ -108,6 +110,20 @@ define([
     }
 
     /**
+     * Initiates default values for all fields.
+     * Skips the field if the current value is defined or the default value is not defined.
+     */
+    function initDefaultValues () {
+      _.each(vm.fieldsIndexed, function (field) {
+        if (field.value !== undefined || field.defaultValue === undefined) {
+          return;
+        }
+
+        field.value = field.defaultValue;
+      });
+    }
+
+    /**
      * Initiates the default view:
      * - selects Leave category;
      * - expands the General section and leaves the Settings section collapsed;
@@ -117,6 +133,13 @@ define([
       vm.leaveTypeCategory = 'leave';
 
       openSection(0);
+    }
+
+    /**
+     * Initiates all fields watchers
+     */
+    function initFieldsWatchers () {
+      watchFieldAllowCarryForward();
     }
 
     /**
@@ -211,6 +234,19 @@ define([
       tabs[tabIndex].active = true;
       vm.isOnSectionLastTab = tabIndex === tabs.length - 1;
       vm.isOnSectionFirstTab = tabIndex === 0;
+    }
+
+    /**
+     * Initiates a watcher over the "Allow carry forward" field.
+     * Toggles dependent fields on value change.
+     */
+    function watchFieldAllowCarryForward () {
+      $scope.$watch(function () {
+        return vm.fieldsIndexed.allow_carry_forward.value;
+      }, function (allowCarryForward) {
+        vm.fieldsIndexed.max_number_of_days_to_carry_forward.hidden = !allowCarryForward;
+        vm.fieldsIndexed.carry_forward_expiration_duration.hidden = !allowCarryForward;
+      });
     }
   }
 });

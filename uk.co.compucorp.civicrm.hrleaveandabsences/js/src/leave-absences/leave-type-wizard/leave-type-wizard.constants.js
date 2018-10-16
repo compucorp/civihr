@@ -34,6 +34,7 @@ define([
               {
                 name: 'category',
                 labelLayout: 'horizontal',
+                defaultValue: 'leave',
                 label: 'What kind of absence type are you looking to create?'
               }
             ]
@@ -69,7 +70,8 @@ define([
               },
               {
                 name: 'calculation_unit',
-                label: 'Calculate leave in'
+                label: 'Calculate leave in',
+                defaultValue: '1'
               },
               {
                 name: 'default_entitlement',
@@ -104,6 +106,7 @@ define([
               {
                 name: 'allow_request_cancelation',
                 label: 'Staff self-cancellation',
+                defaultValue: '1',
                 helpText: [
                   'Configure whether staff can cancel the leave request themselves without manager approval.',
                   'There are 3 options:',
@@ -146,7 +149,8 @@ define([
             fields: [
               {
                 name: 'allow_carry_forward',
-                label: 'Allow carry forward?'
+                label: 'Allow carry forward?',
+                defaultValue: false
               },
               {
                 name: 'max_number_of_days_to_carry_forward',
