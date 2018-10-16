@@ -1,0 +1,27 @@
+<div class="row">
+  <div class="col-md-4">
+    <div class="radio">
+      <label>
+        <input type="radio" name="carry_forward_expiration_duration"/>
+        Never expire
+      </label>
+    </div>
+    <div class="radio">
+      <label>
+        <input type="radio" name="carry_forward_expiration_duration"/>
+        Expire after
+      </label>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-2">
+    <input type="text" ng-model="field.value" class="form-control"/>
+  </div>
+  <div class="col-md-2">
+    <select ng-model="field.value" class="form-control">
+      <option value="1">Days</option>
+      <option value="2">Months</option>
+    </select>
+  </div>
+</div>
