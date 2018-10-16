@@ -3,7 +3,7 @@
 define([
   'common/lodash'
 ], function (_) {
-  LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', 'AbsenceType', 'Contact',
+  LeaveTypeWizardController.$inject = ['$log', '$scope', 'AbsenceType', 'Contact',
     'form-sections', 'shared-settings'];
 
   return {
@@ -16,7 +16,7 @@ define([
     }
   };
 
-  function LeaveTypeWizardController ($log, $q, $scope, AbsenceType, Contact,
+  function LeaveTypeWizardController ($log, $scope, AbsenceType, Contact,
     formSections, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
@@ -49,10 +49,8 @@ define([
       indexFields();
       initFieldsWatchers();
       initDefaultValues();
-      $q.all([
-        loadContacts(),
-        loadAvailableColours()
-      ]);
+      loadContacts();
+      loadAvailableColours();
     }
 
     /**
@@ -100,13 +98,11 @@ define([
      * Indexes fields for quicker access and sets them to the component
      */
     function indexFields () {
-      vm.sections.forEach(function (section) {
-        section.tabs.forEach(function (tab) {
-          tab.fields.forEach(function (field) {
-            vm.fieldsIndexed[field.name] = field;
-          });
-        });
-      });
+      vm.fieldsIndexed = _.chain(vm.sections)
+        .flatMap('tabs')
+        .flatMap('fields')
+        .keyBy('name')
+        .value();
     }
 
     /**
