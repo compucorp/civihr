@@ -8,15 +8,17 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  describe('LeaveTypeWizard', function () {
-    var $componentController, $log, $q, $rootScope, AbsenceType, controller;
+  fdescribe('LeaveTypeWizard', function () {
+    var $componentController, $log, $q, $rootScope, AbsenceType, Contact, controller;
     var sampleAvailableColours = ['#FFFFFF', '#000000'];
+    var sampleContacts = { list: [{ id: '29', display_name: 'Liza' }] };
 
     beforeEach(angular.mock.module('leave-type-wizard'));
 
     beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-      _AbsenceType_) {
+      _AbsenceType_, _Contact_) {
       AbsenceType = _AbsenceType_;
+      Contact = _Contact_;
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -25,6 +27,7 @@ define([
 
     beforeEach(function () {
       spyOn(AbsenceType, 'getAvailableColours').and.returnValue($q.resolve(sampleAvailableColours));
+      spyOn(Contact, 'all').and.returnValue($q.resolve(sampleContacts));
       spyOn($log, 'debug').and.callThrough();
     });
 
@@ -81,6 +84,11 @@ define([
       it('loads available colours', function () {
         expect(AbsenceType.getAvailableColours).toHaveBeenCalledWith();
         expect(controller.availableColours).toEqual(sampleAvailableColours);
+      });
+
+      it('loads contacts', function () {
+        expect(Contact.all).toHaveBeenCalledWith();
+        expect(controller.contacts).toEqual(sampleContacts.list);
       });
 
       describe('when user clicks the "next section" button', function () {

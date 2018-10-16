@@ -3,8 +3,8 @@
 define([
   'common/lodash'
 ], function (_) {
-  LeaveTypeWizardController.$inject = ['$log', 'AbsenceType', 'shared-settings',
-    'form-sections'];
+  LeaveTypeWizardController.$inject = ['$log', '$q', 'AbsenceType', 'Contact',
+    'form-sections', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -16,8 +16,8 @@ define([
     }
   };
 
-  function LeaveTypeWizardController ($log, AbsenceType, sharedSettings,
-    formSections) {
+  function LeaveTypeWizardController ($log, $q, AbsenceType, Contact,
+    formSections, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var vm = this;
@@ -45,7 +45,10 @@ define([
 
     function $onInit () {
       initDefaultView();
-      loadAvailableColours();
+      $q.all([
+        loadContacts(),
+        loadAvailableColours()
+      ]);
     }
 
     /**
@@ -110,6 +113,18 @@ define([
       return AbsenceType.getAvailableColours()
         .then(function (availableColours) {
           vm.availableColours = availableColours;
+        });
+    }
+
+    /**
+     * Fetches contact and sets them to the component
+     *
+     * @return {Promise}
+     */
+    function loadContacts () {
+      return Contact.all()
+        .then(function (contacts) {
+          vm.contacts = contacts.list;
         });
     }
 
