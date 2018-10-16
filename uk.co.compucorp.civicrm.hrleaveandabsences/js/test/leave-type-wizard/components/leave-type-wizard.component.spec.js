@@ -8,7 +8,7 @@ define([
 ], function (angular, _) {
   'use strict';
 
-  fdescribe('LeaveTypeWizard', function () {
+  describe('LeaveTypeWizard', function () {
     var $componentController, $log, $q, $rootScope, AbsenceType, Contact, controller;
     var sampleAvailableColours = ['#FFFFFF', '#000000'];
     var sampleContacts = { list: [{ id: '29', display_name: 'Liza' }] };
@@ -89,6 +89,14 @@ define([
       it('loads contacts', function () {
         expect(Contact.all).toHaveBeenCalledWith();
         expect(controller.contacts).toEqual(sampleContacts.list);
+      });
+
+      it('indexes fields', function () {
+        var firstIndex = Object.keys(controller.fieldsIndexed)[0];
+
+        expect(controller.fieldsIndexed).toEqual(jasmine.any(Object));
+        expect(firstIndex).toBe(controller.sections[0].tabs[0].fields[0].name);
+        expect(controller.fieldsIndexed[firstIndex]).toBe(controller.sections[0].tabs[0].fields[0]);
       });
 
       describe('when user clicks the "next section" button', function () {
