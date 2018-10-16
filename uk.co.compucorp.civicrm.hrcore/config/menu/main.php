@@ -17,7 +17,7 @@ return [
       'Record Communication' => [
         'children' => [
           'New Email' => 'civicrm/activity/email/add?atype=3&action=add&reset=1&context=standalone',
-          'New Meeting' => 'civicrm/activity?reset=1&action=add&context=standalone'
+          'New Meeting' => 'civicrm/activity?reset=1&action=add&context=standalone',
         ]
       ],
     ],

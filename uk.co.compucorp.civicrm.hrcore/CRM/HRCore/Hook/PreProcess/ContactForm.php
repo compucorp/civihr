@@ -40,8 +40,6 @@ class CRM_HRCore_Hook_PreProcess_ContactForm {
    * @return bool
    */
   private function shouldHandle($formName) {
-    $expectedFormName = 'CRM_Contact_Form_Contact';
-
-    return $formName === $expectedFormName;
+    return $formName === CRM_Contact_Form_Contact::class;
   }
 }
