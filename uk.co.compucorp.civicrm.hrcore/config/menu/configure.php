@@ -182,6 +182,10 @@ return [
     ],
   ],
 
+  'Import' => [
+    'children' => CRM_HRCore_Menu_Config_Import::getItems(),
+  ],
+
   'Custom Fields' => [
     'url' => 'civicrm/admin/custom/group?reset=1',
     'permission' => 'administer CiviCRM',
