@@ -36,7 +36,6 @@ define([
     vm.sections = formSections;
 
     vm.$onInit = $onInit;
-    vm.getFieldsForActiveTab = getFieldsForActiveTab;
     vm.openNextActiveSectionTab = openNextActiveSectionTab;
     vm.openPreviousActiveSectionTab = openPreviousActiveSectionTab;
     vm.openNextSection = openNextSection;
@@ -81,18 +80,6 @@ define([
      */
     function getActiveSectionIndex () {
       return _.findIndex(vm.sections, { active: true });
-    }
-
-    /**
-     * Gets fields for the active tab of the active section
-     *
-     * @return {Array} collection of fields
-     */
-    function getFieldsForActiveTab () {
-      var activeSection = getActiveSection();
-      var activeTab = _.find(activeSection.tabs, { active: true });
-
-      return activeTab.fields;
     }
 
     /**

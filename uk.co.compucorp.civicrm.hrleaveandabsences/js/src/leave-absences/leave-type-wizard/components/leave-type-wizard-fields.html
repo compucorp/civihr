@@ -1,6 +1,6 @@
-<div class="row form-horizontal">
+<div class="row form-horizontal" ng-repeat="tab in section.tabs" ng-show="tab.active">
   <div class="col-md-12">
-    <div class="form-group" ng-repeat="field in form.getFieldsForActiveTab()" ng-if="!field.hidden">
+    <div class="form-group" ng-repeat="field in tab.fields" ng-if="!field.hidden">
       <label class="control-label"
         ng-class="{
           'col-md-3': !field.labelLayout,

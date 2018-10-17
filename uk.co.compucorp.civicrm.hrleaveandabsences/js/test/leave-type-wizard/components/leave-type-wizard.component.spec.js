@@ -154,10 +154,6 @@ define([
           expect(controller.isOnSectionFirstTab).toEqual(true);
         });
 
-        it('renders the fields for the active tab', function () {
-          expect(_.first(controller.getFieldsForActiveTab()).name).toBe('hide_label');
-        });
-
         describe('when user selects the middle tab', function () {
           beforeEach(function () {
             controller.openActiveSectionTab(1);
@@ -169,10 +165,6 @@ define([
 
           it('expands the middle tab', function () {
             expect(secondSection.tabs[1].active).toBe(true);
-          });
-
-          it('renders the fields related to the second tab', function () {
-            expect(_.first(controller.getFieldsForActiveTab()).name).toBe('max_consecutive_leave_days');
           });
 
           it('tells that the user is neither on the first tab nor on the last one', function () {
