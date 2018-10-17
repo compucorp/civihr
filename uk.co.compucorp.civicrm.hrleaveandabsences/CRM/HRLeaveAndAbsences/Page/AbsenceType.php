@@ -201,7 +201,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page {
     if ($addResourcesForAddingOrEditing) {
       CRM_Core_Resources::singleton()
         ->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/dist/leave-type-wizard-form.min.js', 1001)
-        ->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/src/leave-absences/crm/vendor/spectrum/spectrum.min.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header')
+        ->addScriptFile('uk.co.compucorp.civicrm.hrleaveandabsences', 'js/src/leave-absences/crm/vendor/spectrum/spectrum.min.js', 1)
         ->addVars('leaveAndAbsences', [
           'baseURL' => CRM_Core_Resources::singleton()->getUrl('uk.co.compucorp.civicrm.hrleaveandabsences')
         ]);

@@ -13,5 +13,8 @@
     "gulp-angular-templatecache": "^2.2.1",
     "gulp-replace": "^0.6.1",
     "path": "^0.12.7"
+  },
+  "dependencies": {
+    "angular-spectrum-colorpicker": "1.4.5"
   }
 }

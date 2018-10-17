@@ -3,8 +3,8 @@
 define([
   'common/lodash'
 ], function (_) {
-  LeaveTypeWizardController.$inject = ['$log', 'shared-settings',
-    'form-sections'];
+  LeaveTypeWizardController.$inject = ['$log', '$scope', 'AbsenceType', 'Contact',
+    'form-sections', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -16,14 +16,23 @@ define([
     }
   };
 
-  function LeaveTypeWizardController ($log, sharedSettings,
-    formSections) {
+  function LeaveTypeWizardController ($log, $scope, AbsenceType, Contact,
+    formSections, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var vm = this;
 
+    vm.availableColours = [];
     vm.componentsPath =
       sharedSettings.sourcePath + 'leave-type-wizard/components';
+    vm.fieldsIndexed = {};
+    vm.leaveTypeCategories = [
+      {
+        value: 'leave',
+        label: 'Leave',
+        icon: 'plane'
+      }
+    ];
     vm.sections = formSections;
 
     vm.$onInit = $onInit;
@@ -37,6 +46,11 @@ define([
 
     function $onInit () {
       initDefaultView();
+      indexFields();
+      initFieldsWatchers();
+      initDefaultValues();
+      loadContacts();
+      loadAvailableColours();
     }
 
     /**
@@ -81,6 +95,31 @@ define([
     }
 
     /**
+     * Indexes fields for quicker access and sets them to the component
+     */
+    function indexFields () {
+      vm.fieldsIndexed = _.chain(vm.sections)
+        .flatMap('tabs')
+        .flatMap('fields')
+        .keyBy('name')
+        .value();
+    }
+
+    /**
+     * Initiates default values for all fields.
+     * Skips the field if the current value is defined or the default value is not defined.
+     */
+    function initDefaultValues () {
+      _.each(vm.fieldsIndexed, function (field) {
+        if (field.value !== undefined || field.defaultValue === undefined) {
+          return;
+        }
+
+        field.value = field.defaultValue;
+      });
+    }
+
+    /**
      * Initiates the default view:
      * - selects Leave category;
      * - expands the General section and leaves the Settings section collapsed;
@@ -90,6 +129,37 @@ define([
       vm.leaveTypeCategory = 'leave';
 
       openSection(0);
+    }
+
+    /**
+     * Initiates all fields watchers
+     */
+    function initFieldsWatchers () {
+      watchFieldAllowCarryForward();
+    }
+
+    /**
+     * Fetches available colours and sets them to the component
+     *
+     * @return {Promise}
+     */
+    function loadAvailableColours () {
+      return AbsenceType.getAvailableColours()
+        .then(function (availableColours) {
+          vm.availableColours = availableColours;
+        });
+    }
+
+    /**
+     * Fetches contact and sets them to the component
+     *
+     * @return {Promise}
+     */
+    function loadContacts () {
+      return Contact.all()
+        .then(function (contacts) {
+          vm.contacts = contacts.list;
+        });
     }
 
     /**
@@ -160,6 +230,19 @@ define([
       tabs[tabIndex].active = true;
       vm.isOnSectionLastTab = tabIndex === tabs.length - 1;
       vm.isOnSectionFirstTab = tabIndex === 0;
+    }
+
+    /**
+     * Initiates a watcher over the "Allow carry forward" field.
+     * Toggles dependent fields on value change.
+     */
+    function watchFieldAllowCarryForward () {
+      $scope.$watch(function () {
+        return vm.fieldsIndexed.allow_carry_forward.value;
+      }, function (allowCarryForward) {
+        vm.fieldsIndexed.max_number_of_days_to_carry_forward.hidden = !allowCarryForward;
+        vm.fieldsIndexed.carry_forward_expiration_duration.hidden = !allowCarryForward;
+      });
     }
   }
 });

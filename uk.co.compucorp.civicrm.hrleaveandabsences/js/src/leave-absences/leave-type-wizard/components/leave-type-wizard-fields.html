@@ -1,6 +1,6 @@
 <div class="row form-horizontal">
   <div class="col-md-12">
-    <div class="form-group" ng-repeat="field in form.getFieldsForActiveTab()">
+    <div class="form-group" ng-repeat="field in form.getFieldsForActiveTab()" ng-if="!field.hidden">
       <label class="control-label"
         ng-class="{ 'col-md-3': !field.labelLayout, 'col-md-12': field.labelLayout === 'horizontal' }">
         {{field.label}}
@@ -9,7 +9,8 @@
         </help-text>
       </label>
       <div ng-class="{ 'col-md-9': !field.labelLayout, 'col-md-12': field.labelLayout === 'horizontal' }">
-        [template of the field]
+        <ng-include
+          src="form.componentsPath + '/fields-templates/leave-type-wizard-field-' + field.name + '.html'"></ng-include>
       </div>
     </div>
     <hr ng-if="section.tabs.length > 1"/>

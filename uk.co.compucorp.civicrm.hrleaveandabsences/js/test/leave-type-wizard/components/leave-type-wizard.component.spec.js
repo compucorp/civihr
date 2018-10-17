@@ -9,16 +9,25 @@ define([
   'use strict';
 
   describe('LeaveTypeWizard', function () {
-    var $componentController, $log, controller;
+    var $componentController, $log, $q, $rootScope, AbsenceType, Contact, controller;
+    var sampleAvailableColours = ['#FFFFFF', '#000000'];
+    var sampleContacts = { list: [{ id: '29', display_name: 'Liza' }] };
 
     beforeEach(angular.mock.module('leave-type-wizard'));
 
-    beforeEach(inject(function (_$componentController_, _$log_) {
+    beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
+      _AbsenceType_, _Contact_) {
+      AbsenceType = _AbsenceType_;
+      Contact = _Contact_;
       $componentController = _$componentController_;
       $log = _$log_;
+      $q = _$q_;
+      $rootScope = _$rootScope_;
     }));
 
     beforeEach(function () {
+      spyOn(AbsenceType, 'getAvailableColours').and.returnValue($q.resolve(sampleAvailableColours));
+      spyOn(Contact, 'all').and.returnValue($q.resolve(sampleContacts));
       spyOn($log, 'debug').and.callThrough();
     });
 
@@ -38,6 +47,7 @@ define([
         secondSectionFirstTab = _.first(secondSection.tabs);
 
         controller.$onInit();
+        $rootScope.$digest();
       });
 
       it('exports the absolute path to the components folder', function () {
@@ -69,6 +79,30 @@ define([
 
       it('has the Leave leave type category selected', function () {
         expect(controller.leaveTypeCategory).toBe('leave');
+      });
+
+      it('loads available colours', function () {
+        expect(AbsenceType.getAvailableColours).toHaveBeenCalledWith();
+        expect(controller.availableColours).toEqual(sampleAvailableColours);
+      });
+
+      it('loads contacts', function () {
+        expect(Contact.all).toHaveBeenCalledWith();
+        expect(controller.contacts).toEqual(sampleContacts.list);
+      });
+
+      it('indexes fields', function () {
+        var firstIndex = Object.keys(controller.fieldsIndexed)[0];
+
+        expect(controller.fieldsIndexed).toEqual(jasmine.any(Object));
+        expect(firstIndex).toBe(controller.sections[0].tabs[0].fields[0].name);
+        expect(controller.fieldsIndexed[firstIndex]).toBe(controller.sections[0].tabs[0].fields[0]);
+      });
+
+      it('sets default values', function () {
+        expect(_.every(controller.fieldsIndexed, function (field) {
+          return field.value === field.defaultValue;
+        }));
       });
 
       describe('when user clicks the "next section" button', function () {
@@ -174,6 +208,34 @@ define([
 
           it('tells that the user is on the last tab', function () {
             expect(controller.isOnSectionLastTab).toEqual(true);
+          });
+        });
+      });
+
+      describe('fields watchers', function () {
+        describe('on default values', function () {
+          it('hides the "Maximum carry forward" field', function () {
+            expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(true);
+          });
+
+          it('hides the "Carry forward expiry" field', function () {
+            expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(true);
+          });
+        });
+
+        describe('when user changes "Allow carry forward" to "Yes"', function () {
+          beforeEach(function () {
+            controller.fieldsIndexed.allow_carry_forward.value = true;
+
+            $rootScope.$digest();
+          });
+
+          it('shows the "Maximum carry forward" field', function () {
+            expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(false);
+          });
+
+          it('shows the "Carry forward expiry" field', function () {
+            expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(false);
           });
         });
       });
