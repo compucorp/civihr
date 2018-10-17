@@ -239,6 +239,45 @@ define([
           });
         });
       });
+
+      describe('validators', function () {
+        var sampleField;
+        var sampleErrorMessage = 'Invalid format';
+
+        beforeEach(function () {
+          sampleField = controller.fieldsIndexed.default_entitlement;
+          sampleField.validations = [
+            {
+              rule: /^\d+$/,
+              message: sampleErrorMessage
+            }
+          ];
+        });
+
+        describe('when user enters a value in a wrong format', function () {
+          beforeEach(function () {
+            sampleField.value = 'Not a number';
+
+            $rootScope.$digest();
+          });
+
+          it('sets the error to the field', function () {
+            expect(sampleField.error).toBe(sampleErrorMessage);
+          });
+
+          describe('when user enters a value in a valid format', function () {
+            beforeEach(function () {
+              sampleField.value = '1';
+
+              $rootScope.$digest();
+            });
+
+            it('removes the error from the field', function () {
+              expect(sampleField.error).toBe(undefined);
+            });
+          });
+        });
+      });
     });
 
     /**

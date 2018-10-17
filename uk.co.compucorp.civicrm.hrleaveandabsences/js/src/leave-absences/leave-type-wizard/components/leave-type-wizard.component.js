@@ -47,6 +47,7 @@ define([
     function $onInit () {
       initDefaultView();
       indexFields();
+      initValidators();
       initFieldsWatchers();
       initDefaultValues();
       loadContacts();
@@ -136,6 +137,34 @@ define([
      */
     function initFieldsWatchers () {
       watchFieldAllowCarryForward();
+    }
+
+    function initValidatorForField (field) {
+      $scope.$watch(function () {
+        return field.value;
+      }, function (value) {
+        delete field.error;
+
+        if (value === undefined || value === '') {
+          return;
+        }
+
+        field.validations.forEach(function (validation) {
+          if (!validation.rule.test(value)) {
+            field.error = validation.message;
+          }
+        });
+      });
+    }
+
+    function initValidators () {
+      _.each(vm.fieldsIndexed, function (field) {
+        if (!field.validations) {
+          return;
+        }
+
+        initValidatorForField(field);
+      });
     }
 
     /**

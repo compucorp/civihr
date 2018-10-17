@@ -7,6 +7,10 @@ define([
 
   var LINE_BREAK = '\n';
   var DOUBLE_LINE_BREAK = LINE_BREAK + LINE_BREAK;
+  var VALIDATOR_DECIMAL = {
+    rule: /^\d+(\.\d)?$/,
+    message: 'The value should be a positive decimal number up to 1 decimal digit'
+  };
 
   angular.module('leave-type-wizard.constants', [])
     .constant('form-sections', [
@@ -75,7 +79,8 @@ define([
               },
               {
                 name: 'default_entitlement',
-                label: 'Default entitlement'
+                label: 'Default entitlement',
+                validations: [VALIDATOR_DECIMAL]
               },
               {
                 name: 'notification_receivers_ids',
@@ -98,6 +103,7 @@ define([
               {
                 name: 'max_consecutive_leave_days',
                 label: 'Max consecutive duration (Leave blank for unlimited)',
+                validations: [VALIDATOR_DECIMAL],
                 helpText: [
                   'Configure the maximum duration of consecutive leave permitted to be selected in a single leave request.',
                   'You can leave this field blank for unlimited duration of leave.'
@@ -155,6 +161,7 @@ define([
               {
                 name: 'max_number_of_days_to_carry_forward',
                 label: 'Maximum carry forward',
+                validations: [VALIDATOR_DECIMAL],
                 helpText: 'Configure the maximum amount of days or hours of this leave type that can be carried forward from one period to another.'
               },
               {
