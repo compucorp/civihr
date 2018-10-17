@@ -16,12 +16,19 @@
 </div>
 <div class="row form-horizontal" ng-show="field._showDuration">
   <div class="col-md-2">
-    <input type="text" class="form-control"/>
+    <input type="text" class="form-control" ng-model="field.value"/>
   </div>
   <div class="col-md-2">
-    <select ng-model="field.value" class="form-control">
+    <select class="form-control"
+      ng-model="form.fieldsIndexed.carry_forward_expiration_unit.value">
       <option value="1">Days</option>
       <option value="2">Months</option>
     </select>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <ng-include
+      src="form.componentsPath + '/leave-type-wizard-field-error.html'"></ng-include>
   </div>
 </div>

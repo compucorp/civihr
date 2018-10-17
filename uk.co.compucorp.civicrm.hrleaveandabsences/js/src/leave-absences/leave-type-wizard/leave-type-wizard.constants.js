@@ -173,12 +173,18 @@ define([
               {
                 name: 'carry_forward_expiration_duration',
                 label: 'Carry forward expiry',
+                validations: [VALIDATOR_DECIMAL],
                 helpText: [
                   'You can configure the carry forward leave to expire in the new period after a certain time or to never expire. i.e.',
                   'If I set the expiry for 3 months and the end of my leave period is 31 December, the carry forward will expire on the 31st March.',
                   DOUBLE_LINE_BREAK,
                   'If you configure the leave to never expire the leave will carry forward indefinitely including to future periods.'
                 ].join(' ')
+              },
+              {
+                name: 'carry_forward_expiration_unit',
+                defaultValue: '1',
+                hidden: true
               }
             ]
           }
