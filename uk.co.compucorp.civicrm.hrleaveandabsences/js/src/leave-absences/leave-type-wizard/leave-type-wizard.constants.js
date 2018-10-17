@@ -25,6 +25,7 @@ define([
             fields: [
               {
                 name: 'title',
+                required: true,
                 label: 'Title',
                 helpText: [
                   'The Leave Type Title is displayed for everyone on all leave reports and request forms.' +
@@ -37,6 +38,7 @@ define([
               },
               {
                 name: 'category',
+                required: true,
                 labelLayout: 'horizontal',
                 defaultValue: 'leave',
                 label: 'What kind of absence type are you looking to create?'
@@ -70,16 +72,19 @@ define([
               {
                 name: 'colour',
                 label: 'Calendar colour',
+                required: true,
                 helpText: 'Note this will be a default grey on the public calendar if "Hide leave type label on public calendars and feeds" is set to "Yes".'
               },
               {
                 name: 'calculation_unit',
                 label: 'Calculate leave in',
+                required: true,
                 defaultValue: '1'
               },
               {
                 name: 'default_entitlement',
                 label: 'Default entitlement',
+                required: true,
                 validations: [VALIDATOR_DECIMAL]
               },
               {
@@ -112,6 +117,7 @@ define([
               {
                 name: 'allow_request_cancelation',
                 label: 'Staff self-cancellation',
+                required: true,
                 defaultValue: '1',
                 helpText: [
                   'Configure whether staff can cancel the leave request themselves without manager approval.',
