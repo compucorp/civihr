@@ -36,21 +36,30 @@ define([
     vm.sections = formSections;
 
     vm.$onInit = $onInit;
-    vm.openNextActiveSectionTab = openNextActiveSectionTab;
-    vm.openPreviousActiveSectionTab = openPreviousActiveSectionTab;
-    vm.openNextSection = openNextSection;
-    vm.openPreviousSection = openPreviousSection;
+    vm.nextTabHandler = nextTabHandler;
+    vm.previousTabHandler = previousTabHandler;
     vm.openSection = openSection;
     vm.openActiveSectionTab = openActiveSectionTab;
 
     function $onInit () {
       initDefaultView();
       indexFields();
+      initDefaultValues();
       initValidators();
       initFieldsWatchers();
-      initDefaultValues();
       loadContacts();
       loadAvailableColours();
+    }
+
+    /**
+     * Returns the active tab
+     *
+     * @return {Object}
+     */
+    function getActiveTab () {
+      var activeSection = getActiveSection();
+
+      return _.find(activeSection.tabs, { active: true });
     }
 
     /**
@@ -134,18 +143,22 @@ define([
     function initValidatorsForField (field) {
       $scope.$watch(function () {
         return field.value;
-      }, function (value) {
-        delete field.error;
+      }, function (value, oldValue) {
+        var activeTab;
 
-        if (value === undefined || value === '') {
+        if (value === oldValue) {
           return;
         }
 
-        field.validations.forEach(function (validation) {
-          if (!validation.rule.test(value)) {
-            field.error = validation.message;
-          }
-        });
+        activeTab = getActiveTab();
+
+        delete field.error;
+
+        validateField(field);
+
+        if (activeTab.valid !== undefined) {
+          validateTab(activeTab);
+        }
       });
     }
 
@@ -154,7 +167,7 @@ define([
      */
     function initValidators () {
       _.each(vm.fieldsIndexed, function (field) {
-        if (!field.validations) {
+        if (!field.validations && !field.required) {
           return;
         }
 
@@ -189,9 +202,11 @@ define([
     /**
      * Opens the next tab in the active section
      */
-    function openNextActiveSectionTab () {
+    function nextTabHandler () {
       var activeTabIndex = getActiveTabIndex();
+      var activeTab = getActiveTab();
 
+      validateAllTabFields(activeTab);
       openActiveSectionTab(activeTabIndex + 1);
     }
 
@@ -202,15 +217,6 @@ define([
       var activeSectionIndex = getActiveSectionIndex();
 
       openSection(activeSectionIndex + 1);
-    }
-
-    /**
-     * Opens the previous tab in the active section
-     */
-    function openPreviousActiveSectionTab () {
-      var activeTabIndex = getActiveTabIndex();
-
-      openActiveSectionTab(activeTabIndex - 1);
     }
 
     /**
@@ -246,14 +252,78 @@ define([
     function openActiveSectionTab (tabIndex) {
       var activeSection = getActiveSection();
       var tabs = activeSection.tabs;
+      var nextTab = tabs[tabIndex];
 
       tabs.forEach(function (tab) {
         tab.active = false;
       });
 
-      tabs[tabIndex].active = true;
+      if (!nextTab) {
+        if (tabIndex === -1) {
+          openPreviousSection();
+        } else {
+          openNextSection();
+        }
+
+        return;
+      }
+
+      nextTab.active = true;
       vm.isOnSectionLastTab = tabIndex === tabs.length - 1;
       vm.isOnSectionFirstTab = tabIndex === 0;
+    }
+
+    /**
+     * Opens the previous tab in the active section
+     */
+    function previousTabHandler () {
+      var activeTabIndex = getActiveTabIndex();
+
+      openActiveSectionTab(activeTabIndex - 1);
+    }
+
+    /**
+     * Validates a field
+     *
+     * @param {Object} field
+     */
+    function validateField (field) {
+      if (field.required && field.value === '') {
+        field.error = 'This field is required';
+      } else if (field.value !== '' && field.validations) {
+        field.validations.forEach(function (validation) {
+          if (!validation.rule.test(field.value)) {
+            field.error = validation.message;
+          }
+        });
+      }
+    }
+
+    /**
+     * Validates all fields for a tab
+     * and checks if the whole tab is filled in correctly
+     *
+     * @param {Object} tab
+     */
+    function validateAllTabFields (tab) {
+      tab.fields.forEach(function (field) {
+        validateField(field);
+      });
+      validateTab(tab);
+    }
+
+    /**
+     * Validates a whole tab.
+     * It runs through fields and checks if the tab fields contain errors.
+     *
+     * @param {Object} tab
+     */
+    function validateTab (tab) {
+      var tabIsValid = !_.find(tab.fields, function (field) {
+        return field.error;
+      });
+
+      tab.valid = tabIsValid;
     }
 
     /**

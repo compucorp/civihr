@@ -18,6 +18,12 @@
                 ng-class="{ active: tab.active }"
                 ng-click="form.openActiveSectionTab(tabIndex)">
                 <a href>
+                  <span class="badge badge-danger pull-right" ng-if="tab.valid === false">
+                    <i class="fa fa-times"></i>
+                  </span>
+                  <span class="badge badge-success pull-right" ng-if="tab.valid === true">
+                    <i class="fa fa-check"></i>
+                  </span>
                   {{tab.label}}
                 </a>
               </li>

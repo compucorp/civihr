@@ -72,8 +72,7 @@ define([
 
       it('has fields defined in second section tabs', function () {
         expect(_.sample(_.sample(secondSection.tabs).fields)).toEqual(jasmine.objectContaining({
-          name: jasmine.any(String),
-          label: jasmine.any(String)
+          name: jasmine.any(String)
         }));
       });
 
@@ -107,7 +106,7 @@ define([
 
       describe('when user clicks the "next section" button', function () {
         beforeEach(function () {
-          controller.openNextSection();
+          controller.nextTabHandler();
         });
 
         it('collapses the first section', function () {
@@ -118,9 +117,9 @@ define([
           expect(secondSection.active).toBe(true);
         });
 
-        describe('when user clicks the "next section" button', function () {
+        describe('when user clicks the "previous section" button', function () {
           beforeEach(function () {
-            controller.openPreviousSection();
+            controller.previousTabHandler();
           });
 
           it('collapses the second section', function () {
@@ -175,7 +174,7 @@ define([
 
         describe('when opens the next section tab', function () {
           beforeEach(function () {
-            controller.openNextActiveSectionTab();
+            controller.nextTabHandler();
           });
 
           it('opens the second tab', function () {
@@ -184,7 +183,7 @@ define([
 
           describe('when opens the previous section tab', function () {
             beforeEach(function () {
-              controller.openPreviousActiveSectionTab();
+              controller.previousTabHandler();
             });
 
             it('opens the first tab', function () {
@@ -235,12 +234,14 @@ define([
       describe('validators', function () {
         var sampleField;
         var sampleErrorMessage = 'Invalid format';
+        var requiredFieldErrorMessage = 'This field is required';
 
         beforeEach(function () {
           sampleField = controller.fieldsIndexed.default_entitlement;
           sampleField.validations = [
             {
               rule: /^\d+$/,
+              required: true,
               message: sampleErrorMessage
             }
           ];
@@ -267,6 +268,34 @@ define([
             it('removes the error from the field', function () {
               expect(sampleField.error).toBe(undefined);
             });
+          });
+
+          describe('when user erases the value', function () {
+            beforeEach(function () {
+              sampleField.value = '';
+
+              $rootScope.$digest();
+            });
+
+            it('sets the error to the field', function () {
+              expect(sampleField.error).toBe(requiredFieldErrorMessage);
+            });
+          });
+        });
+
+        describe('when user does not fill in the field and navigates to the next tab', function () {
+          beforeEach(function () {
+            controller.nextTabHandler();
+
+            $rootScope.$digest();
+          });
+
+          it('sets the error to the missed field', function () {
+            expect(sampleField.error).toBe(requiredFieldErrorMessage);
+          });
+
+          it('sets the error to the whole tab', function () {
+            expect(controller.sections[0].tabs[0].valid).toBe(false);
           });
         });
       });
