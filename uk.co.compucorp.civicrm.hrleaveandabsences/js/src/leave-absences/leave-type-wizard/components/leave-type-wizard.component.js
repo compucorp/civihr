@@ -126,7 +126,12 @@ define([
       watchFieldAllowCarryForward();
     }
 
-    function initValidatorForField (field) {
+    /**
+     * Initiates validators of a given field
+     *
+     * @param {Object} field
+     */
+    function initValidatorsForField (field) {
       $scope.$watch(function () {
         return field.value;
       }, function (value) {
@@ -144,13 +149,16 @@ define([
       });
     }
 
+    /**
+     * Initiates validators for all fields
+     */
     function initValidators () {
       _.each(vm.fieldsIndexed, function (field) {
         if (!field.validations) {
           return;
         }
 
-        initValidatorForField(field);
+        initValidatorsForField(field);
       });
     }
 
