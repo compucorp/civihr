@@ -353,6 +353,9 @@ define([
       }
     }
 
+    /**
+     * Validates all sections (the whole wizard)
+     */
     function validateAllSections () {
       vm.sections.forEach(function (section) {
         section.tabs.forEach(function (tab) {
