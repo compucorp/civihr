@@ -51,6 +51,29 @@ define([
       loadAvailableColours();
     }
 
+    function findIndexesOfFirstSectionAndTabWithErrors () {
+      var indexes;
+
+      _.each(vm.sections, function (section, sectionIndex) {
+        _.each(section.tabs, function (tab, tabIndex) {
+          if (!tab.valid) {
+            indexes = {
+              sectionIndex: sectionIndex,
+              tabIndex: tabIndex
+            };
+
+            return false;
+          }
+        });
+
+        if (indexes) {
+          return false;
+        }
+      });
+
+      return indexes;
+    }
+
     /**
      * Returns the active tab
      *
@@ -235,11 +258,19 @@ define([
      * @param {Number} sectionIndex
      */
     function openSection (sectionIndex) {
+      var sectionToOpen = vm.sections[sectionIndex];
+
       vm.sections.forEach(function (section) {
         section.active = false;
       });
 
-      vm.sections[sectionIndex].active = true;
+      if (!sectionToOpen) {
+        save();
+
+        return;
+      }
+
+      sectionToOpen.active = true;
 
       openActiveSectionTab(0);
     }
@@ -282,6 +313,19 @@ define([
       openActiveSectionTab(activeTabIndex - 1);
     }
 
+    function save () {
+      var sectionAndTabWithErrorsIndexes;
+
+      validateAllSections();
+
+      sectionAndTabWithErrorsIndexes = findIndexesOfFirstSectionAndTabWithErrors();
+
+      if (sectionAndTabWithErrorsIndexes) {
+        openSection(sectionAndTabWithErrorsIndexes.sectionIndex);
+        openActiveSectionTab(sectionAndTabWithErrorsIndexes.tabIndex);
+      }
+    }
+
     /**
      * Validates a field
      *
@@ -297,6 +341,14 @@ define([
           }
         });
       }
+    }
+
+    function validateAllSections () {
+      vm.sections.forEach(function (section) {
+        section.tabs.forEach(function (tab) {
+          validateAllTabFields(tab);
+        });
+      });
     }
 
     /**

@@ -237,7 +237,7 @@ define([
         var requiredFieldErrorMessage = 'This field is required';
 
         beforeEach(function () {
-          sampleField = controller.fieldsIndexed.default_entitlement;
+          sampleField = controller.sections[0].tabs[0].fields[0];
           sampleField.validations = [
             {
               rule: /^\d+$/,
@@ -296,6 +296,19 @@ define([
 
           it('sets the error to the whole tab', function () {
             expect(controller.sections[0].tabs[0].valid).toBe(false);
+          });
+        });
+
+        describe('when user attempts to save and there are errors', function () {
+          beforeEach(function () {
+            controller.openSection(1);
+            controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
+            controller.nextTabHandler();
+          });
+
+          it('navigates to the first section and the tab where errors occured', function () {
+            expect(controller.sections[0].active).toBe(true);
+            expect(controller.sections[0].tabs[0].active).toBe(true);
           });
         });
       });
