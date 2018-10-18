@@ -120,7 +120,8 @@ function hrcore_civicrm_buildForm($formName, &$form) {
     new CRM_HRCore_Hook_BuildForm_LocalisationPageFilter(),
     new CRM_HRCore_Hook_BuildForm_OptionEditPathFilter(),
     new CRM_HRCore_Hook_BuildForm_ContactFormCustomGroupFilter(),
-    new CRM_HRCore_Hook_BuildForm_ContactImportFieldsFilter()
+    new CRM_HRCore_Hook_BuildForm_ContactImportFieldsFilter(),
+    new CRM_HRCore_Hook_BuildForm_CustomImportFieldsFilter(),
   ];
 
   foreach ($listeners as $currentListener) {
