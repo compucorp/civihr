@@ -9,26 +9,29 @@ define([
   'use strict';
 
   describe('LeaveTypeWizard', function () {
-    var $componentController, $log, $q, $rootScope, AbsenceType, Contact, controller;
+    var $componentController, $log, $q, $rootScope, AbsenceType, Contact,
+      controller, notificationService;
     var sampleAvailableColours = ['#FFFFFF', '#000000'];
     var sampleContacts = { list: [{ id: '29', display_name: 'Liza' }] };
 
     beforeEach(angular.mock.module('leave-type-wizard'));
 
     beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-      _AbsenceType_, _Contact_) {
-      AbsenceType = _AbsenceType_;
-      Contact = _Contact_;
+      _AbsenceType_, _Contact_, _notificationService_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
       $rootScope = _$rootScope_;
+      AbsenceType = _AbsenceType_;
+      Contact = _Contact_;
+      notificationService = _notificationService_;
     }));
 
     beforeEach(function () {
       spyOn(AbsenceType, 'getAvailableColours').and.returnValue($q.resolve(sampleAvailableColours));
       spyOn(Contact, 'all').and.returnValue($q.resolve(sampleContacts));
       spyOn($log, 'debug').and.callThrough();
+      spyOn(notificationService, 'error');
     });
 
     beforeEach(function () {
@@ -309,6 +312,11 @@ define([
           it('navigates to the first section and the tab where errors occured', function () {
             expect(controller.sections[0].active).toBe(true);
             expect(controller.sections[0].tabs[0].active).toBe(true);
+          });
+
+          it('throws an error notification', function () {
+            expect(notificationService.error)
+              .toHaveBeenCalledWith('', jasmine.any(String));
           });
         });
       });

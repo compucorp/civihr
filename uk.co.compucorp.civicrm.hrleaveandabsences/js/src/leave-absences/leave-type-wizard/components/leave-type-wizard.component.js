@@ -4,7 +4,7 @@ define([
   'common/lodash'
 ], function (_) {
   LeaveTypeWizardController.$inject = ['$log', '$scope', 'AbsenceType', 'Contact',
-    'form-sections', 'shared-settings'];
+    'form-sections', 'notificationService', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -17,7 +17,7 @@ define([
   };
 
   function LeaveTypeWizardController ($log, $scope, AbsenceType, Contact,
-    formSections, sharedSettings) {
+    formSections, notificationService, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var vm = this;
@@ -51,6 +51,12 @@ define([
       loadAvailableColours();
     }
 
+    /**
+     * Searches for a tab with errors and,
+     * if finds, returnes indexes of the section and the tab.
+     *
+     * @return {Object} { sectionIndex, tabIndex }
+     */
     function findIndexesOfFirstSectionAndTabWithErrors () {
       var indexes;
 
@@ -313,6 +319,9 @@ define([
       openActiveSectionTab(activeTabIndex - 1);
     }
 
+    /**
+     * Saves the whole wizard
+     */
     function save () {
       var sectionAndTabWithErrorsIndexes;
 
@@ -321,6 +330,7 @@ define([
       sectionAndTabWithErrorsIndexes = findIndexesOfFirstSectionAndTabWithErrors();
 
       if (sectionAndTabWithErrorsIndexes) {
+        notificationService.error('', 'There are errors on the form. Please fix them before continuing.');
         openSection(sectionAndTabWithErrorsIndexes.sectionIndex);
         openActiveSectionTab(sectionAndTabWithErrorsIndexes.tabIndex);
       }
