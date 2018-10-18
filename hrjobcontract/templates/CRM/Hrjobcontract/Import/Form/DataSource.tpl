@@ -62,7 +62,7 @@
                 </span>
             </td>
   </tr>
-     <tr class="crm-import-datasource-form-block-fieldSeparator">
+     <tr class="crm-import-datasource-form-block-fieldSeparator hiddenElement">
        <td class="label">{$form.fieldSeparator.label} {help id='id-fieldSeparator' file='CRM/Contact/Import/Form/DataSource'}</td>
        <td>{$form.fieldSeparator.html}</td>
      </tr>
