@@ -20,6 +20,7 @@ define([
     formSections, notificationService, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
+    var absenceTypes = [];
     var state = {
       sectionIndex: null,
       tabIndex: null
@@ -53,6 +54,7 @@ define([
       initFieldsWatchers();
       loadContacts();
       loadAvailableColours();
+      loadAbsenceTypes();
     }
 
     /**
@@ -143,7 +145,8 @@ define([
      * Initiates all fields watchers
      */
     function initFieldsWatchers () {
-      watchFieldAllowCarryForward();
+      watchAllowCarryForwardField();
+      watchTitleField();
     }
 
     /**
@@ -175,6 +178,18 @@ define([
       _.each(vm.fieldsIndexed, function (field) {
         (field.validations || field.required) && initValidatorsForField(field);
       });
+    }
+
+    /**
+     * Fetches absence types and stores them in the component.
+     * Feteches only absence types' titles
+     * and "Must staff take public holiday as leave?" options.
+     */
+    function loadAbsenceTypes () {
+      return AbsenceType.all({}, { return: ['title', 'must_take_public_holiday_as_leave'] })
+        .then(function (_absenceTypes_) {
+          absenceTypes = _absenceTypes_;
+        });
     }
 
     /**
@@ -363,12 +378,32 @@ define([
      * Initiates a watcher over the "Allow carry forward" field.
      * Toggles dependent fields on value change.
      */
-    function watchFieldAllowCarryForward () {
+    function watchAllowCarryForwardField () {
       $scope.$watch(function () {
         return vm.fieldsIndexed.allow_carry_forward.value;
       }, function (allowCarryForward) {
         vm.fieldsIndexed.max_number_of_days_to_carry_forward.hidden = !allowCarryForward;
         vm.fieldsIndexed.carry_forward_expiration_duration.hidden = !allowCarryForward;
+      });
+    }
+
+    /**
+     * Initiates a watches over "Title" field.
+     * Watches for already used leave types titles.
+     */
+    function watchTitleField () {
+      var titleField = vm.fieldsIndexed.title;
+
+      $scope.$watch(function () {
+        return titleField.value;
+      }, function (title) {
+        if (title === '') {
+          return;
+        }
+
+        if (_.find(absenceTypes, { title: title })) {
+          titleField.error = 'This leave type title is already in use';
+        }
       });
     }
   }
