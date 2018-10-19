@@ -13,6 +13,10 @@ define([
       controller, notificationService;
     var sampleAvailableColours = ['#FFFFFF', '#000000'];
     var sampleContacts = { list: [{ id: '29', display_name: 'Liza' }] };
+    var sampleAbsenceTypeTitle = 'Holiday';
+    var sampleAbsenceTypes = [
+      { title: sampleAbsenceTypeTitle }
+    ];
 
     beforeEach(angular.mock.module('leave-type-wizard'));
 
@@ -29,6 +33,7 @@ define([
 
     beforeEach(function () {
       spyOn(AbsenceType, 'getAvailableColours').and.returnValue($q.resolve(sampleAvailableColours));
+      spyOn(AbsenceType, 'all').and.returnValue($q.resolve(sampleAbsenceTypes));
       spyOn(Contact, 'all').and.returnValue($q.resolve(sampleContacts));
       spyOn($log, 'debug').and.callThrough();
       spyOn(notificationService, 'error');
@@ -105,6 +110,10 @@ define([
         expect(_.every(controller.fieldsIndexed, function (field) {
           return field.value === field.defaultValue;
         }));
+      });
+
+      it('loads absence types titles', function () {
+        expect(AbsenceType.all).toHaveBeenCalledWith({}, { return: ['title'] });
       });
 
       describe('when user clicks the "next section" button', function () {
@@ -230,6 +239,18 @@ define([
 
           it('shows the "Carry forward expiry" field', function () {
             expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(false);
+          });
+        });
+
+        describe('when user inputs an already used leave type title', function () {
+          beforeEach(function () {
+            controller.fieldsIndexed.title.value = sampleAbsenceTypeTitle;
+
+            $rootScope.$digest();
+          });
+
+          it('shows the error', function () {
+            expect(controller.fieldsIndexed.title.error).toBe('This leave type title is already in use');
           });
         });
       });

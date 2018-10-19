@@ -20,6 +20,7 @@ define([
     formSections, notificationService, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
+    var absenceTypes = [];
     var state = {
       sectionIndex: null,
       tabIndex: null
@@ -53,6 +54,7 @@ define([
       initFieldsWatchers();
       loadContacts();
       loadAvailableColours();
+      loadAbsenceTypes();
     }
 
     /**
@@ -143,7 +145,8 @@ define([
      * Initiates all fields watchers
      */
     function initFieldsWatchers () {
-      watchFieldAllowCarryForward();
+      watchAllowCarryForwardField();
+      watchTitleField();
     }
 
     /**
@@ -175,6 +178,17 @@ define([
       _.each(vm.fieldsIndexed, function (field) {
         (field.validations || field.required) && initValidatorsForField(field);
       });
+    }
+
+    /**
+     * Fetches absence types and stores them in the component.
+     * Fetches only absence types' titles.
+     */
+    function loadAbsenceTypes () {
+      return AbsenceType.all({}, { return: ['title'] })
+        .then(function (_absenceTypes_) {
+          absenceTypes = _absenceTypes_;
+        });
     }
 
     /**
@@ -310,7 +324,7 @@ define([
      * @param {Object} field
      */
     function validateField (field) {
-      if (field.required && field.value === '') {
+      if (field.required && _.isEmpty(field.value)) {
         field.error = 'This field is required';
       } else if (field.value !== '' && field.validations) {
         field.validations.forEach(function (validation) {
@@ -363,12 +377,32 @@ define([
      * Initiates a watcher over the "Allow carry forward" field.
      * Toggles dependent fields on value change.
      */
-    function watchFieldAllowCarryForward () {
+    function watchAllowCarryForwardField () {
       $scope.$watch(function () {
         return vm.fieldsIndexed.allow_carry_forward.value;
       }, function (allowCarryForward) {
         vm.fieldsIndexed.max_number_of_days_to_carry_forward.hidden = !allowCarryForward;
         vm.fieldsIndexed.carry_forward_expiration_duration.hidden = !allowCarryForward;
+      });
+    }
+
+    /**
+     * Initiates a watches over "Title" field.
+     * Watches for already used leave types titles.
+     */
+    function watchTitleField () {
+      var titleField = vm.fieldsIndexed.title;
+
+      $scope.$watch(function () {
+        return titleField.value;
+      }, function (title) {
+        if (_.isEmpty(title)) {
+          return;
+        }
+
+        if (_.find(absenceTypes, { title: title })) {
+          titleField.error = 'This leave type title is already in use';
+        }
       });
     }
   }
