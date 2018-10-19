@@ -182,11 +182,10 @@ define([
 
     /**
      * Fetches absence types and stores them in the component.
-     * Feteches only absence types' titles
-     * and "Must staff take public holiday as leave?" options.
+     * Fetches only absence types' titles.
      */
     function loadAbsenceTypes () {
-      return AbsenceType.all({}, { return: ['title', 'must_take_public_holiday_as_leave'] })
+      return AbsenceType.all({}, { return: ['title'] })
         .then(function (_absenceTypes_) {
           absenceTypes = _absenceTypes_;
         });
@@ -325,7 +324,7 @@ define([
      * @param {Object} field
      */
     function validateField (field) {
-      if (field.required && field.value === '') {
+      if (field.required && _.isEmpty(field.value)) {
         field.error = 'This field is required';
       } else if (field.value !== '' && field.validations) {
         field.validations.forEach(function (validation) {
@@ -397,7 +396,7 @@ define([
       $scope.$watch(function () {
         return titleField.value;
       }, function (title) {
-        if (title === '') {
+        if (_.isEmpty(title)) {
           return;
         }
 
