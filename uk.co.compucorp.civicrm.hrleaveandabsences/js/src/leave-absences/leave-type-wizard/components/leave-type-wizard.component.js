@@ -20,6 +20,10 @@ define([
     formSections, notificationService, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
+    var state = {
+      sectionIndex: null,
+      tabIndex: null
+    };
     var vm = this;
 
     vm.availableColours = [];
@@ -81,43 +85,21 @@ define([
     }
 
     /**
+     * Flushes an error for a given field
+     *
+     * @param {Object} field
+     */
+    function flushErrorForField (field) {
+      delete field.error;
+    }
+
+    /**
      * Returns the active tab
      *
      * @return {Object}
      */
     function getActiveTab () {
-      var activeSection = getActiveSection();
-
-      return _.find(activeSection.tabs, { active: true });
-    }
-
-    /**
-     * Returns the index of the active tab
-     *
-     * @return {Number}
-     */
-    function getActiveTabIndex () {
-      var activeSection = getActiveSection();
-
-      return _.findIndex(activeSection.tabs, { active: true });
-    }
-
-    /**
-     * Returns the active section
-     *
-     * @return {Object}
-     */
-    function getActiveSection () {
-      return _.find(vm.sections, { active: true });
-    }
-
-    /**
-     * Returns the index of the active section
-     *
-     * @return {Number}
-     */
-    function getActiveSectionIndex () {
-      return _.findIndex(vm.sections, { active: true });
+      return vm.sections[state.sectionIndex].tabs[state.tabIndex];
     }
 
     /**
@@ -173,21 +155,16 @@ define([
       $scope.$watch(function () {
         return field.value;
       }, function (newValue, oldValue) {
-        var activeTab;
+        var activeTab = getActiveTab();
 
         if (newValue === oldValue) {
           return;
         }
 
-        activeTab = getActiveTab();
-
-        delete field.error;
-
+        flushErrorForField(field);
         validateField(field);
 
-        if (activeTab.valid !== undefined) {
-          validateTab(activeTab);
-        }
+        (activeTab.valid !== undefined) && validateTab(activeTab);
       });
     }
 
@@ -228,29 +205,24 @@ define([
      * Opens the next tab in the active section
      */
     function nextTabHandler () {
-      var activeTabIndex = getActiveTabIndex();
       var activeTab = getActiveTab();
 
       validateAllTabFields(activeTab);
-      openActiveSectionTab(activeTabIndex + 1);
+      openActiveSectionTab(state.tabIndex + 1);
     }
 
     /**
      * Opens next section
      */
-    function openNextSection (currentIndex) {
-      var activeSectionIndex = getActiveSectionIndex();
-
-      openSection(activeSectionIndex + 1);
+    function openNextSection () {
+      openSection(state.sectionIndex + 1);
     }
 
     /**
      * Opens previous section
      */
     function openPreviousSection () {
-      var activeSectionIndex = getActiveSectionIndex();
-
-      openSection(activeSectionIndex - 1);
+      openSection(state.sectionIndex - 1);
     }
 
     /**
@@ -272,6 +244,7 @@ define([
         return;
       }
 
+      state.sectionIndex = sectionIndex;
       sectionToOpen.active = true;
 
       openActiveSectionTab(0);
@@ -283,7 +256,7 @@ define([
      * @param {Number} tabIndex
      */
     function openActiveSectionTab (tabIndex) {
-      var activeSection = getActiveSection();
+      var activeSection = vm.sections[state.sectionIndex];
       var tabs = activeSection.tabs;
       var nextTab = tabs[tabIndex];
 
@@ -301,6 +274,7 @@ define([
         return;
       }
 
+      state.tabIndex = tabIndex;
       nextTab.active = true;
       vm.isOnSectionLastTab = tabIndex === tabs.length - 1;
       vm.isOnSectionFirstTab = tabIndex === 0;
@@ -310,9 +284,7 @@ define([
      * Opens the previous tab in the active section
      */
     function previousTabHandler () {
-      var activeTabIndex = getActiveTabIndex();
-
-      openActiveSectionTab(activeTabIndex - 1);
+      openActiveSectionTab(state.tabIndex - 1);
     }
 
     /**
