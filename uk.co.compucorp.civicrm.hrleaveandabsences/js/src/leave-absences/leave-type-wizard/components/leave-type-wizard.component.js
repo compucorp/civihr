@@ -4,7 +4,7 @@ define([
   'common/lodash'
 ], function (_) {
   LeaveTypeWizardController.$inject = ['$log', '$scope', 'AbsenceType', 'Contact',
-    'form-sections', 'shared-settings'];
+    'form-sections', 'notificationService', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -17,9 +17,13 @@ define([
   };
 
   function LeaveTypeWizardController ($log, $scope, AbsenceType, Contact,
-    formSections, sharedSettings) {
+    formSections, notificationService, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
+    var state = {
+      sectionIndex: null,
+      tabIndex: null
+    };
     var vm = this;
 
     vm.availableColours = [];
@@ -36,62 +40,66 @@ define([
     vm.sections = formSections;
 
     vm.$onInit = $onInit;
-    vm.getFieldsForActiveTab = getFieldsForActiveTab;
-    vm.openNextActiveSectionTab = openNextActiveSectionTab;
-    vm.openPreviousActiveSectionTab = openPreviousActiveSectionTab;
-    vm.openNextSection = openNextSection;
-    vm.openPreviousSection = openPreviousSection;
+    vm.nextTabHandler = nextTabHandler;
+    vm.previousTabHandler = previousTabHandler;
     vm.openSection = openSection;
     vm.openActiveSectionTab = openActiveSectionTab;
 
     function $onInit () {
       initDefaultView();
       indexFields();
-      initFieldsWatchers();
       initDefaultValues();
+      initValidators();
+      initFieldsWatchers();
       loadContacts();
       loadAvailableColours();
     }
 
     /**
-     * Returns the index of the active tab
+     * Searches for a tab with errors and,
+     * if finds, returnes indexes of the section and the tab.
      *
-     * @return {Number}
+     * @return {Object} { sectionIndex, tabIndex }
      */
-    function getActiveTabIndex () {
-      var activeSection = getActiveSection();
+    function findIndexesOfFirstSectionAndTabWithErrors () {
+      var indexes;
 
-      return _.findIndex(activeSection.tabs, { active: true });
+      _.each(vm.sections, function (section, sectionIndex) {
+        _.each(section.tabs, function (tab, tabIndex) {
+          if (!tab.valid) {
+            indexes = {
+              sectionIndex: sectionIndex,
+              tabIndex: tabIndex
+            };
+
+            return false;
+          }
+        });
+
+        if (indexes) {
+          return false;
+        }
+      });
+
+      return indexes;
     }
 
     /**
-     * Returns the active section
+     * Flushes an error for a given field
+     *
+     * @param {Object} field
+     */
+    function flushErrorForField (field) {
+      delete field.error;
+    }
+
+    /**
+     * Returns the active tab
      *
      * @return {Object}
      */
-    function getActiveSection () {
-      return _.find(vm.sections, { active: true });
-    }
-
-    /**
-     * Returns the index of the active section
-     *
-     * @return {Number}
-     */
-    function getActiveSectionIndex () {
-      return _.findIndex(vm.sections, { active: true });
-    }
-
-    /**
-     * Gets fields for the active tab of the active section
-     *
-     * @return {Array} collection of fields
-     */
-    function getFieldsForActiveTab () {
-      var activeSection = getActiveSection();
-      var activeTab = _.find(activeSection.tabs, { active: true });
-
-      return activeTab.fields;
+    function getActiveTab () {
+      return vm.sections[state.sectionIndex].tabs[state.tabIndex];
     }
 
     /**
@@ -139,6 +147,37 @@ define([
     }
 
     /**
+     * Initiates validators of a given field
+     *
+     * @param {Object} field
+     */
+    function initValidatorsForField (field) {
+      $scope.$watch(function () {
+        return field.value;
+      }, function (newValue, oldValue) {
+        var activeTab = getActiveTab();
+
+        if (newValue === oldValue) {
+          return;
+        }
+
+        flushErrorForField(field);
+        validateField(field);
+
+        (activeTab.valid !== undefined) && validateTab(activeTab);
+      });
+    }
+
+    /**
+     * Initiates validators for all fields
+     */
+    function initValidators () {
+      _.each(vm.fieldsIndexed, function (field) {
+        (field.validations || field.required) && initValidatorsForField(field);
+      });
+    }
+
+    /**
      * Fetches available colours and sets them to the component
      *
      * @return {Promise}
@@ -165,37 +204,25 @@ define([
     /**
      * Opens the next tab in the active section
      */
-    function openNextActiveSectionTab () {
-      var activeTabIndex = getActiveTabIndex();
+    function nextTabHandler () {
+      var activeTab = getActiveTab();
 
-      openActiveSectionTab(activeTabIndex + 1);
+      validateAllTabFields(activeTab);
+      openActiveSectionTab(state.tabIndex + 1);
     }
 
     /**
      * Opens next section
      */
-    function openNextSection (currentIndex) {
-      var activeSectionIndex = getActiveSectionIndex();
-
-      openSection(activeSectionIndex + 1);
-    }
-
-    /**
-     * Opens the previous tab in the active section
-     */
-    function openPreviousActiveSectionTab () {
-      var activeTabIndex = getActiveTabIndex();
-
-      openActiveSectionTab(activeTabIndex - 1);
+    function openNextSection () {
+      openSection(state.sectionIndex + 1);
     }
 
     /**
      * Opens previous section
      */
     function openPreviousSection () {
-      var activeSectionIndex = getActiveSectionIndex();
-
-      openSection(activeSectionIndex - 1);
+      openSection(state.sectionIndex - 1);
     }
 
     /**
@@ -205,11 +232,20 @@ define([
      * @param {Number} sectionIndex
      */
     function openSection (sectionIndex) {
+      var sectionToOpen = vm.sections[sectionIndex];
+
       vm.sections.forEach(function (section) {
         section.active = false;
       });
 
-      vm.sections[sectionIndex].active = true;
+      if (!sectionToOpen) {
+        save();
+
+        return;
+      }
+
+      state.sectionIndex = sectionIndex;
+      sectionToOpen.active = true;
 
       openActiveSectionTab(0);
     }
@@ -220,16 +256,107 @@ define([
      * @param {Number} tabIndex
      */
     function openActiveSectionTab (tabIndex) {
-      var activeSection = getActiveSection();
+      var activeSection = vm.sections[state.sectionIndex];
       var tabs = activeSection.tabs;
+      var nextTab = tabs[tabIndex];
 
       tabs.forEach(function (tab) {
         tab.active = false;
       });
 
-      tabs[tabIndex].active = true;
+      if (!nextTab) {
+        if (tabIndex === -1) {
+          openPreviousSection();
+        } else {
+          openNextSection();
+        }
+
+        return;
+      }
+
+      state.tabIndex = tabIndex;
+      nextTab.active = true;
       vm.isOnSectionLastTab = tabIndex === tabs.length - 1;
       vm.isOnSectionFirstTab = tabIndex === 0;
+    }
+
+    /**
+     * Opens the previous tab in the active section
+     */
+    function previousTabHandler () {
+      openActiveSectionTab(state.tabIndex - 1);
+    }
+
+    /**
+     * Saves the whole wizard
+     */
+    function save () {
+      var sectionAndTabWithErrorsIndexes;
+
+      validateAllSections();
+
+      sectionAndTabWithErrorsIndexes = findIndexesOfFirstSectionAndTabWithErrors();
+
+      if (sectionAndTabWithErrorsIndexes) {
+        notificationService.error('', 'There are errors on the form. Please fix them before continuing.');
+        openSection(sectionAndTabWithErrorsIndexes.sectionIndex);
+        openActiveSectionTab(sectionAndTabWithErrorsIndexes.tabIndex);
+      }
+    }
+
+    /**
+     * Validates a field
+     *
+     * @param {Object} field
+     */
+    function validateField (field) {
+      if (field.required && field.value === '') {
+        field.error = 'This field is required';
+      } else if (field.value !== '' && field.validations) {
+        field.validations.forEach(function (validation) {
+          if (!validation.rule.test(field.value)) {
+            field.error = validation.message;
+          }
+        });
+      }
+    }
+
+    /**
+     * Validates all sections (the whole wizard)
+     */
+    function validateAllSections () {
+      vm.sections.forEach(function (section) {
+        section.tabs.forEach(function (tab) {
+          validateAllTabFields(tab);
+        });
+      });
+    }
+
+    /**
+     * Validates all fields for a tab
+     * and checks if the whole tab is filled in correctly
+     *
+     * @param {Object} tab
+     */
+    function validateAllTabFields (tab) {
+      tab.fields.forEach(function (field) {
+        validateField(field);
+      });
+      validateTab(tab);
+    }
+
+    /**
+     * Validates a whole tab.
+     * It runs through fields and checks if the tab fields contain errors.
+     *
+     * @param {Object} tab
+     */
+    function validateTab (tab) {
+      var tabIsValid = !_.find(tab.fields, function (field) {
+        return field.error;
+      });
+
+      tab.valid = tabIsValid;
     }
 
     /**

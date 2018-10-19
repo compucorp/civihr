@@ -9,26 +9,29 @@ define([
   'use strict';
 
   describe('LeaveTypeWizard', function () {
-    var $componentController, $log, $q, $rootScope, AbsenceType, Contact, controller;
+    var $componentController, $log, $q, $rootScope, AbsenceType, Contact,
+      controller, notificationService;
     var sampleAvailableColours = ['#FFFFFF', '#000000'];
     var sampleContacts = { list: [{ id: '29', display_name: 'Liza' }] };
 
     beforeEach(angular.mock.module('leave-type-wizard'));
 
     beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-      _AbsenceType_, _Contact_) {
-      AbsenceType = _AbsenceType_;
-      Contact = _Contact_;
+      _AbsenceType_, _Contact_, _notificationService_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
       $rootScope = _$rootScope_;
+      AbsenceType = _AbsenceType_;
+      Contact = _Contact_;
+      notificationService = _notificationService_;
     }));
 
     beforeEach(function () {
       spyOn(AbsenceType, 'getAvailableColours').and.returnValue($q.resolve(sampleAvailableColours));
       spyOn(Contact, 'all').and.returnValue($q.resolve(sampleContacts));
       spyOn($log, 'debug').and.callThrough();
+      spyOn(notificationService, 'error');
     });
 
     beforeEach(function () {
@@ -72,8 +75,7 @@ define([
 
       it('has fields defined in second section tabs', function () {
         expect(_.sample(_.sample(secondSection.tabs).fields)).toEqual(jasmine.objectContaining({
-          name: jasmine.any(String),
-          label: jasmine.any(String)
+          name: jasmine.any(String)
         }));
       });
 
@@ -107,7 +109,7 @@ define([
 
       describe('when user clicks the "next section" button', function () {
         beforeEach(function () {
-          controller.openNextSection();
+          controller.nextTabHandler();
         });
 
         it('collapses the first section', function () {
@@ -118,9 +120,9 @@ define([
           expect(secondSection.active).toBe(true);
         });
 
-        describe('when user clicks the "next section" button', function () {
+        describe('when user clicks the "previous section" button', function () {
           beforeEach(function () {
-            controller.openPreviousSection();
+            controller.previousTabHandler();
           });
 
           it('collapses the second section', function () {
@@ -154,10 +156,6 @@ define([
           expect(controller.isOnSectionFirstTab).toEqual(true);
         });
 
-        it('renders the fields for the active tab', function () {
-          expect(_.first(controller.getFieldsForActiveTab()).name).toBe('hide_label');
-        });
-
         describe('when user selects the middle tab', function () {
           beforeEach(function () {
             controller.openActiveSectionTab(1);
@@ -171,10 +169,6 @@ define([
             expect(secondSection.tabs[1].active).toBe(true);
           });
 
-          it('renders the fields related to the second tab', function () {
-            expect(_.first(controller.getFieldsForActiveTab()).name).toBe('max_consecutive_leave_days');
-          });
-
           it('tells that the user is neither on the first tab nor on the last one', function () {
             expect(controller.isOnSectionLastTab).toEqual(false);
             expect(controller.isOnSectionFirstTab).toEqual(false);
@@ -183,7 +177,7 @@ define([
 
         describe('when opens the next section tab', function () {
           beforeEach(function () {
-            controller.openNextActiveSectionTab();
+            controller.nextTabHandler();
           });
 
           it('opens the second tab', function () {
@@ -192,7 +186,7 @@ define([
 
           describe('when opens the previous section tab', function () {
             beforeEach(function () {
-              controller.openPreviousActiveSectionTab();
+              controller.previousTabHandler();
             });
 
             it('opens the first tab', function () {
@@ -236,6 +230,93 @@ define([
 
           it('shows the "Carry forward expiry" field', function () {
             expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(false);
+          });
+        });
+      });
+
+      describe('validators', function () {
+        var sampleField;
+        var sampleErrorMessage = 'Invalid format';
+        var requiredFieldErrorMessage = 'This field is required';
+
+        beforeEach(function () {
+          sampleField = controller.sections[0].tabs[0].fields[0];
+          sampleField.validations = [
+            {
+              rule: /^\d+$/,
+              required: true,
+              message: sampleErrorMessage
+            }
+          ];
+        });
+
+        describe('when user enters a value in a wrong format', function () {
+          beforeEach(function () {
+            sampleField.value = 'Not a number';
+
+            $rootScope.$digest();
+          });
+
+          it('sets the error to the field', function () {
+            expect(sampleField.error).toBe(sampleErrorMessage);
+          });
+
+          describe('when user changes the value to a valid format', function () {
+            beforeEach(function () {
+              sampleField.value = '1';
+
+              $rootScope.$digest();
+            });
+
+            it('removes the error from the field', function () {
+              expect(sampleField.error).toBeUndefined();
+            });
+          });
+
+          describe('when user erases the value', function () {
+            beforeEach(function () {
+              sampleField.value = '';
+
+              $rootScope.$digest();
+            });
+
+            it('sets the error to the field', function () {
+              expect(sampleField.error).toBe(requiredFieldErrorMessage);
+            });
+          });
+        });
+
+        describe('when user does not fill in the field and navigates to the next tab', function () {
+          beforeEach(function () {
+            controller.nextTabHandler();
+
+            $rootScope.$digest();
+          });
+
+          it('sets the error to the missed field', function () {
+            expect(sampleField.error).toBe(requiredFieldErrorMessage);
+          });
+
+          it('sets the error to the whole tab', function () {
+            expect(controller.sections[0].tabs[0].valid).toBe(false);
+          });
+        });
+
+        describe('when user attempts to save and there are errors', function () {
+          beforeEach(function () {
+            controller.openSection(1);
+            controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
+            controller.nextTabHandler();
+          });
+
+          it('navigates to the first section and the tab where errors occured', function () {
+            expect(controller.sections[0].active).toBe(true);
+            expect(controller.sections[0].tabs[0].active).toBe(true);
+          });
+
+          it('throws an error notification', function () {
+            expect(notificationService.error)
+              .toHaveBeenCalledWith('', jasmine.any(String));
           });
         });
       });

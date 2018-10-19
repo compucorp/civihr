@@ -7,6 +7,10 @@ define([
 
   var LINE_BREAK = '\n';
   var DOUBLE_LINE_BREAK = LINE_BREAK + LINE_BREAK;
+  var VALIDATOR_DECIMAL = {
+    rule: /^\d+(\.\d)?$/,
+    message: 'The value should be a positive decimal number up to 1 decimal digit'
+  };
 
   angular.module('leave-type-wizard.constants', [])
     .constant('form-sections', [
@@ -21,6 +25,8 @@ define([
             fields: [
               {
                 name: 'title',
+                required: true,
+                defaultValue: '',
                 label: 'Title',
                 helpText: [
                   'The Leave Type Title is displayed for everyone on all leave reports and request forms.' +
@@ -33,6 +39,7 @@ define([
               },
               {
                 name: 'category',
+                required: true,
                 labelLayout: 'horizontal',
                 defaultValue: 'leave',
                 label: 'What kind of absence type are you looking to create?'
@@ -53,6 +60,7 @@ define([
               {
                 name: 'hide_label',
                 label: 'Hide leave type label on public calendars and feeds?',
+                defaultValue: false,
                 helpText: [
                   'The CiviHR self service portal has an all staff calendar.',
                   'You can also create calendar feeds that can be integrated with your calendar app.',
@@ -66,20 +74,27 @@ define([
               {
                 name: 'colour',
                 label: 'Calendar colour',
+                defaultValue: '',
+                required: true,
                 helpText: 'Note this will be a default grey on the public calendar if "Hide leave type label on public calendars and feeds" is set to "Yes".'
               },
               {
                 name: 'calculation_unit',
                 label: 'Calculate leave in',
+                required: true,
                 defaultValue: '1'
               },
               {
                 name: 'default_entitlement',
-                label: 'Default entitlement'
+                label: 'Default entitlement',
+                defaultValue: '',
+                required: true,
+                validations: [VALIDATOR_DECIMAL]
               },
               {
                 name: 'notification_receivers_ids',
                 label: 'Backup leave approver',
+                defaultValue: '',
                 helpText: [
                   'You can configure the system with a backup leave approver that will be notified of a leave request if a staff member does not have an active leave approver.',
                   DOUBLE_LINE_BREAK,
@@ -98,6 +113,8 @@ define([
               {
                 name: 'max_consecutive_leave_days',
                 label: 'Max consecutive duration (Leave blank for unlimited)',
+                defaultValue: '',
+                validations: [VALIDATOR_DECIMAL],
                 helpText: [
                   'Configure the maximum duration of consecutive leave permitted to be selected in a single leave request.',
                   'You can leave this field blank for unlimited duration of leave.'
@@ -106,6 +123,7 @@ define([
               {
                 name: 'allow_request_cancelation',
                 label: 'Staff self-cancellation',
+                required: true,
                 defaultValue: '1',
                 helpText: [
                   'Configure whether staff can cancel the leave request themselves without manager approval.',
@@ -123,6 +141,7 @@ define([
               {
                 name: 'allow_overuse',
                 label: 'Allow negative balances',
+                defaultValue: false,
                 helpText: [
                   'Configure whether staff members can apply for this leave type even if the request would mean that they would have a negative leave balance after the leave request was approved.',
                   DOUBLE_LINE_BREAK,
@@ -140,6 +159,7 @@ define([
               {
                 name: 'must_take_public_holiday_as_leave',
                 label: 'Do staff work on public holidays?',
+                defaultValue: false,
                 helpText: 'If your staff work on public holidays then set this to yes and public holidays will be considered working days, otherwise by setting this to no, the system will consider these to be non-working days and staff will have public holidays leave requests generated automatically for them.'
               }
             ]
@@ -155,17 +175,26 @@ define([
               {
                 name: 'max_number_of_days_to_carry_forward',
                 label: 'Maximum carry forward',
+                defaultValue: '',
+                validations: [VALIDATOR_DECIMAL],
                 helpText: 'Configure the maximum amount of days or hours of this leave type that can be carried forward from one period to another.'
               },
               {
                 name: 'carry_forward_expiration_duration',
                 label: 'Carry forward expiry',
+                defaultValue: '',
+                validations: [VALIDATOR_DECIMAL],
                 helpText: [
                   'You can configure the carry forward leave to expire in the new period after a certain time or to never expire. i.e.',
                   'If I set the expiry for 3 months and the end of my leave period is 31 December, the carry forward will expire on the 31st March.',
                   DOUBLE_LINE_BREAK,
                   'If you configure the leave to never expire the leave will carry forward indefinitely including to future periods.'
                 ].join(' ')
+              },
+              {
+                name: 'carry_forward_expiration_unit',
+                defaultValue: '1',
+                hidden: true
               }
             ]
           }

@@ -6,6 +6,7 @@ define([
   'common/directives/help-text.directive',
   'common/models/contact',
   'common/services/hr-settings',
+  'common/services/notification.service',
   'common/angular-spectrum-colorpicker',
   'leave-absences/shared/models/absence-type.model',
   'leave-absences/leave-type-wizard/leave-type-wizard.core'
