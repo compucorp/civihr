@@ -172,10 +172,10 @@ define([
     function initValidatorsForField (field) {
       $scope.$watch(function () {
         return field.value;
-      }, function (value, oldValue) {
+      }, function (newValue, oldValue) {
         var activeTab;
 
-        if (value === oldValue) {
+        if (newValue === oldValue) {
           return;
         }
 
@@ -196,11 +196,7 @@ define([
      */
     function initValidators () {
       _.each(vm.fieldsIndexed, function (field) {
-        if (!field.validations && !field.required) {
-          return;
-        }
-
-        initValidatorsForField(field);
+        (field.validations || field.required) && initValidatorsForField(field);
       });
     }
 

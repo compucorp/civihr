@@ -261,7 +261,7 @@ define([
             expect(sampleField.error).toBe(sampleErrorMessage);
           });
 
-          describe('when user enters a value in a valid format', function () {
+          describe('when user changes the value to a valid format', function () {
             beforeEach(function () {
               sampleField.value = '1';
 
@@ -269,7 +269,7 @@ define([
             });
 
             it('removes the error from the field', function () {
-              expect(sampleField.error).toBe(undefined);
+              expect(sampleField.error).toBeUndefined();
             });
           });
 
