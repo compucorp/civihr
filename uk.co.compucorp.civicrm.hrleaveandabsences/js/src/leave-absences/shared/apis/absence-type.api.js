@@ -63,9 +63,7 @@ define([
        */
       save: function (params) {
         return this.sendPOST('AbsenceType', 'create', params)
-          .catch(function (error) {
-            return $q.reject(error);
-          });
+          .catch($q.reject);
       }
     });
   }]);

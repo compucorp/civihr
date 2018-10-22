@@ -112,9 +112,7 @@ define([
          */
         save: function (params) {
           return absenceTypeAPI.save(params)
-            .catch(function (error) {
-              return $q.reject(error);
-            });
+            .catch($q.reject);
         }
       });
     }
