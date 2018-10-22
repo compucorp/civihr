@@ -3,7 +3,7 @@
 define([
   'common/lodash'
 ], function (_) {
-  LeaveTypeWizardController.$inject = ['$log', '$scope', '$window',
+  LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
     'AbsenceType', 'Contact', 'form-sections', 'notificationService',
     'shared-settings'];
 
@@ -17,7 +17,7 @@ define([
     }
   };
 
-  function LeaveTypeWizardController ($log, $scope, $window, AbsenceType,
+  function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
     Contact, formSections, notificationService, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
@@ -39,6 +39,7 @@ define([
         icon: 'plane'
       }
     ];
+    vm.loading = true;
     vm.sections = formSections;
 
     vm.$onInit = $onInit;
@@ -48,15 +49,22 @@ define([
     vm.openActiveSectionTab = openActiveSectionTab;
 
     function $onInit () {
-      loadContacts();
-      loadAvailableColours();
-      loadAbsenceTypes();
-      initDefaultView();
-      indexFields();
-      initDefaultValues();
-      initFieldsWatchers();
-      initValidators();
-      initCustomValidators();
+      vm.loading = true;
+
+      $q.all([
+        loadContacts(),
+        loadAvailableColours(),
+        loadAbsenceTypes()
+      ])
+        .then(initDefaultView)
+        .then(indexFields)
+        .then(initDefaultValues)
+        .then(initFieldsWatchers)
+        .then(initValidators)
+        .then(initCustomValidators)
+        .finally(function () {
+          vm.loading = false;
+        });
     }
 
     /**
@@ -355,12 +363,16 @@ define([
         .mapValues('value')
         .value();
 
+      vm.loading = true;
+
       preProcessParams(params);
       AbsenceType.save(params)
         .then(navigateToLeaveTypesList)
         .catch(function (error) {
           notificationService.error('', error);
           openSection(0);
+
+          vm.loading = false;
         });
     }
 

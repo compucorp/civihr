@@ -58,6 +58,16 @@ define([
       expect($log.debug).toHaveBeenCalledWith('Controller: LeaveTypeWizardController');
     });
 
+    describe('before init ends', function () {
+      beforeEach(function () {
+        controller.$onInit();
+      });
+
+      it('is loading', function () {
+        expect(controller.loading).toBe(true);
+      });
+    });
+
     describe('on init', function () {
       var secondSection, secondSectionFirstTab;
 
@@ -67,6 +77,10 @@ define([
 
         controller.$onInit();
         $rootScope.$digest();
+      });
+
+      it('finishes loading', function () {
+        expect(controller.loading).toBe(false);
       });
 
       it('exports the absolute path to the components folder', function () {
@@ -246,19 +260,33 @@ define([
               submitWizard();
             });
 
-            it('saves absence type', function () {
-              var params = AbsenceType.save.calls.mostRecent().args[0];
-
-              expect(AbsenceType.save).toHaveBeenCalled();
-              expect(params).toEqual(jasmine.objectContaining({
-                title: jasmine.any(String)
-              }));
-              expect(params.carry_forward_expiration_duration_switch).toBeUndefined();
+            it('is loading', function () {
+              expect(controller.loading).toBe(true);
             });
 
-            it('redirects to the leave types list page', function () {
-              expect($window.location.href).toBe(
-                sampleURLOrigin + leaveTypeListPageURL);
+            describe('when saving finishes', function () {
+              beforeEach(function () {
+                $rootScope.$digest();
+              });
+
+              it('saves absence type', function () {
+                var params = AbsenceType.save.calls.mostRecent().args[0];
+
+                expect(AbsenceType.save).toHaveBeenCalled();
+                expect(params).toEqual(jasmine.objectContaining({
+                  title: jasmine.any(String)
+                }));
+                expect(params.carry_forward_expiration_duration_switch).toBeUndefined();
+              });
+
+              it('redirects to the leave types list page', function () {
+                expect($window.location.href).toBe(
+                  sampleURLOrigin + leaveTypeListPageURL);
+              });
+
+              it('still shows that the component is loading', function () {
+                expect(controller.loading).toBe(true);
+              });
             });
           });
 
@@ -271,6 +299,7 @@ define([
               });
               fillWizardIn();
               submitWizard();
+              $rootScope.$digest();
             });
 
             it('throws an error notification', function () {
@@ -284,6 +313,10 @@ define([
               expect(firstSection.active).toBe(true);
               expect(_.first(firstSection.tabs).active).toBe(true);
             });
+
+            it('finishes loading', function () {
+              expect(controller.loading).toBe(false);
+            });
           });
 
           /**
@@ -293,7 +326,6 @@ define([
             controller.openSection(1);
             controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
             controller.nextTabHandler();
-            $rootScope.$digest();
           }
         });
       });
