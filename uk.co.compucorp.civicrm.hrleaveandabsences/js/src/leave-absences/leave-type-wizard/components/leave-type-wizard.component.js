@@ -3,8 +3,9 @@
 define([
   'common/lodash'
 ], function (_) {
-  LeaveTypeWizardController.$inject = ['$log', '$scope', 'AbsenceType', 'Contact',
-    'form-sections', 'notificationService', 'shared-settings'];
+  LeaveTypeWizardController.$inject = ['$log', '$scope', '$window',
+    'AbsenceType', 'Contact', 'form-sections', 'notificationService',
+    'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -16,8 +17,8 @@ define([
     }
   };
 
-  function LeaveTypeWizardController ($log, $scope, AbsenceType, Contact,
-    formSections, notificationService, sharedSettings) {
+  function LeaveTypeWizardController ($log, $scope, $window, AbsenceType,
+    Contact, formSections, notificationService, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var absenceTypes = [];
@@ -47,14 +48,15 @@ define([
     vm.openActiveSectionTab = openActiveSectionTab;
 
     function $onInit () {
-      initDefaultView();
-      indexFields();
-      initDefaultValues();
-      initValidators();
-      initFieldsWatchers();
       loadContacts();
       loadAvailableColours();
       loadAbsenceTypes();
+      initDefaultView();
+      indexFields();
+      initDefaultValues();
+      initFieldsWatchers();
+      initValidators();
+      initCustomValidators();
     }
 
     /**
@@ -116,6 +118,13 @@ define([
     }
 
     /**
+     * Initiates custom validators
+     */
+    function initCustomValidators () {
+      watchTitleField();
+    }
+
+    /**
      * Initiates default values for all fields.
      * Skips the field if the current value is defined or the default value is not defined.
      */
@@ -146,7 +155,7 @@ define([
      */
     function initFieldsWatchers () {
       watchAllowCarryForwardField();
-      watchTitleField();
+      watchCarryForwardExpirySwitch();
     }
 
     /**
@@ -159,15 +168,15 @@ define([
         return field.value;
       }, function (newValue, oldValue) {
         var activeTab = getActiveTab();
+        var wasActiveTabValidatedBefore = activeTab.valid !== undefined;
 
         if (newValue === oldValue) {
           return;
         }
 
-        flushErrorForField(field);
-        validateField(field);
-
-        (activeTab.valid !== undefined) && validateTab(activeTab);
+        wasActiveTabValidatedBefore
+          ? validateTab(activeTab)
+          : validateField(field);
       });
     }
 
@@ -176,7 +185,7 @@ define([
      */
     function initValidators () {
       _.each(vm.fieldsIndexed, function (field) {
-        (field.validations || field.required) && initValidatorsForField(field);
+        initValidatorsForField(field);
       });
     }
 
@@ -216,12 +225,20 @@ define([
     }
 
     /**
+     * Redirects to the leave types list page
+     */
+    function navigateToLeaveTypesList () {
+      $window.location.href = $window.location.origin +
+        '/civicrm/admin/leaveandabsences/types?action=browse&reset=1';
+    }
+
+    /**
      * Opens the next tab in the active section
      */
     function nextTabHandler () {
       var activeTab = getActiveTab();
 
-      validateAllTabFields(activeTab);
+      validateTab(activeTab);
       openActiveSectionTab(state.tabIndex + 1);
     }
 
@@ -246,17 +263,25 @@ define([
      * @param {Number} sectionIndex
      */
     function openSection (sectionIndex) {
-      var sectionToOpen = vm.sections[sectionIndex];
+      var sectionToOpen;
+
+      if (sectionIndex === -1) {
+        navigateToLeaveTypesList();
+
+        return;
+      }
+
+      sectionToOpen = vm.sections[sectionIndex];
+
+      if (!sectionToOpen) {
+        submit();
+
+        return;
+      }
 
       vm.sections.forEach(function (section) {
         section.active = false;
       });
-
-      if (!sectionToOpen) {
-        save();
-
-        return;
-      }
 
       state.sectionIndex = sectionIndex;
       sectionToOpen.active = true;
@@ -295,6 +320,25 @@ define([
     }
 
     /**
+     * Pre-processes parameters for sending them to the backend.
+     * - flushes dependent fields' values
+     * - deletes fields held for UX only
+     *
+     */
+    function preProcessParams (params) {
+      if (!params.allow_carry_forward) {
+        params.max_number_of_days_to_carry_forward = '';
+      }
+
+      if (!params.allow_carry_forward || !params.carry_forward_expiration_duration_switch) {
+        params.carry_forward_expiration_duration = '';
+        params.carry_forward_expiration_unit = '';
+      }
+
+      delete params.carry_forward_expiration_duration_switch;
+    }
+
+    /**
      * Opens the previous tab in the active section
      */
     function previousTabHandler () {
@@ -302,9 +346,30 @@ define([
     }
 
     /**
-     * Saves the whole wizard
+     * Saves leave type by sending an API call to the backend
+     * with all appropriate parameters.
      */
     function save () {
+      var params = _.chain(vm.fieldsIndexed)
+        .keyBy('name')
+        .mapValues('value')
+        .value();
+
+      preProcessParams(params);
+      AbsenceType.save(params)
+        .then(navigateToLeaveTypesList)
+        .catch(function (error) {
+          notificationService.error('', error);
+          openSection(0);
+        });
+    }
+
+    /**
+     * Submits the whole wizard.
+     * Validates all fields and, if all valid, saves the form.
+     * If errors are found, navigates to the first found tab with errors.
+     */
+    function submit () {
       var sectionAndTabWithErrorsIndexes;
 
       validateAllSections();
@@ -315,7 +380,11 @@ define([
         notificationService.error('', 'There are errors on the form. Please fix them before continuing.');
         openSection(sectionAndTabWithErrorsIndexes.sectionIndex);
         openActiveSectionTab(sectionAndTabWithErrorsIndexes.tabIndex);
+
+        return;
       }
+
+      save();
     }
 
     /**
@@ -324,6 +393,8 @@ define([
      * @param {Object} field
      */
     function validateField (field) {
+      flushErrorForField(field);
+
       if (field.required && _.isEmpty(field.value)) {
         field.error = 'This field is required';
       } else if (field.value !== '' && field.validations) {
@@ -341,7 +412,7 @@ define([
     function validateAllSections () {
       vm.sections.forEach(function (section) {
         section.tabs.forEach(function (tab) {
-          validateAllTabFields(tab);
+          validateTab(tab);
         });
       });
     }
@@ -352,25 +423,14 @@ define([
      *
      * @param {Object} tab
      */
-    function validateAllTabFields (tab) {
+    function validateTab (tab) {
       tab.fields.forEach(function (field) {
         validateField(field);
       });
-      validateTab(tab);
-    }
 
-    /**
-     * Validates a whole tab.
-     * It runs through fields and checks if the tab fields contain errors.
-     *
-     * @param {Object} tab
-     */
-    function validateTab (tab) {
-      var tabIsValid = !_.find(tab.fields, function (field) {
-        return field.error;
+      tab.valid = !_.find(tab.fields, function (field) {
+        return !field.hidden && field.error;
       });
-
-      tab.valid = tabIsValid;
     }
 
     /**
@@ -381,9 +441,22 @@ define([
       $scope.$watch(function () {
         return vm.fieldsIndexed.allow_carry_forward.value;
       }, function (allowCarryForward) {
+        vm.fieldsIndexed.carry_forward_expiration_duration_switch.hidden = !allowCarryForward;
         vm.fieldsIndexed.max_number_of_days_to_carry_forward.hidden = !allowCarryForward;
-        vm.fieldsIndexed.carry_forward_expiration_duration.hidden = !allowCarryForward;
       });
+    }
+
+    /**
+     * Initiates a watcher over the "Carry forward expiry" field.
+     * Toggles dependent fields on value change of if gets toggled.
+     */
+    function watchCarryForwardExpirySwitch () {
+      $scope.$watch(function () {
+        return vm.fieldsIndexed.carry_forward_expiration_duration_switch;
+      }, function (expirySwitch) {
+        vm.fieldsIndexed.carry_forward_expiration_duration.hidden =
+          !expirySwitch.value || expirySwitch.hidden;
+      }, true);
     }
 
     /**

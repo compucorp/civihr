@@ -9,34 +9,45 @@ define([
   'use strict';
 
   describe('LeaveTypeWizard', function () {
-    var $componentController, $log, $q, $rootScope, AbsenceType, Contact,
-      controller, notificationService;
+    var $componentController, $log, $q, $rootScope, $window,
+      absenceTypeSaverSpy, AbsenceType, Contact, controller, notificationService;
+    var leaveTypeListPageURL = '/civicrm/admin/leaveandabsences/types?action=browse&reset=1';
     var sampleAvailableColours = ['#FFFFFF', '#000000'];
     var sampleContacts = { list: [{ id: '29', display_name: 'Liza' }] };
     var sampleAbsenceTypeTitle = 'Holiday';
     var sampleAbsenceTypes = [
       { title: sampleAbsenceTypeTitle }
     ];
+    var sampleURLOrigin = 'https://civihr.org';
 
     beforeEach(angular.mock.module('leave-type-wizard'));
 
-    beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
-      _AbsenceType_, _Contact_, _notificationService_) {
+    beforeEach(module('common.mocks', function ($provide) {
+      $provide.value('$window', {
+        location: { href: '', origin: sampleURLOrigin }
+      });
+    }));
+
+    beforeEach(inject(function (_$componentController_, _$log_, _$q_,
+      _$rootScope_, _$window_, _AbsenceType_, _Contact_, _notificationService_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
       $rootScope = _$rootScope_;
+      $window = _$window_;
       AbsenceType = _AbsenceType_;
       Contact = _Contact_;
       notificationService = _notificationService_;
     }));
 
     beforeEach(function () {
+      spyOn($log, 'debug').and.callThrough();
       spyOn(AbsenceType, 'getAvailableColours').and.returnValue($q.resolve(sampleAvailableColours));
       spyOn(AbsenceType, 'all').and.returnValue($q.resolve(sampleAbsenceTypes));
       spyOn(Contact, 'all').and.returnValue($q.resolve(sampleContacts));
-      spyOn($log, 'debug').and.callThrough();
       spyOn(notificationService, 'error');
+
+      absenceTypeSaverSpy = spyOn(AbsenceType, 'save');
     });
 
     beforeEach(function () {
@@ -213,6 +224,78 @@ define([
             expect(controller.isOnSectionLastTab).toEqual(true);
           });
         });
+
+        describe('when user cancels the form filling', function () {
+          beforeEach(function () {
+            controller.openSection(0);
+            controller.previousTabHandler();
+            $rootScope.$digest();
+          });
+
+          it('redirects to the leave types list page', function () {
+            expect($window.location.href).toBe(
+              sampleURLOrigin + leaveTypeListPageURL);
+          });
+        });
+
+        describe('when user submits the whole wizard form', function () {
+          describe('basic tests', function () {
+            beforeEach(function () {
+              absenceTypeSaverSpy.and.returnValue($q.resolve());
+              fillWizardIn();
+              submitWizard();
+            });
+
+            it('saves absence type', function () {
+              var params = AbsenceType.save.calls.mostRecent().args[0];
+
+              expect(AbsenceType.save).toHaveBeenCalled();
+              expect(params).toEqual(jasmine.objectContaining({
+                title: jasmine.any(String)
+              }));
+              expect(params.carry_forward_expiration_duration_switch).toBeUndefined();
+            });
+
+            it('redirects to the leave types list page', function () {
+              expect($window.location.href).toBe(
+                sampleURLOrigin + leaveTypeListPageURL);
+            });
+          });
+
+          describe('when there are errors', function () {
+            var error = 'error';
+
+            beforeEach(function () {
+              absenceTypeSaverSpy.and.callFake(function () {
+                return $q.reject(error);
+              });
+              fillWizardIn();
+              submitWizard();
+            });
+
+            it('throws an error notification', function () {
+              expect(notificationService.error)
+                .toHaveBeenCalledWith('', error);
+            });
+
+            it('navigates to the start of the form', function () {
+              var firstSection = _.first(controller.sections);
+
+              expect(firstSection.active).toBe(true);
+              expect(_.first(firstSection.tabs).active).toBe(true);
+            });
+          });
+
+          /**
+           * Submits wizard form
+           */
+          function submitWizard () {
+            controller.openSection(1);
+            controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
+            controller.nextTabHandler();
+            $rootScope.$digest();
+          }
+        });
       });
 
       describe('fields watchers', function () {
@@ -239,6 +322,18 @@ define([
 
           it('shows the "Carry forward expiry" field', function () {
             expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(false);
+          });
+
+          describe('when user changes "Carry forward expiry" to "Expire after"', function () {
+            beforeEach(function () {
+              controller.fieldsIndexed.carry_forward_expiration_duration_switch.value = true;
+
+              $rootScope.$digest();
+            });
+
+            it('shows the expiration duration field', function () {
+              expect(controller.fieldsIndexed.carry_forward_expiration_duration.hidden).toBe(false);
+            });
           });
         });
 
@@ -323,7 +418,7 @@ define([
           });
         });
 
-        describe('when user attempts to save and there are errors', function () {
+        describe('when user attempts to submit and there are errors', function () {
           beforeEach(function () {
             controller.openSection(1);
             controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
@@ -341,6 +436,17 @@ define([
           });
         });
       });
+
+      /**
+       * Fills in all required and valid fields in the wizard
+       */
+      function fillWizardIn () {
+        controller.fieldsIndexed.title.value = 'Some title';
+        controller.fieldsIndexed.color.value = _.sample(sampleAvailableColours);
+        controller.fieldsIndexed.default_entitlement.value = '100';
+
+        $rootScope.$digest();
+      }
     });
 
     /**

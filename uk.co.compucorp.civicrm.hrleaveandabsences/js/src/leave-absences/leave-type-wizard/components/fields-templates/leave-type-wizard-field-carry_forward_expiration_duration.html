@@ -1,20 +1,4 @@
-<div class="row" ng-init="field._showDuration = false">
-  <div class="col-md-4">
-    <div class="radio">
-      <label>
-        <input type="radio" ng-model="field._showDuration" ng-value="false"/>
-        Never expire
-      </label>
-    </div>
-    <div class="radio">
-      <label>
-        <input type="radio" ng-model="field._showDuration" ng-value="true"/>
-        Expire after
-      </label>
-    </div>
-  </div>
-</div>
-<div class="row form-horizontal" ng-show="field._showDuration">
+<div class="row form-horizontal">
   <div class="col-md-2">
     <input type="text" class="form-control" ng-model="field.value"/>
   </div>

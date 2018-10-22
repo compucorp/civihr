@@ -5,7 +5,7 @@
         ng-class="{
           'col-md-3': !field.labelLayout,
           'col-md-12': field.labelLayout === 'horizontal',
-          'required-mark': field.required
+          'required-mark': field.label && field.required
         }">
         {{field.label}}
         <help-text ng-if="field.helpText">
