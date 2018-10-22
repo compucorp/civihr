@@ -47,7 +47,8 @@ define([
         'calculateToilExpiryDate',
         'canExpire',
         'getAvailableColours',
-        'loadCalculationUnits'
+        'loadCalculationUnits',
+        'save'
       ]);
     });
 
@@ -262,6 +263,44 @@ define([
             calculation_unit_name: 'days',
             calculation_unit_label: 'Days'
           }));
+      });
+    });
+
+    describe('save()', function () {
+      var params = { key: 'value' };
+
+      describe('basic tests', function () {
+        beforeEach(function (done) {
+          spyOn(AbsenceTypeAPI, 'save').and.returnValue($q.resolve());
+
+          AbsenceType.save(params)
+            .finally(done);
+          $rootScope.$digest();
+        });
+
+        it('calls API `save()` method with parameters', function () {
+          expect(AbsenceTypeAPI.save).toHaveBeenCalledWith(params);
+        });
+      });
+
+      describe('when there are API errors', function () {
+        var apiError = 'error';
+        var expectedError;
+
+        beforeEach(function (done) {
+          spyOn(AbsenceTypeAPI, 'save').and.returnValue($q.reject(apiError));
+
+          AbsenceType.save(params)
+            .catch(function (_expectedError_) {
+              expectedError = _expectedError_;
+            })
+            .finally(done);
+          $rootScope.$digest();
+        });
+
+        it('returns error', function () {
+          expect(expectedError).toBe(apiError);
+        });
       });
     });
   });
