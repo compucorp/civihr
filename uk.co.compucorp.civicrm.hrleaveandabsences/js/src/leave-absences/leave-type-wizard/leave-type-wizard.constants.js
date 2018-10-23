@@ -72,7 +72,7 @@ define([
                 ].join(' ')
               },
               {
-                name: 'colour',
+                name: 'color',
                 label: 'Calendar colour',
                 defaultValue: '',
                 required: true,
@@ -103,7 +103,8 @@ define([
               },
               {
                 name: 'is_active',
-                label: 'Enabled'
+                label: 'Enabled',
+                defaultValue: false
               }
             ]
           },
@@ -180,16 +181,21 @@ define([
                 helpText: 'Configure the maximum amount of days or hours of this leave type that can be carried forward from one period to another.'
               },
               {
-                name: 'carry_forward_expiration_duration',
+                name: 'carry_forward_expiration_duration_switch',
                 label: 'Carry forward expiry',
-                defaultValue: '',
-                validations: [VALIDATOR_DECIMAL],
+                defaultValue: false,
                 helpText: [
                   'You can configure the carry forward leave to expire in the new period after a certain time or to never expire. i.e.',
                   'If I set the expiry for 3 months and the end of my leave period is 31 December, the carry forward will expire on the 31st March.',
                   DOUBLE_LINE_BREAK,
                   'If you configure the leave to never expire the leave will carry forward indefinitely including to future periods.'
                 ].join(' ')
+              },
+              {
+                name: 'carry_forward_expiration_duration',
+                required: true,
+                defaultValue: '',
+                validations: [VALIDATOR_DECIMAL]
               },
               {
                 name: 'carry_forward_expiration_unit',

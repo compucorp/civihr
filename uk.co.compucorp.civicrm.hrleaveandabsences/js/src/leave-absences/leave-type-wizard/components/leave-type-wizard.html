@@ -1,48 +1,49 @@
 <div>
   <h1>Create leave/absence type</h1>
-
-  <div class="panel-group">
-    <uib-accordion>
-      <div uib-accordion-group class="panel-default {{section.tabs.length > 1 && 'panel-w-vertical-tabs'}}"
-        ng-repeat="(sectionIndex, section) in form.sections"
-        is-open="section.active"
-        ng-click="form.openSection(sectionIndex)">
-        <uib-accordion-heading>
-          {{section.label}}
-        </uib-accordion-heading>
-        <div class="row" ng-click="$event.stopPropagation()"
-          ng-class="{ 'nav-tabs-stacked-wrapper': section.tabs.length > 1 }">
-          <div class="col-md-3" ng-if="section.tabs.length > 1">
-            <ul class="nav nav-tabs nav-tabs-stacked">
-              <li ng-repeat="(tabIndex, tab) in section.tabs"
-                ng-class="{ active: tab.active }"
-                ng-click="form.openActiveSectionTab(tabIndex)">
-                <a href>
-                  <span class="badge badge-danger pull-right" ng-if="tab.valid === false">
-                    <i class="fa fa-times"></i>
-                  </span>
-                  <span class="badge badge-success pull-right" ng-if="tab.valid === true">
-                    <i class="fa fa-check"></i>
-                  </span>
-                  {{tab.label}}
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div class="col-xs-9 nav-tabs-stacked-content" ng-if="section.tabs.length > 1">
-            <div class="tab-content">
-              <div class="tab-pane active">
-                <ng-include
-                  src="form.componentsPath + '/leave-type-wizard-fields.html'"></ng-include>
+  <crm-loading show="!form.loading">
+    <div class="panel-group">
+      <uib-accordion>
+        <div uib-accordion-group class="panel-default {{section.tabs.length > 1 && 'panel-w-vertical-tabs'}}"
+          ng-repeat="(sectionIndex, section) in form.sections"
+          is-open="section.active"
+          ng-click="form.openSection(sectionIndex)">
+          <uib-accordion-heading>
+            {{section.label}}
+          </uib-accordion-heading>
+          <div class="row" ng-click="$event.stopPropagation()"
+            ng-class="{ 'nav-tabs-stacked-wrapper': section.tabs.length > 1 }">
+            <div class="col-md-3" ng-if="section.tabs.length > 1">
+              <ul class="nav nav-tabs nav-tabs-stacked">
+                <li ng-repeat="(tabIndex, tab) in section.tabs"
+                  ng-class="{ active: tab.active }"
+                  ng-click="form.openActiveSectionTab(tabIndex)">
+                  <a href>
+                    <span class="badge badge-danger pull-right" ng-if="tab.valid === false">
+                      <i class="fa fa-times"></i>
+                    </span>
+                    <span class="badge badge-success pull-right" ng-if="tab.valid === true">
+                      <i class="fa fa-check"></i>
+                    </span>
+                    {{tab.label}}
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class="col-xs-9 nav-tabs-stacked-content" ng-if="section.tabs.length > 1">
+              <div class="tab-content">
+                <div class="tab-pane active">
+                  <ng-include
+                    src="form.componentsPath + '/leave-type-wizard-fields.html'"></ng-include>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="col-xs-12" ng-if="section.tabs.length === 1">
-            <ng-include
-              src="form.componentsPath + '/leave-type-wizard-fields.html'"></ng-include>
+            <div class="col-xs-12" ng-if="section.tabs.length === 1">
+              <ng-include
+                src="form.componentsPath + '/leave-type-wizard-fields.html'"></ng-include>
+            </div>
           </div>
         </div>
-      </div>
-    </uib-accordion>
-  </div>
+      </uib-accordion>
+    </div>
+  </crm-loading>
 </div>

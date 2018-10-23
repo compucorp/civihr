@@ -4,6 +4,7 @@ define([
   'common/angular',
   'leave-absences/leave-type-wizard/components/leave-type-wizard.component',
   'common/directives/help-text.directive',
+  'common/directives/loading',
   'common/models/contact',
   'common/services/hr-settings',
   'common/services/notification.service',

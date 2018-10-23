@@ -103,6 +103,16 @@ define([
                 });
               });
             });
+        },
+
+        /**
+         * Saves Absence Type
+         *
+         * @param {Object} params matching the `create()` API endpoint parameters
+         */
+        save: function (params) {
+          return absenceTypeAPI.save(params)
+            .catch($q.reject);
         }
       });
     }

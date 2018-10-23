@@ -8,7 +8,7 @@ define([
 ], function (_, moment, apis) {
   'use strict';
 
-  apis.factory('AbsenceTypeAPI', ['$log', 'api', 'shared-settings', function ($log, api, sharedSettings) {
+  apis.factory('AbsenceTypeAPI', ['$log', '$q', 'api', 'shared-settings', function ($log, $q, api, sharedSettings) {
     $log.debug('AbsenceTypeAPI');
 
     return api.extend({
@@ -54,6 +54,16 @@ define([
           .then(function (data) {
             return data.values.expiry_date;
           });
+      },
+
+      /**
+       * Saves Absence Type
+       *
+       * @param {Object} params matching the `create()` API endpoint parameters
+       */
+      save: function (params) {
+        return this.sendPOST('AbsenceType', 'create', params)
+          .catch($q.reject);
       }
     });
   }]);
