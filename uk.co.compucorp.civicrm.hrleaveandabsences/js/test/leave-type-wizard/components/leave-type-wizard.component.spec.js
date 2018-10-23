@@ -18,14 +18,11 @@ define([
     var sampleAbsenceTypes = [
       { title: sampleAbsenceTypeTitle }
     ];
-    var sampleURLOrigin = 'https://civihr.org';
 
     beforeEach(angular.mock.module('leave-type-wizard'));
 
     beforeEach(module('common.mocks', function ($provide) {
-      $provide.value('$window', {
-        location: { href: '', origin: sampleURLOrigin }
-      });
+      $provide.value('$window', { location: { href: '' } });
     }));
 
     beforeEach(inject(function (_$componentController_, _$log_, _$q_,
@@ -46,6 +43,7 @@ define([
       spyOn(AbsenceType, 'all').and.returnValue($q.resolve(sampleAbsenceTypes));
       spyOn(Contact, 'all').and.returnValue($q.resolve(sampleContacts));
       spyOn(notificationService, 'error');
+      spyOn(CRM, 'url').and.returnValue(leaveTypeListPageURL);
 
       absenceTypeSaverSpy = spyOn(AbsenceType, 'save');
     });
@@ -143,7 +141,7 @@ define([
 
       describe('when user clicks the "next section" button', function () {
         beforeEach(function () {
-          controller.nextTabHandler();
+          controller.openNextTab();
         });
 
         it('collapses the first section', function () {
@@ -156,7 +154,7 @@ define([
 
         describe('when user clicks the "previous section" button', function () {
           beforeEach(function () {
-            controller.previousTabHandler();
+            controller.openPreviousTab();
           });
 
           it('collapses the second section', function () {
@@ -211,7 +209,7 @@ define([
 
         describe('when opens the next section tab', function () {
           beforeEach(function () {
-            controller.nextTabHandler();
+            controller.openNextTab();
           });
 
           it('opens the second tab', function () {
@@ -220,7 +218,7 @@ define([
 
           describe('when opens the previous section tab', function () {
             beforeEach(function () {
-              controller.previousTabHandler();
+              controller.openPreviousTab();
             });
 
             it('opens the first tab', function () {
@@ -242,13 +240,16 @@ define([
         describe('when user cancels the form filling', function () {
           beforeEach(function () {
             controller.openSection(0);
-            controller.previousTabHandler();
+            controller.openPreviousTab();
             $rootScope.$digest();
           });
 
           it('redirects to the leave types list page', function () {
-            expect($window.location.href).toBe(
-              sampleURLOrigin + leaveTypeListPageURL);
+            expect(CRM.url).toHaveBeenCalledWith('civicrm/admin/leaveandabsences/types', {
+              action: 'browse',
+              reset: 1
+            });
+            expect($window.location.href).toBe(leaveTypeListPageURL);
           });
         });
 
@@ -270,18 +271,23 @@ define([
               });
 
               it('saves absence type', function () {
-                var params = AbsenceType.save.calls.mostRecent().args[0];
-
-                expect(AbsenceType.save).toHaveBeenCalled();
-                expect(params).toEqual(jasmine.objectContaining({
+                expect(AbsenceType.save).toHaveBeenCalledWith(jasmine.objectContaining({
                   title: jasmine.any(String)
                 }));
+              });
+
+              it('removes auxiliary fields', function () {
+                var params = AbsenceType.save.calls.mostRecent().args[0];
+
                 expect(params.carry_forward_expiration_duration_switch).toBeUndefined();
               });
 
               it('redirects to the leave types list page', function () {
-                expect($window.location.href).toBe(
-                  sampleURLOrigin + leaveTypeListPageURL);
+                expect(CRM.url).toHaveBeenCalledWith('civicrm/admin/leaveandabsences/types', {
+                  action: 'browse',
+                  reset: 1
+                });
+                expect($window.location.href).toBe(leaveTypeListPageURL);
               });
 
               it('still shows that the component is loading', function () {
@@ -325,7 +331,7 @@ define([
           function submitWizard () {
             controller.openSection(1);
             controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
-            controller.nextTabHandler();
+            controller.openNextTab();
           }
         });
       });
@@ -436,7 +442,7 @@ define([
 
         describe('when user does not fill in the field and navigates to the next tab', function () {
           beforeEach(function () {
-            controller.nextTabHandler();
+            controller.openNextTab();
 
             $rootScope.$digest();
           });
@@ -454,7 +460,7 @@ define([
           beforeEach(function () {
             controller.openSection(1);
             controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
-            controller.nextTabHandler();
+            controller.openNextTab();
           });
 
           it('navigates to the first section and the tab where errors occured', function () {

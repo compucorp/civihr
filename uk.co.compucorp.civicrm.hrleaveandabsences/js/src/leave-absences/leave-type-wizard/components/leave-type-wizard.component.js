@@ -43,8 +43,8 @@ define([
     vm.sections = formSections;
 
     vm.$onInit = $onInit;
-    vm.nextTabHandler = nextTabHandler;
-    vm.previousTabHandler = previousTabHandler;
+    vm.openNextTab = openNextTab;
+    vm.openPreviousTab = openPreviousTab;
     vm.openSection = openSection;
     vm.openActiveSectionTab = openActiveSectionTab;
 
@@ -129,7 +129,7 @@ define([
      * Initiates custom validators
      */
     function initCustomValidators () {
-      watchTitleField();
+      watchTitleFieldIsUnique();
     }
 
     /**
@@ -236,14 +236,31 @@ define([
      * Redirects to the leave types list page
      */
     function navigateToLeaveTypesList () {
-      $window.location.href = $window.location.origin +
-        '/civicrm/admin/leaveandabsences/types?action=browse&reset=1';
+      $window.location.href = CRM.url('civicrm/admin/leaveandabsences/types', {
+        action: 'browse',
+        reset: 1
+      });
+    }
+
+    /**
+     * Opens next section. If there are no more sections, then submits the form.
+     */
+    function openNextSection () {
+      var isOnLastSection = state.sectionIndex === vm.sections.length - 1;
+
+      if (isOnLastSection) {
+        submit();
+
+        return;
+      }
+
+      openSection(state.sectionIndex + 1);
     }
 
     /**
      * Opens the next tab in the active section
      */
-    function nextTabHandler () {
+    function openNextTab () {
       var activeTab = getActiveTab();
 
       validateTab(activeTab);
@@ -251,17 +268,25 @@ define([
     }
 
     /**
-     * Opens next section
+     * Opens previous section. If there are no sections behind, cancels form filling.
      */
-    function openNextSection () {
-      openSection(state.sectionIndex + 1);
+    function openPreviousSection () {
+      var isOnFirstSection = state.sectionIndex === 0;
+
+      if (isOnFirstSection) {
+        navigateToLeaveTypesList();
+
+        return;
+      }
+
+      openSection(state.sectionIndex - 1);
     }
 
     /**
-     * Opens previous section
+     * Opens the previous tab in the active section
      */
-    function openPreviousSection () {
-      openSection(state.sectionIndex - 1);
+    function openPreviousTab () {
+      openActiveSectionTab(state.tabIndex - 1);
     }
 
     /**
@@ -272,12 +297,6 @@ define([
      */
     function openSection (sectionIndex) {
       var sectionToOpen;
-
-      if (sectionIndex === -1) {
-        navigateToLeaveTypesList();
-
-        return;
-      }
 
       sectionToOpen = vm.sections[sectionIndex];
 
@@ -332,6 +351,7 @@ define([
      * - flushes dependent fields' values
      * - deletes fields held for UX only
      *
+     * @param {Object} params
      */
     function preProcessParams (params) {
       if (!params.allow_carry_forward) {
@@ -344,13 +364,6 @@ define([
       }
 
       delete params.carry_forward_expiration_duration_switch;
-    }
-
-    /**
-     * Opens the previous tab in the active section
-     */
-    function previousTabHandler () {
-      openActiveSectionTab(state.tabIndex - 1);
     }
 
     /**
@@ -475,7 +488,7 @@ define([
      * Initiates a watches over "Title" field.
      * Watches for already used leave types titles.
      */
-    function watchTitleField () {
+    function watchTitleFieldIsUnique () {
       var titleField = vm.fieldsIndexed.title;
 
       $scope.$watch(function () {
