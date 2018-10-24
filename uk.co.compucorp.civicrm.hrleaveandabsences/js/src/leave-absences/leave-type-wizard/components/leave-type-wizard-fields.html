@@ -27,7 +27,8 @@
         </button>
         <button class="btn btn-primary pull-right leave-type-wizard__next-section-button"
           ng-if="form.isOnSectionLastTab"
-          ng-click="form.openNextTab()">
+          ng-click="form.openNextTab()"
+          ng-disabled="section.disableNextSectionButton">
           {{section.nextSectionButtonCustomText || 'Next section'}}
           <i class="fa fa-chevron-right"
             ng-if="section.nextSectionButtonChevron"></i>

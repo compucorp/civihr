@@ -130,6 +130,7 @@ define([
      */
     function initCustomValidators () {
       watchTitleFieldIsUnique();
+      watchTitleFieldIsFilledInProperly();
     }
 
     /**
@@ -293,9 +294,7 @@ define([
      * @param {Number} sectionIndex
      */
     function openSection (sectionIndex) {
-      var sectionToOpen;
-
-      sectionToOpen = vm.sections[sectionIndex];
+      var sectionToOpen = vm.sections[sectionIndex];
 
       if (!sectionToOpen) {
         submit();
@@ -479,6 +478,35 @@ define([
         vm.fieldsIndexed.carry_forward_expiration_duration.hidden =
           !expirySwitch.value || expirySwitch.hidden;
       }, true);
+    }
+
+    /**
+     * Watches title field to toggle Settings section locking
+     */
+    function watchTitleFieldIsFilledInProperly () {
+      var titleField = vm.fieldsIndexed.title;
+
+      $scope.$watch(function () {
+        return titleField.value;
+      }, function (title) {
+        var allowedToMoveToSettingsSection = !titleField.error && title !== '';
+
+        setAvailabilityOfFollowingSections(allowedToMoveToSettingsSection);
+      });
+    }
+
+    /**
+     * Sets the availability of the sections that follow the active section.
+     * Also sets the availability of the "Next section" button for the active section.
+     *
+     * @param {Boolean} enabled
+     */
+    function setAvailabilityOfFollowingSections (enabled) {
+      vm.sections[state.sectionIndex].disableNextSectionButton = !enabled;
+
+      vm.sections.slice(state.sectionIndex + 1).forEach(function (section) {
+        section.disabled = !enabled;
+      });
     }
 
     /**
