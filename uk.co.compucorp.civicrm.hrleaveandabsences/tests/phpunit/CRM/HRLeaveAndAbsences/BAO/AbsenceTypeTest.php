@@ -39,6 +39,37 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     AbsenceTypeFabricator::fabricate(['title' => 'Type 1']);
   }
 
+  public function testTypeTitleUniquenessValidationRespectsTrailingSpaces() {
+    AbsenceTypeFabricator::fabricate(['title' => 'Type 1']);
+
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException',
+      'Absence Type with same title already exists!'
+    );
+    AbsenceTypeFabricator::fabricate(['title' => ' Type 1 ']);
+  }
+
+  public function testTypeTitleShouldNotBeEmpty() {
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException',
+      'The title is not provided'
+    );
+    AbsenceTypeFabricator::fabricate(['title' => ''], FALSE);
+  }
+
+  public function testTypeTitleShouldNotContainSpacesOnly() {
+    $this->setExpectedException(
+      'CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException',
+      'The title is not provided'
+    );
+    AbsenceTypeFabricator::fabricate(['title' => '   '], FALSE);
+  }
+
+  public function testTypeTitleCanBeZero() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['title' => '0'], FALSE);
+    $this->assertEquals('0', $absenceType->title);
+  }
+
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    * @expectedExceptionMessage There is already one Absence Type where public holidays should be added to it
@@ -644,6 +675,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     //disable TOIL
     AbsenceType::create([
       'id' => $absenceType->id,
+      'title' => $absenceType->title,
       'allow_accruals_request' => false,
       'color' => '#000000'
     ]);

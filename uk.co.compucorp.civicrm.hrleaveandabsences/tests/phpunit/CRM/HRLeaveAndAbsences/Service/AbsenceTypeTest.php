@@ -73,6 +73,7 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
     //disable TOIL
     $updatedAbsenceType = AbsenceType::create([
       'id' => $absenceType->id,
+      'title' => $absenceType->title,
       'allow_accruals_request' => false,
       'color' => '#000000'
     ]);

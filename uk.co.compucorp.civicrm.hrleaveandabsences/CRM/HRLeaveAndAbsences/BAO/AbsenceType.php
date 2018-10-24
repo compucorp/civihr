@@ -277,6 +277,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   private static function validateAbsenceTypeTitle($params) {
     $title = trim(CRM_Utils_Array::value('title', $params));
+
     if (empty($title) && $title !== '0') {
       throw new InvalidAbsenceTypeException(
         'The title is not provided'

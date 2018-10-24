@@ -3071,6 +3071,7 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // decrease the max leave accrual
     AbsenceType::create([
       'id' => $absenceType->id,
+      'title' => $absenceType->title,
       'max_leave_accrual' => 1,
       'allow_accruals_request' => true,
       'color' => '#000000'
