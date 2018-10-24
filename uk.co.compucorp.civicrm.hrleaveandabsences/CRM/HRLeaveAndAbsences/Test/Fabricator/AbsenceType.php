@@ -13,10 +13,10 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType extends
     'calculation_unit' => 1
   ];
 
-  public static function fabricate($params = []) {
+  public static function fabricate($params = [], $strictTitle = TRUE) {
     $params = array_merge(static::$defaultParams, $params);
 
-    if(empty($params['title'])) {
+    if(empty($params['title']) && $strictTitle) {
       $params['title'] = static::nextSequentialTitle();
     }
 

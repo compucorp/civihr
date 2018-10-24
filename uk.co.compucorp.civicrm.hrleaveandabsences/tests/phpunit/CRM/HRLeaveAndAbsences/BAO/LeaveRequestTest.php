@@ -3059,6 +3059,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $maxLeaveAccrual = 1;
     AbsenceType::create([
       'id' => $absenceType->id,
+      'title' => $absenceType->title,
       'max_leave_accrual' => $maxLeaveAccrual,
       'allow_accruals_request' => true,
       'color' => '#000000'
