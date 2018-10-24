@@ -148,13 +148,10 @@ define([
 
     /**
      * Initiates the default view:
-     * - selects Leave category;
      * - expands the General section and leaves the Settings section collapsed;
      * - selects Basic Details settings tab.
      */
     function initDefaultView () {
-      vm.leaveTypeCategory = 'leave';
-
       openSection(0);
     }
 

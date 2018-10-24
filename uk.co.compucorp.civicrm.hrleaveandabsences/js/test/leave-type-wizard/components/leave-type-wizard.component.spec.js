@@ -107,10 +107,6 @@ define([
         }));
       });
 
-      it('has the Leave leave type category selected', function () {
-        expect(controller.leaveTypeCategory).toBe('leave');
-      });
-
       it('loads available colours', function () {
         expect(AbsenceType.getAvailableColours).toHaveBeenCalledWith();
         expect(controller.availableColours).toEqual(sampleAvailableColours);
