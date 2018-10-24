@@ -489,9 +489,9 @@ define([
       $scope.$watch(function () {
         return titleField.value;
       }, function (title) {
-        var allowedToMoveToSettingsSection = !titleField.error && title !== '';
+        var disallowedToMoveToSettingsSection = !!(titleField.error || title === '');
 
-        setAvailabilityOfFollowingSections(allowedToMoveToSettingsSection);
+        setAvailabilityOfFollowingSections(disallowedToMoveToSettingsSection);
       });
     }
 
@@ -499,13 +499,13 @@ define([
      * Sets the availability of the sections that follow the active section.
      * Also sets the availability of the "Next section" button for the active section.
      *
-     * @param {Boolean} enabled
+     * @param {Boolean} isDisabled
      */
-    function setAvailabilityOfFollowingSections (enabled) {
-      vm.sections[state.sectionIndex].disableNextSectionButton = !enabled;
+    function setAvailabilityOfFollowingSections (isDisabled) {
+      vm.sections[state.sectionIndex].disableNextSectionButton = isDisabled;
 
       vm.sections.slice(state.sectionIndex + 1).forEach(function (section) {
-        section.disabled = !enabled;
+        section.disabled = isDisabled;
       });
     }
 
