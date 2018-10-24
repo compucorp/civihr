@@ -226,7 +226,7 @@ class CRM_HRCore_Form_Search_StaffDirectory extends CRM_Contact_Form_Search_Cust
     $form->add('datepicker', 'contract_end_date', ts('Job Contract End Date'),
       '', FALSE, ['time' => false]);
 
-//    $form->assign('elements', ['select_staff', 'contact_type', 'group', 'tag']);
+    CRM_Utils_System::setTitle(ts('Staff Directory'));
   }
 
   /**
