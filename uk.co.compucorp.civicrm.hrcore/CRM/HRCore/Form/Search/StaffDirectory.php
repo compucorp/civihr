@@ -173,7 +173,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * @return string
    */
   private function getGroupBy() {
-    return ' GROUP BY contact_a.id';
+    return ' GROUP BY contact_a.id, contract_details.title';
   }
 
 
@@ -274,26 +274,43 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * @return string
    */
   private function getJobContractJoin($jobDetailsCondition) {
-    $jobDetailsQuery =  "SELECT * FROM civicrm_hrjobcontract_details contract_details ";
-    if ($jobDetailsCondition) {
-      $jobDetailsQuery .= "WHERE {$jobDetailsCondition}";
-    }
+    $sql = "LEFT JOIN
+    (SELECT civicrm_hrjobcontract.contact_id,
+    MAX(contract_details.period_start_date) as period_start_date 
+    FROM {$this->getJobContractDetailsDerivedTable($jobDetailsCondition)} 
+    GROUP BY civicrm_hrjobcontract.contact_id) contract_details_aggregate
+      ON contract_details_aggregate.contact_id = contact_a.id
+    LEFT JOIN
+    (SELECT contract_details.title, civicrm_hrjobcontract.id, civicrm_hrjobcontract.contact_id,
+    contract_details.period_start_date, contract_details.period_end_date 
+    FROM {$this->getJobContractDetailsDerivedTable($jobDetailsCondition)}) contract_details
+      ON (contract_details.contact_id = contract_details_aggregate.contact_id 
+    AND contract_details.period_start_date = contract_details_aggregate.period_start_date)";
 
-    $jobDetailsQuery .= " ORDER BY period_start_date DESC";
+    return $sql;
+  }
 
-    $sql = "LEFT JOIN (SELECT civicrm_hrjobcontract_details.title, civicrm_hrjobcontract.id, civicrm_hrjobcontract.contact_id,
-      civicrm_hrjobcontract_details.period_start_date, civicrm_hrjobcontract_details.period_end_date
-      FROM civicrm_hrjobcontract 
-      INNER JOIN civicrm_hrjobcontract_revision rev 
+  /**
+   * Returns the Job contract details derived table.
+   *
+   * @param string $jobDetailsCondition
+   *
+   * @return string
+   */
+  private function getJobContractDetailsDerivedTable($jobDetailsCondition) {
+    $sql = "civicrm_hrjobcontract 
+    INNER JOIN civicrm_hrjobcontract_revision rev 
       ON rev.id = (SELECT id
                    FROM civicrm_hrjobcontract_revision jcr2
                    WHERE jcr2.jobcontract_id = civicrm_hrjobcontract.id
                    ORDER BY jcr2.effective_date DESC LIMIT 1)
-      INNER JOIN ({$jobDetailsQuery}) civicrm_hrjobcontract_details
-        ON rev.details_revision_id = civicrm_hrjobcontract_details.jobcontract_revision_id 
-      WHERE civicrm_hrjobcontract.deleted = 0 
-      GROUP BY civicrm_hrjobcontract.contact_id) contract_details
-      ON contract_details.contact_id = contact_a.id";
+    INNER JOIN civicrm_hrjobcontract_details contract_details
+      ON rev.details_revision_id = contract_details.jobcontract_revision_id 
+    WHERE civicrm_hrjobcontract.deleted = 0";
+
+    if ($jobDetailsCondition) {
+      $sql .=  " AND " . $jobDetailsCondition;
+    }
 
     return $sql;
   }
