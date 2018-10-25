@@ -17,7 +17,7 @@
             <thead class="sticky">
               <th>{ts}Title{/ts}</th>
               <th>{ts}Allow Accruals?{/ts}</th>
-              <th>{ts}Category{/ts}</th>
+              <th>{ts}Leave/Absence Type{/ts}</th>
               <th>{ts}Order{/ts}</th>
               <th>{ts}Enabled/Disabled{/ts}</th>
               <th>{ts}Actions{/ts}</th>
