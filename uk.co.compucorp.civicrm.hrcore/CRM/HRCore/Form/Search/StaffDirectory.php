@@ -212,6 +212,9 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     unset($selector[0], $selector['']);
     $options = $this->selectStaffFixedOptions + ['choose_date' => 'Select Dates'] + $selector;
 
+    //The select staff field is created this way rather than via CRM_Core_Form_Date::buildDateRange function
+    //because if we add additional option parameters, Civi will throw an error when evaluating these values
+    //after submission because it will not consider them to be relative dates
     $form->add('select', 'select_staff', ts('Select Staff'), $options, FALSE,
       ['class' => 'crm-select2', 'multiple' => FALSE]
     );
@@ -251,10 +254,10 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
 
     $orderBy = '';
     if ($sort) {
-      $orderBy = trim($sort->orderBy());
+      $orderBy = " ORDER BY " . trim($sort->orderBy());
     }
 
-    $sql = $this->selectClause .  $this->fromClause . $this->whereClause . $this->getGroupBy()  . " ORDER BY " . $orderBy ;
+    $sql = $this->selectClause .  $this->fromClause . $this->whereClause . $this->getGroupBy() . $orderBy ;
 
     return $sql ." LIMIT $offset, $rowCount ";
   }
@@ -342,21 +345,21 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     DateTime $periodEndDate = NULL)
   {
 
-    $sql = '';
+    $conditions = [];
     if (!$periodStartDate && !$periodEndDate) {
       return $this->getJobDetailsConditionForSpecificStaff();
     }
 
     if ($periodStartDate) {
-      $sql .= "(contract_details.period_end_date >= '" .
-        $periodStartDate->format('Y-m-d') . "' OR contract_details.period_end_date IS NULL) AND ";
+      $conditions[] = "(contract_details.period_end_date >= '" .
+        $periodStartDate->format('Y-m-d') . "' OR contract_details.period_end_date IS NULL)";
     }
 
     if ($periodEndDate) {
-      $sql .= "contract_details.period_start_date <= '". $periodEndDate->format('Y-m-d') . "' AND ";
+      $conditions[] = "contract_details.period_start_date <= '". $periodEndDate->format('Y-m-d') . "'";
     }
 
-    return rtrim($sql, 'AND ');
+    return implode(' AND ', $conditions);
   }
 
   /**
