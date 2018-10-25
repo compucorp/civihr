@@ -1,7 +1,7 @@
 <?php
 
 
-class CRM_HRCore_Form_Search_StaffDirectory extends CRM_Contact_Form_Search_Custom_Base implements CRM_Contact_Form_Search_Interface {
+class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_Interface {
 
   /**
    * @var array
@@ -43,14 +43,24 @@ class CRM_HRCore_Form_Search_StaffDirectory extends CRM_Contact_Form_Search_Cust
   protected $params = [];
 
   /**
+   * @var array
+   */
+  protected $formValues = [];
+
+  /**
+   * @var array
+   */
+  protected $columns = [];
+
+  /**
    * Class constructor.
    *
    * @param array $formValues
    */
   public function __construct(&$formValues) {
-    parent::__construct($formValues);
+    $this->formValues = $formValues;
 
-    $this->_columns = [
+    $this->columns = [
       ts('Display Name') => 'display_name',
       ts('Work Phone') => 'work_phone',
       ts('Work Email') => 'work_email',
@@ -64,7 +74,7 @@ class CRM_HRCore_Form_Search_StaffDirectory extends CRM_Contact_Form_Search_Cust
       'select_staff' => '',
     ];
 
-    $allParameters = array_merge($this->_formValues, $this->getAdditionalParameters());
+    $allParameters = array_merge($this->formValues, $this->getAdditionalParameters());
     $this->params = CRM_Contact_BAO_Query::convertFormValues($allParameters);
     $this->generateQueryClause();
   }
@@ -100,8 +110,8 @@ class CRM_HRCore_Form_Search_StaffDirectory extends CRM_Contact_Form_Search_Cust
             $jobDetailsCondition = $this->getJobDetailsConditionForSpecificStaff($value);
           }
           elseif ($value == 'choose_date') {
-            $fromDate = $this->_formValues['contract_start_date'] ? new DateTime($this->_formValues['contract_start_date']) : '';
-            $toDate = $this->_formValues['contract_end_date'] ? new DateTime($this->_formValues['contract_end_date']) : '';
+            $fromDate = $this->formValues['contract_start_date'] ? new DateTime($this->formValues['contract_start_date']) : '';
+            $toDate = $this->formValues['contract_end_date'] ? new DateTime($this->formValues['contract_end_date']) : '';
             $jobDetailsCondition = $this->getJobDetailsConditionForSpecificDates($fromDate, $toDate);
           }
           else {
@@ -364,7 +374,7 @@ class CRM_HRCore_Form_Search_StaffDirectory extends CRM_Contact_Form_Search_Cust
    */
   private function getAdditionalParameters() {
     $additionalParameters = [];
-    if (!empty($this->_formValues['force']) && $this->_formValues['force'] == 1) {
+    if (!empty($this->formValues['force']) && $this->formValues['force'] == 1) {
       $additionalParameters = array_intersect($_GET, $this->filters);
     }
 
@@ -387,4 +397,40 @@ class CRM_HRCore_Form_Search_StaffDirectory extends CRM_Contact_Form_Search_Cust
   public function templateFile() {
     return 'CRM/HRCore/Form/Search/StaffDirectory.tpl';
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function &columns() {
+    return $this->columns;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function summary() {
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildTaskList(CRM_Core_Form_Search $form) {
+    return $form->getVar('_taskList');
+  }
+
+  /**
+   * Validate form input.
+   *
+   * @param array $fields
+   * @param array $files
+   * @param CRM_Core_Form $self
+   *
+   * @return array
+   *   Input errors from the form.
+   */
+  public function formRule($fields, $files, $self) {
+    return [];
+  }
+
 }
