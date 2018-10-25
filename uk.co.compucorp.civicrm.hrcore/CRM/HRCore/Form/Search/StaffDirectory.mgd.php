@@ -11,7 +11,7 @@ return [
     'params' =>
     [
       'version' => 3,
-      'label' => 'StaffDirectory',
+      'label' => 'Staff Directory',
       'description' => 'Staff Directory Search',
       'class_name' => 'CRM_HRCore_Form_Search_StaffDirectory',
     ],

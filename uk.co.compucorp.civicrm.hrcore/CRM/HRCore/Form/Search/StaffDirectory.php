@@ -53,6 +53,16 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
   protected $columns = [];
 
   /**
+   * @var array
+   */
+  protected $selectStaffFixedOptions = [
+    'all' => 'All Staff',
+    'current' => 'Current Staff',
+    'future' => 'Future Staff',
+    'past' => 'Past Staff'
+  ];
+
+  /**
    * Class constructor.
    *
    * @param array $formValues
@@ -115,7 +125,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
   }
 
   /**
-   * Builds the FROM part of the overrall sql query.
+   * Builds the FROM part of the overral SQL query.
    *
    * @return string
    */
@@ -128,6 +138,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
 
     $this->from['contract_join'] = $this->getJobContractJoin($this->getJobDetailsConditionForSpecificStaff());
 
+    $today = date('Y-m-d');
     $this->from['after_contract'] = "LEFT JOIN civicrm_hrjobroles hrjobroles ON contract_details.id = hrjobroles.job_contract_id
     LEFT JOIN civicrm_option_group og_department ON og_department.name = 'hrjc_department'
     LEFT JOIN civicrm_option_value ov_department ON og_department.id = ov_department.option_group_id AND ov_department.value = hrjobroles.department
@@ -135,14 +146,14 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     LEFT JOIN civicrm_option_value ov_location ON og_location.id = ov_location.option_group_id AND ov_location.value = hrjobroles.location
     LEFT JOIN civicrm_relationship 
       ON (contact_a.id = civicrm_relationship.contact_id_a AND civicrm_relationship.is_active = '1' 
-      AND ((civicrm_relationship.start_date IS NULL OR civicrm_relationship.start_date <= CURDATE()) 
-      AND (civicrm_relationship.end_date IS NULL OR civicrm_relationship.end_date >= CURDATE())))
+      AND ((civicrm_relationship.start_date IS NULL OR civicrm_relationship.start_date <= '{$today}') 
+      AND (civicrm_relationship.end_date IS NULL OR civicrm_relationship.end_date >= '{$today}')))
     LEFT JOIN civicrm_relationship_type ON civicrm_relationship.relationship_type_id = civicrm_relationship_type.id
     LEFT JOIN civicrm_contact manager_contact ON  civicrm_relationship.contact_id_b = manager_contact.id";
   }
 
   /**
-   * Sets the Select, From and Where clause of the overall sql query.
+   * Sets the Select, From and Where clauses of the overall SQL query.
    */
   private function generateQueryClause() {
     $this->buildSelect();
@@ -187,14 +198,6 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * {@inheritdoc}
    */
   public function buildForm(&$form) {
-    $additional = [
-      'all' => 'All Staff',
-      'current' => 'Current Staff',
-      'future' => 'Future Staff',
-      'past' => 'Past Staff',
-      'choose_date' => 'Select Dates'
-    ];
-
     $selector = CRM_Core_Form_Date::returnDateRangeSelector(
       $form,
       'select_staff',
@@ -202,11 +205,12 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       '_low',
       '_high',
       ts('From:')
-
     );
     //remove unwanted options from the relative dates list.
+    //Options like 'Choose Date Range' and 'Any' Option that would not work as expected.
+    //because the select_staff field is created differently.
     unset($selector[0], $selector['']);
-    $options = $additional + $selector;
+    $options = $this->selectStaffFixedOptions + ['choose_date' => 'Select Dates'] + $selector;
 
     $form->add('select', 'select_staff', ts('Select Staff'), $options, FALSE,
       ['class' => 'crm-select2', 'multiple' => FALSE]
@@ -245,7 +249,11 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     $justIDs = FALSE
   ) {
 
-    $orderBy = trim($sort->orderBy());
+    $orderBy = '';
+    if ($sort) {
+      $orderBy = trim($sort->orderBy());
+    }
+
     $sql = $this->selectClause .  $this->fromClause . $this->whereClause . $this->getGroupBy()  . " ORDER BY " . $orderBy ;
 
     return $sql ." LIMIT $offset, $rowCount ";
@@ -361,7 +369,12 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
   private function getAdditionalParameters() {
     $additionalParameters = [];
     if (!empty($this->formValues['force']) && $this->formValues['force'] == 1) {
-      $additionalParameters = array_intersect($_GET, $this->filters);
+      foreach($this->filters as $filter) {
+        $additionalParameters['filter'] = filter_input(
+          INPUT_GET,
+          $filter,
+          FILTER_SANITIZE_STRING);
+      }
     }
 
     return $additionalParameters;
@@ -373,7 +386,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * @param string $value
    */
   private function setQueryConditionForSelectStaff($value) {
-    if (in_array($value, ['all', 'current', 'past', 'future'])) {
+    if (in_array($value, array_keys($this->selectStaffFixedOptions))) {
       $jobDetailsCondition = $this->getJobDetailsConditionForSpecificStaff($value);
     }
     elseif ($value == 'choose_date') {
