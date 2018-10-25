@@ -16,7 +16,7 @@ define([
     var sampleContacts = { list: [{ id: '29', display_name: 'Liza' }] };
     var sampleAbsenceTypeTitle = 'Holiday';
     var sampleAbsenceTypes = [
-      { title: sampleAbsenceTypeTitle }
+      { title: 'hOliday' }
     ];
     var sampleFieldValidationExpression = /^\w+ \w+$/;
     var sampleFieldValue = 'Some value';
@@ -249,6 +249,10 @@ define([
             });
             expect($window.location.href).toBe(leaveTypeListPageURL);
           });
+
+          it('shows that the component is "loading"', function () {
+            expect(controller.loading).toBe(true);
+          });
         });
 
         describe('when user submits the whole wizard form', function () {
@@ -381,7 +385,8 @@ define([
           });
 
           it('shows the error', function () {
-            expect(controller.fieldsIndexed.title.error).toBe('This leave type title is already in use');
+            expect(controller.fieldsIndexed.title.error)
+              .toBe('This leave type title is already in use');
           });
         });
       });

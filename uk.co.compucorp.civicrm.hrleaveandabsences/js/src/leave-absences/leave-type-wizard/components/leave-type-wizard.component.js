@@ -21,7 +21,7 @@ define([
     Contact, formSections, notificationService, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
-    var absenceTypes = [];
+    var absenceTypesExistingTitles = [];
     var state = {
       sectionIndex: null,
       tabIndex: null
@@ -54,7 +54,7 @@ define([
       $q.all([
         loadContacts(),
         loadAvailableColours(),
-        loadAbsenceTypes()
+        loadAbsenceTypesExistingTitles()
       ])
         .then(initDefaultView)
         .then(indexFields)
@@ -196,13 +196,15 @@ define([
     }
 
     /**
-     * Fetches absence types and stores them in the component.
-     * Fetches only absence types' titles.
+     * Fetches absence types and stores their titles in the component.
+     * It also lowers the case of the titles.
      */
-    function loadAbsenceTypes () {
+    function loadAbsenceTypesExistingTitles () {
       return AbsenceType.all({}, { return: ['title'] })
-        .then(function (_absenceTypes_) {
-          absenceTypes = _absenceTypes_;
+        .then(function (absenceTypes) {
+          absenceTypesExistingTitles = absenceTypes.map(function (absenceType) {
+            return absenceType.title.toLowerCase();
+          });
         });
     }
 
@@ -272,6 +274,8 @@ define([
       var isOnFirstSection = state.sectionIndex === 0;
 
       if (isOnFirstSection) {
+        vm.loading = true;
+
         navigateToLeaveTypesList();
 
         return;
@@ -523,7 +527,7 @@ define([
           return;
         }
 
-        if (_.find(absenceTypes, { title: title })) {
+        if (_.includes(absenceTypesExistingTitles, title.toLowerCase())) {
           titleField.error = 'This leave type title is already in use';
         }
       });
