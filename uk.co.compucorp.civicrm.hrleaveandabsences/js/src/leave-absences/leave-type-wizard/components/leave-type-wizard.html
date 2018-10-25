@@ -6,7 +6,8 @@
         <div uib-accordion-group class="panel-default {{section.tabs.length > 1 && 'panel-w-vertical-tabs'}}"
           ng-repeat="(sectionIndex, section) in form.sections"
           is-open="section.active"
-          ng-click="form.openSection(sectionIndex)">
+          is-disabled="section.disabled"
+          ng-click="!section.disabled && form.openSection(sectionIndex)">
           <uib-accordion-heading>
             {{section.label}}
           </uib-accordion-heading>

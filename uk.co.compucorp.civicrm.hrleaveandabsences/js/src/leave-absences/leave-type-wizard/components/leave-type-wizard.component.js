@@ -21,7 +21,7 @@ define([
     Contact, formSections, notificationService, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
-    var absenceTypes = [];
+    var absenceTypesExistingTitles = [];
     var state = {
       sectionIndex: null,
       tabIndex: null
@@ -54,7 +54,7 @@ define([
       $q.all([
         loadContacts(),
         loadAvailableColours(),
-        loadAbsenceTypes()
+        loadAbsenceTypesExistingTitles()
       ])
         .then(initDefaultView)
         .then(indexFields)
@@ -130,6 +130,7 @@ define([
      */
     function initCustomValidators () {
       watchTitleFieldIsUnique();
+      watchTitleFieldIsFilledInProperly();
     }
 
     /**
@@ -148,13 +149,10 @@ define([
 
     /**
      * Initiates the default view:
-     * - selects Leave category;
      * - expands the General section and leaves the Settings section collapsed;
      * - selects Basic Details settings tab.
      */
     function initDefaultView () {
-      vm.leaveTypeCategory = 'leave';
-
       openSection(0);
     }
 
@@ -198,13 +196,15 @@ define([
     }
 
     /**
-     * Fetches absence types and stores them in the component.
-     * Fetches only absence types' titles.
+     * Fetches absence types and stores their titles in the component.
+     * It also lowers the case of the titles.
      */
-    function loadAbsenceTypes () {
+    function loadAbsenceTypesExistingTitles () {
       return AbsenceType.all({}, { return: ['title'] })
-        .then(function (_absenceTypes_) {
-          absenceTypes = _absenceTypes_;
+        .then(function (absenceTypes) {
+          absenceTypesExistingTitles = absenceTypes.map(function (absenceType) {
+            return absenceType.title.toLowerCase();
+          });
         });
     }
 
@@ -274,6 +274,8 @@ define([
       var isOnFirstSection = state.sectionIndex === 0;
 
       if (isOnFirstSection) {
+        vm.loading = true;
+
         navigateToLeaveTypesList();
 
         return;
@@ -296,9 +298,7 @@ define([
      * @param {Number} sectionIndex
      */
     function openSection (sectionIndex) {
-      var sectionToOpen;
-
-      sectionToOpen = vm.sections[sectionIndex];
+      var sectionToOpen = vm.sections[sectionIndex];
 
       if (!sectionToOpen) {
         submit();
@@ -485,6 +485,35 @@ define([
     }
 
     /**
+     * Watches title field to toggle Settings section locking
+     */
+    function watchTitleFieldIsFilledInProperly () {
+      var titleField = vm.fieldsIndexed.title;
+
+      $scope.$watch(function () {
+        return titleField.value;
+      }, function (title) {
+        var disallowedToMoveToSettingsSection = !!(titleField.error || title === '');
+
+        setAvailabilityOfFollowingSections(disallowedToMoveToSettingsSection);
+      });
+    }
+
+    /**
+     * Sets the availability of the sections that follow the active section.
+     * Also sets the availability of the "Next section" button for the active section.
+     *
+     * @param {Boolean} isDisabled
+     */
+    function setAvailabilityOfFollowingSections (isDisabled) {
+      vm.sections[state.sectionIndex].disableNextSectionButton = isDisabled;
+
+      vm.sections.slice(state.sectionIndex + 1).forEach(function (section) {
+        section.disabled = isDisabled;
+      });
+    }
+
+    /**
      * Initiates a watches over "Title" field.
      * Watches for already used leave types titles.
      */
@@ -498,7 +527,7 @@ define([
           return;
         }
 
-        if (_.find(absenceTypes, { title: title })) {
+        if (_.includes(absenceTypesExistingTitles, title.toLowerCase())) {
           titleField.error = 'This leave type title is already in use';
         }
       });

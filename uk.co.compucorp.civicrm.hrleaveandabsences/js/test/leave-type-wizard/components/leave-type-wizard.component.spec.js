@@ -16,8 +16,10 @@ define([
     var sampleContacts = { list: [{ id: '29', display_name: 'Liza' }] };
     var sampleAbsenceTypeTitle = 'Holiday';
     var sampleAbsenceTypes = [
-      { title: sampleAbsenceTypeTitle }
+      { title: 'hOliday' }
     ];
+    var sampleFieldValidationExpression = /^\w+ \w+$/;
+    var sampleFieldValue = 'Some value';
 
     beforeEach(angular.mock.module('leave-type-wizard'));
 
@@ -105,10 +107,6 @@ define([
         expect(_.sample(_.sample(secondSection.tabs).fields)).toEqual(jasmine.objectContaining({
           name: jasmine.any(String)
         }));
-      });
-
-      it('has the Leave leave type category selected', function () {
-        expect(controller.leaveTypeCategory).toBe('leave');
       });
 
       it('loads available colours', function () {
@@ -251,6 +249,10 @@ define([
             });
             expect($window.location.href).toBe(leaveTypeListPageURL);
           });
+
+          it('shows that the component is "loading"', function () {
+            expect(controller.loading).toBe(true);
+          });
         });
 
         describe('when user submits the whole wizard form', function () {
@@ -383,7 +385,8 @@ define([
           });
 
           it('shows the error', function () {
-            expect(controller.fieldsIndexed.title.error).toBe('This leave type title is already in use');
+            expect(controller.fieldsIndexed.title.error)
+              .toBe('This leave type title is already in use');
           });
         });
       });
@@ -397,7 +400,7 @@ define([
           sampleField = controller.sections[0].tabs[0].fields[0];
           sampleField.validations = [
             {
-              rule: /^\d+$/,
+              rule: sampleFieldValidationExpression,
               required: true,
               message: sampleErrorMessage
             }
@@ -406,7 +409,7 @@ define([
 
         describe('when user enters a value in a wrong format', function () {
           beforeEach(function () {
-            sampleField.value = 'Not a number';
+            sampleField.value = '???';
 
             $rootScope.$digest();
           });
@@ -417,7 +420,7 @@ define([
 
           describe('when user changes the value to a valid format', function () {
             beforeEach(function () {
-              sampleField.value = '1';
+              sampleField.value = sampleFieldValue;
 
               $rootScope.$digest();
             });
@@ -475,11 +478,45 @@ define([
         });
       });
 
+      describe('section locking', function () {
+        describe('when title is not filled in', function () {
+          beforeEach(function () {
+            controller.fieldsIndexed.title.value = '';
+
+            $rootScope.$digest();
+          });
+
+          it('locks the Settings section', function () {
+            expect(controller.sections[1].disabled).toBe(true);
+          });
+
+          it('locks the "next section" button in the General section', function () {
+            expect(_.first(controller.sections).disableNextSectionButton).toBe(true);
+          });
+
+          describe('when title is filled in', function () {
+            beforeEach(function () {
+              controller.fieldsIndexed.title.value = sampleFieldValue;
+
+              $rootScope.$digest();
+            });
+
+            it('unlocks the Settings section', function () {
+              expect(controller.sections[1].disabled).toBe(false);
+            });
+
+            it('unlocks the "next section" button in the General section', function () {
+              expect(_.first(controller.sections).disableNextSectionButton).toBe(false);
+            });
+          });
+        });
+      });
+
       /**
        * Fills in all required and valid fields in the wizard
        */
       function fillWizardIn () {
-        controller.fieldsIndexed.title.value = 'Some title';
+        controller.fieldsIndexed.title.value = sampleFieldValue;
         controller.fieldsIndexed.color.value = _.sample(sampleAvailableColours);
         controller.fieldsIndexed.default_entitlement.value = '100';
 
