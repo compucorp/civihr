@@ -35,7 +35,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $this->assertEquals($contactIds, [$contact1['id'], $contact2['id']]);
   }
 
-  public function testCountReturnsTheTotalNumberOfStaffWithCurrentContractsForSelectStaffFilter() {
+  public function testSelectStaffFilterCanFilterOnlyCurrentStaff() {
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
     $contact3 = ContactFabricator::fabricate();
@@ -72,7 +72,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $this->assertEquals($contactIds, [$contact2['id'], $contact3['id']]);
   }
 
-  public function testCountReturnsTheTotalNumberOfStaffWithPastContractsForSelectStaffFilter() {
+  public function testSelectStaffFilterCanFilterOnlyPastStaff() {
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
 
@@ -100,7 +100,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $this->assertEquals($contactIds, [$contact1['id']]);
   }
 
-  public function testCountReturnsTheTotalNumberOfStaffWithFutureContractsForSelectStaffFilter() {
+  public function testSelectStaffFilterCanFilterOnlyFutureStaff() {
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
 
@@ -125,7 +125,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $this->assertEquals($contactIds, [$contact1['id']]);
   }
 
-  public function testCountReturnsTheCorrectNumberOfStaffWithSpecificJobContractDatesForSelectStaffFilter() {
+  public function testSelectStaffFilterCanFilterStaffWithSpecificJobContractDates() {
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
 
@@ -157,7 +157,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $this->assertEquals($contactIds, [$contact1['id']]);
   }
 
-  public function testCountReturnsZeroWhenNoStaffWithContractsOverlappingSpecificJobContractDatesForSelectStaffFilter() {
+  public function testSelectStaffDoesNotReturnResultsWhenNoStaffWithContractsOverlappingSpecificJobContractDates() {
     $contact1 = ContactFabricator::fabricate();
 
     HRJobContractFabricator::fabricate(
@@ -258,13 +258,14 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
       'department' => $department2['value']
     ]);
 
-    $this->createRelationShip($contact1, $manager);
+    $this->createRelationship($contact1, $manager);
     $formValues = [];
     $searchDirectory =  new SearchDirectory($formValues);
     $results = $this->extractColumnValues($searchDirectory->all(0, 10));
 
     $expectedResults = [
       [
+        'contact_id' => $contact1['id'],
         'display_name' => $contact1['display_name'],
         'work_phone' => "{$contactWorkPhone} + {$contactWorkPhoneExtension}",
         'work_email' => $contactWorkEmail,
@@ -274,6 +275,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
         'job_title' => $contractTitle,
       ],
       [
+        'contact_id' => $manager['id'],
         'display_name' => $manager['display_name'],
         'work_phone' => NULL,
         'work_email' => NULL,
@@ -299,7 +301,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
       $contactWorkPhoneExtension
     );
 
-    $manager1 = ContactFabricator::fabricate(['first_name' => 'Manager2']);
+    $manager1 = ContactFabricator::fabricate(['first_name' => 'Manager1']);
     $manager2 = ContactFabricator::fabricate(['first_name' => 'Manager2']);
     $manager3 = ContactFabricator::fabricate(['first_name' => 'Manager3']);
 
@@ -312,7 +314,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
       ]
     );
 
-    $location1= $this->createLocation('location1');
+    $location1 = $this->createLocation('location1');
     $department1 = $this->createDepartment('department1');
 
     HRJobRolesFabricator::fabricate([
@@ -321,11 +323,11 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
       'department' => $department1['value']
     ]);
 
-    //active manger relationship
-    $this->createRelationShip($contact1, $manager1);
-    $this->createRelationShip($contact1, $manager3, '2016-01-01');
+    //active manager relationship
+    $this->createRelationship($contact1, $manager1);
+    $this->createRelationship($contact1, $manager3, '2016-01-01');
     //inactive relationship
-    $this->createRelationShip($contact1, $manager2, '2016-01-01', '2016-12-31');
+    $this->createRelationship($contact1, $manager2, '2016-01-01', '2016-12-31');
 
     $formValues = [];
     $searchDirectory =  new SearchDirectory($formValues);
@@ -333,6 +335,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
     $expectedResults = [
       [
+        'contact_id' => $contact1['id'],
         'display_name' => $contact1['display_name'],
         'work_phone' => "{$contactWorkPhone} + {$contactWorkPhoneExtension}",
         'work_email' => $contactWorkEmail,
@@ -342,6 +345,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
         'job_title' => $contractTitle,
       ],
       [
+        'contact_id' => $manager1['id'],
         'display_name' => $manager1['display_name'],
         'work_phone' => NULL,
         'work_email' => NULL,
@@ -351,6 +355,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
         'job_title' => NULL,
       ],
       [
+        'contact_id' => $manager2['id'],
         'display_name' => $manager2['display_name'],
         'work_phone' => NULL,
         'work_email' => NULL,
@@ -360,6 +365,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
         'job_title' => NULL,
       ],
       [
+        'contact_id' => $manager3['id'],
         'display_name' => $manager3['display_name'],
         'work_phone' => NULL,
         'work_email' => NULL,
@@ -387,21 +393,8 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
   private function extractColumnValues($sql) {
     $result = CRM_Core_DAO::executeQuery($sql);
-    $results = [];
 
-    while ($result->fetch()) {
-      $results[] = [
-        'display_name' => $result->display_name,
-        'work_phone' => $result->work_phone,
-        'work_email' => $result->work_email,
-        'manager' => $result->manager,
-        'location' => $result->location,
-        'department' => $result->department,
-        'job_title' => $result->job_title
-      ];
-    }
-
-    return $results;
+    return $result->fetchAll();
   }
 
   private function createDepartment($departmentName) {
@@ -426,7 +419,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     return $location;
   }
 
-  private function createRelationShip($contactA, $contactB, $startDate = NULL, $endDate = NULL, $isActive = 1) {
+  private function createRelationship($contactA, $contactB, $startDate = NULL, $endDate = NULL, $isActive = 1) {
     RelationshipFabricator::fabricate([
       'contact_id_a' => $contactA['id'],
       'contact_id_b' => $contactB['id'],
@@ -437,7 +430,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     ]);
   }
 
-  public static function fabricateContactWithWorkContactDetails($params = [], $email, $phone, $phone_ext = '') {
+  public static function fabricateContactWithWorkContactDetails($params = [], $email, $phone, $phoneExt = '') {
     $contact = ContactFabricator::fabricate($params);
     $workLocationId = CRM_Core_DAO::getFieldValue(
       'CRM_Core_DAO_LocationType',
@@ -457,7 +450,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
       'contact_id' => $contact['id'],
       'phone' => $phone,
       'location_type_id' => $workLocationId,
-      'phone_ext' => $phone_ext
+      'phone_ext' => $phoneExt
     ]);
 
     return $contact;
