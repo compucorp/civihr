@@ -216,5 +216,9 @@ define([
           }
         ]
       }
-    ]);
+    ])
+    .constant('leave-type-categories-icons', {
+      leave: 'plane',
+      sickness: 'medkit'
+    });
 });

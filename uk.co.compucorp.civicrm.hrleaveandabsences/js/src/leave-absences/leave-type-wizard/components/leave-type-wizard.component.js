@@ -5,8 +5,8 @@ define([
   'common/lodash'
 ], function (angular, _) {
   LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
-    'AbsenceType', 'Contact', 'form-sections', 'notificationService',
-    'shared-settings'];
+    'AbsenceType', 'Contact', 'form-sections', 'leave-type-categories-icons',
+    'notificationService', 'OptionGroup', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -19,7 +19,8 @@ define([
   };
 
   function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
-    Contact, formSections, notificationService, sharedSettings) {
+    Contact, formSections, leaveTypeCategoriesIcons, notificationService,
+    OptionGroup, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var absenceTypesExistingTitles = [];
@@ -33,13 +34,7 @@ define([
     vm.componentsPath =
       sharedSettings.sourcePath + 'leave-type-wizard/components';
     vm.fieldsIndexed = {};
-    vm.leaveTypeCategories = [
-      {
-        value: 'leave',
-        label: 'Leave',
-        icon: 'plane'
-      }
-    ];
+    vm.leaveTypeCategories = [];
     vm.loading = true;
     vm.sections = formSections;
 
@@ -56,8 +51,13 @@ define([
       $q.all([
         loadContacts(),
         loadAvailableColours(),
-        loadAbsenceTypesExistingTitles()
+        loadAbsenceTypesExistingTitles(),
+        loadLeaveTypeCategories()
       ])
+        // @NOTE this is a temporary option group suppressor to match user stories
+        // @TODO the suppressor should be amended to gradually support other leave categories
+        // @TODO the suppressor must be completely removed once all leave categories are supported
+        .then(temporarilySuppressNotYetUsedLeaveCategories)
         .then(initDefaultView)
         .then(indexFields)
         .then(initDefaultValues)
@@ -250,6 +250,22 @@ define([
     }
 
     /**
+     * Fetches leave type categories and sets them to the component.
+     * It only stores names, labels and icons mapped from the respected constant.
+     *
+     * @return {Promise}
+     */
+    function loadLeaveTypeCategories () {
+      return OptionGroup.valuesOf('hrleaveandabsences_absence_type_category')
+        .then(function (categories) {
+          vm.leaveTypeCategories = categories.map(function (category) {
+            return _.assign(_.pick(category, ['name', 'label']),
+              { icon: leaveTypeCategoriesIcons[category.name] });
+          });
+        });
+    }
+
+    /**
      * Redirects to the leave types list page
      */
     function navigateToLeaveTypesList () {
@@ -432,6 +448,18 @@ define([
       }
 
       save();
+    }
+
+    /**
+     * Suppresses the not yet used leave categories by removing them from
+     * the list that was made by loading option groups
+     *
+     * @TODO the suppressor must be completely removed once all leave categories are supported
+     */
+    function temporarilySuppressNotYetUsedLeaveCategories () {
+      vm.leaveTypeCategories = _.filter(vm.leaveTypeCategories, function (category) {
+        return !_.includes(['toil', 'custom'], category.name);
+      });
     }
 
     /**

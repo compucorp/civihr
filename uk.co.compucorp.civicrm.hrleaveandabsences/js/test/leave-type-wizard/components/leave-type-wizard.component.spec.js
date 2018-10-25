@@ -10,7 +10,8 @@ define([
 
   describe('LeaveTypeWizard', function () {
     var $componentController, $log, $q, $rootScope, $window,
-      absenceTypeSaverSpy, AbsenceType, Contact, controller, notificationService;
+      absenceTypeSaverSpy, AbsenceType, Contact, controller, formSections,
+      leaveTypeCategoriesIcons, notificationService, OptionGroup;
     var leaveTypeListPageURL = '/civicrm/admin/leaveandabsences/types?action=browse&reset=1';
     var sampleAvailableColours = ['#FFFFFF', '#000000'];
     var sampleContacts = { list: [{ id: '29', display_name: 'Liza' }] };
@@ -20,6 +21,10 @@ define([
     ];
     var sampleFieldValidationExpression = /^\w+ \w+$/;
     var sampleFieldValue = 'Some value';
+    var sampleLeaveTypeCategoriesOptionGroupValues = [
+      { name: 'leave', label: 'Leave' },
+      { name: 'sickness', label: 'Sickness' }
+    ];
 
     beforeEach(angular.mock.module('leave-type-wizard'));
 
@@ -28,7 +33,8 @@ define([
     }));
 
     beforeEach(inject(function (_$componentController_, _$log_, _$q_,
-      _$rootScope_, _$window_, _AbsenceType_, _Contact_, _notificationService_) {
+      _$rootScope_, _$window_, _AbsenceType_, _Contact_, _notificationService_,
+      _OptionGroup_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -37,7 +43,14 @@ define([
       AbsenceType = _AbsenceType_;
       Contact = _Contact_;
       notificationService = _notificationService_;
+      OptionGroup = _OptionGroup_;
     }));
+
+    beforeEach(inject(['form-sections', 'leave-type-categories-icons',
+      function (_formSections_, _leaveTypeCategoriesIcons_) {
+        formSections = _formSections_;
+        leaveTypeCategoriesIcons = _leaveTypeCategoriesIcons_;
+      }]));
 
     beforeEach(function () {
       spyOn($log, 'debug').and.callThrough();
@@ -45,6 +58,7 @@ define([
       spyOn(AbsenceType, 'all').and.returnValue($q.resolve(sampleAbsenceTypes));
       spyOn(Contact, 'all').and.returnValue($q.resolve(sampleContacts));
       spyOn(notificationService, 'error');
+      spyOn(OptionGroup, 'valuesOf').and.returnValue($q.resolve(sampleLeaveTypeCategoriesOptionGroupValues));
       spyOn(CRM, 'url').and.returnValue(leaveTypeListPageURL);
 
       absenceTypeSaverSpy = spyOn(AbsenceType, 'save');
@@ -135,6 +149,18 @@ define([
 
       it('loads absence types titles', function () {
         expect(AbsenceType.all).toHaveBeenCalledWith({}, { return: ['title'] });
+      });
+
+      it('has leave type categories', function () {
+        expect(controller.leaveTypeCategories.map(function (category) {
+          return _.omit(category, ['icon']);
+        })).toEqual(sampleLeaveTypeCategoriesOptionGroupValues);
+        expect(_.map(controller.leaveTypeCategories, 'icon'))
+          .toEqual(_.values(leaveTypeCategoriesIcons));
+      });
+
+      it('has form sections', function () {
+        expect(controller.sections).toBe(formSections);
       });
 
       describe('when user clicks the "next section" button', function () {
