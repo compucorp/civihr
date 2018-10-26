@@ -29,11 +29,11 @@ define([
                 defaultValue: '',
                 label: 'Title',
                 helpText: [
-                  'The Leave Type Title is displayed for everyone on all leave reports and request forms.' +
-                  'For example, if you enter "Annual Leave" here, all your staff will see a Leave Type called "Annual Leave" in their Self Service Portal screens.' +
-                  'Use a term that is familiar to them, and a part of your organisation"s leave policies.' +
-                  'Other examples: "Annual Leave Full-time" , "Annual Leave Part-time" , "Paid Sick Leave", "Unpaid Sick Leave", "Compensatory Off".' +
-                  DOUBLE_LINE_BREAK +
+                  'The Leave Type Title is displayed for everyone on all leave reports and request forms.',
+                  'For example, if you enter "Annual Leave" here, all your staff will see a Leave Type called "Annual Leave" in their Self Service Portal screens.',
+                  'Use a term that is familiar to them, and a part of your organisation\'s leave policies.',
+                  'Other examples: "Annual Leave Full-time" , "Annual Leave Part-time" , "Paid Sick Leave", "Unpaid Sick Leave", "Compensatory Off".',
+                  DOUBLE_LINE_BREAK,
                   'The Leave Type Title is also displayed in the Staff Calendar, but can be made private later in this wizard.'
                 ].join(' ')
               },
@@ -43,6 +43,16 @@ define([
                 labelLayout: 'horizontal',
                 defaultValue: 'leave',
                 label: 'What kind of absence type are you looking to create?'
+              },
+              {
+                name: 'allow_accruals_request',
+                defaultValue: false,
+                hidden: true
+              },
+              {
+                name: 'add_public_holiday_to_entitlement',
+                defaultValue: false,
+                hidden: true
               }
             ]
           }
@@ -59,7 +69,7 @@ define([
             fields: [
               {
                 name: 'hide_label',
-                label: 'Hide leave type label on public calendars and feeds?',
+                label: 'Hide leave type title on public staff calendar and feeds?',
                 defaultValue: false,
                 helpText: [
                   'The CiviHR self service portal has an all staff calendar.',
@@ -88,7 +98,6 @@ define([
                 name: 'default_entitlement',
                 label: 'Default entitlement',
                 defaultValue: '',
-                required: true,
                 validations: [VALIDATOR_DECIMAL]
               },
               {
@@ -104,7 +113,7 @@ define([
               {
                 name: 'is_active',
                 label: 'Enabled',
-                defaultValue: false
+                defaultValue: true
               }
             ]
           },
@@ -125,7 +134,7 @@ define([
                 name: 'allow_request_cancelation',
                 label: 'Staff self-cancellation',
                 required: true,
-                defaultValue: '1',
+                defaultValue: '3',
                 helpText: [
                   'Configure whether staff can cancel the leave request themselves without manager approval.',
                   'There are 3 options:',
@@ -171,7 +180,8 @@ define([
               {
                 name: 'allow_carry_forward',
                 label: 'Allow carry forward?',
-                defaultValue: false
+                defaultValue: false,
+                helpText: 'Configure whether leave of this type be carried forward from one period to another.'
               },
               {
                 name: 'max_number_of_days_to_carry_forward',

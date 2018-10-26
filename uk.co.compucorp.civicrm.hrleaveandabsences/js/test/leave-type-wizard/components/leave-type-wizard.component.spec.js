@@ -298,6 +298,24 @@ define([
             });
           });
 
+          describe('when default entitlement field is empty', function () {
+            beforeEach(function () {
+              absenceTypeSaverSpy.and.returnValue($q.resolve());
+              fillWizardIn();
+
+              controller.fieldsIndexed.default_entitlement.value = '';
+
+              submitWizard();
+              $rootScope.$digest();
+            });
+
+            it('sends the default entitlement to "0"', function () {
+              expect(AbsenceType.save).toHaveBeenCalledWith(jasmine.objectContaining({
+                default_entitlement: '0'
+              }));
+            });
+          });
+
           describe('when there are errors', function () {
             var error = 'error';
 
@@ -508,6 +526,48 @@ define([
             it('unlocks the "next section" button in the General section', function () {
               expect(_.first(controller.sections).disableNextSectionButton).toBe(false);
             });
+          });
+        });
+      });
+
+      describe('checkIfAccordionHeaderClicked()', function () {
+        var mockedEvent = { originalEvent: {} };
+        var panelHeaderHTML = '<div class="panel-heading"></div>';
+
+        describe('when user clicks on accordion header', function () {
+          beforeEach(function () {
+            mockedEvent.originalEvent.path =
+              angular.element(panelHeaderHTML)[0];
+          });
+
+          it('returns `true`', function () {
+            expect(controller.checkIfAccordionHeaderClicked(mockedEvent)).toBe(true);
+          });
+        });
+
+        describe('when user clicks on element inside accordion header', function () {
+          var $element;
+          beforeEach(function () {
+            $element = angular.element('<button></button>');
+            $element.wrap(panelHeaderHTML);
+
+            mockedEvent.originalEvent.path =
+              angular.element($element)[0];
+          });
+
+          it('returns `true`', function () {
+            expect(controller.checkIfAccordionHeaderClicked(mockedEvent)).toBe(true);
+          });
+        });
+
+        describe('when user clicks outside accordion header', function () {
+          beforeEach(function () {
+            mockedEvent.originalEvent.path =
+              angular.element('<div class="outside-header"></div>')[0];
+          });
+
+          it('returns `false`', function () {
+            expect(controller.checkIfAccordionHeaderClicked(mockedEvent)).toBe(false);
           });
         });
       });

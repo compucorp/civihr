@@ -8,7 +8,7 @@
           'required-mark': field.label && field.required
         }">
         {{field.label}}
-        <help-text ng-if="field.helpText">
+        <help-text ng-if="field.helpText" title="{{field.label}}">
           <p class="respect-line-breaks">{{field.helpText}}</p>
         </help-text>
       </label>

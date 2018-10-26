@@ -7,11 +7,13 @@
           ng-repeat="(sectionIndex, section) in form.sections"
           is-open="section.active"
           is-disabled="section.disabled"
-          ng-click="!section.disabled && form.openSection(sectionIndex)">
+          ng-click="form.checkIfAccordionHeaderClicked($event)
+            && !section.disabled
+            && form.openSection(sectionIndex)">
           <uib-accordion-heading>
             {{section.label}}
           </uib-accordion-heading>
-          <div class="row" ng-click="$event.stopPropagation()"
+          <div class="row"
             ng-class="{ 'nav-tabs-stacked-wrapper': section.tabs.length > 1 }">
             <div class="col-md-3" ng-if="section.tabs.length > 1">
               <ul class="nav nav-tabs nav-tabs-stacked">
