@@ -1,17 +1,5 @@
 <?php
 
-$result = civicrm_api3('OptionValue', 'getsingle', [
-  'option_group_id' => 'custom_search',
-  'name' => 'CRM_HRCore_Form_Search_StaffDirectory',
-]);
-
-$searchDirectoryURL = '';
-if (!empty($result['value'])) {
-  $searchDirectoryURL =
-    "civicrm/contact/search/custom?csid={$result['value']}&force=1&reset=1&select_staff=current";
-}
-
-
 return [
   'Home' => 'civicrm/tasksassignments/dashboard#/tasks',
 
@@ -22,10 +10,7 @@ return [
         'url' => 'civicrm/contact/add?reset=1&ct=Individual',
         'permission' => 'add contacts',
       ],
-      'Staff Directory' => [
-        'url' => $searchDirectoryURL,
-        'separator' => 1
-      ],
+      'Staff Directory' => CRM_HRCore_Menu_Config_StaffDirectory::getItems(),
       'Record Communication' => [
         'children' => [
           'New Email' => 'civicrm/activity/email/add?atype=3&action=add&reset=1&context=standalone',
