@@ -496,7 +496,24 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * {@inheritdoc}
    */
   public function buildTaskList(CRM_Core_Form_Search $form) {
-    return $form->getVar('_taskList');
+    $newTaskList = [];
+    $taskListLabelMapping = [
+      'Create User Accounts(s)' => 'Create User Accounts(s)',
+      'Delete contacts' => 'Delete Staff',
+      'Delete permanently' => 'Delete Staff Permanently',
+      'Export contacts' => 'Export Staff ',
+      'Print/merge document' => 'Print/merge document'
+    ];
+    $oldTaskLists = $form->getVar('_taskList');
+
+    foreach($taskListLabelMapping as $oldLabel => $newLabel) {
+      $key = array_search($oldLabel, $oldTaskLists);
+      if ($key !== FALSE) {
+        $newTaskList[$key] = $newLabel;
+      }
+    }
+
+    return $newTaskList;
   }
 
   /**
