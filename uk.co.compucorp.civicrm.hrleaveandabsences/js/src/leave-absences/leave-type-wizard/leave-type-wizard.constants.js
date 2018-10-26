@@ -170,7 +170,8 @@ define([
               {
                 name: 'allow_carry_forward',
                 label: 'Allow carry forward?',
-                defaultValue: false
+                defaultValue: false,
+                helpText: 'Configure whether leave of this type be carried forward from one period to another.'
               },
               {
                 name: 'max_number_of_days_to_carry_forward',
