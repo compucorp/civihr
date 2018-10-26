@@ -1,8 +1,9 @@
 /* eslint-env amd */
 
 define([
+  'common/angular',
   'common/lodash'
-], function (_) {
+], function (angular, _) {
   LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
     'AbsenceType', 'Contact', 'form-sections', 'notificationService',
     'shared-settings'];
@@ -43,6 +44,7 @@ define([
     vm.sections = formSections;
 
     vm.$onInit = $onInit;
+    vm.checkIfAccordionHeaderClicked = checkIfAccordionHeaderClicked;
     vm.openNextTab = openNextTab;
     vm.openPreviousTab = openPreviousTab;
     vm.openSection = openSection;
@@ -65,6 +67,21 @@ define([
         .finally(function () {
           vm.loading = false;
         });
+    }
+
+    /**
+     * Check if the header of the accordion was clicked and not other area
+     *
+     * @param  {Event} $event
+     * @return {Boolean}
+     */
+    function checkIfAccordionHeaderClicked ($event) {
+      var className = 'panel-heading';
+      var $sourceElement = angular.element($event.originalEvent.path);
+      var isHeaderOrElementInsideHeader = $sourceElement.hasClass(className) ||
+        !!$sourceElement.closest('.' + className).length;
+
+      return isHeaderOrElementInsideHeader;
     }
 
     /**

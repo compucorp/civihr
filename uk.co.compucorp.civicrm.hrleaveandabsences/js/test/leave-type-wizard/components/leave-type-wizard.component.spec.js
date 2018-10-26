@@ -530,6 +530,48 @@ define([
         });
       });
 
+      describe('checkIfAccordionHeaderClicked()', function () {
+        var mockedEvent = { originalEvent: {} };
+        var panelHeaderHTML = '<div class="panel-heading"></div>';
+
+        describe('when user clicks on accordion header', function () {
+          beforeEach(function () {
+            mockedEvent.originalEvent.path =
+              angular.element(panelHeaderHTML)[0];
+          });
+
+          it('returns `true`', function () {
+            expect(controller.checkIfAccordionHeaderClicked(mockedEvent)).toBe(true);
+          });
+        });
+
+        describe('when user clicks on element inside accordion header', function () {
+          var $element;
+          beforeEach(function () {
+            $element = angular.element('<button></button>');
+            $element.wrap(panelHeaderHTML);
+
+            mockedEvent.originalEvent.path =
+              angular.element($element)[0];
+          });
+
+          it('returns `true`', function () {
+            expect(controller.checkIfAccordionHeaderClicked(mockedEvent)).toBe(true);
+          });
+        });
+
+        describe('when user clicks outside accordion header', function () {
+          beforeEach(function () {
+            mockedEvent.originalEvent.path =
+              angular.element('<div class="outside-header"></div>')[0];
+          });
+
+          it('returns `false`', function () {
+            expect(controller.checkIfAccordionHeaderClicked(mockedEvent)).toBe(false);
+          });
+        });
+      });
+
       /**
        * Fills in all required and valid fields in the wizard
        */
