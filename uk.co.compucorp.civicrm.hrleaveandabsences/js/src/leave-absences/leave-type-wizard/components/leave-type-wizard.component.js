@@ -182,7 +182,7 @@ define([
 
         wasActiveTabValidatedBefore
           ? validateTab(activeTab)
-          : validateField(field);
+          : validateField(field, oldValue);
       });
     }
 
@@ -421,11 +421,12 @@ define([
      * Validates a field
      *
      * @param {Object} field
+     * @param {String} [oldValue]
      */
-    function validateField (field) {
+    function validateField (field, oldValue) {
       flushErrorForField(field);
 
-      if (field.required && _.isEmpty(field.value)) {
+      if (field.required && _.isEmpty(field.value) && oldValue !== '') {
         field.error = 'This field is required';
       } else if (field.value !== '' && field.validations) {
         field.validations.forEach(function (validation) {
