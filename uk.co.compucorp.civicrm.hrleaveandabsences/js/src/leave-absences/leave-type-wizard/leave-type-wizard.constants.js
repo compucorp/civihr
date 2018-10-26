@@ -43,6 +43,16 @@ define([
                 labelLayout: 'horizontal',
                 defaultValue: 'leave',
                 label: 'What kind of absence type are you looking to create?'
+              },
+              {
+                name: 'allow_accruals_request',
+                defaultValue: false,
+                hidden: true
+              },
+              {
+                name: 'add_public_holiday_to_entitlement',
+                defaultValue: false,
+                hidden: true
               }
             ]
           }
