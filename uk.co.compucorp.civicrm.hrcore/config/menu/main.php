@@ -10,10 +10,7 @@ return [
         'url' => 'civicrm/contact/add?reset=1&ct=Individual',
         'permission' => 'add contacts',
       ],
-      'Staff Directory' => [
-        'url' => '/civicrm/contact/search/advanced?reset=1',
-        'separator' => 1
-      ],
+      'Staff Directory' => CRM_HRCore_Menu_Config_StaffDirectory::getItems(),
       'Record Communication' => [
         'children' => [
           'New Email' => 'civicrm/activity/email/add?atype=3&action=add&reset=1&context=standalone',
