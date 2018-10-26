@@ -59,7 +59,7 @@ define([
             fields: [
               {
                 name: 'hide_label',
-                label: 'Hide leave type label on public calendars and feeds?',
+                label: 'Hide leave type title on public staff calendar and feeds?',
                 defaultValue: false,
                 helpText: [
                   'The CiviHR self service portal has an all staff calendar.',
