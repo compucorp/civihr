@@ -124,7 +124,7 @@ define([
                 name: 'allow_request_cancelation',
                 label: 'Staff self-cancellation',
                 required: true,
-                defaultValue: '1',
+                defaultValue: '3',
                 helpText: [
                   'Configure whether staff can cancel the leave request themselves without manager approval.',
                   'There are 3 options:',
