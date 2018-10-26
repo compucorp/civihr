@@ -103,7 +103,7 @@ define([
               {
                 name: 'is_active',
                 label: 'Enabled',
-                defaultValue: false
+                defaultValue: true
               }
             ]
           },
