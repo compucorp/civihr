@@ -130,6 +130,26 @@ function hrcore_civicrm_buildForm($formName, &$form) {
 }
 
 /**
+ * Implements hook_civicrm_links().
+ *
+ * @param string $op
+ * @param string $objectName
+ * @param mixed $objectId
+ * @param array $links
+ * @param string $mask
+ * @param array $values
+ */
+function hrcore_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &$values) {
+  $listeners = [
+    new CRM_HRCore_Hook_Links_ContactCustomActions(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($op, $objectName, $objectId, $links, $mask, $values);
+  }
+}
+
+/**
  * Implements hook_civicrm_preProcess().
  *
  * @param string $formName
