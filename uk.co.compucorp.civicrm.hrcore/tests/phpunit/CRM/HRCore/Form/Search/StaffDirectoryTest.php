@@ -421,6 +421,32 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $this->assertEquals($expectedResults, $results);
   }
 
+  public function testExpectedTaskListIsReturned() {
+    $formValues = [];
+    $searchDirectory =  new SearchDirectory($formValues);
+
+    $expectedTaskList = [
+      'Create User Accounts(s)',
+      'Delete Staff',
+      'Delete Staff Permanently',
+      'Export Staff',
+      'Print/merge document'
+    ];
+
+    $form = new CRM_Core_Form_Search();
+    $form->setVar('_taskList', [
+      'Create User Accounts(s)',
+      'Delete contacts',
+      'Delete permanently',
+      'Export contacts',
+      'Print/merge document',
+      'Sample Task',
+      'Add Tags'
+    ]);
+
+    $this->assertEquals($expectedTaskList, array_values($searchDirectory->buildTaskList($form)));
+  }
+
   private function extractContactIds($sql) {
     $result = CRM_Core_DAO::executeQuery($sql);
     $contactId = [];
