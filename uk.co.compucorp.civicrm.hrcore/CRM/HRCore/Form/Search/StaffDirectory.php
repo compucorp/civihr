@@ -267,11 +267,37 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       $orderBy = " ORDER BY " . trim($sort);
     }
 
+    if ($includeContactIDs) {
+      $this->includeContactIDs();
+    }
+
     $sql = $this->selectClause .  $this->fromClause . $this->whereClause . $this->getGroupBy() . $orderBy ;
 
-    return $sql ." LIMIT $offset, $rowCount ";
+    if ($offset || $rowCount) {
+      $sql .= " LIMIT $offset, $rowCount";
+    }
+
+    return $sql;
   }
 
+  /**
+   * Logic for including contact Ids and rebuilding the Where clause
+   * when contact ids are selected via checkboxes in the UI.
+   */
+  public function includeContactIDs() {
+    $contactIds = [];
+    foreach ($this->formValues as $id => $value) {
+      if (substr($id, 0, CRM_Core_Form::CB_PREFIX_LEN) == CRM_Core_Form::CB_PREFIX) {
+        $contactIds[] = substr($id, CRM_Core_Form::CB_PREFIX_LEN);
+      }
+    }
+
+    CRM_Utils_Type::validateAll($contactIds, 'Positive');
+    if (!empty($contactIds)) {
+      $this->where[] = " ( contact_a.id IN (" . implode(',', $contactIds) . " ) ) ";
+      $this->whereClause =  ' WHERE ' . implode(' AND ', $this->where);
+    }
+  }
 
   /**
    * The part of the query that returns the JOIN to the job contracts table.
@@ -496,6 +522,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * {@inheritdoc}
    */
   public function buildTaskList(CRM_Core_Form_Search $form) {
+    return  $form->getVar('_taskList');
     $newTaskList = [];
     $taskListLabelMapping = [
       'Create User Accounts(s)' => 'Create User Accounts(s)',
