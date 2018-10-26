@@ -379,6 +379,74 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $this->assertEquals($expectedResults, $results);
   }
 
+  public function testRightContactsAreReturnedWhenIncludeContactIsTrue() {
+    $contact1 = ContactFabricator::fabricate(['first_name' => 'Contact1']);
+    $contact2 = ContactFabricator::fabricate(['first_name' => 'Contact2']);
+    $contact3 = ContactFabricator::fabricate(['first_name' => 'Contact3']);
+
+    $formValues = [];
+    //We need to simulate the values here when a contact is selected via the
+    //checkbox via the UI.
+    $formValues['mark_x_'. $contact1['id']] = '';
+    $formValues['mark_x_'. $contact3['id']] = '';
+
+    $searchDirectory =  new SearchDirectory($formValues);
+    $includeContactId = TRUE;
+    $results = $this->extractColumnValues($searchDirectory->all(0, 0, NULL, $includeContactId));
+
+    //Only contact1 and contact3 are expected
+    $expectedResults = [
+      [
+        'contact_id' => $contact1['id'],
+        'display_name' => $contact1['display_name'],
+        'work_phone' => NULL,
+        'work_email' => NULL,
+        'manager' => NULL,
+        'location' => NULL,
+        'department' => NULL,
+        'job_title' => NULL,
+      ],
+      [
+        'contact_id' => $contact3['id'],
+        'display_name' => $contact3['display_name'],
+        'work_phone' => NULL,
+        'work_email' => NULL,
+        'manager' => NULL,
+        'location' => NULL,
+        'department' => NULL,
+        'job_title' => NULL,
+      ]
+    ];
+
+    $this->assertEquals($expectedResults, $results);
+  }
+
+  public function testExpectedTaskListIsReturned() {
+    $formValues = [];
+    $searchDirectory =  new SearchDirectory($formValues);
+
+    $expectedTaskList = [
+      'Create User Accounts(s)',
+      'Delete Staff',
+      'Delete Staff Permanently',
+      'Export Staff',
+      'Print/merge document'
+    ];
+
+    $form = new CRM_Core_Form_Search();
+    $form->setVar('_taskList', [
+      'Create User Accounts(s)',
+      'Delete contacts',
+      'Delete permanently',
+      'Export contacts',
+      'Print/merge document',
+      'Sample Task',
+      'Add Tags'
+    ]);
+
+    $this->assertEquals($expectedTaskList, array_values($searchDirectory->buildTaskList($form)));
+  }
+
   private function extractContactIds($sql) {
     $result = CRM_Core_DAO::executeQuery($sql);
     $contactId = [];
