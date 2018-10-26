@@ -298,6 +298,24 @@ define([
             });
           });
 
+          describe('when default entitlement field is empty', function () {
+            beforeEach(function () {
+              absenceTypeSaverSpy.and.returnValue($q.resolve());
+              fillWizardIn();
+
+              controller.fieldsIndexed.default_entitlement.value = '';
+
+              submitWizard();
+              $rootScope.$digest();
+            });
+
+            it('sends the default entitlement to "0"', function () {
+              expect(AbsenceType.save).toHaveBeenCalledWith(jasmine.objectContaining({
+                default_entitlement: '0'
+              }));
+            });
+          });
+
           describe('when there are errors', function () {
             var error = 'error';
 

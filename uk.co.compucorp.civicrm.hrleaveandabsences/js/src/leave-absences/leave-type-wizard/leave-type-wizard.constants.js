@@ -88,7 +88,6 @@ define([
                 name: 'default_entitlement',
                 label: 'Default entitlement',
                 defaultValue: '',
-                required: true,
                 validations: [VALIDATOR_DECIMAL]
               },
               {

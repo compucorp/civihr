@@ -348,12 +348,17 @@ define([
 
     /**
      * Pre-processes parameters for sending them to the backend.
+     * - sets default entitlement to 0 if not provided
      * - flushes dependent fields' values
      * - deletes fields held for UX only
      *
      * @param {Object} params
      */
     function preProcessParams (params) {
+      if (params.default_entitlement === '') {
+        params.default_entitlement = '0';
+      }
+
       if (!params.allow_carry_forward) {
         params.max_number_of_days_to_carry_forward = '';
       }
