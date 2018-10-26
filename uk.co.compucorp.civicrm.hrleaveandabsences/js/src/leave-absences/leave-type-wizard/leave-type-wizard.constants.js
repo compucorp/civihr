@@ -29,11 +29,11 @@ define([
                 defaultValue: '',
                 label: 'Title',
                 helpText: [
-                  'The Leave Type Title is displayed for everyone on all leave reports and request forms.' +
-                  'For example, if you enter "Annual Leave" here, all your staff will see a Leave Type called "Annual Leave" in their Self Service Portal screens.' +
-                  'Use a term that is familiar to them, and a part of your organisation"s leave policies.' +
-                  'Other examples: "Annual Leave Full-time" , "Annual Leave Part-time" , "Paid Sick Leave", "Unpaid Sick Leave", "Compensatory Off".' +
-                  DOUBLE_LINE_BREAK +
+                  'The Leave Type Title is displayed for everyone on all leave reports and request forms.',
+                  'For example, if you enter "Annual Leave" here, all your staff will see a Leave Type called "Annual Leave" in their Self Service Portal screens.',
+                  'Use a term that is familiar to them, and a part of your organisation\'s leave policies.',
+                  'Other examples: "Annual Leave Full-time" , "Annual Leave Part-time" , "Paid Sick Leave", "Unpaid Sick Leave", "Compensatory Off".',
+                  DOUBLE_LINE_BREAK,
                   'The Leave Type Title is also displayed in the Staff Calendar, but can be made private later in this wizard.'
                 ].join(' ')
               },
