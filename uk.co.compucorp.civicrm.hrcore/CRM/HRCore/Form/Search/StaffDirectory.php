@@ -122,6 +122,8 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
           $this->where[] = CRM_Contact_BAO_Query::buildClause($alias, $op, $value);
       }
     }
+
+    $this->where[] = "contact_a.contact_type = 'Individual' AND contact_a.is_deleted = 0";
   }
 
   /**
@@ -253,7 +255,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
   ) {
 
     $orderBy = '';
-    if ($sort) {
+    if ($sort instanceof CRM_Utils_Sort) {
       $orderBy = " ORDER BY " . trim($sort->orderBy());
     }
 
