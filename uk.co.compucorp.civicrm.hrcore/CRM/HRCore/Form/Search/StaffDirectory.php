@@ -255,8 +255,16 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
   ) {
 
     $orderBy = '';
-    if ($sort instanceof CRM_Utils_Sort) {
-      $orderBy = " ORDER BY " . trim($sort->orderBy());
+
+    if ($sort) {
+      if ($sort instanceof CRM_Utils_Sort) {
+        $sort = trim($sort->orderBy());
+      }
+      else{
+        $sort = trim($sort);
+      }
+
+      $orderBy = " ORDER BY " . trim($sort);
     }
 
     $sql = $this->selectClause .  $this->fromClause . $this->whereClause . $this->getGroupBy() . $orderBy ;
