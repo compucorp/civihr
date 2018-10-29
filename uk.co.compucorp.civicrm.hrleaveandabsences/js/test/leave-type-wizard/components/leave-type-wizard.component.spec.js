@@ -73,6 +73,10 @@ define([
       expect($log.debug).toHaveBeenCalledWith('Controller: LeaveTypeWizardController');
     });
 
+    it('has form sections', function () {
+      expect(controller.sections).toEqual(formSections);
+    });
+
     describe('before init ends', function () {
       beforeEach(function () {
         controller.$onInit();
@@ -162,10 +166,6 @@ define([
         })).toEqual(sampleLeaveTypeCategoriesOptionGroupValues);
         expect(_.map(controller.leaveTypeCategories, 'icon'))
           .toEqual(_.values(leaveTypeCategoriesIcons));
-      });
-
-      it('has form sections', function () {
-        expect(controller.sections).toBe(formSections);
       });
 
       it('marks the "General" tab as the first and last one because it is the only tab in the section', function () {
@@ -369,15 +369,6 @@ define([
               expect(controller.loading).toBe(false);
             });
           });
-
-          /**
-           * Submits wizard form
-           */
-          function submitWizard () {
-            controller.openSection(1);
-            controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
-            controller.openNextTab();
-          }
         });
       });
 
@@ -597,6 +588,35 @@ define([
         });
       });
 
+      describe('when user selects the "Leave" category', function () {
+        beforeEach(function () {
+          controller.fieldsIndexed.category.value = 'leave';
+
+          $rootScope.$digest();
+        });
+
+        describe('when user submits the whole wizard form', function () {
+          var params;
+
+          beforeEach(function () {
+            absenceTypeSaverSpy.and.returnValue($q.resolve());
+            fillWizardIn();
+            submitWizard();
+            $rootScope.$digest();
+
+            params = AbsenceType.save.calls.mostRecent().args[0];
+          });
+
+          it('sends `allow_accruals_request` as "false"', function () {
+            expect(params.allow_accruals_request).toBe(false);
+          });
+
+          it('sends `add_public_holiday_to_entitlement` as "false"', function () {
+            expect(params.allow_accruals_request).toBe(false);
+          });
+        });
+      });
+
       describe('when user selects the "Sickness" category', function () {
         beforeEach(function () {
           controller.fieldsIndexed.category.value = 'sickness';
@@ -615,6 +635,35 @@ define([
         it('marks the "Leave Requests" tab as the last one in the section', function () {
           expect(tabsIndexed['leave-requests'].last).toBe(true);
         });
+
+        describe('when user submits the whole wizard form', function () {
+          var params;
+
+          beforeEach(function () {
+            absenceTypeSaverSpy.and.returnValue($q.resolve());
+            fillWizardIn();
+            submitWizard();
+            $rootScope.$digest();
+
+            params = AbsenceType.save.calls.mostRecent().args[0];
+          });
+
+          it('sends `must_take_public_holiday_as_leave` as "false"', function () {
+            expect(params.must_take_public_holiday_as_leave).toBe(false);
+          });
+
+          it('sends `allow_carry_forward` as "false"', function () {
+            expect(params.allow_carry_forward).toBe(false);
+          });
+
+          it('sends `allow_accruals_request` as "false"', function () {
+            expect(params.allow_accruals_request).toBe(false);
+          });
+
+          it('sends `add_public_holiday_to_entitlement` as "false"', function () {
+            expect(params.allow_accruals_request).toBe(false);
+          });
+        });
       });
 
       /**
@@ -626,6 +675,15 @@ define([
         controller.fieldsIndexed.default_entitlement.value = '100';
 
         $rootScope.$digest();
+      }
+
+      /**
+       * Submits wizard form
+       */
+      function submitWizard () {
+        controller.openSection(1);
+        controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
+        controller.openNextTab();
       }
     });
 

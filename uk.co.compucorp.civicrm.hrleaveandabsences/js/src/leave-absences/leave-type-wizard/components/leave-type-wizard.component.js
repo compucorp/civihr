@@ -7,7 +7,7 @@ define([
   LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
     'AbsenceType', 'Contact', 'form-sections', 'leave-type-categories-icons',
     'leave-type-categories-hidden-tabs-by-category', 'notificationService',
-    'OptionGroup', 'shared-settings'];
+    'OptionGroup', 'preprocess-rules-by-category', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -21,7 +21,7 @@ define([
 
   function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
     Contact, formSections, leaveTypeCategoriesIcons, hiddenTabsByCategory,
-    notificationService, OptionGroup, sharedSettings) {
+    notificationService, OptionGroup, preProcessRulesByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var absenceTypesExistingTitles = [];
@@ -38,7 +38,7 @@ define([
     vm.fieldsIndexed = {};
     vm.leaveTypeCategories = [];
     vm.loading = true;
-    vm.sections = formSections;
+    vm.sections = _.cloneDeep(formSections);
 
     vm.$onInit = $onInit;
     vm.checkIfAccordionHeaderClicked = checkIfAccordionHeaderClicked;
@@ -441,6 +441,21 @@ define([
     }
 
     /**
+     * Pre-processes parameters depending on the selected leave category.
+     */
+    function preProcessParamsDependingOnLeaveCategory (params) {
+      var preProcessRules = preProcessRulesByCategory[params.category];
+
+      if (!preProcessRules) {
+        return;
+      }
+
+      _.each(preProcessRules, function (value, fieldName) {
+        params[fieldName] = value;
+      });
+    }
+
+    /**
      * Saves leave type by sending an API call to the backend
      * with all appropriate parameters.
      */
@@ -452,6 +467,7 @@ define([
 
       vm.loading = true;
 
+      preProcessParamsDependingOnLeaveCategory(params);
       preProcessParams(params);
       AbsenceType.save(params)
         .then(navigateToLeaveTypesList)

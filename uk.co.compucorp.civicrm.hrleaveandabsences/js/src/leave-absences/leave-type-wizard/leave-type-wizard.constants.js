@@ -229,5 +229,11 @@ define([
     .constant('leave-type-categories-hidden-tabs-by-category', {
       leave: [],
       sickness: ['public-holidays', 'carry-forwards']
+    })
+    .constant('preprocess-rules-by-category', {
+      sickness: {
+        must_take_public_holiday_as_leave: false,
+        allow_carry_forward: false
+      }
     });
 });
