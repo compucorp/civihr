@@ -25,6 +25,7 @@ define([
       { name: 'leave', label: 'Leave' },
       { name: 'sickness', label: 'Sickness' }
     ];
+    var tabsIndexed = {};
 
     beforeEach(angular.mock.module('leave-type-wizard'));
 
@@ -88,6 +89,10 @@ define([
       beforeEach(function () {
         secondSection = controller.sections[1];
         secondSectionFirstTab = _.first(secondSection.tabs);
+        tabsIndexed = _.chain(controller.sections)
+          .flatMap('tabs')
+          .keyBy('name')
+          .value();
 
         controller.$onInit();
         $rootScope.$digest();
@@ -163,6 +168,19 @@ define([
         expect(controller.sections).toBe(formSections);
       });
 
+      it('marks the "General" tab as the first and last one because it is the only tab in the section', function () {
+        expect(tabsIndexed.general.first).toBe(true);
+        expect(tabsIndexed.general.last).toBe(true);
+      });
+
+      it('marks the "Basic" tab as the first one in the section', function () {
+        expect(tabsIndexed.basic.first).toBe(true);
+      });
+
+      it('marks the "Carry Forwards" tab as the last one in the section', function () {
+        expect(tabsIndexed['carry-forwards'].last).toBe(true);
+      });
+
       describe('when user clicks the "next section" button', function () {
         beforeEach(function () {
           controller.openNextTab();
@@ -208,10 +226,6 @@ define([
           expect(secondSectionFirstTab.active).toBe(true);
         });
 
-        it('tells that the user is on the first tab section', function () {
-          expect(controller.isOnSectionFirstTab).toEqual(true);
-        });
-
         describe('when user selects the middle tab', function () {
           beforeEach(function () {
             controller.openActiveSectionTab(1);
@@ -223,11 +237,6 @@ define([
 
           it('expands the middle tab', function () {
             expect(secondSection.tabs[1].active).toBe(true);
-          });
-
-          it('tells that the user is neither on the first tab nor on the last one', function () {
-            expect(controller.isOnSectionLastTab).toEqual(false);
-            expect(controller.isOnSectionFirstTab).toEqual(false);
           });
         });
 
@@ -248,16 +257,6 @@ define([
             it('opens the first tab', function () {
               expect(secondSection.tabs[0].active).toEqual(true);
             });
-          });
-        });
-
-        describe('when user selects the last tab', function () {
-          beforeEach(function () {
-            controller.openActiveSectionTab(secondSection.tabs.length - 1);
-          });
-
-          it('tells that the user is on the last tab', function () {
-            expect(controller.isOnSectionLastTab).toEqual(true);
           });
         });
 
@@ -595,6 +594,26 @@ define([
           it('returns `false`', function () {
             expect(controller.checkIfAccordionHeaderClicked(mockedEvent)).toBe(false);
           });
+        });
+      });
+
+      describe('when user selects the "Sickness" category', function () {
+        beforeEach(function () {
+          controller.fieldsIndexed.category.value = 'sickness';
+
+          $rootScope.$digest();
+        });
+
+        it('hides the "Public Holidays" tab', function () {
+          expect(tabsIndexed['public-holidays'].hidden).toBe(true);
+        });
+
+        it('hides the "Carry Forwards" tab', function () {
+          expect(tabsIndexed['carry-forwards'].hidden).toBe(true);
+        });
+
+        it('marks the "Leave Requests" tab as the last one in the section', function () {
+          expect(tabsIndexed['leave-requests'].last).toBe(true);
         });
       });
 

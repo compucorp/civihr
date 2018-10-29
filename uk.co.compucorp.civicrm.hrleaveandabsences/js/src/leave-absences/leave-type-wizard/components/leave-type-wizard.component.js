@@ -6,7 +6,8 @@ define([
 ], function (angular, _) {
   LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
     'AbsenceType', 'Contact', 'form-sections', 'leave-type-categories-icons',
-    'notificationService', 'OptionGroup', 'shared-settings'];
+    'leave-type-categories-hidden-tabs-by-category', 'notificationService',
+    'OptionGroup', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -19,8 +20,8 @@ define([
   };
 
   function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
-    Contact, formSections, leaveTypeCategoriesIcons, notificationService,
-    OptionGroup, sharedSettings) {
+    Contact, formSections, leaveTypeCategoriesIcons, hiddenTabsByCategory,
+    notificationService, OptionGroup, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var absenceTypesExistingTitles = [];
@@ -28,6 +29,7 @@ define([
       sectionIndex: null,
       tabIndex: null
     };
+    var tabsIndexed = {};
     var vm = this;
 
     vm.availableColours = [];
@@ -59,6 +61,8 @@ define([
         // @TODO the suppressor must be completely removed once all leave categories are supported
         .then(temporarilySuppressNotYetUsedLeaveCategories)
         .then(initDefaultView)
+        .then(indexTabs)
+        .then(markFirstAndLastTabsInSections)
         .then(indexFields)
         .then(initDefaultValues)
         .then(initFieldsWatchers)
@@ -135,9 +139,15 @@ define([
      * Indexes fields for quicker access and sets them to the component
      */
     function indexFields () {
-      vm.fieldsIndexed = _.chain(vm.sections)
-        .flatMap('tabs')
+      vm.fieldsIndexed = _.chain(tabsIndexed)
         .flatMap('fields')
+        .keyBy('name')
+        .value();
+    }
+
+    function indexTabs () {
+      tabsIndexed = _.chain(vm.sections)
+        .flatMap('tabs')
         .keyBy('name')
         .value();
     }
@@ -179,6 +189,7 @@ define([
     function initFieldsWatchers () {
       watchAllowCarryForwardField();
       watchCarryForwardExpirySwitch();
+      watchLeaveCategorySelector();
     }
 
     /**
@@ -209,6 +220,24 @@ define([
     function initValidators () {
       _.each(vm.fieldsIndexed, function (field) {
         initValidatorsForField(field);
+      });
+    }
+
+    /**
+     * Marks first and last tabs in sections with according flags
+     */
+    function markFirstAndLastTabsInSections () {
+      _.each(tabsIndexed, function (tab) {
+        delete tab.last;
+        delete tab.first;
+      });
+      vm.sections.forEach(function (section) {
+        var visibleTabs = section.tabs.filter(function (tab) {
+          return !tab.hidden;
+        });
+
+        _.first(visibleTabs).first = true;
+        _.last(visibleTabs).last = true;
       });
     }
 
@@ -295,9 +324,18 @@ define([
      */
     function openNextTab () {
       var activeTab = getActiveTab();
+      var nextTabIndex = _.findIndex(vm.sections[state.sectionIndex].tabs,
+        function (tab, tabIndex) {
+          return tabIndex > state.tabIndex && !tab.hidden;
+        });
 
       validateTab(activeTab);
-      openActiveSectionTab(state.tabIndex + 1);
+
+      if (nextTabIndex === -1) {
+        openNextSection();
+      } else {
+        openActiveSectionTab(nextTabIndex);
+      }
     }
 
     /**
@@ -321,7 +359,19 @@ define([
      * Opens the previous tab in the active section
      */
     function openPreviousTab () {
-      openActiveSectionTab(state.tabIndex - 1);
+      var activeTab = getActiveTab();
+      var previousTabIndex = _.findIndex(vm.sections[state.sectionIndex].tabs,
+        function (tab, tabIndex) {
+          return tabIndex < state.tabIndex && !tab.hidden;
+        });
+
+      validateTab(activeTab);
+
+      if (previousTabIndex === -1) {
+        openPreviousSection();
+      } else {
+        openActiveSectionTab(previousTabIndex);
+      }
     }
 
     /**
@@ -356,27 +406,13 @@ define([
      */
     function openActiveSectionTab (tabIndex) {
       var activeSection = vm.sections[state.sectionIndex];
-      var tabs = activeSection.tabs;
-      var nextTab = tabs[tabIndex];
 
-      tabs.forEach(function (tab) {
+      activeSection.tabs.forEach(function (tab) {
         tab.active = false;
       });
 
-      if (!nextTab) {
-        if (tabIndex === -1) {
-          openPreviousSection();
-        } else {
-          openNextSection();
-        }
-
-        return;
-      }
-
       state.tabIndex = tabIndex;
-      nextTab.active = true;
-      vm.isOnSectionLastTab = tabIndex === tabs.length - 1;
-      vm.isOnSectionFirstTab = tabIndex === 0;
+      activeSection.tabs[tabIndex].active = true;
     }
 
     /**
@@ -463,6 +499,17 @@ define([
     }
 
     /**
+     * Toggles tabs depending on the leave category
+     *
+     * @param {String} category "leave", "sickness" etc
+     */
+    function toggleTabsDependingOnLeaveCategory (category) {
+      _.each(tabsIndexed, function (tab) {
+        tab.hidden = _.includes(hiddenTabsByCategory[category], tab.name);
+      });
+    }
+
+    /**
      * Validates a field
      *
      * @param {Object} field
@@ -533,6 +580,19 @@ define([
         vm.fieldsIndexed.carry_forward_expiration_duration.hidden =
           !expirySwitch.value || expirySwitch.hidden;
       }, true);
+    }
+
+    /**
+     * Watches the leave category selector field:
+     * - it toggles tabs
+     */
+    function watchLeaveCategorySelector () {
+      $scope.$watch(function () {
+        return vm.fieldsIndexed.category.value;
+      }, function (category) {
+        toggleTabsDependingOnLeaveCategory(category);
+        markFirstAndLastTabsInSections();
+      });
     }
 
     /**

@@ -18,6 +18,7 @@
             <div class="col-md-3" ng-if="section.tabs.length > 1">
               <ul class="nav nav-tabs nav-tabs-stacked">
                 <li ng-repeat="(tabIndex, tab) in section.tabs"
+                  ng-if="!tab.hidden"
                   ng-class="{ active: tab.active }"
                   ng-click="form.openActiveSectionTab(tabIndex)">
                   <a href>
