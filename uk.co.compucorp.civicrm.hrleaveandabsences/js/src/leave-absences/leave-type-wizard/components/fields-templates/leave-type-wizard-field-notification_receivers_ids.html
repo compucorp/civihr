@@ -1,13 +1,14 @@
 <div class="row">
-  <div class="col-md-4">
+  <div class="col-md-6">
     <ui-select
+      multiple
       ng-model="field.value"
       ng-required="true">
       <ui-select-match placeholder="Search Staff Member" allow-clear>
-        <span ng-bind="$select.selected.display_name"></span>
+        {{$item.display_name}}
       </ui-select-match>
-      <ui-select-choices repeat="contact.id as contact in (form.contacts | filter: $select.search) track by contact.id">
-        <span ng-bind="contact.display_name"></span>
+      <ui-select-choices repeat="contact.contact_id as contact in form.contacts">
+        {{contact.display_name}}
       </ui-select-choices>
     </ui-select>
   </div>

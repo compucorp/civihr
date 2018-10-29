@@ -103,7 +103,7 @@ define([
               {
                 name: 'notification_receivers_ids',
                 label: 'Backup leave approver',
-                defaultValue: '',
+                defaultValue: [],
                 helpText: [
                   'You can configure the system with a backup leave approver that will be notified of a leave request if a staff member does not have an active leave approver.',
                   DOUBLE_LINE_BREAK,
