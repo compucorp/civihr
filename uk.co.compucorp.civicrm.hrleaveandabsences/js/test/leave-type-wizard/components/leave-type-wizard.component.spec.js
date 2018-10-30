@@ -732,6 +732,32 @@ define([
         });
       });
 
+      describe('when a loaded value is a decimal with more than one decimal digit', function () {
+        beforeEach(function () {
+          absenceType.default_entitlement = '9.10';
+
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('strips the value to a single decimal digit', function () {
+          expect(controller.fieldsIndexed.default_entitlement.value).toBe('9.1');
+        });
+      });
+
+      describe('when a loaded value is a whole decimal', function () {
+        beforeEach(function () {
+          absenceType.default_entitlement = '9.00';
+
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('strips the value to a whole number', function () {
+          expect(controller.fieldsIndexed.default_entitlement.value).toBe('9');
+        });
+      });
+
       describe('when "Default entitlement" is "0.00"', function () {
         beforeEach(function () {
           absenceType.default_entitlement = '0.00';

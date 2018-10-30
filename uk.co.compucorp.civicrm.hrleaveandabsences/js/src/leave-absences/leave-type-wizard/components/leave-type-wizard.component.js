@@ -264,23 +264,36 @@ define([
 
     /**
      * Sets values to the field map from the loaded Absence Type.
-     * - At first, it simply overrides values with loaded ones
+     * - At first, it simply overrides values with loaded ones, however:
+     *   - if the default value is boolean, it transforms "1" to true, else to false
+     *   - if the loaded value is a whole decimal, it transform to a whole number
+     *   - if the loaded value is a decimal, it only leaves 1 decimal digit
      * - The Category field is then set as a name from the value
      * - If the Default Entitlement field is "0.00", it set to an empty string
      */
     function initExistingValues () {
       _.each(vm.fieldsIndexed, function (field) {
+        var loadedValue = absenceType[field.name];
+
+        if (loadedValue === undefined) {
+          return;
+        }
+
         if (typeof (field.defaultValue) === 'boolean') {
-          field.value = absenceType[field.name] === '1';
-        } else if (absenceType[field.name] !== undefined) {
-          field.value = absenceType[field.name];
+          field.value = loadedValue === '1';
+        } else if (/^\d+\.[0]+$/.test(loadedValue)) {
+          field.value = loadedValue.replace(/^(\d+)\..+$/, '$1');
+        } else if (/^\d+\.\d{2,}$/.test(loadedValue)) {
+          field.value = loadedValue.replace(/^(\d+\.\d).+$/, '$1');
+        } else {
+          field.value = loadedValue;
         }
       });
 
       vm.fieldsIndexed.category.value =
         _.find(vm.leaveTypeCategories, { value: absenceType.category }).name;
 
-      if (vm.fieldsIndexed.default_entitlement.value === '0.00') {
+      if (vm.fieldsIndexed.default_entitlement.value === '0') {
         vm.fieldsIndexed.default_entitlement.value = '';
       }
     }
