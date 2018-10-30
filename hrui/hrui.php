@@ -405,7 +405,6 @@ function hrui_civicrm_summary($contactId, &$content, &$contentPlacement) {
     return;
   }
 
-  $content['userid'] = $result['values'][0]['id'];
   $content['username'] = $result['values'][0]['name'];
   $contentPlacement = NULL;
 }
