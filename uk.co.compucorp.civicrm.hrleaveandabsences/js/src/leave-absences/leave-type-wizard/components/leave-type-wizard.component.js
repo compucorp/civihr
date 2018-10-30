@@ -45,11 +45,13 @@ define([
     vm.sections = _.cloneDeep(formSections);
 
     vm.$onInit = $onInit;
+    vm.cancel = cancel;
     vm.checkIfAccordionHeaderClicked = checkIfAccordionHeaderClicked;
     vm.goBack = goBack;
     vm.goNext = goNext;
     vm.openActiveSectionTab = openActiveSectionTab;
     vm.openSection = openSection;
+    vm.submit = submit;
 
     function $onInit () {
       vm.loading = true;
@@ -84,6 +86,15 @@ define([
         .then(loadAbsenceTypesExistingTitles)
         .then(vm.isEditMode && removeLoadedAbsenceTypeTitleFromExistingTitles)
         .then(validateTitleField);
+    }
+
+    /**
+     * Cancels form filling and redirects to the leave types list page
+     */
+    function cancel () {
+      vm.loading = true;
+
+      navigateToLeaveTypesList();
     }
 
     /**
@@ -481,9 +492,7 @@ define([
       var isOnFirstSection = state.sectionIndex === 0;
 
       if (isOnFirstSection) {
-        vm.loading = true;
-
-        navigateToLeaveTypesList();
+        cancel();
 
         return;
       }
