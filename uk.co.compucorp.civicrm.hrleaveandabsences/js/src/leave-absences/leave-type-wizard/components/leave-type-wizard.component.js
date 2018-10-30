@@ -77,6 +77,7 @@ define([
         .then(initFieldsWatchers)
         .then(initValidators)
         .then(initCustomValidators)
+        .then(vm.isEditMode && openSettingsSection)
         .then(function () {
           vm.loading = false;
         })
@@ -443,6 +444,22 @@ define([
     }
 
     /**
+     * Opens a section tab by its index and collapses all other section tabs
+     *
+     * @param {Number} tabIndex
+     */
+    function openActiveSectionTab (tabIndex) {
+      var activeSection = vm.sections[state.sectionIndex];
+
+      activeSection.tabs.forEach(function (tab) {
+        tab.active = false;
+      });
+
+      state.tabIndex = tabIndex;
+      activeSection.tabs[tabIndex].active = true;
+    }
+
+    /**
      * Opens next section. If there are no more sections, then submits the form.
      */
     function openNextSection () {
@@ -500,19 +517,10 @@ define([
     }
 
     /**
-     * Opens a section tab by its index and collapses all other section tabs
-     *
-     * @param {Number} tabIndex
+     * Opens Settings section
      */
-    function openActiveSectionTab (tabIndex) {
-      var activeSection = vm.sections[state.sectionIndex];
-
-      activeSection.tabs.forEach(function (tab) {
-        tab.active = false;
-      });
-
-      state.tabIndex = tabIndex;
-      activeSection.tabs[tabIndex].active = true;
+    function openSettingsSection () {
+      openSection(_.findIndex(vm.sections, { name: 'settings' }));
     }
 
     /**

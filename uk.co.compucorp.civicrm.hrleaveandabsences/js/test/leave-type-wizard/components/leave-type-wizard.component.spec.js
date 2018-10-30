@@ -730,6 +730,10 @@ define([
 
           expect(controller.fieldsIndexed.category.value).toBe(categoryName);
         });
+
+        it('opens Settings section', function () {
+          expect(_.find(controller.sections, { name: 'settings' }).active).toBe(true);
+        });
       });
 
       describe('when a loaded value is a decimal with more than one decimal digit', function () {
