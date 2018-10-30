@@ -1,5 +1,9 @@
 <div>
-  <h1>Create leave/absence type</h1>
+  <h1 ng-switch="form.isEditMode">
+    <span ng-switch-when="false">Create</span>
+    <span ng-switch-when="true">Edit</span>
+    leave/absence type
+  </h1>
   <crm-loading show="!form.loading">
     <div class="panel-group">
       <uib-accordion>
