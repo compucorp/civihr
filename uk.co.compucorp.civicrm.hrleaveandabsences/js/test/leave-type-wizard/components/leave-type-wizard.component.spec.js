@@ -734,6 +734,18 @@ define([
         it('opens Settings section', function () {
           expect(_.find(controller.sections, { name: 'settings' }).active).toBe(true);
         });
+
+        it('sets the Category field view mode to column', function () {
+          expect(controller.fieldsIndexed.category.labelLayout).toBeUndefined();
+        });
+
+        it('sets the Category field label to "Category"', function () {
+          expect(controller.fieldsIndexed.category.label).toBe('Category');
+        });
+
+        it('makes the Category field not required', function () {
+          expect(controller.fieldsIndexed.category.required).toBeUndefined();
+        });
       });
 
       describe('when a loaded value is a decimal with more than one decimal digit', function () {

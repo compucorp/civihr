@@ -80,12 +80,30 @@ define([
         .then(initValidators)
         .then(initCustomValidators)
         .then(vm.isEditMode && openSettingsSection)
+        .then(vm.isEditMode && adjustCategoryFieldForEditingMode)
         .then(function () {
           vm.loading = false;
         })
         .then(loadAbsenceTypesExistingTitles)
         .then(vm.isEditMode && removeLoadedAbsenceTypeTitleFromExistingTitles)
         .then(validateTitleField);
+    }
+
+    /**
+     * Adjusts Category field in edit mode:
+     * - sets the field to column view by resetting the `labelLayout` property
+     * - updates the label
+     * - makes field not required
+     *
+     * @NOTE it is expected that in UI the user is not able to edit this field
+     */
+    function adjustCategoryFieldForEditingMode () {
+      var field = vm.fieldsIndexed.category;
+
+      delete field.labelLayout;
+      delete field.required;
+
+      field.label = 'Category';
     }
 
     /**
