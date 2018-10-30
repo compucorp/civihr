@@ -46,6 +46,7 @@ define([
         'all',
         'calculateToilExpiryDate',
         'canExpire',
+        'findById',
         'getAvailableColours',
         'loadCalculationUnits',
         'save'
@@ -300,6 +301,50 @@ define([
 
         it('returns error', function () {
           expect(expectedError).toBe(apiError);
+        });
+      });
+    });
+
+    describe('findById()', function () {
+      var leaveTypeId = '28';
+      var absenceType = { id: leaveTypeId };
+
+      beforeEach(function () {
+        spyOn(AbsenceType, 'all').and.returnValue($q.resolve([absenceType]));
+      });
+
+      describe('basic tests', function () {
+        var foundAbsenceType;
+
+        beforeEach(function (done) {
+          AbsenceType.findById(leaveTypeId)
+            .then(function (_foundAbsenceType_) {
+              foundAbsenceType = _foundAbsenceType_;
+            })
+            .finally(done);
+          $rootScope.$digest();
+        });
+
+        it('calls models `all()` with an ID of the leave type', function () {
+          expect(AbsenceType.all).toHaveBeenCalledWith({ id: leaveTypeId }, undefined);
+        });
+
+        it('returns one found absence type', function () {
+          expect(foundAbsenceType).toBe(absenceType);
+        });
+      });
+
+      describe('when additional parameters are passed', function () {
+        var additionalParams = { any: 'param' };
+
+        beforeEach(function (done) {
+          AbsenceType.findById(leaveTypeId, additionalParams)
+            .finally(done);
+          $rootScope.$digest();
+        });
+
+        it('calls models `all()` method with additional parameters', function () {
+          expect(AbsenceType.all).toHaveBeenCalledWith({ id: leaveTypeId }, additionalParams);
         });
       });
     });

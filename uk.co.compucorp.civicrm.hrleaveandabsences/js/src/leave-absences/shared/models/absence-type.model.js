@@ -68,6 +68,20 @@ define([
         },
 
         /**
+         * Get an absence type by its ID
+         *
+         * @param  {String} id
+         * @param  {Object} additionalParams
+         * @return {Promise}
+         */
+        findById: function (id, additionalParams) {
+          return this.all({ id: id }, additionalParams)
+            .then(function (absenceTypes) {
+              return _.first(absenceTypes);
+            });
+        },
+
+        /**
          * Retrieves yet unused absence type colours
          *
          * @return {Promise} resolves with {Array}
