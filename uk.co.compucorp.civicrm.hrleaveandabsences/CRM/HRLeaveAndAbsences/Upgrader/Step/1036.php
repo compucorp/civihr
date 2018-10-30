@@ -64,6 +64,9 @@ trait CRM_HRLeaveAndAbsences_Upgrader_Step_1036 {
       $absenceType->allow_accruals_request = 0;
       $absenceType->must_take_public_holiday_as_leave = 0;
       $absenceType->allow_carry_forward = 0;
+      $absenceType->max_number_of_days_to_carry_forward = 0;
+      $absenceType->carry_forward_expiration_duration = 0;
+      $absenceType->carry_forward_expiration_unit = 0;
     }
 
     AbsenceType::create($absenceType->toArray());
