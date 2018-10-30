@@ -15,7 +15,10 @@ define([
       controllerAs: 'form',
       templateUrl: ['shared-settings', function (sharedSettings) {
         return sharedSettings.sourcePath + 'leave-type-wizard/components/leave-type-wizard.html';
-      }]
+      }],
+      bindings: {
+        leaveTypeId: '@'
+      }
     }
   };
 
@@ -25,6 +28,7 @@ define([
     $log.debug('Controller: LeaveTypeWizardController');
 
     var absenceTypesExistingTitles = null;
+    var absenceType;
     var state = {
       sectionIndex: null,
       tabIndex: null
@@ -49,12 +53,14 @@ define([
 
     function $onInit () {
       vm.loading = true;
+      vm.isEditMode = !!vm.leaveTypeId;
 
       $q.all([
         // @TODO lazy load the contacts and colours
         loadContacts(),
         loadAvailableColours(),
-        loadLeaveTypeCategories()
+        loadLeaveTypeCategories(),
+        vm.isEditMode && loadAbsenceType()
       ])
         // @NOTE this is a temporary option group suppressor to match user stories
         // @TODO the suppressor should be amended to gradually support other leave categories
@@ -67,6 +73,7 @@ define([
         })
         .then(markFirstAndLastTabsInSections)
         .then(initDefaultValues)
+        .then(vm.isEditMode && initExistingValues)
         .then(initFieldsWatchers)
         .then(initValidators)
         .then(initCustomValidators)
@@ -74,6 +81,7 @@ define([
           vm.loading = false;
         })
         .then(loadAbsenceTypesExistingTitles)
+        .then(vm.isEditMode && removeLoadedAbsenceTypeTitleFromExistingTitles)
         .then(validateTitleField);
     }
 
@@ -255,6 +263,29 @@ define([
     }
 
     /**
+     * Sets values to the field map from the loaded Absence Type.
+     * - At first, it simply overrides values with loaded ones
+     * - The Category field is then set as a name from the value
+     * - If the Default Entitlement field is "0.00", it set to an empty string
+     */
+    function initExistingValues () {
+      _.each(vm.fieldsIndexed, function (field) {
+        if (typeof (field.defaultValue) === 'boolean') {
+          field.value = absenceType[field.name] === '1';
+        } else if (absenceType[field.name] !== undefined) {
+          field.value = absenceType[field.name];
+        }
+      });
+
+      vm.fieldsIndexed.category.value =
+        _.find(vm.leaveTypeCategories, { value: absenceType.category }).name;
+
+      if (vm.fieldsIndexed.default_entitlement.value === '0.00') {
+        vm.fieldsIndexed.default_entitlement.value = '';
+      }
+    }
+
+    /**
      * Initiates the default view:
      * - expands the General section and leaves the Settings section collapsed;
      * - selects Basic Details settings tab.
@@ -322,6 +353,18 @@ define([
     }
 
     /**
+     * Fetches absence type to be edited and stores it in the component.
+     *
+     * @return {Promise}
+     */
+    function loadAbsenceType () {
+      return AbsenceType.findById(vm.leaveTypeId)
+        .then(function (_absenceType_) {
+          absenceType = _absenceType_;
+        });
+    }
+
+    /**
      * Fetches absence types and stores their titles in the component.
      * It also lowers the case of the titles.
      *
@@ -370,7 +413,7 @@ define([
       return OptionGroup.valuesOf('hrleaveandabsences_absence_type_category')
         .then(function (categories) {
           vm.leaveTypeCategories = categories.map(function (category) {
-            return _.assign(_.pick(category, ['name', 'label']),
+            return _.assign(_.pick(category, ['name', 'label', 'value']),
               { icon: leaveTypeCategoriesIcons[category.name] });
           });
         });
@@ -491,6 +534,13 @@ define([
       _.each(defaultsByCategory[params.category], function (value, fieldName) {
         params[fieldName] = value;
       });
+    }
+
+    /**
+     * Removes the loaded absence type title from the array of existing titles
+     */
+    function removeLoadedAbsenceTypeTitleFromExistingTitles () {
+      _.pull(absenceTypesExistingTitles, absenceType.title.toLowerCase());
     }
 
     /**

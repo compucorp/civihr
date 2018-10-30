@@ -3,9 +3,10 @@
 define([
   'common/angular',
   'common/lodash',
+  'leave-absences/mocks/data/absence-type.data',
   'common/angularMocks',
   'leave-absences/leave-type-wizard/leave-type-wizard.module'
-], function (angular, _) {
+], function (angular, _, absenceTypesData) {
   'use strict';
 
   describe('LeaveTypeWizard', function () {
@@ -22,8 +23,8 @@ define([
     var sampleFieldValidationExpression = /^\w+ \w+$/;
     var sampleFieldValue = 'Some value';
     var sampleLeaveTypeCategoriesOptionGroupValues = [
-      { name: 'leave', label: 'Leave' },
-      { name: 'sickness', label: 'Sickness' }
+      { name: 'leave', label: 'Leave', value: '1' },
+      { name: 'sickness', label: 'Sickness', value: '2' }
     ];
     var tabsIndexed = {};
 
@@ -431,7 +432,7 @@ define([
         var requiredFieldErrorMessage = 'This field is required';
 
         beforeEach(function () {
-          sampleField = controller.sections[0].tabs[0].fields[0];
+          sampleField = controller.fieldsIndexed.title;
           sampleField.validations = [
             {
               rule: sampleFieldValidationExpression,
@@ -685,6 +686,64 @@ define([
         controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
         controller.goNext();
       }
+    });
+
+    describe('when user edits a leave type', function () {
+      var absenceType = _.first(absenceTypesData.all().values);
+
+      beforeEach(function () {
+        controller.leaveTypeId = absenceType.id;
+
+        spyOn(AbsenceType, 'findById').and.returnValue($q.resolve(absenceType));
+      });
+
+      describe('basic tests', function () {
+        beforeEach(function () {
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('sets the mode to "edit"', function () {
+          expect(controller.isEditMode).toBe(true);
+        });
+
+        it('loads a leave type by a given ID', function () {
+          expect(AbsenceType.findById).toHaveBeenCalledWith(absenceType.id);
+        });
+
+        it('sets loaded values to the field map', function () {
+          expect(controller.fieldsIndexed.title.value).toBe(absenceType.title);
+        });
+
+        it('transforms "0" and "1" to booleans for boolean fields', function () {
+          expect(controller.fieldsIndexed.hide_label.value)
+            .toEqual(jasmine.any(Boolean));
+        });
+
+        it('sets the ID field', function () {
+          expect(controller.fieldsIndexed.id.value).toBe(absenceType.id);
+        });
+
+        it('sets the category field', function () {
+          var categoryName = _.find(controller.leaveTypeCategories,
+            { value: absenceType.id }).name;
+
+          expect(controller.fieldsIndexed.category.value).toBe(categoryName);
+        });
+      });
+
+      describe('when "Default entitlement" is "0.00"', function () {
+        beforeEach(function () {
+          absenceType.default_entitlement = '0.00';
+
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('sets the "Default entitlement" to an empty string', function () {
+          expect(controller.fieldsIndexed.default_entitlement.value).toBe('');
+        });
+      });
     });
 
     /**

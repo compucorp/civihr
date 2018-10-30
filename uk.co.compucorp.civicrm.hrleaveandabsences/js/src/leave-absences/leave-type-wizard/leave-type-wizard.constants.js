@@ -25,6 +25,10 @@ define([
             name: 'general',
             fields: [
               {
+                name: 'id',
+                hidden: true
+              },
+              {
                 name: 'title',
                 required: true,
                 defaultValue: '',
