@@ -24,7 +24,7 @@ define([
     notificationService, OptionGroup, preProcessRulesByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
-    var absenceTypesExistingTitles = [];
+    var absenceTypesExistingTitles = null;
     var state = {
       sectionIndex: null,
       tabIndex: null
@@ -53,7 +53,6 @@ define([
       $q.all([
         loadContacts(),
         loadAvailableColours(),
-        loadAbsenceTypesExistingTitles(),
         loadLeaveTypeCategories()
       ])
         // @NOTE this is a temporary option group suppressor to match user stories
@@ -68,9 +67,11 @@ define([
         .then(initFieldsWatchers)
         .then(initValidators)
         .then(initCustomValidators)
-        .finally(function () {
+        .then(function () {
           vm.loading = false;
-        });
+        })
+        .then(loadAbsenceTypesExistingTitles)
+        .then(validateTitleField);
     }
 
     /**
@@ -86,6 +87,32 @@ define([
         !!$sourceElement.closest('.' + className).length;
 
       return isHeaderOrElementInsideHeader;
+    }
+
+    /**
+     * Checks if title provided is unique.
+     * If existing titles are not yet loaded, the validation will not be executed,
+     * instead, it will show that the field is "loading".
+     */
+    function checkIfTitleIsUnique () {
+      var titleField = vm.fieldsIndexed.title;
+      var title = titleField.value;
+
+      if (_.isEmpty(title)) {
+        return;
+      }
+
+      if (absenceTypesExistingTitles === null) {
+        titleField.loading = true;
+
+        return;
+      } else {
+        delete titleField.loading;
+      }
+
+      if (_.includes(absenceTypesExistingTitles, title.toLowerCase())) {
+        titleField.error = 'This leave type title is already in use';
+      }
     }
 
     /**
@@ -145,6 +172,9 @@ define([
         .value();
     }
 
+    /**
+     * Indexes tabs for quicker access and sets them to the component
+     */
     function indexTabs () {
       tabsIndexed = _.chain(vm.sections)
         .flatMap('tabs')
@@ -156,8 +186,7 @@ define([
      * Initiates custom validators
      */
     function initCustomValidators () {
-      watchTitleFieldIsUnique();
-      watchTitleFieldIsFilledInProperly();
+      watchTitleField();
     }
 
     /**
@@ -244,6 +273,8 @@ define([
     /**
      * Fetches absence types and stores their titles in the component.
      * It also lowers the case of the titles.
+     *
+     * @return {Promise}
      */
     function loadAbsenceTypesExistingTitles () {
       return AbsenceType.all({}, { return: ['title'] })
@@ -480,6 +511,20 @@ define([
     }
 
     /**
+     * Sets the availability of the sections that follow the active section.
+     * Also sets the availability of the "Next section" button for the active section.
+     *
+     * @param {Boolean} isDisabled
+     */
+    function setAvailabilityOfFollowingSections (isDisabled) {
+      vm.sections[state.sectionIndex].disableNextSectionButton = isDisabled;
+
+      vm.sections.slice(state.sectionIndex + 1).forEach(function (section) {
+        section.disabled = isDisabled;
+      });
+    }
+
+    /**
      * Submits the whole wizard.
      * Validates all fields and, if all valid, saves the form.
      * If errors are found, navigates to the first found tab with errors.
@@ -515,6 +560,18 @@ define([
     }
 
     /**
+     * Toggles the Settings section depending on the title field value
+     */
+    function toggleSettingsSectionAvailability () {
+      var titleField = vm.fieldsIndexed.title;
+      var title = titleField.value;
+      var disallowedToMoveToSettingsSection =
+        !!(titleField.error || title === '' || titleField.loading);
+
+      setAvailabilityOfFollowingSections(disallowedToMoveToSettingsSection);
+    }
+
+    /**
      * Toggles tabs depending on the leave category
      *
      * @param {String} category "leave", "sickness" etc
@@ -522,6 +579,17 @@ define([
     function toggleTabsDependingOnLeaveCategory (category) {
       _.each(tabsIndexed, function (tab) {
         tab.hidden = _.includes(hiddenTabsByCategory[category], tab.name);
+      });
+    }
+
+    /**
+     * Validates all sections (the whole wizard)
+     */
+    function validateAllSections () {
+      vm.sections.forEach(function (section) {
+        section.tabs.forEach(function (tab) {
+          validateTab(tab);
+        });
       });
     }
 
@@ -546,14 +614,13 @@ define([
     }
 
     /**
-     * Validates all sections (the whole wizard)
+     * Validates the title field:
+     * - checks if the title is unique
+     * - toggles the Settings section depending on the title
      */
-    function validateAllSections () {
-      vm.sections.forEach(function (section) {
-        section.tabs.forEach(function (tab) {
-          validateTab(tab);
-        });
-      });
+    function validateTitleField () {
+      checkIfTitleIsUnique();
+      toggleSettingsSectionAvailability();
     }
 
     /**
@@ -612,51 +679,14 @@ define([
     }
 
     /**
-     * Watches title field to toggle Settings section locking
-     */
-    function watchTitleFieldIsFilledInProperly () {
-      var titleField = vm.fieldsIndexed.title;
-
-      $scope.$watch(function () {
-        return titleField.value;
-      }, function (title) {
-        var disallowedToMoveToSettingsSection = !!(titleField.error || title === '');
-
-        setAvailabilityOfFollowingSections(disallowedToMoveToSettingsSection);
-      });
-    }
-
-    /**
-     * Sets the availability of the sections that follow the active section.
-     * Also sets the availability of the "Next section" button for the active section.
-     *
-     * @param {Boolean} isDisabled
-     */
-    function setAvailabilityOfFollowingSections (isDisabled) {
-      vm.sections[state.sectionIndex].disableNextSectionButton = isDisabled;
-
-      vm.sections.slice(state.sectionIndex + 1).forEach(function (section) {
-        section.disabled = isDisabled;
-      });
-    }
-
-    /**
      * Initiates a watches over "Title" field.
      * Watches for already used leave types titles.
      */
-    function watchTitleFieldIsUnique () {
-      var titleField = vm.fieldsIndexed.title;
-
+    function watchTitleField () {
       $scope.$watch(function () {
-        return titleField.value;
-      }, function (title) {
-        if (_.isEmpty(title)) {
-          return;
-        }
-
-        if (_.includes(absenceTypesExistingTitles, title.toLowerCase())) {
-          titleField.error = 'This leave type title is already in use';
-        }
+        return vm.fieldsIndexed.title.value;
+      }, function () {
+        validateTitleField();
       });
     }
   }
