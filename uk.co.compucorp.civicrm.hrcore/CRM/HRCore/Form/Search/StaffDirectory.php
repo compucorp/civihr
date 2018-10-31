@@ -71,7 +71,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     $this->formValues = $formValues;
 
     $this->columns = [
-      ts('Display Name') => 'display_name',
+      ts('Name') => 'display_name',
       ts('Work Phone') => 'work_phone',
       ts('Work Email') => 'work_email',
       ts('Manager') => 'manager',
@@ -82,6 +82,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
 
     $this->filters = [
       'select_staff' => '',
+      'name' => 'contact_a.display_name'
     ];
 
     $allParameters = array_merge($this->formValues, $this->getAdditionalParameters());
@@ -117,6 +118,9 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       switch ($name) {
         case 'select_staff':
           $this->setQueryConditionForSelectStaff($value);
+          break;
+        case 'name':
+          $this->setQueryConditionForName($alias, $value);
           break;
         default:
           $this->where[] = CRM_Contact_BAO_Query::buildClause($alias, $op, $value);
@@ -200,6 +204,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * {@inheritdoc}
    */
   public function buildForm(&$form) {
+    $form->add('text', 'name', ts('Name'), ['placeholder' => 'name'], FALSE);
     $options = $this->selectStaffFixedOptions + ['choose_date' => 'Select Dates'];
     $form->add('select', 'select_staff', ts('Select Staff'), $options, FALSE,
       ['class' => 'crm-select2', 'multiple' => FALSE]
@@ -438,6 +443,16 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       $this->from['contract_join'] = $this->getJobContractJoin($jobDetailsCondition);
       $this->where[] = $jobDetailsCondition;
     }
+  }
+
+  /**
+   * Sets the query condition for 'name' field
+   *
+   * @param string $alias
+   * @param string $value
+   */
+  private function setQueryConditionForName($alias, $value) {
+    $this->where[] = CRM_Contact_BAO_Query::buildClause($alias, 'LIKE', "%{$value}%");
   }
 
   /**

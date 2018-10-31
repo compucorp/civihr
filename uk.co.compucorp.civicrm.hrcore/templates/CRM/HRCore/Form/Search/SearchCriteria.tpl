@@ -16,6 +16,16 @@
 
         <div class="crm-section" id="select-staff">
           <div class="label">
+            {$form.name.label}
+          </div>
+          <div class="content">
+            {$form.name.html}
+          </div>
+          <div class="clear"></div>
+        </div>
+
+        <div class="crm-section" id="select-staff">
+          <div class="label">
             {$form.select_staff.label}
           </div>
           <div class="content">
