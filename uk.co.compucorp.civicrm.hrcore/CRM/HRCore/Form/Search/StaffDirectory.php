@@ -200,31 +200,13 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * {@inheritdoc}
    */
   public function buildForm(&$form) {
-    $selector = CRM_Core_Form_Date::returnDateRangeSelector(
-      $form,
-      'select_staff',
-      1,
-      '_low',
-      '_high',
-      ts('From:')
-    );
-    //remove unwanted options from the relative dates list.
-    //Options like 'Choose Date Range' and 'Any' Option that would not work as expected.
-    //because the select_staff field is created differently.
-    unset($selector[0], $selector['']);
-    $options = $this->selectStaffFixedOptions + ['choose_date' => 'Select Dates'] + $selector;
-
-    //The select staff field is created this way rather than via CRM_Core_Form_Date::buildDateRange function
-    //because if we add additional option parameters, Civi will throw an error when evaluating these values
-    //after submission because it will not consider them to be relative dates
+    $options = $this->selectStaffFixedOptions + ['choose_date' => 'Select Dates'];
     $form->add('select', 'select_staff', ts('Select Staff'), $options, FALSE,
       ['class' => 'crm-select2', 'multiple' => FALSE]
     );
 
-    $form->add('datepicker', 'contract_start_date', ts('Job Contract Start Date'),
-      '', FALSE, ['time' => false]);
-    $form->add('datepicker', 'contract_end_date', ts('Job Contract End Date'),
-      '', FALSE, ['time' => false]);
+    CRM_Core_Form_Date::buildDateRange($form, 'contract_start_date', 1, '_low', '_high', ts('From:'), FALSE, FALSE);
+    CRM_Core_Form_Date::buildDateRange($form, 'contract_end_date', 1, '_low', '_high', ts('To:'), FALSE, FALSE);
 
     CRM_Utils_System::setTitle(ts('Staff Directory'));
   }

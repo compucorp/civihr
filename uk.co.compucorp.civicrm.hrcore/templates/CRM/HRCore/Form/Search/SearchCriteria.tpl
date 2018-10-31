@@ -27,19 +27,19 @@
         <div class="contract-dates">
           <div class="crm-section">
             <div class="label">
-              {$form.contract_start_date.label}
+              Job Contract Start Date
             </div>
             <div class="content">
-              {$form.contract_start_date.html}
+              {include file="CRM/Core/DateRange.tpl" fieldName="contract_start_date" from='_low' to='_high'}
             </div>
           </div>
 
           <div class="crm-section">
             <div class="label">
-              {$form.contract_end_date.label}
+              Job Contract End Date
             </div>
             <div class="content">
-              {$form.contract_end_date.html}
+              {include file="CRM/Core/DateRange.tpl" fieldName="contract_end_date" from='_low' to='_high'}
             </div>
           </div>
         </div>
