@@ -1,13 +1,13 @@
 <div class="row form-horizontal">
   <div class="col-md-2"
     ng-repeat="leaveTypeCategory in form.leaveTypeCategories">
-    <div class="well pointer text-center" ng-click="field.value = leaveTypeCategory.value">
+    <div class="well pointer text-center" ng-click="field.value = leaveTypeCategory.name">
       <i class="leave-type-wizard__category-selector_icon fa fa-{{leaveTypeCategory.icon}}"></i>
       <div class="radio">
         <label>
           <input type="radio"
             ng-model="field.value"
-            value="{{leaveTypeCategory.value}}"/>
+            value="{{leaveTypeCategory.name}}"/>
           {{leaveTypeCategory.label}}
         </label>
       </div>

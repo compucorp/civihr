@@ -122,9 +122,12 @@ define([
      * @return {AbsencePeriodInstance}
      */
     function lastAbsencePeriod (absencePeriods) {
-      return _.chain(absencePeriods).sort(function (previous, current) {
-        return moment(previous.end_date).diff(current);
-      }).last().value();
+      return _.chain(absencePeriods)
+        .sort(function (absencePeriodA, absencePeriodB) {
+          return moment(absencePeriodA.end_date).diff(absencePeriodB.end_date);
+        })
+        .last()
+        .value();
     }
 
     /**

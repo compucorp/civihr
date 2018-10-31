@@ -22,6 +22,7 @@ define([
         previousSectionButtonCustomText: 'Cancel',
         tabs: [
           {
+            name: 'general',
             fields: [
               {
                 name: 'title',
@@ -66,6 +67,7 @@ define([
         tabs: [
           {
             label: 'Basic',
+            name: 'basic',
             fields: [
               {
                 name: 'hide_label',
@@ -119,6 +121,7 @@ define([
           },
           {
             label: 'Leave Requests',
+            name: 'leave-requests',
             fields: [
               {
                 name: 'max_consecutive_leave_days',
@@ -165,6 +168,7 @@ define([
           },
           {
             label: 'Public Holidays',
+            name: 'public-holidays',
             fields: [
               {
                 name: 'must_take_public_holiday_as_leave',
@@ -176,6 +180,7 @@ define([
           },
           {
             label: 'Carry Forwards',
+            name: 'carry-forwards',
             fields: [
               {
                 name: 'allow_carry_forward',
@@ -216,5 +221,19 @@ define([
           }
         ]
       }
-    ]);
+    ])
+    .constant('leave-type-categories-icons', {
+      leave: 'plane',
+      sickness: 'medkit'
+    })
+    .constant('tabs-hidden-by-category', {
+      leave: [],
+      sickness: ['public-holidays', 'carry-forwards']
+    })
+    .constant('defaults-by-category', {
+      sickness: {
+        must_take_public_holiday_as_leave: false,
+        allow_carry_forward: false
+      }
+    });
 });

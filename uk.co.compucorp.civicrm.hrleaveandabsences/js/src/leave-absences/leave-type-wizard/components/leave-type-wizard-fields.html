@@ -1,4 +1,6 @@
-<div class="row form-horizontal" ng-repeat="tab in section.tabs" ng-if="tab.active">
+<div ng-repeat="tab in section.tabs"
+  ng-if="tab.active && !tab.hidden"
+  class="row form-horizontal">
   <div class="col-md-12">
     <div class="form-group" ng-repeat="field in tab.fields" ng-if="!field.hidden">
       <label class="control-label"
@@ -21,26 +23,26 @@
     <div class="row">
       <div class="col-md-12">
         <button class="btn btn-secondary pull-right"
-          ng-if="!form.isOnSectionLastTab"
-          ng-click="form.openNextTab()">
+          ng-if="!tab.last"
+          ng-click="form.goNext()">
           Next
         </button>
         <button class="btn btn-primary pull-right leave-type-wizard__next-section-button"
-          ng-if="form.isOnSectionLastTab"
-          ng-click="form.openNextTab()"
+          ng-if="tab.last"
+          ng-click="form.goNext()"
           ng-disabled="section.disableNextSectionButton">
           {{section.nextSectionButtonCustomText || 'Next section'}}
           <i class="fa fa-chevron-right"
             ng-if="section.nextSectionButtonChevron"></i>
         </button>
         <button class="btn btn-secondary"
-          ng-if="form.isOnSectionFirstTab"
-          ng-click="form.openPreviousTab()">
+          ng-if="tab.first"
+          ng-click="form.goBack()">
           {{section.previousSectionButtonCustomText || 'Previous section'}}
         </button>
         <button class="btn btn-secondary"
-          ng-if="!form.isOnSectionFirstTab"
-          ng-click="form.openPreviousTab()">
+          ng-if="!tab.first"
+          ng-click="form.goBack()">
           Back
         </button>
       </div>
