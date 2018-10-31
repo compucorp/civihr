@@ -55,6 +55,11 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
   /**
    * @var array
    */
+  protected $jobDetailsCondition = [];
+
+  /**
+   * @var array
+   */
   protected $selectStaffFixedOptions = [
     'all' => 'All Staff',
     'current' => 'Current Staff',
@@ -127,6 +132,12 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       }
     }
 
+    if (!empty($this->jobDetailsCondition)) {
+      $jobDetailsCondition =  implode(' AND ', $this->jobDetailsCondition);
+      $this->from['contract_join'] = $this->getJobContractJoin($jobDetailsCondition);
+      $this->where[] = $jobDetailsCondition;
+    }
+
     $this->where[] = "contact_a.contact_type = 'Individual' AND contact_a.is_deleted = 0";
   }
 
@@ -142,7 +153,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     LEFT JOIN civicrm_email c_email ON c_email.contact_id = contact_a.id
     LEFT JOIN civicrm_location_type email_location ON c_email.location_type_id = email_location.id";
 
-    $this->from['contract_join'] = $this->getJobContractJoin($this->getJobDetailsConditionForSpecificStaff());
+    $this->from['contract_join'] = $this->getJobContractJoin();
 
     $today = date('Y-m-d');
     $this->from['after_contract'] = "LEFT JOIN civicrm_hrjobroles hrjobroles ON contract_details.id = hrjobroles.job_contract_id
@@ -296,7 +307,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    *
    * @return string
    */
-  private function getJobContractJoin($jobDetailsCondition) {
+  private function getJobContractJoin($jobDetailsCondition = '') {
     $sql = "LEFT JOIN
     (SELECT civicrm_hrjobcontract.contact_id,
     MAX(contract_details.period_start_date) as period_start_date 
@@ -329,6 +340,8 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
                    ORDER BY jcr2.effective_date DESC LIMIT 1)
     INNER JOIN civicrm_hrjobcontract_details contract_details
       ON rev.details_revision_id = contract_details.jobcontract_revision_id 
+    LEFT JOIN civicrm_hrjobroles hrjobroles
+      ON civicrm_hrjobcontract.id = hrjobroles.job_contract_id  
     WHERE civicrm_hrjobcontract.deleted = 0";
 
     if ($jobDetailsCondition) {
@@ -440,8 +453,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     }
 
     if ($jobDetailsCondition) {
-      $this->from['contract_join'] = $this->getJobContractJoin($jobDetailsCondition);
-      $this->where[] = $jobDetailsCondition;
+      $this->jobDetailsCondition[] = $jobDetailsCondition;
     }
   }
 
