@@ -24,12 +24,12 @@
       <div class="col-md-12">
         <button class="btn btn-secondary pull-right"
           ng-if="!tab.last"
-          ng-click="form.openNextTab()">
+          ng-click="form.goNext()">
           Next
         </button>
         <button class="btn btn-primary pull-right leave-type-wizard__next-section-button"
           ng-if="tab.last"
-          ng-click="form.openNextTab()"
+          ng-click="form.goNext()"
           ng-disabled="section.disableNextSectionButton">
           {{section.nextSectionButtonCustomText || 'Next section'}}
           <i class="fa fa-chevron-right"
@@ -37,12 +37,12 @@
         </button>
         <button class="btn btn-secondary"
           ng-if="tab.first"
-          ng-click="form.openPreviousTab()">
+          ng-click="form.goBack()">
           {{section.previousSectionButtonCustomText || 'Previous section'}}
         </button>
         <button class="btn btn-secondary"
           ng-if="!tab.first"
-          ng-click="form.openPreviousTab()">
+          ng-click="form.goBack()">
           Back
         </button>
       </div>

@@ -183,7 +183,7 @@ define([
 
       describe('when user clicks the "next section" button', function () {
         beforeEach(function () {
-          controller.openNextTab();
+          controller.goNext();
         });
 
         it('collapses the first section', function () {
@@ -196,7 +196,7 @@ define([
 
         describe('when user clicks the "previous section" button', function () {
           beforeEach(function () {
-            controller.openPreviousTab();
+            controller.goBack();
           });
 
           it('collapses the second section', function () {
@@ -242,7 +242,7 @@ define([
 
         describe('when opens the next section tab', function () {
           beforeEach(function () {
-            controller.openNextTab();
+            controller.goNext();
           });
 
           it('opens the second tab', function () {
@@ -251,7 +251,7 @@ define([
 
           describe('when opens the previous section tab', function () {
             beforeEach(function () {
-              controller.openPreviousTab();
+              controller.goBack();
             });
 
             it('opens the first tab', function () {
@@ -263,7 +263,7 @@ define([
         describe('when user cancels the form filling', function () {
           beforeEach(function () {
             controller.openSection(0);
-            controller.openPreviousTab();
+            controller.goBack();
             $rootScope.$digest();
           });
 
@@ -479,7 +479,7 @@ define([
 
         describe('when user does not fill in the field and navigates to the next tab', function () {
           beforeEach(function () {
-            controller.openNextTab();
+            controller.goNext();
 
             $rootScope.$digest();
           });
@@ -497,7 +497,7 @@ define([
           beforeEach(function () {
             controller.openSection(1);
             controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
-            controller.openNextTab();
+            controller.goNext();
           });
 
           it('navigates to the first section and the tab where errors occured', function () {
@@ -683,7 +683,7 @@ define([
       function submitWizard () {
         controller.openSection(1);
         controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
-        controller.openNextTab();
+        controller.goNext();
       }
     });
 

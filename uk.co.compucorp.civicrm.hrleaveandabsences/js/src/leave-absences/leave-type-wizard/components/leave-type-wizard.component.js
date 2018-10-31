@@ -6,8 +6,8 @@ define([
 ], function (angular, _) {
   LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
     'AbsenceType', 'Contact', 'form-sections', 'leave-type-categories-icons',
-    'leave-type-categories-hidden-tabs-by-category', 'notificationService',
-    'OptionGroup', 'preprocess-rules-by-category', 'shared-settings'];
+    'tabs-hidden-by-category', 'notificationService',
+    'OptionGroup', 'defaults-by-category', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -21,7 +21,7 @@ define([
 
   function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
     Contact, formSections, leaveTypeCategoriesIcons, hiddenTabsByCategory,
-    notificationService, OptionGroup, preProcessRulesByCategory, sharedSettings) {
+    notificationService, OptionGroup, defaultsByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var absenceTypesExistingTitles = null;
@@ -42,15 +42,16 @@ define([
 
     vm.$onInit = $onInit;
     vm.checkIfAccordionHeaderClicked = checkIfAccordionHeaderClicked;
-    vm.openNextTab = openNextTab;
-    vm.openPreviousTab = openPreviousTab;
-    vm.openSection = openSection;
+    vm.goBack = goBack;
+    vm.goNext = goNext;
     vm.openActiveSectionTab = openActiveSectionTab;
+    vm.openSection = openSection;
 
     function $onInit () {
       vm.loading = true;
 
       $q.all([
+        // @TODO lazy load the contacts and colours
         loadContacts(),
         loadAvailableColours(),
         loadLeaveTypeCategories()
@@ -163,11 +164,64 @@ define([
     }
 
     /**
+     * Navigates to the previous step:
+     * - if there is a previous tab in the same section, navigates to the previous tab
+     * - if there is no previous tab in the current section - opens previous section
+     */
+    function goBack () {
+      var activeTab = getActiveTab();
+      var previousTabIndex = _.findIndex(vm.sections[state.sectionIndex].tabs,
+        function (tab, tabIndex) {
+          return tabIndex < state.tabIndex && !tab.hidden;
+        });
+
+      validateTab(activeTab);
+
+      if (previousTabIndex === -1) {
+        openPreviousSection();
+      } else {
+        openActiveSectionTab(previousTabIndex);
+      }
+    }
+
+    /**
+     * Navigates to the next step:
+     * - if there is a next tab in the same section, navigates to the next tab
+     * - if there is no next tab in the current section - opens next section
+     */
+    function goNext () {
+      var activeTab = getActiveTab();
+      var nextTabIndex = _.findIndex(vm.sections[state.sectionIndex].tabs,
+        function (tab, tabIndex) {
+          return tabIndex > state.tabIndex && !tab.hidden;
+        });
+
+      validateTab(activeTab);
+
+      if (nextTabIndex === -1) {
+        openNextSection();
+      } else {
+        openActiveSectionTab(nextTabIndex);
+      }
+    }
+
+    /**
      * Indexes fields for quicker access and sets them to the component
      */
     function indexFields () {
-      vm.fieldsIndexed = _.chain(tabsIndexed)
-        .flatMap('fields')
+      vm.fieldsIndexed = indexPropertyByName(tabsIndexed, 'fields');
+    }
+
+    /**
+     * Indexes collection by a property name
+     *
+     * @param  {Array} collection
+     * @param  {String} propertyName
+     * @return {Object}
+     */
+    function indexPropertyByName (collection, propertyName) {
+      return _.chain(collection)
+        .flatMap(propertyName)
         .keyBy('name')
         .value();
     }
@@ -176,10 +230,7 @@ define([
      * Indexes tabs for quicker access and sets them to the component
      */
     function indexTabs () {
-      tabsIndexed = _.chain(vm.sections)
-        .flatMap('tabs')
-        .keyBy('name')
-        .value();
+      tabsIndexed = indexPropertyByName(vm.sections, 'tabs');
     }
 
     /**
@@ -351,25 +402,6 @@ define([
     }
 
     /**
-     * Opens the next tab in the active section
-     */
-    function openNextTab () {
-      var activeTab = getActiveTab();
-      var nextTabIndex = _.findIndex(vm.sections[state.sectionIndex].tabs,
-        function (tab, tabIndex) {
-          return tabIndex > state.tabIndex && !tab.hidden;
-        });
-
-      validateTab(activeTab);
-
-      if (nextTabIndex === -1) {
-        openNextSection();
-      } else {
-        openActiveSectionTab(nextTabIndex);
-      }
-    }
-
-    /**
      * Opens previous section. If there are no sections behind, cancels form filling.
      */
     function openPreviousSection () {
@@ -384,25 +416,6 @@ define([
       }
 
       openSection(state.sectionIndex - 1);
-    }
-
-    /**
-     * Opens the previous tab in the active section
-     */
-    function openPreviousTab () {
-      var activeTab = getActiveTab();
-      var previousTabIndex = _.findIndex(vm.sections[state.sectionIndex].tabs,
-        function (tab, tabIndex) {
-          return tabIndex < state.tabIndex && !tab.hidden;
-        });
-
-      validateTab(activeTab);
-
-      if (previousTabIndex === -1) {
-        openPreviousSection();
-      } else {
-        openActiveSectionTab(previousTabIndex);
-      }
     }
 
     /**
@@ -447,14 +460,14 @@ define([
     }
 
     /**
-     * Pre-processes parameters for sending them to the backend.
+     * Prepares some parameters for sending them to the backend.
      * - sets default entitlement to 0 if not provided
      * - flushes dependent fields' values
      * - deletes fields held for UX only
      *
      * @param {Object} params
      */
-    function preProcessParams (params) {
+    function prepareParamsForSaving (params) {
       if (params.default_entitlement === '') {
         params.default_entitlement = '0';
       }
@@ -475,13 +488,13 @@ define([
      * Pre-processes parameters depending on the selected leave category.
      */
     function preProcessParamsDependingOnLeaveCategory (params) {
-      var preProcessRules = preProcessRulesByCategory[params.category];
+      var rules = defaultsByCategory[params.category];
 
-      if (!preProcessRules) {
+      if (!rules) {
         return;
       }
 
-      _.each(preProcessRules, function (value, fieldName) {
+      _.each(rules, function (value, fieldName) {
         params[fieldName] = value;
       });
     }
@@ -499,7 +512,7 @@ define([
       vm.loading = true;
 
       preProcessParamsDependingOnLeaveCategory(params);
-      preProcessParams(params);
+      prepareParamsForSaving(params);
       AbsenceType.save(params)
         .then(navigateToLeaveTypesList)
         .catch(function (error) {

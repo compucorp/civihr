@@ -226,11 +226,11 @@ define([
       leave: 'plane',
       sickness: 'medkit'
     })
-    .constant('leave-type-categories-hidden-tabs-by-category', {
+    .constant('tabs-hidden-by-category', {
       leave: [],
       sickness: ['public-holidays', 'carry-forwards']
     })
-    .constant('preprocess-rules-by-category', {
+    .constant('defaults-by-category', {
       sickness: {
         must_take_public_holiday_as_leave: false,
         allow_carry_forward: false
