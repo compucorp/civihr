@@ -61,9 +61,11 @@ define([
         // @TODO the suppressor must be completely removed once all leave categories are supported
         .then(temporarilySuppressNotYetUsedLeaveCategories)
         .then(initDefaultView)
-        .then(indexTabs)
+        .then(function () {
+          tabsIndexed = indexPropertyByName(vm.sections, 'tabs');
+          vm.fieldsIndexed = indexPropertyByName(tabsIndexed, 'fields');
+        })
         .then(markFirstAndLastTabsInSections)
-        .then(indexFields)
         .then(initDefaultValues)
         .then(initFieldsWatchers)
         .then(initValidators)
@@ -104,11 +106,11 @@ define([
       }
 
       if (absenceTypesExistingTitles === null) {
-        titleField.loading = true;
+        titleField.waitsForSupportiveData = true;
 
         return;
       } else {
-        delete titleField.loading;
+        delete titleField.waitsForSupportiveData;
       }
 
       if (_.includes(absenceTypesExistingTitles, title.toLowerCase())) {
@@ -164,16 +166,31 @@ define([
     }
 
     /**
+     * Returns either next or previous tab index.
+     * Returns -1 if there is no such tab found.
+     *
+     * @param  {String} direction "next" or "previous"
+     * @return {Number}
+     */
+    function getSiblingTabIndex (direction) {
+      return _.findIndex(vm.sections[state.sectionIndex].tabs,
+        function (tab, tabIndex) {
+          var directionCondition = direction === 'next'
+            ? tabIndex > state.tabIndex
+            : tabIndex < state.tabIndex;
+
+          return directionCondition && !tab.hidden;
+        });
+    }
+
+    /**
      * Navigates to the previous step:
      * - if there is a previous tab in the same section, navigates to the previous tab
      * - if there is no previous tab in the current section - opens previous section
      */
     function goBack () {
       var activeTab = getActiveTab();
-      var previousTabIndex = _.findIndex(vm.sections[state.sectionIndex].tabs,
-        function (tab, tabIndex) {
-          return tabIndex < state.tabIndex && !tab.hidden;
-        });
+      var previousTabIndex = getSiblingTabIndex('previous');
 
       validateTab(activeTab);
 
@@ -191,10 +208,7 @@ define([
      */
     function goNext () {
       var activeTab = getActiveTab();
-      var nextTabIndex = _.findIndex(vm.sections[state.sectionIndex].tabs,
-        function (tab, tabIndex) {
-          return tabIndex > state.tabIndex && !tab.hidden;
-        });
+      var nextTabIndex = getSiblingTabIndex('next');
 
       validateTab(activeTab);
 
@@ -203,13 +217,6 @@ define([
       } else {
         openActiveSectionTab(nextTabIndex);
       }
-    }
-
-    /**
-     * Indexes fields for quicker access and sets them to the component
-     */
-    function indexFields () {
-      vm.fieldsIndexed = indexPropertyByName(tabsIndexed, 'fields');
     }
 
     /**
@@ -224,13 +231,6 @@ define([
         .flatMap(propertyName)
         .keyBy('name')
         .value();
-    }
-
-    /**
-     * Indexes tabs for quicker access and sets them to the component
-     */
-    function indexTabs () {
-      tabsIndexed = indexPropertyByName(vm.sections, 'tabs');
     }
 
     /**
@@ -307,13 +307,13 @@ define([
      * Marks first and last tabs in sections with according flags
      */
     function markFirstAndLastTabsInSections () {
-      _.each(tabsIndexed, function (tab) {
-        delete tab.last;
-        delete tab.first;
-      });
       vm.sections.forEach(function (section) {
         var visibleTabs = section.tabs.filter(function (tab) {
           return !tab.hidden;
+        });
+
+        _.each(section.tabs, function (tab) {
+          tab.first = tab.last = false;
         });
 
         _.first(visibleTabs).first = true;
@@ -488,13 +488,7 @@ define([
      * Pre-processes parameters depending on the selected leave category.
      */
     function preProcessParamsDependingOnLeaveCategory (params) {
-      var rules = defaultsByCategory[params.category];
-
-      if (!rules) {
-        return;
-      }
-
-      _.each(rules, function (value, fieldName) {
+      _.each(defaultsByCategory[params.category], function (value, fieldName) {
         params[fieldName] = value;
       });
     }
@@ -579,7 +573,7 @@ define([
       var titleField = vm.fieldsIndexed.title;
       var title = titleField.value;
       var disallowedToMoveToSettingsSection =
-        !!(titleField.error || title === '' || titleField.loading);
+        !!(titleField.error || title === '' || titleField.waitsForSupportiveData);
 
       setAvailabilityOfFollowingSections(disallowedToMoveToSettingsSection);
     }
