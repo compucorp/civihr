@@ -224,19 +224,19 @@ define([
         beforeEach(function () {
           absencePeriods = [
             {
-              'id': '1',
-              'title': '2016',
-              'start_date': '2016-01-01',
-              'end_date': '2016-12-31',
-              'weight': '1'
-            },
-            {
               'id': '2',
               'title': '2017',
               'start_date': '2017-01-01',
               'end_date': '2017-12-31',
               'weight': '2',
               'current': true
+            },
+            {
+              'id': '1',
+              'title': '2016',
+              'start_date': '2016-01-01',
+              'end_date': '2016-12-31',
+              'weight': '1'
             }
           ];
 
@@ -302,7 +302,7 @@ define([
             $rootScope.$digest();
           });
 
-          it('sotres the leave request statuses', function () {
+          it('stores the leave request statuses', function () {
             expect(ctrl.leaveRequestStatuses).toEqual(expectedStatuses);
           });
         });
