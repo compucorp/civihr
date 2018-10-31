@@ -87,7 +87,10 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
 
     $this->filters = [
       'select_staff' => '',
-      'name' => 'contact_a.display_name'
+      'name' => 'contact_a.display_name',
+      'job_title' => 'contract_details.title',
+      'department' => 'hrjobroles.department',
+      'location' => 'hrjobroles.location',
     ];
 
     $allParameters = array_merge($this->formValues, $this->getAdditionalParameters());
@@ -104,8 +107,8 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       GROUP_CONCAT(DISTINCT CASE WHEN phone_location.name = 'Work' THEN CONCAT(c_phone.phone, IF (c_phone.phone_ext, CONCAT(' + ', c_phone.phone_ext), '')) END) AS work_phone,
       GROUP_CONCAT(DISTINCT CASE WHEN email_location.name = 'Work' THEN c_email.email END) AS work_email,
       GROUP_CONCAT(DISTINCT CASE WHEN civicrm_relationship_type.is_active = '1' THEN manager_contact.display_name END) AS manager,
-      GROUP_CONCAT(DISTINCT ov_location.name) AS location,
-      GROUP_CONCAT(DISTINCT ov_department.name) AS department,
+      GROUP_CONCAT(DISTINCT ov_location.label) AS location,
+      GROUP_CONCAT(DISTINCT ov_department.label) AS department,
       contract_details.title AS job_title ";
   }
 
@@ -125,7 +128,14 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
           $this->setQueryConditionForSelectStaff($value);
           break;
         case 'name':
-          $this->setQueryConditionForName($alias, $value);
+          $this->where[] = CRM_Contact_BAO_Query::buildClause($alias, 'LIKE', "%{$value}%");
+          break;
+        case 'job_title':
+          $this->setQueryConditionForJobDetailsFields($alias, 'LIKE', "%{$value}%");
+          break;
+        case 'department':
+        case 'location':
+          $this->setQueryConditionForJobDetailsFields($alias, '=', "{$value}");
           break;
         default:
           $this->where[] = CRM_Contact_BAO_Query::buildClause($alias, $op, $value);
@@ -135,10 +145,27 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     if (!empty($this->jobDetailsCondition)) {
       $jobDetailsCondition =  implode(' AND ', $this->jobDetailsCondition);
       $this->from['contract_join'] = $this->getJobContractJoin($jobDetailsCondition);
-      $this->where[] = $jobDetailsCondition;
     }
 
     $this->where[] = "contact_a.contact_type = 'Individual' AND contact_a.is_deleted = 0";
+  }
+
+  /**
+   * Sets the query condition for job details related filter fields
+   *
+   * @param string $alias
+   * @param string $op
+   * @param string $value
+   */
+  private function setQueryConditionForJobDetailsFields($alias, $op, $value) {
+    $sqlCondition = CRM_Contact_BAO_Query::buildClause($alias, $op, $value);
+    $this->jobDetailsCondition[] = $sqlCondition;
+    $limitToContactWithContract = 'contract_details.id IS NOT NULL';
+    if (array_search($limitToContactWithContract, $this->where) === FALSE) {
+      //Since the the job roles filters are not applied to the outer query we need to make sure that
+      //only rows linked to the job contract details are returned.
+      $this->where[] = $limitToContactWithContract;
+    }
   }
 
   /**
@@ -224,7 +251,53 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     CRM_Core_Form_Date::buildDateRange($form, 'contract_start_date', 1, '_low', '_high', ts('From:'), FALSE, FALSE);
     CRM_Core_Form_Date::buildDateRange($form, 'contract_end_date', 1, '_low', '_high', ts('To:'), FALSE, FALSE);
 
+    $form->add('text', 'job_title', ts('Job Title'));
+
+    $form->add('select', 'department', ts('Department'), $this->getDepartmentsList(), FALSE,
+      ['class' => 'crm-select2', 'multiple' => FALSE, 'placeholder' => '- select -']
+    );
+
+    $form->add('select', 'location', ts('Location'), $this->getLocationsList(), FALSE,
+      ['class' => 'crm-select2', 'multiple' => FALSE, 'placeholder' => '- select -']
+    );
+
     CRM_Utils_System::setTitle(ts('Staff Directory'));
+  }
+
+  /**
+   * Returns the departments list.
+   *
+   * @return array
+   */
+  private function getDepartmentsList() {
+    return $this->getOptionValuesList('hrjc_department');
+  }
+
+  /**
+   * Returns the locations list.
+   *
+   * @return array
+   */
+  private function getLocationsList() {
+    return $this->getOptionValuesList('hrjc_location');
+  }
+
+  /**
+   * Returns the values for an option group formatted for a
+   * select list options.
+   *
+   * @param array $optionGroupName
+   *
+   * @return array
+   */
+  private function getOptionValuesList($optionGroupName) {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'return' => ['label', 'value'],
+      'option_group_id' => $optionGroupName,
+      'is_active' => 1,
+    ]);
+
+    return array_column($result['values'], 'label', 'value');
   }
 
   /**
@@ -454,17 +527,8 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
 
     if ($jobDetailsCondition) {
       $this->jobDetailsCondition[] = $jobDetailsCondition;
+      $this->where[] = $jobDetailsCondition;
     }
-  }
-
-  /**
-   * Sets the query condition for 'name' field
-   *
-   * @param string $alias
-   * @param string $value
-   */
-  private function setQueryConditionForName($alias, $value) {
-    $this->where[] = CRM_Contact_BAO_Query::buildClause($alias, 'LIKE', "%{$value}%");
   }
 
   /**
