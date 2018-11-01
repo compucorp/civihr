@@ -173,7 +173,9 @@ define([
      * @return {Number}
      */
     function getSiblingTabIndex (direction) {
-      return _.findIndex(vm.sections[state.sectionIndex].tabs,
+      var indexSearchFunction = direction === 'next' ? _.findIndex : _.findLastIndex;
+
+      return indexSearchFunction(vm.sections[state.sectionIndex].tabs,
         function (tab, tabIndex) {
           var directionCondition = direction === 'next'
             ? tabIndex > state.tabIndex

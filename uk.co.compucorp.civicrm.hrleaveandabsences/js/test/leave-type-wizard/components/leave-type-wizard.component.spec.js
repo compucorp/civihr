@@ -207,6 +207,28 @@ define([
             expect(controller.sections[0].active).toBe(true);
           });
         });
+
+        describe('when user clicks the "next" button 2 times and then "back" 1 time', function () {
+          beforeEach(function () {
+            controller.goNext();
+            controller.goNext();
+            controller.goBack();
+          });
+
+          it('opens seconds tab', function () {
+            expect(secondSection.tabs[1].active).toBe(true);
+          });
+
+          describe('when user clicks the "next" button', function () {
+            beforeEach(function () {
+              controller.goNext();
+            });
+
+            it('opens seconds tab', function () {
+              expect(secondSection.tabs[2].active).toBe(true);
+            });
+          });
+        });
       });
 
       describe('when user clicks the second section header', function () {
