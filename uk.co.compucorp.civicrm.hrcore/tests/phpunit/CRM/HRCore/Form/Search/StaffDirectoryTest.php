@@ -144,12 +144,17 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
     $formValues = [
       'select_staff' => 'choose_date',
-      'contract_start_date' => '2016-04-01',
-      'contract_end_date' => '2016-05-01'
+      'contract_start_date_relative' => 0,
+      'contract_end_date_relative' => 0,
+      'contract_start_date_low' => '2016-01-01',
+      'contract_start_date_high' => '2016-01-05',
+      'contract_end_date_low' => '2016-12-30',
+      'contract_end_date_high' => '2016-12-31'
     ];
     $searchDirectory =  new SearchDirectory($formValues);
 
-    //only Contact1 has contract dates overlapping selected dates
+    //only Contact1 has contract start dates between the given contract start low and high dates
+    // And contract end date between the given contract end low and high dates.
     $this->assertEquals(1, $searchDirectory->count());
 
     //verify contact ids
@@ -170,12 +175,17 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
     $formValues = [
       'select_staff' => 'choose_date',
-      'contract_start_date' => '2016-04-01',
-      'contract_end_date' => '2016-05-01'
+      'contract_start_date_relative' => 0,
+      'contract_end_date_relative' => 0,
+      'contract_start_date_low' => '2017-01-01',
+      'contract_start_date_high' => '2017-01-05',
+      'contract_end_date_low' => '2018-12-30',
+      'contract_end_date_high' => '2018-12-31'
     ];
     $searchDirectory =  new SearchDirectory($formValues);
 
-    //No staff with contract dates overlapping the contract dates selected
+    //No staff with contract start dates between the given contract start low and high dates
+    //and contract end dates between the given contract end low and high dates.
     $this->assertEquals(0, $searchDirectory->count());
   }
 
@@ -193,13 +203,23 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $contact2['id']],
-      ['period_start_date' => '2018-01-01']
+      ['period_start_date' => date('Y-m-d')]
     );
 
-    $formValues = ['select_staff' => 'this.day'];
+    $formValues = [
+      'select_staff' => 'choose_date',
+      'contract_start_date_relative' => 'this.year',
+      'contract_end_date_relative' => 'this.year',
+      'contract_start_date_low' => '',
+      'contract_start_date_high' => '',
+      'contract_end_date_low' => '',
+      'contract_end_date_high' => ''
+    ];
+
     $searchDirectory =  new SearchDirectory($formValues);
 
-    //only Contact2 has contract dates overlapping today
+    //only Contact2 has contract start dates within this year
+    //and also end date within this year(since period end date is NULL)
     $this->assertEquals(1, $searchDirectory->count());
 
     //verify contact ids

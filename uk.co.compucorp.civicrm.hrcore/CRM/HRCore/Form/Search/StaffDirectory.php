@@ -73,8 +73,6 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * @param array $formValues
    */
   public function __construct(&$formValues) {
-    $this->formValues = $formValues;
-
     $this->columns = [
       ts('Name') => 'display_name',
       ts('Work Phone') => 'work_phone',
@@ -93,8 +91,11 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       'location' => 'hrjobroles.location',
     ];
 
-    $allParameters = array_merge($this->formValues, $this->getAdditionalParameters());
+    $allParameters = array_merge($formValues, $this->getAdditionalParameters());
     $this->params = CRM_Contact_BAO_Query::convertFormValues($allParameters);
+    //relative dates are converted to real dates by convertFormValues hence reason for
+    //setting the form values after the function has ran.
+    $this->formValues = $allParameters;
     $this->generateQueryClause();
   }
 
@@ -518,11 +519,8 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     if (in_array($value, array_keys($this->selectStaffFixedOptions))) {
       $jobDetailsCondition = $this->getJobDetailsConditionForSpecificStaff($value);
     }
-    elseif ($value == 'choose_date') {
-      $jobDetailsCondition = $this->getWhereClauseWhenSelectStaffIsChooseDate();
-    }
     else {
-      $jobDetailsCondition = $this->getWhereClauseWhenSelectStaffIsRelativeDate($value);
+      $jobDetailsCondition = $this->getWhereClauseWhenSelectStaffIsChooseDate();
     }
 
     if ($jobDetailsCondition) {
@@ -537,27 +535,25 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * @return string
    */
   private function getWhereClauseWhenSelectStaffIsChooseDate() {
-    $fromDate = $this->formValues['contract_start_date'] ? new DateTime($this->formValues['contract_start_date']) : '';
-    $toDate = $this->formValues['contract_end_date'] ? new DateTime($this->formValues['contract_end_date']) : '';
+    $conditions = [];
+    if (!empty($this->formValues['contract_start_date_low']) && !empty($this->formValues['contract_start_date_high'])) {
+      $fromDate = new DateTime($this->formValues['contract_start_date_low']);
+      $toDate = new DateTime($this->formValues['contract_start_date_high']);
 
-    return $this->getJobDetailsConditionForSpecificDates($fromDate, $toDate);
-  }
+      $conditions[] = "contract_details.period_start_date >= '" . $fromDate->format('Y-m-d') .
+        "' AND contract_details.period_start_date <= '" . $toDate->format('Y-m-d') . "'";
+    }
 
-  /**
-   * Gets the WHERE condition when select_staff field has relative date
-   * value, e.g 'this.year'.
-   *
-   * @param string $value
-   *
-   * @return string
-   */
-  private function getWhereClauseWhenSelectStaffIsRelativeDate($value) {
-    list($term, $unit) = explode('.', $value, 2);
-    $dateRange = CRM_Utils_Date::relativeToAbsolute($term, $unit);
-    $from = substr($dateRange['from'], 0, 8);
-    $to = substr($dateRange['to'], 0, 8);
+    if (!empty($this->formValues['contract_end_date_low']) && !empty($this->formValues['contract_end_date_high'])) {
+      $fromDate = new DateTime($this->formValues['contract_end_date_low']);
+      $toDate = new DateTime($this->formValues['contract_end_date_high']);
 
-    return $this->getJobDetailsConditionForSpecificDates(new DateTime($from), new DateTime($to));
+      $conditions[] = "((contract_details.period_end_date >= '" . $fromDate->format('Y-m-d') .  "'
+        AND contract_details.period_end_date <= '" . $toDate->format('Y-m-d') . "') 
+        OR (contract_details.period_end_date IS NULL))";
+    }
+
+    return implode(' AND ', $conditions);
   }
 
   /**
