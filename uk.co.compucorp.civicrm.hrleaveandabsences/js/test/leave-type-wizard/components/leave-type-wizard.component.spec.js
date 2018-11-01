@@ -207,6 +207,28 @@ define([
             expect(controller.sections[0].active).toBe(true);
           });
         });
+
+        describe('when user clicks the "next" button 2 times and then "back" 1 time', function () {
+          beforeEach(function () {
+            controller.goNext();
+            controller.goNext();
+            controller.goBack();
+          });
+
+          it('opens the second tab', function () {
+            expect(secondSection.tabs[1].active).toBe(true);
+          });
+
+          describe('when user clicks the "next" button', function () {
+            beforeEach(function () {
+              controller.goNext();
+            });
+
+            it('opens the third tab', function () {
+              expect(secondSection.tabs[2].active).toBe(true);
+            });
+          });
+        });
       });
 
       describe('when user clicks the second section header', function () {
@@ -493,6 +515,22 @@ define([
           });
         });
 
+        describe('when user does not fill in the field and navigates to the previous tab', function () {
+          beforeEach(function () {
+            controller.goBack();
+
+            $rootScope.$digest();
+          });
+
+          it('does not set an error to the field', function () {
+            expect(sampleField.error).toBeUndefined();
+          });
+
+          it('does not set an error to the tab', function () {
+            expect(controller.sections[0].tabs[0].valid).toBeUndefined();
+          });
+        });
+
         describe('when user attempts to submit and there are errors', function () {
           beforeEach(function () {
             controller.openSection(1);
@@ -617,6 +655,21 @@ define([
         });
       });
 
+      describe('when user submits the whole wizard form', function () {
+        beforeEach(function () {
+          absenceTypeSaverSpy.and.returnValue($q.resolve());
+          fillWizardIn();
+          submitWizard();
+          $rootScope.$digest();
+        });
+
+        it('sends `is_sick` as "false"', function () {
+          var params = AbsenceType.save.calls.mostRecent().args[0];
+
+          expect(params.is_sick).toBe(false);
+        });
+      });
+
       describe('when user selects the "Sickness" category', function () {
         beforeEach(function () {
           controller.fieldsIndexed.category.value = 'sickness';
@@ -662,6 +715,10 @@ define([
 
           it('sends `add_public_holiday_to_entitlement` as "false"', function () {
             expect(params.allow_accruals_request).toBe(false);
+          });
+
+          it('sends `is_sick` as "true"', function () {
+            expect(params.is_sick).toBe(true);
           });
         });
       });

@@ -54,6 +54,11 @@ define([
                 name: 'add_public_holiday_to_entitlement',
                 defaultValue: false,
                 hidden: true
+              },
+              {
+                name: 'is_sick',
+                defaultValue: false,
+                hidden: true
               }
             ]
           }
@@ -231,9 +236,13 @@ define([
       sickness: ['public-holidays', 'carry-forwards']
     })
     .constant('defaults-by-category', {
+      leave: {
+        is_sick: false
+      },
       sickness: {
         must_take_public_holiday_as_leave: false,
-        allow_carry_forward: false
+        allow_carry_forward: false,
+        is_sick: true
       }
     });
 });

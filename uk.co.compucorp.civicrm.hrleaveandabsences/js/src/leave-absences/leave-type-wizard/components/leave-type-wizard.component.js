@@ -173,7 +173,9 @@ define([
      * @return {Number}
      */
     function getSiblingTabIndex (direction) {
-      return _.findIndex(vm.sections[state.sectionIndex].tabs,
+      var indexSearchFunction = direction === 'next' ? _.findIndex : _.findLastIndex;
+
+      return indexSearchFunction(vm.sections[state.sectionIndex].tabs,
         function (tab, tabIndex) {
           var directionCondition = direction === 'next'
             ? tabIndex > state.tabIndex
@@ -189,10 +191,7 @@ define([
      * - if there is no previous tab in the current section - opens previous section
      */
     function goBack () {
-      var activeTab = getActiveTab();
       var previousTabIndex = getSiblingTabIndex('previous');
-
-      validateTab(activeTab);
 
       if (previousTabIndex === -1) {
         openPreviousSection();
