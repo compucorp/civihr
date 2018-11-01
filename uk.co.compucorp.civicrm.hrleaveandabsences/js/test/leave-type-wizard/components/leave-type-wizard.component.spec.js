@@ -655,6 +655,29 @@ define([
         });
       });
 
+      describe('when user selects the "Leave" category', function () {
+        beforeEach(function () {
+          controller.fieldsIndexed.category.value = 'leave';
+
+          $rootScope.$digest();
+        });
+
+        describe('when user submits the whole wizard form', function () {
+          beforeEach(function () {
+            absenceTypeSaverSpy.and.returnValue($q.resolve());
+            fillWizardIn();
+            submitWizard();
+            $rootScope.$digest();
+          });
+
+          it('sends `is_sick` as "false"', function () {
+            var params = AbsenceType.save.calls.mostRecent().args[0];
+
+            expect(params.is_sick).toBe(false);
+          });
+        });
+      });
+
       describe('when user selects the "Sickness" category', function () {
         beforeEach(function () {
           controller.fieldsIndexed.category.value = 'sickness';
@@ -700,6 +723,10 @@ define([
 
           it('sends `add_public_holiday_to_entitlement` as "false"', function () {
             expect(params.allow_accruals_request).toBe(false);
+          });
+
+          it('sends `is_sick` as "true"', function () {
+            expect(params.is_sick).toBe(true);
           });
         });
       });
