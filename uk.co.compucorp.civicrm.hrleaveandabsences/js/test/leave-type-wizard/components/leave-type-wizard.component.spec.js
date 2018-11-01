@@ -493,6 +493,22 @@ define([
           });
         });
 
+        describe('when user does not fill in the field and navigates to the previous tab', function () {
+          beforeEach(function () {
+            controller.goBack();
+
+            $rootScope.$digest();
+          });
+
+          it('does not set an error to the field', function () {
+            expect(sampleField.error).toBeUndefined();
+          });
+
+          it('does not set an error to the tab', function () {
+            expect(controller.sections[0].tabs[0].valid).toBeUndefined();
+          });
+        });
+
         describe('when user attempts to submit and there are errors', function () {
           beforeEach(function () {
             controller.openSection(1);

@@ -189,10 +189,7 @@ define([
      * - if there is no previous tab in the current section - opens previous section
      */
     function goBack () {
-      var activeTab = getActiveTab();
       var previousTabIndex = getSiblingTabIndex('previous');
-
-      validateTab(activeTab);
 
       if (previousTabIndex === -1) {
         openPreviousSection();
