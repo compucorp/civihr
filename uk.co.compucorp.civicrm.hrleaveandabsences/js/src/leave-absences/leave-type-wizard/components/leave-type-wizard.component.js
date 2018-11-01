@@ -268,6 +268,7 @@ define([
     function initFieldsWatchers () {
       watchAllowCarryForwardField();
       watchCarryForwardExpirySwitch();
+      watchAccrualExpirationSwitch();
       watchLeaveCategorySelector();
     }
 
@@ -480,6 +481,11 @@ define([
         params.carry_forward_expiration_unit = '';
       }
 
+      if (params.accrual_never_expire) {
+        params.accrual_expiration_duration = '';
+        params.accrual_expiration_unit = '';
+      }
+
       delete params.carry_forward_expiration_duration_switch;
     }
 
@@ -606,11 +612,13 @@ define([
      * @param {String} [oldValue]
      */
     function validateField (field, oldValue) {
+      var fieldIsEmpty = field.value === '';
+
       flushErrorForField(field);
 
-      if (field.required && _.isEmpty(field.value) && oldValue !== '') {
+      if (field.required && fieldIsEmpty && oldValue !== '') {
         field.error = 'This field is required';
-      } else if (field.value !== '' && field.validations) {
+      } else if (!fieldIsEmpty && field.validations) {
         field.validations.forEach(function (validation) {
           if (!validation.rule.test(field.value)) {
             field.error = validation.message;
@@ -646,6 +654,18 @@ define([
     }
 
     /**
+     * Initiates a watcher over the "Expiry" field.
+     * Toggles dependent fields on value change.
+     */
+    function watchAccrualExpirationSwitch () {
+      $scope.$watch(function () {
+        return vm.fieldsIndexed.accrual_never_expire.value;
+      }, function (neverExpires) {
+        vm.fieldsIndexed.accrual_expiration_duration.hidden = neverExpires;
+      });
+    }
+
+    /**
      * Initiates a watcher over the "Allow carry forward" field.
      * Toggles dependent fields on value change.
      */
@@ -660,7 +680,7 @@ define([
 
     /**
      * Initiates a watcher over the "Carry forward expiry" field.
-     * Toggles dependent fields on value change of if gets toggled.
+     * Toggles dependent fields on value change or if gets toggled.
      */
     function watchCarryForwardExpirySwitch () {
       $scope.$watch(function () {
