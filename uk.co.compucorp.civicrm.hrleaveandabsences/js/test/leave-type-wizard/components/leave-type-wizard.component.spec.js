@@ -215,7 +215,7 @@ define([
             controller.goBack();
           });
 
-          it('opens seconds tab', function () {
+          it('opens the second tab', function () {
             expect(secondSection.tabs[1].active).toBe(true);
           });
 
@@ -224,7 +224,7 @@ define([
               controller.goNext();
             });
 
-            it('opens seconds tab', function () {
+            it('opens the third tab', function () {
               expect(secondSection.tabs[2].active).toBe(true);
             });
           });
@@ -655,26 +655,18 @@ define([
         });
       });
 
-      describe('when user selects the "Leave" category', function () {
+      describe('when user submits the whole wizard form', function () {
         beforeEach(function () {
-          controller.fieldsIndexed.category.value = 'leave';
-
+          absenceTypeSaverSpy.and.returnValue($q.resolve());
+          fillWizardIn();
+          submitWizard();
           $rootScope.$digest();
         });
 
-        describe('when user submits the whole wizard form', function () {
-          beforeEach(function () {
-            absenceTypeSaverSpy.and.returnValue($q.resolve());
-            fillWizardIn();
-            submitWizard();
-            $rootScope.$digest();
-          });
+        it('sends `is_sick` as "false"', function () {
+          var params = AbsenceType.save.calls.mostRecent().args[0];
 
-          it('sends `is_sick` as "false"', function () {
-            var params = AbsenceType.save.calls.mostRecent().args[0];
-
-            expect(params.is_sick).toBe(false);
-          });
+          expect(params.is_sick).toBe(false);
         });
       });
 
