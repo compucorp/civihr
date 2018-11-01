@@ -561,7 +561,7 @@ define([
      */
     function temporarilySuppressNotYetUsedLeaveCategories () {
       vm.leaveTypeCategories = _.filter(vm.leaveTypeCategories, function (category) {
-        return !_.includes(['toil', 'custom'], category.name);
+        return !_.includes(['custom'], category.name);
       });
     }
 

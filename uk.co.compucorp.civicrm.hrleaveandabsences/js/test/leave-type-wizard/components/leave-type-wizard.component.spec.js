@@ -23,7 +23,8 @@ define([
     var sampleFieldValue = 'Some value';
     var sampleLeaveTypeCategoriesOptionGroupValues = [
       { name: 'leave', label: 'Leave' },
-      { name: 'sickness', label: 'Sickness' }
+      { name: 'sickness', label: 'Sickness' },
+      { name: 'toil', label: 'TOIL' }
     ];
     var tabsIndexed = {};
 

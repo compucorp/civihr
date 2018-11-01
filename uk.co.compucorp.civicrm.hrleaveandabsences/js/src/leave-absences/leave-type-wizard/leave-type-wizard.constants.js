@@ -229,7 +229,8 @@ define([
     ])
     .constant('leave-type-categories-icons', {
       leave: 'plane',
-      sickness: 'medkit'
+      sickness: 'medkit',
+      toil: 'clock-o'
     })
     .constant('tabs-hidden-by-category', {
       leave: [],
