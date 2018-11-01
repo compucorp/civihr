@@ -244,6 +244,11 @@ define([
         must_take_public_holiday_as_leave: false,
         allow_carry_forward: false,
         is_sick: true
+      },
+      toil: {
+        must_take_public_holiday_as_leave: false,
+        allow_accruals_request: true,
+        is_sick: false
       }
     });
 });
