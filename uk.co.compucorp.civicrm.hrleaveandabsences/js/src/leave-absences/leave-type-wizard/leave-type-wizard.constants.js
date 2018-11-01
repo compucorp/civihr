@@ -15,6 +15,7 @@ define([
     rule: /^[1-9]\d*$/,
     message: 'The value should be a positive whole number'
   };
+  var LEAVE_REQUESTS_TAB_DEFAULT_LABEL = 'Leave Requests';
 
   angular.module('leave-type-wizard.constants', [])
     .constant('form-sections', [
@@ -178,7 +179,7 @@ define([
             ]
           },
           {
-            label: 'Leave Requests',
+            label: LEAVE_REQUESTS_TAB_DEFAULT_LABEL,
             name: 'leave-requests',
             fields: [
               {
@@ -295,6 +296,13 @@ define([
         leave: false,
         sickness: false,
         toil: true
+      }
+    })
+    .constant('custom-tab-names-by-category', {
+      'leave-requests': {
+        leave: LEAVE_REQUESTS_TAB_DEFAULT_LABEL,
+        sickness: LEAVE_REQUESTS_TAB_DEFAULT_LABEL,
+        toil: 'Using TOIL'
       }
     })
     .constant('defaults-by-category', {

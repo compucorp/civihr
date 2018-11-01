@@ -748,6 +748,10 @@ define([
           fillWizardIn();
         });
 
+        it('changes the label of the Leave Requests tab', function () {
+          expect(tabsIndexed['leave-requests'].label).toBe('Using TOIL');
+        });
+
         it('hides the "Public Holidays" tab', function () {
           expect(tabsIndexed['public-holidays'].hidden).toBe(true);
         });

@@ -5,9 +5,10 @@ define([
   'common/lodash'
 ], function (angular, _) {
   LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
-    'AbsenceType', 'Contact', 'fields-hidden-by-category', 'form-sections',
-    'leave-type-categories-icons', 'tabs-hidden-by-category',
-    'notificationService', 'OptionGroup', 'defaults-by-category', 'shared-settings'];
+    'AbsenceType', 'Contact', 'custom-tab-names-by-category',
+    'fields-hidden-by-category', 'form-sections', 'leave-type-categories-icons',
+    'tabs-hidden-by-category', 'notificationService', 'OptionGroup',
+    'defaults-by-category', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -20,9 +21,9 @@ define([
   };
 
   function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
-    Contact, fieldsHiddenByCategory, formSections, leaveTypeCategoriesIcons,
-    hiddenTabsByCategory, notificationService, OptionGroup, defaultsByCategory,
-    sharedSettings) {
+    Contact, customTabNamesByCategory, fieldsHiddenByCategory, formSections,
+    leaveTypeCategoriesIcons, hiddenTabsByCategory, notificationService,
+    OptionGroup, defaultsByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var absenceTypesExistingTitles = null;
@@ -538,6 +539,17 @@ define([
     }
 
     /**
+     * Sets custom tabs labels depending on the set category
+     *
+     * @param {String} category "leave", "sickness" etc
+     */
+    function setCustomTabNamesByCategory (category) {
+      _.each(customTabNamesByCategory, function (categories, tabName) {
+        tabsIndexed[tabName].label = categories[category];
+      });
+    }
+
+    /**
      * Submits the whole wizard.
      * Validates all fields and, if all valid, saves the form.
      * If errors are found, navigates to the first found tab with errors.
@@ -624,7 +636,7 @@ define([
      * @param {String} [oldValue]
      */
     function validateField (field, oldValue) {
-      var fieldIsEmpty = field.value === '';
+      var fieldIsEmpty = field.value === '' || field.value === null;
 
       flushErrorForField(field);
 
@@ -713,6 +725,7 @@ define([
       }, function (category) {
         toggleTabsDependingOnLeaveCategory(category);
         toggleFieldsDependingOnLeaveCategory(category);
+        setCustomTabNamesByCategory(category);
         markFirstAndLastTabsInSections();
       });
     }
