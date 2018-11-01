@@ -11,6 +11,10 @@ define([
     rule: /^\d+(\.\d)?$/,
     message: 'The value should be a positive decimal number up to 1 decimal digit'
   };
+  var VALIDATOR_INTEGER = {
+    rule: /^[1-9]\d*$/,
+    message: 'The value should be a positive whole number'
+  };
 
   angular.module('leave-type-wizard.constants', [])
     .constant('form-sections', [
@@ -164,7 +168,7 @@ define([
                 name: 'accrual_expiration_duration',
                 required: true,
                 defaultValue: '',
-                validations: [VALIDATOR_DECIMAL]
+                validations: [VALIDATOR_INTEGER]
               },
               {
                 name: 'accrual_expiration_unit',
