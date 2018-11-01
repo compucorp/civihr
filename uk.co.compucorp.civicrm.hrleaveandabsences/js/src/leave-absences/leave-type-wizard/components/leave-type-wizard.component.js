@@ -5,9 +5,9 @@ define([
   'common/lodash'
 ], function (angular, _) {
   LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
-    'AbsenceType', 'Contact', 'form-sections', 'leave-type-categories-icons',
-    'tabs-hidden-by-category', 'notificationService',
-    'OptionGroup', 'defaults-by-category', 'shared-settings'];
+    'AbsenceType', 'Contact', 'fields-hidden-by-category', 'form-sections',
+    'leave-type-categories-icons', 'tabs-hidden-by-category',
+    'notificationService', 'OptionGroup', 'defaults-by-category', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -20,8 +20,9 @@ define([
   };
 
   function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
-    Contact, formSections, leaveTypeCategoriesIcons, hiddenTabsByCategory,
-    notificationService, OptionGroup, defaultsByCategory, sharedSettings) {
+    Contact, fieldsHiddenByCategory, formSections, leaveTypeCategoriesIcons,
+    hiddenTabsByCategory, notificationService, OptionGroup, defaultsByCategory,
+    sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var absenceTypesExistingTitles = null;
@@ -572,6 +573,17 @@ define([
     }
 
     /**
+     * Toggles fields depending on the leave category
+     *
+     * @param {String} category "leave", "sickness" etc
+     */
+    function toggleFieldsDependingOnLeaveCategory (category) {
+      _.each(fieldsHiddenByCategory, function (categories, fieldName) {
+        vm.fieldsIndexed[fieldName].hidden = categories[category];
+      });
+    }
+
+    /**
      * Toggles the Settings section depending on the title field value
      */
     function toggleSettingsSectionAvailability () {
@@ -700,6 +712,7 @@ define([
         return vm.fieldsIndexed.category.value;
       }, function (category) {
         toggleTabsDependingOnLeaveCategory(category);
+        toggleFieldsDependingOnLeaveCategory(category);
         markFirstAndLastTabsInSections();
       });
     }

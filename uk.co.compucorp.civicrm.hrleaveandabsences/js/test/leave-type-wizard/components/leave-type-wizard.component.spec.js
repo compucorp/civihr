@@ -800,6 +800,25 @@ define([
             });
           });
         });
+
+        describe('when accrual "Allow negative balances" was specified', function () {
+          beforeEach(function () {
+            controller.fieldsIndexed.allow_overuse.value = true;
+          });
+
+          describe('when user submits the form', function () {
+            beforeEach(function () {
+              submitWizard();
+              $rootScope.$digest();
+            });
+
+            it('sends falsy `allow_overuse` field', function () {
+              expect(AbsenceType.save).toHaveBeenCalledWith(jasmine.objectContaining({
+                allow_overuse: false
+              }));
+            });
+          });
+        });
       });
 
       /**

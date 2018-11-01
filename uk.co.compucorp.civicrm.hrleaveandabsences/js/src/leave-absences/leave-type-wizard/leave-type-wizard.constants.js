@@ -290,6 +290,13 @@ define([
       sickness: ['public-holidays', 'carry-forwards', 'toil-accruals'],
       toil: ['public-holidays']
     })
+    .constant('fields-hidden-by-category', {
+      allow_overuse: {
+        leave: false,
+        sickness: false,
+        toil: true
+      }
+    })
     .constant('defaults-by-category', {
       leave: {
         is_sick: false
@@ -302,7 +309,8 @@ define([
       toil: {
         must_take_public_holiday_as_leave: false,
         allow_accruals_request: true,
-        is_sick: false
+        is_sick: false,
+        allow_overuse: false
       }
     });
 });
