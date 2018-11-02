@@ -91,11 +91,11 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       'location' => 'hrjobroles.location',
     ];
 
-    $allParameters = array_merge($formValues, $this->getAdditionalParameters());
-    $this->params = CRM_Contact_BAO_Query::convertFormValues($allParameters);
+    $this->addAdditionalParameters($formValues);
+    $this->params = CRM_Contact_BAO_Query::convertFormValues($formValues);
     //relative dates are converted to real dates by convertFormValues hence reason for
     //setting the form values after the function has ran.
-    $this->formValues = $allParameters;
+    $this->formValues = $formValues;
     $this->generateQueryClause();
   }
 
@@ -490,24 +490,22 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
   }
 
   /**
-   * Returns additional parameters set via the URL when force = 1
-   * Only form fields that are included in the filters are returned
+   * Adds the additional parameters set via the URL when force = 1
+   * to the form values array.
+   * Only form fields that are included in the filters are added
    * from the URL parameters.
    *
    * @return array
    */
-  private function getAdditionalParameters() {
-    $additionalParameters = [];
-    if (!empty($this->formValues['force']) && $this->formValues['force'] == 1) {
-      foreach($this->filters as $filter) {
-        $additionalParameters['filter'] = filter_input(
+  private function addAdditionalParameters(&$formValues) {
+    if (!empty($_GET['force']) && $_GET['force'] == 1) {
+      foreach($this->filters as $filter => $alias) {
+        $formValues[$filter] = filter_input(
           INPUT_GET,
           $filter,
           FILTER_SANITIZE_STRING);
       }
     }
-
-    return $additionalParameters;
   }
 
   /**
