@@ -34,9 +34,10 @@ define([
     var tabsIndexed = {};
     var vm = this;
 
-    vm.availableColours = [];
+    vm.availableColours = null;
     vm.componentsPath =
       sharedSettings.sourcePath + 'leave-type-wizard/components';
+    vm.contacts = null;
     vm.fieldsIndexed = {};
     vm.leaveTypeCategories = [];
     vm.loading = true;
@@ -52,12 +53,7 @@ define([
     function $onInit () {
       vm.loading = true;
 
-      $q.all([
-        // @TODO lazy load the contacts and colours
-        loadContacts(),
-        loadAvailableColours(),
-        loadLeaveTypeCategories()
-      ])
+      loadLeaveTypeCategories()
         // @NOTE this is a temporary option group suppressor to match user stories
         // @TODO the suppressor should be amended to gradually support other leave categories
         // @TODO the suppressor must be completely removed once all leave categories are supported
@@ -75,8 +71,13 @@ define([
         .then(function () {
           vm.loading = false;
         })
-        .then(loadAbsenceTypesExistingTitles)
-        .then(validateTitleField);
+        .then(function () {
+          return $q.all([
+            loadAbsenceTypesExistingTitles().then(validateTitleField),
+            loadContacts(),
+            loadAvailableColours()
+          ]);
+        });
     }
 
     /**
