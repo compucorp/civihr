@@ -26,7 +26,9 @@ define([
     OptionGroup, defaultsByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
-    var absenceTypesExistingTitles = null;
+    var promises = {
+      titlesInUse: null
+    };
     var state = {
       sectionIndex: null,
       tabIndex: null
@@ -62,6 +64,9 @@ define([
         .then(function () {
           tabsIndexed = indexPropertyByName(vm.sections, 'tabs');
           vm.fieldsIndexed = indexPropertyByName(tabsIndexed, 'fields');
+          promises.titlesInUse = fetchAbsenceTypesTitlesInUse();
+
+          promises.titlesInUse.then(validateTitleField);
         })
         .then(markFirstAndLastTabsInSections)
         .then(initDefaultValues)
@@ -73,7 +78,6 @@ define([
         })
         .then(function () {
           return $q.all([
-            loadAbsenceTypesExistingTitles().then(validateTitleField),
             loadContacts(),
             loadAvailableColours()
           ]);
@@ -99,26 +103,27 @@ define([
      * Checks if title provided is unique.
      * If existing titles are not yet loaded, the validation will not be executed,
      * instead, it will show that the field is "loading".
+     *
+     * @return {Promise}
      */
     function checkIfTitleIsUnique () {
       var titleField = vm.fieldsIndexed.title;
-      var title = titleField.value;
 
-      if (_.isEmpty(title)) {
-        return;
+      if (_.isEmpty(titleField.value) || titleField.waitsForSupportiveData) {
+        return $q.resolve();
       }
 
-      if (absenceTypesExistingTitles === null) {
-        titleField.waitsForSupportiveData = true;
+      titleField.waitsForSupportiveData = true;
 
-        return;
-      } else {
-        delete titleField.waitsForSupportiveData;
-      }
-
-      if (_.includes(absenceTypesExistingTitles, title.toLowerCase())) {
-        titleField.error = 'This leave type title is already in use';
-      }
+      return promises.titlesInUse
+        .then(function (titlesInUse) {
+          if (_.includes(titlesInUse, titleField.value.toLowerCase())) {
+            titleField.error = 'This leave type title is already in use';
+          }
+        })
+        .then(function () {
+          titleField.waitsForSupportiveData = false;
+        });
     }
 
     /**
@@ -148,6 +153,21 @@ define([
       });
 
       return indexes;
+    }
+
+    /**
+     * Fetches absence types titles in use.
+     * It also lowers the case of the titles.
+     *
+     * @return {Promise} resolves with an {Array}
+     */
+    function fetchAbsenceTypesTitlesInUse () {
+      return AbsenceType.all({}, { return: ['title'] })
+        .then(function (absenceTypes) {
+          return absenceTypes.map(function (absenceType) {
+            return absenceType.title.toLowerCase();
+          });
+        });
     }
 
     /**
@@ -322,21 +342,6 @@ define([
         _.first(visibleTabs).first = true;
         _.last(visibleTabs).last = true;
       });
-    }
-
-    /**
-     * Fetches absence types and stores their titles in the component.
-     * It also lowers the case of the titles.
-     *
-     * @return {Promise}
-     */
-    function loadAbsenceTypesExistingTitles () {
-      return AbsenceType.all({}, { return: ['title'] })
-        .then(function (absenceTypes) {
-          absenceTypesExistingTitles = absenceTypes.map(function (absenceType) {
-            return absenceType.title.toLowerCase();
-          });
-        });
     }
 
     /**
@@ -601,9 +606,8 @@ define([
      */
     function toggleSettingsSectionAvailability () {
       var titleField = vm.fieldsIndexed.title;
-      var title = titleField.value;
       var disallowedToMoveToSettingsSection =
-        !!(titleField.error || title === '' || titleField.waitsForSupportiveData);
+        !!(titleField.error || titleField.value === '' || titleField.waitsForSupportiveData);
 
       setAvailabilityOfFollowingSections(disallowedToMoveToSettingsSection);
     }
@@ -658,8 +662,8 @@ define([
      * - toggles the Settings section depending on the title
      */
     function validateTitleField () {
-      checkIfTitleIsUnique();
-      toggleSettingsSectionAvailability();
+      checkIfTitleIsUnique()
+        .then(toggleSettingsSectionAvailability);
     }
 
     /**
