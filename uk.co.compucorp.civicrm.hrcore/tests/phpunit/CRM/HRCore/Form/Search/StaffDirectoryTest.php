@@ -27,7 +27,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $contact2 = ContactFabricator::fabricate();
 
     $formValues = [];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $this->assertEquals(2, $searchDirectory->count());
 
     //verify contact ids
@@ -62,7 +62,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     );
 
     $formValues = ['select_staff' => 'current'];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
 
     //Contact2 and contact3 have current contracts
     $this->assertEquals(2, $searchDirectory->count());
@@ -90,7 +90,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     );
 
     $formValues = ['select_staff' => 'past'];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
 
     //Contact1 has past contract
     $this->assertEquals(1, $searchDirectory->count());
@@ -115,7 +115,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     );
 
     $formValues = ['select_staff' => 'future'];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
 
     //Contact1 has future contract
     $this->assertEquals(1, $searchDirectory->count());
@@ -151,7 +151,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
       'contract_end_date_low' => '2016-12-30',
       'contract_end_date_high' => '2016-12-31'
     ];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
 
     //only Contact1 has contract start dates between the given contract start low and high dates
     // And contract end date between the given contract end low and high dates.
@@ -182,7 +182,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
       'contract_end_date_low' => '2018-12-30',
       'contract_end_date_high' => '2018-12-31'
     ];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
 
     //No staff with contract start dates between the given contract start low and high dates
     //and contract end dates between the given contract end low and high dates.
@@ -216,7 +216,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
       'contract_end_date_high' => ''
     ];
 
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
 
     //only Contact2 has contract start dates within this year
     //and also end date within this year(since period end date is NULL)
@@ -280,7 +280,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
     $this->createRelationship($contact1, $manager);
     $formValues = [];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $results = $this->extractColumnValues($searchDirectory->all(0, 10));
 
     $expectedResults = [
@@ -350,7 +350,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $this->createRelationship($contact1, $manager2, '2016-01-01', '2016-12-31');
 
     $formValues = [];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $results = $this->extractColumnValues($searchDirectory->all(0, 10));
 
     $expectedResults = [
@@ -410,7 +410,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $formValues['mark_x_'. $contact1['id']] = '';
     $formValues['mark_x_'. $contact3['id']] = '';
 
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $includeContactId = TRUE;
     $results = $this->extractColumnValues($searchDirectory->all(0, 0, NULL, $includeContactId));
 
@@ -475,7 +475,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $formValues = [
       'name' => 'Test'
     ];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $results = $this->extractColumnValues($searchDirectory->all(0, 10));
 
     //Contact1 and Contact3 has the keyword 'Test' in their first and last names respectively
@@ -543,7 +543,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $formValues = [
       'job_title' => 'Test'
     ];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $results = $this->extractColumnValues($searchDirectory->all(0, 10));
     //Contact1 and Contact3 has the keyword 'Test' in their job contract titles
     $expectedResults = [
@@ -616,7 +616,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $formValues = [
       'department' => $department1['value']
     ];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $results = $this->extractColumnValues($searchDirectory->all(0, 10));
 
     //Contact1 belongs to department1 in one of the job roles.
@@ -680,7 +680,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $formValues = [
       'location' => $location1['value']
     ];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $results = $this->extractColumnValues($searchDirectory->all(0, 10));
 
     //Contact1 belongs to location1 in one of the job roles.
@@ -732,7 +732,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
       'department' => $department1['value'],
       'location' => $location2['value']
     ];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $results = $this->extractColumnValues($searchDirectory->all(0, 10));
 
     //Because the filters work with the 'AND' condition, no results will be returned
@@ -777,7 +777,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
       'department' => $department1['value'],
       'location' => $location1['value']
     ];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $results = $this->extractColumnValues($searchDirectory->all(0, 10));
 
 

@@ -144,7 +144,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     }
 
     if (!empty($this->jobDetailsCondition)) {
-      $jobDetailsCondition =  implode(' AND ', $this->jobDetailsCondition);
+      $jobDetailsCondition = implode(' AND ', $this->jobDetailsCondition);
       $this->from['contract_join'] = $this->getJobContractJoin($jobDetailsCondition);
     }
 
@@ -520,7 +520,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       $jobDetailsCondition = $this->getJobDetailsConditionForSpecificStaff($value);
     }
     else {
-      $jobDetailsCondition = $this->getWhereClauseWhenSelectStaffIsChooseDate();
+      $jobDetailsCondition = $this->getWhenSelectStaffIsChooseDate();
     }
 
     if ($jobDetailsCondition) {
@@ -534,7 +534,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    *
    * @return string
    */
-  private function getWhereClauseWhenSelectStaffIsChooseDate() {
+  private function getWhenSelectStaffIsChooseDate() {
     $conditions = [];
     if (!empty($this->formValues['contract_start_date_low']) && !empty($this->formValues['contract_start_date_high'])) {
       $fromDate = new DateTime($this->formValues['contract_start_date_low']);
