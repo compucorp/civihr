@@ -27,7 +27,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $contact2 = ContactFabricator::fabricate();
 
     $formValues = [];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $this->assertEquals(2, $searchDirectory->count());
 
     //verify contact ids
@@ -62,7 +62,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     );
 
     $formValues = ['select_staff' => 'current'];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
 
     //Contact2 and contact3 have current contracts
     $this->assertEquals(2, $searchDirectory->count());
@@ -90,7 +90,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     );
 
     $formValues = ['select_staff' => 'past'];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
 
     //Contact1 has past contract
     $this->assertEquals(1, $searchDirectory->count());
@@ -115,7 +115,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     );
 
     $formValues = ['select_staff' => 'future'];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
 
     //Contact1 has future contract
     $this->assertEquals(1, $searchDirectory->count());
@@ -144,12 +144,17 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
     $formValues = [
       'select_staff' => 'choose_date',
-      'contract_start_date' => '2016-04-01',
-      'contract_end_date' => '2016-05-01'
+      'contract_start_date_relative' => 0,
+      'contract_end_date_relative' => 0,
+      'contract_start_date_low' => '2016-01-01',
+      'contract_start_date_high' => '2016-01-05',
+      'contract_end_date_low' => '2016-12-30',
+      'contract_end_date_high' => '2016-12-31'
     ];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
 
-    //only Contact1 has contract dates overlapping selected dates
+    //only Contact1 has contract start dates between the given contract start low and high dates
+    // And contract end date between the given contract end low and high dates.
     $this->assertEquals(1, $searchDirectory->count());
 
     //verify contact ids
@@ -170,12 +175,17 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
     $formValues = [
       'select_staff' => 'choose_date',
-      'contract_start_date' => '2016-04-01',
-      'contract_end_date' => '2016-05-01'
+      'contract_start_date_relative' => 0,
+      'contract_end_date_relative' => 0,
+      'contract_start_date_low' => '2017-01-01',
+      'contract_start_date_high' => '2017-01-05',
+      'contract_end_date_low' => '2018-12-30',
+      'contract_end_date_high' => '2018-12-31'
     ];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
 
-    //No staff with contract dates overlapping the contract dates selected
+    //No staff with contract start dates between the given contract start low and high dates
+    //and contract end dates between the given contract end low and high dates.
     $this->assertEquals(0, $searchDirectory->count());
   }
 
@@ -193,13 +203,23 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $contact2['id']],
-      ['period_start_date' => '2018-01-01']
+      ['period_start_date' => date('Y-m-d')]
     );
 
-    $formValues = ['select_staff' => 'this.day'];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $formValues = [
+      'select_staff' => 'choose_date',
+      'contract_start_date_relative' => 'this.year',
+      'contract_end_date_relative' => 'this.year',
+      'contract_start_date_low' => '',
+      'contract_start_date_high' => '',
+      'contract_end_date_low' => '',
+      'contract_end_date_high' => ''
+    ];
 
-    //only Contact2 has contract dates overlapping today
+    $searchDirectory = new SearchDirectory($formValues);
+
+    //only Contact2 has contract start dates within this year
+    //and also end date within this year(since period end date is NULL)
     $this->assertEquals(1, $searchDirectory->count());
 
     //verify contact ids
@@ -260,7 +280,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
     $this->createRelationship($contact1, $manager);
     $formValues = [];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $results = $this->extractColumnValues($searchDirectory->all(0, 10));
 
     $expectedResults = [
@@ -330,7 +350,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $this->createRelationship($contact1, $manager2, '2016-01-01', '2016-12-31');
 
     $formValues = [];
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $results = $this->extractColumnValues($searchDirectory->all(0, 10));
 
     $expectedResults = [
@@ -390,7 +410,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $formValues['mark_x_'. $contact1['id']] = '';
     $formValues['mark_x_'. $contact3['id']] = '';
 
-    $searchDirectory =  new SearchDirectory($formValues);
+    $searchDirectory = new SearchDirectory($formValues);
     $includeContactId = TRUE;
     $results = $this->extractColumnValues($searchDirectory->all(0, 0, NULL, $includeContactId));
 
@@ -445,6 +465,326 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     ]);
 
     $this->assertEquals($expectedTaskList, array_values($searchDirectory->buildTaskList($form)));
+  }
+
+  public function testDisplayNameFilterReturnsOnlyResultsThatMatchesFilterValue() {
+    $contact1 = ContactFabricator::fabricate(['first_name' => 'FirstTest', 'last_name' => 'Contact1']);
+    $contact2 = ContactFabricator::fabricate(['first_name' => 'Sample', 'last_name' => 'Doe']);
+    $contact3 = ContactFabricator::fabricate(['first_name' => 'Contact3', 'last_name' => 'TestLast']);
+
+    $formValues = [
+      'name' => 'Test'
+    ];
+    $searchDirectory = new SearchDirectory($formValues);
+    $results = $this->extractColumnValues($searchDirectory->all(0, 10));
+
+    //Contact1 and Contact3 has the keyword 'Test' in their first and last names respectively
+    $expectedResults = [
+      [
+        'contact_id' => $contact1['id'],
+        'display_name' => $contact1['display_name'],
+        'work_phone' => NULL,
+        'work_email' => NULL,
+        'manager' => NULL,
+        'location' => NULL,
+        'department' => NULL,
+        'job_title' => NULL,
+      ],
+      [
+        'contact_id' => $contact3['id'],
+        'display_name' => $contact3['display_name'],
+        'work_phone' => NULL,
+        'work_email' => NULL,
+        'manager' => NULL,
+        'location' => NULL,
+        'department' => NULL,
+        'job_title' => NULL,
+      ]
+    ];
+
+    $this->assertEquals($expectedResults, $results);
+  }
+
+  public function testJobTitleFilterReturnsOnlyResultsThatMatchesFilterValue() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+    $contact3 = ContactFabricator::fabricate();
+
+    $contract1Title = 'Test Contract';
+    $contract3Title = 'ContraTestSample';
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2017-01-01',
+        'period_end_date' => '2017-12-31',
+        'title' => $contract1Title
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-12-31',
+        'title' => 'Sample Contract'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact3['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-12-31',
+        'title' => $contract3Title
+      ]
+    );
+
+    $formValues = [
+      'job_title' => 'Test'
+    ];
+    $searchDirectory = new SearchDirectory($formValues);
+    $results = $this->extractColumnValues($searchDirectory->all(0, 10));
+    //Contact1 and Contact3 has the keyword 'Test' in their job contract titles
+    $expectedResults = [
+      [
+        'contact_id' => $contact1['id'],
+        'display_name' => $contact1['display_name'],
+        'work_phone' => NULL,
+        'work_email' => NULL,
+        'manager' => NULL,
+        'location' => NULL,
+        'department' => NULL,
+        'job_title' => $contract1Title,
+      ],
+      [
+        'contact_id' => $contact3['id'],
+        'display_name' => $contact3['display_name'],
+        'work_phone' => NULL,
+        'work_email' => NULL,
+        'manager' => NULL,
+        'location' => NULL,
+        'department' => NULL,
+        'job_title' => $contract3Title,
+      ]
+    ];
+
+    $this->assertEquals($expectedResults, $results);
+  }
+
+  public function testDepartmentFilterReturnsOnlyResultsThatMatchesFilterValue() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+    $contract1 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-12-31',
+      ]
+    );
+
+    $contract2 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      [
+        'period_start_date' => '2017-01-01',
+        'period_end_date' => '2017-12-31',
+      ]
+    );
+
+    $location1 = $this->createLocation('location1');
+    $department1 = $this->createDepartment('department1');
+    $department2 = $this->createDepartment('department2');
+
+    //Contact1 has a contract linked to two job roles
+    HRJobRolesFabricator::fabricate([
+      'job_contract_id' => $contract1['id'],
+      'location' => $location1['value'],
+      'department' => $department1['value']
+    ]);
+
+    HRJobRolesFabricator::fabricate([
+      'job_contract_id' => $contract1['id'],
+      'department' => $department2['value']
+    ]);
+
+    //Contact2 has a contract linked to one job role
+    HRJobRolesFabricator::fabricate([
+      'job_contract_id' => $contract2['id'],
+      'department' => $department2['value']
+    ]);
+
+    $formValues = [
+      'department' => $department1['value']
+    ];
+    $searchDirectory = new SearchDirectory($formValues);
+    $results = $this->extractColumnValues($searchDirectory->all(0, 10));
+
+    //Contact1 belongs to department1 in one of the job roles.
+    $expectedResults = [
+      [
+        'contact_id' => $contact1['id'],
+        'display_name' => $contact1['display_name'],
+        'work_phone' => NULL,
+        'work_email' => NULL,
+        'manager' => NULL,
+        'location' => $location1['name'],
+        'department' => "{$department1['name']},{$department2['name']}",
+        'job_title' => NULL,
+      ],
+    ];
+
+    $this->assertEquals($expectedResults, $results);
+  }
+
+  public function testLocationFilterReturnsOnlyResultsThatMatchesFilterValue() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+    $contract1 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-12-31',
+      ]
+    );
+
+    $contract2 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      [
+        'period_start_date' => '2017-01-01',
+        'period_end_date' => '2017-12-31',
+      ]
+    );
+
+    $department1 = $this->createDepartment('department1');
+    $location1 = $this->createLocation('location1');
+    $location2 = $this->createLocation('location2');
+
+    //Contact1 has a contract linked to two job roles
+    HRJobRolesFabricator::fabricate([
+      'job_contract_id' => $contract1['id'],
+      'location' => $location1['value'],
+      'department' => $department1['value']
+    ]);
+
+    HRJobRolesFabricator::fabricate([
+      'job_contract_id' => $contract1['id'],
+      'location' => $location2['value']
+    ]);
+
+    //Contact2 has a contract linked to one job role
+    HRJobRolesFabricator::fabricate([
+      'job_contract_id' => $contract2['id'],
+      'location' => $location2['value']
+    ]);
+
+    $formValues = [
+      'location' => $location1['value']
+    ];
+    $searchDirectory = new SearchDirectory($formValues);
+    $results = $this->extractColumnValues($searchDirectory->all(0, 10));
+
+    //Contact1 belongs to location1 in one of the job roles.
+    $expectedResults = [
+      [
+        'contact_id' => $contact1['id'],
+        'display_name' => $contact1['display_name'],
+        'work_phone' => NULL,
+        'work_email' => NULL,
+        'manager' => NULL,
+        'location' => "{$location1['name']},{$location2['name']}",
+        'department' => $department1['name'],
+        'job_title' => NULL,
+      ],
+    ];
+
+    $this->assertEquals($expectedResults, $results);
+  }
+
+  public function testDepartmentInConjunctionWithLocationFilterWillNotReturnResultsIfNoMatchFound() {
+    $contact1 = ContactFabricator::fabricate();
+    $contract1 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-12-31',
+      ]
+    );
+
+    $department1 = $this->createDepartment('department1');
+    $department2 = $this->createDepartment('department2');
+    $location1 = $this->createLocation('location1');
+    $location2 = $this->createLocation('location2');
+
+    //Contact1 has a contract linked to two job roles
+    HRJobRolesFabricator::fabricate([
+      'job_contract_id' => $contract1['id'],
+      'location' => $location1['value'],
+      'department' => $department1['value']
+    ]);
+
+    HRJobRolesFabricator::fabricate([
+      'job_contract_id' => $contract1['id'],
+      'location' => $location2['value'],
+      'department' => $department2['value']
+    ]);
+
+    $formValues = [
+      'department' => $department1['value'],
+      'location' => $location2['value']
+    ];
+    $searchDirectory = new SearchDirectory($formValues);
+    $results = $this->extractColumnValues($searchDirectory->all(0, 10));
+
+    //Because the filters work with the 'AND' condition, no results will be returned
+    //because there is no job role that the user has in which he belongs to department1
+    //and location2 at the same time
+    $this->assertEmpty($results);
+  }
+
+  public function testJobTitleInConjunctionWithLocationFilterWillNotReturnResultsIfNoMatchFound() {
+    $contact1 = ContactFabricator::fabricate();
+    $contractTitle = 'ContractTitle';
+    $contract1 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-12-31',
+        'title' => 'Test Contract'
+      ]
+    );
+
+    $contract2 = HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2017-01-01',
+        'period_end_date' => '2017-12-31',
+        'title' => $contractTitle
+      ]
+    );
+
+    $department1 = $this->createDepartment('department1');
+    $location1 = $this->createLocation('location1');
+
+    HRJobRolesFabricator::fabricate([
+      'job_contract_id' => $contract1['id'],
+      'location' => $location1['value'],
+      'department' => $department1['value']
+    ]);
+
+
+    $formValues = [
+      'job_title' => $contractTitle,
+      'department' => $department1['value'],
+      'location' => $location1['value']
+    ];
+    $searchDirectory = new SearchDirectory($formValues);
+    $results = $this->extractColumnValues($searchDirectory->all(0, 10));
+
+
+    //Even though the contact has a Job contract with the specified title, since the
+    //operator is 'AND' and there is no contract job title linked to a role with
+    //the specified department and location, no result is returned.
+    $this->assertEmpty($results);
   }
 
   private function extractContactIds($sql) {

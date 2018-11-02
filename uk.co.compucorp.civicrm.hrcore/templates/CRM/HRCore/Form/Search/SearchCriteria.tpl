@@ -14,6 +14,16 @@
       </div>
       <div class="crm-accordion-body">
 
+        <div class="crm-section">
+          <div class="label">
+            {$form.name.label}
+          </div>
+          <div class="content">
+            {$form.name.html}
+          </div>
+          <div class="clear"></div>
+        </div>
+
         <div class="crm-section" id="select-staff">
           <div class="label">
             {$form.select_staff.label}
@@ -27,21 +37,51 @@
         <div class="contract-dates">
           <div class="crm-section">
             <div class="label">
-              {$form.contract_start_date.label}
+              Job Contract Start Date
             </div>
             <div class="content">
-              {$form.contract_start_date.html}
+              {include file="CRM/Core/DateRange.tpl" fieldName="contract_start_date" from='_low' to='_high'}
             </div>
           </div>
 
           <div class="crm-section">
             <div class="label">
-              {$form.contract_end_date.label}
+              Job Contract End Date
             </div>
             <div class="content">
-              {$form.contract_end_date.html}
+              {include file="CRM/Core/DateRange.tpl" fieldName="contract_end_date" from='_low' to='_high'}
             </div>
           </div>
+        </div>
+
+        <div class="crm-section">
+          <div class="label">
+            {$form.job_title.label}
+          </div>
+          <div class="content">
+            {$form.job_title.html}
+          </div>
+          <div class="clear"></div>
+        </div>
+
+        <div class="crm-section">
+          <div class="label">
+            {$form.department.label}
+          </div>
+          <div class="content">
+            {$form.department.html}
+          </div>
+          <div class="clear"></div>
+        </div>
+
+        <div class="crm-section">
+          <div class="label">
+            {$form.location.label}
+          </div>
+          <div class="content">
+            {$form.location.html}
+          </div>
+          <div class="clear"></div>
         </div>
 
         <script type="text/javascript">

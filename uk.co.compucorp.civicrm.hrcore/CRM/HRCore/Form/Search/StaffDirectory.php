@@ -55,6 +55,11 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
   /**
    * @var array
    */
+  protected $jobDetailsCondition = [];
+
+  /**
+   * @var array
+   */
   protected $selectStaffFixedOptions = [
     'all' => 'All Staff',
     'current' => 'Current Staff',
@@ -68,10 +73,8 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * @param array $formValues
    */
   public function __construct(&$formValues) {
-    $this->formValues = $formValues;
-
     $this->columns = [
-      ts('Display Name') => 'display_name',
+      ts('Name') => 'display_name',
       ts('Work Phone') => 'work_phone',
       ts('Work Email') => 'work_email',
       ts('Manager') => 'manager',
@@ -82,10 +85,17 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
 
     $this->filters = [
       'select_staff' => '',
+      'name' => 'contact_a.display_name',
+      'job_title' => 'contract_details.title',
+      'department' => 'hrjobroles.department',
+      'location' => 'hrjobroles.location',
     ];
 
-    $allParameters = array_merge($this->formValues, $this->getAdditionalParameters());
+    $allParameters = array_merge($formValues, $this->getAdditionalParameters());
     $this->params = CRM_Contact_BAO_Query::convertFormValues($allParameters);
+    //relative dates are converted to real dates by convertFormValues hence reason for
+    //setting the form values after the function has ran.
+    $this->formValues = $allParameters;
     $this->generateQueryClause();
   }
 
@@ -98,8 +108,8 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       GROUP_CONCAT(DISTINCT CASE WHEN phone_location.name = 'Work' THEN CONCAT(c_phone.phone, IF (c_phone.phone_ext, CONCAT(' + ', c_phone.phone_ext), '')) END) AS work_phone,
       GROUP_CONCAT(DISTINCT CASE WHEN email_location.name = 'Work' THEN c_email.email END) AS work_email,
       GROUP_CONCAT(DISTINCT CASE WHEN civicrm_relationship_type.is_active = '1' THEN manager_contact.display_name END) AS manager,
-      GROUP_CONCAT(DISTINCT ov_location.name) AS location,
-      GROUP_CONCAT(DISTINCT ov_department.name) AS department,
+      GROUP_CONCAT(DISTINCT ov_location.label) AS location,
+      GROUP_CONCAT(DISTINCT ov_department.label) AS department,
       contract_details.title AS job_title ";
   }
 
@@ -118,12 +128,45 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
         case 'select_staff':
           $this->setQueryConditionForSelectStaff($value);
           break;
+        case 'name':
+          $this->where[] = CRM_Contact_BAO_Query::buildClause($alias, 'LIKE', "%{$value}%");
+          break;
+        case 'job_title':
+          $this->setQueryConditionForJobDetailsFields($alias, 'LIKE', "%{$value}%");
+          break;
+        case 'department':
+        case 'location':
+          $this->setQueryConditionForJobDetailsFields($alias, '=', "{$value}");
+          break;
         default:
           $this->where[] = CRM_Contact_BAO_Query::buildClause($alias, $op, $value);
       }
     }
 
+    if (!empty($this->jobDetailsCondition)) {
+      $jobDetailsCondition = implode(' AND ', $this->jobDetailsCondition);
+      $this->from['contract_join'] = $this->getJobContractJoin($jobDetailsCondition);
+    }
+
     $this->where[] = "contact_a.contact_type = 'Individual' AND contact_a.is_deleted = 0";
+  }
+
+  /**
+   * Sets the query condition for job details related filter fields
+   *
+   * @param string $alias
+   * @param string $op
+   * @param string $value
+   */
+  private function setQueryConditionForJobDetailsFields($alias, $op, $value) {
+    $sqlCondition = CRM_Contact_BAO_Query::buildClause($alias, $op, $value);
+    $this->jobDetailsCondition[] = $sqlCondition;
+    $limitToContactWithContract = 'contract_details.id IS NOT NULL';
+    if (array_search($limitToContactWithContract, $this->where) === FALSE) {
+      //Since the the job roles filters are not applied to the outer query we need to make sure that
+      //only rows linked to the job contract details are returned.
+      $this->where[] = $limitToContactWithContract;
+    }
   }
 
   /**
@@ -138,7 +181,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     LEFT JOIN civicrm_email c_email ON c_email.contact_id = contact_a.id
     LEFT JOIN civicrm_location_type email_location ON c_email.location_type_id = email_location.id";
 
-    $this->from['contract_join'] = $this->getJobContractJoin($this->getJobDetailsConditionForSpecificStaff());
+    $this->from['contract_join'] = $this->getJobContractJoin();
 
     $today = date('Y-m-d');
     $this->from['after_contract'] = "LEFT JOIN civicrm_hrjobroles hrjobroles ON contract_details.id = hrjobroles.job_contract_id
@@ -200,33 +243,62 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * {@inheritdoc}
    */
   public function buildForm(&$form) {
-    $selector = CRM_Core_Form_Date::returnDateRangeSelector(
-      $form,
-      'select_staff',
-      1,
-      '_low',
-      '_high',
-      ts('From:')
-    );
-    //remove unwanted options from the relative dates list.
-    //Options like 'Choose Date Range' and 'Any' Option that would not work as expected.
-    //because the select_staff field is created differently.
-    unset($selector[0], $selector['']);
-    $options = $this->selectStaffFixedOptions + ['choose_date' => 'Select Dates'] + $selector;
-
-    //The select staff field is created this way rather than via CRM_Core_Form_Date::buildDateRange function
-    //because if we add additional option parameters, Civi will throw an error when evaluating these values
-    //after submission because it will not consider them to be relative dates
+    $form->add('text', 'name', ts('Name'), ['placeholder' => 'name'], FALSE);
+    $options = $this->selectStaffFixedOptions + ['choose_date' => 'Select Dates'];
     $form->add('select', 'select_staff', ts('Select Staff'), $options, FALSE,
       ['class' => 'crm-select2', 'multiple' => FALSE]
     );
 
-    $form->add('datepicker', 'contract_start_date', ts('Job Contract Start Date'),
-      '', FALSE, ['time' => false]);
-    $form->add('datepicker', 'contract_end_date', ts('Job Contract End Date'),
-      '', FALSE, ['time' => false]);
+    CRM_Core_Form_Date::buildDateRange($form, 'contract_start_date', 1, '_low', '_high', ts('From:'), FALSE, FALSE);
+    CRM_Core_Form_Date::buildDateRange($form, 'contract_end_date', 1, '_low', '_high', ts('To:'), FALSE, FALSE);
+
+    $form->add('text', 'job_title', ts('Job Title'));
+
+    $form->add('select', 'department', ts('Department'), $this->getDepartmentsList(), FALSE,
+      ['class' => 'crm-select2', 'multiple' => FALSE, 'placeholder' => '- select -']
+    );
+
+    $form->add('select', 'location', ts('Location'), $this->getLocationsList(), FALSE,
+      ['class' => 'crm-select2', 'multiple' => FALSE, 'placeholder' => '- select -']
+    );
 
     CRM_Utils_System::setTitle(ts('Staff Directory'));
+  }
+
+  /**
+   * Returns the departments list.
+   *
+   * @return array
+   */
+  private function getDepartmentsList() {
+    return $this->getOptionValuesList('hrjc_department');
+  }
+
+  /**
+   * Returns the locations list.
+   *
+   * @return array
+   */
+  private function getLocationsList() {
+    return $this->getOptionValuesList('hrjc_location');
+  }
+
+  /**
+   * Returns the values for an option group formatted for a
+   * select list options.
+   *
+   * @param array $optionGroupName
+   *
+   * @return array
+   */
+  private function getOptionValuesList($optionGroupName) {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'return' => ['label', 'value'],
+      'option_group_id' => $optionGroupName,
+      'is_active' => 1,
+    ]);
+
+    return array_column($result['values'], 'label', 'value');
   }
 
   /**
@@ -309,7 +381,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    *
    * @return string
    */
-  private function getJobContractJoin($jobDetailsCondition) {
+  private function getJobContractJoin($jobDetailsCondition = '') {
     $sql = "LEFT JOIN
     (SELECT civicrm_hrjobcontract.contact_id,
     MAX(contract_details.period_start_date) as period_start_date 
@@ -342,6 +414,8 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
                    ORDER BY jcr2.effective_date DESC LIMIT 1)
     INNER JOIN civicrm_hrjobcontract_details contract_details
       ON rev.details_revision_id = contract_details.jobcontract_revision_id 
+    LEFT JOIN civicrm_hrjobroles hrjobroles
+      ON civicrm_hrjobcontract.id = hrjobroles.job_contract_id  
     WHERE civicrm_hrjobcontract.deleted = 0";
 
     if ($jobDetailsCondition) {
@@ -445,15 +519,12 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     if (in_array($value, array_keys($this->selectStaffFixedOptions))) {
       $jobDetailsCondition = $this->getJobDetailsConditionForSpecificStaff($value);
     }
-    elseif ($value == 'choose_date') {
-      $jobDetailsCondition = $this->getWhereClauseWhenSelectStaffIsChooseDate();
-    }
     else {
-      $jobDetailsCondition = $this->getWhereClauseWhenSelectStaffIsRelativeDate($value);
+      $jobDetailsCondition = $this->getWhenSelectStaffIsChooseDate();
     }
 
     if ($jobDetailsCondition) {
-      $this->from['contract_join'] = $this->getJobContractJoin($jobDetailsCondition);
+      $this->jobDetailsCondition[] = $jobDetailsCondition;
       $this->where[] = $jobDetailsCondition;
     }
   }
@@ -463,28 +534,26 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    *
    * @return string
    */
-  private function getWhereClauseWhenSelectStaffIsChooseDate() {
-    $fromDate = $this->formValues['contract_start_date'] ? new DateTime($this->formValues['contract_start_date']) : '';
-    $toDate = $this->formValues['contract_end_date'] ? new DateTime($this->formValues['contract_end_date']) : '';
+  private function getWhenSelectStaffIsChooseDate() {
+    $conditions = [];
+    if (!empty($this->formValues['contract_start_date_low']) && !empty($this->formValues['contract_start_date_high'])) {
+      $fromDate = new DateTime($this->formValues['contract_start_date_low']);
+      $toDate = new DateTime($this->formValues['contract_start_date_high']);
 
-    return $this->getJobDetailsConditionForSpecificDates($fromDate, $toDate);
-  }
+      $conditions[] = "contract_details.period_start_date >= '" . $fromDate->format('Y-m-d') .
+        "' AND contract_details.period_start_date <= '" . $toDate->format('Y-m-d') . "'";
+    }
 
-  /**
-   * Gets the WHERE condition when select_staff field has relative date
-   * value, e.g 'this.year'.
-   *
-   * @param string $value
-   *
-   * @return string
-   */
-  private function getWhereClauseWhenSelectStaffIsRelativeDate($value) {
-    list($term, $unit) = explode('.', $value, 2);
-    $dateRange = CRM_Utils_Date::relativeToAbsolute($term, $unit);
-    $from = substr($dateRange['from'], 0, 8);
-    $to = substr($dateRange['to'], 0, 8);
+    if (!empty($this->formValues['contract_end_date_low']) && !empty($this->formValues['contract_end_date_high'])) {
+      $fromDate = new DateTime($this->formValues['contract_end_date_low']);
+      $toDate = new DateTime($this->formValues['contract_end_date_high']);
 
-    return $this->getJobDetailsConditionForSpecificDates(new DateTime($from), new DateTime($to));
+      $conditions[] = "((contract_details.period_end_date >= '" . $fromDate->format('Y-m-d') .  "'
+        AND contract_details.period_end_date <= '" . $toDate->format('Y-m-d') . "') 
+        OR (contract_details.period_end_date IS NULL))";
+    }
+
+    return implode(' AND ', $conditions);
   }
 
   /**
