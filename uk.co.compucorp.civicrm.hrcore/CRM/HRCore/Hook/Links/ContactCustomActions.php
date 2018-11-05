@@ -42,6 +42,20 @@ class CRM_HRCore_Hook_Links_ContactCustomActions {
   private function setContactCustomLinks(&$links) {
     $links = [
       [
+        'name' => 'View',
+        'url' => 'civicrm/contact/view',
+        'class' => 'no-popup',
+        'qs' => 'reset=1&cid=%%id%%',
+        'title' => 'View Staff Details',
+      ],
+      [
+        'name' => 'Edit',
+        'url' => 'civicrm/contact/add',
+        'class' => 'no-popup',
+        'qs' => 'reset=1&action=update&cid=%%id%%',
+        'title' => 'Edit Staff Details',
+      ],
+      [
         'name' => 'Record Leave',
         'url' => 'civicrm/contact/view',
         'class' => 'no-popup',
