@@ -88,22 +88,31 @@
           {literal}
           CRM.$(function($) {
             $(document).ready(function() {
-              toogleContractDates();
-              initSelectStaffControls();
+              toggleContractDates();
+              initSelectStaffControl();
             });
 
-            function initSelectStaffControls() {
+            /**
+             * Initiates the Select Staff control.
+             * Toggles contract dates on change.
+             */
+            function initSelectStaffControl() {
               $('#select-staff select').on('change', function(e) {
-                toogleContractDates();
+                toggleContractDates();
               });
             }
 
-            function toogleContractDates() {
-              var select_staff_value = $('#select-staff select option:selected').val();
-              if (select_staff_value === 'choose_date') {
-                $('.contract-dates').show()
+            /**
+             * Toggles contract dates depending on the Select Staff control value
+             */
+            function toggleContractDates() {
+              var $selectStaffValue = $('#select-staff select option:selected').val();
+              var $contractDates = $('.contract-dates');
+
+              if ($selectStaffValue === 'choose_date') {
+                $contractDates.show()
               } else {
-                $('.contract-dates').hide();
+                $contractDates.hide();
               }
             }
           });
