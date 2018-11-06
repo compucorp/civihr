@@ -65,8 +65,6 @@ define([
           tabsIndexed = indexPropertyByName(vm.sections, 'tabs');
           vm.fieldsIndexed = indexPropertyByName(tabsIndexed, 'fields');
           promises.titlesInUse = fetchAbsenceTypesTitlesInUse();
-
-          promises.titlesInUse.then(validateTitleField);
         })
         .then(markFirstAndLastTabsInSections)
         .then(initDefaultValues)
@@ -109,11 +107,11 @@ define([
     function checkIfTitleIsUnique () {
       var titleField = vm.fieldsIndexed.title;
 
-      if (_.isEmpty(titleField.value) || titleField.waitsForSupportiveData) {
+      if (_.isEmpty(titleField.value) || titleField.validating) {
         return $q.resolve();
       }
 
-      titleField.waitsForSupportiveData = true;
+      titleField.validating = true;
 
       return promises.titlesInUse
         .then(function (titlesInUse) {
@@ -122,7 +120,7 @@ define([
           }
         })
         .then(function () {
-          titleField.waitsForSupportiveData = false;
+          titleField.validating = false;
         });
     }
 
@@ -607,7 +605,7 @@ define([
     function toggleSettingsSectionAvailability () {
       var titleField = vm.fieldsIndexed.title;
       var disallowedToMoveToSettingsSection =
-        !!(titleField.error || titleField.value === '' || titleField.waitsForSupportiveData);
+        !!(titleField.error || titleField.value === '' || titleField.validating);
 
       setAvailabilityOfFollowingSections(disallowedToMoveToSettingsSection);
     }
