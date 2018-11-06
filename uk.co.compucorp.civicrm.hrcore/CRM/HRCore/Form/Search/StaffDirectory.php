@@ -103,13 +103,14 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * Builds the select part of the query.
    */
   private function buildSelect() {
+    $commaAndSpaceSeparator = "SEPARATOR ', '";
     $this->selectClause = "SELECT contact_a.id as contact_id,
       contact_a.display_name as display_name,
-      GROUP_CONCAT(DISTINCT CASE WHEN phone_location.name = 'Work' THEN CONCAT(c_phone.phone, IF (c_phone.phone_ext, CONCAT(' + ', c_phone.phone_ext), '')) END) AS work_phone,
-      GROUP_CONCAT(DISTINCT CASE WHEN email_location.name = 'Work' THEN c_email.email END) AS work_email,
-      GROUP_CONCAT(DISTINCT CASE WHEN civicrm_relationship_type.is_active = '1' THEN manager_contact.display_name END) AS manager,
-      GROUP_CONCAT(DISTINCT ov_location.label) AS location,
-      GROUP_CONCAT(DISTINCT ov_department.label) AS department,
+      GROUP_CONCAT(DISTINCT CASE WHEN phone_location.name = 'Work' THEN CONCAT(c_phone.phone, IF (c_phone.phone_ext, CONCAT(' + ', c_phone.phone_ext), '')) END {$commaAndSpaceSeparator}) AS work_phone,
+      GROUP_CONCAT(DISTINCT CASE WHEN email_location.name = 'Work' THEN c_email.email END {$commaAndSpaceSeparator}) AS work_email,
+      GROUP_CONCAT(DISTINCT CASE WHEN civicrm_relationship_type.is_active = '1' THEN manager_contact.display_name END {$commaAndSpaceSeparator}) AS manager,
+      GROUP_CONCAT(DISTINCT ov_location.label {$commaAndSpaceSeparator}) AS location,
+      GROUP_CONCAT(DISTINCT ov_department.label {$commaAndSpaceSeparator}) AS department,
       contract_details.title AS job_title ";
   }
 
@@ -189,9 +190,9 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     LEFT JOIN civicrm_option_value ov_department ON og_department.id = ov_department.option_group_id AND ov_department.value = hrjobroles.department
     LEFT JOIN civicrm_option_group og_location ON og_location.name = 'hrjc_location'
     LEFT JOIN civicrm_option_value ov_location ON og_location.id = ov_location.option_group_id AND ov_location.value = hrjobroles.location
-    LEFT JOIN civicrm_relationship 
-      ON (contact_a.id = civicrm_relationship.contact_id_a AND civicrm_relationship.is_active = '1' 
-      AND ((civicrm_relationship.start_date IS NULL OR civicrm_relationship.start_date <= '{$today}') 
+    LEFT JOIN civicrm_relationship
+      ON (contact_a.id = civicrm_relationship.contact_id_a AND civicrm_relationship.is_active = '1'
+      AND ((civicrm_relationship.start_date IS NULL OR civicrm_relationship.start_date <= '{$today}')
       AND (civicrm_relationship.end_date IS NULL OR civicrm_relationship.end_date >= '{$today}')))
     LEFT JOIN civicrm_relationship_type ON civicrm_relationship.relationship_type_id = civicrm_relationship_type.id
     LEFT JOIN civicrm_contact manager_contact ON  civicrm_relationship.contact_id_b = manager_contact.id";
@@ -384,15 +385,15 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
   private function getJobContractJoin($jobDetailsCondition = '') {
     $sql = "LEFT JOIN
     (SELECT civicrm_hrjobcontract.contact_id,
-    MAX(contract_details.period_start_date) as period_start_date 
-    FROM {$this->getJobContractDetailsDerivedTable($jobDetailsCondition)} 
+    MAX(contract_details.period_start_date) as period_start_date
+    FROM {$this->getJobContractDetailsDerivedTable($jobDetailsCondition)}
     GROUP BY civicrm_hrjobcontract.contact_id) contract_details_aggregate
       ON contract_details_aggregate.contact_id = contact_a.id
     LEFT JOIN
     (SELECT contract_details.title, civicrm_hrjobcontract.id, civicrm_hrjobcontract.contact_id,
-    contract_details.period_start_date, contract_details.period_end_date 
+    contract_details.period_start_date, contract_details.period_end_date
     FROM {$this->getJobContractDetailsDerivedTable($jobDetailsCondition)}) contract_details
-      ON (contract_details.contact_id = contract_details_aggregate.contact_id 
+      ON (contract_details.contact_id = contract_details_aggregate.contact_id
     AND contract_details.period_start_date = contract_details_aggregate.period_start_date)";
 
     return $sql;
@@ -406,16 +407,16 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * @return string
    */
   private function getJobContractDetailsDerivedTable($jobDetailsCondition) {
-    $sql = "civicrm_hrjobcontract 
-    INNER JOIN civicrm_hrjobcontract_revision rev 
+    $sql = "civicrm_hrjobcontract
+    INNER JOIN civicrm_hrjobcontract_revision rev
       ON rev.id = (SELECT id
                    FROM civicrm_hrjobcontract_revision jcr2
                    WHERE jcr2.jobcontract_id = civicrm_hrjobcontract.id
                    ORDER BY jcr2.effective_date DESC LIMIT 1)
     INNER JOIN civicrm_hrjobcontract_details contract_details
-      ON rev.details_revision_id = contract_details.jobcontract_revision_id 
+      ON rev.details_revision_id = contract_details.jobcontract_revision_id
     LEFT JOIN civicrm_hrjobroles hrjobroles
-      ON civicrm_hrjobcontract.id = hrjobroles.job_contract_id  
+      ON civicrm_hrjobcontract.id = hrjobroles.job_contract_id
     WHERE civicrm_hrjobcontract.deleted = 0";
 
     if ($jobDetailsCondition) {
@@ -547,7 +548,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       $toDate = new DateTime($this->formValues['contract_end_date_high']);
 
       $conditions[] = "((contract_details.period_end_date >= '" . $fromDate->format('Y-m-d') .  "'
-        AND contract_details.period_end_date <= '" . $toDate->format('Y-m-d') . "') 
+        AND contract_details.period_end_date <= '" . $toDate->format('Y-m-d') . "')
         OR (contract_details.period_end_date IS NULL))";
     }
 
