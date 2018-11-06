@@ -5,9 +5,10 @@ define([
   'common/lodash'
 ], function (angular, _) {
   LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
-    'AbsenceType', 'Contact', 'form-sections', 'leave-type-categories-icons',
-    'tabs-hidden-by-category', 'notificationService',
-    'OptionGroup', 'defaults-by-category', 'shared-settings'];
+    'AbsenceType', 'Contact', 'custom-tab-names-by-category',
+    'fields-hidden-by-category', 'form-sections', 'leave-type-categories-icons',
+    'tabs-hidden-by-category', 'notificationService', 'OptionGroup',
+    'defaults-by-category', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -20,11 +21,14 @@ define([
   };
 
   function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
-    Contact, formSections, leaveTypeCategoriesIcons, hiddenTabsByCategory,
-    notificationService, OptionGroup, defaultsByCategory, sharedSettings) {
+    Contact, customTabNamesByCategory, fieldsHiddenByCategory, formSections,
+    leaveTypeCategoriesIcons, hiddenTabsByCategory, notificationService,
+    OptionGroup, defaultsByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
-    var absenceTypesExistingTitles = null;
+    var promises = {
+      titlesInUse: null
+    };
     var state = {
       sectionIndex: null,
       tabIndex: null
@@ -32,9 +36,10 @@ define([
     var tabsIndexed = {};
     var vm = this;
 
-    vm.availableColours = [];
+    vm.availableColours = null;
     vm.componentsPath =
       sharedSettings.sourcePath + 'leave-type-wizard/components';
+    vm.contacts = null;
     vm.fieldsIndexed = {};
     vm.leaveTypeCategories = [];
     vm.loading = true;
@@ -50,12 +55,7 @@ define([
     function $onInit () {
       vm.loading = true;
 
-      $q.all([
-        // @TODO lazy load the contacts and colours
-        loadContacts(),
-        loadAvailableColours(),
-        loadLeaveTypeCategories()
-      ])
+      loadLeaveTypeCategories()
         // @NOTE this is a temporary option group suppressor to match user stories
         // @TODO the suppressor should be amended to gradually support other leave categories
         // @TODO the suppressor must be completely removed once all leave categories are supported
@@ -64,6 +64,7 @@ define([
         .then(function () {
           tabsIndexed = indexPropertyByName(vm.sections, 'tabs');
           vm.fieldsIndexed = indexPropertyByName(tabsIndexed, 'fields');
+          promises.titlesInUse = fetchAbsenceTypesTitlesInUse();
         })
         .then(markFirstAndLastTabsInSections)
         .then(initDefaultValues)
@@ -73,8 +74,12 @@ define([
         .then(function () {
           vm.loading = false;
         })
-        .then(loadAbsenceTypesExistingTitles)
-        .then(validateTitleField);
+        .then(function () {
+          return $q.all([
+            loadContacts(),
+            loadAvailableColours()
+          ]);
+        });
     }
 
     /**
@@ -96,26 +101,27 @@ define([
      * Checks if title provided is unique.
      * If existing titles are not yet loaded, the validation will not be executed,
      * instead, it will show that the field is "loading".
+     *
+     * @return {Promise}
      */
     function checkIfTitleIsUnique () {
       var titleField = vm.fieldsIndexed.title;
-      var title = titleField.value;
 
-      if (_.isEmpty(title)) {
-        return;
+      if (_.isEmpty(titleField.value) || titleField.validating) {
+        return $q.resolve();
       }
 
-      if (absenceTypesExistingTitles === null) {
-        titleField.waitsForSupportiveData = true;
+      titleField.validating = true;
 
-        return;
-      } else {
-        delete titleField.waitsForSupportiveData;
-      }
-
-      if (_.includes(absenceTypesExistingTitles, title.toLowerCase())) {
-        titleField.error = 'This leave type title is already in use';
-      }
+      return promises.titlesInUse
+        .then(function (titlesInUse) {
+          if (_.includes(titlesInUse, titleField.value.toLowerCase())) {
+            titleField.error = 'This leave type title is already in use';
+          }
+        })
+        .then(function () {
+          titleField.validating = false;
+        });
     }
 
     /**
@@ -145,6 +151,21 @@ define([
       });
 
       return indexes;
+    }
+
+    /**
+     * Fetches absence types titles in use.
+     * It also lowers the case of the titles.
+     *
+     * @return {Promise} resolves with an {Array}
+     */
+    function fetchAbsenceTypesTitlesInUse () {
+      return AbsenceType.all({}, { return: ['title'] })
+        .then(function (absenceTypes) {
+          return absenceTypes.map(function (absenceType) {
+            return absenceType.title.toLowerCase();
+          });
+        });
     }
 
     /**
@@ -268,6 +289,7 @@ define([
     function initFieldsWatchers () {
       watchAllowCarryForwardField();
       watchCarryForwardExpirySwitch();
+      watchAccrualExpirationSwitch();
       watchLeaveCategorySelector();
     }
 
@@ -318,21 +340,6 @@ define([
         _.first(visibleTabs).first = true;
         _.last(visibleTabs).last = true;
       });
-    }
-
-    /**
-     * Fetches absence types and stores their titles in the component.
-     * It also lowers the case of the titles.
-     *
-     * @return {Promise}
-     */
-    function loadAbsenceTypesExistingTitles () {
-      return AbsenceType.all({}, { return: ['title'] })
-        .then(function (absenceTypes) {
-          absenceTypesExistingTitles = absenceTypes.map(function (absenceType) {
-            return absenceType.title.toLowerCase();
-          });
-        });
     }
 
     /**
@@ -480,6 +487,11 @@ define([
         params.carry_forward_expiration_unit = '';
       }
 
+      if (params.accrual_never_expire) {
+        params.accrual_expiration_duration = '';
+        params.accrual_expiration_unit = '';
+      }
+
       delete params.carry_forward_expiration_duration_switch;
     }
 
@@ -531,6 +543,17 @@ define([
     }
 
     /**
+     * Sets custom tabs labels depending on the set category
+     *
+     * @param {String} category "leave", "sickness" etc
+     */
+    function setCustomTabNamesByCategory (category) {
+      _.each(customTabNamesByCategory, function (categories, tabName) {
+        tabsIndexed[tabName].label = categories[category];
+      });
+    }
+
+    /**
      * Submits the whole wizard.
      * Validates all fields and, if all valid, saves the form.
      * If errors are found, navigates to the first found tab with errors.
@@ -561,7 +584,18 @@ define([
      */
     function temporarilySuppressNotYetUsedLeaveCategories () {
       vm.leaveTypeCategories = _.filter(vm.leaveTypeCategories, function (category) {
-        return !_.includes(['toil', 'custom'], category.name);
+        return !_.includes(['custom'], category.name);
+      });
+    }
+
+    /**
+     * Toggles fields depending on the leave category
+     *
+     * @param {String} category "leave", "sickness" etc
+     */
+    function toggleFieldsDependingOnLeaveCategory (category) {
+      _.each(fieldsHiddenByCategory, function (categories, fieldName) {
+        vm.fieldsIndexed[fieldName].hidden = categories[category];
       });
     }
 
@@ -570,9 +604,8 @@ define([
      */
     function toggleSettingsSectionAvailability () {
       var titleField = vm.fieldsIndexed.title;
-      var title = titleField.value;
       var disallowedToMoveToSettingsSection =
-        !!(titleField.error || title === '' || titleField.waitsForSupportiveData);
+        !!(titleField.error || titleField.value === '' || titleField.validating);
 
       setAvailabilityOfFollowingSections(disallowedToMoveToSettingsSection);
     }
@@ -606,11 +639,13 @@ define([
      * @param {String} [oldValue]
      */
     function validateField (field, oldValue) {
+      var fieldIsEmpty = field.value === '' || field.value === null;
+
       flushErrorForField(field);
 
-      if (field.required && _.isEmpty(field.value) && oldValue !== '') {
+      if (field.required && fieldIsEmpty && oldValue !== '') {
         field.error = 'This field is required';
-      } else if (field.value !== '' && field.validations) {
+      } else if (!fieldIsEmpty && field.validations) {
         field.validations.forEach(function (validation) {
           if (!validation.rule.test(field.value)) {
             field.error = validation.message;
@@ -625,8 +660,8 @@ define([
      * - toggles the Settings section depending on the title
      */
     function validateTitleField () {
-      checkIfTitleIsUnique();
-      toggleSettingsSectionAvailability();
+      checkIfTitleIsUnique()
+        .then(toggleSettingsSectionAvailability);
     }
 
     /**
@@ -646,6 +681,18 @@ define([
     }
 
     /**
+     * Initiates a watcher over the "Expiry" field.
+     * Toggles dependent fields on value change.
+     */
+    function watchAccrualExpirationSwitch () {
+      $scope.$watch(function () {
+        return vm.fieldsIndexed.accrual_never_expire.value;
+      }, function (neverExpires) {
+        vm.fieldsIndexed.accrual_expiration_duration.hidden = neverExpires;
+      });
+    }
+
+    /**
      * Initiates a watcher over the "Allow carry forward" field.
      * Toggles dependent fields on value change.
      */
@@ -660,7 +707,7 @@ define([
 
     /**
      * Initiates a watcher over the "Carry forward expiry" field.
-     * Toggles dependent fields on value change of if gets toggled.
+     * Toggles dependent fields on value change or if gets toggled.
      */
     function watchCarryForwardExpirySwitch () {
       $scope.$watch(function () {
@@ -680,6 +727,8 @@ define([
         return vm.fieldsIndexed.category.value;
       }, function (category) {
         toggleTabsDependingOnLeaveCategory(category);
+        toggleFieldsDependingOnLeaveCategory(category);
+        setCustomTabNamesByCategory(category);
         markFirstAndLastTabsInSections();
       });
     }

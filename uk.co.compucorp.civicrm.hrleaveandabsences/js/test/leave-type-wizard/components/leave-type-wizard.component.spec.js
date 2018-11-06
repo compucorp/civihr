@@ -23,7 +23,8 @@ define([
     var sampleFieldValue = 'Some value';
     var sampleLeaveTypeCategoriesOptionGroupValues = [
       { name: 'leave', label: 'Leave' },
-      { name: 'sickness', label: 'Sickness' }
+      { name: 'sickness', label: 'Sickness' },
+      { name: 'toil', label: 'TOIL' }
     ];
     var tabsIndexed = {};
 
@@ -91,15 +92,18 @@ define([
       var secondSection, secondSectionFirstTab;
 
       beforeEach(function () {
+        controller.$onInit();
+        $rootScope.$digest();
+
         secondSection = controller.sections[1];
+        secondSection.tabs = secondSection.tabs.filter(function (tab) {
+          return !tab.hidden;
+        });
         secondSectionFirstTab = _.first(secondSection.tabs);
         tabsIndexed = _.chain(controller.sections)
           .flatMap('tabs')
           .keyBy('name')
           .value();
-
-        controller.$onInit();
-        $rootScope.$digest();
       });
 
       it('finishes loading', function () {
@@ -420,7 +424,7 @@ define([
             expect(controller.fieldsIndexed.max_number_of_days_to_carry_forward.hidden).toBe(false);
           });
 
-          describe('when user changes "Carry forward expiry" to "Expire after"', function () {
+          describe('when user changes "Carry forward expiry" to "Expire after a certain duration"', function () {
             beforeEach(function () {
               controller.fieldsIndexed.carry_forward_expiration_duration_switch.value = true;
 
@@ -430,6 +434,18 @@ define([
             it('shows the expiration duration field', function () {
               expect(controller.fieldsIndexed.carry_forward_expiration_duration.hidden).toBe(false);
             });
+          });
+        });
+
+        describe('when user changes TOIL "Expiry" to "Expire after a certain duration"', function () {
+          beforeEach(function () {
+            controller.fieldsIndexed.accrual_never_expire.value = false;
+
+            $rootScope.$digest();
+          });
+
+          it('shows the expiration duration field', function () {
+            expect(controller.fieldsIndexed.accrual_expiration_duration.hidden).toBe(false);
           });
         });
 
@@ -650,7 +666,7 @@ define([
           });
 
           it('sends `add_public_holiday_to_entitlement` as "false"', function () {
-            expect(params.allow_accruals_request).toBe(false);
+            expect(params.add_public_holiday_to_entitlement).toBe(false);
           });
         });
       });
@@ -719,6 +735,92 @@ define([
 
           it('sends `is_sick` as "true"', function () {
             expect(params.is_sick).toBe(true);
+          });
+        });
+      });
+
+      describe('when user selects the "TOIL" category', function () {
+        beforeEach(function () {
+          controller.fieldsIndexed.category.value = 'toil';
+
+          $rootScope.$digest();
+          absenceTypeSaverSpy.and.returnValue($q.resolve());
+          fillWizardIn();
+        });
+
+        it('changes the label of the Leave Requests tab', function () {
+          expect(tabsIndexed['leave-requests'].label).toBe('Using TOIL');
+        });
+
+        it('hides the "Public Holidays" tab', function () {
+          expect(tabsIndexed['public-holidays'].hidden).toBe(true);
+        });
+
+        describe('basic tests', function () {
+          var params;
+
+          beforeEach(function () {
+            submitWizard();
+            $rootScope.$digest();
+
+            params = AbsenceType.save.calls.mostRecent().args[0];
+          });
+
+          it('sends `must_take_public_holiday_as_leave` as "false"', function () {
+            expect(params.must_take_public_holiday_as_leave).toBe(false);
+          });
+
+          it('sends `allow_accruals_request` as "true"', function () {
+            expect(params.allow_accruals_request).toBe(true);
+          });
+
+          it('sends `add_public_holiday_to_entitlement` as "false"', function () {
+            expect(params.add_public_holiday_to_entitlement).toBe(false);
+          });
+        });
+
+        describe('when accrual expiration duration was specified', function () {
+          beforeEach(function () {
+            controller.fieldsIndexed.accrual_expiration_duration.value = '60';
+          });
+
+          describe('when accrual expiration is then set to "Never expire"', function () {
+            beforeEach(function () {
+              controller.fieldsIndexed.accrual_never_expire.value = true;
+            });
+
+            describe('when user submits the form', function () {
+              beforeEach(function () {
+                submitWizard();
+                $rootScope.$digest();
+              });
+
+              it('sends empty `accrual_expiration_duration` and `accrual_expiration_unit` fields', function () {
+                expect(AbsenceType.save).toHaveBeenCalledWith(jasmine.objectContaining({
+                  accrual_expiration_duration: '',
+                  accrual_expiration_unit: ''
+                }));
+              });
+            });
+          });
+        });
+
+        describe('when accrual "Allow negative balances" was specified', function () {
+          beforeEach(function () {
+            controller.fieldsIndexed.allow_overuse.value = true;
+          });
+
+          describe('when user submits the form', function () {
+            beforeEach(function () {
+              submitWizard();
+              $rootScope.$digest();
+            });
+
+            it('sends falsy `allow_overuse` field', function () {
+              expect(AbsenceType.save).toHaveBeenCalledWith(jasmine.objectContaining({
+                allow_overuse: false
+              }));
+            });
           });
         });
       });
