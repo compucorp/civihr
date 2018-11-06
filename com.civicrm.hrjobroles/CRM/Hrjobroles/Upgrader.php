@@ -79,6 +79,25 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
   }
 
   /**
+   * Creates an option group for organisation provider
+   * used for job role funder
+   *
+   * @return bool
+   */
+  public function upgrade_1007() {
+    $result = civicrm_api3('OptionGroup', 'get', [
+      'name' => 'hrjc_funder',
+    ]);
+
+    if ($result['count'] === 0) {
+      $file = 'xml/option_groups/organisation_provider_install.xml';
+      $this->executeCustomDataFile($file);
+    }
+
+    return TRUE;
+  }
+
+  /**
    * Deletes cost centre option value with name "other"
    */
   private function deleteCostCentreOther() {
