@@ -85,14 +85,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
   public function upgradeBundle() {
     //$this->ctx->log->info('Applying update 0999');
-    $this->executeCustomDataFile('xml/option_group_install.xml');
+    $this->executeCustomDataFile('xml/option_groups/option_group_install.xml');
 
     //$this->ctx->log->info('Applying update 1101');
-    $this->executeCustomDataFile('xml/1101_departments.xml');
+    $this->executeCustomDataFile('xml/option_groups/1101_departments.xml');
 
     //$this->ctx->log->info('Applying update 1105');
     if (!CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup','hrjc_pension_type', 'name')) {
-      $this->executeCustomDataFile('xml/1105_pension_type.xml');
+      $this->executeCustomDataFile('xml/option_groups/1105_pension_type.xml');
     }
 
     $i = 4;
@@ -336,6 +336,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1041();
     $this->upgrade_1042();
     $this->upgrade_1043();
+    $this->upgrade_1044();
   }
 
   function upgrade_1001() {
@@ -1049,6 +1050,29 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       'name' => 'Contact_Length_Of_Service',
       'api.CustomGroup.create' => ['id' => '$value.id', 'is_active' => 1],
     ]);
+
+    return TRUE;
+  }
+
+  /**
+   * Creates option groups for organisation providers belonging to sub types
+   * Health Insurance Provider, Life Insurance Provider, or Pension Provider
+   *
+   * @return bool
+   */
+  public function upgrade_1044() {
+    $result = civicrm_api3('OptionGroup', 'get', [
+      'name' => ['IN' => [
+        'hrjc_health_insurance_provider',
+        'hrjc_life_insurance_provider',
+        'hrjc_pension_provider'
+      ]],
+    ]);
+
+    if ($result['count'] === 0) {
+      $file = 'xml/option_groups/organisation_contact_install.xml';
+      $this->executeCustomDataFile($file);
+    }
 
     return TRUE;
   }

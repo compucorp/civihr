@@ -428,7 +428,7 @@ function _hrjobcontract_phpunit_populateDB() {
   $import = new CRM_Utils_Migrate_Import();
   $import->run(
     CRM_Extension_System::singleton()->getMapper()->keyToBasePath('org.civicrm.hrjobcontract')
-      . '/xml/option_group_install.xml'
+      . '/xml/option_groups/option_group_install.xml'
   );
 
   //create option value for option group region
