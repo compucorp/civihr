@@ -23,8 +23,8 @@
         </div>
       </div>
     </div>
-    {* Filters block *}
-    {include file="CRM/HRCore/Form/Search/SearchCriteria.tpl"}
+    {* Filters section *}
+    {include file="CRM/HRCore/Form/Search/StaffDirectoryFiltersSection.tpl"}
   </div>
 </div>
 <div class="crm-content-block">

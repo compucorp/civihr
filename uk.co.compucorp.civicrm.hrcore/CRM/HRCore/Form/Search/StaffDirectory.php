@@ -251,7 +251,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
     );
 
     CRM_Core_Form_Date::buildDateRange($form, 'contract_start_date', 1, '_low', '_high', ts('From:'), FALSE, FALSE);
-    CRM_Core_Form_Date::buildDateRange($form, 'contract_end_date', 1, '_low', '_high', ts('To:'), FALSE, FALSE);
+    CRM_Core_Form_Date::buildDateRange($form, 'contract_end_date', 1, '_low', '_high', ts('From:'), FALSE, FALSE);
 
     $form->add('text', 'job_title', ts('Job Title'));
 
