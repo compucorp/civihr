@@ -18,6 +18,7 @@ use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 use CRM_HRCore_Service_Stats_StatsGatherer as StatsGatherer;
 use CRM_HRCore_Test_Helpers_SessionHelper as SessionHelper;
 use CRM_Hrjobroles_Test_Fabricator_HrJobRoles as HrJobRolesFabricator;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 
 /**
  * @group headless
@@ -26,6 +27,12 @@ class CRM_HRCore_Service_Stats_StatsGathererTest extends CRM_HRCore_Test_BaseHea
 
   use CRM_HRCore_Test_Helpers_TableCleanupTrait;
   use CRM_HRCore_Test_Helpers_DomainConfigurationTrait;
+
+  public function setUp() {
+    // Delete default absence periods created during the extension installation
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
+  }
 
   /**
    * Used in setup method for leave request fabrication

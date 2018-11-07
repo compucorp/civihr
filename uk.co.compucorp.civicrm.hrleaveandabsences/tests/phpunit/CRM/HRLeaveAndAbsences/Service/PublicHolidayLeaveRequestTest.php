@@ -3,6 +3,7 @@
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_Hrjobcontract_Test_Fabricator_HRJobContract as HRJobContractFabricator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
@@ -32,8 +33,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestTest extends BaseH
   public function setUp() {
     // We delete everything two avoid problems with the default absence types
     // created during the extension installation
-    $tableName = AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    $absenceTypeTable = AbsenceType::getTableName();
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absenceTypeTable}");
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
 
     $this->absenceType = AbsenceTypeFabricator::fabricate([
       'must_take_public_holiday_as_leave' => 1

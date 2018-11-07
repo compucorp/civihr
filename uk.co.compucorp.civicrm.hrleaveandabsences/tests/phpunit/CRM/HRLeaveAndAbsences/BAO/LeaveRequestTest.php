@@ -12,6 +12,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_WorkPattern as WorkPatternFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatternFabricator;
 use CRM_HRCore_Test_Fabricator_Contact as ContactFabricator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Factory_LeaveBalanceChangeCalculation as LeaveBalanceChangeCalculationFactory;
 
@@ -49,6 +50,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $messageSpoolTable = CRM_Mailing_BAO_Spool::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$messageSpoolTable}");
+
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    // Delete default absence periods created during the extension installation
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
 
     // This is needed for the tests regarding public holiday leave requests
     $this->absenceType = AbsenceTypeFabricator::fabricate([
