@@ -41,8 +41,20 @@ return [
         'url' => 'civicrm/admin/options/hrjc_deduction_name?reset=1',
         'permission' => 'access CiviCRM',
       ],
+      'Health Insurance Providers' => [
+        'url' => 'civicrm/admin/options/hrjc_health_insurance_provider?reset=1',
+        'permission' => 'access CiviCRM',
+      ],
+      'Life Insurance Providers' => [
+        'url' => 'civicrm/admin/options/hrjc_life_insurance_provider?reset=1',
+        'permission' => 'access CiviCRM',
+      ],
       'Insurance Plan Types' => [
         'url' => 'civicrm/admin/options/hrjc_insurance_plantype?reset=1',
+        'permission' => 'access CiviCRM',
+      ],
+      'Pension Providers' => [
+        'url' => 'civicrm/admin/options/hrjc_pension_provider?reset=1',
         'permission' => 'access CiviCRM',
       ],
     ],
@@ -65,6 +77,10 @@ return [
       ],
       'Levels' => [
         'url' => 'civicrm/admin/options/hrjc_level_type?reset=1',
+        'permission' => 'access CiviCRM',
+      ],
+      'Funders' => [
+        'url' => 'civicrm/admin/options/hrjc_funder?reset=1',
         'permission' => 'access CiviCRM',
       ],
       'Cost Centres' => [
