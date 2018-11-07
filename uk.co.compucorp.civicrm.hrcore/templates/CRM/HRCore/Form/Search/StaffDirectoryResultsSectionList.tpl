@@ -1,4 +1,4 @@
-{include file="CRM/common/pager.tpl" location="top"}
+{include file="CRM/HRCore/Form/Search/StaffDirectoryResultsSectionListPager.tpl" location="top"}
 
 <div id="staff-directory__results-list" class="table-responsive">
   <table summary="{ts}Search results listings.{/ts}" class="table table-clean selector">
@@ -64,7 +64,7 @@
         .prop('checked', false)
         .closest('tr')
         .removeClass('crm-row-selected');
-  
+
       if (cids.length > 0) {
         $('#mark_x_' + cids.join(',#mark_x_') + ',input[name=radio_ts][value=ts_sel]')
           .prop('checked', true);
@@ -105,4 +105,4 @@
   });
   {/literal}
 </script>
-{include file="CRM/common/pager.tpl" location="bottom"}
+{include file="CRM/HRCore/Form/Search/StaffDirectoryResultsSectionListPager.tpl" location="bottom"}

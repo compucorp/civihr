@@ -26,9 +26,9 @@
       {if $action eq 512}
         {$form._qf_Advanced_next_action.html}
       {elseif $action eq 8192}
-        {$form._qf_Builder_next_action.html}&nbsp;&nbsp;
+        {$form._qf_Builder_next_action.html}
       {elseif $action eq 16384}
-        {$form._qf_Custom_next_action.html}&nbsp;&nbsp;
+        {$form._qf_Custom_next_action.html}
       {else}
         {$form._qf_Basic_next_action.html}
       {/if}
