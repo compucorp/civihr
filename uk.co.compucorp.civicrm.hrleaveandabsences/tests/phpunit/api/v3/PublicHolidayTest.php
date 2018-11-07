@@ -10,6 +10,12 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabrica
  */
 class api_v3_PublicHolidayTest extends BaseHeadlessTest {
 
+  public function setUp() {
+    // Delete default absence periods created during the extension installation
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
+  }
+
   public function testGetCountForCurrentPeriod() {
     AbsencePeriod::create([
       'title' => 'Current Period',

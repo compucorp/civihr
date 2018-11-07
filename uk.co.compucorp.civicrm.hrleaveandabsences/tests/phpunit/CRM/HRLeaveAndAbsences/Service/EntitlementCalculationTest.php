@@ -25,6 +25,10 @@ class CRM_HRLeaveAndAbsences_Service_EntitlementCalculationTest extends BaseHead
   private $contact;
 
   public function setUp() {
+    // Delete default absence periods created during the extension installation
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
+
     $this->contract = HRJobContractFabricator::fabricate(['contact_id' => 2]);
     $this->contact = ['id' => $this->contract['contact_id']];
   }
