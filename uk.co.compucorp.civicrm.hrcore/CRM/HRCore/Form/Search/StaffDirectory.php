@@ -244,7 +244,7 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    * {@inheritdoc}
    */
   public function buildForm(&$form) {
-    $form->add('text', 'name', ts('Name'), ['placeholder' => 'name'], FALSE);
+    $form->add('text', 'name', ts('Name'), ['placeholder' => 'Please type a name', 'class' => 'form-control'], FALSE);
     $options = $this->selectStaffFixedOptions + ['choose_date' => 'Select Dates'];
     $form->add('select', 'select_staff', ts('Select Staff'), $options, FALSE,
       ['class' => 'crm-select2', 'multiple' => FALSE]

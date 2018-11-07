@@ -1,8 +1,29 @@
 {* Main template for basic search (Find Contacts) *}
 {include file="CRM/Contact/Form/Search/Intro.tpl"}
-<div class="crm-form-block crm-search-form-block">
-{* This section handles form elements for search criteria *}
-  <div id="searchForm">
+<div id="bootstrap-theme">
+  <div class="panel panel-default">
+    {* Top bar *}
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-lg-9 col-sm-8">
+          <h1 class="media-heading">
+            {ts count=$pager->_totalItems plural='%count Staff Members'}%count Staff Member{/ts}
+          </h1>
+        </div>
+        <div class="col-lg-3 col-sm-4">
+          <div class="input-group">
+            {$form.name.html}
+            <div class="input-group-btn">
+              <button class="btn btn-primary btn-sm">Search</button>
+            </div>
+          </div>
+          <div class="text-right">
+            <a href="advanced">Advanced search</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {* Filters block *}
     {include file="CRM/HRCore/Form/Search/SearchCriteria.tpl"}
   </div>
 </div>
