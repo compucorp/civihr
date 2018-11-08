@@ -1,5 +1,3 @@
-{* Main template for basic search (Find Contacts) *}
-{include file="CRM/Contact/Form/Search/Intro.tpl"}
 <div id="bootstrap-theme">
   <div class="staff-directory panel panel-default">
     {* Top bar section *}
@@ -10,4 +8,3 @@
     {include file="CRM/HRCore/Form/Search/StaffDirectoryResultsSection.tpl"}
   </div>
 </div>
-{*include file="CRM/common/searchJs.tpl"*}
