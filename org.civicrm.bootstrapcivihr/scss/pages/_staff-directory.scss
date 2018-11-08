@@ -26,6 +26,11 @@
     padding-bottom: 0;
     padding-top: 0;
   }
+
+  // Removes top margin from the message that is shown if there are no results
+  .status {
+    margin-top: 0;
+  }
 }
 
 // Shrinks actions column to the contents width
