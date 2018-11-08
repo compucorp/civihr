@@ -88,6 +88,13 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
       }
 
       $url = CRM_Utils_System::url('civicrm/admin/leaveandabsences/periods', 'reset=1&action=browse');
+
+      if ($params['confirmEntitlement'] == 'yes' && !empty($absenceType)) {
+        $url =  CRM_Utils_System::url(
+          'civicrm/admin/leaveandabsences/periods/manage_entitlements',
+          'reset=1&id=' . $absenceType->id);
+      }
+
       $session = CRM_Core_Session::singleton();
       $session->replaceUserContext($url);
     }
@@ -137,6 +144,11 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
       $this->getDAOFieldAttributes('weight'),
       true
     );
+
+    //This element will have its value set if the user
+    //clicks the confirmation to have the entitlement calculated
+    //for the absence period.
+    $this->addElement('hidden', 'confirmEntitlement');
   }
 
   /**

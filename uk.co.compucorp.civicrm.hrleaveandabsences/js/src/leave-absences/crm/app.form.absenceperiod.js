@@ -45,6 +45,41 @@ define([
     };
 
     /**
+     * Prompts the user via a modal to calculate entitlement for
+     * a new absence period
+     *
+     * @private
+     */
+    AbsencePeriod.prototype._showEntitlementCalculationPrompt = function () {
+      var confirmationMessage = 'The system will now update the staff members ' +
+                                'leave entitlement';
+
+      CRM.confirm({
+        title: ts('Update Leave Entitlement?'),
+        message: ts(confirmationMessage),
+        width: '30%',
+        options: {
+          yes: ts('Proceed'),
+          no: ts('Cancel')
+        }
+      })
+        .on('crmConfirm:yes', this._processEntitlementConfirmation.bind(this))
+        .on('crmConfirm:no', this._submitForm.bind(this));
+    };
+
+    /**
+     * Sets the value of the confirmEntitlement form element and
+     * submits the form.
+     *
+     * @private
+     */
+    AbsencePeriod.prototype._processEntitlementConfirmation = function () {
+      var confirmEntitlement = document.getElementsByName('confirmEntitlement')[0];
+      confirmEntitlement.value = 'yes';
+      this._submitForm();
+    };
+
+    /**
      * Checks if there's another Absence Period with the same
      * Order number as the one the user is trying to add/edit.
      *
@@ -79,7 +114,26 @@ define([
       if (data.result > 0) {
         this._showConfirmation();
       } else {
+        this._processValidateOrder();
+      }
+    };
+
+    /**
+     * Determines what action to take after the validate order Api
+     * callback, i.e what happens if the modal was not shown or if
+     * the confirmation modal was shown and the user clicks yes.
+     *
+     * @private
+     */
+    AbsencePeriod.prototype._processValidateOrder = function () {
+      var id = document.getElementsByName('_id')[0].value;
+
+      // the entitlement calculation prompt is not shown for
+      // existing absence periods.
+      if (id) {
         this._submitForm();
+      } else {
+        this._showEntitlementCalculationPrompt();
       }
     };
 
@@ -105,7 +159,7 @@ define([
           no: ts('No')
         }
       })
-        .on('crmConfirm:yes', this._submitForm.bind(this));
+        .on('crmConfirm:yes', this._processValidateOrder.bind(this));
     };
 
     /**
@@ -117,6 +171,7 @@ define([
      * @private
      */
     AbsencePeriod.prototype._submitForm = function () {
+      $('#_qf_AbsencePeriod_next-bottom').attr('disabled', true);
       this._formElement.submit();
     };
 
