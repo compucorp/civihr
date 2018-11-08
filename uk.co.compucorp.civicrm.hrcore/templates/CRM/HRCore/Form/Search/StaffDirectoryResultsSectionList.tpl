@@ -110,3 +110,4 @@
   {/literal}
 </script>
 {include file="CRM/HRCore/Form/Search/StaffDirectoryResultsSectionListPager.tpl" location="bottom"}
+{include file="CRM/HRCore/Form/Search/StaffDirectoryResultsSectionListPagerScript.tpl"}
