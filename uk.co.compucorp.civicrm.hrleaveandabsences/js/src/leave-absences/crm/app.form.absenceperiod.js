@@ -51,13 +51,11 @@ define([
      * @private
      */
     AbsencePeriod.prototype._showEntitlementCalculationPrompt = function () {
-      var confirmationMessage = 'The system will now update the staff members ' +
-                                'leave entitlement';
+      var confirmationMessage = 'The system will now update the staff members leave entitlement';
 
       CRM.confirm({
         title: ts('Update Leave Entitlement?'),
         message: ts(confirmationMessage),
-        width: '30%',
         options: {
           yes: ts('Proceed'),
           no: ts('Cancel')
@@ -75,7 +73,9 @@ define([
      */
     AbsencePeriod.prototype._processEntitlementConfirmation = function () {
       var confirmEntitlement = document.getElementsByName('confirmEntitlement')[0];
+
       confirmEntitlement.value = 'yes';
+
       this._submitForm();
     };
 
@@ -126,11 +126,9 @@ define([
      * @private
      */
     AbsencePeriod.prototype._processValidateOrder = function () {
-      var id = document.getElementsByName('_id')[0].value;
+      var absencePeriodExists = !!document.getElementsByName('_id')[0].value;
 
-      // the entitlement calculation prompt is not shown for
-      // existing absence periods.
-      if (id) {
+      if (absencePeriodExists) {
         this._submitForm();
       } else {
         this._showEntitlementCalculationPrompt();

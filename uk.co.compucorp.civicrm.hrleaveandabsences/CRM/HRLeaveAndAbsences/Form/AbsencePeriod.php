@@ -145,9 +145,8 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
       true
     );
 
-    //This element will have its value set if the user
-    //clicks the confirmation to have the entitlement calculated
-    //for the absence period.
+    // This element is needed to store the state of the
+    // absence period entitlement calculation prompt
     $this->addElement('hidden', 'confirmEntitlement');
   }
 
