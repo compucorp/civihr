@@ -1,7 +1,7 @@
 {if $pager and $pager->_response}
   <div class="panel-body">
-    <div class="row">
-      <div class="col-md-4">
+    <div class="row form-horizontal">
+      <div class="col-sm-5">
         {if $pager->_response.numPages > 1}
           <div>
             <span>
@@ -9,12 +9,12 @@
               {$pager->_response.back}
               {$pager->_response.next}
               {$pager->_response.last}
-              {$pager->_response.status}
+              <label class="control-label">{$pager->_response.status}</label>
             </span>
           </div>
         {/if}
       </div>
-      <div class="col-md-4 text-center">
+      <div class="col-sm-3">
         {if $pager->_response.numPages > 1}
           {if $location eq 'top'}
             {$pager->_response.titleTop}
@@ -23,10 +23,10 @@
           {/if}
         {/if}
       </div>
-      <div class="col-md-4 text-right">
+      <div class="col-sm-4 text-right">
         {if $location eq 'bottom' and $pager->_totalItems > 25}
         <label for="{$form.formClass}-rows-per-page-select">{ts}Rows per page:{/ts}</label>
-        <input class="crm-rows-per-page-select" id="{$form.formClass}-rows-per-page-select" type="text" size="7" value="{$pager->_perPage}"/>
+        <input class="crm-rows-per-page-select" id="{$form.formClass}-rows-per-page-select" type="text" size="2" value="{$pager->_perPage}"/>
         {/if}
       </div>
 

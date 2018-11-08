@@ -1,9 +1,11 @@
 {include file="CRM/HRCore/Form/Search/StaffDirectoryResultsSectionListPager.tpl" location="top"}
 
-<div id="staff-directory__results-list" class="table-responsive">
+<div class="staff-directory__results-list table-responsive">
   <table summary="{ts}Search results listings.{/ts}" class="table table-clean selector">
     <tr>
-      <th scope="col" title="Select All Rows">{$form.toggleSelect.html}</th>
+      <th scope="col" title="Select All Rows">
+        <div class="checkbox-inline"><label></label>{$form.toggleSelect.html}</div>
+      </th>
       {if $context eq 'smog'}
         <th scope="col">
           {ts}Status{/ts}
@@ -27,7 +29,9 @@
     {foreach from=$rows item=row}
       <tr id="rowid{$row.contact_id}" class="{cycle values='odd-row,even-row'}">
         {assign var=cbName value=$row.checkbox}
-        <td>{$form.$cbName.html}</td>
+        <td>
+          <div class="checkbox-inline"><label></label>{$form.$cbName.html}<div>
+        </td>
         {if $context eq 'smog'}
           {if $row.status eq 'Pending'}<td class="status-pending"}>
           {elseif $row.status eq 'Removed'}<td class="status-removed">
@@ -40,7 +44,7 @@
             <td class="crm-{$columnName} crm-{$columnName}_{$row.columnName}">{$row.$columnName} </td>
           {/if}
         {/foreach}
-        <td style='width:125px;'>{$row.action|replace:'xx':$row.contact_id}</td>
+        <td class="staff-directory__results-list_actions">{$row.action|replace:'xx':$row.contact_id}</td>
       </tr>
     {/foreach}
   </table>
@@ -79,7 +83,7 @@
      * 4. It removes classes from the <a> element and adds according to the Styleguide
      */
     function transformCiviDropdownIntoBootstrap () {
-      $.each($('#staff-directory__results-list .btn-slide'), function (index, dropdownWrapper) {
+      $.each($('.staff-directory__results-list .btn-slide'), function (index, dropdownWrapper) {
         var $dropdownWrapper = $(dropdownWrapper);
 
         $dropdownWrapper

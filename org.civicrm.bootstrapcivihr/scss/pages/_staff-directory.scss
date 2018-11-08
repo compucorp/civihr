@@ -1,0 +1,28 @@
+.staff-directory {
+  .crm-select2 {
+    width: 100% !important;
+  }
+
+  .crm-pager-link {
+    display: inline-block;
+    padding-bottom: $padding-small-vertical;
+  }
+
+  .ui-spinner {
+    height: 30px;
+  }
+
+  .ui-spinner-input {
+    min-width: 60px;
+    padding-left: $padding-base-horizontal;
+  }
+
+  .fa-ellipsis-v {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+}
+
+.staff-directory__results-list_actions {
+  width: 0;
+}

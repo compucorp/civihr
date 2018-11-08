@@ -1,7 +1,7 @@
 <div class="panel-body">
-  <div class="row form-group">
+  <div class="row form-group form-horizontal">
     <div class="col-lg-2">
-      {ts}Select Records{/ts}:
+      <label class="control-label">{ts}Select Records{/ts}:</label>
     </div>
     <div class="col-lg-2">
       {assign var="checked" value=$selectedContactIds|@count}
@@ -19,9 +19,8 @@
       {/if}
     </div>
     <div class="col-lg-2">
-      {* Hide export button in 'Add Members to Group' context. *}
       {if $context NEQ 'amtg'}
-         {$form.task.html}
+        {$form.task.html}
       {/if}
       {if $action eq 512}
         {$form._qf_Advanced_next_action.html}
