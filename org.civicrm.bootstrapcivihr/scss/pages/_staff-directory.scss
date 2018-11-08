@@ -1,28 +1,34 @@
 .staff-directory {
+  // Makes selectors fullfill the container by width
   .crm-select2 {
     width: 100% !important;
   }
 
+  // Lines up pager links with other elements
   .crm-pager-link {
     display: inline-block;
     padding-bottom: $padding-small-vertical;
   }
 
+  // Makes the spinner selector the same height as other inputs
   .ui-spinner {
     height: 30px;
   }
 
+  // Does not allow the spinner selector to collapse and adds a padding on the left
   .ui-spinner-input {
     min-width: 60px;
     padding-left: $padding-base-horizontal;
   }
 
+  // Makes the ellipsis icon more condensed so it fits table rows
   .fa-ellipsis-v {
     padding-bottom: 0;
     padding-top: 0;
   }
 }
 
+// Shrinks actions column to the contents width
 .staff-directory__results-list_actions {
   width: 0;
 }
