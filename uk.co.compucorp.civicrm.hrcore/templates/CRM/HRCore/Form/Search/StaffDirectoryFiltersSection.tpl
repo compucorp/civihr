@@ -38,15 +38,17 @@
   CRM.$(function($) {
     var CONTRACT_DATES_BLOCK_CLASS = '.contract-dates';
 
-    addFormTextClassToDatepickerInputs();
-    initSelectStaffControl();
-    toggleContractDates();
-    initDateRangeSelectors();
-    $.each($('.date-range-selector select'), function () {
-      var $dateRangeSelector = $(this);
+    (function () {
+      addFormTextClassToDatepickerInputs();
+      initSelectStaffControl();
+      toggleContractDates();
+      initDateRangeSelectors();
+      $.each($('.date-range-selector select'), function () {
+        var $dateRangeSelector = $(this);
 
-      toggleAbsoluteDateRangeFields($dateRangeSelector);
-    })
+        toggleAbsoluteDateRangeFields($dateRangeSelector);
+      })
+    })();
 
     /**
      * Adds 'crm-form-text` class to datepickers inputs
