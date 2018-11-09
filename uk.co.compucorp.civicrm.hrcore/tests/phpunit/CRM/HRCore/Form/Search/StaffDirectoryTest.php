@@ -203,7 +203,10 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $contact2['id']],
-      ['period_start_date' => date('Y-m-d')]
+      [
+        'period_start_date' => date('Y-m-d'),
+        'period_end_date' => date('Y-m-d')
+      ]
     );
 
     $formValues = [
@@ -219,7 +222,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $searchDirectory = new SearchDirectory($formValues);
 
     //only Contact2 has contract start dates within this year
-    //and also end date within this year(since period end date is NULL)
+    //and also end date within this year
     $this->assertEquals(1, $searchDirectory->count());
 
     //verify contact ids
@@ -785,6 +788,90 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     //operator is 'AND' and there is no contract job title linked to a role with
     //the specified department and location, no result is returned.
     $this->assertEmpty($results);
+  }
+
+  public function testSelectStaffFilterCanFilterStaffCorrectlyWhenOnlyJobContractEndDateIsSelected() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+    $contact3 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-12-31'
+      ]
+    );
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => '2018-01-01']
+    );
+
+    $formValues = [
+      'select_staff' => 'choose_date',
+      'contract_end_date_relative' => 0,
+      'contract_end_date_low' => '2016-12-31',
+      'contract_end_date_high' => '2016-12-31'
+    ];
+
+    $searchDirectory = new SearchDirectory($formValues);
+    //only Contact1 has contract end date between the given contract end low and high dates
+    $results = $this->extractColumnValues($searchDirectory->all(0, 10));
+    $expectedResults = [
+      [
+        'contact_id' => $contact1['id'],
+        'display_name' => $contact1['display_name'],
+        'work_phone' => NULL,
+        'work_email' => NULL,
+        'manager' => NULL,
+        'location' => NULL,
+        'department' => NULL,
+        'job_title' => NULL,
+      ],
+    ];
+    $this->assertEquals($expectedResults, $results);
+  }
+
+  public function testSelectStaffFilterCanFilterStaffCorrectlyWhenOnlyJobContractStartDateIsSelected() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+    $contact3 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-12-31'
+      ]
+    );
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => '2018-01-01']
+    );
+
+    $formValues = [
+      'select_staff' => 'choose_date',
+      'contract_start_date_relative' => 0,
+      'contract_start_date_low' => '2018-01-01',
+      'contract_start_date_high' => '2018-01-01'
+    ];
+
+    $searchDirectory = new SearchDirectory($formValues);
+    //only Contact2 has contract start date between the given contract start low and high dates
+    $results = $this->extractColumnValues($searchDirectory->all(0, 10));
+    $expectedResults = [
+      [
+        'contact_id' => $contact2['id'],
+        'display_name' => $contact2['display_name'],
+        'work_phone' => NULL,
+        'work_email' => NULL,
+        'manager' => NULL,
+        'location' => NULL,
+        'department' => NULL,
+        'job_title' => NULL,
+      ],
+    ];
+    $this->assertEquals($expectedResults, $results);
   }
 
   private function extractContactIds($sql) {

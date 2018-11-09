@@ -547,9 +547,8 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
       $fromDate = new DateTime($this->formValues['contract_end_date_low']);
       $toDate = new DateTime($this->formValues['contract_end_date_high']);
 
-      $conditions[] = "((contract_details.period_end_date >= '" . $fromDate->format('Y-m-d') .  "'
-        AND contract_details.period_end_date <= '" . $toDate->format('Y-m-d') . "')
-        OR (contract_details.period_end_date IS NULL))";
+      $conditions[] = "contract_details.period_end_date >= '" . $fromDate->format('Y-m-d') .  "'
+        AND contract_details.period_end_date <= '" . $toDate->format('Y-m-d') . "'";
     }
 
     return implode(' AND ', $conditions);
