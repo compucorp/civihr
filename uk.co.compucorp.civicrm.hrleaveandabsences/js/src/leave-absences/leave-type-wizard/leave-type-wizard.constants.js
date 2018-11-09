@@ -59,11 +59,6 @@ define([
                 name: 'add_public_holiday_to_entitlement',
                 defaultValue: false,
                 hidden: true
-              },
-              {
-                name: 'is_sick',
-                defaultValue: false,
-                hidden: true
               }
             ]
           }
@@ -92,6 +87,11 @@ define([
                   DOUBLE_LINE_BREAK,
                   'This may be helpful if the leave type title is sensitive - i.e. Unpaid leave or Compassionate leave.'
                 ].join(' ')
+              },
+              {
+                name: 'is_sick',
+                defaultValue: false,
+                hidden: true
               },
               {
                 name: 'color',
@@ -293,11 +293,8 @@ define([
       toil: ['public-holidays']
     })
     .constant('fields-hidden-by-category', {
-      allow_overuse: {
-        leave: false,
-        sickness: false,
-        toil: true
-      }
+      allow_overuse: ['toil'],
+      is_sick: ['leave', 'sickness', 'toil']
     })
     .constant('custom-tab-names-by-category', {
       'leave-requests': {

@@ -579,7 +579,7 @@ define([
      */
     function toggleFieldsDependingOnLeaveCategory (category) {
       _.each(fieldsHiddenByCategory, function (categories, fieldName) {
-        vm.fieldsIndexed[fieldName].hidden = categories[category];
+        vm.fieldsIndexed[fieldName].hidden = _.includes(categories, category);
       });
     }
 
