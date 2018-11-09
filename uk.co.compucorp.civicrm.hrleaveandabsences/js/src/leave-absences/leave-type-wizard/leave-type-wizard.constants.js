@@ -303,7 +303,8 @@ define([
       'leave-requests': {
         leave: LEAVE_REQUESTS_TAB_DEFAULT_LABEL,
         sickness: LEAVE_REQUESTS_TAB_DEFAULT_LABEL,
-        toil: 'Using TOIL'
+        toil: 'Using TOIL',
+        custom: LEAVE_REQUESTS_TAB_DEFAULT_LABEL
       }
     })
     .constant('defaults-by-category', {
