@@ -8,7 +8,7 @@ define([
     'AbsenceType', 'Contact', 'custom-tab-names-by-category',
     'fields-hidden-by-category', 'form-sections', 'leave-type-categories-icons',
     'tabs-hidden-by-category', 'notificationService', 'OptionGroup',
-    'defaults-by-category', 'shared-settings'];
+    'overrides-by-category', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -23,7 +23,7 @@ define([
   function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
     Contact, customTabNamesByCategory, fieldsHiddenByCategory, formSections,
     leaveTypeCategoriesIcons, hiddenTabsByCategory, notificationService,
-    OptionGroup, defaultsByCategory, sharedSettings) {
+    OptionGroup, overridesByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var promises = {
@@ -462,6 +462,15 @@ define([
     }
 
     /**
+     * Overrides parameters depending on the selected leave category.
+     */
+    function overrideParamsDependingOnLeaveCategory (params) {
+      _.each(overridesByCategory[params.category], function (value, fieldName) {
+        params[fieldName] = value;
+      });
+    }
+
+    /**
      * Prepares some parameters for sending them to the backend.
      * - sets default entitlement to 0 if not provided
      * - flushes dependent fields' values
@@ -492,15 +501,6 @@ define([
     }
 
     /**
-     * Pre-processes parameters depending on the selected leave category.
-     */
-    function preProcessParamsDependingOnLeaveCategory (params) {
-      _.each(defaultsByCategory[params.category], function (value, fieldName) {
-        params[fieldName] = value;
-      });
-    }
-
-    /**
      * Saves leave type by sending an API call to the backend
      * with all appropriate parameters.
      */
@@ -512,7 +512,7 @@ define([
 
       vm.loading = true;
 
-      preProcessParamsDependingOnLeaveCategory(params);
+      overrideParamsDependingOnLeaveCategory(params);
       prepareParamsForSaving(params);
       AbsenceType.save(params)
         .then(navigateToLeaveTypesList)

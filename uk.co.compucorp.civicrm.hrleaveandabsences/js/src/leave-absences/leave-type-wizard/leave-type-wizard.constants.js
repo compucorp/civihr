@@ -304,20 +304,29 @@ define([
         custom: LEAVE_REQUESTS_TAB_DEFAULT_LABEL
       }
     })
-    .constant('defaults-by-category', {
+    .constant('overrides-by-category', {
       leave: {
-        is_sick: false
+        is_sick: false,
+        allow_accruals_request: false,
+        add_public_holiday_to_entitlement: false
       },
       sickness: {
         must_take_public_holiday_as_leave: false,
         allow_carry_forward: false,
-        is_sick: true
+        allow_accruals_request: false,
+        is_sick: true,
+        add_public_holiday_to_entitlement: false
       },
       toil: {
         must_take_public_holiday_as_leave: false,
         allow_accruals_request: true,
         is_sick: false,
-        allow_overuse: false
+        allow_overuse: false,
+        add_public_holiday_to_entitlement: false
+      },
+      custom: {
+        allow_accruals_request: true,
+        add_public_holiday_to_entitlement: false
       }
     });
 });
