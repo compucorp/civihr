@@ -76,6 +76,39 @@
     }
 
     /**
+     * Moves dropdown to other container. This is needed if the original
+     * container is overflowed and clips the dropdown.
+     * It watches for changes in `class` attribute of the wrapper to detect
+     * the `open` class. If class is detected, then it positions the dropdown
+     * relatively to the wrapper, if not, then it simply hides it.
+     *
+     * @param {jQuery} $dropdownWrapper element that holds the trigger and the dropdown
+     * @param {String} targetContainerSelector selector of an element to move the dropdown to
+     */
+    function moveDropdownToOtherContainer ($dropdownWrapper, targetContainerSelector) {
+      var $dropdown = $dropdownWrapper.find('.dropdown-menu');
+      var observer = new MutationObserver(function () {
+        if ($dropdownWrapper.hasClass('open')) {
+          $dropdown
+            .css({
+              top: $dropdownWrapper.position().top + $dropdownWrapper.height()
+            })
+            .show();
+        } else {
+          $dropdown.hide();
+        }
+      });
+
+      $dropdown.appendTo(targetContainerSelector);
+      observer.observe($dropdownWrapper[0], {
+        attributes: true,
+        attributeFilter: ['class'],
+        childList: false,
+        characterData: false
+      });
+    }
+
+    /**
      * Transforms CiviCRM dropdowns into Boostrap dropdowns
      * 1. It removes classes from the wrapper and adds according to the Styleguide
      * 2. It appends a button with an ellipsis and removes the default ellipsis
@@ -104,7 +137,8 @@
         $dropdownWrapper
           .find('a')
           .removeClass('crm-hover-button');
-      })
+        moveDropdownToOtherContainer($dropdownWrapper, '#bootstrap-theme');
+      });
     }
   });
   {/literal}
