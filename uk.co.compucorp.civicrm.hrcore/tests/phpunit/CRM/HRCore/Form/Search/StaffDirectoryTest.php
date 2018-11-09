@@ -203,7 +203,10 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
 
     HRJobContractFabricator::fabricate(
       ['contact_id' => $contact2['id']],
-      ['period_start_date' => date('Y-m-d')]
+      [
+        'period_start_date' => date('Y-m-d'),
+        'period_end_date' => date('Y-m-d')
+      ]
     );
 
     $formValues = [
@@ -219,7 +222,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $searchDirectory = new SearchDirectory($formValues);
 
     //only Contact2 has contract start dates within this year
-    //and also end date within this year(since period end date is NULL)
+    //and also end date within this year
     $this->assertEquals(1, $searchDirectory->count());
 
     //verify contact ids
