@@ -24,7 +24,8 @@ define([
     var sampleLeaveTypeCategoriesOptionGroupValues = [
       { name: 'leave', label: 'Leave' },
       { name: 'sickness', label: 'Sickness' },
-      { name: 'toil', label: 'TOIL' }
+      { name: 'toil', label: 'TOIL' },
+      { name: 'custom', label: 'Custom' }
     ];
     var tabsIndexed = {};
 

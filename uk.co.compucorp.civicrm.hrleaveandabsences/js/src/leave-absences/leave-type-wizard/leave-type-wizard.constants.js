@@ -284,7 +284,8 @@ define([
     .constant('leave-type-categories-icons', {
       leave: 'plane',
       sickness: 'medkit',
-      toil: 'clock-o'
+      toil: 'clock-o',
+      custom: 'wrench'
     })
     .constant('tabs-hidden-by-category', {
       leave: ['toil-accruals'],

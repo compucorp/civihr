@@ -56,10 +56,6 @@ define([
       vm.loading = true;
 
       loadLeaveTypeCategories()
-        // @NOTE this is a temporary option group suppressor to match user stories
-        // @TODO the suppressor should be amended to gradually support other leave categories
-        // @TODO the suppressor must be completely removed once all leave categories are supported
-        .then(temporarilySuppressNotYetUsedLeaveCategories)
         .then(initDefaultView)
         .then(function () {
           tabsIndexed = indexPropertyByName(vm.sections, 'tabs');
@@ -574,18 +570,6 @@ define([
       }
 
       save();
-    }
-
-    /**
-     * Suppresses the not yet used leave categories by removing them from
-     * the list that was made by loading option groups
-     *
-     * @TODO the suppressor must be completely removed once all leave categories are supported
-     */
-    function temporarilySuppressNotYetUsedLeaveCategories () {
-      vm.leaveTypeCategories = _.filter(vm.leaveTypeCategories, function (category) {
-        return !_.includes(['custom'], category.name);
-      });
     }
 
     /**
