@@ -2,7 +2,11 @@
   <div class="row">
     <div class="col-lg-9 col-sm-8">
       <h1 class="media-heading">
-        {ts count=$pager->_totalItems plural='%count Staff Members'}%count Staff Member{/ts}
+        {if $pager->_totalItems > 0}
+          {ts count=$pager->_totalItems plural='%count Staff Members'}%count Staff Member{/ts}
+        {else}
+          {ts}No Staff Members found{/ts}
+        {/if}
       </h1>
     </div>
     <div class="col-lg-3 col-sm-4">
