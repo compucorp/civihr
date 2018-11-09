@@ -97,7 +97,7 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
 
         $url =  CRM_Utils_System::url(
           'civicrm/admin/leaveandabsences/periods/manage_entitlements',
-          'reset=1&id=' . $absenceType->id . "&returnUrl=" . urlencode($returnUrl)
+          'reset=1&id=' . $absenceType->id . '&returnUrl=' . urlencode($returnUrl)
         );
       }
 
