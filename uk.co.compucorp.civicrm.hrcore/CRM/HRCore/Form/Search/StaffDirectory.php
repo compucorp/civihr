@@ -75,12 +75,12 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
   public function __construct(&$formValues) {
     $this->columns = [
       ts('Name') => 'display_name',
-      ts('Work Phone') => 'work_phone',
       ts('Work Email') => 'work_email',
+      ts('Work Phone') => 'work_phone',
+      ts('Job Title') => 'job_title',
       ts('Manager') => 'manager',
       ts('Location') => 'location',
       ts('Department') => 'department',
-      ts('Job Title') => 'job_title',
     ];
 
     $this->filters = [
