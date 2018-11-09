@@ -1,7 +1,7 @@
 {include file="CRM/HRCore/Form/Search/StaffDirectoryResultsSectionListPager.tpl" location="top"}
 
 <div class="staff-directory__results-list table-responsive">
-  <table summary="{ts}Search results listings.{/ts}" class="table table-clean selector">
+  <table summary="{ts}Search results listings.{/ts}" class="table table-clean selector row-highlight">
     <tr>
       <th scope="col" title="Select All Rows">
         <div class="checkbox-inline"><label></label>{$form.toggleSelect.html}</div>
