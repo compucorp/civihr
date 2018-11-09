@@ -90,6 +90,7 @@ define([
               },
               {
                 name: 'is_sick',
+                label: 'Request button',
                 defaultValue: false,
                 hidden: true
               },

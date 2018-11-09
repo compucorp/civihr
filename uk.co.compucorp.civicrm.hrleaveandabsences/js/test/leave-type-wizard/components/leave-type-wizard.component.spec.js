@@ -826,6 +826,48 @@ define([
         });
       });
 
+      describe('when user selects the "Custom" category', function () {
+        var params;
+
+        beforeEach(function () {
+          controller.fieldsIndexed.category.value = 'custom';
+
+          $rootScope.$digest();
+          absenceTypeSaverSpy.and.returnValue($q.resolve());
+          fillWizardIn();
+        });
+
+        describe('user sets "Request button" to "Request Leave"', function () {
+          beforeEach(function () {
+            controller.fieldsIndexed.is_sick.value = false;
+
+            submitWizard();
+            $rootScope.$digest();
+
+            params = AbsenceType.save.calls.mostRecent().args[0];
+          });
+
+          it('sends `is_sick` as "false"', function () {
+            expect(params.is_sick).toBe(false);
+          });
+        });
+
+        describe('user sets "Request button" to "Record Sickness"', function () {
+          beforeEach(function () {
+            controller.fieldsIndexed.is_sick.value = true;
+
+            submitWizard();
+            $rootScope.$digest();
+
+            params = AbsenceType.save.calls.mostRecent().args[0];
+          });
+
+          it('sends `is_sick` as "true"', function () {
+            expect(params.is_sick).toBe(true);
+          });
+        });
+      });
+
       /**
        * Fills in all required and valid fields in the wizard
        */
