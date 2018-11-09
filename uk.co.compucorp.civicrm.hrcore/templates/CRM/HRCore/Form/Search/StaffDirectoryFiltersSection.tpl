@@ -6,7 +6,7 @@
         {$form.select_staff.html}
       </div>
     </div>
-    <div class="col-md-2 col-sm-3">
+    <div class="col-md-3 col-sm-3">
       {$form.job_title.label}
       <div>
         {$form.job_title.html}
