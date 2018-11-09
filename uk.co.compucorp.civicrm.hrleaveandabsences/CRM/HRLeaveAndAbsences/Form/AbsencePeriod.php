@@ -90,9 +90,15 @@ class CRM_HRLeaveAndAbsences_Form_AbsencePeriod extends CRM_Core_Form {
       $url = CRM_Utils_System::url('civicrm/admin/leaveandabsences/periods', 'reset=1&action=browse');
 
       if ($params['confirmEntitlement'] == 'yes' && !empty($absenceType)) {
+        $returnUrl = CRM_Utils_System::url(
+          'civicrm/admin/leaveandabsences/periods',
+          'action=browse&reset=1'
+        );
+
         $url =  CRM_Utils_System::url(
           'civicrm/admin/leaveandabsences/periods/manage_entitlements',
-          'reset=1&id=' . $absenceType->id);
+          'reset=1&id=' . $absenceType->id . "&returnUrl=" . urlencode($returnUrl)
+        );
       }
 
       $session = CRM_Core_Session::singleton();
