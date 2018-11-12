@@ -109,7 +109,7 @@ define([
           // Loop funders and set up the data to store the funders
           for (var i = 0, l = jobRolesData.funders.length; i < l; i++) {
             if (jobRolesData.funders[i]) {
-              funders += jobRolesData.funders[i]['funder_id']['id'] + '|';
+              funders += jobRolesData.funders[i]['funder_id'] + '|';
               funderTypes += jobRolesData.funders[i]['type'] + '|';
               percentFunders += jobRolesData.funders[i]['percentage'] + '|';
               amountFunders += jobRolesData.funders[i]['amount'] + '|';
@@ -196,7 +196,7 @@ define([
           // Loop funders and set up the data to store the funders
           for (var i = 0, l = jobRolesData.funders.length; i < l; i++) {
             if (jobRolesData.funders[i]) {
-              funders += jobRolesData.funders[i]['funder_id']['id'] + '|';
+              funders += jobRolesData.funders[i]['funder_id'] + '|';
               funderTypes += jobRolesData.funders[i]['type'] + '|';
               percentFunders += jobRolesData.funders[i]['percentage'] + '|';
               amountFunders += jobRolesData.funders[i]['amount'] + '|';

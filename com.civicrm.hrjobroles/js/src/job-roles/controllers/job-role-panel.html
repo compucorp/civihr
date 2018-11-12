@@ -326,7 +326,18 @@
               <table class="table">
                 <thead>
                   <tr>
-                    <th style="width:40%">Funder</th>
+                    <th style="width:40%">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          Funder
+                        </div>
+                        <div class="col-sm-2">
+                          <a class="pointer">
+                            <i class="crm-i fa-wrench" ng-click="jobroles.openOptionsEditor('hrjc_funder')"></i>
+                          </a>
+                        </div>
+                      </div>
+                    </th>
                     <th style="width:15%">Type</th>
                     <th style="width:15%">% Amount</th>
                     <th style="width:15%">Absolute Amount</th>
@@ -337,23 +348,22 @@
                   <tr ng-repeat="(key, funder) in jobroles.editData[job_roles_data.id]['funders']">
                     <td>
                       <span ng-show="!tableform.$visible">
-                        {{funder.funder_id.sort_name}}
+                        {{jobroles.FundersData[funder.funder_id].title}}
                       </span>
                       <span ng-show="tableform.$visible">
-                        <ui-select class="funder-select"
+                        <ui-select
+                          class="funder-select"
                           prevent-animations
                           theme="civihr-ui-select"
                           ng-model="funder.funder_id">
                           <ui-select-match prevent-animations allow-clear placeholder="Select a funder" class="ui-select-match">
-                            {{$select.selected.sort_name}}
+                           {{$select.selected.value.title}}
                           </ui-select-match>
                           <ui-select-choices
                             prevent-animations
                             class="ui-select-choices"
-                            repeat="contact in jobroles.contactList | filter: $select.search"
-                            refresh="jobroles.getContactList($select.search)"
-                            refresh-delay="500">
-                            <div ng-bind-html="contact.sort_name | highlight: $select.search"></div>
+                            repeat="funder.value.value as (key,funder) in jobroles.FundersData | filter: { value: { title: $select.search }}">
+                            <div ng-bind-html="funder.value.title | highlight: $select.search"></div>
                           </ui-select-choices>
                         </ui-select>
                       </span>

@@ -39,6 +39,7 @@ define([
     vm.LevelsData = {}; // Store the level types
     vm.LocationsData = {}; // Store the location types
     vm.RegionsData = {}; // Store the region types
+    vm.FundersData = {}; // Stores the list of funders
     // Define the add new role URL
     vm.addNewRoleUrl = settings.baseUrl + 'controllers/add-new-role.html';
     vm.jobRolePanelUrl = settings.baseUrl + 'controllers/job-role-panel.html';
@@ -56,7 +57,6 @@ define([
     vm.collapseRow = collapseRow;
     vm.deleteAdditionalRow = deleteAdditionalRow;
     vm.dpOpen = dpOpen;
-    vm.getContactList = getContactList;
     vm.getCostLabel = getCostLabel;
     vm.initData = initData;
     vm.isChanged = isChanged;
@@ -87,8 +87,7 @@ define([
 
       $q.all([
         getOptionValues(),
-        getJobRolesList(vm.contactId),
-        vm.getContactList()
+        getJobRolesList(vm.contactId)
       ])
         .then(function () {
           vm.loading = false;
@@ -322,25 +321,6 @@ define([
     }
 
     /**
-     * Extracts, from each job role past and preset, the contact id of every funder
-     *
-     * It combines present and past job roles, make a list of the funder ids string,
-     * splits it by the "|" separator, and return only the non-null and unique values
-     *
-     * @return {Array} a list of ids
-     */
-    function extractFundersContactIds () {
-      return _(vm.presentJobRoles.concat(vm.pastJobRoles))
-        .map(function (jobRole) {
-          return jobRole.funder;
-        })
-        .thru(function (funderIds) {
-          return funderIds.join('').split('|');
-        })
-        .compact().uniq().value();
-    }
-
-    /**
      * Filter the editData property to remove
      * the funders/cost_centers entries which are empty
      *
@@ -375,45 +355,6 @@ define([
     }
 
     /**
-     * Get the contact list and store the data
-     *
-     * @param  {string} sortName
-     */
-    function getContactList (sortName) {
-      var successCallback = function (data) {
-        var contactList = [];
-        var i = 0;
-
-        if (data.is_error === 1) {
-          vm.message_type = 'alert-danger';
-          vm.message = 'Cannot get contact list!';
-        } else {
-          // Pass the contact list to the scope
-          for (; i < data.count; i++) {
-            contactList.push({
-              id: data.values[i]['id'],
-              sort_name: data.values[i]['sort_name']
-            });
-          }
-
-          // Store the ContactList as Array as typeahead needs array that we can reuse later
-          vm.contactList = contactList;
-        }
-
-        // Hide the message after some seconds
-        $timeout(function () {
-          vm.message = null;
-        }, 3000);
-      };
-
-      var errorCallback = function (errorMessage) {
-        vm.error = errorMessage;
-      };
-
-      return jobRoleService.getContactList(sortName).then(successCallback, errorCallback);
-    }
-
-    /**
      * Get a contract with the given contractId
      *
      * @param {int} contractId
@@ -437,23 +378,6 @@ define([
       });
 
       return label;
-    }
-
-    /**
-     * Fetches from the API the contact data of all the funders of each job role
-     *
-     * @return {Promise}
-     *   resolves to an object, with the key as the contact id,
-     *   and the value as the contact data
-     */
-    function getFundersContacts () {
-      return jobRoleService.getContactList(null, extractFundersContactIds()).then(function (data) {
-        return _(data.values).map(function (contact) {
-          return contact;
-        })
-          .keyBy('contact_id')
-          .value();
-      });
     }
 
     /**
@@ -516,6 +440,7 @@ define([
             'hrjc_region': { storage: 'RegionsData', data: {} },
             'hrjc_location': { storage: 'LocationsData', data: {} },
             'hrjc_level_type': { storage: 'LevelsData', data: {} },
+            'hrjc_funder': { storage: 'FundersData', data: {} },
             'cost_centres': { storage: 'CostCentreList', data: [] }
           };
 
@@ -562,13 +487,20 @@ define([
     }
 
     /**
-     * Get options values for department, region, location, level and cost centres
+     * Get options values for department, region, location, level, funder and cost centres
      *
      * @returns {*}
      */
     function getOptionValues () {
       // Set the option groups for which we want to get the values
-      var optionGroups = ['hrjc_department', 'hrjc_region', 'hrjc_location', 'hrjc_level_type', 'cost_centres'];
+      var optionGroups = [
+        'hrjc_department',
+        'hrjc_region',
+        'hrjc_location',
+        'hrjc_level_type',
+        'hrjc_funder',
+        'cost_centres'
+      ];
 
       return retrieveOptionGroupValues(optionGroups);
     }
@@ -656,10 +588,7 @@ define([
             amount: amountFunders[i],
             percentage: percentFunders[i],
             type: funderTypes[i],
-            funder_id: {
-              id: funderContactIds[i],
-              sort_name: fundersContacts[funderContactIds[i]].sort_name
-            }
+            funder_id: funderContactIds[i]
           });
         }
       }
@@ -872,10 +801,7 @@ define([
           });
         })
         .then(function () {
-          return getFundersContacts();
-        })
-        .then(function (contacts) {
-          fundersContacts = contacts;
+          fundersContacts = vm.FundersData;
         })
         .catch(function (errorMessage) {
           vm.error = errorMessage;
@@ -1069,10 +995,10 @@ define([
      */
     function updateFundersContactsList (jobRoleFunders) {
       jobRoleFunders.forEach(function (funder) {
-        var funderData = funder.funder_id;
+        var funderId = funder.funder_id;
 
-        if (!_.includes(Object.keys(fundersContacts), funderData.id)) {
-          fundersContacts[funderData.id] = funderData;
+        if (!_.includes(Object.keys(fundersContacts), funderId)) {
+          fundersContacts[funderId] = vm.FundersData[funderId];
         }
       });
     }
