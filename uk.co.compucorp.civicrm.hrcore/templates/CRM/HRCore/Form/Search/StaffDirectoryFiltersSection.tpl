@@ -86,6 +86,7 @@
 
     /**
      * Toggles contract dates depending on the related Date Range selector value
+     * If it gets hidden, it flushes the inputs of the absolute date range fields.
      *
      * @param {jQuery} $dateRangeSelector
      */
@@ -94,24 +95,29 @@
       var $absoluteDateRange = $dateRangeSelector
         .closest(CONTRACT_DATES_BLOCK_CLASS)
         .find('.absolute-date-range');
-      var toggleFunction = absoluteDateRangeOptionSelected
-        ? 'removeClass'
-        : 'addClass';
 
-      $absoluteDateRange[toggleFunction]('hidden');
+      if (absoluteDateRangeOptionSelected) {
+        $absoluteDateRange.removeClass('hidden');
+      } else {
+        $absoluteDateRange.addClass('hidden');
+        $absoluteDateRange.find('input').val('');
+      }
     }
 
     /**
      * Toggles contract dates depending on the Select Staff control value
+     * If it gets hidden, it flushes the date range selector.
      */
     function toggleContractDates() {
       var selectStaffValue = $('#select-staff select').val();
       var $contractDates = $(CONTRACT_DATES_BLOCK_CLASS);
-      var toggleFunction = selectStaffValue === 'choose_date'
-        ? 'removeClass'
-        : 'addClass';
 
-      $contractDates[toggleFunction]('hidden');
+      if (selectStaffValue === 'choose_date') {
+        $contractDates.removeClass('hidden');
+      } else {
+        $contractDates.addClass('hidden');
+        $contractDates.find('.crm-select2').select2('val', '').change();
+      }
     }
   });
   {/literal}
