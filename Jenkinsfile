@@ -58,6 +58,8 @@ pipeline {
             envBranch = 'master'
           }
 
+          sh "false"
+
           // Clone CiviHR
           cloneCiviHRRepositories(envBranch)
 
