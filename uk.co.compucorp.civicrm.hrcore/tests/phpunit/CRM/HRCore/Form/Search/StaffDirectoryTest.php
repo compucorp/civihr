@@ -874,6 +874,159 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $this->assertEquals($expectedResults, $results);
   }
 
+  public function testSelectStaffCanFilterCorrectlyForRelativeDateWhereEndDateRangeIsNotPopulatedForJobContractStartDate() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-12-31'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => date('Y-m-d', strtotime('this year January 1st'))]
+    );
+
+    //When the greater_previous.year option is selected and Civi converts the date to actual dates
+    //only the contract_start_date_low field is populated. i.e the SQL condition will be where
+    //contract start date >= From End of previous calendar year.
+    $formValues = [
+      'select_staff' => 'choose_date',
+      'contract_start_date_relative' => 'greater_previous.year',// From End of previous calendar year option
+      'contract_start_date_low' => '',
+      'contract_start_date_high' => '',
+    ];
+
+    $searchDirectory = new SearchDirectory($formValues);
+
+    //only Contact2 has contract start dates >= from end of previous year
+    $this->assertEquals(1, $searchDirectory->count());
+
+    //verify contact ids
+    $contactIds = $this->extractContactIds($searchDirectory->contactIDs()) ;
+    $this->assertEquals($contactIds, [$contact2['id']]);
+  }
+
+  public function testSelectStaffCanFilterCorrectlyForRelativeDateWhereStartDateRangeIsNotPopulatedForJobContractStartDate() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2025-01-01',
+        'period_end_date' => '2025-12-31'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      ['period_start_date' => date('Y-m-d', strtotime('last year December 31st'))]
+    );
+
+    //When the earlier.year option is selected and Civi converts the date to actual dates
+    //only the contract_start_date_high field is populated. i.e the SQL condition will be where
+    //contract start date <= To End of previous calendar year.
+    $formValues = [
+      'select_staff' => 'choose_date',
+      'contract_start_date_relative' => 'earlier.year',// To End of previous calendar year option
+      'contract_start_date_low' => '',
+      'contract_start_date_high' => '',
+    ];
+
+    $searchDirectory = new SearchDirectory($formValues);
+
+    //only Contact2 has contract start dates <= to end of previous year
+    $this->assertEquals(1, $searchDirectory->count());
+
+    //verify contact ids
+    $contactIds = $this->extractContactIds($searchDirectory->contactIDs()) ;
+    $this->assertEquals($contactIds, [$contact2['id']]);
+  }
+
+  public function testSelectStaffCanFilterCorrectlyForRelativeDateWhereStartDateRangeIsNotPopulatedForJobContractEndDate() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2025-01-01',
+        'period_end_date' => '2025-12-31'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => date('Y-m-d', strtotime('last year December 31st'))
+      ]
+    );
+
+    //When the earlier.year option is selected and Civi converts the date to actual dates
+    //only the contract_start_date_high field is populated. i.e the SQL condition will be where
+    //contract end date <= To End of previous calendar year.
+    $formValues = [
+      'select_staff' => 'choose_date',
+      'contract_end_date_relative' => 'earlier.year',// To End of previous calendar year option
+      'contract_end_date_low' => '',
+      'contract_end_date_high' => '',
+    ];
+
+    $searchDirectory = new SearchDirectory($formValues);
+
+    //only Contact2 has contract end date <= to end of previous year
+    $this->assertEquals(1, $searchDirectory->count());
+
+    //verify contact ids
+    $contactIds = $this->extractContactIds($searchDirectory->contactIDs()) ;
+    $this->assertEquals($contactIds, [$contact2['id']]);
+  }
+
+  public function testSelectStaffCanFilterCorrectlyForRelativeDatesWhereEndDateRangeIsNotPopulatedForJobContractEndDate() {
+    $contact1 = ContactFabricator::fabricate();
+    $contact2 = ContactFabricator::fabricate();
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact1['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => '2016-12-31'
+      ]
+    );
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $contact2['id']],
+      [
+        'period_start_date' => '2016-01-01',
+        'period_end_date' => date('Y-m-d', strtotime('this year January 1st'))
+      ]
+    );
+
+    //When the greater_previous.year option is selected and Civi converts the date to actual dates
+    //only the contract_start_date_low field is populated. i.e the SQL condition will be where
+    //contract end date >= From End of previous calendar year.
+    $formValues = [
+      'select_staff' => 'choose_date',
+      'contract_end_date_relative' => 'greater_previous.year',// From End of previous calendar year option
+      'contract_end_date_low' => '',
+      'contract_end_date_high' => '',
+    ];
+    $searchDirectory = new SearchDirectory($formValues);
+
+    //only Contact2 has contract end dates >= from end of previous year
+    $this->assertEquals(1, $searchDirectory->count());
+
+    //verify contact ids
+    $contactIds = $this->extractContactIds($searchDirectory->contactIDs()) ;
+    $this->assertEquals($contactIds, [$contact2['id']]);
+  }
+
   private function extractContactIds($sql) {
     $result = CRM_Core_DAO::executeQuery($sql);
     $contactId = [];
