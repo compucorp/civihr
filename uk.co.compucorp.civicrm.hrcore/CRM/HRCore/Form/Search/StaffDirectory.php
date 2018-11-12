@@ -535,20 +535,24 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
    */
   private function getWhenSelectStaffIsChooseDate() {
     $conditions = [];
-    if (!empty($this->formValues['contract_start_date_low']) && !empty($this->formValues['contract_start_date_high'])) {
+    if (!empty($this->formValues['contract_start_date_low'])) {
       $fromDate = new DateTime($this->formValues['contract_start_date_low']);
-      $toDate = new DateTime($this->formValues['contract_start_date_high']);
-
-      $conditions[] = "contract_details.period_start_date >= '" . $fromDate->format('Y-m-d') .
-        "' AND contract_details.period_start_date <= '" . $toDate->format('Y-m-d') . "'";
+      $conditions[] = "contract_details.period_start_date >= '" . $fromDate->format('Y-m-d') . "'";
     }
 
-    if (!empty($this->formValues['contract_end_date_low']) && !empty($this->formValues['contract_end_date_high'])) {
-      $fromDate = new DateTime($this->formValues['contract_end_date_low']);
-      $toDate = new DateTime($this->formValues['contract_end_date_high']);
+    if (!empty($this->formValues['contract_start_date_high'])) {
+      $toDate = new DateTime($this->formValues['contract_start_date_high']);
+      $conditions[] = "contract_details.period_start_date <= '" . $toDate->format('Y-m-d') . "'";
+    }
 
-      $conditions[] = "contract_details.period_end_date >= '" . $fromDate->format('Y-m-d') .  "'
-        AND contract_details.period_end_date <= '" . $toDate->format('Y-m-d') . "'";
+    if (!empty($this->formValues['contract_end_date_low'])) {
+      $fromDate = new DateTime($this->formValues['contract_end_date_low']);
+      $conditions[] = "contract_details.period_end_date >= '" . $fromDate->format('Y-m-d') .  "'";
+    }
+
+    if (!empty($this->formValues['contract_end_date_high'])) {
+      $toDate = new DateTime($this->formValues['contract_end_date_high']);
+      $conditions[] = "contract_details.period_end_date <= '" . $toDate->format('Y-m-d') . "'";
     }
 
     return implode(' AND ', $conditions);
