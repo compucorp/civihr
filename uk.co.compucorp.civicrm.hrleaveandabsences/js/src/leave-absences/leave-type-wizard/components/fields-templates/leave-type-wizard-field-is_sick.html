@@ -1,12 +1,12 @@
-<div class="btn-group">
-  <button class="btn btn-primary-outline"
-    ng-class="{ active: !field.value }"
-    ng-click="field.value = false">
-    Request Leave
-  </button>
-  <button class="btn btn-primary-outline"
-    ng-class="{ active: field.value }"
-    ng-click="field.value = true">
-    Record Sickness
-  </button>
+<div class="row">
+  <div class="col-md-12">
+    <label class="radio-inline">
+      <input type="radio" ng-model="field.value" ng-value="false"/>
+      Request Leave
+    </label>
+    <label class="radio-inline">
+      <input type="radio" ng-model="field.value" ng-value="true"/>
+      Record Sickness
+    </label>
+  </div>
 </div>
