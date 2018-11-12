@@ -13,6 +13,11 @@
   // Makes the spinner selector the same height as other inputs
   .ui-spinner {
     height: 30px;
+
+    // Makes sure the input is the same height as its container
+    input {
+      height: 100%;
+    }
   }
 
   // Does not allow the spinner selector to collapse and adds a padding on the left

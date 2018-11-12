@@ -1,4 +1,4 @@
-{if $pager and $pager->_response && $pager->_response.numPages > 1}
+{if $pager and $pager->_response && $pager->_totalItems > 1}
   <div class="panel-body staff-directory__results-list_pager">
     <div class="row form-horizontal">
       <div class="col-sm-5">
@@ -20,10 +20,8 @@
         {/if}
       </div>
       <div class="col-sm-4 text-right">
-        {if $location eq 'bottom' and $pager->_totalItems > 25}
-          <label for="{$form.formClass}-rows-per-page-select">{ts}Rows per page:{/ts}</label>
-          <input class="crm-rows-per-page-select" id="{$form.formClass}-rows-per-page-select" type="text" size="2" value="{$pager->_perPage}"/>
-        {/if}
+        <label for="{$form.formClass}-rows-per-page-select">{ts}Rows per page:{/ts}</label>
+        <input class="crm-rows-per-page-select" id="{$form.formClass}-rows-per-page-select" type="text" size="2" value="{$pager->_perPage}"/>
       </div>
     </div>
   </div>

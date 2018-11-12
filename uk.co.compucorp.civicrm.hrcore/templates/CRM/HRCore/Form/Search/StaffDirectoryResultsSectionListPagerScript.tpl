@@ -25,7 +25,7 @@
       (function () {
         initPaginator();
         initItemsPerPageAmountSelector();
-        initSpinner();
+        initSpinners();
         initSorters();
       })();
 
@@ -150,21 +150,23 @@
       }
 
       /**
-       * Initialises spinner
+       * Initialises spinners
        */
-      function initSpinner () {
+      function initSpinners () {
         $form
           .on('click' + containerSelector, 'a.ui-spinner-button', function (e) {
             var $el = $(this);
+            var $input = $el.closest('.ui-spinner').find('input');
+            var value = $input.spinner('value');
+            var isItemsPerPageSelector = $input.hasClass('crm-rows-per-page-select');
 
             spinning !== null && window.clearTimeout(spinning);
 
             spinning = window.setTimeout(function () {
-              if ($el.is(containerSelector + ' a')) {
-                paginate($el.siblings('input[name^=crmPID]').spinner('value'));
+              if (!isItemsPerPageSelector) {
+                paginate(value);
               } else {
-                changeItemsAmountPerPage(
-                  $el.siblings('input.crm-rows-per-page-select').spinner('value'));
+                changeItemsAmountPerPage(value);
               }
             }, 200);
           });
