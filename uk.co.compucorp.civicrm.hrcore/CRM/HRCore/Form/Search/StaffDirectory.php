@@ -501,6 +501,9 @@ class CRM_HRCore_Form_Search_StaffDirectory implements CRM_Contact_Form_Search_I
   private function addAdditionalParameters(&$formValues) {
     if (!empty($_GET['force']) && $_GET['force'] == 1) {
       foreach($this->filters as $filter => $alias) {
+        if (empty($_GET[$filter])) {
+          continue;
+        }
         $formValues[$filter] = filter_input(
           INPUT_GET,
           $filter,
