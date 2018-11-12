@@ -92,7 +92,12 @@ define([
                 name: 'is_sick',
                 label: 'Request button',
                 defaultValue: false,
-                hidden: true
+                hidden: true,
+                helpText: [
+                  'You can configure which button staff members should use to request this type of leave.',
+                  'If "Request Leave" is selected then the leave type will be available after selecting the Leave under Record New Absence.',
+                  'If "Record Sickness" is selected the leave type will be available after selecting the Sickness under Record New Absence.'
+                ].join(' ')
               },
               {
                 name: 'color',
