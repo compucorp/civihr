@@ -11,6 +11,11 @@ define([
     rule: /^\d+(\.\d)?$/,
     message: 'The value should be a positive decimal number up to 1 decimal digit'
   };
+  var VALIDATOR_INTEGER = {
+    rule: /^[1-9]\d*$/,
+    message: 'The value should be a positive whole number'
+  };
+  var LEAVE_REQUESTS_TAB_DEFAULT_LABEL = 'Leave Requests';
 
   angular.module('leave-type-wizard.constants', [])
     .constant('form-sections', [
@@ -88,6 +93,17 @@ define([
                 ].join(' ')
               },
               {
+                name: 'is_sick',
+                label: 'Request button',
+                defaultValue: false,
+                hidden: true,
+                helpText: [
+                  'You can configure which button staff members should use to request this type of leave.',
+                  'If "Request Leave" is selected then the leave type will be available after selecting the Leave under Record New Absence.',
+                  'If "Record Sickness" is selected the leave type will be available after selecting the Sickness under Record New Absence.'
+                ].join(' ')
+              },
+              {
                 name: 'color',
                 label: 'Calendar colour',
                 defaultValue: '',
@@ -124,7 +140,56 @@ define([
             ]
           },
           {
-            label: 'Leave Requests',
+            label: 'TOIL Accruals',
+            name: 'toil-accruals',
+            fields: [
+              {
+                name: 'max_leave_accrual',
+                label: 'Max accrual amount',
+                defaultValue: '',
+                validations: [VALIDATOR_DECIMAL],
+                helpText: [
+                  'Configure the maximum amount of TOIL that a staff member can obtain during a leave period.',
+                  'You can leave this field blank for an unlimited amount.'
+                ].join(' ')
+              },
+              {
+                name: 'allow_accrue_in_the_past',
+                label: 'Overtime requests',
+                defaultValue: true,
+                required: true,
+                helpText: [
+                  'Configure whether staff can request overtime (and therefore accrue TOIL) only in advance of the date worked, or whether they can request overtime anytime (i.e. both before or after the date worked).',
+                  'Most organisations would set this as Anytime.',
+                  DOUBLE_LINE_BREAK,
+                  'Note that admin and managers can always record overtime on behalf of employees for any date.'
+                ].join(' ')
+              },
+              {
+                name: 'accrual_never_expire',
+                label: 'Expiry',
+                defaultValue: true,
+                required: true,
+                helpText: [
+                  'Configure the default expiry of TOIL accruals.',
+                  'i.e. If I accrue TOIL for working on 1st February, if I set this to 1 month, then the TOIL will exprire on 1st March.'
+                ].join(' ')
+              },
+              {
+                name: 'accrual_expiration_duration',
+                required: true,
+                defaultValue: '',
+                validations: [VALIDATOR_INTEGER]
+              },
+              {
+                name: 'accrual_expiration_unit',
+                defaultValue: '1',
+                hidden: true
+              }
+            ]
+          },
+          {
+            label: LEAVE_REQUESTS_TAB_DEFAULT_LABEL,
             name: 'leave-requests',
             fields: [
               {
@@ -228,16 +293,50 @@ define([
     ])
     .constant('leave-type-categories-icons', {
       leave: 'plane',
-      sickness: 'medkit'
+      sickness: 'medkit',
+      toil: 'clock-o',
+      custom: 'wrench'
     })
     .constant('tabs-hidden-by-category', {
-      leave: [],
-      sickness: ['public-holidays', 'carry-forwards']
+      leave: ['toil-accruals'],
+      sickness: ['public-holidays', 'carry-forwards', 'toil-accruals'],
+      toil: ['public-holidays']
     })
-    .constant('defaults-by-category', {
+    .constant('fields-hidden-by-category', {
+      allow_overuse: ['toil'],
+      is_sick: ['leave', 'sickness', 'toil']
+    })
+    .constant('custom-tab-names-by-category', {
+      'leave-requests': {
+        leave: LEAVE_REQUESTS_TAB_DEFAULT_LABEL,
+        sickness: LEAVE_REQUESTS_TAB_DEFAULT_LABEL,
+        toil: 'Using TOIL',
+        custom: LEAVE_REQUESTS_TAB_DEFAULT_LABEL
+      }
+    })
+    .constant('overrides-by-category', {
+      leave: {
+        is_sick: false,
+        allow_accruals_request: false,
+        add_public_holiday_to_entitlement: false
+      },
       sickness: {
         must_take_public_holiday_as_leave: false,
-        allow_carry_forward: false
+        allow_carry_forward: false,
+        allow_accruals_request: false,
+        is_sick: true,
+        add_public_holiday_to_entitlement: false
+      },
+      toil: {
+        must_take_public_holiday_as_leave: false,
+        allow_accruals_request: true,
+        is_sick: false,
+        allow_overuse: false,
+        add_public_holiday_to_entitlement: false
+      },
+      custom: {
+        allow_accruals_request: true,
+        add_public_holiday_to_entitlement: false
       }
     });
 });

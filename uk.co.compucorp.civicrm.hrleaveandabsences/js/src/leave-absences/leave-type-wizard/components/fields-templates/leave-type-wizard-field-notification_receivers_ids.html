@@ -1,15 +1,17 @@
 <div class="row">
   <div class="col-md-6">
-    <ui-select
-      multiple
-      ng-model="field.value"
-      ng-required="true">
-      <ui-select-match placeholder="Search Staff Member" allow-clear>
-        {{$item.display_name}}
-      </ui-select-match>
-      <ui-select-choices repeat="contact.contact_id as contact in (form.contacts | filter: $select.search)">
-        {{contact.display_name}}
-      </ui-select-choices>
-    </ui-select>
+    <crm-loading show="form.contacts" ng-class="{ 'pull-left': !form.contacts }">
+      <ui-select
+        multiple
+        ng-model="field.value"
+        ng-required="true">
+        <ui-select-match placeholder="Search Staff Member" allow-clear>
+          {{$item.display_name}}
+        </ui-select-match>
+        <ui-select-choices repeat="contact.contact_id as contact in (form.contacts | filter: $select.search)">
+          {{contact.display_name}}
+        </ui-select-choices>
+      </ui-select>
+    </crm-loading>
   </div>
 </div>

@@ -5,9 +5,10 @@ define([
   'common/lodash'
 ], function (angular, _) {
   LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
-    'AbsenceType', 'Contact', 'form-sections', 'leave-type-categories-icons',
-    'tabs-hidden-by-category', 'notificationService',
-    'OptionGroup', 'defaults-by-category', 'shared-settings'];
+    'AbsenceType', 'Contact', 'custom-tab-names-by-category',
+    'fields-hidden-by-category', 'form-sections', 'leave-type-categories-icons',
+    'tabs-hidden-by-category', 'notificationService', 'OptionGroup',
+    'overrides-by-category', 'shared-settings'];
 
   return {
     leaveTypeWizard: {
@@ -23,12 +24,16 @@ define([
   };
 
   function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
-    Contact, formSections, leaveTypeCategoriesIcons, hiddenTabsByCategory,
-    notificationService, OptionGroup, defaultsByCategory, sharedSettings) {
+    Contact, customTabNamesByCategory, fieldsHiddenByCategory, formSections,
+    leaveTypeCategoriesIcons, hiddenTabsByCategory, notificationService,
+    OptionGroup, overridesByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
     var absenceTypesExistingTitles = null;
     var absenceType;
+    var promises = {
+      titlesInUse: null
+    };
     var state = {
       sectionIndex: null,
       tabIndex: null
@@ -36,9 +41,10 @@ define([
     var tabsIndexed = {};
     var vm = this;
 
-    vm.availableColours = [];
+    vm.availableColours = null;
     vm.componentsPath =
       sharedSettings.sourcePath + 'leave-type-wizard/components';
+    vm.contacts = null;
     vm.fieldsIndexed = {};
     vm.leaveTypeCategories = [];
     vm.loading = true;
@@ -58,20 +64,15 @@ define([
       vm.isEditMode = !!vm.leaveTypeId;
 
       $q.all([
-        // @TODO lazy load the contacts and colours
-        loadContacts(),
-        loadAvailableColours(),
         loadLeaveTypeCategories(),
         vm.isEditMode && loadAbsenceType()
       ])
-        // @NOTE this is a temporary option group suppressor to match user stories
-        // @TODO the suppressor should be amended to gradually support other leave categories
-        // @TODO the suppressor must be completely removed once all leave categories are supported
-        .then(temporarilySuppressNotYetUsedLeaveCategories)
         .then(initDefaultView)
         .then(function () {
           tabsIndexed = indexPropertyByName(vm.sections, 'tabs');
           vm.fieldsIndexed = indexPropertyByName(tabsIndexed, 'fields');
+          promises.titlesInUse = fetchAbsenceTypesTitlesInUse()
+            .then(vm.isEditMode ? removeLoadedAbsenceTypeTitleFromExistingTitles : $q.resolve());
         })
         .then(markFirstAndLastTabsInSections)
         .then(initDefaultValues)
@@ -84,9 +85,13 @@ define([
         .then(function () {
           vm.loading = false;
         })
-        .then(loadAbsenceTypesExistingTitles)
-        .then(vm.isEditMode && removeLoadedAbsenceTypeTitleFromExistingTitles)
-        .then(validateTitleField);
+        .then(validateTitleField)
+        .then(function () {
+          return $q.all([
+            loadContacts(),
+            loadAvailableColours()
+          ]);
+        });
     }
 
     /**
@@ -134,26 +139,27 @@ define([
      * Checks if title provided is unique.
      * If existing titles are not yet loaded, the validation will not be executed,
      * instead, it will show that the field is "loading".
+     *
+     * @return {Promise}
      */
     function checkIfTitleIsUnique () {
       var titleField = vm.fieldsIndexed.title;
-      var title = titleField.value;
 
-      if (_.isEmpty(title)) {
-        return;
+      if (_.isEmpty(titleField.value) || titleField.validating) {
+        return $q.resolve();
       }
 
-      if (absenceTypesExistingTitles === null) {
-        titleField.waitsForSupportiveData = true;
+      titleField.validating = true;
 
-        return;
-      } else {
-        delete titleField.waitsForSupportiveData;
-      }
-
-      if (_.includes(absenceTypesExistingTitles, title.toLowerCase())) {
-        titleField.error = 'This leave type title is already in use';
-      }
+      return promises.titlesInUse
+        .then(function (titlesInUse) {
+          if (_.includes(titlesInUse, titleField.value.toLowerCase())) {
+            titleField.error = 'This leave type title is already in use';
+          }
+        })
+        .then(function () {
+          titleField.validating = false;
+        });
     }
 
     /**
@@ -186,6 +192,21 @@ define([
     }
 
     /**
+     * Fetches absence types titles in use.
+     * It also lowers the case of the titles.
+     *
+     * @return {Promise} resolves with an {Array}
+     */
+    function fetchAbsenceTypesTitlesInUse () {
+      return AbsenceType.all({}, { return: ['title'] })
+        .then(function (absenceTypes) {
+          return absenceTypes.map(function (absenceType) {
+            return absenceType.title.toLowerCase();
+          });
+        });
+    }
+
+    /**
      * Flushes an error for a given field
      *
      * @param {Object} field
@@ -211,7 +232,9 @@ define([
      * @return {Number}
      */
     function getSiblingTabIndex (direction) {
-      return _.findIndex(vm.sections[state.sectionIndex].tabs,
+      var indexSearchFunction = direction === 'next' ? _.findIndex : _.findLastIndex;
+
+      return indexSearchFunction(vm.sections[state.sectionIndex].tabs,
         function (tab, tabIndex) {
           var directionCondition = direction === 'next'
             ? tabIndex > state.tabIndex
@@ -227,10 +250,7 @@ define([
      * - if there is no previous tab in the current section - opens previous section
      */
     function goBack () {
-      var activeTab = getActiveTab();
       var previousTabIndex = getSiblingTabIndex('previous');
-
-      validateTab(activeTab);
 
       if (previousTabIndex === -1) {
         openPreviousSection();
@@ -343,6 +363,7 @@ define([
     function initFieldsWatchers () {
       watchAllowCarryForwardField();
       watchCarryForwardExpirySwitch();
+      watchAccrualExpirationSwitch();
       watchLeaveCategorySelector();
     }
 
@@ -404,21 +425,6 @@ define([
       return AbsenceType.findById(vm.leaveTypeId)
         .then(function (_absenceType_) {
           absenceType = _absenceType_;
-        });
-    }
-
-    /**
-     * Fetches absence types and stores their titles in the component.
-     * It also lowers the case of the titles.
-     *
-     * @return {Promise}
-     */
-    function loadAbsenceTypesExistingTitles () {
-      return AbsenceType.all({}, { return: ['title'] })
-        .then(function (absenceTypes) {
-          absenceTypesExistingTitles = absenceTypes.map(function (absenceType) {
-            return absenceType.title.toLowerCase();
-          });
         });
     }
 
@@ -551,6 +557,15 @@ define([
     }
 
     /**
+     * Overrides parameters depending on the selected leave category.
+     */
+    function overrideParamsDependingOnLeaveCategory (params) {
+      _.each(overridesByCategory[params.category], function (value, fieldName) {
+        params[fieldName] = value;
+      });
+    }
+
+    /**
      * Prepares some parameters for sending them to the backend.
      * - sets default entitlement to 0 if not provided
      * - flushes dependent fields' values
@@ -572,16 +587,12 @@ define([
         params.carry_forward_expiration_unit = '';
       }
 
-      delete params.carry_forward_expiration_duration_switch;
-    }
+      if (params.accrual_never_expire) {
+        params.accrual_expiration_duration = '';
+        params.accrual_expiration_unit = '';
+      }
 
-    /**
-     * Pre-processes parameters depending on the selected leave category.
-     */
-    function preProcessParamsDependingOnLeaveCategory (params) {
-      _.each(defaultsByCategory[params.category], function (value, fieldName) {
-        params[fieldName] = value;
-      });
+      delete params.carry_forward_expiration_duration_switch;
     }
 
     /**
@@ -603,7 +614,7 @@ define([
 
       vm.loading = true;
 
-      preProcessParamsDependingOnLeaveCategory(params);
+      overrideParamsDependingOnLeaveCategory(params);
       prepareParamsForSaving(params);
       AbsenceType.save(params)
         .then(navigateToLeaveTypesList)
@@ -626,6 +637,17 @@ define([
 
       vm.sections.slice(state.sectionIndex + 1).forEach(function (section) {
         section.disabled = isDisabled;
+      });
+    }
+
+    /**
+     * Sets custom tabs labels depending on the set category
+     *
+     * @param {String} category "leave", "sickness" etc
+     */
+    function setCustomTabNamesByCategory (category) {
+      _.each(customTabNamesByCategory, function (categories, tabName) {
+        tabsIndexed[tabName].label = categories[category];
       });
     }
 
@@ -653,14 +675,13 @@ define([
     }
 
     /**
-     * Suppresses the not yet used leave categories by removing them from
-     * the list that was made by loading option groups
+     * Toggles fields depending on the leave category
      *
-     * @TODO the suppressor must be completely removed once all leave categories are supported
+     * @param {String} category "leave", "sickness" etc
      */
-    function temporarilySuppressNotYetUsedLeaveCategories () {
-      vm.leaveTypeCategories = _.filter(vm.leaveTypeCategories, function (category) {
-        return !_.includes(['toil', 'custom'], category.name);
+    function toggleFieldsDependingOnLeaveCategory (category) {
+      _.each(fieldsHiddenByCategory, function (categories, fieldName) {
+        vm.fieldsIndexed[fieldName].hidden = _.includes(categories, category);
       });
     }
 
@@ -669,9 +690,8 @@ define([
      */
     function toggleSettingsSectionAvailability () {
       var titleField = vm.fieldsIndexed.title;
-      var title = titleField.value;
       var disallowedToMoveToSettingsSection =
-        !!(titleField.error || title === '' || titleField.waitsForSupportiveData);
+        !!(titleField.error || titleField.value === '' || titleField.validating);
 
       setAvailabilityOfFollowingSections(disallowedToMoveToSettingsSection);
     }
@@ -705,11 +725,13 @@ define([
      * @param {String} [oldValue]
      */
     function validateField (field, oldValue) {
+      var fieldIsEmpty = field.value === '' || field.value === null;
+
       flushErrorForField(field);
 
-      if (field.required && _.isEmpty(field.value) && oldValue !== '') {
+      if (field.required && fieldIsEmpty && oldValue !== '') {
         field.error = 'This field is required';
-      } else if (field.value !== '' && field.validations) {
+      } else if (!fieldIsEmpty && field.validations) {
         field.validations.forEach(function (validation) {
           if (!validation.rule.test(field.value)) {
             field.error = validation.message;
@@ -724,8 +746,8 @@ define([
      * - toggles the Settings section depending on the title
      */
     function validateTitleField () {
-      checkIfTitleIsUnique();
-      toggleSettingsSectionAvailability();
+      checkIfTitleIsUnique()
+        .then(toggleSettingsSectionAvailability);
     }
 
     /**
@@ -745,6 +767,18 @@ define([
     }
 
     /**
+     * Initiates a watcher over the "Expiry" field.
+     * Toggles dependent fields on value change.
+     */
+    function watchAccrualExpirationSwitch () {
+      $scope.$watch(function () {
+        return vm.fieldsIndexed.accrual_never_expire.value;
+      }, function (neverExpires) {
+        vm.fieldsIndexed.accrual_expiration_duration.hidden = neverExpires;
+      });
+    }
+
+    /**
      * Initiates a watcher over the "Allow carry forward" field.
      * Toggles dependent fields on value change.
      */
@@ -759,7 +793,7 @@ define([
 
     /**
      * Initiates a watcher over the "Carry forward expiry" field.
-     * Toggles dependent fields on value change of if gets toggled.
+     * Toggles dependent fields on value change or if gets toggled.
      */
     function watchCarryForwardExpirySwitch () {
       $scope.$watch(function () {
@@ -779,6 +813,8 @@ define([
         return vm.fieldsIndexed.category.value;
       }, function (category) {
         toggleTabsDependingOnLeaveCategory(category);
+        toggleFieldsDependingOnLeaveCategory(category);
+        setCustomTabNamesByCategory(category);
         markFirstAndLastTabsInSections();
       });
     }
