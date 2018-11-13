@@ -1,5 +1,3 @@
-{* This input is needed to flush the selections after submit *}
-<input type="hidden" name="_qf_Custom_refresh" value="true"/>
 <div id="bootstrap-theme">
   <div class="staff-directory panel panel-default">
     {* Top bar section *}

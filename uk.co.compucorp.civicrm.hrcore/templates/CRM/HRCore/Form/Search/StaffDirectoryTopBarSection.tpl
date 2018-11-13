@@ -13,7 +13,7 @@
       <div class="input-group">
         {$form.name.html}
         <div class="input-group-btn">
-          <button class="btn btn-primary btn-sm">Search</button>
+          <input class="btn btn-sm btn-primary" name="_qf_Custom_refresh" value="Search" type="submit"/>
         </div>
       </div>
       <div class="text-right">
