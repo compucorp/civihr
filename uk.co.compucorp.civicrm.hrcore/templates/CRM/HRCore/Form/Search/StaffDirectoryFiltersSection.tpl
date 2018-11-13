@@ -29,7 +29,7 @@
   {include file="CRM/HRCore/Form/Search/StaffDirectoryFiltersSectionDateRange.tpl" fieldName="contract_end_date" from='_low' to='_high'}
   <div class="row form-group">
     <div class="col-md-2 col-sm-3">
-      <button class="btn btn-primary btn-sm form-control">Filter</button>
+      <input class="btn btn-sm btn-primary" name="_qf_Custom_refresh" value="Filter" type="submit"/>
     </div>
   </div>
 </div>
