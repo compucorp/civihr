@@ -59,11 +59,6 @@ define([
                 name: 'add_public_holiday_to_entitlement',
                 defaultValue: false,
                 hidden: true
-              },
-              {
-                name: 'is_sick',
-                defaultValue: false,
-                hidden: true
               }
             ]
           }
@@ -91,6 +86,17 @@ define([
                   'Managers and administrators will continue to see the actual leave title of the request.',
                   DOUBLE_LINE_BREAK,
                   'This may be helpful if the leave type title is sensitive - i.e. Unpaid leave or Compassionate leave.'
+                ].join(' ')
+              },
+              {
+                name: 'is_sick',
+                label: 'Request button',
+                defaultValue: false,
+                hidden: true,
+                helpText: [
+                  'You can configure which button staff members should use to request this type of leave.',
+                  'If "Request Leave" is selected then the leave type will be available after selecting the Leave under Record New Absence.',
+                  'If "Record Sickness" is selected the leave type will be available after selecting the Sickness under Record New Absence.'
                 ].join(' ')
               },
               {
@@ -284,7 +290,8 @@ define([
     .constant('leave-type-categories-icons', {
       leave: 'plane',
       sickness: 'medkit',
-      toil: 'clock-o'
+      toil: 'clock-o',
+      custom: 'wrench'
     })
     .constant('tabs-hidden-by-category', {
       leave: ['toil-accruals'],
@@ -292,33 +299,40 @@ define([
       toil: ['public-holidays']
     })
     .constant('fields-hidden-by-category', {
-      allow_overuse: {
-        leave: false,
-        sickness: false,
-        toil: true
-      }
+      allow_overuse: ['toil'],
+      is_sick: ['leave', 'sickness', 'toil']
     })
     .constant('custom-tab-names-by-category', {
       'leave-requests': {
         leave: LEAVE_REQUESTS_TAB_DEFAULT_LABEL,
         sickness: LEAVE_REQUESTS_TAB_DEFAULT_LABEL,
-        toil: 'Using TOIL'
+        toil: 'Using TOIL',
+        custom: LEAVE_REQUESTS_TAB_DEFAULT_LABEL
       }
     })
-    .constant('defaults-by-category', {
+    .constant('overrides-by-category', {
       leave: {
-        is_sick: false
+        is_sick: false,
+        allow_accruals_request: false,
+        add_public_holiday_to_entitlement: false
       },
       sickness: {
         must_take_public_holiday_as_leave: false,
         allow_carry_forward: false,
-        is_sick: true
+        allow_accruals_request: false,
+        is_sick: true,
+        add_public_holiday_to_entitlement: false
       },
       toil: {
         must_take_public_holiday_as_leave: false,
         allow_accruals_request: true,
         is_sick: false,
-        allow_overuse: false
+        allow_overuse: false,
+        add_public_holiday_to_entitlement: false
+      },
+      custom: {
+        allow_accruals_request: true,
+        add_public_holiday_to_entitlement: false
       }
     });
 });
