@@ -61,6 +61,8 @@ class CRM_Hrjobroles_Import_Form_DataSource extends CRM_Import_Form_DataSource {
     $this->addGroup($duplicateOptions, 'onDuplicate',
       ts('On duplicate entries')
     );
+
+    $this->setDefaults(['fieldSeparator' => ',']);
   }
 
   /**
