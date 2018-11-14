@@ -422,7 +422,7 @@ define([
      * @return {Promise}
      */
     function loadAbsenceType () {
-      return AbsenceType.findById(vm.leaveTypeId)
+      return AbsenceType.findById(vm.leaveTypeId, {}, { notificationReceivers: true })
         .then(function (_absenceType_) {
           absenceType = _absenceType_;
         });

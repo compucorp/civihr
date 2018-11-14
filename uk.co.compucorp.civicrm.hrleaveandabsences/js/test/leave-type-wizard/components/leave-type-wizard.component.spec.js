@@ -909,8 +909,10 @@ define([
           expect(controller.isEditMode).toBe(true);
         });
 
-        it('loads a leave type by a given ID', function () {
-          expect(AbsenceType.findById).toHaveBeenCalledWith(absenceType.id);
+        it('loads a leave type with notification receivers by a given ID', function () {
+          expect(AbsenceType.findById).toHaveBeenCalledWith(absenceType.id, {}, {
+            notificationReceivers: true
+          });
         });
 
         it('sets loaded values to the field map', function () {

@@ -15,6 +15,23 @@ define([
     function ($log, $q, Model, OptionGroup, ABSENCE_TYPE_COLOURS, absenceTypeAPI, instance) {
       $log.debug('AbsenceType');
 
+      var NOTIFICATION_RECEIVERS_FIELD = 'api.NotificationReceiver.get';
+
+      /**
+       * Processes notifications receivers field got by chaining.
+       * It creates a new field `notification_receivers_ids` - an array of contact IDs.
+       * It also removes the original redundant field.
+       */
+      function processNotificationReceiversField (absenceType) {
+        absenceType.notification_receivers_ids =
+          absenceType[NOTIFICATION_RECEIVERS_FIELD]
+            .values.map(function (receiver) {
+              return receiver.contact_id;
+            });
+
+        delete absenceType[NOTIFICATION_RECEIVERS_FIELD];
+      }
+
       return Model.extend({
         /**
          * Calls the all() method of the AbsenceType API, and returns an
@@ -71,13 +88,29 @@ define([
          * Get an absence type by its ID
          *
          * @param  {String} id
-         * @param  {Object} additionalParams
+         * @param  {Object} [additionalParams]
+         * @param  {Object} [include] eg. { notificationReceivers: true }
          * @return {Promise}
          */
-        findById: function (id, additionalParams) {
-          return this.all({ id: id, is_active: null }, additionalParams)
+        findById: function (id, additionalParams, include) {
+          var params = { id: id, is_active: null };
+          var includeNotificationReceivers = include.notificationReceivers;
+
+          include = _.assign({}, include);
+
+          if (includeNotificationReceivers) {
+            params[NOTIFICATION_RECEIVERS_FIELD] = { type_id: id };
+          }
+
+          return this.all(params, additionalParams)
             .then(function (absenceTypes) {
-              return _.first(absenceTypes);
+              var absenceType = _.first(absenceTypes);
+
+              if (includeNotificationReceivers) {
+                processNotificationReceiversField(absenceType);
+              }
+
+              return absenceType;
             });
         },
 

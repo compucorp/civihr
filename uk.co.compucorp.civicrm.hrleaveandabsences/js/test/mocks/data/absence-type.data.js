@@ -2,8 +2,9 @@
 
 define([
   'common/lodash',
+  'common/mocks/data/contact.data',
   'leave-absences/mocks/data/option-group.data'
-], function (_, OptionGroupData) {
+], function (_, contactsData, optionGroupsData) {
   var allData = {
     'is_error': 0,
     'version': 3,
@@ -115,6 +116,29 @@ define([
     all: function () {
       return allData;
     },
+    allWithNotificationReceivers: function () {
+      var data = _.cloneDeep(allData);
+
+      data.values.forEach(function (absenceType) {
+        var notificationReceivers =
+          contactsData.all.values.map(function (contact, index) {
+            return {
+              id: index + 1,
+              type_id: absenceType.id,
+              contact_id: contact.id
+            };
+          });
+
+        absenceType['api.NotificationReceiver.get'] = {
+          is_error: '0',
+          version: '3',
+          count: notificationReceivers.length,
+          values: notificationReceivers
+        };
+      });
+
+      return data;
+    },
     getRandomAbsenceType: function (key) {
       return _.sample(allData.values)[key];
     },
@@ -151,7 +175,7 @@ define([
     getAllAndTheirCalculationUnits: function () {
       var calculationUnits, unit;
 
-      calculationUnits = OptionGroupData.getCollection('hrleaveandabsences_absence_type_calculation_unit');
+      calculationUnits = optionGroupsData.getCollection('hrleaveandabsences_absence_type_calculation_unit');
       calculationUnits = _.keyBy(calculationUnits, 'value');
 
       return this.all().values.map(function (absenceType) {

@@ -306,11 +306,13 @@ define([
     });
 
     describe('findById()', function () {
+      var absenceTypeSpy;
       var leaveTypeId = '28';
       var absenceType = { id: leaveTypeId };
 
       beforeEach(function () {
-        spyOn(AbsenceType, 'all').and.returnValue($q.resolve([absenceType]));
+        absenceTypeSpy =
+          spyOn(AbsenceType, 'all').and.returnValue($q.resolve([absenceType]));
       });
 
       describe('basic tests', function () {
@@ -351,6 +353,42 @@ define([
             id: leaveTypeId,
             is_active: null
           }, additionalParams);
+        });
+      });
+
+      describe('when notification receivers are included', function () {
+        var absenceTypeWithNotificationReceivers, result;
+        var includes = { notificationReceivers: true };
+
+        beforeEach(function (done) {
+          absenceTypeWithNotificationReceivers =
+            _.sample(absenceTypeData.allWithNotificationReceivers().values);
+          absenceTypeSpy.and.returnValue(
+            $q.resolve([_.cloneDeep(absenceTypeWithNotificationReceivers)]));
+          AbsenceType.findById(leaveTypeId, {}, includes)
+            .then(function (_result_) {
+              result = _result_;
+            })
+            .finally(done);
+          $rootScope.$digest();
+        });
+
+        it('calls models `all()` method with chaining notification receivers', function () {
+          expect(AbsenceType.all).toHaveBeenCalledWith({
+            id: leaveTypeId,
+            is_active: null,
+            'api.NotificationReceiver.get': { type_id: leaveTypeId }
+          }, {});
+        });
+
+        it('processes notifications receivers into an array of contacts IDs', function () {
+          var contactsIds =
+            absenceTypeWithNotificationReceivers['api.NotificationReceiver.get']
+              .values.map(function (receiver) {
+                return receiver.contact_id;
+              });
+
+          expect(result.notification_receivers_ids).toEqual(contactsIds);
         });
       });
     });
