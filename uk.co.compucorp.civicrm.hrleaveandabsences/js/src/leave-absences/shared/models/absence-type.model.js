@@ -75,7 +75,7 @@ define([
          * @return {Promise}
          */
         findById: function (id, additionalParams) {
-          return this.all({ id: id }, additionalParams)
+          return this.all({ id: id, is_active: null }, additionalParams)
             .then(function (absenceTypes) {
               return _.first(absenceTypes);
             });

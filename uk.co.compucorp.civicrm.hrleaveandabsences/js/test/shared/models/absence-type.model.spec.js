@@ -326,7 +326,10 @@ define([
         });
 
         it('calls models `all()` with an ID of the leave type', function () {
-          expect(AbsenceType.all).toHaveBeenCalledWith({ id: leaveTypeId }, undefined);
+          expect(AbsenceType.all).toHaveBeenCalledWith({
+            id: leaveTypeId,
+            is_active: null
+          }, undefined);
         });
 
         it('returns one found absence type', function () {
@@ -344,7 +347,10 @@ define([
         });
 
         it('calls models `all()` method with additional parameters', function () {
-          expect(AbsenceType.all).toHaveBeenCalledWith({ id: leaveTypeId }, additionalParams);
+          expect(AbsenceType.all).toHaveBeenCalledWith({
+            id: leaveTypeId,
+            is_active: null
+          }, additionalParams);
         });
       });
     });
