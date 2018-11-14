@@ -968,6 +968,7 @@ define([
 
         describe('when user cancels the form editing', function () {
           beforeEach(function () {
+            spyOn(dialog, 'open');
             controller.cancel();
             $rootScope.$digest();
           });
