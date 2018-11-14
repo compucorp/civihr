@@ -11,7 +11,7 @@ define([
 
   describe('LeaveTypeWizard', function () {
     var $componentController, $log, $q, $rootScope, $window,
-      absenceTypeSaverSpy, AbsenceType, Contact, controller, formSections,
+      absenceTypeSaverSpy, AbsenceType, Contact, controller, dialog, formSections,
       leaveTypeCategoriesIcons, notificationService, OptionGroup;
     var leaveTypeListPageURL = '/civicrm/admin/leaveandabsences/types?action=browse&reset=1';
     var sampleAvailableColours = ['#FFFFFF', '#000000'];
@@ -37,8 +37,8 @@ define([
     }));
 
     beforeEach(inject(function (_$componentController_, _$log_, _$q_,
-      _$rootScope_, _$window_, _AbsenceType_, _Contact_, _notificationService_,
-      _OptionGroup_) {
+      _$rootScope_, _$window_, _AbsenceType_, _Contact_, _dialog_,
+      _notificationService_, _OptionGroup_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -46,6 +46,7 @@ define([
       $window = _$window_;
       AbsenceType = _AbsenceType_;
       Contact = _Contact_;
+      dialog = _dialog_;
       notificationService = _notificationService_;
       OptionGroup = _OptionGroup_;
     }));
@@ -963,6 +964,17 @@ define([
 
         it('makes the Category field not required', function () {
           expect(controller.fieldsIndexed.category.required).toBeUndefined();
+        });
+
+        describe('when user cancels the form editing', function () {
+          beforeEach(function () {
+            controller.cancel();
+            $rootScope.$digest();
+          });
+
+          it('shows a prompt', function () {
+            expect(dialog.open).toHaveBeenCalled();
+          });
         });
       });
 

@@ -5,7 +5,7 @@ define([
   'common/lodash'
 ], function (angular, _) {
   LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
-    'AbsenceType', 'Contact', 'custom-tab-names-by-category',
+    'AbsenceType', 'Contact', 'custom-tab-names-by-category', 'dialog',
     'fields-hidden-by-category', 'form-sections', 'leave-type-categories-icons',
     'tabs-hidden-by-category', 'notificationService', 'OptionGroup',
     'overrides-by-category', 'shared-settings'];
@@ -24,7 +24,7 @@ define([
   };
 
   function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
-    Contact, customTabNamesByCategory, fieldsHiddenByCategory, formSections,
+    Contact, customTabNamesByCategory, dialog, fieldsHiddenByCategory, formSections,
     leaveTypeCategoriesIcons, hiddenTabsByCategory, notificationService,
     OptionGroup, overridesByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
@@ -128,9 +128,11 @@ define([
      * Cancels form filling and redirects to the leave types list page
      */
     function cancel () {
-      vm.loading = true;
-
-      navigateToLeaveTypesList();
+      if (vm.isEditMode) {
+        promptCancellingConfirmation();
+      } else {
+        navigateToLeaveTypesList();
+      }
     }
 
     /**
@@ -500,6 +502,8 @@ define([
      * Redirects to the leave types list page
      */
     function navigateToLeaveTypesList () {
+      vm.loading = true;
+
       $window.location.href = CRM.url('civicrm/admin/leaveandabsences/types', {
         action: 'browse',
         reset: 1
@@ -621,6 +625,19 @@ define([
       }
 
       delete params.carry_forward_expiration_duration_switch;
+    }
+
+    /**
+     * Prompts a confirmation window that warns you about form cancelling
+     */
+    function promptCancellingConfirmation () {
+      dialog.open({
+        title: 'Are you sure you want to discard all the changes you have made?',
+        copyCancel: 'No',
+        copyConfirm: 'Yes',
+        classConfirm: 'btn-warning',
+        onConfirm: navigateToLeaveTypesList
+      });
     }
 
     /**
