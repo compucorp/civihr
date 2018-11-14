@@ -94,11 +94,10 @@ define([
          */
         findById: function (id, additionalParams, include) {
           var params = { id: id, is_active: null };
-          var includeNotificationReceivers = include.notificationReceivers;
 
           include = _.assign({}, include);
 
-          if (includeNotificationReceivers) {
+          if (include.notificationReceivers) {
             params[NOTIFICATION_RECEIVERS_FIELD] = { type_id: id };
           }
 
@@ -106,7 +105,7 @@ define([
             .then(function (absenceTypes) {
               var absenceType = _.first(absenceTypes);
 
-              if (includeNotificationReceivers) {
+              if (include.notificationReceivers) {
                 processNotificationReceiversField(absenceType);
               }
 

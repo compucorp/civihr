@@ -29,7 +29,6 @@ define([
     OptionGroup, overridesByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
-    var absenceTypesExistingTitles = null;
     var absenceType;
     var promises = {
       titlesInUse: null
@@ -45,8 +44,9 @@ define([
     vm.componentsPath =
       sharedSettings.sourcePath + 'leave-type-wizard/components';
     vm.contacts = null;
+    vm.disableFormSubmission = true;
     vm.fieldsIndexed = {};
-    vm.leaveTypeCategories = [];
+    vm.leaveTypeCategories = null;
     vm.loading = true;
     vm.sections = _.cloneDeep(formSections);
 
@@ -71,8 +71,8 @@ define([
         .then(function () {
           tabsIndexed = indexPropertyByName(vm.sections, 'tabs');
           vm.fieldsIndexed = indexPropertyByName(tabsIndexed, 'fields');
-          promises.titlesInUse = fetchAbsenceTypesTitlesInUse()
-            .then(vm.isEditMode ? removeLoadedAbsenceTypeTitleFromExistingTitles : $q.resolve());
+          promises.titlesInUse = fetchAbsenceTypesTitlesInUse();
+          promises.titlesInUse.then(updateFormSubmissionAllowance);
         })
         .then(markFirstAndLastTabsInSections)
         .then(initDefaultValues)
@@ -91,7 +91,8 @@ define([
             loadContacts(),
             loadAvailableColours()
           ]);
-        });
+        })
+        .then(updateFormSubmissionAllowance);
     }
 
     /**
@@ -200,9 +201,16 @@ define([
     function fetchAbsenceTypesTitlesInUse () {
       return AbsenceType.all({}, { return: ['title'] })
         .then(function (absenceTypes) {
-          return absenceTypes.map(function (absenceType) {
-            return absenceType.title.toLowerCase();
-          });
+          var absenceTypesExistingTitles = absenceTypes
+            .map(function (absenceType) {
+              return absenceType.title.toLowerCase();
+            });
+
+          if (vm.isEditMode) {
+            _.pull(absenceTypesExistingTitles, absenceType.title.toLowerCase());
+          }
+
+          return absenceTypesExistingTitles;
         });
     }
 
@@ -604,13 +612,6 @@ define([
     }
 
     /**
-     * Removes the loaded absence type title from the array of existing titles
-     */
-    function removeLoadedAbsenceTypeTitleFromExistingTitles () {
-      _.pull(absenceTypesExistingTitles, absenceType.title.toLowerCase());
-    }
-
-    /**
      * Saves leave type by sending an API call to the backend
      * with all appropriate parameters.
      */
@@ -713,6 +714,17 @@ define([
       _.each(tabsIndexed, function (tab) {
         tab.hidden = _.includes(hiddenTabsByCategory[category], tab.name);
       });
+    }
+
+    /**
+     * Updates form submission allowance.
+     * It allows to submit the form when all the supporting data is loaded.
+     */
+    function updateFormSubmissionAllowance () {
+      var supportingDataHasLoaded = !vm.fieldsIndexed.title.validating &&
+        vm.availableColours && vm.leaveTypeCategories;
+
+      vm.disableFormSubmission = !supportingDataHasLoaded;
     }
 
     /**

@@ -899,10 +899,20 @@ define([
         spyOn(AbsenceType, 'findById').and.returnValue($q.resolve(absenceType));
       });
 
+      describe('before the component loads the supporting data', function () {
+        it('does not allow to submit the form just yet', function () {
+          expect(controller.disableFormSubmission).toBe(true);
+        });
+      });
+
       describe('basic tests', function () {
         beforeEach(function () {
           controller.$onInit();
           $rootScope.$digest();
+        });
+
+        it('allows to submit the form', function () {
+          expect(controller.disableFormSubmission).toBe(false);
         });
 
         it('sets the mode to "edit"', function () {
