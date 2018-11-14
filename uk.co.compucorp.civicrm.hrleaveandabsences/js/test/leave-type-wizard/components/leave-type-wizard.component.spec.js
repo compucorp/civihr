@@ -911,6 +911,10 @@ define([
           $rootScope.$digest();
         });
 
+        it('sets all tabs validation stated to positive', function () {
+          expect(_.every(tabsIndexed, { valid: true })).toBe(true);
+        });
+
         it('allows to submit the form', function () {
           expect(controller.disableFormSubmission).toBe(false);
         });

@@ -92,6 +92,7 @@ define([
             loadAvailableColours()
           ]);
         })
+        .then(vm.isEditMode && assumeAllSectionsAreValid)
         .then(updateFormSubmissionAllowance);
     }
 
@@ -110,6 +111,17 @@ define([
       delete field.required;
 
       field.label = 'Category';
+    }
+
+    /**
+     * Sets all tabs validation states to positive without actual validation
+     */
+    function assumeAllSectionsAreValid () {
+      vm.sections.forEach(function (section) {
+        section.tabs.forEach(function (tab) {
+          tab.valid = true;
+        });
+      });
     }
 
     /**
