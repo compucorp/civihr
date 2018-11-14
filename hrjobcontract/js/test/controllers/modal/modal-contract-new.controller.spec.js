@@ -3,14 +3,15 @@
 define([
   'common/lodash',
   'mocks/data/insurance-plan-types.data',
+  'mocks/data/option-value.data',
   'job-contract/job-contract.module'
-], function (_, InsurancePlanTypesMock) {
+], function (_, InsurancePlanTypesMock, OptionValueMock) {
   'use strict';
 
   describe('ModalContractNewController', function () {
     var $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock, crmAngService,
-      contractHealthService, locationUrl, popupLists, payScaleGradeUrl,
-      annualBenefitUrl, annualDeductionUrl;
+      contractHealthService, utilsService, locationUrl, popupLists, payScaleGradeUrl,
+      annualBenefitUrl, annualDeductionUrl, providersPopupLists;
 
     beforeEach(module('job-contract', 'job-contract.templates'));
 
@@ -23,12 +24,13 @@ define([
     }));
 
     beforeEach(inject(function (_$controller_, _$rootScope_, _$httpBackend_, _$q_, _crmAngService_,
-      _contractDetailsService_, _contractHealthService_) {
+      _contractDetailsService_, _contractHealthService_, _utilsService_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       $httpBackend = _$httpBackend_;
       crmAngService = _crmAngService_;
       contractHealthService = _contractHealthService_;
+      utilsService = _utilsService_;
       $q = _$q_;
     }));
 
@@ -59,6 +61,7 @@ define([
     beforeEach(function () {
       mockUIBModalInstance();
       contractHealthServiceSpy();
+      utilsServiceSpy();
       makeController();
     });
 
@@ -86,6 +89,10 @@ define([
 
       it('fetches life insurance plan types', function () {
         expect($rootScope.options.health.plan_type_life_insurance).toEqual(result);
+      });
+
+      it('calls getOptionValues() from utilsService', function () {
+        expect(utilsService.getOptionValues).toHaveBeenCalled();
       });
     });
 
@@ -216,6 +223,31 @@ define([
       });
     });
 
+    describe('when user clicks on the "Provider options" wrench icon', function () {
+      providersPopupLists = [
+        {
+          'popupFormUrl': '/civicrm/admin/options/hrjc_health_insurance_provider?reset=1',
+          'popupFormField': 'hrjc_health_insurance_provider'
+        }
+      ];
+
+      beforeEach(function () {
+        spyOn(crmAngService, 'loadForm').and.callFake(function () {
+          return {
+            on: function (event, callback) {
+            }
+          };
+        });
+        _.each(providersPopupLists, function (popupList) {
+          $scope.openProvidersEditor(popupList.popupFormField);
+        });
+      });
+
+      it('calls the crmAngService with the requested url', function () {
+        expect(crmAngService.loadForm).toHaveBeenCalledWith(providersPopupLists[0].popupFormUrl);
+      });
+    });
+
     function makeController () {
       $scope = $rootScope.$new();
       $controller('ModalContractNewController', {
@@ -240,6 +272,15 @@ define([
     function contractHealthServiceSpy () {
       spyOn(contractHealthService, 'getOptions').and.callFake(function () {
         return $q.resolve(InsurancePlanTypesMock.values);
+      });
+    }
+
+    /**
+     * Mocks the response of the getOptionValues from utilsService.
+     */
+    function utilsServiceSpy () {
+      spyOn(utilsService, 'getOptionValues').and.callFake(function () {
+        return $q.resolve(OptionValueMock);
       });
     }
   });

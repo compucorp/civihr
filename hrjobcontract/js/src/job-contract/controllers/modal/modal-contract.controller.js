@@ -58,6 +58,8 @@ define([
     $scope.openPayScaleGradeOptionsEditor = openPayScaleGradeOptionsEditor;
     $scope.openAnnualBenefitOptionsEditor = openAnnualBenefitOptionsEditor;
     $scope.openAnnualDeductionOptionsEditor = openAnnualDeductionOptionsEditor;
+    $scope.openProvidersEditor = openProvidersEditor;
+    $scope.loadProviderOptions = loadProviderOptions;
 
     // Init
     (function init () {
@@ -70,6 +72,8 @@ define([
 
       $rootScope.$broadcast('hrjc-loader-show');
       fetchInsurancePlanTypes().then(function () {
+        return fetchProviders();
+      }).then(function () {
         $rootScope.$broadcast('hrjc-loader-hide');
       });
     }());
@@ -348,6 +352,19 @@ define([
             }, {});
           });
       }));
+    }
+
+    /**
+     * Fetches list of providers
+     *
+     *  @return {Promise}
+     */
+    function fetchProviders () {
+      var providerGroups = [
+        'hrjc_health_insurance_provider'
+      ];
+
+      return loadProviderOptions(providerGroups);
     }
 
     /**
@@ -753,6 +770,20 @@ define([
     }
 
     /**
+     * Opens providers options editor for editing
+     *
+     * @param {String} provider
+     */
+    function openProvidersEditor (provider) {
+      var url = '/civicrm/admin/options/' + provider + '?reset=1';
+
+      crmAngService.loadForm(url)
+        .on('crmUnload', function () {
+          loadProviderOptions([provider]);
+        });
+    }
+
+    /**
      * Reload updated changes for annual deduction and benefit options
      *
      * @param {String} optionType
@@ -763,6 +794,35 @@ define([
       return OptionGroup.valuesOf(optionType, false)
         .then(function (data) {
           $rootScope.options.pay[optionName] = _.mapValues(_.keyBy(data, 'value'), 'label');
+        });
+    }
+
+    /**
+     * Loads updated record of providers option group
+     *
+     * @param {Array} providers
+     * @returns {Promise}
+     */
+    function loadProviderOptions (providers) {
+      var providersList = [];
+      var optionGroup = '';
+
+      return utilsService.getOptionValues(providers)
+        .then(function (data) {
+          providers.forEach(function (provider) {
+            optionGroup = provider.substr(5);
+            providersList[optionGroup] = data.values.filter(function (item) {
+              return item['option_group_id.name'] === provider;
+            }).map(function (item) {
+              return {
+                id: item.id,
+                value: item.value,
+                label: item.label
+              };
+            });
+          });
+
+          $scope.providers = providersList;
         });
     }
   }

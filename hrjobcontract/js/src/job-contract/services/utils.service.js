@@ -1,8 +1,9 @@
 /* eslint-env amd */
 
 define([
-  'common/angular'
-], function (angular) {
+  'common/angular',
+  'common/lodash'
+], function (angular, _) {
   'use strict';
 
   utilsService.$inject = ['apiService', 'settings', '$q', '$log', '$rootElement', '$timeout', '$uibModal', '$window', 'AbsencePeriod'];
@@ -70,6 +71,40 @@ define([
         });
 
         return deffered.promise;
+      },
+
+      getOptionValues: function (groupNames) {
+        var deferred = $q.defer();
+        var multiple = _.isArray(groupNames);
+
+        CRM.api3('OptionValue', 'get', {
+          'sequential': 1,
+          'is_active': 1,
+          'option_group_id.name': { 'IN': multiple ? groupNames : [groupNames] },
+          'return': [ 'id', 'label', 'weight', 'value', 'is_active', 'option_group_id', 'option_group_id.name' ],
+          'options': {
+            'limit': 1000,
+            'sort': 'id'
+          }
+        })
+          .done(function (result) {
+            result.optionGroupData = _(result.values)
+              .map(function (optionValue) {
+                return [
+                  optionValue['option_group_id.name'],
+                  optionValue.option_group_id
+                ];
+              })
+              .fromPairs()
+              .value();
+
+            deferred.resolve(result);
+          })
+          .error(function () {
+            deferred.reject('An error occured while fetching items');
+          });
+
+        return deferred.promise;
       },
 
       /**
