@@ -346,6 +346,14 @@ define([
       if (vm.fieldsIndexed.default_entitlement.value === '0') {
         vm.fieldsIndexed.default_entitlement.value = '';
       }
+
+      if (vm.fieldsIndexed.accrual_expiration_duration.value) {
+        vm.fieldsIndexed.accrual_never_expire.value = false;
+      }
+
+      if (vm.fieldsIndexed.carry_forward_expiration_duration.value) {
+        vm.fieldsIndexed.carry_forward_expiration_duration_switch.value = true;
+      }
     }
 
     /**

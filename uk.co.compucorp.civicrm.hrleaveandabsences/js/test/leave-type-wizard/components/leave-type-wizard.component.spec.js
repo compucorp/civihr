@@ -990,6 +990,32 @@ define([
           expect(controller.fieldsIndexed.default_entitlement.value).toBe('');
         });
       });
+
+      describe('when "Accrual Expiration" is set', function () {
+        beforeEach(function () {
+          absenceType.accrual_expiration_duration = '999';
+
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('sets "Accrual Never Expire" to `false`', function () {
+          expect(controller.fieldsIndexed.accrual_never_expire.value).toBe(false);
+        });
+      });
+
+      describe('when "Carry Forward Expiration" is set', function () {
+        beforeEach(function () {
+          absenceType.carry_forward_expiration_duration = '999';
+
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('sets "Carry Forward Expiration Duration Switch" to `true`', function () {
+          expect(controller.fieldsIndexed.carry_forward_expiration_duration_switch.value).toBe(true);
+        });
+      });
     });
 
     /**
