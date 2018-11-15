@@ -22,7 +22,8 @@ define([
     settings, pubSub) {
     $log.debug('Controller: ModalContractNewController');
 
-    var providersKey = {
+    // option group name: key used to store option values for group in scope
+    var PROVIDERS = {
       'hrjc_health_insurance_provider': 'health_insurance_provider'
     };
 
@@ -109,7 +110,7 @@ define([
       $rootScope.$broadcast('hrjc-loader-show');
       $q.all([
         fetchInsurancePlanTypes(),
-        fetchProviders()
+        loadProviderOptions(Object.keys(PROVIDERS))
       ])
         .then(function () {
           $rootScope.$broadcast('hrjc-loader-hide');
@@ -262,19 +263,6 @@ define([
             }, {});
           });
       }));
-    }
-
-    /**
-     * Fetches list of providers
-     *
-     *  @return {Promise}
-     */
-    function fetchProviders () {
-      var providerGroups = [
-        'hrjc_health_insurance_provider'
-      ];
-
-      return loadProviderOptions(providerGroups);
     }
 
     function save () {
@@ -442,10 +430,10 @@ define([
      * @returns {Object}
      */
     function groupResultByProviders (data) {
-      var providers = Object.keys(providersKey);
+      var providers = Object.keys(PROVIDERS);
 
       return providers.reduce(function (acc, provider) {
-        acc[providersKey[provider]] = data.values
+        acc[PROVIDERS[provider]] = data.values
           .filter(function (optionValue) {
             return optionValue['option_group_id.name'] === provider;
           })
