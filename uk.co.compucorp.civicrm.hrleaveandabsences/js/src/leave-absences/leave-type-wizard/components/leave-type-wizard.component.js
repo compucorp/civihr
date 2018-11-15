@@ -29,7 +29,7 @@ define([
     OptionGroup, overridesByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
-    var absenceType;
+    var loadedAbsenceType;
     var promises = {
       titlesInUse: null
     };
@@ -121,7 +121,7 @@ define([
      */
     function adjustLoadedValues () {
       vm.fieldsIndexed.category.value =
-        _.find(vm.leaveTypeCategories, { value: absenceType.category }).name;
+        _.find(vm.leaveTypeCategories, { value: loadedAbsenceType.category }).name;
 
       if (vm.fieldsIndexed.default_entitlement.value === '0') {
         vm.fieldsIndexed.default_entitlement.value = '';
@@ -244,7 +244,7 @@ define([
             });
 
           if (vm.isEditMode) {
-            _.pull(absenceTypesExistingTitles, absenceType.title.toLowerCase());
+            _.pull(absenceTypesExistingTitles, loadedAbsenceType.title.toLowerCase());
           }
 
           return absenceTypesExistingTitles;
@@ -364,7 +364,7 @@ define([
      */
     function initLoadedValues () {
       _.each(vm.fieldsIndexed, function (field) {
-        var loadedValue = absenceType[field.name];
+        var loadedValue = loadedAbsenceType[field.name];
 
         if (loadedValue === undefined) {
           return;
@@ -455,8 +455,8 @@ define([
      */
     function loadAbsenceType () {
       return AbsenceType.findById(vm.leaveTypeId, {}, { notificationReceivers: true })
-        .then(function (_absenceType_) {
-          absenceType = _absenceType_;
+        .then(function (absenceType) {
+          loadedAbsenceType = absenceType;
         });
     }
 
