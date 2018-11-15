@@ -764,7 +764,8 @@
                       <ui-select-match
                         prevent-animations
                         placeholder="Start typing a name...">{{$select.selected.label}}</ui-select-match>
-                      <ui-select-choices  repeat="provider.value as provider in providers.life_insurance_provider | filter: $select.search"
+                      <ui-select-choices
+                        repeat="provider.value as provider in providers.life_insurance_provider | filter: $select.search"
                         refresh="loadProviderOptions(['hrjc_life_insurance_provider'])"
                         refresh-delay="0"
                         prevent-animations>
