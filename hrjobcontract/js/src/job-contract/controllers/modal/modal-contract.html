@@ -754,7 +754,7 @@
             <div class="col-xs-12">
               <div class="form-group">
                 <label class="col-sm-4 control-label">Provider</label>
-                <div class="col-sm-6">
+                <div class="col-sm-5">
                   <div class="input-group">
                     <ui-select
                       prevent-animations
@@ -763,13 +763,12 @@
                       ng-model="entity.health.provider_life_insurance">
                       <ui-select-match
                         prevent-animations
-                        placeholder="Start typing a name or email...">{{$select.selected.label}}</ui-select-match>
-                      <ui-select-choices  repeat="contact.id as contact in contacts.Life_Insurance_Provider | filter: $select.search"
-                        refresh="refreshContacts($select.search, 'Life_Insurance_Provider')"
+                        placeholder="Start typing a name...">{{$select.selected.label}}</ui-select-match>
+                      <ui-select-choices  repeat="provider.value as provider in providers.life_insurance_provider | filter: $select.search"
+                        refresh="loadProviderOptions(['hrjc_life_insurance_provider'])"
                         refresh-delay="0"
                         prevent-animations>
-                        <div ng-bind="contact.label"></div>
-                        <small ng-bind="contact.description[0]"></small>
+                        <div ng-bind="provider.label"></div>
                       </ui-select-choices>
                     </ui-select>
                     <span class="input-group-btn">
@@ -780,10 +779,15 @@
                     </span>
                   </div>
                 </div>
+                <div class="col-sm-1 control-label">
+                  <a href ng-click="openProvidersEditor('hrjc_life_insurance_provider')">
+                    <i class="crm-i fa-wrench"></i>
+                  </a>
+                </div>
               </div>
               <div class="form-group">
                 <label for="health-life-plan" class="col-sm-4 control-label">Plan Type</label>
-                <div class="col-sm-4">
+                <div class="col-sm-5">
                   <div class="chr_custom-select chr_custom-select--full">
                     <select id="health-life-plan" class="form-control no-select2"
                       ng-model="entity.health.plan_type_life_insurance"
