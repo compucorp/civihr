@@ -294,9 +294,9 @@ define([
               {
                 name: 'carry_forward_expiration_duration',
                 required: true,
-                type: 'decimal',
                 defaultValue: '',
-                validations: [VALIDATOR_DECIMAL]
+                type: 'integer',
+                validations: [VALIDATOR_INTEGER]
               },
               {
                 name: 'carry_forward_expiration_unit',
