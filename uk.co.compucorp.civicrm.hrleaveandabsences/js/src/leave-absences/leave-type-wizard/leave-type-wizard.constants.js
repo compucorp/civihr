@@ -335,14 +335,16 @@ define([
       leave: {
         is_sick: false,
         allow_accruals_request: false,
-        add_public_holiday_to_entitlement: false
+        add_public_holiday_to_entitlement: false,
+        allow_accrue_in_the_past: false
       },
       sickness: {
         must_take_public_holiday_as_leave: false,
         allow_carry_forward: false,
         allow_accruals_request: false,
         is_sick: true,
-        add_public_holiday_to_entitlement: false
+        add_public_holiday_to_entitlement: false,
+        allow_accrue_in_the_past: false
       },
       toil: {
         must_take_public_holiday_as_leave: false,
