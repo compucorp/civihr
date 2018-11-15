@@ -30,6 +30,10 @@ define([
             name: 'general',
             fields: [
               {
+                name: 'id',
+                hidden: true
+              },
+              {
                 name: 'title',
                 required: true,
                 defaultValue: '',
@@ -53,12 +57,14 @@ define([
               {
                 name: 'allow_accruals_request',
                 defaultValue: false,
-                hidden: true
+                hidden: true,
+                type: 'boolean'
               },
               {
                 name: 'add_public_holiday_to_entitlement',
                 defaultValue: false,
-                hidden: true
+                hidden: true,
+                type: 'boolean'
               }
             ]
           }
@@ -78,6 +84,7 @@ define([
                 name: 'hide_label',
                 label: 'Hide leave type title on public staff calendar and feeds?',
                 defaultValue: false,
+                type: 'boolean',
                 helpText: [
                   'The CiviHR self service portal has an all staff calendar.',
                   'You can also create calendar feeds that can be integrated with your calendar app.',
@@ -93,6 +100,7 @@ define([
                 label: 'Request button',
                 defaultValue: false,
                 hidden: true,
+                type: 'boolean',
                 helpText: [
                   'You can configure which button staff members should use to request this type of leave.',
                   'If "Request Leave" is selected then the leave type will be available after selecting the Leave under Record New Absence.',
@@ -116,6 +124,7 @@ define([
                 name: 'default_entitlement',
                 label: 'Default entitlement',
                 defaultValue: '',
+                type: 'decimal',
                 validations: [VALIDATOR_DECIMAL]
               },
               {
@@ -131,7 +140,8 @@ define([
               {
                 name: 'is_active',
                 label: 'Enabled',
-                defaultValue: true
+                defaultValue: true,
+                type: 'boolean'
               }
             ]
           },
@@ -144,6 +154,7 @@ define([
                 label: 'Max accrual amount',
                 defaultValue: '',
                 validations: [VALIDATOR_DECIMAL],
+                type: 'decimal',
                 helpText: [
                   'Configure the maximum amount of TOIL that a staff member can obtain during a leave period.',
                   'You can leave this field blank for an unlimited amount.'
@@ -154,6 +165,7 @@ define([
                 label: 'Overtime requests',
                 defaultValue: true,
                 required: true,
+                type: 'boolean',
                 helpText: [
                   'Configure whether staff can request overtime (and therefore accrue TOIL) only in advance of the date worked, or whether they can request overtime anytime (i.e. both before or after the date worked).',
                   'Most organisations would set this as Anytime.',
@@ -165,6 +177,7 @@ define([
                 name: 'accrual_never_expire',
                 label: 'Expiry',
                 defaultValue: true,
+                type: 'boolean',
                 required: true,
                 helpText: [
                   'Configure the default expiry of TOIL accruals.',
@@ -175,6 +188,7 @@ define([
                 name: 'accrual_expiration_duration',
                 required: true,
                 defaultValue: '',
+                type: 'integer',
                 validations: [VALIDATOR_INTEGER]
               },
               {
@@ -192,6 +206,7 @@ define([
                 name: 'max_consecutive_leave_days',
                 label: 'Max consecutive duration (Leave blank for unlimited)',
                 defaultValue: '',
+                type: 'decimal',
                 validations: [VALIDATOR_DECIMAL],
                 helpText: [
                   'Configure the maximum duration of consecutive leave permitted to be selected in a single leave request.',
@@ -220,6 +235,7 @@ define([
                 name: 'allow_overuse',
                 label: 'Allow negative balances',
                 defaultValue: false,
+                type: 'boolean',
                 helpText: [
                   'Configure whether staff members can apply for this leave type even if the request would mean that they would have a negative leave balance after the leave request was approved.',
                   DOUBLE_LINE_BREAK,
@@ -239,6 +255,7 @@ define([
                 name: 'must_take_public_holiday_as_leave',
                 label: 'Do staff work on public holidays?',
                 defaultValue: false,
+                type: 'boolean',
                 helpText: 'If your staff work on public holidays then set this to yes and public holidays will be considered working days, otherwise by setting this to no, the system will consider these to be non-working days and staff will have public holidays leave requests generated automatically for them.'
               }
             ]
@@ -251,12 +268,14 @@ define([
                 name: 'allow_carry_forward',
                 label: 'Allow carry forward?',
                 defaultValue: false,
+                type: 'boolean',
                 helpText: 'Configure whether leave of this type be carried forward from one period to another.'
               },
               {
                 name: 'max_number_of_days_to_carry_forward',
                 label: 'Maximum carry forward',
                 defaultValue: '',
+                type: 'decimal',
                 validations: [VALIDATOR_DECIMAL],
                 helpText: 'Configure the maximum amount of days or hours of this leave type that can be carried forward from one period to another.'
               },
@@ -264,6 +283,7 @@ define([
                 name: 'carry_forward_expiration_duration_switch',
                 label: 'Carry forward expiry',
                 defaultValue: false,
+                type: 'boolean',
                 helpText: [
                   'You can configure the carry forward leave to expire in the new period after a certain time or to never expire. i.e.',
                   'If I set the expiry for 3 months and the end of my leave period is 31 December, the carry forward will expire on the 31st March.',
@@ -275,7 +295,8 @@ define([
                 name: 'carry_forward_expiration_duration',
                 required: true,
                 defaultValue: '',
-                validations: [VALIDATOR_DECIMAL]
+                type: 'integer',
+                validations: [VALIDATOR_INTEGER]
               },
               {
                 name: 'carry_forward_expiration_unit',

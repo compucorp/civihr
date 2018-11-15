@@ -6,6 +6,7 @@ define([
   'common/directives/help-text.directive',
   'common/directives/loading',
   'common/models/contact',
+  'common/modules/dialog',
   'common/services/hr-settings',
   'common/services/notification.service',
   'common/angular-spectrum-colorpicker',
@@ -13,6 +14,7 @@ define([
   'leave-absences/leave-type-wizard/leave-type-wizard.core'
 ], function (angular, LeaveTypeWizardComponent) {
   angular.module('leave-type-wizard', [
+    'common.dialog',
     'common.directives',
     /*
      * @TODO Because the app requires Contact, which requires Group,

@@ -1,7 +1,7 @@
 {if in_array($action, array(1,2))}
   <div id="bootstrap-theme" class="crm-leave-and-absences-list-block"
     data-leave-absences-leave-type-wizard>
-    <leave-type-wizard></leave-type-wizard>
+    <leave-type-wizard leave-type-id="{$leaveTypeId}"></leave-type-wizard>
   </div>
 {else}
   {if $rows}

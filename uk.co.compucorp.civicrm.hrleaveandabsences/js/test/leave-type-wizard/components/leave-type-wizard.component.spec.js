@@ -3,14 +3,15 @@
 define([
   'common/angular',
   'common/lodash',
+  'leave-absences/mocks/data/absence-type.data',
   'common/angularMocks',
   'leave-absences/leave-type-wizard/leave-type-wizard.module'
-], function (angular, _) {
+], function (angular, _, absenceTypesData) {
   'use strict';
 
   describe('LeaveTypeWizard', function () {
     var $componentController, $log, $q, $rootScope, $window,
-      absenceTypeSaverSpy, AbsenceType, Contact, controller, formSections,
+      absenceTypeSaverSpy, AbsenceType, Contact, controller, dialog, formSections,
       leaveTypeCategoriesIcons, notificationService, OptionGroup;
     var leaveTypeListPageURL = '/civicrm/admin/leaveandabsences/types?action=browse&reset=1';
     var sampleAvailableColours = ['#FFFFFF', '#000000'];
@@ -22,10 +23,10 @@ define([
     var sampleFieldValidationExpression = /^\w+ \w+$/;
     var sampleFieldValue = 'Some value';
     var sampleLeaveTypeCategoriesOptionGroupValues = [
-      { name: 'leave', label: 'Leave' },
-      { name: 'sickness', label: 'Sickness' },
-      { name: 'toil', label: 'TOIL' },
-      { name: 'custom', label: 'Custom' }
+      { name: 'leave', label: 'Leave', value: '1' },
+      { name: 'sickness', label: 'Sickness', value: '2' },
+      { name: 'toil', label: 'TOIL', value: '3' },
+      { name: 'custom', label: 'Custom', value: '4' }
     ];
     var tabsIndexed = {};
 
@@ -36,8 +37,8 @@ define([
     }));
 
     beforeEach(inject(function (_$componentController_, _$log_, _$q_,
-      _$rootScope_, _$window_, _AbsenceType_, _Contact_, _notificationService_,
-      _OptionGroup_) {
+      _$rootScope_, _$window_, _AbsenceType_, _Contact_, _dialog_,
+      _notificationService_, _OptionGroup_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -45,6 +46,7 @@ define([
       $window = _$window_;
       AbsenceType = _AbsenceType_;
       Contact = _Contact_;
+      dialog = _dialog_;
       notificationService = _notificationService_;
       OptionGroup = _OptionGroup_;
     }));
@@ -470,7 +472,7 @@ define([
         var requiredFieldErrorMessage = 'This field is required';
 
         beforeEach(function () {
-          sampleField = controller.sections[0].tabs[0].fields[0];
+          sampleField = controller.fieldsIndexed.title;
           sampleField.validations = [
             {
               rule: sampleFieldValidationExpression,
@@ -887,6 +889,160 @@ define([
         controller.openActiveSectionTab(controller.sections[1].tabs.length - 1);
         controller.goNext();
       }
+    });
+
+    describe('when user edits a leave type', function () {
+      var absenceType = _.first(absenceTypesData.all().values);
+
+      beforeEach(function () {
+        controller.leaveTypeId = absenceType.id;
+
+        spyOn(AbsenceType, 'findById').and.returnValue($q.resolve(absenceType));
+      });
+
+      describe('before the component loads the supporting data', function () {
+        it('does not allow to submit the form just yet', function () {
+          expect(controller.disableFormSubmission).toBe(true);
+        });
+      });
+
+      describe('basic tests', function () {
+        beforeEach(function () {
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('sets all tabs validation stated to positive', function () {
+          expect(_.every(tabsIndexed, { valid: true })).toBe(true);
+        });
+
+        it('allows to submit the form', function () {
+          expect(controller.disableFormSubmission).toBe(false);
+        });
+
+        it('sets the mode to "edit"', function () {
+          expect(controller.isEditMode).toBe(true);
+        });
+
+        it('loads a leave type with notification receivers by a given ID', function () {
+          expect(AbsenceType.findById).toHaveBeenCalledWith(absenceType.id, {}, {
+            notificationReceivers: true
+          });
+        });
+
+        it('sets loaded values to the field map', function () {
+          expect(controller.fieldsIndexed.title.value).toBe(absenceType.title);
+        });
+
+        it('transforms "0" and "1" to booleans for boolean fields', function () {
+          expect(controller.fieldsIndexed.hide_label.value)
+            .toEqual(jasmine.any(Boolean));
+        });
+
+        it('sets the ID field', function () {
+          expect(controller.fieldsIndexed.id.value).toBe(absenceType.id);
+        });
+
+        it('sets the category field', function () {
+          var categoryName = _.find(controller.leaveTypeCategories,
+            { value: absenceType.id }).name;
+
+          expect(controller.fieldsIndexed.category.value).toBe(categoryName);
+        });
+
+        it('opens Settings section', function () {
+          expect(_.find(controller.sections, { name: 'settings' }).active).toBe(true);
+        });
+
+        it('sets the Category field view mode to column', function () {
+          expect(controller.fieldsIndexed.category.labelLayout).toBeUndefined();
+        });
+
+        it('sets the Category field label to "Category"', function () {
+          expect(controller.fieldsIndexed.category.label).toBe('Category');
+        });
+
+        it('makes the Category field not required', function () {
+          expect(controller.fieldsIndexed.category.required).toBeUndefined();
+        });
+
+        describe('when user cancels the form editing', function () {
+          beforeEach(function () {
+            spyOn(dialog, 'open');
+            controller.cancel();
+            $rootScope.$digest();
+          });
+
+          it('shows a prompt', function () {
+            expect(dialog.open).toHaveBeenCalled();
+          });
+        });
+      });
+
+      describe('when a loaded value is a decimal with more than one decimal digit', function () {
+        beforeEach(function () {
+          absenceType.default_entitlement = '9.10';
+
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('strips the value to a single decimal digit', function () {
+          expect(controller.fieldsIndexed.default_entitlement.value).toBe('9.1');
+        });
+      });
+
+      describe('when a loaded value is a whole decimal', function () {
+        beforeEach(function () {
+          absenceType.default_entitlement = '9.00';
+
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('strips the value to a whole number', function () {
+          expect(controller.fieldsIndexed.default_entitlement.value).toBe('9');
+        });
+      });
+
+      describe('when "Default entitlement" is "0.00"', function () {
+        beforeEach(function () {
+          absenceType.default_entitlement = '0.00';
+
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('sets the "Default entitlement" to an empty string', function () {
+          expect(controller.fieldsIndexed.default_entitlement.value).toBe('');
+        });
+      });
+
+      describe('when "Accrual Expiration" is set', function () {
+        beforeEach(function () {
+          absenceType.accrual_expiration_duration = '999';
+
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('sets "Accrual Never Expire" to `false`', function () {
+          expect(controller.fieldsIndexed.accrual_never_expire.value).toBe(false);
+        });
+      });
+
+      describe('when "Carry Forward Expiration" is set', function () {
+        beforeEach(function () {
+          absenceType.carry_forward_expiration_duration = '999';
+
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('sets "Carry Forward Expiration Duration Switch" to `true`', function () {
+          expect(controller.fieldsIndexed.carry_forward_expiration_duration_switch.value).toBe(true);
+        });
+      });
     });
 
     /**

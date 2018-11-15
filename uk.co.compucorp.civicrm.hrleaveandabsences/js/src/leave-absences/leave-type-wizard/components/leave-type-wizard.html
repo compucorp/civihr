@@ -1,5 +1,9 @@
 <div>
-  <h1>Create leave/absence type</h1>
+  <h1 ng-switch="form.isEditMode">
+    <span ng-switch-when="false">Create</span>
+    <span ng-switch-when="true">Edit</span>
+    leave/absence type
+  </h1>
   <crm-loading show="!form.loading">
     <div class="panel-group">
       <uib-accordion>
@@ -22,10 +26,12 @@
                   ng-class="{ active: tab.active }"
                   ng-click="form.openActiveSectionTab(tabIndex)">
                   <a href>
-                    <span class="badge badge-danger pull-right" ng-if="tab.valid === false">
+                    <span class="badge badge-danger pull-right"
+                      ng-if="tab.valid === false">
                       <i class="fa fa-times"></i>
                     </span>
-                    <span class="badge badge-success pull-right" ng-if="tab.valid === true">
+                    <span class="badge badge-success pull-right"
+                      ng-if="!form.isEditMode && tab.valid === true">
                       <i class="fa fa-check"></i>
                     </span>
                     {{tab.label}}

@@ -22,6 +22,7 @@ class CRM_HRLeaveAndAbsences_Page_AbsenceType extends CRM_Core_Page {
     if ($action & CRM_Core_Action::BROWSE) {
       $this->browse();
     } else {
+      $this->assign('leaveTypeId', CRM_Utils_Array::value('id', $_GET, ''));
       $this->loadResources(TRUE);
     }
 

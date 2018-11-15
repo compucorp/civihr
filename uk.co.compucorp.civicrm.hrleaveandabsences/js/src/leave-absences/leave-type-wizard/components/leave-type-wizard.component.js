@@ -5,7 +5,7 @@ define([
   'common/lodash'
 ], function (angular, _) {
   LeaveTypeWizardController.$inject = ['$log', '$q', '$scope', '$window',
-    'AbsenceType', 'Contact', 'custom-tab-names-by-category',
+    'AbsenceType', 'Contact', 'custom-tab-names-by-category', 'dialog',
     'fields-hidden-by-category', 'form-sections', 'leave-type-categories-icons',
     'tabs-hidden-by-category', 'notificationService', 'OptionGroup',
     'overrides-by-category', 'shared-settings'];
@@ -16,16 +16,31 @@ define([
       controllerAs: 'form',
       templateUrl: ['shared-settings', function (sharedSettings) {
         return sharedSettings.sourcePath + 'leave-type-wizard/components/leave-type-wizard.html';
-      }]
+      }],
+      bindings: {
+        leaveTypeId: '@'
+      }
     }
   };
 
   function LeaveTypeWizardController ($log, $q, $scope, $window, AbsenceType,
-    Contact, customTabNamesByCategory, fieldsHiddenByCategory, formSections,
+    Contact, customTabNamesByCategory, dialog, fieldsHiddenByCategory, formSections,
     leaveTypeCategoriesIcons, hiddenTabsByCategory, notificationService,
     OptionGroup, overridesByCategory, sharedSettings) {
     $log.debug('Controller: LeaveTypeWizardController');
 
+    var loadedAbsenceType;
+    var parsers = {
+      boolean: function (value) {
+        return value === '1';
+      },
+      decimal: function (value) {
+        return parseFloat(value).toString();
+      },
+      integer: function (value) {
+        return parseInt(value).toString();
+      }
+    };
     var promises = {
       titlesInUse: null
     };
@@ -40,42 +55,118 @@ define([
     vm.componentsPath =
       sharedSettings.sourcePath + 'leave-type-wizard/components';
     vm.contacts = null;
+    vm.disableFormSubmission = true;
     vm.fieldsIndexed = {};
-    vm.leaveTypeCategories = [];
+    vm.leaveTypeCategories = null;
     vm.loading = true;
     vm.sections = _.cloneDeep(formSections);
 
     vm.$onInit = $onInit;
+    vm.cancel = cancel;
     vm.checkIfAccordionHeaderClicked = checkIfAccordionHeaderClicked;
     vm.goBack = goBack;
     vm.goNext = goNext;
     vm.openActiveSectionTab = openActiveSectionTab;
     vm.openSection = openSection;
+    vm.submit = submit;
 
     function $onInit () {
       vm.loading = true;
+      vm.isEditMode = !!vm.leaveTypeId;
 
-      loadLeaveTypeCategories()
+      $q.all([
+        loadLeaveTypeCategories(),
+        vm.isEditMode && loadAbsenceType()
+      ])
         .then(initDefaultView)
         .then(function () {
           tabsIndexed = indexPropertyByName(vm.sections, 'tabs');
           vm.fieldsIndexed = indexPropertyByName(tabsIndexed, 'fields');
           promises.titlesInUse = fetchAbsenceTypesTitlesInUse();
+          promises.titlesInUse.then(updateFormSubmissionAllowance);
         })
         .then(markFirstAndLastTabsInSections)
         .then(initDefaultValues)
+        .then(vm.isEditMode && initLoadedValues)
         .then(initFieldsWatchers)
         .then(initValidators)
         .then(initCustomValidators)
+        .then(vm.isEditMode && openSettingsSection)
+        .then(vm.isEditMode && adjustCategoryFieldForEditingMode)
         .then(function () {
           vm.loading = false;
         })
+        .then(validateTitleField)
         .then(function () {
           return $q.all([
             loadContacts(),
             loadAvailableColours()
           ]);
+        })
+        .then(vm.isEditMode && assumeAllSectionsAreValid)
+        .then(updateFormSubmissionAllowance);
+    }
+
+    /**
+     * Adjusts Category field in edit mode:
+     * - sets the field to column view by resetting the `labelLayout` property
+     * - updates the label
+     * - makes field not required
+     *
+     * @NOTE it is expected that in UI the user is not able to edit this field
+     */
+    function adjustCategoryFieldForEditingMode () {
+      var field = vm.fieldsIndexed.category;
+
+      delete field.labelLayout;
+      delete field.required;
+
+      field.label = 'Category';
+    }
+
+    /**
+     * Adjusts loaded values that have custom parsing logic
+     * - sets the Leave Type Category value from the loaded categories
+     * - sets the Default Entitlement to an empty string if it is zero
+     * - sets switches that don't come from the backend but depend on other values
+     */
+    function adjustLoadedValues () {
+      vm.fieldsIndexed.category.value =
+        _.find(vm.leaveTypeCategories, { value: loadedAbsenceType.category }).name;
+
+      if (vm.fieldsIndexed.default_entitlement.value === '0') {
+        vm.fieldsIndexed.default_entitlement.value = '';
+      }
+
+      if (vm.fieldsIndexed.accrual_expiration_duration.value) {
+        vm.fieldsIndexed.accrual_never_expire.value = false;
+      }
+
+      if (vm.fieldsIndexed.carry_forward_expiration_duration.value) {
+        vm.fieldsIndexed.carry_forward_expiration_duration_switch.value = true;
+      }
+    }
+
+    /**
+     * Sets all tabs validation states to positive without actual validation
+     */
+    function assumeAllSectionsAreValid () {
+      vm.sections.forEach(function (section) {
+        section.tabs.forEach(function (tab) {
+          tab.valid = true;
         });
+      });
+    }
+
+    /**
+     * Cancels form filling and redirects to the leave types list page
+     */
+    function cancel () {
+      if (vm.isEditMode) {
+        promptCancellingConfirmation();
+      } else {
+        navigateToLeaveTypesList();
+      }
     }
 
     /**
@@ -158,9 +249,16 @@ define([
     function fetchAbsenceTypesTitlesInUse () {
       return AbsenceType.all({}, { return: ['title'] })
         .then(function (absenceTypes) {
-          return absenceTypes.map(function (absenceType) {
-            return absenceType.title.toLowerCase();
-          });
+          var absenceTypesExistingTitles = absenceTypes
+            .map(function (absenceType) {
+              return absenceType.title.toLowerCase();
+            });
+
+          if (vm.isEditMode) {
+            _.pull(absenceTypesExistingTitles, loadedAbsenceType.title.toLowerCase());
+          }
+
+          return absenceTypesExistingTitles;
         });
     }
 
@@ -271,6 +369,29 @@ define([
     }
 
     /**
+     * Sets values to the field map from the loaded Absence Type.
+     * - it parses the values depending on their type, if present
+     * - it parses fields with custom logic
+     */
+    function initLoadedValues () {
+      _.each(vm.fieldsIndexed, function (field) {
+        var loadedValue = loadedAbsenceType[field.name];
+
+        if (loadedValue === undefined) {
+          return;
+        }
+
+        if (field.type) {
+          loadedValue = parseLoadedValue(loadedValue, field.type);
+        }
+
+        field.value = loadedValue;
+      });
+
+      adjustLoadedValues();
+    }
+
+    /**
      * Initiates the default view:
      * - expands the General section and leaves the Settings section collapsed;
      * - selects Basic Details settings tab.
@@ -339,6 +460,18 @@ define([
     }
 
     /**
+     * Fetches absence type to be edited and stores it in the component.
+     *
+     * @return {Promise}
+     */
+    function loadAbsenceType () {
+      return AbsenceType.findById(vm.leaveTypeId, {}, { notificationReceivers: true })
+        .then(function (absenceType) {
+          loadedAbsenceType = absenceType;
+        });
+    }
+
+    /**
      * Fetches available colours and sets them to the component
      *
      * @return {Promise}
@@ -372,7 +505,7 @@ define([
       return OptionGroup.valuesOf('hrleaveandabsences_absence_type_category')
         .then(function (categories) {
           vm.leaveTypeCategories = categories.map(function (category) {
-            return _.assign(_.pick(category, ['name', 'label']),
+            return _.assign(_.pick(category, ['name', 'label', 'value']),
               { icon: leaveTypeCategoriesIcons[category.name] });
           });
         });
@@ -382,10 +515,28 @@ define([
      * Redirects to the leave types list page
      */
     function navigateToLeaveTypesList () {
+      vm.loading = true;
+
       $window.location.href = CRM.url('civicrm/admin/leaveandabsences/types', {
         action: 'browse',
         reset: 1
       });
+    }
+
+    /**
+     * Opens a section tab by its index and collapses all other section tabs
+     *
+     * @param {Number} tabIndex
+     */
+    function openActiveSectionTab (tabIndex) {
+      var activeSection = vm.sections[state.sectionIndex];
+
+      activeSection.tabs.forEach(function (tab) {
+        tab.active = false;
+      });
+
+      state.tabIndex = tabIndex;
+      activeSection.tabs[tabIndex].active = true;
     }
 
     /**
@@ -410,9 +561,7 @@ define([
       var isOnFirstSection = state.sectionIndex === 0;
 
       if (isOnFirstSection) {
-        vm.loading = true;
-
-        navigateToLeaveTypesList();
+        cancel();
 
         return;
       }
@@ -446,19 +595,10 @@ define([
     }
 
     /**
-     * Opens a section tab by its index and collapses all other section tabs
-     *
-     * @param {Number} tabIndex
+     * Opens Settings section
      */
-    function openActiveSectionTab (tabIndex) {
-      var activeSection = vm.sections[state.sectionIndex];
-
-      activeSection.tabs.forEach(function (tab) {
-        tab.active = false;
-      });
-
-      state.tabIndex = tabIndex;
-      activeSection.tabs[tabIndex].active = true;
+    function openSettingsSection () {
+      openSection(_.findIndex(vm.sections, { name: 'settings' }));
     }
 
     /**
@@ -468,6 +608,23 @@ define([
       _.each(overridesByCategory[params.category], function (value, fieldName) {
         params[fieldName] = value;
       });
+    }
+
+    /**
+     * Parses value depending on the specified type
+     *
+     * @param  {String} value
+     * @param  {String} type "boolean|decimal|integer"
+     * @return {Boolean|String}
+     */
+    function parseLoadedValue (value, type) {
+      var parser = parsers[type];
+
+      if (!parser) {
+        return value;
+      }
+
+      return parser(value);
     }
 
     /**
@@ -498,6 +655,19 @@ define([
       }
 
       delete params.carry_forward_expiration_duration_switch;
+    }
+
+    /**
+     * Prompts a confirmation window that warns you about form cancelling
+     */
+    function promptCancellingConfirmation () {
+      dialog.open({
+        title: 'Are you sure you want to discard all the changes you have made?',
+        copyCancel: 'No',
+        copyConfirm: 'Yes',
+        classConfirm: 'btn-warning',
+        onConfirm: navigateToLeaveTypesList
+      });
     }
 
     /**
@@ -603,6 +773,17 @@ define([
       _.each(tabsIndexed, function (tab) {
         tab.hidden = _.includes(hiddenTabsByCategory[category], tab.name);
       });
+    }
+
+    /**
+     * Updates form submission allowance.
+     * It allows to submit the form when all the supporting data is loaded.
+     */
+    function updateFormSubmissionAllowance () {
+      var supportingDataHasLoaded = !vm.fieldsIndexed.title.validating &&
+        vm.availableColours && vm.leaveTypeCategories;
+
+      vm.disableFormSubmission = !supportingDataHasLoaded;
     }
 
     /**

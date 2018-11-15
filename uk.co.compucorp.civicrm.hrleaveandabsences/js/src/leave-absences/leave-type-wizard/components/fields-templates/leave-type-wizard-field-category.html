@@ -1,5 +1,5 @@
 <div class="row form-horizontal">
-  <div class="col-md-2"
+  <div class="col-md-2" ng-if="!form.isEditMode"
     ng-repeat="leaveTypeCategory in form.leaveTypeCategories">
     <div class="well pointer text-center" ng-click="field.value = leaveTypeCategory.name">
       <i class="leave-type-wizard__category-selector_icon fa fa-{{leaveTypeCategory.icon}}"></i>
@@ -12,5 +12,11 @@
         </label>
       </div>
     </div>
+  </div>
+  <div class="col-md-12" ng-if="form.isEditMode">
+    <label ng-repeat="leaveTypeCategory in form.leaveTypeCategories"
+      ng-if="leaveTypeCategory.name === field.value" class="control-label">
+      {{leaveTypeCategory.label}}
+    </label>
   </div>
 </div>
