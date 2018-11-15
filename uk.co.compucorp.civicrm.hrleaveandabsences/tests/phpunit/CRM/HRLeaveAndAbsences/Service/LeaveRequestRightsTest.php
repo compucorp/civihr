@@ -44,8 +44,18 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->unregisterCurrentLoggedInContactFromSession();
   }
 
+  public function testCanDeleteForReturnsFalseWhenCurrentUserIsAdminForOwnRequestAndNotOwnLeaveApprover() {
+    $adminId = 5;
+    $this->registerCurrentLoggedInContactInSession($adminId);
+    $this->assertFalse($this->getLeaveRequestRightsForAdminAsCurrentUser()->canDeleteFor($adminId));
+    $this->unregisterCurrentLoggedInContactFromSession();
+  }
+
   public function testCanDeleteForReturnsTrueWhenCurrentUserIsAdmin() {
+    $adminId = 5;
+    $this->registerCurrentLoggedInContactInSession($adminId);
     $this->assertTrue($this->getLeaveRequestRightsForAdminAsCurrentUser()->canDeleteFor($this->leaveContact));
+    $this->unregisterCurrentLoggedInContactFromSession();
   }
 
   public function testCanDeleteForReturnsTrueWhenCurrentUserIsOwnLeaveApproverAndIsOwnRequest() {
