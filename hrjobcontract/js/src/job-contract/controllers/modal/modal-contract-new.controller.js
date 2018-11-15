@@ -22,6 +22,10 @@ define([
     settings, pubSub) {
     $log.debug('Controller: ModalContractNewController');
 
+    var providersKey = {
+      'hrjc_health_insurance_provider': 'health_insurance_provider'
+    };
+
     $scope.allowSave = true;
     $scope.action = 'new';
     $scope.entity = {};
@@ -103,11 +107,13 @@ define([
       setDefaultLeaveValuesFromAbsenceType();
 
       $rootScope.$broadcast('hrjc-loader-show');
-      fetchInsurancePlanTypes().then(function () {
-        return fetchProviders();
-      }).then(function () {
-        $rootScope.$broadcast('hrjc-loader-hide');
-      });
+      $q.all([
+        fetchInsurancePlanTypes(),
+        fetchProviders()
+      ])
+        .then(function () {
+          $rootScope.$broadcast('hrjc-loader-hide');
+        });
     }());
 
     function cancel () {
@@ -420,26 +426,39 @@ define([
      * @returns {Promise}
      */
     function loadProviderOptions (providers) {
-      var providersList = [];
-      var optionGroup = '';
-
       return utilsService.getOptionValues(providers)
         .then(function (data) {
-          providers.forEach(function (provider) {
-            optionGroup = provider.substr(5);
-            providersList[optionGroup] = data.values.filter(function (item) {
-              return item['option_group_id.name'] === provider;
-            }).map(function (item) {
-              return {
-                id: item.id,
-                value: item.value,
-                label: item.label
-              };
-            });
+          $scope.providers = groupResultByProviders(data);
+        });
+    }
+
+    /**
+     * Groups result of getOptionValues from utilsService.
+     * Results from getOptionValues contains providers from different
+     * option groups. This function pulls each option value into their
+     * respective group.
+     *
+     * @param {Object} data
+     * @returns {Object}
+     */
+    function groupResultByProviders (data) {
+      var providers = Object.keys(providersKey);
+
+      return providers.reduce(function (acc, provider) {
+        acc[providersKey[provider]] = data.values
+          .filter(function (optionValue) {
+            return optionValue['option_group_id.name'] === provider;
+          })
+          .map(function (optionValue) {
+            return {
+              id: optionValue.id,
+              value: optionValue.value,
+              label: optionValue.label
+            };
           });
 
-          $scope.providers = providersList;
-        });
+        return acc;
+      }, {});
     }
   }
 

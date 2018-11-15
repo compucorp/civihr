@@ -11,7 +11,7 @@ define([
   describe('ModalContractNewController', function () {
     var $rootScope, $controller, $scope, $q, $httpBackend, $uibModalInstanceMock, crmAngService,
       contractHealthService, utilsService, locationUrl, popupLists, payScaleGradeUrl,
-      annualBenefitUrl, annualDeductionUrl, providersPopupLists;
+      annualBenefitUrl, annualDeductionUrl;
 
     beforeEach(module('job-contract', 'job-contract.templates'));
 
@@ -224,14 +224,15 @@ define([
     });
 
     describe('when user clicks on the "Provider options" wrench icon', function () {
-      providersPopupLists = [
-        {
-          'popupFormUrl': '/civicrm/admin/options/hrjc_health_insurance_provider?reset=1',
-          'popupFormField': 'hrjc_health_insurance_provider'
-        }
-      ];
+      var providersPopupLists;
 
       beforeEach(function () {
+        providersPopupLists = [
+          {
+            'popupFormUrl': '/civicrm/admin/options/hrjc_health_insurance_provider?reset=1',
+            'popupFormField': 'hrjc_health_insurance_provider'
+          }
+        ];
         spyOn(crmAngService, 'loadForm').and.callFake(function () {
           return {
             on: function (event, callback) {

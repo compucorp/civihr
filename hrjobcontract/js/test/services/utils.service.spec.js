@@ -13,17 +13,6 @@ define([
   describe('utilsService', function () {
     var $httpBackend, $provide, $rootScope, $q, $uibModal, utilsService, apiService,
       AbsencePeriod, $window;
-    var groupNames = 'hrjc_health_insurance_provider';
-    var optionValueApiParams = {
-      'sequential': 1,
-      'is_active': 1,
-      'option_group_id.name': { 'IN': [groupNames] },
-      'return': [ 'id', 'label', 'weight', 'value', 'is_active', 'option_group_id', 'option_group_id.name' ],
-      'options': {
-        'limit': 1000,
-        'sort': 'id'
-      }
-    };
 
     beforeEach(module('job-contract', 'job-contract.templates', 'leave-absences.models', function (_$provide_, $qProvider) {
       $provide = _$provide_;
@@ -83,19 +72,23 @@ define([
     });
 
     describe('getOptionValues', function () {
+      var optionValueApiParams;
+      var groupNames;
+
       beforeEach(function () {
-        spyOn(CRM, 'api3').and.callFake(function () {
-          return {
-            done: function (fn) { return this; },
-            error: function () { return this; }
-          };
-        });
+        groupNames = 'hrjc_health_insurance_provider';
+        optionValueApiParams = {
+          'sequential': 1,
+          'is_active': 1,
+          'option_group_id.name': { 'IN': [groupNames] },
+          'return': [ 'id', 'label', 'weight', 'value', 'is_active', 'option_group_id', 'option_group_id.name' ]
+        };
 
         utilsService.getOptionValues([groupNames]);
       });
 
       it('returns only the active option value entries', function () {
-        expect(CRM.api3).toHaveBeenCalledWith('OptionValue', 'get', optionValueApiParams);
+        expect(apiService.resource).toHaveBeenCalledWith('OptionValue', 'get', optionValueApiParams);
       });
     });
 

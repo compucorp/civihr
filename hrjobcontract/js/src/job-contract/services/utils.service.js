@@ -77,32 +77,16 @@ define([
         var deferred = $q.defer();
         var multiple = _.isArray(groupNames);
 
-        CRM.api3('OptionValue', 'get', {
+        API.resource('OptionValue', 'get', {
           'sequential': 1,
           'is_active': 1,
           'option_group_id.name': { 'IN': multiple ? groupNames : [groupNames] },
-          'return': [ 'id', 'label', 'weight', 'value', 'is_active', 'option_group_id', 'option_group_id.name' ],
-          'options': {
-            'limit': 1000,
-            'sort': 'id'
-          }
-        })
-          .done(function (result) {
-            result.optionGroupData = _(result.values)
-              .map(function (optionValue) {
-                return [
-                  optionValue['option_group_id.name'],
-                  optionValue.option_group_id
-                ];
-              })
-              .fromPairs()
-              .value();
-
-            deferred.resolve(result);
-          })
-          .error(function () {
-            deferred.reject('An error occured while fetching items');
-          });
+          'return': [ 'id', 'label', 'weight', 'value', 'is_active', 'option_group_id', 'option_group_id.name' ]
+        }).get(function (data) {
+          deferred.resolve(data);
+        }, function () {
+          deferred.reject('Unable to fetch standard hours');
+        });
 
         return deferred.promise;
       },

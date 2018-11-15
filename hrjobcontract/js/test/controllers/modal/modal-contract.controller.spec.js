@@ -17,7 +17,7 @@ define([
       contractHourService, contractLeaveService, contractPayService,
       contractPensionService, contractRevisionService, contractService, settings,
       utilsService, locationUrl, popupLists, payScaleGradeUrl,
-      annualBenefitUrl, annualDeductionUrl, providersPopupLists;
+      annualBenefitUrl, annualDeductionUrl;
     var today = moment().format('YYYY-MM-DD');
 
     beforeEach(module('job-contract', 'job-contract.templates'));
@@ -577,14 +577,15 @@ define([
     });
 
     describe('when user clicks on the "Provider options" wrench icon', function () {
-      providersPopupLists = [
-        {
-          'popupFormUrl': '/civicrm/admin/options/hrjc_health_insurance_provider?reset=1',
-          'popupFormField': 'hrjc_health_insurance_provider'
-        }
-      ];
+      var providersPopupLists;
 
       beforeEach(function () {
+        providersPopupLists = [
+          {
+            'popupFormUrl': '/civicrm/admin/options/hrjc_health_insurance_provider?reset=1',
+            'popupFormField': 'hrjc_health_insurance_provider'
+          }
+        ];
         spyOn(crmAngService, 'loadForm').and.callFake(function () {
           return {
             on: function (event, callback) {
