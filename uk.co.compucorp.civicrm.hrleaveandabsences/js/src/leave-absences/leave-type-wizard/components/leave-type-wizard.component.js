@@ -145,6 +145,9 @@ define([
       if (vm.fieldsIndexed.carry_forward_expiration_duration.value) {
         vm.fieldsIndexed.carry_forward_expiration_duration_switch.value = true;
       }
+
+      vm.fieldsIndexed.must_take_public_holiday_as_leave.value =
+        !vm.fieldsIndexed.must_take_public_holiday_as_leave.value;
     }
 
     /**
@@ -654,6 +657,8 @@ define([
         params.accrual_expiration_unit = '';
       }
 
+      params.must_take_public_holiday_as_leave = !params.must_take_public_holiday_as_leave;
+
       delete params.carry_forward_expiration_duration_switch;
     }
 
@@ -682,8 +687,8 @@ define([
 
       vm.loading = true;
 
-      overrideParamsDependingOnLeaveCategory(params);
       prepareParamsForSaving(params);
+      overrideParamsDependingOnLeaveCategory(params);
       AbsenceType.save(params)
         .then(navigateToLeaveTypesList)
         .catch(function (error) {

@@ -1043,6 +1043,19 @@ define([
           expect(controller.fieldsIndexed.carry_forward_expiration_duration_switch.value).toBe(true);
         });
       });
+
+      describe('when `must_take_public_holiday_as_leave` is set', function () {
+        beforeEach(function () {
+          absenceType.must_take_public_holiday_as_leave = '1';
+
+          controller.$onInit();
+          $rootScope.$digest();
+        });
+
+        it('inverses the value', function () {
+          expect(controller.fieldsIndexed.must_take_public_holiday_as_leave.value).toBe(false);
+        });
+      });
     });
 
     /**
