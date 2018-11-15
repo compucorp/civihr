@@ -30,6 +30,17 @@ define([
     $log.debug('Controller: LeaveTypeWizardController');
 
     var loadedAbsenceType;
+    var parsers = {
+      boolean: function (value) {
+        return value === '1';
+      },
+      decimal: function (value) {
+        return parseFloat(value).toString();
+      },
+      integer: function (value) {
+        return parseInt(value).toString();
+      }
+    };
     var promises = {
       titlesInUse: null
     };
@@ -607,17 +618,6 @@ define([
      * @return {Boolean|String}
      */
     function parseLoadedValue (value, type) {
-      var parsers = {
-        boolean: function (value) {
-          return value === '1';
-        },
-        decimal: function (value) {
-          return parseFloat(value).toString();
-        },
-        integer: function (value) {
-          return parseInt(value).toString();
-        }
-      };
       var parser = parsers[type];
 
       if (!parser) {
