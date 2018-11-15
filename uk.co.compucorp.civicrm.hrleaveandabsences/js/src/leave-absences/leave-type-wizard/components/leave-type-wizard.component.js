@@ -76,7 +76,7 @@ define([
         })
         .then(markFirstAndLastTabsInSections)
         .then(initDefaultValues)
-        .then(vm.isEditMode && initExistingValues)
+        .then(vm.isEditMode && initLoadedValues)
         .then(initFieldsWatchers)
         .then(initValidators)
         .then(initCustomValidators)
@@ -111,6 +111,29 @@ define([
       delete field.required;
 
       field.label = 'Category';
+    }
+
+    /**
+     * Adjusts loaded values that have custom parsing logic
+     * - sets the Leave Type Category value from the loaded categories
+     * - sets the Default Entitlement to an empty string if it is zero
+     * - sets switches that don't come from the backend but depend on other values
+     */
+    function adjustLoadedValues () {
+      vm.fieldsIndexed.category.value =
+        _.find(vm.leaveTypeCategories, { value: absenceType.category }).name;
+
+      if (vm.fieldsIndexed.default_entitlement.value === '0') {
+        vm.fieldsIndexed.default_entitlement.value = '';
+      }
+
+      if (vm.fieldsIndexed.accrual_expiration_duration.value) {
+        vm.fieldsIndexed.accrual_never_expire.value = false;
+      }
+
+      if (vm.fieldsIndexed.carry_forward_expiration_duration.value) {
+        vm.fieldsIndexed.carry_forward_expiration_duration_switch.value = true;
+      }
     }
 
     /**
@@ -336,14 +359,10 @@ define([
 
     /**
      * Sets values to the field map from the loaded Absence Type.
-     * - At first, it simply overrides values with loaded ones, however:
-     *   - if the default value is boolean, it transforms "1" to true, else to false
-     *   - if the loaded value is a whole decimal, it transform to a whole number
-     *   - if the loaded value is a decimal, it only leaves 1 decimal digit
-     * - The Category field is then set as a name from the value
-     * - If the Default Entitlement field is "0.00", it set to an empty string
+     * - it parses the values depending on their type, if present
+     * - it parses fields with custom logic
      */
-    function initExistingValues () {
+    function initLoadedValues () {
       _.each(vm.fieldsIndexed, function (field) {
         var loadedValue = absenceType[field.name];
 
@@ -351,31 +370,14 @@ define([
           return;
         }
 
-        if (typeof (field.defaultValue) === 'boolean') {
-          field.value = loadedValue === '1';
-        } else if (/^\d+\.[0]+$/.test(loadedValue)) {
-          field.value = loadedValue.replace(/^(\d+)\..+$/, '$1');
-        } else if (/^\d+\.\d{2,}$/.test(loadedValue)) {
-          field.value = loadedValue.replace(/^(\d+\.\d).+$/, '$1');
-        } else {
-          field.value = loadedValue;
+        if (field.type) {
+          loadedValue = parseLoadedValue(loadedValue, field.type);
         }
+
+        field.value = loadedValue;
       });
 
-      vm.fieldsIndexed.category.value =
-        _.find(vm.leaveTypeCategories, { value: absenceType.category }).name;
-
-      if (vm.fieldsIndexed.default_entitlement.value === '0') {
-        vm.fieldsIndexed.default_entitlement.value = '';
-      }
-
-      if (vm.fieldsIndexed.accrual_expiration_duration.value) {
-        vm.fieldsIndexed.accrual_never_expire.value = false;
-      }
-
-      if (vm.fieldsIndexed.carry_forward_expiration_duration.value) {
-        vm.fieldsIndexed.carry_forward_expiration_duration_switch.value = true;
-      }
+      adjustLoadedValues();
     }
 
     /**
@@ -595,6 +597,34 @@ define([
       _.each(overridesByCategory[params.category], function (value, fieldName) {
         params[fieldName] = value;
       });
+    }
+
+    /**
+     * Parses value depending on the specified type
+     *
+     * @param  {String} value
+     * @param  {String} type "boolean|decimal|integer"
+     * @return {Boolean|String}
+     */
+    function parseLoadedValue (value, type) {
+      var parsers = {
+        boolean: function (value) {
+          return value === '1';
+        },
+        decimal: function (value) {
+          return parseFloat(value).toString();
+        },
+        integer: function (value) {
+          return parseInt(value).toString();
+        }
+      };
+      var parser = parsers[type];
+
+      if (!parser) {
+        return value;
+      }
+
+      return parser(value);
     }
 
     /**
