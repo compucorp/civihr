@@ -98,7 +98,7 @@ define([
 
       return loadLoggedInContact()
         .then(initIsSelfRecord)
-        .then(initIsSelfLeaveApprover)
+        .then(initSelfLeaveApproverProperties)
         .then(function () {
           return $q.all([
             initRole(),
@@ -583,20 +583,6 @@ define([
     }
 
     /**
-     * Initiates the `canApproveOwnRequests` and `vm.isSelfLeaveApprover` properties
-     */
-    function initIsSelfLeaveApprover () {
-      return loggedInContact.checkIfSelfLeaveApprover()
-        .then(function (_canApproveOwnRequests_) {
-          canApproveOwnRequests = _canApproveOwnRequests_;
-
-          if (canApproveOwnRequests && vm.isSelfRecord) {
-            vm.isSelfLeaveApprover = true;
-          }
-        });
-    }
-
-    /**
      * Initializes the is self record property and sets it to true when
      * on My Leave section and the user is editing their own request or creating
      * a new one for themselves.
@@ -707,6 +693,17 @@ define([
         })
         .then(function (isManager) {
           isManager && (role = 'manager');
+        });
+    }
+
+    /**
+     * Initiates the `canApproveOwnRequests` and `vm.isSelfLeaveApprover` properties
+     */
+    function initSelfLeaveApproverProperties () {
+      return loggedInContact.checkIfSelfLeaveApprover()
+        .then(function (_canApproveOwnRequests_) {
+          canApproveOwnRequests = _canApproveOwnRequests_;
+          vm.isSelfLeaveApprover = !!(canApproveOwnRequests && vm.isSelfRecord);
         });
     }
 
