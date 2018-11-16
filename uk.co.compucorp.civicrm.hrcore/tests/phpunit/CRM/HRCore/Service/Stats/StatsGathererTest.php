@@ -264,8 +264,9 @@ class CRM_HRCore_Service_Stats_StatsGathererTest extends CRM_HRCore_Test_BaseHea
   public function testDeletedEntitiesWillNotBeIncluded() {
     $this->truncateTables(['civicrm_contact']);
     $contactID = ContactFabricator::fabricate()['id'];
+    $adminID = ContactFabricator::fabricate()['id'];
+    SessionHelper::registerCurrentLoggedInContactInSession($adminID);
     $this->setUpLeaveRequest($contactID);
-    SessionHelper::registerCurrentLoggedInContactInSession($contactID);
 
     $ufMatch = UFMatchFabricator::fabricate();
     civicrm_api3('UFMatch', 'delete', ['id' => $ufMatch['id']]);
@@ -296,7 +297,7 @@ class CRM_HRCore_Service_Stats_StatsGathererTest extends CRM_HRCore_Test_BaseHea
 
     $stats = $this->getGatherer()->gather();
 
-    $this->assertEquals(1, $stats->getEntityCount('contact'));
+    $this->assertEquals(2, $stats->getEntityCount('contact'));
     $this->assertEquals(0, $stats->getEntityCount('task'));
     $this->assertEquals(0, $stats->getEntityCount('assignment'));
     $this->assertEquals(0, $stats->getEntityCount('document'));
