@@ -150,16 +150,6 @@ define([
     }
 
     /**
-     * Amends the user role based on their self leave approver state.
-     * Self-approvers are simply treated as admins (for their own leave requests).
-     */
-    function amendRoleBasedOnSelfLeaveApproverState () {
-      if (vm.isSelfRecord && vm.isSelfLeaveApprover) {
-        role = 'admin';
-      }
-    }
-
-    /**
      * Broadcasts an event when request has been updated from awaiting approval status to something else
      */
     function broadcastRequestUpdatedEvent () {
@@ -359,6 +349,30 @@ define([
     }
 
     /**
+     * Fetches managees for admin role
+     *
+     * @return {Promise}
+     */
+    function fetchManageesForAdmin () {
+      return Contact.all()
+        .then(function (contacts) {
+          return contacts.list;
+        });
+    }
+
+    /**
+     * Fetches the contact that is currently being managed and wraps in an array
+     *
+     * @return {Promise}
+     */
+    function fetchManageesForSingleContactAdministration () {
+      return Contact.find(vm.selectedContactId)
+        .then(function (contact) {
+          return [contact];
+        });
+    }
+
+    /**
      * Returns the parameters for to load Absence Type of selected leave type
      *
      * @return {Object}
@@ -406,6 +420,23 @@ define([
      */
     function getLeaveType () {
       return vm.request ? vm.request.request_type : (vm.leaveType || null);
+    }
+
+    /**
+     * Returns a function that fetches managees for the current scenario and role.
+     *
+     * @return {Function}
+     */
+    function getManageesFetcher () {
+      var isSingleContactManagement = !!vm.selectedContactId;
+
+      if (isSingleContactManagement) {
+        return fetchManageesForSingleContactAdministration;
+      } else if (vm.isRole('admin')) {
+        return fetchManageesForAdmin;
+      } else {
+        return loggedInContact.leaveManagees;
+      }
     }
 
     /**
@@ -641,8 +672,13 @@ define([
     function initRole () {
       role = 'staff';
 
-      return initRoleBasedOnPermissions()
-        .then(amendRoleBasedOnSelfLeaveApproverState);
+      if (vm.isSelfLeaveApprover) {
+        role = 'admin';
+
+        return $q.resolve();
+      }
+
+      return initRoleBasedOnPermissions();
     }
 
     /**
@@ -806,33 +842,17 @@ define([
     }
 
     /**
-     * Loads the managees of currently logged in user
-     * If a contact is pre-selected, then a single managee is loaded.
-     * If user is an admin, then all contacts, including the admin, are loaded.
-     * If user is a manager, then only contacts they manage are loaded.
+     * Loads the managees for the current use case and user role
      *
      * @return {Promise}
      */
     function loadManagees () {
-      if (vm.selectedContactId) {
-        // In case of a pre-selected contact administration
-        return Contact.find(vm.selectedContactId)
-          .then(function (contact) {
-            vm.managedContacts = [contact];
-          });
-      } else if (vm.isRole('admin')) {
-        // In case of general administration
-        return Contact.all()
-          .then(function (contacts) {
-            vm.managedContacts = contacts.list;
-          });
-      } else {
-        // In any other case (including managing)
-        return loggedInContact.leaveManagees()
-          .then(function (contacts) {
-            vm.managedContacts = contacts;
-          });
-      }
+      var fetchManagees = getManageesFetcher();
+
+      return fetchManagees()
+        .then(function (managedContacts) {
+          vm.managedContacts = managedContacts;
+        });
     }
 
     /**
