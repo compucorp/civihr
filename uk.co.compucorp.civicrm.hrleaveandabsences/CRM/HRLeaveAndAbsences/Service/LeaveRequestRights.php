@@ -47,12 +47,14 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   public function canChangeDatesFor($contactID, $statusID, $requestType) {
-    if ($this->currentUserIsAdmin()) {
+    $currentUserIsLeaveContact = $this->currentUserIsLeaveContact($contactID);
+    $isAdmin = $this->currentUserIsAdmin();
+
+    if ($isAdmin && !$currentUserIsLeaveContact) {
       return TRUE;
     }
 
     $isOpenLeaveRequest = in_array($statusID, LeaveRequest::getOpenStatuses());
-    $currentUserIsLeaveContact = $this->currentUserIsLeaveContact($contactID);
 
     if ($currentUserIsLeaveContact && $isOpenLeaveRequest) {
       return TRUE;

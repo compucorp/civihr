@@ -67,6 +67,71 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
   /**
    * @dataProvider openLeaveRequestStatusesDataProvider
    */
+  public function testCanChangeDatesForReturnsTrueForAllRequestTypesWhenAdminIsLeaveContactAndNotOwnApproverAndTheLeaveRequestIsOpen($status) {
+    $adminId = 5;
+    $this->registerCurrentLoggedInContactInSession($adminId);
+
+    $this->assertTrue(
+      $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeDatesFor(
+        $adminId,
+        $status,
+        LeaveRequest::REQUEST_TYPE_LEAVE
+      )
+    );
+
+    $this->assertTrue(
+      $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeDatesFor(
+        $adminId,
+        $status,
+        LeaveRequest::REQUEST_TYPE_TOIL
+      )
+    );
+
+    $this->assertTrue(
+      $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeDatesFor(
+        $adminId,
+        $status,
+        LeaveRequest::REQUEST_TYPE_SICKNESS
+      )
+    );
+  }
+
+  /**
+   * @dataProvider closedLeaveRequestStatusesDataProvider
+   */
+  public function testCanChangeDatesForReturnsFalseForAllRequestTypesWhenAdminIsLeaveContactAndNotOwnApproverAndTheLeaveRequestIsClosed($status) {
+    $adminId = 5;
+    $this->registerCurrentLoggedInContactInSession($adminId);
+
+    $this->assertFalse(
+      $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeDatesFor(
+        $adminId,
+        $status,
+        LeaveRequest::REQUEST_TYPE_LEAVE
+      )
+    );
+
+    $this->assertFalse(
+      $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeDatesFor(
+        $adminId,
+        $status,
+        LeaveRequest::REQUEST_TYPE_TOIL
+      )
+    );
+
+    $this->assertFalse(
+      $this->getLeaveRequestRightsForAdminAsCurrentUser()->canChangeDatesFor(
+        $adminId,
+        $status,
+        LeaveRequest::REQUEST_TYPE_SICKNESS
+      )
+    );
+  }
+
+
+  /**
+   * @dataProvider openLeaveRequestStatusesDataProvider
+   */
   public function testCanChangeDatesForReturnsTrueForAllRequestTypesWhenCurrentUserIsLeaveContactAndTheLeaveRequestIsOpen($status) {
     $this->assertTrue(
       $this->getLeaveRightsService()->canChangeDatesFor(
