@@ -1386,8 +1386,8 @@
               expect(controller.isRole('admin')).toBe(true);
             });
 
-            it('sets the `isSelfLeaveApprover` public property to `true`', function () {
-              expect(controller.isSelfLeaveApprover).toBe(true);
+            it('sets the `isSelfLeaveApprover` public property to `false`', function () {
+              expect(controller.isSelfLeaveApprover).toBe(false);
             });
 
             it('sets the `canManage` public property to `true`', function () {

@@ -97,6 +97,7 @@ define([
 
       return loadLoggedInContact()
         .then(initIsSelfRecord)
+        .then(initIsSelfLeaveApprover)
         .then(function () {
           return $q.all([
             initRole(),
@@ -105,7 +106,6 @@ define([
           ]);
         })
         .then(initCanManage)
-        .then(initIsSelfLeaveApprover)
         .then(initRequest)
         .then(setModalMode)
         .then(setInitialAbsencePeriod)
@@ -151,20 +151,12 @@ define([
 
     /**
      * Amends the user role based on their self leave approver state.
-     * If the user is creating or editing their own leave request
-     * and they are self approvers, they will be treated as "admins".
-     *
-     * @return {Promise}
+     * Self-approvers are simply treated as admins (for their own leave requests).
      */
     function amendRoleBasedOnSelfLeaveApproverState () {
-      return loggedInContact.checkIfSelfLeaveApprover()
-        .then(function (isSelfLeaveApprover) {
-          if (!isSelfLeaveApprover) {
-            return;
-          }
-
-          role = 'admin';
-        });
+      if (vm.isSelfRecord && vm.isSelfLeaveApprover) {
+        role = 'admin';
+      }
     }
 
     /**
@@ -551,14 +543,15 @@ define([
     }
 
     /**
-     * Initiates the isSelfLeaveApprover public property.
-     * @NOTE Users are treated as admins if they are self leave approvers.
-     * @see initRole()
+     * Initiates the `isSelfLeaveApprover` public property.
      */
     function initIsSelfLeaveApprover () {
-      if (vm.isRole('admin') && vm.isSelfRecord) {
-        vm.isSelfLeaveApprover = true;
-      }
+      return loggedInContact.checkIfSelfLeaveApprover()
+        .then(function (isSelfLeaveApprover) {
+          if (isSelfLeaveApprover && vm.isSelfRecord) {
+            vm.isSelfLeaveApprover = true;
+          }
+        });
     }
 
     /**
@@ -649,7 +642,7 @@ define([
       role = 'staff';
 
       return initRoleBasedOnPermissions()
-        .then(vm.isSelfRecord && !vm.isRole('admin') && amendRoleBasedOnSelfLeaveApproverState);
+        .then(amendRoleBasedOnSelfLeaveApproverState);
     }
 
     /**
