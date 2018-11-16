@@ -387,6 +387,26 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRightsTest extends BaseHeadless
     $this->assertTrue($result);
   }
 
+  public function testAdminCanNotCancelOwnRequestForForAbsenceTypeThatDoesNotNotAllowItWhenNotOwnLeaveApprover() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_NO]);
+    $adminID = 2;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $leaveDate = new DateTime();
+    $leaveRequestRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
+    $result = $leaveRequestRightsService->canCancelForAbsenceType($absenceType->id, $adminID, $leaveDate);
+    $this->assertFalse($result);
+  }
+
+  public function testAdminCanNotCancelOwnRequestForForAbsenceTypeThatDoesNotAllowFutureCancellationForPastLeaveDateWhenNotOwnLeaveApprover() {
+    $absenceType = AbsenceTypeFabricator::fabricate(['allow_request_cancelation' => AbsenceType::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE]);
+    $adminID = 2;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    $leaveDate = new DateTime('yesterday');
+    $leaveRequestRightsService = $this->getLeaveRequestRightsForAdminAsCurrentUser();
+    $result = $leaveRequestRightsService->canCancelForAbsenceType($absenceType->id, $adminID, $leaveDate);
+    $this->assertFalse($result);
+  }
+
   public function testCanCancelForAbsenceTypeReturnsTrueWhenUserIsLeaveManager() {
     $typeId = 1;
     $contactID = 2;

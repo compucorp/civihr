@@ -214,7 +214,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   public function canCancelForAbsenceType($absenceTypeId, $contactId, DateTime $leaveFromDate) {
-    if ($this->currentUserIsAdmin() || $this->currentUserIsLeaveManagerOf($contactId)) {
+    $isLeaveContact = $this->currentUserIsLeaveContact($contactId);
+    $isAdmin = $this->currentUserIsAdmin();
+
+    if (($isAdmin && !$isLeaveContact) || $this->currentUserIsLeaveManagerOf($contactId)) {
       return TRUE;
     }
 
