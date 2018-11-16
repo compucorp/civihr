@@ -34,6 +34,7 @@ define([
 
     var absenceTypesAndIds;
     var availableStatusesMatrix = {};
+    var canApproveOwnRequests = null;
     var childComponentsCount = 0;
     var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
     var listeners = [];
@@ -349,14 +350,22 @@ define([
     }
 
     /**
-     * Fetches managees for admin role
+     * Fetches managees for admin role.
+     * Basically fetches all contacts,
+     * but if the admin is not their self-approver, excludes them from the list.
      *
      * @return {Promise}
      */
     function fetchManageesForAdmin () {
       return Contact.all()
         .then(function (contacts) {
-          return contacts.list;
+          if (canApproveOwnRequests) {
+            return contacts.list;
+          }
+
+          return _.filter(contacts.list, function (contact) {
+            return contact.id !== loggedInContact.id;
+          });
         });
     }
 
@@ -574,12 +583,14 @@ define([
     }
 
     /**
-     * Initiates the `isSelfLeaveApprover` public property.
+     * Initiates the `canApproveOwnRequests` and `vm.isSelfLeaveApprover` properties
      */
     function initIsSelfLeaveApprover () {
       return loggedInContact.checkIfSelfLeaveApprover()
-        .then(function (isSelfLeaveApprover) {
-          if (isSelfLeaveApprover && vm.isSelfRecord) {
+        .then(function (_canApproveOwnRequests_) {
+          canApproveOwnRequests = _canApproveOwnRequests_;
+
+          if (canApproveOwnRequests && vm.isSelfRecord) {
             vm.isSelfLeaveApprover = true;
           }
         });
