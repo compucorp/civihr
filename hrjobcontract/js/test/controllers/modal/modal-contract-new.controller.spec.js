@@ -235,6 +235,10 @@ define([
           {
             'popupFormUrl': '/civicrm/admin/options/hrjc_life_insurance_provider?reset=1',
             'popupFormField': 'hrjc_life_insurance_provider'
+          },
+          {
+            'popupFormUrl': '/civicrm/admin/options/hrjc_pension_provider?reset=1',
+            'popupFormField': 'hrjc_pension_provider'
           }
         ];
         spyOn(crmAngService, 'loadForm').and.callFake(function () {
@@ -249,8 +253,9 @@ define([
       });
 
       it('calls the crmAngService with the requested url', function () {
-        expect(crmAngService.loadForm).toHaveBeenCalledWith(providersPopupLists[0].popupFormUrl);
-        expect(crmAngService.loadForm).toHaveBeenCalledWith(providersPopupLists[1].popupFormUrl);
+        _.each(providersPopupLists, function (popupList) {
+          expect(crmAngService.loadForm).toHaveBeenCalledWith(popupList.popupFormUrl);
+        });
       });
     });
 

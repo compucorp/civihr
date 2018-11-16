@@ -25,7 +25,8 @@ define([
     // option group name: key used to store option values for group in scope
     var PROVIDERS = {
       'hrjc_health_insurance_provider': 'health_insurance_provider',
-      'hrjc_life_insurance_provider': 'life_insurance_provider'
+      'hrjc_life_insurance_provider': 'life_insurance_provider',
+      'hrjc_pension_provider': 'pension_provider'
     };
 
     $scope.allowSave = true;
