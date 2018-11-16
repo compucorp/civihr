@@ -1134,25 +1134,27 @@
         var leaveRequest;
         var adminId = CRM.vars.leaveAndAbsences.contactId.toString();
 
-        beforeEach(function () {
-          leaveRequest = LeaveRequestInstance.init();
-          leaveRequest.contact_id = adminId.toString();
-          role = 'admin';
+        describe('basic tests', function () {
+          beforeEach(function () {
+            leaveRequest = LeaveRequestInstance.init();
+            leaveRequest.contact_id = adminId.toString();
+            role = 'admin';
 
-          initTestController({ leaveRequest: leaveRequest });
-        });
-
-        describe('on initialization', function () {
-          it('is in create mode', function () {
-            expect(controller.isMode('create')).toBeTruthy();
+            initTestController({ leaveRequest: leaveRequest });
           });
 
-          it('has admin role', function () {
-            expect(controller.isRole('admin')).toBeTruthy();
-          });
+          describe('on initialization', function () {
+            it('is in create mode', function () {
+              expect(controller.isMode('create')).toBeTruthy();
+            });
 
-          it('contains admin in the list of managees', function () {
-            expect(!!_.find(controller.managedContacts, { 'id': adminId })).toBe(true);
+            it('has admin role', function () {
+              expect(controller.isRole('admin')).toBeTruthy();
+            });
+
+            it('contains admin in the list of managees', function () {
+              expect(!!_.find(controller.managedContacts, { 'id': adminId })).toBe(true);
+            });
           });
         });
       });
