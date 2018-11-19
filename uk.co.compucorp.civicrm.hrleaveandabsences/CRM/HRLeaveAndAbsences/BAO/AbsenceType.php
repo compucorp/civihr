@@ -75,7 +75,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   public static function del($id) {
     $absenceType = new CRM_HRLeaveAndAbsences_DAO_AbsenceType();
     $absenceType->id = $id;
-    $absenceType->find(true);
+    $absenceType->find(TRUE);
     $absenceType->delete();
 
     if($absenceType->must_take_public_holiday_as_leave) {
@@ -90,8 +90,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   public static function getRequestCancelationOptions() {
     return [
-      self::REQUEST_CANCELATION_NO                       => ts('No'),
-      self::REQUEST_CANCELATION_ALWAYS                   => ts('Yes - always'),
+      self::REQUEST_CANCELATION_NO => ts('No'),
+      self::REQUEST_CANCELATION_ALWAYS => ts('Yes - always'),
       self::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE => ts('Yes - in advance of the start date of the leave')
     ];
   }
@@ -104,7 +104,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   public static function getExpirationUnitOptions() {
     return [
-      self::EXPIRATION_UNIT_DAYS   => ts('Days'),
+      self::EXPIRATION_UNIT_DAYS => ts('Days'),
       self::EXPIRATION_UNIT_MONTHS => ts('Months'),
     ];
   }
@@ -300,7 +300,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       $absenceType->whereAdd("id <> $id");
     }
 
-    $absenceType->find(true);
+    $absenceType->find(TRUE);
 
     if ($absenceType->id) {
       throw new InvalidAbsenceTypeException(
@@ -329,7 +329,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     $dao = new self();
     $dao->$fieldName = $value;
 
-    $id = empty($params['id']) ? null : intval($params['id']);
+    $id = empty($params['id']) ? NULL : intval($params['id']);
     if($id) {
       $dao->whereAdd("id <> {$id}");
     }
@@ -476,7 +476,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   private static function mustUpdatePublicHolidayLeaveRequests($params) {
     if(!array_key_exists('must_take_public_holiday_as_leave', $params)) {
-      return false;
+      return FALSE;
     }
 
     if(!empty($params['id'])) {
@@ -511,7 +511,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   public function carryForwardNeverExpires() {
     if(!$this->allow_carry_forward) {
-      return null;
+      return NULL;
     }
 
     return !$this->hasExpirationDuration();
@@ -575,7 +575,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       return $absenceType;
     }
 
-    return null;
+    return NULL;
   }
 
   /**
@@ -595,7 +595,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       throw new InvalidAbsenceTypeException("This Absence Type does not allow Accruals Request");
     }
     if ($this->toilNeverExpires()) {
-      return null;
+      return NULL;
     }
 
     if ($this->accrual_expiration_unit == self::EXPIRATION_UNIT_DAYS) {
