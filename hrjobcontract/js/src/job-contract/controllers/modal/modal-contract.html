@@ -686,7 +686,7 @@
                         refresh="loadProviderOptions(['hrjc_health_insurance_provider'])"
                         refresh-delay="0"
                         prevent-animations>
-                        <div ng-bind="provider.label"></div>
+                        <div>{{provider.label}}</div>
                       </ui-select-choices>
                     </ui-select>
                     <span class="input-group-btn">
@@ -769,7 +769,7 @@
                         refresh="loadProviderOptions(['hrjc_life_insurance_provider'])"
                         refresh-delay="0"
                         prevent-animations>
-                        <div ng-bind="provider.label"></div>
+                        <div>{{provider.label}}</div>
                       </ui-select-choices>
                     </ui-select>
                     <span class="input-group-btn">
@@ -865,12 +865,12 @@
                       ng-disabled="isDisabled"
                       ng-model="entity.pension.pension_type">
                       <ui-select-match
-                        placeholder="Start typing a name or email...">{{$select.selected.label}}</ui-select-match>
-                      <ui-select-choices  repeat="contact.id as contact in contacts.Pension_Provider | filter: $select.search"
-                        refresh="refreshContacts($select.search, 'Pension_Provider')"
+                        placeholder="Start typing a name...">{{$select.selected.label}}</ui-select-match>
+                      <ui-select-choices
+                        repeat="provider.value as provider in providers.pension_provider | filter: $select.search"
+                        refresh="loadProviderOptions(['hrjc_pension_provider'])"
                         refresh-delay="0">
-                        <div ng-bind="contact.label"></div>
-                        <small ng-bind="contact.description[0]"></small>
+                        <div>{{provider.label}}</div>
                       </ui-select-choices>
                     </ui-select>
                     <span class="input-group-btn">
@@ -880,6 +880,11 @@
                     </a>
                     </span>
                   </div>
+                </div>
+                <div class="col-sm-1 control-label">
+                  <a href ng-click="openProvidersEditor('hrjc_pension_provider')">
+                    <i class="crm-i fa-wrench"></i>
+                  </a>
                 </div>
               </div>
               <div class="form-group">
