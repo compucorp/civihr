@@ -160,8 +160,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    */
   public function testAllowAccrualsRequestShouldBeTrueIfMaxLeaveAccrualIsNotEmpty() {
     AbsenceTypeFabricator::fabricate([
-        'allow_accruals_request' => false,
-        'max_leave_accrual' => 1
+      'allow_accruals_request' => false,
+      'max_leave_accrual' => 1
     ]);
   }
 
@@ -171,8 +171,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    */
   public function testAllowAccrualsRequestShouldBeTrueIfAllowAccrueInThePast() {
     AbsenceTypeFabricator::fabricate([
-        'allow_accruals_request'   => false,
-        'allow_accrue_in_the_past' => 1
+      'allow_accruals_request' => false,
+      'allow_accrue_in_the_past' => 1
     ]);
   }
 
@@ -182,9 +182,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    */
   public function testAllowAccrualsRequestShouldBeTrueIfAllowAccrualDurationAndUnitAreNotEmpty() {
     AbsenceTypeFabricator::fabricate([
-        'allow_accruals_request' => false,
-        'accrual_expiration_duration' => 1,
-        'accrual_expiration_unit' => AbsenceType::EXPIRATION_UNIT_DAYS
+      'allow_accruals_request' => false,
+      'accrual_expiration_duration' => 1,
+      'accrual_expiration_unit' => AbsenceType::EXPIRATION_UNIT_DAYS
     ]);
   }
 
@@ -194,15 +194,15 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   public function testShouldNotAllowInvalidAccrualExpirationUnit($expirationUnit, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
-          InvalidAbsenceTypeException::class,
-          'Invalid Accrual Expiration Unit'
+        InvalidAbsenceTypeException::class,
+        'Invalid Accrual Expiration Unit'
       );
     }
 
     AbsenceTypeFabricator::fabricate([
-        'allow_accruals_request' => true,
-        'accrual_expiration_duration' => 1,
-        'accrual_expiration_unit' => $expirationUnit
+      'allow_accruals_request' => true,
+      'accrual_expiration_duration' => 1,
+      'accrual_expiration_unit' => $expirationUnit
     ]);
   }
 
@@ -212,15 +212,15 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   public function testShouldNotAllowAccrualExpirationUnitWithoutDurationAndViceVersa($unit, $duration, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
-          InvalidAbsenceTypeException::class,
-          'Invalid Accrual Expiration. It should have both Unit and Duration'
+        InvalidAbsenceTypeException::class,
+        'Invalid Accrual Expiration. It should have both Unit and Duration'
       );
     }
 
     AbsenceTypeFabricator::fabricate([
-        'allow_accruals_request' => true,
-        'accrual_expiration_unit' => $unit,
-        'accrual_expiration_duration' => $duration,
+      'allow_accruals_request' => true,
+      'accrual_expiration_unit' => $unit,
+      'accrual_expiration_duration' => $duration,
     ]);
   }
 
@@ -230,8 +230,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    */
   public function testAllowCarryForwardShouldBeTrueIfMaxNumberOfDaysToCarryForwardIsNotEmpty() {
     AbsenceTypeFabricator::fabricate([
-        'allow_carry_forward'   => false,
-        'max_number_of_days_to_carry_forward' => 1
+      'allow_carry_forward' => false,
+      'max_number_of_days_to_carry_forward' => 1
     ]);
   }
 
@@ -241,9 +241,9 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
    */
   public function testAllowCarryForwardShouldBeTrueIfCarryForwardExpirationDurationAndUnitAreNotEmpty() {
     AbsenceTypeFabricator::fabricate([
-        'allow_carry_forward' => false,
-        'carry_forward_expiration_duration' => 1,
-        'carry_forward_expiration_unit' => AbsenceType::EXPIRATION_UNIT_DAYS
+      'allow_carry_forward' => false,
+      'carry_forward_expiration_duration' => 1,
+      'carry_forward_expiration_unit' => AbsenceType::EXPIRATION_UNIT_DAYS
     ]);
   }
 
@@ -253,15 +253,15 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   public function testShouldNotAllowCarryForwardExpirationUnitWithoutDurationAndViceVersa($unit, $duration, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
-          InvalidAbsenceTypeException::class,
-          'Invalid Carry Forward Expiration. It should have both Unit and Duration'
+        InvalidAbsenceTypeException::class,
+        'Invalid Carry Forward Expiration. It should have both Unit and Duration'
       );
     }
 
     AbsenceTypeFabricator::fabricate([
-        'allow_carry_forward' => true,
-        'carry_forward_expiration_unit' => $unit,
-        'carry_forward_expiration_duration' => $duration,
+      'allow_carry_forward' => true,
+      'carry_forward_expiration_unit' => $unit,
+      'carry_forward_expiration_duration' => $duration,
     ]);
   }
 
@@ -271,15 +271,15 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   public function testShouldNotAllowInvalidCarryForwardExpirationUnit($expirationUnit, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
-          InvalidAbsenceTypeException::class,
-          'Invalid Carry Forward Expiration Unit'
+        InvalidAbsenceTypeException::class,
+        'Invalid Carry Forward Expiration Unit'
       );
     }
 
     AbsenceTypeFabricator::fabricate([
-        'allow_carry_forward' => true,
-        'carry_forward_expiration_duration' => 1,
-        'carry_forward_expiration_unit' => $expirationUnit
+      'allow_carry_forward' => true,
+      'carry_forward_expiration_duration' => 1,
+      'carry_forward_expiration_unit' => $expirationUnit
     ]);
   }
 
@@ -289,8 +289,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
   public function testShouldNotAllowInvalidRequestCancelationOptions($requestCancelationOption, $throwsException) {
     if($throwsException) {
       $this->setExpectedException(
-          InvalidAbsenceTypeException::class,
-          'Invalid Request Cancelation Option'
+        InvalidAbsenceTypeException::class,
+        'Invalid Request Cancelation Option'
       );
     }
 
@@ -502,8 +502,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     AbsenceType::del($absenceType->id);
 
     $queue = PublicHolidayLeaveRequestUpdatesQueue::getQueue();
-    // The number is two because another update was added when the absence type was
-    // created
+    // The number is two because another update was added
+    // when the absence type was created
     $this->assertEquals(2, $queue->numberOfItems());
   }
 
@@ -514,8 +514,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
   public function expirationUnitDataProvider() {
     $data = [
-        [rand(3, PHP_INT_MAX), true],
-        [rand(3, PHP_INT_MAX), true],
+      [rand(3, PHP_INT_MAX), true],
+      [rand(3, PHP_INT_MAX), true],
     ];
     $validOptions = array_keys(AbsenceType::getExpirationUnitOptions());
     foreach($validOptions as $option) {
@@ -534,8 +534,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
 
   public function allowRequestCancelationDataProvider() {
     $data = [
-        [rand(3, PHP_INT_MAX), true],
-        [rand(3, PHP_INT_MAX), true],
+      [rand(3, PHP_INT_MAX), true],
+      [rand(3, PHP_INT_MAX), true],
     ];
     $validOptions = array_keys(AbsenceType::getRequestCancelationOptions());
     foreach($validOptions as $option) {
@@ -593,7 +593,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'allow_accruals_request' => false,
       'is_active' => 1,
     ]);
-    //date to calculate TOIL expiry for
+    // date to calculate TOIL expiry for
     $date = new DateTime('2016-11-10');
     $absenceType->calculateToilExpiryDate($date);
   }
@@ -606,14 +606,14 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'accrual_expiration_duration' => null,
       'is_active' => 1,
     ]);
-    //date to calculate TOIL expiry for
+    // date to calculate TOIL expiry for
     $date = new DateTime('2016-11-10');
     $expiry = $absenceType->calculateToilExpiryDate($date);
     $this->assertNull($expiry);
   }
 
   public function testCalculateToilExpiryDateWhenAbsenceTypeAllowsAccrualsRequestAndExpiryDurationSet() {
-    //Duration set in days
+    // Duration set in days
     $absenceType = AbsenceTypeFabricator::fabricate([
       'title' => 'Title 1',
       'allow_accruals_request' => true,
@@ -621,12 +621,12 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'accrual_expiration_unit' => AbsenceType::EXPIRATION_UNIT_DAYS,
       'is_active' => 1,
     ]);
-    //date to calculate TOIL expiry for
+    // date to calculate TOIL expiry for
     $date = new DateTime('2016-11-10');
     $expiry = $absenceType->calculateToilExpiryDate($date);
     $this->assertEquals('2016-11-20', $expiry->format('Y-m-d'));
 
-    //Duration set in months
+    // Duration set in months
     $absenceType2 = AbsenceTypeFabricator::fabricate([
       'title' => 'Title 2',
       'allow_accruals_request' => true,
@@ -634,7 +634,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'accrual_expiration_unit' => AbsenceType::EXPIRATION_UNIT_MONTHS,
       'is_active' => 1,
     ]);
-    //date to calculate TOIL expiry for
+    // date to calculate TOIL expiry for
     $date = new DateTime('2016-11-10');
     $expiry = $absenceType2->calculateToilExpiryDate($date);
     $this->assertEquals('2017-09-10', $expiry->format('Y-m-d'));
@@ -673,7 +673,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'request_type' => LeaveRequest::REQUEST_TYPE_TOIL
     ], true);
 
-    //assert the records exist first before updating absence type
+    // assert the records exist first before updating absence type
     $balanceChange = new LeaveBalanceChange();
     $balanceChange->find();
     $this->assertEquals($balanceChange->N, 2);
@@ -686,7 +686,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $leaveRequestDate->find();
     $this->assertEquals($leaveRequestDate->N, 2);
 
-    //disable TOIL
+    // disable TOIL
     AbsenceType::create([
       'id' => $absenceType->id,
       'title' => $absenceType->title,
@@ -694,21 +694,21 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'color' => '#000000'
     ]);
 
-    //confirm the balance change for the expired TOIL balance was not deleted
+    // confirm the balance change for the expired TOIL balance was not deleted
     $balanceChange = new LeaveBalanceChange();
     $balanceChange->find(true);
     $this->assertEquals(1, $balanceChange->N);
     $toilRequestBalanceChange = $this->findToilRequestMainBalanceChange($toilRequest2->id);
     $this->assertEquals($toilRequestBalanceChange->id, $balanceChange->id);
 
-    //confirm the leave request for the expired TOIL balance was not deleted
+    // confirm the leave request for the expired TOIL balance was not deleted
     $leaveRequest = new LeaveRequest();
     $leaveRequest->find();
     $this->assertEquals($leaveRequest->N, 1);
     $leaveRequest->fetch();
     $this->assertEquals($leaveRequest->id, $toilRequest2->id);
 
-    //confirm the leave request dates for the expired TOIL balance was not deleted
+    // confirm the leave request dates for the expired TOIL balance was not deleted
     $leaveRequestDate = new LeaveRequestDate();
     $leaveRequestDate->find();
     $this->assertEquals($leaveRequestDate->N, 1);
@@ -748,7 +748,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $params = ['title' => 'Type 1'];
     $absenceType = AbsenceTypeFabricator::fabricate($params);
 
-    //update the absence type
+    // update the absence type
     $params['id'] = $absenceType->id;
     $params['default_entitlement'] = 50;
 
@@ -767,7 +767,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $params2 = ['title' => 'Type 2'];
     $absenceType2 = AbsenceTypeFabricator::fabricate($params2);
 
-    //update the second absence type with the title of the first type
+    // update the second absence type with the title of the first type
     $params['id'] = $absenceType2->id;
     $params['title'] = $params1['title'];
 
@@ -831,7 +831,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
       'calculation_unit' => $this->calculationUnitOptions['hours']
     ]);
 
-
     $this->assertTrue($absenceType->isCalculationUnitInHours());
   }
 
@@ -839,7 +838,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $absenceType = AbsenceTypeFabricator::fabricate([
       'calculation_unit' => $this->calculationUnitOptions['days']
     ]);
-
 
     $this->assertFalse($absenceType->isCalculationUnitInHours());
   }
