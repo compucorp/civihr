@@ -75,7 +75,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   public static function del($id) {
     $absenceType = new CRM_HRLeaveAndAbsences_DAO_AbsenceType();
     $absenceType->id = $id;
-    $absenceType->find(true);
+    $absenceType->find(TRUE);
     $absenceType->delete();
 
     if($absenceType->must_take_public_holiday_as_leave) {
@@ -89,11 +89,11 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @return array
    */
   public static function getRequestCancelationOptions() {
-     return [
-         self::REQUEST_CANCELATION_NO                       => ts('No'),
-         self::REQUEST_CANCELATION_ALWAYS                   => ts('Yes - always'),
-         self::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE => ts('Yes - in advance of the start date of the leave')
-     ];
+    return [
+      self::REQUEST_CANCELATION_NO => ts('No'),
+      self::REQUEST_CANCELATION_ALWAYS => ts('Yes - always'),
+      self::REQUEST_CANCELATION_IN_ADVANCE_OF_START_DATE => ts('Yes - in advance of the start date of the leave')
+    ];
   }
 
   /**
@@ -104,8 +104,8 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   public static function getExpirationUnitOptions() {
     return [
-        self::EXPIRATION_UNIT_DAYS   => ts('Days'),
-        self::EXPIRATION_UNIT_MONTHS => ts('Months'),
+      self::EXPIRATION_UNIT_DAYS => ts('Days'),
+      self::EXPIRATION_UNIT_MONTHS => ts('Months'),
     ];
   }
 
@@ -276,6 +276,14 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    */
   private static function validateAbsenceTypeTitle($params) {
+    $isEditing = array_key_exists('id', $params);
+    $titleIsPassed = array_key_exists('title', $params);
+    $skipTitleValidation = $isEditing && !$titleIsPassed;
+
+    if ($skipTitleValidation) {
+      return;
+    }
+
     $title = trim(CRM_Utils_Array::value('title', $params));
 
     if (empty($title) && $title !== '0') {
@@ -292,7 +300,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       $absenceType->whereAdd("id <> $id");
     }
 
-    $absenceType->find(true);
+    $absenceType->find(TRUE);
 
     if ($absenceType->id) {
       throw new InvalidAbsenceTypeException(
@@ -321,7 +329,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     $dao = new self();
     $dao->$fieldName = $value;
 
-    $id = empty($params['id']) ? null : intval($params['id']);
+    $id = empty($params['id']) ? NULL : intval($params['id']);
     if($id) {
       $dao->whereAdd("id <> {$id}");
     }
@@ -340,13 +348,13 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     $allow_accruals_request = !empty($params['allow_accruals_request']);
     if(!empty($params['max_leave_accrual']) && !$allow_accruals_request) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'To set maximum amount of leave that can be accrued you must allow staff to accrue additional days'
+        'To set maximum amount of leave that can be accrued you must allow staff to accrue additional days'
       );
     }
 
     if(!empty($params['allow_accrue_in_the_past']) && !$allow_accruals_request) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'To allow accrue in the past you must allow staff to accrue additional days'
+        'To allow accrue in the past you must allow staff to accrue additional days'
       );
     }
 
@@ -354,7 +362,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     $has_accrual_expiration_unit = !empty($params['accrual_expiration_unit']);
     if($has_accrual_expiration_duration && $has_accrual_expiration_unit && !$allow_accruals_request) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'To set the accrual expiry duration you must allow staff to accrue additional days'
+        'To set the accrual expiry duration you must allow staff to accrue additional days'
       );
     }
 
@@ -362,13 +370,13 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
         !array_key_exists($params['accrual_expiration_unit'], self::getExpirationUnitOptions())
     ) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'Invalid Accrual Expiration Unit'
+        'Invalid Accrual Expiration Unit'
       );
     }
 
     if ($has_accrual_expiration_duration xor $has_accrual_expiration_unit) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'Invalid Accrual Expiration. It should have both Unit and Duration'
+        'Invalid Accrual Expiration. It should have both Unit and Duration'
       );
     }
   }
@@ -384,7 +392,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     $allow_carry_forward = !empty($params['allow_carry_forward']);
     if(!empty($params['max_number_of_days_to_carry_forward']) && !$allow_carry_forward) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'To set the Max Number of Days to Carry Forward you must allow Carry Forward'
+        'To set the Max Number of Days to Carry Forward you must allow Carry Forward'
       );
     }
 
@@ -392,21 +400,21 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     $has_carry_forward_expiration_unit = !empty($params['carry_forward_expiration_unit']);
     if($has_carry_forward_expiration_duration && $has_carry_forward_expiration_unit && !$allow_carry_forward) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'To set the carry forward expiry duration you must allow Carry Forward'
+        'To set the carry forward expiry duration you must allow Carry Forward'
       );
     }
 
     if($has_carry_forward_expiration_unit xor $has_carry_forward_expiration_duration) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'Invalid Carry Forward Expiration. It should have both Unit and Duration'
+        'Invalid Carry Forward Expiration. It should have both Unit and Duration'
       );
     }
 
     if (!empty($params['carry_forward_expiration_unit']) &&
-        !array_key_exists($params['carry_forward_expiration_unit'], self::getExpirationUnitOptions())
+      !array_key_exists($params['carry_forward_expiration_unit'], self::getExpirationUnitOptions())
     ) {
       throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-          'Invalid Carry Forward Expiration Unit'
+        'Invalid Carry Forward Expiration Unit'
       );
     }
   }
@@ -468,7 +476,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   private static function mustUpdatePublicHolidayLeaveRequests($params) {
     if(!array_key_exists('must_take_public_holiday_as_leave', $params)) {
-      return false;
+      return FALSE;
     }
 
     if(!empty($params['id'])) {
@@ -503,7 +511,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    */
   public function carryForwardNeverExpires() {
     if(!$this->allow_carry_forward) {
-      return null;
+      return NULL;
     }
 
     return !$this->hasExpirationDuration();
@@ -515,8 +523,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    *
    * @return bool
    */
-  public function hasExpirationDuration()
-  {
+  public function hasExpirationDuration() {
     return $this->carry_forward_expiration_duration && $this->carry_forward_expiration_unit;
   }
 
@@ -525,8 +532,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_AbsenceType[]
    */
-  public static function getEnabledAbsenceTypes()
-  {
+  public static function getEnabledAbsenceTypes() {
     $absenceTypes = [];
     $absenceType = new self();
     $absenceType->is_active = 1;
@@ -569,7 +575,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       return $absenceType;
     }
 
-    return null;
+    return NULL;
   }
 
   /**
@@ -589,7 +595,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       throw new InvalidAbsenceTypeException("This Absence Type does not allow Accruals Request");
     }
     if ($this->toilNeverExpires()) {
-      return null;
+      return NULL;
     }
 
     if ($this->accrual_expiration_unit == self::EXPIRATION_UNIT_DAYS) {
