@@ -82,6 +82,20 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     AbsenceTypeFabricator::fabricate(['add_public_holiday_to_entitlement' => true]);
   }
 
+  public function testTypeCanBeEnabledDirectly() {
+    $entity = AbsenceTypeFabricator::fabricate();
+    AbsenceType::create(['id' => $entity->id, 'is_active' => 1]);
+  }
+
+  /**
+   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
+   * @expectedExceptionMessage The title is not provided
+   */
+  public function testTypeTitleCannotBeAnEmptyStringOnUpdate() {
+    $entity = AbsenceTypeFabricator::fabricate();
+    AbsenceType::create(['id' => $entity->id, 'title' => '']);
+  }
+
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    * @expectedExceptionMessage There is already one Absence Type where public holidays should be added to it
