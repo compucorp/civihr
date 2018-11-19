@@ -164,9 +164,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    */
   private static function validateParams($params) {
-    $isEditing = !empty($params['id']);
-    $skipTitleValidation = $isEditing && !array_key_exists('title', $params);
-
     if(!empty($params['add_public_holiday_to_entitlement'])) {
       self::validateAddPublicHolidayToEntitlement($params);
     }
@@ -182,7 +179,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
           'Invalid Request Cancelation Option'
       );
     }
-    !$skipTitleValidation && self::validateAbsenceTypeTitle($params);
+    self::validateAbsenceTypeTitle($params);
     self::validateTOIL($params);
     self::validateCarryForward($params);
     self::validateCalculationUnit($params);
@@ -279,6 +276,14 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
    * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
    */
   private static function validateAbsenceTypeTitle($params) {
+    $isEditing = array_key_exists('id', $params);
+    $titleIsPassed = array_key_exists('title', $params);
+    $skipTitleValidation = $isEditing && !$titleIsPassed;
+
+    if ($skipTitleValidation) {
+      return;
+    }
+
     $title = trim(CRM_Utils_Array::value('title', $params));
 
     if (empty($title) && $title !== '0') {
