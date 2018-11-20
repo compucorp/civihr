@@ -98,6 +98,90 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
   }
 
   /**
+   * Migrates existing job role funder to option values
+   *
+   * @return bool
+   */
+  public function upgrade_1008() {
+    $result = civicrm_api3('HrJobRoles', 'get', [
+      'return' => ['funder'],
+    ]);
+    $jobRoles = $result['values'];
+    $funderIds = $this->getFunderIds($jobRoles);
+    $contactFunders = $this->createFunderOptionValues($funderIds);
+    $this->updateJobRoleFunder($jobRoles, $contactFunders);
+
+    return TRUE;
+  }
+
+  /**
+   * Swaps job role funder contact id with option values and updates record
+   *
+   * @param array $jobRoles
+   * @param array $contactFunders
+   */
+  private function updateJobRoleFunder($jobRoles, $contactFunders) {
+    foreach ($jobRoles as $jobRole) {
+      foreach ($contactFunders as $contactId => $optionValue) {
+        $jobRole['funder'] = str_replace(
+          '|' . $contactId . '|',
+          '|' . $optionValue['value'] . '|',
+          $jobRole['funder']
+        );
+      }
+
+      civicrm_api3('HrJobRoles', 'create', [
+        'id' => $jobRole['id'],
+        'funder' => $jobRole['funder']
+      ]);
+    }
+  }
+
+  /**
+   * Sets up option values for job role funders
+   * using hrjc_funder option group
+   *
+   * @param array $funderIds
+   *
+   * @return array
+   */
+  private function createFunderOptionValues($funderIds) {
+    $funderOptionValueIds = [];
+    $contactResult = civicrm_api3('Contact', 'get', [
+      'return' => ['sort_name', 'display_name'],
+      'id' => ['IN' => $funderIds],
+    ]);
+
+    $contacts = $contactResult['values'];
+    foreach ($contacts as $contact) {
+      $funderOptionValueIds[$contact['id']] = CRM_Core_BAO_OptionValue::ensureOptionValueExists([
+        'option_group_id' => 'hrjc_funder',
+        'name' => $contact['display_name'],
+        'label' => $contact['sort_name']
+      ]);
+    }
+
+    return $funderOptionValueIds;
+  }
+
+  /**
+   * Retrieves unique id of contacts used as funder
+   *
+   * @param array $jobRoles
+   *
+   * @return array
+   */
+  private function getFunderIds($jobRoles) {
+    $funderIds = [];
+    foreach ($jobRoles as $jobRole) {
+      $funders = array_values(array_filter(explode('|', $jobRole['funder'])));
+      $funderIds = array_merge($funderIds, $funders);
+    }
+
+    return array_unique($funderIds);
+  }
+
+  /**
    * Deletes cost centre option value with name "other"
    */
   private function deleteCostCentreOther() {
