@@ -119,7 +119,45 @@ function hrcore_civicrm_buildForm($formName, &$form) {
     new CRM_HRCore_Hook_BuildForm_ContactAdvancedSearch(),
     new CRM_HRCore_Hook_BuildForm_LocalisationPageFilter(),
     new CRM_HRCore_Hook_BuildForm_OptionEditPathFilter(),
-    new CRM_HRCore_Hook_BuildForm_ContactFormCustomGroupFilter()
+    new CRM_HRCore_Hook_BuildForm_ContactFormCustomGroupFilter(),
+    new CRM_HRCore_Hook_BuildForm_ContactImportFieldsFilter(),
+    new CRM_HRCore_Hook_BuildForm_CustomImportFieldsFilter(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($formName, $form);
+  }
+}
+
+/**
+ * Implements hook_civicrm_links().
+ *
+ * @param string $op
+ * @param string $objectName
+ * @param mixed $objectId
+ * @param array $links
+ * @param string $mask
+ * @param array $values
+ */
+function hrcore_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &$values) {
+  $listeners = [
+    new CRM_HRCore_Hook_Links_ContactCustomActions(),
+  ];
+
+  foreach ($listeners as $currentListener) {
+    $currentListener->handle($op, $objectName, $objectId, $links, $mask, $values);
+  }
+}
+
+/**
+ * Implements hook_civicrm_preProcess().
+ *
+ * @param string $formName
+ * @param CRM_Core_Form $form
+ */
+function hrcore_civicrm_preProcess($formName, &$form) {
+  $listeners = [
+    new CRM_HRCore_Hook_PreProcess_ContactForm()
   ];
 
   foreach ($listeners as $currentListener) {
@@ -361,6 +399,7 @@ function hrcore_civicrm_coreResourceList(&$items, $region) {
 function hrcore_civicrm_alterMenu(&$items) {
   $items['civicrm/api']['access_arguments'] = [['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
   $items['civicrm/styleguide']['access_arguments'] = [['access CiviCRM', 'access CiviCRM developer menu and tools'], "and"];
+  $items['civicrm/import/contact']['title'] = 'Import Staff';
 }
 
 /**

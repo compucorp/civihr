@@ -7,15 +7,15 @@
 }
 
 %ui-select-border {
-  border-width: 1px !important;
   border-style: solid !important;
+  border-width: 1px !important;
 }
 
 %ui-select-icon {
   font-family: 'FontAwesome';
+  -webkit-font-smoothing: antialiased;
   font-style: normal;
   text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
 }
 
 %ui-select-line-height {
@@ -38,9 +38,9 @@
   width: 100% !important;
 
   &:not(.open).form-control.select2-container-disabled {
-    color: $disabled-color !important;
-    border-color: $disabled-color !important;
     background: $input-bg-disabled !important;
+    border-color: $disabled-color !important;
+    color: $disabled-color !important;
 
     .select2-chosen {
       color: $disabled-color !important;
@@ -68,26 +68,7 @@
   }
 
   .select2-search-choice-close {
-    @extend %ui-select-no-background;
-    height: 15px;
-    left: unset !important;
     right: 45px !important;
-    width: 15px !important;
-
-    @at-root & {
-      background: none !important;
-      top: 2px !important;
-    }
-
-    &::before {
-      @extend %ui-select-icon;
-      @extend %ui-select-font-size;
-      content: '\f057';
-      line-height: inherit !important;
-      vertical-align: middle !important;
-      text-align: right;
-      display: block;
-    }
   }
 
   &.open {
@@ -111,8 +92,8 @@
       }
 
       > span:first-of-type {
-        max-width: calc(100% - 20px);
         display: block;
+        max-width: calc(100% - 20px);
         overflow: hidden;
         text-overflow: ellipsis;
       }
@@ -124,8 +105,8 @@
 
     .ui-select-search {
       @extend %ui-select-border;
-      padding: 0 5px !important;
       margin-top: 5px !important;
+      padding: 0 5px !important;
     }
 
     .select2-search-choice-close::before {
@@ -134,16 +115,11 @@
 
     .select2-arrow {
       @extend %ui-select-no-padding;
-    }
 
-    .select2-search::after {
-      @extend %ui-select-icon;
-      position: relative;
-      content: '\f002';
-      color: $gray !important;
-      right: 30px;
+      &::before {
+        right: 2px;
+      }
     }
-
   }
 
   &:not(.open) {
@@ -164,12 +140,6 @@
       width: 31px !important;
 
       &::before {
-        width: 100%;
-        display: block;
-        text-align: center;
-        line-height: 30px;
-        content: '\f0d7';
-
         @at-root .contact-lookup#{&} {
           content: '\f002' !important;
         }
@@ -207,12 +177,6 @@
     cursor: pointer !important;
     right: 0 !important;
     top: 0 !important;
-
-    &::before {
-      @extend %ui-select-icon;
-      color: $gray-dark;
-      content: '\f0d8';
-    }
   }
 
   .select2-chosen {
@@ -223,8 +187,8 @@
 
   .select2-drop-active {
     @extend %ui-select-opened-background;
-    border-top: 0 !important;
     border-style: solid;
+    border-top: 0 !important;
     border-width: 1px !important;
     opacity: 1 !important;
   }
@@ -252,8 +216,8 @@
   }
 
   .select2-result-label {
-    padding: 5px 10px !important;
     color: $gray-dark;
+    padding: 5px 10px !important;
   }
 
   .select2-highlighted {
@@ -266,12 +230,12 @@
 
     .ui-select-match-item {
       @extend %ui-select-border;
+      background: none;
+      border-radius: 0 !important;
       box-sizing: border-box !important;
       line-height: 17px !important;
       margin: 5px 5px 5px 0 !important;
       padding: 0 22px 0 5px !important;
-      border-radius: 0 !important;
-      background: none;
 
       .select2-search-choice-close {
         right: 5px !important;
@@ -284,28 +248,14 @@
     }
 
     .select2-choices {
+      background: none !important;
+      background-image: none !important;
+      border: 0;
       box-shadow: none !important;
+      margin-bottom: 0 !important;
       -moz-padding-start: 0 !important;
       -webkit-padding-start: 0 !important;
-      margin-bottom: 0 !important;
       width: 100% !important;
-      border: 0;
-      background-image: none !important;
-      background: none !important;
-
-      &::before {
-        @extend %ui-select-line-height;
-        @extend %ui-select-icon;
-        @extend %ui-select-no-background;
-        @extend %ui-select-font-size;
-        color: $gray-dark;
-        padding-left: 13px !important;
-        width: 26px !important;
-        height: 30px;
-        top: 0 !important;
-        pointer-events: none;
-        position: absolute;
-      }
     }
 
     &:not(.open) {
@@ -339,16 +289,16 @@
       }
 
       .select2-chosen {
-        min-height: 25px !important;
         border: 0 !important;
         line-height: 25px;
+        min-height: 25px !important;
       }
     }
 
     .select2-drop-active {
       @extend %ui-select-opened-background;
-      left: -1px;
       box-sizing: content-box !important;
+      left: -1px;
     }
   }
 }

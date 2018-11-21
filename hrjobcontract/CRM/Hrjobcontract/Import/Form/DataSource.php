@@ -65,21 +65,22 @@ class CRM_Hrjobcontract_Import_Form_DataSource extends CRM_Import_Form_DataSourc
       ts('Import Mode')
     );
 
-    $this->setDefaults(array(
+    $this->setDefaults([
       'importMode' =>
         CRM_Hrjobcontract_Import_Parser::IMPORT_CONTRACTS,
-    ));
+    ]);
 
-    $this->setDefaults(array(
+    $this->setDefaults([
       'onDuplicate' =>
         CRM_Import_Parser::DUPLICATE_SKIP,
-    ));
+    ]);
 
-    $this->setDefaults(array(
+    $this->setDefaults([
         'contactType' =>
           CRM_Import_Parser::CONTACT_INDIVIDUAL,
-      )
-    );
+    ]);
+
+    $this->setDefaults(['fieldSeparator' => ',']);
   }
 
   /**

@@ -32,11 +32,11 @@ class CRM_HRCore_Hook_BuildForm_ActivityFilterSelectFieldsModifier {
 
     return FALSE;
   }
-  
+
   /**
    * Overrides the include and exclude select activity Form fields on the
    * activities tab of the contact summary page to display only activities of
-   * type Email, Inbound Email, Reminder Sent, Print PDf Letter.
+   * type Email, Inbound Email, Reminder Sent, Print PDf Letter, Meeting.
    *
    * @param object $form
    */
@@ -67,6 +67,6 @@ class CRM_HRCore_Hook_BuildForm_ActivityFilterSelectFieldsModifier {
    * @return array
    */
   private function getAllowedActivityTypes() {
-    return ['Email',  'Inbound Email', 'Reminder Sent', 'Print PDF Letter'];
+    return ['Email', 'Inbound Email', 'Meeting', 'Print PDF Letter', 'Reminder Sent'];
   }
 }

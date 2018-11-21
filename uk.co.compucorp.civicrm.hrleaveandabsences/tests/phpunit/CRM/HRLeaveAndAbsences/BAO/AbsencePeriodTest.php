@@ -11,6 +11,12 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHoliday as PublicHolidayFabrica
  */
 class CRM_HRLeaveAndAbsences_BAO_AbsencePeriodTest extends BaseHeadlessTest {
 
+  public function setUp() {
+    // Delete default absence periods created during the extension installation
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
+  }
+
   /**
    * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsencePeriodException
    * @expectedExceptionMessage Both the start and end dates are required

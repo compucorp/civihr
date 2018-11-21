@@ -4,6 +4,7 @@ use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
@@ -35,6 +36,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     // as a way to allow the creation of leave request records related
     // to a non-existing leave period entitlement
     CRM_Core_DAO::executeQuery('SET foreign_key_checks = 0;');
+    // Delete default absence periods created during the extension installation
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
+
     $absenceTypeInDays = AbsenceTypeFabricator::fabricate();
     $absenceTypeInHours = AbsenceTypeFabricator::fabricate(['calculation_unit' => 2]);
     $this->dateAmountDeductionService = LeaveDateAmountDeductionFactory::createForAbsenceType($absenceTypeInDays->id);
