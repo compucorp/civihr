@@ -350,6 +350,23 @@ define([
     }
 
     /**
+     * Fetches managees for the current scenario and role.
+     *
+     * @return {Promise} resolved with {Array} of ContactInstance
+     */
+    function fetchManagees () {
+      var isSingleContactManagement = !!vm.selectedContactId;
+
+      if (isSingleContactManagement) {
+        return fetchManageesForSingleContactAdministration();
+      } else if (vm.isRole('admin')) {
+        return fetchManageesForAdmin();
+      } else {
+        return loggedInContact.leaveManagees();
+      }
+    }
+
+    /**
      * Fetches managees for admin role.
      * Basically fetches all contacts,
      * but if the admin is not their self-approver, excludes them from the list.
@@ -429,23 +446,6 @@ define([
      */
     function getLeaveType () {
       return vm.request ? vm.request.request_type : (vm.leaveType || null);
-    }
-
-    /**
-     * Returns a function that fetches managees for the current scenario and role.
-     *
-     * @return {Function}
-     */
-    function getManageesFetcher () {
-      var isSingleContactManagement = !!vm.selectedContactId;
-
-      if (isSingleContactManagement) {
-        return fetchManageesForSingleContactAdministration;
-      } else if (vm.isRole('admin')) {
-        return fetchManageesForAdmin;
-      } else {
-        return loggedInContact.leaveManagees;
-      }
     }
 
     /**
@@ -855,8 +855,6 @@ define([
      * @return {Promise}
      */
     function loadManagees () {
-      var fetchManagees = getManageesFetcher();
-
       return fetchManagees()
         .then(function (managedContacts) {
           vm.managedContacts = managedContacts;

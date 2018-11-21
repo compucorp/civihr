@@ -1425,6 +1425,7 @@
             beforeEach(function () {
               role = 'manager';
 
+              spyOn(ContactInstance, 'leaveManagees').and.callThrough();
               initTestController({ leaveRequest: leaveRequest });
             });
 
@@ -1438,6 +1439,10 @@
 
             it('sets the `canManage` public property to `true`', function () {
               expect(controller.canManage).toBe(true);
+            });
+
+            it('fetches contacts that have leave approver relationship to the manager', function () {
+              expect(ContactInstance.leaveManagees).toHaveBeenCalledWith();
             });
           });
 
