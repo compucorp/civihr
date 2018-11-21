@@ -19,7 +19,6 @@ define([
     $log.debug('Controller: JobRolesController');
 
     var formatDate = $filter('formatDate');
-    var fundersContacts = {};
     var getActiveValues = $filter('getActiveValues');
     var rolesType = ['funders', 'cost_centers'];
     var vm = this;
@@ -30,16 +29,15 @@ define([
     vm.pastJobRoles = [];
     vm.presentJobRoles = [];
     vm.collapsedRows = []; // Tracks collapsed / expanded rows
-    vm.contactList = []; // Contact List IDs array to use for the select lists
     vm.editData = {}; // Tracks edit data changes on the forms
     vm.viewTab = []; // Tracks clicked tabs per each row
     vm.CalendarShow = []; // As default hide the datepickers
     vm.contractsData = []; // Store the contractsData
-    vm.DepartmentsData = {}; // Store the department types
-    vm.LevelsData = {}; // Store the level types
-    vm.LocationsData = {}; // Store the location types
-    vm.RegionsData = {}; // Store the region types
-    vm.FundersData = {}; // Stores the list of funders
+    vm.departmentsData = {}; // Store the department types
+    vm.levelsData = {}; // Store the level types
+    vm.locationsData = {}; // Store the location types
+    vm.regionsData = {}; // Store the region types
+    vm.fundersData = {}; // Stores the list of funders
     // Define the add new role URL
     vm.addNewRoleUrl = settings.baseUrl + 'controllers/add-new-role.html';
     vm.jobRolePanelUrl = settings.baseUrl + 'controllers/job-role-panel.html';
@@ -80,6 +78,7 @@ define([
     vm.validateRole = validateRole;
     vm.validateTitle = validateTitle;
     vm.openOptionsEditor = openOptionsEditor;
+    vm.getOptionGroupTypeValues = getOptionGroupTypeValues;
 
     (function init () {
       subcribeToEvents();
@@ -436,11 +435,11 @@ define([
           vm.message = 'Cannot get option values!';
         } else {
           var optionsData = {
-            'hrjc_department': { storage: 'DepartmentsData', data: {} },
-            'hrjc_region': { storage: 'RegionsData', data: {} },
-            'hrjc_location': { storage: 'LocationsData', data: {} },
-            'hrjc_level_type': { storage: 'LevelsData', data: {} },
-            'hrjc_funder': { storage: 'FundersData', data: {} },
+            'hrjc_department': { storage: 'departmentsData', data: {} },
+            'hrjc_region': { storage: 'regionsData', data: {} },
+            'hrjc_location': { storage: 'locationsData', data: {} },
+            'hrjc_level_type': { storage: 'levelsData', data: {} },
+            'hrjc_funder': { storage: 'fundersData', data: {} },
             'cost_centres': { storage: 'CostCentreList', data: [] }
           };
 
@@ -800,9 +799,6 @@ define([
             }
           });
         })
-        .then(function () {
-          fundersContacts = vm.FundersData;
-        })
         .catch(function (errorMessage) {
           vm.error = errorMessage;
         });
@@ -879,10 +875,6 @@ define([
           newRole.newEndDate = convertDateToServerFormat(newRole.newEndDate);
         } else {
           delete newRole.newEndDate;
-        }
-
-        if (newRole.funders && newRole.funders.length) {
-          updateFundersContactsList(newRole.funders);
         }
 
         createJobRole(newRole).then(function () {
@@ -987,23 +979,6 @@ define([
     }
 
     /**
-     * Updates the internal list of funders contacts with the funders list
-     * of the given job role. If the job role has any funder which is not
-     * already stored in the list, the funder gets added
-     *
-     * @param  {Array} jobRoleFunders
-     */
-    function updateFundersContactsList (jobRoleFunders) {
-      jobRoleFunders.forEach(function (funder) {
-        var funderId = funder.funder_id;
-
-        if (!_.includes(Object.keys(fundersContacts), funderId)) {
-          fundersContacts[funderId] = vm.FundersData[funderId];
-        }
-      });
-    }
-
-    /**
      * Triggers the update of the contact header via the `hrui` extension
      * by emitting a DOM event with the roles data
      *
@@ -1044,10 +1019,10 @@ define([
     function updateRole (roleId, roleType) {
       var updatedRole;
       var optionsData = {
-        'location': {data: vm.LocationsData},
-        'level': {data: vm.LevelsData},
-        'department': {data: vm.DepartmentsData},
-        'region': {data: vm.RegionsData}
+        'location': {data: vm.locationsData},
+        'level': {data: vm.levelsData},
+        'department': {data: vm.departmentsData},
+        'region': {data: vm.regionsData}
       };
 
       $log.debug('Update Role');
@@ -1062,10 +1037,6 @@ define([
         optionsData[type].status = _.includes(_.keys(option.data), updatedRole[type]);
       });
       updatedRole = sanitizeUpdatedRole(updatedRole, optionsData);
-
-      if (updatedRole.funders && updatedRole.funders.length) {
-        updateFundersContactsList(updatedRole.funders);
-      }
 
       updateJobRole(roleId, updatedRole).then(function () {
         updateHeaderInfo(updatedRole);

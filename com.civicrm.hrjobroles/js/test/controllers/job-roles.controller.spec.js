@@ -73,28 +73,28 @@ define([
       });
 
       it('builds the "hrjc_level_type" collection containing the "value" property', function () {
-        expect(Object.keys(ctrl.LevelsData).length).toBe(1);
-        expect(ctrl.LevelsData[Object.keys(ctrl.LevelsData)[0]]['value']).toBe(expectedLevelValue);
+        expect(Object.keys(ctrl.levelsData).length).toBe(1);
+        expect(ctrl.levelsData[Object.keys(ctrl.levelsData)[0]]['value']).toBe(expectedLevelValue);
       });
 
       it('builds the "hrjc_department" collection containing the "value" property', function () {
-        expect(Object.keys(ctrl.DepartmentsData).length).toBe(1);
-        expect(ctrl.DepartmentsData[Object.keys(ctrl.DepartmentsData)[0]]['value']).toBe(expectedDepartmentValue);
+        expect(Object.keys(ctrl.departmentsData).length).toBe(1);
+        expect(ctrl.departmentsData[Object.keys(ctrl.departmentsData)[0]]['value']).toBe(expectedDepartmentValue);
       });
 
       it('builds the "hrjc_location" collection containing the "value" property', function () {
-        expect(Object.keys(ctrl.LocationsData).length).toBe(1);
-        expect(ctrl.LocationsData[Object.keys(ctrl.LocationsData)[0]]['value']).toBe(expectedLocationValue);
+        expect(Object.keys(ctrl.locationsData).length).toBe(1);
+        expect(ctrl.locationsData[Object.keys(ctrl.locationsData)[0]]['value']).toBe(expectedLocationValue);
       });
 
       it('builds the "hrjc_region" collection containing the "value" property', function () {
-        expect(Object.keys(ctrl.RegionsData).length).toBe(1);
-        expect(ctrl.RegionsData[Object.keys(ctrl.RegionsData)[0]]['value']).toBe(expectedRegionValue);
+        expect(Object.keys(ctrl.regionsData).length).toBe(1);
+        expect(ctrl.regionsData[Object.keys(ctrl.regionsData)[0]]['value']).toBe(expectedRegionValue);
       });
 
       it('builds the "hrjc_funder" collection containing the "value" property', function () {
-        expect(Object.keys(ctrl.FundersData).length).toBe(1);
-        expect(ctrl.FundersData[Object.keys(ctrl.FundersData)[0]]['value']).toBe(expectedFunderValue);
+        expect(Object.keys(ctrl.fundersData).length).toBe(1);
+        expect(ctrl.fundersData[Object.keys(ctrl.fundersData)[0]]['value']).toBe(expectedFunderValue);
       });
     });
 

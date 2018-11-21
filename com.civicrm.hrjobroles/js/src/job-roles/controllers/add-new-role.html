@@ -11,7 +11,7 @@
       </div>
     </header>
   </div>
-  <div class="panel panel-default panel-nested">
+  <span class="panel panel-default panel-nested">
     <uib-tabset class="job-role__tabs">
       <uib-tab heading="Basic Details">
         <form name="form" class="form-horizontal" role="form">
@@ -94,7 +94,7 @@
                         title="Choose a location"
                         name="newLocation">
                         <ui-select-match prevent-animations allow-clear placeholder="Select a location">{{$select.selected.value.title}}</ui-select-match>
-                        <ui-select-choices prevent-animations repeat="location.value.value as (key,location) in jobroles.LocationsData | filter: { value: { title: $select.search }}">
+                        <ui-select-choices prevent-animations repeat="location.value.value as (key,location) in jobroles.locationsData | filter: { value: { title: $select.search }}">
                           <div ng-bind-html="location.value.title | highlight: $select.search"></div>
                         </ui-select-choices>
                       </ui-select>
@@ -119,7 +119,7 @@
                         title="Choose a Region"
                         name="newRegion">
                         <ui-select-match prevent-animations allow-clear placeholder="Select a region">{{$select.selected.value.title}}</ui-select-match>
-                        <ui-select-choices prevent-animations repeat="region.value.value as (key,region) in jobroles.RegionsData | filter: { value: { title: $select.search }}">
+                        <ui-select-choices prevent-animations repeat="region.value.value as (key,region) in jobroles.regionsData | filter: { value: { title: $select.search }}">
                           <div ng-bind-html="region.value.title | highlight: $select.search"></div>
                         </ui-select-choices>
                       </ui-select>
@@ -143,7 +143,7 @@
                         theme="civihr-ui-select"
                         title="Choose a Department">
                         <ui-select-match prevent-animations allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
-                        <ui-select-choices prevent-animations repeat="department.value.value as (key,department) in jobroles.DepartmentsData | filter: { value: { title: $select.search }}">
+                        <ui-select-choices prevent-animations repeat="department.value.value as (key,department) in jobroles.departmentsData | filter: { value: { title: $select.search }}">
                           <div ng-bind-html="department.value.title | highlight: $select.search"></div>
                         </ui-select-choices>
                       </ui-select>
@@ -167,7 +167,7 @@
                         theme="civihr-ui-select"
                         title="Choose a Level">
                         <ui-select-match prevent-animations allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
-                        <ui-select-choices prevent-animations repeat="level.value.value as (key,level) in jobroles.LevelsData | filter: { value: { title: $select.search }}">
+                        <ui-select-choices prevent-animations repeat="level.value.value as (key,level) in jobroles.levelsData | filter: { value: { title: $select.search }}">
                           <div ng-bind-html="level.value.title | highlight: $select.search"></div>
                         </ui-select-choices>
                       </ui-select>
@@ -250,7 +250,9 @@
                         <ui-select-choices
                           prevent-animations
                           class="ui-select-choices"
-                          repeat="funder.value.value as (key,funder) in jobroles.FundersData | filter: { value: { title: $select.search }}">
+                          repeat="funder.value.value as (key,funder) in jobroles.fundersData | filter: { value: { title: $select.search }}"
+                          refresh="jobroles.getOptionGroupTypeValues('hrjc_funder')"
+                          refresh-delay="500">
                           <div ng-bind-html="funder.value.title | highlight: $select.search"></div>
                         </ui-select-choices>
                       </ui-select>

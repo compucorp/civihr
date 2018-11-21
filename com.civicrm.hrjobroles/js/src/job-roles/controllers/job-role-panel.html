@@ -155,7 +155,7 @@
                 </label>
                 <div class="col-sm-7">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
-                    {{jobroles.LocationsData[jobroles.editData[job_roles_data.id]['location']]['title'] || '-'}}
+                    {{jobroles.locationsData[jobroles.editData[job_roles_data.id]['location']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <div class="form-inline">
@@ -167,7 +167,7 @@
                           name="newLocation"
                           title="Choose a location">
                           <ui-select-match prevent-animations allow-clear placeholder="Select a location">{{$select.selected.value.title}}</ui-select-match>
-                          <ui-select-choices prevent-animations repeat="location.value.value as (key,location) in jobroles.LocationsData | filter: { value: { title: $select.search }}">
+                          <ui-select-choices prevent-animations repeat="location.value.value as (key,location) in jobroles.locationsData | filter: { value: { title: $select.search }}">
                             <div ng-bind-html="location.value.title | highlight: $select.search"></div>
                           </ui-select-choices>
                         </ui-select>
@@ -187,7 +187,7 @@
                 </label>
                 <div class="col-sm-7">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
-                    {{jobroles.RegionsData[jobroles.editData[job_roles_data.id]['region']]['title'] || '-'}}
+                    {{jobroles.regionsData[jobroles.editData[job_roles_data.id]['region']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <div class="form-inline">
@@ -199,7 +199,7 @@
                           name="newRegion"
                           title="Choose a Region">
                           <ui-select-match prevent-animations allow-clear placeholder="Select a Region">{{$select.selected.value.title}}</ui-select-match>
-                          <ui-select-choices prevent-animations repeat="region.value.value as (key,region) in jobroles.RegionsData | filter: { value: { title: $select.search }}">
+                          <ui-select-choices prevent-animations repeat="region.value.value as (key,region) in jobroles.regionsData | filter: { value: { title: $select.search }}">
                             <div ng-bind-html="region.value.title | highlight: $select.search"></div>
                           </ui-select-choices>
                         </ui-select>
@@ -219,7 +219,7 @@
                 </label>
                 <div class="col-sm-7">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
-                    {{jobroles.DepartmentsData[jobroles.editData[job_roles_data.id]['department']]['title'] || '-'}}
+                    {{jobroles.departmentsData[jobroles.editData[job_roles_data.id]['department']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <div class="form-inline">
@@ -231,7 +231,7 @@
                           name="newDepartment"
                           title="Choose a Department">
                           <ui-select-match prevent-animations allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
-                          <ui-select-choices prevent-animations repeat="department.value.value as (key,department) in jobroles.DepartmentsData | filter: { value: { title: $select.search }}">
+                          <ui-select-choices prevent-animations repeat="department.value.value as (key,department) in jobroles.departmentsData | filter: { value: { title: $select.search }}">
                             <div ng-bind-html="department.value.title | highlight: $select.search"></div>
                           </ui-select-choices>
                         </ui-select>
@@ -251,7 +251,7 @@
                 </label>
                 <div class="col-sm-7">
                   <p class="form-control-static" ng-show="!editableForm.$visible">
-                    {{jobroles.LevelsData[jobroles.editData[job_roles_data.id]['level']]['title'] || '-'}}
+                    {{jobroles.levelsData[jobroles.editData[job_roles_data.id]['level']]['title'] || '-'}}
                   </p>
                   <span ng-show="editableForm.$visible">
                     <div class="form-inline">
@@ -263,7 +263,7 @@
                         name="newLevel"
                         title="Choose a Level">
                           <ui-select-match prevent-animations allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
-                          <ui-select-choices prevent-animations repeat="level.value.value as (key,level) in jobroles.LevelsData | filter: { value: { title: $select.search }}">
+                          <ui-select-choices prevent-animations repeat="level.value.value as (key,level) in jobroles.levelsData | filter: { value: { title: $select.search }}">
                             <div ng-bind-html="level.value.title | highlight: $select.search"></div>
                           </ui-select-choices>
                         </ui-select>
@@ -348,7 +348,7 @@
                   <tr ng-repeat="(key, funder) in jobroles.editData[job_roles_data.id]['funders']">
                     <td>
                       <span ng-show="!tableform.$visible">
-                        {{jobroles.FundersData[funder.funder_id].title}}
+                        {{jobroles.fundersData[funder.funder_id].title}}
                       </span>
                       <span ng-show="tableform.$visible">
                         <ui-select
@@ -362,7 +362,9 @@
                           <ui-select-choices
                             prevent-animations
                             class="ui-select-choices"
-                            repeat="funder.value.value as (key,funder) in jobroles.FundersData | filter: { value: { title: $select.search }}">
+                            repeat="funder.value.value as (key,funder) in jobroles.fundersData | filter: { value: { title: $select.search }}"
+                            refresh="jobroles.getOptionGroupTypeValues('hrjc_funder')"
+                            refresh-delay="500">
                             <div ng-bind-html="funder.value.title | highlight: $select.search"></div>
                           </ui-select-choices>
                         </ui-select>
