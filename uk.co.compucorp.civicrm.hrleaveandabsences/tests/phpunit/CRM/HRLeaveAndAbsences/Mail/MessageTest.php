@@ -151,7 +151,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'date' => 'Test Date'
     ];
     $expectedUrl = ['leaveRequestLink' => CRM_Utils_System::url(
-      'my-leave#/my-leave/report?leave-request-id=' . $leaveRequestId, [], true)];
+      'my-leave#!/my-leave/report?leave-request-id=' . $leaveRequestId, [], true)];
     $expectedParameters = array_merge($templateParameters, $expectedUrl);
     $leaveTemplate = $this->createLeaveTemplateMock($templateParameters);
     $notificationTemplateFactory = $this->createRequestNotificationTemplateFactoryMock($leaveTemplate);
@@ -170,7 +170,7 @@ class CRM_HRLeaveAndAbsences_Mail_MessageTest extends BaseHeadlessTest {
       'date' => 'Test Date'
     ];
     $expectedUrl = ['leaveRequestLink' => CRM_Utils_System::url(
-      'manager-leave#/manager-leave/requests?leave-request-id=' . $leaveRequestId, [], true)];
+      'manager-leave#!/manager-leave/requests?leave-request-id=' . $leaveRequestId, [], true)];
     $expectedParameters = array_merge($templateParameters, $expectedUrl);
     $leaveTemplate = $this->createLeaveTemplateMock($templateParameters);
     $notificationTemplateFactory = $this->createRequestNotificationTemplateFactoryMock($leaveTemplate);
