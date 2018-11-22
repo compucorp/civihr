@@ -21,8 +21,9 @@ define([
 
   describe('leaveRequestActions', function () {
     var $componentController, $log, $provide, $q, $rootScope, controller, Contact,
-      ContactInstance, LeaveRequestInstance, dialog, sharedSettings, leaveRequest,
-      LeavePopup, LeaveRequestService, notification, pubSub;
+      ContactInstance, currentlyLoggedInContactId, LeaveRequestInstance, dialog,
+      sharedSettings, leaveRequest, LeavePopup, LeaveRequestService,
+      notification, pubSub, Session;
     var absenceTypes = _.keyBy(absenceTypeData.all().values, 'id');
     var leaveRequestStatuses = _.keyBy(optionGroupMock.getCollection('hrleaveandabsences_leave_request_status'), 'value');
 
@@ -51,7 +52,7 @@ define([
 
     beforeEach(inject(function (_$componentController_, _$log_, _$q_, _$rootScope_,
       _dialog_, _Contact_, _ContactInstance_, _LeaveRequestInstance_, _LeavePopup_,
-      _LeaveRequestService_, _notificationService_, _pubSub_) {
+      _LeaveRequestService_, _notificationService_, _pubSub_, _Session_) {
       $componentController = _$componentController_;
       $log = _$log_;
       $q = _$q_;
@@ -64,7 +65,17 @@ define([
       LeaveRequestService = _LeaveRequestService_;
       notification = _notificationService_;
       pubSub = _pubSub_;
+      Session = _Session_;
     }));
+
+    beforeEach(function (done) {
+      Session.get()
+        .then(function (session) {
+          currentlyLoggedInContactId = session.contactId;
+        })
+        .finally(done);
+      $rootScope.$digest();
+    });
 
     beforeEach(function () {
       window.alert = function () {}; // prevent alert from being logged in console
@@ -670,26 +681,40 @@ define([
 
     describe('self approving', function () {
       beforeEach(function () {
-        leaveRequest = getRequest('leave', 'awaitingApproval');
+        leaveRequest = getRequest('leave', 'awaitingApproval', true);
 
         makeRequestExpired(leaveRequest, false);
       });
 
       describe('when own leave request', function () {
-        beforeEach(function () {
-          spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.returnValue(true);
-          compileComponentAndDigest();
+        describe('when user is a self-approver', function () {
+          beforeEach(function () {
+            spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.returnValue(true);
+            compileComponentAndDigest();
+          });
+
+          it('shows same actions as "admin" role will see', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(
+              ['respond', 'approve', 'reject', 'cancel', 'delete']);
+          });
         });
 
-        it('shows same actions as "admin" role will see', function () {
-          expect(flattenActions(controller.allowedActions)).toEqual(
-            ['respond', 'approve', 'reject', 'cancel', 'delete']);
+        describe('when user is not a self-approver', function () {
+          beforeEach(function () {
+            spyOn(ContactInstance, 'checkIfSelfLeaveApprover').and.returnValue(false);
+            compileComponentAndDigest();
+          });
+
+          it('shows same actions as "staff" role will see', function () {
+            expect(flattenActions(controller.allowedActions)).toEqual(
+              ['edit', 'cancel']);
+          });
         });
       });
 
       describe('when other contact\'s leave request', function () {
         beforeEach(function () {
-          leaveRequest.contact_id = '112358';
+          leaveRequest = getRequest('leave', 'awaitingApproval');
 
           spyOn(Contact, 'find');
           spyOn(ContactInstance, 'checkIfSelfLeaveApprover');
@@ -704,19 +729,6 @@ define([
         it('does not amend the actions', function () {
           expect(flattenActions(controller.allowedActions)).toEqual(
             ['edit', 'cancel']);
-        });
-      });
-
-      describe('when the role is set as "admin"', function () {
-        beforeEach(function () {
-          spyOn(Contact, 'find');
-          spyOn(ContactInstance, 'checkIfSelfLeaveApprover');
-          compileComponentAndDigest('admin');
-        });
-
-        it('does not check if the contact can approve their own requests', function () {
-          expect(Contact.find).not.toHaveBeenCalled();
-          expect(ContactInstance.checkIfSelfLeaveApprover).not.toHaveBeenCalled();
         });
       });
     });
@@ -736,11 +748,12 @@ define([
     /**
      * Returns a mocked request by a given absence type
      *
-     * @param  {string} type - leave|toil|sick, optional
-     * @param  {string} status - according to sharedSettings.statusNames, optional
+     * @param  {String} [type] leave|toil|sick
+     * @param  {String} [status] according to sharedSettings.statusNames
+     * @param  {Boolean} [isOwn]
      * @return {LeaveRequestInstance}
      */
-    function getRequest (type, status) {
+    function getRequest (type, status, isOwn) {
       type = type || 'leave';
 
       var map = { leave: '1', toil: '2', sick: '3' };
@@ -751,6 +764,10 @@ define([
       if (status) {
         leaveRequest.status_id = statuses[sharedSettings.statusNames[status]].value;
       }
+
+      leaveRequest.contact_id = isOwn
+        ? currentlyLoggedInContactId
+        : (parseInt(currentlyLoggedInContactId) + 1).toString();
 
       return leaveRequest;
     }
