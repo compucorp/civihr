@@ -275,7 +275,7 @@ class CRM_HRCore_Helper_ContactActionsMenu_WorkflowActionGroup {
     $queryParameters = array_merge($defaultParameters, $queryParameters);
 
     $url = CRM_Utils_System::url(
-      "civicrm/tasksassignments/dashboard#/{$defaultTab}",
+      "civicrm/tasksassignments/dashboard#!/{$defaultTab}",
       http_build_query($queryParameters)
     );
 

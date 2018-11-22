@@ -1,7 +1,7 @@
 <?php
 
 return [
-  'Home' => 'civicrm/tasksassignments/dashboard#/tasks',
+  'Home' => 'civicrm/tasksassignments/dashboard#!/tasks',
 
   'Staff' => [
     'icon' => 'crm-i fa-users',
@@ -24,10 +24,10 @@ return [
     'icon' => 'crm-i fa-list-ul',
     'permission' => 'access Tasks and Assignments',
     'children' => [
-      'Tasks' => 'civicrm/tasksassignments/dashboard#/tasks',
-      'Documents' => 'civicrm/tasksassignments/dashboard#/documents',
-      'Calendar' => 'civicrm/tasksassignments/dashboard#/calendar',
-      'Key Dates' => 'civicrm/tasksassignments/dashboard#/key-dates',
+      'Tasks' => 'civicrm/tasksassignments/dashboard#!/tasks',
+      'Documents' => 'civicrm/tasksassignments/dashboard#!/documents',
+      'Calendar' => 'civicrm/tasksassignments/dashboard#!/calendar',
+      'Key Dates' => 'civicrm/tasksassignments/dashboard#!/key-dates',
     ],
   ],
 
@@ -35,9 +35,9 @@ return [
     'icon' => 'crm-i fa-briefcase',
     'permission' => 'access leave and absences',
     'children' => [
-      'Leave Requests' => 'civicrm/leaveandabsences/dashboard#/requests',
-      'Leave Calendar' => 'civicrm/leaveandabsences/dashboard#/calendar',
-      'Leave Balances' => 'civicrm/leaveandabsences/dashboard#/leave-balances',
+      'Leave Requests' => 'civicrm/leaveandabsences/dashboard#!/requests',
+      'Leave Calendar' => 'civicrm/leaveandabsences/dashboard#!/calendar',
+      'Leave Balances' => 'civicrm/leaveandabsences/dashboard#!/leave-balances',
     ],
   ],
 
