@@ -46,7 +46,10 @@ define([
       describe('when there are no job contracts and job roles', function () {
         beforeEach(function () {
           spyOn(contractServiceMock, 'get').and.callThrough();
+
           controller = ctrlConstructor('KeyDatesController');
+
+          controller.$onInit();
         });
 
         it('Should subscribe for contract changes', function () {
@@ -87,15 +90,19 @@ define([
           beforeEach(function () {
             jobRoleServiceMock.jobRoles[0]['end_date'] = moment().add(2, 'days').format('YYYY-MM-DD');
 
-            spyOn(contractServiceMock, 'get').and.returnValue($q.resolve(jobRoleServiceMock.jobRoles));
+            spyOn(contractServiceMock, 'get').and.returnValue($q.resolve([{ is_current: '1' }]));
 
             controller = ctrlConstructor('KeyDatesController');
 
-            $rootScope.$apply();
+            initControllerAndDigest();
           });
 
           it('sets the active jobroles counter to one (1)', function () {
             expect(controller.activeRoles).toBe(1);
+          });
+
+          it('sets the active contracts counter to one (1)', function () {
+            expect(controller.activeContracts).toBe(1);
           });
         });
 
@@ -107,7 +114,7 @@ define([
 
             controller = ctrlConstructor('KeyDatesController');
 
-            $rootScope.$apply();
+            initControllerAndDigest();
           });
 
           it('sets the active jobroles counter to zero (0)', function () {
@@ -123,7 +130,7 @@ define([
 
             controller = ctrlConstructor('KeyDatesController');
 
-            $rootScope.$apply();
+            initControllerAndDigest();
           });
 
           it('sets the active jobroles counter to one (1)', function () {
@@ -137,7 +144,7 @@ define([
 
             controller = ctrlConstructor('KeyDatesController');
 
-            $rootScope.$apply();
+            initControllerAndDigest();
           });
 
           it('sets the active jobroles counter to one (1)', function () {
@@ -149,14 +156,16 @@ define([
 
     describe('When contract or job role creating/deleting/updating events are published', function () {
       beforeEach(function () {
-        spyOn(contractServiceMock, 'get').and.callThrough();
+        spyOn(contractServiceMock, 'get').and.returnValue($q.resolve([]));
         controller = ctrlConstructor('KeyDatesController');
+
+        initControllerAndDigest();
       });
 
       describe('when contract is deleted', function () {
         beforeEach(function () {
           pubSub.publish('Contract::deleted', '1');
-          $rootScope.$apply();
+          $rootScope.$digest();
         });
 
         it('calls contract service to remove contract from the list', function () {
@@ -194,5 +203,13 @@ define([
         });
       });
     });
+
+    /**
+     * Initialises the controller and digests the root scope
+     */
+    function initControllerAndDigest () {
+      controller.$onInit();
+      $rootScope.$digest();
+    }
   });
 });

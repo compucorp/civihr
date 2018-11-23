@@ -7,9 +7,9 @@ define([
 ], function (angular, _, moment) {
   'use strict';
 
-  KeyDatesController.$inject = ['$log', 'contractService', 'jobRoleService', 'pubSub'];
+  KeyDatesController.$inject = ['$log', '$q', 'contractService', 'jobRoleService', 'pubSub'];
 
-  function KeyDatesController ($log, Contract, JobRole, pubSub) {
+  function KeyDatesController ($log, $q, Contract, JobRole, pubSub) {
     $log.debug('Controller: KeyDatesController');
 
     var vm = this;
@@ -19,10 +19,12 @@ define([
     vm.activeRoles = 0;
     vm.ready = false;
 
-    (function init () {
-      getContacts();
+    vm.$onInit = $onInit;
+
+    function $onInit () {
+      loadData();
       initSubscribers();
-    }());
+    }
 
     /**
      * Add the contract dates to the timeline
@@ -46,60 +48,8 @@ define([
     }
 
     /**
-     * Fetch Contacts and Job Roles from Server
+     * Initialises subscribers
      */
-    function getContacts () {
-      resetKeyDates();
-
-      Contract.get()
-        .then(function (response) {
-          if (!_.isEmpty(response)) {
-            angular.forEach(response, function (contract) {
-              addContractDates(contract);
-
-              if (contract.is_current === '1') {
-                vm.activeContracts++;
-              }
-            });
-          }
-
-          return JobRole.get();
-        })
-        .then(function (response) {
-          angular.forEach(response, function (role) {
-            var endDate = moment(role.end_date);
-
-            if (role.end_date === undefined || (endDate.isValid() && isDateNotInPast(endDate))) {
-              vm.activeRoles++;
-            }
-          });
-        })
-        .finally(function () {
-          vm.ready = true;
-        });
-    }
-
-    /**
-     * Checks if a date is in the future
-     *
-     * @param {string} date
-     * @return {boolean}
-     */
-    function isDateNotInPast (date) {
-      return moment().diff(date, 'days') <= 0;
-    }
-
-    /**
-     * Resets activeRoles and activeContracts counter and
-     * resets the list of key dates to empty
-     */
-    function resetKeyDates () {
-      vm.activeContracts = 0;
-      vm.activeRoles = 0;
-      vm.dates = [];
-    }
-
-    // Init subscribers
     function initSubscribers () {
       $log.debug('Subcsribers initialiazed!');
 
@@ -112,13 +62,88 @@ define([
       ];
 
       events.forEach(function (event) {
-        pubSub.subscribe(event, getContacts);
+        pubSub.subscribe(event, loadData);
       });
 
       pubSub.subscribe('Contract::deleted', function (contract) {
         Contract.removeContract(contract);
-        getContacts();
+        loadData();
       });
+    }
+
+    /**
+     * Checks if a date is in the future
+     *
+     * @param  {String} date
+     * @return {Boolean}
+     */
+    function isDateNotInPast (date) {
+      return moment().diff(date, 'days') <= 0;
+    }
+
+    /**
+     * Loads contracts from the backend and sets their amount to the controller
+     *
+     * @return {Promise}
+     */
+    function loadContactsAmount () {
+      return Contract.get()
+        .then(function (response) {
+          vm.activeContracts = _.values(response).filter(function (contract) {
+            addContractDates(contract);
+
+            return contract.is_current;
+          }).length;
+        });
+    }
+
+    /**
+     * Fetches contacts and job roles from the backend
+     *
+     * @return {Promise}
+     */
+    function loadData () {
+      vm.ready = false;
+
+      resetKeyDates();
+
+      return $q
+        .all([
+          loadContactsAmount(),
+          loadJobRolesAmount()
+        ])
+        .finally(function () {
+          vm.ready = true;
+        });
+    }
+
+    /**
+     * Loads job roles from the backend and sets their amount to the controller
+     *
+     * @return {Promise}
+     */
+    function loadJobRolesAmount () {
+      return JobRole.get()
+        .then(function (response) {
+          vm.activeRoles = response.filter(function (role) {
+            var endDate = moment(role.end_date);
+            var hasEndDateAndIsActive = endDate.isValid() && isDateNotInPast(endDate);
+            var doesNotHaveEndDate = endDate === undefined;
+
+            return doesNotHaveEndDate || hasEndDateAndIsActive;
+          }).length;
+        })
+        .catch(_.noop);
+    }
+
+    /**
+     * Resets activeRoles and activeContracts counter and
+     * resets the list of key dates to empty
+     */
+    function resetKeyDates () {
+      vm.activeContracts = 0;
+      vm.activeRoles = 0;
+      vm.dates = [];
     }
   }
 
