@@ -108,6 +108,11 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     ]);
     $jobRoles = $result['values'];
     $funderIds = $this->getFunderIds($jobRoles);
+
+    if (count($funderIds) === 0) {
+      return TRUE;
+    }
+
     $contactFunders = $this->createFunderOptionValues($funderIds);
     $this->updateJobRoleFunder($jobRoles, $contactFunders);
 
