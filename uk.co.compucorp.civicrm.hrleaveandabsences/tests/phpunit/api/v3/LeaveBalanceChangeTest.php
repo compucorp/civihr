@@ -2,6 +2,7 @@
 
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_LeavePeriodEntitlement as LeavePeriodEntitlementFabricator;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 
 /**
  * Class api_v3_LeaveBalanceChangeTest
@@ -17,6 +18,9 @@ class api_v3_LeaveBalanceChangeTest extends BaseHeadlessTest {
     // as a way to allow the creation of brought forward records related
     // to a non-existing entitlement
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    // Delete default absence periods created during the extension installation
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
   }
 
   public function tearDown() {

@@ -18,6 +18,7 @@ use CRM_HRCore_Test_Fabricator_OptionValue as OptionValueFabricator;
 use CRM_HRCore_Service_Stats_StatsGatherer as StatsGatherer;
 use CRM_HRCore_Test_Helpers_SessionHelper as SessionHelper;
 use CRM_Hrjobroles_Test_Fabricator_HrJobRoles as HrJobRolesFabricator;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 
 /**
  * @group headless
@@ -26,6 +27,12 @@ class CRM_HRCore_Service_Stats_StatsGathererTest extends CRM_HRCore_Test_BaseHea
 
   use CRM_HRCore_Test_Helpers_TableCleanupTrait;
   use CRM_HRCore_Test_Helpers_DomainConfigurationTrait;
+
+  public function setUp() {
+    // Delete default absence periods created during the extension installation
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
+  }
 
   /**
    * Used in setup method for leave request fabrication
@@ -257,8 +264,9 @@ class CRM_HRCore_Service_Stats_StatsGathererTest extends CRM_HRCore_Test_BaseHea
   public function testDeletedEntitiesWillNotBeIncluded() {
     $this->truncateTables(['civicrm_contact']);
     $contactID = ContactFabricator::fabricate()['id'];
+    $adminID = ContactFabricator::fabricate()['id'];
+    SessionHelper::registerCurrentLoggedInContactInSession($adminID);
     $this->setUpLeaveRequest($contactID);
-    SessionHelper::registerCurrentLoggedInContactInSession($contactID);
 
     $ufMatch = UFMatchFabricator::fabricate();
     civicrm_api3('UFMatch', 'delete', ['id' => $ufMatch['id']]);
@@ -289,7 +297,7 @@ class CRM_HRCore_Service_Stats_StatsGathererTest extends CRM_HRCore_Test_BaseHea
 
     $stats = $this->getGatherer()->gather();
 
-    $this->assertEquals(1, $stats->getEntityCount('contact'));
+    $this->assertEquals(2, $stats->getEntityCount('contact'));
     $this->assertEquals(0, $stats->getEntityCount('task'));
     $this->assertEquals(0, $stats->getEntityCount('assignment'));
     $this->assertEquals(0, $stats->getEntityCount('document'));

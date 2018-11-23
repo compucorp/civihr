@@ -170,6 +170,40 @@ class CRM_HRCase_Upgrader extends CRM_HRCase_Upgrader_Base {
   }
 
   /**
+   * CiviCRM has the Open Case activity type hardcoded in some places of the
+   * code dealing with creating new Case Types, meaning that it must always be
+   * present.
+   *
+   * During the CiviHR 1.7.11 release, we uninstalled the hrrecruitment extension
+   * and together with that the Application case type. This triggered the deletion
+   * of the "Open Case" activity type (which was used by Application) making it
+   * impossible to create new Case Types on the sites where this happened.
+   *
+   * We still don't know exactly why this deletion happened, but this upgrader
+   * makes sure the missing activity type will exist.
+   *
+   * @return bool
+   * @throws \CiviCRM_API3_Exception
+   */
+  public function upgrade_1433() {
+    $optionValue = [
+      'option_group_id' => 'activity_type',
+      'name' => 'Open Case',
+      'label' => 'Created New Assignment',
+      'component_id' => 'CiviTask',
+    ];
+    $result = civicrm_api3('OptionValue', 'get', $optionValue);
+
+    if (!$result['count']) {
+      $optionValue['is_reserved'] = 1;
+      $optionValue['icon'] = 'fa-folder-open-o';
+      civicrm_api3('OptionValue', 'create', $optionValue);
+    }
+
+    return TRUE;
+  }
+
+  /**
    * Replaces (Case) keyword and (Open Case) keyword with (Assignment) keyword
    * and (Created New Assignment) keyword respectively and vise versa for
    * civicrm default activity types labels when installing/uninstalling the extension.

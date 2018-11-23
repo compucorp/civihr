@@ -218,6 +218,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testDeleteSoftDeletesTheLeaveRequest() {
     $leaveRequestDateTypes = array_flip(LeaveRequest::buildOptions('from_date_type', 'validate'));
+    $adminID = 4;
+    $this->registerCurrentLoggedInContactInSession($adminID);
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
       'type_id' => 1,
@@ -238,6 +240,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testDeleteSoftDeletesAPublicHolidayLeaveRequest() {
+    $adminID = 3;
+    $this->registerCurrentLoggedInContactInSession($adminID);
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2017-12-31')
@@ -254,6 +258,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testPublicHolidayLeaveRequestIsDeletedAndBalanceRecalculatedForOverlappingLeaveRequestDate() {
+    $adminID = 4;
+    $this->registerCurrentLoggedInContactInSession($adminID);
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2016-12-31')
@@ -346,6 +352,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testCreateDoesNotThrowAnExceptionWhenAdminUpdatesDatesForLeaveRequest() {
+    $adminID = 6;
+    $this->registerCurrentLoggedInContactInSession($adminID);
     $params = $this->getDefaultParams(['status_id' => 2]);
 
     $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation($params);
@@ -684,6 +692,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testBalanceChangeIsUpdatedForAnExistingLeaveRequestWhenChangeBalanceParameterIsTrueAndDatesChanged() {
+    $adminID = 5;
+    $this->registerCurrentLoggedInContactInSession($adminID);
     HRJobContractFabricator::fabricate(
       ['contact_id' => $this->leaveContact],
       ['period_start_date' => '2016-01-01']
@@ -758,6 +768,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testBalanceChangeIsUpdatedForAnExistingLeaveRequestWhenChangeBalanceParameterIsFalseAndDatesChanged() {
+    $adminID = 5;
+    $this->registerCurrentLoggedInContactInSession($adminID);
     HRJobContractFabricator::fabricate(
       ['contact_id' => $this->leaveContact],
       ['period_start_date' => '2016-01-01']
@@ -917,6 +929,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testBalanceRemainsSameButDatesAreUpdatedForToilWhenChangeBalanceIsTrueAndToilToAccrueNotChangedAndDatesChanged() {
+    $adminID = 5;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+
     HRJobContractFabricator::fabricate(
       ['contact_id' => $this->leaveContact],
       ['period_start_date' => '2016-01-01']
@@ -968,6 +983,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testBalanceRemainsSameButDatesAreUpdatedForToilWhenChangeBalanceIsFalseAndToilToAccrueNotChangedAndDatesChanged() {
+    $adminID = 2;
+    $this->registerCurrentLoggedInContactInSession($adminID);
     HRJobContractFabricator::fabricate(
       ['contact_id' => $this->leaveContact],
       ['period_start_date' => '2016-01-01']
@@ -1162,6 +1179,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
   }
 
   public function testToilRequestWithPastDatesCanBeCancelledWhenUserIsAdminAndAbsenceTypeDoesNotAllowPastAccrual() {
+    $adminID = 3;
+    $this->registerCurrentLoggedInContactInSession($adminID);
     $absenceType = AbsenceTypeFabricator::fabricate([
       'allow_accruals_request' => TRUE,
       'allow_accrue_in_the_past' => FALSE

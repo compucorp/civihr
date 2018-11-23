@@ -36,6 +36,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
     // as a way to allow the creation of leave request records related
     // to a non-existing leave period entitlement
     CRM_Core_DAO::executeQuery("SET foreign_key_checks = 0;");
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    // Delete default absence periods created during the extension installation
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
 
     $this->createContract();
   }
