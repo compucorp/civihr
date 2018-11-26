@@ -337,6 +337,7 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1042();
     $this->upgrade_1043();
     $this->upgrade_1044();
+    $this->upgrade_1045();
   }
 
   function upgrade_1001() {
@@ -1115,13 +1116,26 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    */
   private function updateJobContractSchema() {
     $healthTableName = CRM_Hrjobcontract_BAO_HRJobHealth::getTableName();
-    CRM_Core_DAO::executeQuery("
-      ALTER TABLE $healthTableName
-      MODIFY provider VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_health_insurance_provider option group',
-      MODIFY provider_life_insurance VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_life_insurance_provider option group',
-      DROP FOREIGN KEY FK_civicrm_hrjobcontract_health_provider,
-      DROP FOREIGN KEY FK_civicrm_hrjobcontract_health_provider_life_insurance
-    ");
+    try {
+      CRM_Core_DAO::executeQuery("
+        ALTER TABLE $healthTableName
+        MODIFY provider VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_health_insurance_provider option group',
+        MODIFY provider_life_insurance VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_life_insurance_provider option group',
+        DROP FOREIGN KEY FK_civicrm_hrjobcontract_health_provider,
+        DROP FOREIGN KEY FK_civicrm_hrjobcontract_health_provider_life_insurance
+      ");
+    } catch (Exception $e) {
+      $healthTableColumnCheck = CRM_Core_DAO::executeQuery("DESC $healthTableName");
+
+      while ($healthTableColumnCheck->fetch()) {
+        if ($healthTableColumnCheck->Field === 'provider' && $healthTableColumnCheck->Type != 'varchar(512)') {
+          throw new Exception("Error updating $healthTableName table: " . $e->getMessage());
+        }
+        elseif ($healthTableColumnCheck->Field === 'provider_life_insurance' && $healthTableColumnCheck->Type != 'varchar(512)') {
+          throw new Exception("Error updating $healthTableName table: " . $e->getMessage());
+        }
+      }
+    }
 
     $pensionTableName = CRM_Hrjobcontract_BAO_HRJobPension::getTableName();
     CRM_Core_DAO::executeQuery("

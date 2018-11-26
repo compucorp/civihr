@@ -229,9 +229,9 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
                   'where' => 'civicrm_hrjobcontract_pension.pension_type',
                   'headerPattern' => '/^pension\s?provider/i',
                   'dataPattern' => '',
-                  'pseudoconstant' => array(
+                  'pseudoconstant' => [
                     'optionGroupName' => 'hrjc_pension_provider'
-                  ),
+                  ],
                   'entity' => 'HRJobPension',
                   'bao' => 'CRM_Hrjobcontract_DAO_HRJobPension',
                   'localizable' => 0,
