@@ -1104,26 +1104,48 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
       }
     }
 
-    $this->updateJobContractSchema();
+    $this->updateJobContractHealthSchema();
+    $this->updateJobContractPensionSchema();
 
     return TRUE;
   }
 
   /**
-   * Updates schema for the following Hrjobcontract tables
-   * 1. civicrm_hrjobcontract_pension
-   * 2. civicrm_hrjobcontract_health
+   * Updates job contract health schema
    */
-  private function updateJobContractSchema() {
+  private function updateJobContractHealthSchema() {
     $healthTableName = CRM_Hrjobcontract_BAO_HRJobHealth::getTableName();
     CRM_Core_DAO::executeQuery("
       ALTER TABLE $healthTableName
       MODIFY provider VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_health_insurance_provider option group',
-      MODIFY provider_life_insurance VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_life_insurance_provider option group',
-      DROP FOREIGN KEY FK_civicrm_hrjobcontract_health_provider,
-      DROP FOREIGN KEY FK_civicrm_hrjobcontract_health_provider_life_insurance
+      MODIFY provider_life_insurance VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_life_insurance_provider option group'
     ");
 
+    $healthConstraintExist = CRM_Core_DAO::checkConstraintExists(
+      $healthTableName,
+      'FK_civicrm_hrjobcontract_health_provider'
+    );
+    if ($healthConstraintExist) {
+      CRM_Core_DAO::executeQuery("
+        ALTER TABLE $healthTableName DROP FOREIGN KEY FK_civicrm_hrjobcontract_health_provider
+      ");
+    }
+
+    $lifeInsuranceConstraintExist = CRM_Core_DAO::checkConstraintExists(
+      $healthTableName,
+      'FK_civicrm_hrjobcontract_health_provider'
+    );
+    if ($lifeInsuranceConstraintExist) {
+      CRM_Core_DAO::executeQuery("
+        ALTER TABLE $healthTableName DROP FOREIGN KEY FK_civicrm_hrjobcontract_health_provider_life_insurance
+      ");
+    }
+  }
+
+  /**
+   * Updates job contract pension schema
+   */
+  private function updateJobContractPensionSchema() {
     $pensionTableName = CRM_Hrjobcontract_BAO_HRJobPension::getTableName();
     CRM_Core_DAO::executeQuery("
       ALTER TABLE $pensionTableName
