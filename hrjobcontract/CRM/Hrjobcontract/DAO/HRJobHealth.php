@@ -198,9 +198,9 @@ class CRM_Hrjobcontract_DAO_HRJobHealth extends CRM_Hrjobcontract_DAO_Base
                 'where' => 'civicrm_hrjobcontract_health.provider',
                 'headerPattern' => '',
                 'dataPattern' => '',
-                'pseudoconstant' => array(
+                'pseudoconstant' => [
                   'optionGroupName' => 'hrjc_health_insurance_provider'
-                ),
+                ],
                 'headerPattern' => '/^health\s?insurance\s?provider/i',
                 'entity' => 'HRJobHealth',
                 'bao' => 'CRM_Hrjobcontract_DAO_HRJobHealth',
