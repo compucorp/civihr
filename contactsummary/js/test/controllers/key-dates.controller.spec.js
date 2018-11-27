@@ -5,14 +5,15 @@ define([
   'common/angularMocks',
   'mocks/constants.mock',
   'mocks/services.mock',
+  'common/models/job-role',
   'common/services/pub-sub',
   'contact-summary/contact-summary.module'
 ], function (moment) {
   'use strict';
 
   describe('KeyDatesController', function () {
-    var $httpBackend, $rootScope, $q, contractServiceMock, controller, ctrlConstructor,
-      jobRoleServiceMock, pubSub;
+    var $httpBackend, $rootScope, $q, contractServiceMock, controller,
+      ctrlConstructor, JobRole, jobRoleActiveForContactSpy, pubSub;
 
     beforeEach(module('contactsummary', 'contactsummary.mocks', 'contactsummary.templates'));
 
@@ -20,32 +21,31 @@ define([
       $provide.factory('contractService', function () {
         return contractServiceMock;
       });
-
-      $provide.factory('jobRoleService', function () {
-        return contractServiceMock;
-      });
     }));
 
     beforeEach(inject(function (_$controller_, $injector, _$httpBackend_, _$q_,
-      _pubSub_, _$rootScope_) {
+      _JobRole_, _pubSub_, _$rootScope_) {
       $httpBackend = _$httpBackend_;
       $rootScope = _$rootScope_;
       $q = _$q_;
       ctrlConstructor = _$controller_;
       contractServiceMock = $injector.get('contractServiceMock');
-      jobRoleServiceMock = $injector.get('jobRoleServiceMock');
+      JobRole = _JobRole_;
       pubSub = _pubSub_;
     }));
 
     beforeEach(function () {
       spyOn(pubSub, 'publish').and.callThrough();
       spyOn(pubSub, 'subscribe').and.callThrough();
+
+      jobRoleActiveForContactSpy = spyOn(JobRole, 'activeForContact');
     });
 
     describe('when controller is initialized', function () {
       describe('when there are no job contracts and job roles', function () {
         beforeEach(function () {
           spyOn(contractServiceMock, 'get').and.callThrough();
+          jobRoleActiveForContactSpy.and.returnValue($q.resolve([{}]));
 
           controller = ctrlConstructor('KeyDatesController');
 
@@ -82,65 +82,11 @@ define([
       describe('when there are job contracts and job roles', function () {
         beforeEach(function () {
           $httpBackend.whenPOST(/civicrm/).respond({});
-
-          delete jobRoleServiceMock.jobRoles[0]['end_date'];
         });
 
         describe('when end date of a job roles is greater than today', function () {
           beforeEach(function () {
-            jobRoleServiceMock.jobRoles[0]['end_date'] = moment().add(2, 'days').format('YYYY-MM-DD');
-
-            spyOn(contractServiceMock, 'get').and.returnValue($q.resolve([{ is_current: '1' }]));
-
-            controller = ctrlConstructor('KeyDatesController');
-
-            initControllerAndDigest();
-          });
-
-          it('sets the active jobroles counter to one (1)', function () {
-            expect(controller.activeRoles).toBe(1);
-          });
-
-          it('sets the active contracts counter to one (1)', function () {
-            expect(controller.activeContracts).toBe(1);
-          });
-        });
-
-        describe('when end date of a job roles is less than today', function () {
-          beforeEach(function () {
-            jobRoleServiceMock.jobRoles[0]['end_date'] = moment().subtract(3, 'days').format('YYYY-MM-DD');
-
-            spyOn(contractServiceMock, 'get').and.returnValue($q.resolve(jobRoleServiceMock.jobRoles));
-
-            controller = ctrlConstructor('KeyDatesController');
-
-            initControllerAndDigest();
-          });
-
-          it('sets the active jobroles counter to zero (0)', function () {
-            expect(controller.activeRoles).toBe(0);
-          });
-        });
-
-        describe('when end date of a job roles is today', function () {
-          beforeEach(function () {
-            jobRoleServiceMock.jobRoles[0]['end_date'] = moment().format('YYYY-MM-DD');
-
-            spyOn(contractServiceMock, 'get').and.returnValue($q.resolve(jobRoleServiceMock.jobRoles));
-
-            controller = ctrlConstructor('KeyDatesController');
-
-            initControllerAndDigest();
-          });
-
-          it('sets the active jobroles counter to one (1)', function () {
-            expect(controller.activeRoles).toBe(1);
-          });
-        });
-
-        describe('when end date of a job roles is not defined', function () {
-          beforeEach(function () {
-            spyOn(contractServiceMock, 'get').and.returnValue($q.resolve(jobRoleServiceMock.jobRoles));
+            jobRoleActiveForContactSpy.and.returnValue($q.resolve([{ id: 50 }]));
 
             controller = ctrlConstructor('KeyDatesController');
 
@@ -157,6 +103,8 @@ define([
     describe('When contract or job role creating/deleting/updating events are published', function () {
       beforeEach(function () {
         spyOn(contractServiceMock, 'get').and.returnValue($q.resolve([]));
+        jobRoleActiveForContactSpy.and.returnValue($q.resolve([{}]));
+
         controller = ctrlConstructor('KeyDatesController');
 
         initControllerAndDigest();

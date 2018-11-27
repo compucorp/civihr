@@ -3,13 +3,14 @@
 define([
   'common/angular',
   'common/lodash',
-  'common/moment'
+  'common/moment',
+  'common/models/job-role'
 ], function (angular, _, moment) {
   'use strict';
 
-  KeyDatesController.$inject = ['$log', '$q', 'contractService', 'jobRoleService', 'pubSub'];
+  KeyDatesController.$inject = ['$log', '$q', 'contractService', 'JobRole', 'pubSub', 'settings'];
 
-  function KeyDatesController ($log, $q, Contract, JobRole, pubSub) {
+  function KeyDatesController ($log, $q, Contract, JobRole, pubSub, settings) {
     $log.debug('Controller: KeyDatesController');
 
     var vm = this;
@@ -86,13 +87,13 @@ define([
      *
      * @return {Promise}
      */
-    function loadContactsAmount () {
+    function loadContractsAmount () {
       return Contract.get()
         .then(function (response) {
           vm.activeContracts = _.values(response).filter(function (contract) {
             addContractDates(contract);
 
-            return contract.is_current;
+            return +contract.is_current;
           }).length;
         });
     }
@@ -109,7 +110,7 @@ define([
 
       return $q
         .all([
-          loadContactsAmount(),
+          loadContractsAmount(),
           loadJobRolesAmount()
         ])
         .finally(function () {
@@ -118,22 +119,15 @@ define([
     }
 
     /**
-     * Loads job roles from the backend and sets their amount to the controller
+     * Fetches active job roles from the backend and sets their amount to the controller
      *
      * @return {Promise}
      */
     function loadJobRolesAmount () {
-      return JobRole.get()
-        .then(function (response) {
-          vm.activeRoles = response.filter(function (role) {
-            var endDate = moment(role.end_date);
-            var hasEndDateAndIsActive = endDate.isValid() && isDateNotInPast(endDate);
-            var doesNotHaveEndDate = endDate === undefined;
-
-            return doesNotHaveEndDate || hasEndDateAndIsActive;
-          }).length;
-        })
-        .catch(_.noop);
+      return JobRole.activeForContact(settings.contactId)
+        .then(function (activeRoles) {
+          vm.activeRoles = activeRoles.length;
+        });
     }
 
     /**

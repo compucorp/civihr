@@ -1,16 +1,18 @@
 /* eslint-env amd, jasmine */
 
 define([
+  'common/moment',
   'common/angularMocks',
   'common/models/job-role',
   'common/mocks/services/hr-settings-mock',
   'common/mocks/services/api/job-role-mock',
   'common/mocks/models/instances/job-role-instance-mock'
-], function () {
+], function (moment) {
   'use strict';
 
   describe('JobRole', function () {
-    var $provide, $rootScope, JobRole, JobRoleInstanceMock, jobRoleAPI, jobRoles;
+    var $provide, $q, $rootScope, Contract, JobRole, JobRoleInstance,
+      JobRoleInstanceMock, jobRoleAPI, jobRoles;
 
     beforeEach(function () {
       module('common.models', 'common.mocks', function (_$provide_) {
@@ -24,22 +26,27 @@ define([
       ]);
     });
 
-    beforeEach(inject([
-      '$rootScope', 'JobRole', 'JobRoleInstanceMock', 'api.job-role',
-      function (_$rootScope_, _JobRole_, _JobRoleInstanceMock_, _jobRoleAPI_) {
-        $rootScope = _$rootScope_;
-
-        JobRole = _JobRole_;
-        JobRoleInstanceMock = _JobRoleInstanceMock_;
+    beforeEach(inject(['api.job-role',
+      function (_jobRoleAPI_) {
         jobRoleAPI = _jobRoleAPI_;
+        jobRoles = jobRoleAPI.mockedJobRoles;
 
         jobRoleAPI.spyOnMethods();
-        jobRoles = jobRoleAPI.mockedJobRoles;
       }
     ]));
 
+    beforeEach(inject(function (_$q_, _$rootScope_, _Contract_, _JobRole_,
+      _JobRoleInstance_, _JobRoleInstanceMock_) {
+      $q = _$q_;
+      $rootScope = _$rootScope_;
+      Contract = _Contract_;
+      JobRole = _JobRole_;
+      JobRoleInstance = _JobRoleInstance_;
+      JobRoleInstanceMock = _JobRoleInstanceMock_;
+    }));
+
     it('has the expected api', function () {
-      expect(Object.keys(JobRole)).toEqual(['all', 'find']);
+      expect(Object.keys(JobRole)).toEqual(['all', 'find', 'activeForContact']);
     });
 
     describe('all()', function () {
@@ -98,6 +105,91 @@ define([
         })
           .finally(done) && $rootScope.$digest();
       });
+    });
+
+    describe('activeForContact()', function () {
+      var contractSpy, jobRoleSpy, instance1, instance2, result;
+      var contactId = '404';
+      var contractId = '12';
+      var serverDateFormat = 'YYYY-MM-DD';
+
+      beforeEach(function () {
+        contractSpy = spyOn(Contract, 'activeForContact');
+        jobRoleSpy = spyOn(JobRole, 'all');
+      });
+
+      describe('basic tests', function () {
+        beforeEach(function (done) {
+          instance1 = JobRoleInstance.init({ id: '50' });
+          instance2 = JobRoleInstance.init({
+            id: '51',
+            end_day: moment().format(serverDateFormat)
+          });
+
+          contractSpy.and.returnValue($q.resolve([{ id: contractId }]));
+          jobRoleSpy.and.returnValue($q.resolve({ list: [instance1, instance2] }));
+          loadActiveJobRoles(done);
+        });
+
+        it('fetches active contracts for a contact', function () {
+          expect(Contract.activeForContact).toHaveBeenCalledWith(contactId);
+        });
+
+        it('fetches active job roles based on contracts IDs', function () {
+          expect(JobRole.all).toHaveBeenCalledWith({
+            job_contract_id: { IN: [contractId] } });
+        });
+
+        it('returns job roles instances', function () {
+          expect(result.length).toBe(2);
+          expect(result[0]).toBe(instance1);
+          expect(result[1]).toBe(instance2);
+        });
+      });
+
+      describe('when there is no current job contract', function () {
+        beforeEach(function (done) {
+          contractSpy.and.returnValue($q.resolve([]));
+          loadActiveJobRoles(done);
+        });
+
+        it('does not fetch job roles', function () {
+          expect(JobRole.all).not.toHaveBeenCalled();
+        });
+
+        it('returns empty array', function () {
+          expect(result).toEqual([]);
+        });
+      });
+
+      describe('when job roles are past', function () {
+        beforeEach(function (done) {
+          instance1 = JobRoleInstance.init({ end_date: moment().subtract(1, 'day').format(serverDateFormat) });
+
+          contractSpy.and.returnValue($q.resolve([{ id: contractId }]));
+          jobRoleSpy.and.returnValue($q.resolve({ list: [instance1] }));
+          loadActiveJobRoles(done);
+        });
+
+        it('does not include past job roles', function () {
+          expect(result).toEqual([]);
+        });
+      });
+
+      /**
+       * Loads active job roles and executes a passed callback when done
+       *
+       * @param {Function} callback
+       */
+      function loadActiveJobRoles (callback) {
+        JobRole
+          .activeForContact(contactId)
+          .then(function (_result_) {
+            result = _result_;
+          })
+          .finally(callback);
+        $rootScope.$digest();
+      }
     });
   });
 });
