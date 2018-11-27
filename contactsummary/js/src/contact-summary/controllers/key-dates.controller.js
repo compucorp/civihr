@@ -83,18 +83,19 @@ define([
     }
 
     /**
-     * Loads contracts from the backend and sets their amount to the controller
+     * Loads contracts from the backend
+     * and sets the amount of active contracts to the controller
      *
      * @return {Promise}
      */
     function loadContractsAmount () {
       return Contract.get()
         .then(function (response) {
-          vm.activeContracts = _.values(response).filter(function (contract) {
-            addContractDates(contract);
+          var contracts = _.values(response);
 
-            return +contract.is_current;
-          }).length;
+          contracts.forEach(addContractDates);
+
+          vm.activeContracts = _.filter(contracts, { 'is_current': '1' }).length;
         });
     }
 
