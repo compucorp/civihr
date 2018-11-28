@@ -24,7 +24,7 @@
     "browser-sync": "^2.24.6",
     "civicrm-scssroot": "git://github.com/totten/civicrm-scssroot.git#v0.1.1",
     "colors": "^1.1.2",
-    "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
+    "gulp": "^4.0.0",
     "gulp-awspublish": "^3.0.1",
     "gulp-cli": "^1.1.0",
     "gulp-html-src": "^1.0.0",
