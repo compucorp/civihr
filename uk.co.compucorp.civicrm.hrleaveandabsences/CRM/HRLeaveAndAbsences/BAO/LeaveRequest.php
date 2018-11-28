@@ -779,19 +779,20 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|null
    */
-  public static function findPublicHolidayLeaveRequest($contactID, PublicHoliday $publicHoliday) {
+  public static function findPublicHolidayLeaveRequests($contactID, PublicHoliday $publicHoliday) {
     $leaveRequest = new self();
     $leaveRequest->contact_id = (int)$contactID;
     $leaveRequest->from_date = date('Ymd', strtotime($publicHoliday->date));
     $leaveRequest->request_type = self::REQUEST_TYPE_PUBLIC_HOLIDAY;
     $leaveRequest->is_deleted = 0;
 
-    $leaveRequest->find(true);
-    if($leaveRequest->id) {
-      return $leaveRequest;
+    $leaveRequest->find();
+    $leaveRequests = [];
+    while ($leaveRequest->fetch()) {
+      $leaveRequests[] = clone $leaveRequest;
     }
 
-    return null;
+    return $leaveRequests;
   }
 
   /**
@@ -1205,7 +1206,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   private static function publicHolidayLeaveRequestExists($contactID, DateTime $date) {
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = $date->format('Y-m-d');
-    return self::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+    return !empty(self::findPublicHolidayLeaveRequests($contactID, $publicHoliday));
   }
 
   /**

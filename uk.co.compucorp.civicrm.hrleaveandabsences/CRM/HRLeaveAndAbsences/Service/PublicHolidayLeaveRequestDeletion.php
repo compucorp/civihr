@@ -48,14 +48,16 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
    */
   public function deleteForContact($contactID, PublicHoliday $publicHoliday) {
-    $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+    $leaveRequests = LeaveRequest::findPublicHolidayLeaveRequests($contactID, $publicHoliday);
 
-    if(!$leaveRequest) {
+    if(empty($leaveRequests)) {
       return;
     }
 
-    $this->deleteDatesWithBalanceChanges($leaveRequest);
-    $leaveRequest->delete();
+    foreach ($leaveRequests as $leaveRequest) {
+      $this->deleteDatesWithBalanceChanges($leaveRequest);
+      $leaveRequest->delete();
+    }
   }
 
   /**

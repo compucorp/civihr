@@ -573,6 +573,20 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
     PublicHolidayLeaveRequestUpdatesQueue::createItem($task);
   }
 
+  public static function getAllWithMustTakePublicHolidayAsLeaveRequest() {
+    $absenceType = new self();
+    $absenceType->must_take_public_holiday_as_leave = 1;
+    $absenceType->is_active = 1;
+
+    $absenceType->find();
+    $absenceTypes = [];
+    while ($absenceType->fetch()) {
+      $absenceTypes[] = clone $absenceType;
+    }
+
+    return $absenceTypes;
+  }
+
   /**
    * The carry forward for an Absence Type never expires if the types has no
    * expiration duration.
