@@ -1147,11 +1147,17 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    */
   private function updateJobContractPensionSchema() {
     $pensionTableName = CRM_Hrjobcontract_BAO_HRJobPension::getTableName();
-    CRM_Core_DAO::executeQuery("
-      ALTER TABLE $pensionTableName
-      MODIFY pension_type VARCHAR(512),
-      DROP FOREIGN KEY  pension_type_contact_id_fk
-    ");
+    $pensionTypeConstraintExist =  CRM_Core_DAO::checkConstraintExists(
+      $pensionTableName,
+      'pension_type_contact_id_fk'
+    );
+    if ($pensionTypeConstraintExist) {
+      CRM_Core_DAO::executeQuery("
+        ALTER TABLE $pensionTableName DROP FOREIGN KEY pension_type_contact_id_fk
+      ");
+    }
+
+    CRM_Core_DAO::executeQuery("ALTER TABLE $pensionTableName MODIFY pension_type VARCHAR(512)");
   }
 
   /**
