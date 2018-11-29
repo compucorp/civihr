@@ -1115,12 +1115,6 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    */
   private function updateJobContractHealthSchema() {
     $healthTableName = CRM_Hrjobcontract_BAO_HRJobHealth::getTableName();
-    CRM_Core_DAO::executeQuery("
-      ALTER TABLE $healthTableName
-      MODIFY provider VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_health_insurance_provider option group',
-      MODIFY provider_life_insurance VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_life_insurance_provider option group'
-    ");
-
     $healthConstraintExist = CRM_Core_DAO::checkConstraintExists(
       $healthTableName,
       'FK_civicrm_hrjobcontract_health_provider'
@@ -1140,6 +1134,12 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
         ALTER TABLE $healthTableName DROP FOREIGN KEY FK_civicrm_hrjobcontract_health_provider_life_insurance
       ");
     }
+
+    CRM_Core_DAO::executeQuery("
+      ALTER TABLE $healthTableName
+      MODIFY provider VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_health_insurance_provider option group',
+      MODIFY provider_life_insurance VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_life_insurance_provider option group'
+    ");
   }
 
   /**
