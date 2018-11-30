@@ -1115,24 +1115,17 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    */
   private function updateJobContractHealthSchema() {
     $healthTableName = CRM_Hrjobcontract_BAO_HRJobHealth::getTableName();
-    $healthConstraintExist = CRM_Core_DAO::checkConstraintExists(
-      $healthTableName,
-      'FK_civicrm_hrjobcontract_health_provider'
-    );
+    $healthForeignKey = 'FK_civicrm_hrjobcontract_health_provider';
+    $lifeInsuranceForeignKey = 'FK_civicrm_hrjobcontract_health_provider_life_insurance';
+
+    $healthConstraintExist = CRM_Core_DAO::checkConstraintExists($healthTableName, $healthForeignKey);
     if ($healthConstraintExist) {
-      CRM_Core_DAO::executeQuery("
-        ALTER TABLE $healthTableName DROP FOREIGN KEY FK_civicrm_hrjobcontract_health_provider
-      ");
+      CRM_Core_DAO::executeQuery("ALTER TABLE $healthTableName DROP FOREIGN KEY $healthForeignKey");
     }
 
-    $lifeInsuranceConstraintExist = CRM_Core_DAO::checkConstraintExists(
-      $healthTableName,
-      'FK_civicrm_hrjobcontract_health_provider'
-    );
+    $lifeInsuranceConstraintExist = CRM_Core_DAO::checkConstraintExists($healthTableName, $lifeInsuranceForeignKey);
     if ($lifeInsuranceConstraintExist) {
-      CRM_Core_DAO::executeQuery("
-        ALTER TABLE $healthTableName DROP FOREIGN KEY FK_civicrm_hrjobcontract_health_provider_life_insurance
-      ");
+      CRM_Core_DAO::executeQuery("ALTER TABLE $healthTableName DROP FOREIGN KEY $lifeInsuranceForeignKey");
     }
 
     CRM_Core_DAO::executeQuery("
@@ -1147,11 +1140,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
    */
   private function updateJobContractPensionSchema() {
     $pensionTableName = CRM_Hrjobcontract_BAO_HRJobPension::getTableName();
-    CRM_Core_DAO::executeQuery("
-      ALTER TABLE $pensionTableName
-      MODIFY pension_type VARCHAR(512),
-      DROP FOREIGN KEY  pension_type_contact_id_fk
-    ");
+    $pensionTypeForeignKey = 'pension_type_contact_id_fk';
+
+    $pensionTypeConstraintExist = CRM_Core_DAO::checkConstraintExists($pensionTableName, $pensionTypeForeignKey);
+    if ($pensionTypeConstraintExist) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE $pensionTableName DROP FOREIGN KEY $pensionTypeForeignKey");
+    }
+
+    CRM_Core_DAO::executeQuery("ALTER TABLE $pensionTableName MODIFY pension_type VARCHAR(512)");
   }
 
   /**
