@@ -119,11 +119,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $this->updateBasicType($entity1->id, ['add_public_holiday_to_entitlement' => TRUE]);
   }
 
-  /**
-   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
-   * @expectedExceptionMessage There is already one Absence Type where "Must staff take public holiday as leave" is selected
-   */
-  public function testThereShouldBeOnlyOneTypeWithMustTakePublicHolidayAsLeaveOnCreate() {
+  public function testThereCanBeMoreThanOneTypeWithMustTakePublicHolidayAsLeaveOnCreate() {
     $basicEntity = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE]);
     $entity1 = AbsenceType::findById($basicEntity->id);
     $this->assertEquals(1, $entity1->must_take_public_holiday_as_leave);
@@ -131,11 +127,7 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE]);
   }
 
-  /**
-   * @expectedException CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
-   * @expectedExceptionMessage There is already one Absence Type where "Must staff take public holiday as leave" is selected
-   */
-  public function testThereShouldBeOnlyOneTypeWithMustTakePublicHolidayAsLeaveOnUpdate() {
+  public function testThereCanBeMoreThanOneTypeWithMustTakePublicHolidayAsLeaveOnUpdate() {
     $basicEntity1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE]);
     $basicEntity2 = AbsenceTypeFabricator::fabricate();
     $entity1 = AbsenceType::findById($basicEntity1->id);

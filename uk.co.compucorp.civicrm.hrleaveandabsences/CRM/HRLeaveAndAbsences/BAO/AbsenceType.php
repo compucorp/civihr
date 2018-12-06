@@ -168,10 +168,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
       self::validateAddPublicHolidayToEntitlement($params);
     }
 
-    if(!empty($params['must_take_public_holiday_as_leave'])) {
-      self::validateMustTakePublicHolidayAsLeave($params);
-    }
-
     if (!empty($params['allow_request_cancelation']) &&
         !array_key_exists($params['allow_request_cancelation'], self::getRequestCancelationOptions())
     ) {
@@ -244,26 +240,6 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
           'The Calculation unit cannot be changed because the Absence Type is In Use!'
         );
       }
-    }
-  }
-
-  /**
-   * Validates the must_take_public_holiday_as_leave field.
-   *
-   * There can be only one AbsenceType where this field is true. So this
-   * method checks if one such type already exists and throws an error if that
-   * is the case.
-   *
-   * @param array $params
-   *  The params array received by the create method
-   *
-   * @throws \CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException
-   */
-  private static function validateMustTakePublicHolidayAsLeave($params) {
-    if(!self::fieldIsUnique('must_take_public_holiday_as_leave', 1, $params)) {
-      throw new CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException(
-        'There is already one Absence Type where "Must staff take public holiday as leave" is selected'
-      );
     }
   }
 
