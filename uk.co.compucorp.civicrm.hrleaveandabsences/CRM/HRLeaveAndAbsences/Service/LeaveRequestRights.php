@@ -47,12 +47,14 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   public function canChangeDatesFor($contactID, $statusID, $requestType) {
-    if ($this->currentUserIsAdmin()) {
+    $currentUserIsLeaveContact = $this->currentUserIsLeaveContact($contactID);
+    $isAdmin = $this->currentUserIsAdmin();
+
+    if ($isAdmin && !$currentUserIsLeaveContact) {
       return TRUE;
     }
 
     $isOpenLeaveRequest = in_array($statusID, LeaveRequest::getOpenStatuses());
-    $currentUserIsLeaveContact = $this->currentUserIsLeaveContact($contactID);
 
     if ($currentUserIsLeaveContact && $isOpenLeaveRequest) {
       return TRUE;
@@ -86,6 +88,8 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * Checks whether the current user has permissions to delete the leave request.
    * Currently only allows the admin and a user who is own leave approver and its
    * own request to delete a leave request.
+   * For cases where the admin is the leave request contact and not own leave
+   * approver, the admin is not allowed to delete the request.
    *
    * @param int $contactID
    *   The contactID of the leave request
@@ -93,15 +97,21 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   public function canDeleteFor($contactID) {
-    if ($this->currentUserIsAdmin()) {
+    $isLeaveContact = $this->currentUserIsLeaveContact($contactID);
+    $isAdmin = $this->currentUserIsAdmin();
+
+    if ($isAdmin && !$isLeaveContact) {
       return TRUE;
     }
 
-    if (!$this->currentUserIsLeaveContact($contactID)) {
-      return FALSE;
+    $isLeaveManager = $this->currentUserIsLeaveManagerOf($contactID);
+    $isOwnLeaveApprover = $isLeaveContact && $isLeaveManager;
+
+    if ($isOwnLeaveApprover) {
+      return TRUE;
     }
 
-    return $this->currentUserIsLeaveManagerOf($contactID);
+    return FALSE;
   }
 
   /**
@@ -206,7 +216,10 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestRights {
    * @return bool
    */
   public function canCancelForAbsenceType($absenceTypeId, $contactId, DateTime $leaveFromDate) {
-    if ($this->currentUserIsAdmin() || $this->currentUserIsLeaveManagerOf($contactId)) {
+    $isLeaveContact = $this->currentUserIsLeaveContact($contactId);
+    $isAdmin = $this->currentUserIsAdmin();
+
+    if (($isAdmin && !$isLeaveContact) || $this->currentUserIsLeaveManagerOf($contactId)) {
       return TRUE;
     }
 

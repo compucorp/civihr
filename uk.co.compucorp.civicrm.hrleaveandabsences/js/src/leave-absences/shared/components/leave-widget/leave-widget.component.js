@@ -123,7 +123,7 @@ define([
      */
     function lastAbsencePeriod (absencePeriods) {
       return _.chain(absencePeriods).sort(function (previous, current) {
-        return moment(previous.end_date).diff(current);
+        return moment(previous.end_date).diff(current.end_date);
       }).last().value();
     }
 

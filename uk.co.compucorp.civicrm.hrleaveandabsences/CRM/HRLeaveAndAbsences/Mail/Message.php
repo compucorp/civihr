@@ -135,11 +135,11 @@ class CRM_HRLeaveAndAbsences_Mail_Message {
    */
   private function getLeaveRequestURL($contactID) {
     $queryString = '?leave-request-id=' . $this->leaveRequest->id;
-    $leaveUrl = CRM_Utils_System::url('my-leave#/my-leave/report' .
+    $leaveUrl = CRM_Utils_System::url('my-leave#!/my-leave/report' .
       $queryString, [], true);
 
     if ($this->leaveRequest->contact_id != $contactID) {
-      $leaveUrl = CRM_Utils_System::url('manager-leave#/manager-leave/requests' .
+      $leaveUrl = CRM_Utils_System::url('manager-leave#!/manager-leave/requests' .
         $queryString, [], true);
     }
 
