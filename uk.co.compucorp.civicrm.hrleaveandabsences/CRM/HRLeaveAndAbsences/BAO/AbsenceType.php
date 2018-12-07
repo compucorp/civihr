@@ -536,22 +536,24 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceType extends CRM_HRLeaveAndAbsences_DAO_
   }
 
   /**
-   * Returns the AbsenceType where the must_take_public_holiday_as_leave option
-   * is set
+   * Returns the AbsenceTypes where the must_take_public_holiday_as_leave option
+   * is set to TRUE.
    *
-   * @return \CRM_HRLeaveAndAbsences_BAO_AbsenceType|null
+   * @return \CRM_HRLeaveAndAbsences_BAO_AbsenceType[]
+   *   An array of Absence Type objects
    */
-  public static function getOneWithMustTakePublicHolidayAsLeaveRequest() {
+  public static function getAllWithMustTakePublicHolidayAsLeaveRequest() {
     $absenceType = new self();
     $absenceType->must_take_public_holiday_as_leave = 1;
     $absenceType->is_active = 1;
-
     $absenceType->find();
-    if($absenceType->fetch()) {
-      return $absenceType;
+
+    $absenceTypes = [];
+    while ($absenceType->fetch()) {
+      $absenceTypes[] = clone $absenceType;
     }
 
-    return NULL;
+    return $absenceTypes;
   }
 
   /**

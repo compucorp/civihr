@@ -409,28 +409,32 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     $this->assertCount(1, $absenceTypes);
   }
 
-  public function testGetOneWithMustTakePublicHolidayAsLeaveRequestShouldReturnTheAbsenceTypeIfItExists() {
-    $expectedAbsenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE, 'is_active' => TRUE]);
+  public function testGetAllWithMustTakePublicHolidayAsLeaveRequestShouldNotReturnDisabledAbsenceTypes() {
+    $absenceType1 = AbsenceTypeFabricator::fabricate([
+      'must_take_public_holiday_as_leave' => TRUE,
+      'is_active' => FALSE
+    ]);
+    $absenceType2 = AbsenceTypeFabricator::fabricate([
+      'must_take_public_holiday_as_leave' => TRUE,
+      'is_active' => TRUE
+    ]);
+    $absenceType3 = AbsenceTypeFabricator::fabricate([
+      'must_take_public_holiday_as_leave' => TRUE,
+      'is_active' => TRUE
+    ]);
 
-    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
-
-    $this->assertEquals($expectedAbsenceType->id, $absenceType->id);
+    $absenceTypes = AbsenceType::getAllWithMustTakePublicHolidayAsLeaveRequest();
+    $this->assertCount(2, $absenceTypes);
+    $this->assertEquals($absenceTypes[0]->id, $absenceType2->id);
+    $this->assertEquals($absenceTypes[1]->id, $absenceType3->id);
   }
 
-  public function testGetOneWithMustTakePublicHolidayAsLeaveRequestShouldReturnADisabledAbsenceType() {
-    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE, 'is_active' => FALSE]);
-
-    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
-
-    $this->assertNull($absenceType);
-  }
-
-  public function testGetOneWithMustTakePublicHolidayAsLeaveRequestShouldReturnNullIfThereIsNoSuchAbsenceType() {
+  public function testGetAllWithMustTakePublicHolidayAsLeaveRequestShouldReturnEmptyIfThereIsNoSuchAbsenceType() {
     AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => FALSE]);
 
-    $absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+    $absenceTypes = AbsenceType::getAllWithMustTakePublicHolidayAsLeaveRequest();
 
-    $this->assertNull($absenceType);
+    $this->assertEmpty($absenceTypes);
   }
 
   public function testItEnqueueAnUpdateWhenCreatingAnAbsenceTypeWithMustTakePublicHolidayAsLeave() {
