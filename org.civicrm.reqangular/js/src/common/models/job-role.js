@@ -22,11 +22,14 @@ define([
          * @param  {Object} [pagination]
          * @param  {Number} pagination.page
          * @param  {Number} pagination.size
+         * @param  {String} sort
+         * @param  {Object} additionalParams
+         * @param  {Boolean} cache
          * @return {Promise} resolve with [{JobRoleInstance}, ...]
          */
-        all: function (filters, pagination) {
+        all: function (filters, pagination, sort, additionalParams, cache) {
           return jobRoleAPI
-            .all(this.processFilters(filters), pagination)
+            .all(this.processFilters(filters), pagination, sort, additionalParams, cache)
             .then(function (response) {
               response.list = response.list
                 .map(function (jobRole) {

@@ -50,39 +50,52 @@ define([
     });
 
     describe('all()', function () {
-      describe('instances', function () {
-        it('returns a list of model instances', function (done) {
-          JobRole.all().then(function (response) {
-            expect(response.list.every(function (jobRole) {
-              return JobRoleInstanceMock.isInstance(jobRole);
-            })).toBe(true);
-          })
-            .finally(done) && $rootScope.$digest();
+      var response;
+      var filters = { key: 'filters' };
+      var pagination = { key: 'pagination' };
+      var sort = 'sort';
+      var additionalParams = { key: 'additionalParams' };
+      var cache = false;
+
+      describe('basic tests', function () {
+        beforeEach(function (done) {
+          JobRole
+            .all()
+            .then(function (_response_) {
+              response = _response_;
+            })
+            .finally(done);
+
+          $rootScope.$digest();
+        });
+
+        it('calls API with according params', function () {
+          expect(jobRoleAPI.all).toHaveBeenCalled();
+        });
+
+        it('returns Job Role instances', function () {
+          expect(response.list.every(function (jobRole) {
+            return JobRoleInstanceMock.isInstance(jobRole);
+          })).toBe(true);
+          expect(response.list.length).toEqual(jobRoles.list.length);
         });
       });
 
-      describe('when called without arguments', function () {
-        it('returns all job roles', function (done) {
-          JobRole.all().then(function (response) {
-            expect(jobRoleAPI.all).toHaveBeenCalled();
-            expect(response.list.length).toEqual(jobRoles.list.length);
-          })
-            .finally(done) && $rootScope.$digest();
+      describe('with parameters', function () {
+        beforeEach(function (done) {
+          JobRole
+            .all(filters, pagination, sort, additionalParams, cache)
+            .then(function (_response_) {
+              response = _response_;
+            })
+            .finally(done);
+
+          $rootScope.$digest();
         });
-      });
 
-      xdescribe('when called with filters', function () {
-      });
-
-      describe('when called with pagination', function () {
-        var pagination = { page: 2, size: 2 };
-
-        it('can paginate the job roles list', function (done) {
-          JobRole.all(null, pagination).then(function (response) {
-            expect(jobRoleAPI.all).toHaveBeenCalledWith(null, pagination);
-            expect(response.list.length).toEqual(2);
-          })
-            .finally(done) && $rootScope.$digest();
+        it('calls API with according params', function () {
+          expect(jobRoleAPI.all).toHaveBeenCalledWith(
+            filters, pagination, sort, additionalParams, cache);
         });
       });
     });
