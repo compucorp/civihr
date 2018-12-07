@@ -26,6 +26,7 @@ define([
 
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
       initController();
+      ctrl.$onInit();
     }));
 
     describe('init', function () {

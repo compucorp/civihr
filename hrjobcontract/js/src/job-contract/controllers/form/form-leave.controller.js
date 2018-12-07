@@ -10,16 +10,14 @@ define([
   function FormLeaveController ($log, $scope, utilsService) {
     $log.debug('Controller: FormLeaveController');
 
-    var vm = {};
+    var vm = this;
 
+    vm.$onInit = $onInit;
     vm.numberOfPublicHolidays = 0;
 
-    /**
-     * Initializes the controller by setting properties and adding watchers
-     */
-    (function init () {
+    function $onInit () {
       loadNumberOfPublicHolidays();
-    }());
+    }
 
     /**
      * Loads the number of Public Holidays in Current Period
@@ -30,8 +28,6 @@ define([
           vm.numberOfPublicHolidays = number;
         });
     }
-
-    return vm;
   }
 
   return { FormLeaveController: FormLeaveController };
