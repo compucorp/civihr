@@ -9,18 +9,6 @@ require_once 'CRM/Core/Form.php';
  */
 class CRM_HRLeaveAndAbsences_Form_GeneralSettings extends CRM_Core_Form {
 
-  /**
-   * @var array
-   *   The filter to pass to the setting.getfields API
-   */
-  private $settingFilter = ['group' => 'leave_and_absences_general_settings'];
-
-  /**
-   * @var array
-   *   An array to store settings once it has been retrieved from the settings API
-   */
-  private $settings = [];
-
   private $submittedValues = [];
 
   public function buildQuickForm() {
@@ -28,7 +16,9 @@ class CRM_HRLeaveAndAbsences_Form_GeneralSettings extends CRM_Core_Form {
 
     foreach ($settings as $name => $setting) {
       if ($name == 'relationship_types_allowed_to_approve_leave') {
-        $this->$setting['html_type'](
+        $htmlType = $setting['html_type'];
+
+        $this->$htmlType(
           $name,
           [
             'options' => $this->getRelationshipTypes(),
@@ -84,9 +74,9 @@ class CRM_HRLeaveAndAbsences_Form_GeneralSettings extends CRM_Core_Form {
    * @return array
    */
   public function getFormSettings() {
-    if (empty($this->settings)) {
-      $settings = civicrm_api3('Setting', 'getfields', ['filters' => $this->settingFilter]);
-    }
+    $settingFilter = ['group' => 'leave_and_absences_general_settings'];
+
+    $settings = civicrm_api3('Setting', 'getfields', ['filters' => $settingFilter]);
 
     return $settings['values'];
   }
