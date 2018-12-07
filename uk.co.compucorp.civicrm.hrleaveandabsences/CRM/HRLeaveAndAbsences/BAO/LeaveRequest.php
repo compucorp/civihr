@@ -797,17 +797,24 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequest extends CRM_HRLeaveAndAbsences_DAO
   /**
    * Returns a LeaveRequest instance representing the Public Holiday Leave Request
    * for the given $publicHoliday and assigned to the Contact with the given
-   * $contactID, the leave request is returned as long as it exists in the database
-   * either soft deleted or not.
+   * $contactID and for the given Absence Type.
+   * The leave request is returned as long as it exists in the database either
+   * soft deleted or not.
    *
    * @param int $contactID
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   * @param AbsenceType $absenceType
    *
    * @return \CRM_HRLeaveAndAbsences_BAO_LeaveRequest|null
    */
-  public static function findPublicHolidayLeaveRequestEvenIfDeleted($contactID, PublicHoliday $publicHoliday) {
+  public static function findPublicHolidayLeaveRequestEvenIfDeleted(
+    $contactID,
+    PublicHoliday $publicHoliday,
+    AbsenceType $absenceType
+  ) {
     $leaveRequest = new self();
     $leaveRequest->contact_id = (int)$contactID;
+    $leaveRequest->type_id = $absenceType->id;
     $leaveRequest->from_date = date('Ymd', strtotime($publicHoliday->date));
     $leaveRequest->request_type = self::REQUEST_TYPE_PUBLIC_HOLIDAY;
 
