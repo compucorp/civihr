@@ -25,51 +25,54 @@ define([
     });
 
     describe('all()', function () {
-      var jobRoleApiPromise;
+      var result;
       var filters = { key: 'filters' };
       var pagination = { key: 'pagination' };
       var sort = 'sort';
       var additionalParams = { key: 'additionalParams' };
 
-      beforeEach(function () {
+      beforeEach(function (done) {
         spyOn(JobRoleAPI, 'getAll').and.returnValue($q.resolve(JobRoleAPIMock.mockedJobRoles));
-        jobRoleApiPromise = JobRoleAPI.all(filters, pagination, sort, additionalParams);
-      });
 
-      afterEach(function () {
-        $rootScope.$apply();
+        JobRoleAPI.all(filters, pagination, sort, additionalParams)
+          .then(function (_result_) {
+            result = _result_;
+          })
+          .finally(done);
+
+        $rootScope.$digest();
       });
 
       it('returns all the job roles', function () {
-        jobRoleApiPromise.then(function (result) {
-          expect(result).toEqual(JobRoleAPIMock.mockedJobRoles);
-        });
+        expect(result).toEqual(JobRoleAPIMock.mockedJobRoles);
       });
 
       it('calls getAll method', function () {
-        expect(JobRoleAPI.getAll).toHaveBeenCalledWith('HrJobRoles', filters, pagination, sort, additionalParams);
+        expect(JobRoleAPI.getAll).toHaveBeenCalledWith('HrJobRoles',
+          filters, pagination, sort, additionalParams);
       });
     });
 
     describe('find()', function () {
-      var jobRoleApiPromise;
+      var result;
       var jobRoleID = '2';
 
-      beforeEach(function () {
+      beforeEach(function (done) {
         spyOn(JobRoleAPI, 'sendGET').and.returnValue($q.resolve({
           values: JobRoleAPIMock.mockedJobRoles.list
         }));
-        jobRoleApiPromise = JobRoleAPI.find(jobRoleID);
-      });
 
-      afterEach(function () {
-        $rootScope.$apply();
+        JobRoleAPI.find(jobRoleID)
+          .then(function (_result_) {
+            result = _result_;
+          })
+          .finally(done);
+
+        $rootScope.$digest();
       });
 
       it('returns a job role', function () {
-        jobRoleApiPromise.then(function (result) {
-          expect(result).toEqual(JobRoleAPIMock.mockedJobRoles.list[0]);
-        });
+        expect(result).toEqual(JobRoleAPIMock.mockedJobRoles.list[0]);
       });
 
       it('calls sendGET method', function () {
