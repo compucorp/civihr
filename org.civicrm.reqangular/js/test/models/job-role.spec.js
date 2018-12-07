@@ -150,7 +150,8 @@ define([
 
         it('fetches active job roles based on contracts IDs', function () {
           expect(JobRole.all).toHaveBeenCalledWith({
-            job_contract_id: { IN: [contractId] } });
+            job_contract_id: { IN: [contractId] } },
+          undefined, undefined, undefined, false);
         });
 
         it('returns job roles instances', function () {

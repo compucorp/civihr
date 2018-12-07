@@ -74,7 +74,8 @@ define([
               });
 
               return this
-                .all({ job_contract_id: { IN: contractsIds } })
+                .all({ job_contract_id: { IN: contractsIds } },
+                  undefined, undefined, undefined, false)
                 .then(function (jobRoles) {
                   return jobRoles.list.filter(function (jobRole) {
                     var endDate = moment(jobRole.end_date);
