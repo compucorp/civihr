@@ -8,6 +8,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 
 /**
  * Class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest
@@ -21,6 +22,10 @@ class CRM_HRLeaveAndAbsences_Service_AbsenceTypeTest extends BaseHeadlessTest {
   private $absenceTypeService;
 
   public function setUp() {
+    // Delete default absence periods created during the extension installation
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
+
     $this->absenceTypeService = new AbsenceTypeService();
   }
 

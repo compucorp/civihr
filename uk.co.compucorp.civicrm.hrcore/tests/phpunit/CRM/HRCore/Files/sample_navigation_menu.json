@@ -3,7 +3,7 @@
     "attributes": {
       "label": "Home",
       "name": "Home",
-      "url": "civicrm/tasksassignments/dashboard#/tasks",
+      "url": "civicrm/tasksassignments/dashboard#!/tasks",
       "icon": null,
       "permission": null,
       "operator": "",

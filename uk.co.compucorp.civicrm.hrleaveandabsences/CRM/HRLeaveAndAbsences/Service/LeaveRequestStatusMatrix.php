@@ -55,7 +55,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix {
    */
   private function shouldUseManagerMatrixForCurrentUser($leaveRequestContactID) {
     return $this->leaveManagerService->currentUserIsLeaveManagerOf($leaveRequestContactID) ||
-           $this->leaveManagerService->currentUserIsAdmin();
+           ($this->leaveManagerService->currentUserIsAdmin() && !$this->currentUserIsLeaveContact($leaveRequestContactID));
   }
 
   /**
@@ -146,15 +146,26 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestStatusMatrix {
    * @return array
    */
   private function getStatusMatrixForCurrentUser($leaveRequestContactID) {
-    $currentUserID = CRM_Core_Session::getLoggedInContactID();
     $statusMatrix = [];
 
     if ($this->shouldUseManagerMatrixForCurrentUser($leaveRequestContactID)) {
       $statusMatrix = $this->getManagerStatusMatrix();
-    } elseif ($currentUserID == $leaveRequestContactID) {
+    } elseif ($this->currentUserIsLeaveContact($leaveRequestContactID)) {
       $statusMatrix = $this->getStaffStatusMatrix();
     }
 
     return $statusMatrix;
+  }
+
+  /**
+   * Checks whether the current user is the leave request contact or not.
+   *
+   * @param int $contactID
+   *   The contactID of the leave request
+   *
+   * @return bool
+   */
+  private function currentUserIsLeaveContact($contactID) {
+    return CRM_Core_Session::getLoggedInContactID() == $contactID;
   }
 }

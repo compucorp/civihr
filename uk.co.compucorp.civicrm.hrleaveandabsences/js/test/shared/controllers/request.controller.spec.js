@@ -1137,11 +1137,13 @@
           leaveRequest = LeaveRequestInstance.init();
           leaveRequest.contact_id = adminId.toString();
           role = 'admin';
-
-          initTestController({ leaveRequest: leaveRequest });
         });
 
-        describe('on initialization', function () {
+        describe('basic tests', function () {
+          beforeEach(function () {
+            initTestController({ leaveRequest: leaveRequest });
+          });
+
           it('is in create mode', function () {
             expect(controller.isMode('create')).toBeTruthy();
           });
@@ -1149,8 +1151,32 @@
           it('has admin role', function () {
             expect(controller.isRole('admin')).toBeTruthy();
           });
+        });
 
-          it('contains admin in the list of managees', function () {
+        describe('when user is not a self leave approver', function () {
+          beforeEach(function () {
+            spyOn(ContactInstance, 'checkIfSelfLeaveApprover')
+              .and.returnValue($q.resolve(false));
+            initTestController({ leaveRequest: leaveRequest });
+          });
+
+          it('does not contain the admin in the list of managees', function () {
+            expect(!!_.find(controller.managedContacts, { 'id': adminId })).toBe(false);
+          });
+        });
+
+        describe('when user is a self leave approver', function () {
+          beforeEach(function () {
+            spyOn(ContactInstance, 'checkIfSelfLeaveApprover')
+              .and.returnValue($q.resolve(true));
+            initTestController({ leaveRequest: leaveRequest });
+          });
+
+          it('loads all contacts as managees', function () {
+            expect(controller.managedContacts).toEqual(ContactAPIMock.mockedContacts().list);
+          });
+
+          it('contains the admin in the list of managees', function () {
             expect(!!_.find(controller.managedContacts, { 'id': adminId })).toBe(true);
           });
         });
@@ -1385,8 +1411,8 @@
               expect(controller.isRole('admin')).toBe(true);
             });
 
-            it('sets the `isSelfLeaveApprover` public property to `true`', function () {
-              expect(controller.isSelfLeaveApprover).toBe(true);
+            it('sets the `isSelfLeaveApprover` public property to `false`', function () {
+              expect(controller.isSelfLeaveApprover).toBe(false);
             });
 
             it('sets the `canManage` public property to `true`', function () {
@@ -1398,6 +1424,7 @@
             beforeEach(function () {
               role = 'manager';
 
+              spyOn(ContactInstance, 'leaveManagees').and.callThrough();
               initTestController({ leaveRequest: leaveRequest });
             });
 
@@ -1411,6 +1438,10 @@
 
             it('sets the `canManage` public property to `true`', function () {
               expect(controller.canManage).toBe(true);
+            });
+
+            it('fetches contacts that have leave approver relationship to the manager', function () {
+              expect(ContactInstance.leaveManagees).toHaveBeenCalledWith();
             });
           });
 

@@ -84,7 +84,7 @@
       {$form.sendEmail.label}
       <br/>
       <p class = "description">
-        {ts 1='/civicrm/tasksassignments/dashboard#/tasks'}
+        {ts 1='/civicrm/tasksassignments/dashboard#!/tasks'}
           By selecting this option, a welcome email containing a link to the
           staff onboarding wizard will be sent to all staff who already have a
           user account and those who meet the criteria of creating a user

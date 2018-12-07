@@ -1,6 +1,7 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Exception_InvalidAbsenceTypeException as InvalidAbsenceTypeException;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 use CRM_HRLeaveAndAbsences_Queue_PublicHolidayLeaveRequestUpdates as PublicHolidayLeaveRequestUpdatesQueue;
@@ -26,6 +27,10 @@ class CRM_HRLeaveAndAbsences_BAO_AbsenceTypeTest extends BaseHeadlessTest {
     // created during the extension installation
     $tableName = AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    // Delete default absence periods created during the extension installation
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
+
     $this->calculationUnitOptions = array_flip(AbsenceType::buildOptions('calculation_unit', 'validate'));
   }
 

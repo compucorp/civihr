@@ -15,6 +15,7 @@ use CRM_HRLeaveAndAbsences_Test_Fabricator_ContactWorkPattern as ContactWorkPatt
 use CRM_HRCore_Test_Fabricator_RelationshipType as RelationshipTypeFabricator;
 use CRM_HRCore_Test_Fabricator_Relationship as RelationshipFabricator;
 use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
+use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 
 /**
  * Class api_v3_LeaveRequestTest
@@ -44,6 +45,9 @@ class api_v3_LeaveRequestTest extends BaseHeadlessTest {
     // created during the extension installation
     $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    // Delete default absence periods created during the extension installation
+    $absencePeriodTable = AbsencePeriod::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
     $this->leaveRequestDayTypes = $this->getLeaveRequestDayTypes();
     $this->absenceType = AbsenceTypeFabricator::fabricate();
   }

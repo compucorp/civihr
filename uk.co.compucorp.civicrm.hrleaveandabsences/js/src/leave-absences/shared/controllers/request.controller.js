@@ -34,6 +34,7 @@ define([
 
     var absenceTypesAndIds;
     var availableStatusesMatrix = {};
+    var canApproveOwnRequests = null;
     var childComponentsCount = 0;
     var initialLeaveRequestAttributes = {}; // used to compare the change in leaverequest in edit mode
     var listeners = [];
@@ -97,6 +98,7 @@ define([
 
       return loadLoggedInContact()
         .then(initIsSelfRecord)
+        .then(initSelfLeaveApproverProperties)
         .then(function () {
           return $q.all([
             initRole(),
@@ -105,7 +107,6 @@ define([
           ]);
         })
         .then(initCanManage)
-        .then(initIsSelfLeaveApprover)
         .then(initRequest)
         .then(setModalMode)
         .then(setInitialAbsencePeriod)
@@ -147,24 +148,6 @@ define([
      */
     function amendRequestParamsBeforeSave () {
       ['from', 'to'].forEach(amendDatesAndDateTypesBeforeSave);
-    }
-
-    /**
-     * Amends the user role based on their self leave approver state.
-     * If the user is creating or editing their own leave request
-     * and they are self approvers, they will be treated as "admins".
-     *
-     * @return {Promise}
-     */
-    function amendRoleBasedOnSelfLeaveApproverState () {
-      return loggedInContact.checkIfSelfLeaveApprover()
-        .then(function (isSelfLeaveApprover) {
-          if (!isSelfLeaveApprover) {
-            return;
-          }
-
-          role = 'admin';
-        });
     }
 
     /**
@@ -367,6 +350,55 @@ define([
     }
 
     /**
+     * Fetches managees for the current scenario and role.
+     *
+     * @return {Promise} resolved with {Array} of ContactInstance
+     */
+    function fetchManagees () {
+      var isSingleContactManagement = !!vm.selectedContactId;
+
+      if (isSingleContactManagement) {
+        return fetchManageesForSingleContactAdministration();
+      } else if (vm.isRole('admin')) {
+        return fetchManageesForAdmin();
+      } else {
+        return loggedInContact.leaveManagees();
+      }
+    }
+
+    /**
+     * Fetches managees for admin role.
+     * Basically fetches all contacts,
+     * but if the admin is not their self-approver, excludes them from the list.
+     *
+     * @return {Promise}
+     */
+    function fetchManageesForAdmin () {
+      return Contact.all()
+        .then(function (contacts) {
+          if (canApproveOwnRequests) {
+            return contacts.list;
+          }
+
+          return _.filter(contacts.list, function (contact) {
+            return contact.id !== loggedInContact.id;
+          });
+        });
+    }
+
+    /**
+     * Fetches the contact that is currently being managed and wraps in an array
+     *
+     * @return {Promise}
+     */
+    function fetchManageesForSingleContactAdministration () {
+      return Contact.find(vm.selectedContactId)
+        .then(function (contact) {
+          return [contact];
+        });
+    }
+
+    /**
      * Returns the parameters for to load Absence Type of selected leave type
      *
      * @return {Object}
@@ -551,17 +583,6 @@ define([
     }
 
     /**
-     * Initiates the isSelfLeaveApprover public property.
-     * @NOTE Users are treated as admins if they are self leave approvers.
-     * @see initRole()
-     */
-    function initIsSelfLeaveApprover () {
-      if (vm.isRole('admin') && vm.isSelfRecord) {
-        vm.isSelfLeaveApprover = true;
-      }
-    }
-
-    /**
      * Initializes the is self record property and sets it to true when
      * on My Leave section and the user is editing their own request or creating
      * a new one for themselves.
@@ -648,8 +669,13 @@ define([
     function initRole () {
       role = 'staff';
 
-      return initRoleBasedOnPermissions()
-        .then(vm.isSelfRecord && !vm.isRole('admin') && amendRoleBasedOnSelfLeaveApproverState);
+      if (vm.isSelfLeaveApprover) {
+        role = 'admin';
+
+        return $q.resolve();
+      }
+
+      return initRoleBasedOnPermissions();
     }
 
     /**
@@ -667,6 +693,17 @@ define([
         })
         .then(function (isManager) {
           isManager && (role = 'manager');
+        });
+    }
+
+    /**
+     * Initiates the `canApproveOwnRequests` and `vm.isSelfLeaveApprover` properties
+     */
+    function initSelfLeaveApproverProperties () {
+      return loggedInContact.checkIfSelfLeaveApprover()
+        .then(function (_canApproveOwnRequests_) {
+          canApproveOwnRequests = _canApproveOwnRequests_;
+          vm.isSelfLeaveApprover = !!(canApproveOwnRequests && vm.isSelfRecord);
         });
     }
 
@@ -813,33 +850,15 @@ define([
     }
 
     /**
-     * Loads the managees of currently logged in user
-     * If a contact is pre-selected, then a single managee is loaded.
-     * If user is an admin, then all contacts, including the admin, are loaded.
-     * If user is a manager, then only contacts they manage are loaded.
+     * Loads the managees for the current use case and user role
      *
      * @return {Promise}
      */
     function loadManagees () {
-      if (vm.selectedContactId) {
-        // In case of a pre-selected contact administration
-        return Contact.find(vm.selectedContactId)
-          .then(function (contact) {
-            vm.managedContacts = [contact];
-          });
-      } else if (vm.isRole('admin')) {
-        // In case of general administration
-        return Contact.all()
-          .then(function (contacts) {
-            vm.managedContacts = contacts.list;
-          });
-      } else {
-        // In any other case (including managing)
-        return loggedInContact.leaveManagees()
-          .then(function (contacts) {
-            vm.managedContacts = contacts;
-          });
-      }
+      return fetchManagees()
+        .then(function (managedContacts) {
+          vm.managedContacts = managedContacts;
+        });
     }
 
     /**

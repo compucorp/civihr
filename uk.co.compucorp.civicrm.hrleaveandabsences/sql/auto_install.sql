@@ -265,6 +265,11 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_period` (
 
 )  ENGINE=InnoDB DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci  ;
 
+INSERT INTO civicrm_hrleaveandabsences_absence_period(title, start_date, end_date, weight)
+VALUES
+(YEAR(CURDATE()), CONCAT(YEAR(CURDATE()), '-01', '-01'), CONCAT(YEAR(CURDATE()), '-12', '-31'), 1),
+(YEAR(CURDATE()) + 1, CONCAT(YEAR(CURDATE()) + 1, '-01', '-01'), CONCAT(YEAR(CURDATE()) + 1, '-12', '-31'), 2);
+
 -- /*******************************************************
 -- *
 -- * civicrm_hrleaveandabsences_public_holiday

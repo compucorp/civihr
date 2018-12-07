@@ -131,8 +131,7 @@ define([
         .then(indexSupportData)
         .then(loadCurrentlyLoggedInContactId)
         .then(function () {
-          return checkIfOwnLeaveRequest() && vm.role !== 'admin' &&
-            setRoleToAdminIfSelfLeaveApprover();
+          return checkIfOwnLeaveRequest() && setRoleForOwnRequest();
         })
         .then(setAllowedActions)
         .finally(function () {
@@ -385,16 +384,14 @@ define([
 
     /**
      * Checks if the contact is a self leave approver and, if true,
-     * sets the role to "admin"
+     * sets the role to "admin", otherwise to "staff"
      *
      * @return {Promise}
      */
-    function setRoleToAdminIfSelfLeaveApprover () {
+    function setRoleForOwnRequest () {
       return checkIfContactIsSelfLeaveApprover()
         .then(function (isSelfLeaveApprover) {
-          if (isSelfLeaveApprover) {
-            vm.role = 'admin';
-          }
+          vm.role = isSelfLeaveApprover ? 'admin' : 'staff';
         });
     }
 
