@@ -30,11 +30,12 @@ define([
       var pagination = { key: 'pagination' };
       var sort = 'sort';
       var additionalParams = { key: 'additionalParams' };
+      var cache = false;
 
       beforeEach(function (done) {
         spyOn(JobRoleAPI, 'getAll').and.returnValue($q.resolve(JobRoleAPIMock.mockedJobRoles));
 
-        JobRoleAPI.all(filters, pagination, sort, additionalParams)
+        JobRoleAPI.all(filters, pagination, sort, additionalParams, cache)
           .then(function (_result_) {
             result = _result_;
           })
@@ -49,7 +50,7 @@ define([
 
       it('calls getAll method', function () {
         expect(JobRoleAPI.getAll).toHaveBeenCalledWith('HrJobRoles',
-          filters, pagination, sort, additionalParams);
+          filters, pagination, sort, additionalParams, undefined, cache);
       });
     });
 
