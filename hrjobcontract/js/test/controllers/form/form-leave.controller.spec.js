@@ -26,6 +26,7 @@ define([
 
       $httpBackend.whenGET(/action=get&entity=HRJobContract/).respond(200);
       initController();
+      ctrl.$onInit();
     }));
 
     describe('init', function () {
@@ -50,20 +51,6 @@ define([
         };
 
         $scope.$digest();
-      });
-
-      describe('when a leave type is set to add public holidays', function () {
-        beforeEach(function () {
-          $scope.entity.leave[1].add_public_holidays = true;
-
-          $scope.$digest();
-        });
-
-        it('sets the other leave types to not add public holidays', function () {
-          expect($scope.entity.leave[0].add_public_holidays).toBe(false);
-          expect($scope.entity.leave[1].add_public_holidays).toBe(true);
-          expect($scope.entity.leave[2].add_public_holidays).toBe(false);
-        });
       });
     });
 
