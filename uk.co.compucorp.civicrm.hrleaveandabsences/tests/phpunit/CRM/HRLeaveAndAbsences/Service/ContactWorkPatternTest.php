@@ -182,7 +182,7 @@ class CRM_HRLeaveAndAbsences_Service_ContactWorkPatternTest extends BaseHeadless
       'time_to' => CRM_Utils_Array::value('time_to', $workDay, ''),
       'break' => CRM_Utils_Array::value('break', $workDay, ''),
       'leave_days' => !empty($workDay['leave_days']) ? $workDay['leave_days'] : '',
-      'number_of_hours' =>  !empty($workDay['number_of_hours']) ? $workDay['number_of_hours'] : ''
+      'number_of_hours' => (float)CRM_Utils_Array::value('number_of_hours', $workDay, 0),
     ];
   }
 }
