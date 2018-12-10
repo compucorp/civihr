@@ -267,6 +267,9 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
 
+    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE]);
     HRJobContractFabricator::fabricate(
       ['contact_id' => $this->leaveContact],
       ['period_start_date' => '2016-01-01']
@@ -279,14 +282,18 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
       'from_date' => CRM_Utils_Date::processDate($publicHoliday->date),
       'to_date' => CRM_Utils_Date::processDate($publicHoliday->date),
       'contact_id' => $this->leaveContact,
-      'type_id' => 1,
+      'type_id' => $absenceType->id,
       'status_id' => 1
     ], TRUE);
 
     $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
 
     PublicHolidayLeaveRequestFabricator::fabricate($this->leaveContact, $publicHoliday);
-    $publicHolidayLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($this->leaveContact, $publicHoliday);
+    $publicHolidayLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest(
+      $this->leaveContact,
+      $publicHoliday,
+      $absenceType
+    );
 
     //Balance change for Leave request will be zero since a public holiday leave request is created
     //for same date.
@@ -296,7 +303,7 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
 
     //After deletion the public holiday leave request is no longer present and the leave request balance
     //change is back to what it was before the public holiday leave request was created.
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($this->leaveContact, $publicHoliday));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($this->leaveContact, $publicHoliday, $absenceType));
     $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
   }
 

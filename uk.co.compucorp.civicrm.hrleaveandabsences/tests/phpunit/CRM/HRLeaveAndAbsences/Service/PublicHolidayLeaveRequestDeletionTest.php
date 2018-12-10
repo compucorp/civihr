@@ -99,7 +99,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
 
     $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
-    $deletionLogic->softDeleteForContact($periodEntitlement->contact_id, $publicHoliday);
+    $deletionLogic->softDeleteForContact($periodEntitlement->contact_id, $publicHoliday, $this->absenceType->id);
 
     $this->assertEquals(0, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
     //Check that the public holiday leave request is soft deleted.
@@ -228,9 +228,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday2);
     $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday3);
 
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday1));
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday2));
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday3));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday1, $this->absenceType));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday2, $this->absenceType));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday3, $this->absenceType));
 
     $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
     $deletionLogic->deleteAllForContract($contract['id']);
@@ -238,9 +238,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     // It's -1 instead of 0 because the public holiday 1 and public holiday 2
     // will be deleted and the public holiday 3 is after the contract end date
     // and will not be deleted.
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday1));
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday2));
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday3));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday1, $this->absenceType));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday2, $this->absenceType));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday3, $this->absenceType));
   }
 
   public function testItDeletesLeaveRequestsForAllPublicHolidaysOverlappingAContractWithNoEndDate() {
@@ -327,14 +327,14 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     PublicHolidayLeaveRequestFabricator::fabricate($contact1['id'], $publicHoliday);
     PublicHolidayLeaveRequestFabricator::fabricate($contact2['id'], $publicHoliday);
 
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday, $this->absenceType));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday, $this->absenceType));
 
     $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
     $deletionLogic->deleteForAllContacts($publicHoliday);
 
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday, $this->absenceType));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday, $this->absenceType));
   }
 
   public function testItDoesntDeleteLeaveRequestsForAllContactsWithoutContractsOverlappingTheGivenPublicHoliday() {
@@ -359,14 +359,14 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     PublicHolidayLeaveRequestFabricator::fabricate($contact1['id'], $publicHoliday);
     PublicHolidayLeaveRequestFabricator::fabricate($contact2['id'], $publicHoliday);
 
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday, $this->absenceType));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday, $this->absenceType));
 
     $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
     $deletionLogic->deleteForAllContacts($publicHoliday);
 
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday));
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact1['id'], $publicHoliday, $this->absenceType));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday, $this->absenceType));
   }
 
   private function countNumberOfPublicHolidayBalanceChanges() {
@@ -602,11 +602,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday2);
     $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact2['id'], $publicHoliday2);
 
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday1));
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday2));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday1, $this->absenceType));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday2, $this->absenceType));
 
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday1));
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday2));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday1, $this->absenceType));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday2, $this->absenceType));
 
     //Delete all Public holiday leave requests for absence period 2.
     $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
@@ -614,11 +614,11 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
 
     //Leave Request for PublicHoliday2 which falls within the absence period will be deleted for both contacts
     //While that of Public Holiday1 will not be deleted.
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday1));
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday2));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday1, $this->absenceType));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday2, $this->absenceType));
 
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday1));
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday2));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday1, $this->absenceType));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday2, $this->absenceType));
   }
 
   public function testCanDeleteAllPublicHolidayLeaveRequestsForAbsencePeriodForSpecificContact() {
@@ -648,16 +648,16 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletionTest exten
     $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact['id'], $publicHoliday);
     $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contact2['id'], $publicHoliday);
 
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday, $this->absenceType));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday, $this->absenceType));
 
     //Delete all Public holiday leave requests for absence period for first contact only
     $deletionLogic = new PublicHolidayLeaveRequestDeletion(new JobContractService());
     $deletionLogic->deleteAllForAbsencePeriod($period, [$contact['id']]);
 
     //Leave Request for PublicHoliday will be deleted for contact1 only
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contact['id'], $publicHoliday, $this->absenceType));
 
-    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday));
+    $this->assertNotNull(LeaveRequest::findPublicHolidayLeaveRequest($contact2['id'], $publicHoliday, $this->absenceType));
   }
 }
