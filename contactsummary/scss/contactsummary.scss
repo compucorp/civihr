@@ -9,7 +9,7 @@
 /* stylelint-disable selector-max-id */
 #contactsummary {
   .panel--key-dates {
-    > .panel-body {
+    > .panel-body.loaded {
       padding-bottom: 0;
       padding-top: 0;
     }

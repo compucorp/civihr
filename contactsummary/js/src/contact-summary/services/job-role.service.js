@@ -58,7 +58,7 @@ define([
         });
 
         if (contractIds.length === 0) {
-          return $q.reject('No job roles found for contracts');
+          return deferred.reject('No job roles found for contracts');
         }
 
         Api.post('HrJobRoles', {job_contract_id: {'IN': contractIds}}, 'get')
