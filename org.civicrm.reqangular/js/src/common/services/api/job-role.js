@@ -1,3 +1,5 @@
+/* eslint-env amd, jasmine */
+
 define([
   'common/modules/apis',
   'common/services/api'
@@ -12,15 +14,21 @@ define([
       /**
        * Returns the list of job roles
        *
-       * @param {object} filters
-       * @param {object} pagination
-       * @param {string} sort
+       * @NOTE API Service signature accepts `action` param,
+       * but we do not seem to need it and pass `undefined` instead.
+       *
+       * @param  {Object} filters
+       * @param  {Object} pagination
+       * @param  {String} sort
+       * @param  {Object} additionalParams
+       * @param  {Boolean} cache
        * @return {Promise}
        */
-      all: function (filters, pagination, sort, additionalParams) {
+      all: function (filters, pagination, sort, additionalParams, cache) {
         $log.debug('api.jobRole.api');
 
-        return this.getAll('HrJobRoles', filters, pagination, sort, additionalParams);
+        return this.getAll('HrJobRoles',
+          filters, pagination, sort, additionalParams, undefined, cache);
       },
 
       /**

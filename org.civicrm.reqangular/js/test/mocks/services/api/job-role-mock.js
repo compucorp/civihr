@@ -15,7 +15,7 @@ define([
       var mockedOptionValues = optionGroupAPI.mockedOptionValues();
 
       return {
-        all: function (filters, pagination, value) {
+        all: function (filters, pagination, sort, additionalParams, cache, value) {
           var list, start, end;
 
           list = value || this.mockedJobRoles.list;
@@ -51,18 +51,18 @@ define([
           return promiseResolvedWith(jobRole);
         },
 
-            /**
-             * Adds a spy on every method for testing purposes
-             */
+        /**
+         * Adds a spy on every method for testing purposes
+         */
         spyOnMethods: function () {
           _.functions(this).forEach(function (method) {
             spyOn(this, method).and.callThrough();
           }.bind(this));
         },
 
-            /**
-             * Mocked Job Roles
-             */
+        /**
+         * Mocked Job Roles
+         */
         mockedJobRoles: {
           total: 10,
           list: (function () {
@@ -73,7 +73,7 @@ define([
               return '20' + i + '-' + i + '-' + i + ' 00:00:00';
             }
 
-                    // Create a job role for each mocked contact
+            // Create a job role for each mocked contact
             return mockedContacts.map(function (contact) {
               i++;
 
@@ -99,23 +99,23 @@ define([
         }
       };
 
-        /**
-         * Pick a random value out of a collection
-         *
-         * @param {array} collection
-         * @param {string} key - The sub-collection key
-         * @return {object}
-         */
+      /**
+       * Pick a random value out of a collection
+       *
+       * @param  {Array} collection
+       * @param  {String} key - The sub-collection key
+       * @return {Object}
+       */
       function randomValue (collection, key) {
         return _.sample(collection[key]);
       }
 
-        /**
-         * Returns a promise that will resolve with the given value
-         *
-         * @param {any} value
-         * @return {Promise}
-         */
+      /**
+       * Returns a promise that will resolve with the given value
+       *
+       * @param  {Any} value
+       * @return {Promise}
+       */
       function promiseResolvedWith (value) {
         var deferred = $q.defer();
         deferred.resolve(value);
