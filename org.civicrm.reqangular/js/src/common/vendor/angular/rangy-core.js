@@ -1,3 +1,20 @@
+/*
+  !CUSTOMIZED VENDOR FILE!
+
+  Rangy is written to correctly work as an AMD module, but textAngular.js
+  (which is a shimmed, not-AMD "module") expects window.rangy to exist.
+
+  The workaround consists of making sure a global variable is created before
+  defining the module
+
+  More details on dependencies for shimmed modules here:
+  http://requirejs.org/docs/api.html#config-shim
+
+  > Only use other "shim" modules as dependencies for shimmed scripts,
+  or AMD libraries that have no dependencies and call define() after they
+  also create a global
+*/
+
 /**
  * Rangy, a cross-browser JavaScript range and selection library
  * https://github.com/timdown/rangy
@@ -9,15 +26,14 @@
  */
 
 (function (factory, root) {
+  root.rangy = factory();
+
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module.
-    define(factory);
+    define(function () { return root.rangy; });
   } else if (typeof module !== 'undefined' && typeof exports === 'object') {
     // Node/CommonJS style
-    module.exports = factory();
-  } else {
-    // No AMD or CommonJS support so we place Rangy in (probably) the global variable
-    root.rangy = factory();
+    module.exports = root.rangy;
   }
 })(function () {
   var OBJECT = 'object', FUNCTION = 'function', UNDEFINED = 'undefined';
