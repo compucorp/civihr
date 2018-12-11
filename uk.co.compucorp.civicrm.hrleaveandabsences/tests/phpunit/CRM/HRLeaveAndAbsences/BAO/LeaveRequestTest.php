@@ -205,6 +205,51 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals($contactID, $leaveRequest->contact_id);
   }
 
+  public function testFindAllPublicHolidayLeaveRequestsForAContact() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-01')
+    ]);
+
+    $contactID = 2;
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = '2016-01-01';
+
+    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+
+    $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+    $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+
+    // Two public holiday leave requests will be created since there are two absence types with
+    // MTPHL as true.
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
+
+    $leaveRequests = LeaveRequest::findAllPublicHolidayLeaveRequests($contactID, $publicHoliday);
+    $this->assertCount(2, $leaveRequests);
+    $publicHolidayRequest1 = $leaveRequests[0];
+    $publicHolidayRequest2 = $leaveRequests[1];
+    $leaveFromDate1 = new DateTime($publicHolidayRequest1->from_date);
+    $leaveFromDate2 = new DateTime($publicHolidayRequest2->from_date);
+
+    $this->assertEquals($publicHoliday->date, $leaveFromDate1->format('Y-m-d'));
+    $this->assertEquals($absenceType1->id, $publicHolidayRequest1->type_id);
+    $this->assertEquals($contactID, $publicHolidayRequest1->contact_id);
+
+    $this->assertEquals($publicHoliday->date, $leaveFromDate2->format('Y-m-d'));
+    $this->assertEquals($absenceType2->id, $publicHolidayRequest2->type_id);
+    $this->assertEquals($contactID, $publicHolidayRequest2->contact_id);
+  }
+
+  public function testFindAllPublicHolidayLeaveRequestsForAContactReturnsEmptyWhenNoSuchRequestExists() {
+    $contactID = 2;
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = '2016-01-01';
+
+    $this->assertEmpty(LeaveRequest::findAllPublicHolidayLeaveRequests($contactID, $publicHoliday));
+  }
+
   public function testShouldReturnNullIfItCantFindAPublicHolidayLeaveRequestForAContact() {
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = '2016-01-03';
