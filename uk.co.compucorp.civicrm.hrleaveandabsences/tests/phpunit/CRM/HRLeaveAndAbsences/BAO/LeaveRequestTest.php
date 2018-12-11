@@ -355,7 +355,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testCalculateBalanceChangeWhenOneOfTheRequestedLeaveDaysIsAPublicHoliday() {
     $periodStartDate = date('2016-01-01');
-    $absenceType = AbsenceTypeFabricator::fabricate();
+    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+
     $contract = HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
       ['period_start_date' => $periodStartDate]
@@ -378,6 +382,11 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($periodEntitlement->contact_id, $publicHoliday, $this->absenceType));
     PublicHolidayLeaveRequestFabricator::fabricate($periodEntitlement->contact_id, $publicHoliday);
+    //Two public holiday leave requests exist for this day
+    $this->assertCount(2, LeaveRequest::findAllPublicHolidayLeaveRequests(
+      $periodEntitlement->contact_id,
+      $publicHoliday
+    ));
 
     $fromDate = new DateTime('2016-11-14');
     $toDate = new DateTime('2016-11-15');

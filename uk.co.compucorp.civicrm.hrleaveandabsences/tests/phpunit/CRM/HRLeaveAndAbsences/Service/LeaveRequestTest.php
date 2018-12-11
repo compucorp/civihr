@@ -307,6 +307,77 @@ class CRM_HRLeaveAndAbsences_Service_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
   }
 
+  public function testPublicHolidayLeaveRequestIsDeletedAndBalanceNotRecalculatedForOverlappingLeaveRequestDateIfThereIsAnotherPublicHolidayExistingForThatDate() {
+    $adminID = 4;
+    $this->registerCurrentLoggedInContactInSession($adminID);
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-31')
+    ]);
+
+    WorkPatternFabricator::fabricateWithA40HourWorkWeek(['is_default' => 1]);
+
+    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE]);
+    $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE]);
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $this->leaveContact],
+      ['period_start_date' => '2016-01-01']
+    );
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = CRM_Utils_Date::processDate('2016-10-10');
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'from_date' => CRM_Utils_Date::processDate($publicHoliday->date),
+      'to_date' => CRM_Utils_Date::processDate($publicHoliday->date),
+      'contact_id' => $this->leaveContact,
+      'type_id' => $absenceType1->id,
+      'status_id' => 1
+    ], TRUE);
+
+    $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+
+    PublicHolidayLeaveRequestFabricator::fabricate($this->leaveContact, $publicHoliday);
+
+    // Check that two public holiday leave requests are created for the date since there are two
+    // absence types with MTPHL as true.
+    $leaveRequests = LeaveRequest::findAllPublicHolidayLeaveRequests($this->leaveContact, $publicHoliday);
+    $this->assertCount(2, $leaveRequests);
+    $publicHolidayLeaveRequest1 = LeaveRequest::findPublicHolidayLeaveRequest(
+      $this->leaveContact,
+      $publicHoliday,
+      $absenceType1
+    );
+    $publicHolidayLeaveRequest2 = LeaveRequest::findPublicHolidayLeaveRequest(
+      $this->leaveContact,
+      $publicHoliday,
+      $absenceType2
+    );
+
+    //Balance change for Leave request will be zero since public holiday leave requests exists for same date
+    $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+
+    //Delete one of the public holiday leave requests.
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->delete($publicHolidayLeaveRequest1->id);
+
+    //After deletion, one public holiday leave request is still present for the leave request date and
+    //the leave request balance change is untouched even though the deleted public holiday has same absence
+    //type as leave request.
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($this->leaveContact, $publicHoliday, $absenceType1));
+    $this->assertEquals(0, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+
+    //Delete the last public holiday leave request
+    $this->getLeaveRequestServiceWhenCurrentUserIsAdmin()->delete($publicHolidayLeaveRequest2->id);
+
+    //After deletion, there are no more public holiday leave request for the leave request date and
+    //the leave request balance change is is back to what it was before the public holiday leave requests were created.
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($this->leaveContact, $publicHoliday, $absenceType1));
+    $this->assertEquals(-1, LeaveBalanceChange::getTotalBalanceChangeForLeaveRequest($leaveRequest));
+  }
+
   /**
    * @expectedException RuntimeException
    * @expectedExceptionMessage You are not allowed to create or update a leave request for this employee

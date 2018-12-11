@@ -536,6 +536,24 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
    * @return \CRM_Core_DAO|null|object
    */
   public static function getExistingBalanceChangeForALeaveRequestDate(LeaveRequest $leaveRequest, DateTime $date) {
+    $balanceChanges = self::getBalanceChangesForLeaveRequestDate($leaveRequest, $date);
+
+    if (count($balanceChanges) == 1) {
+      return $balanceChanges[0];
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Returns balance changes records for a leave request date.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   * @param \DateTime $date
+   *
+   * @return \CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange[]
+   */
+  private static function getBalanceChangesForLeaveRequestDate(LeaveRequest $leaveRequest, DateTime $date) {
     $balanceChangeTable = self::getTableName();
     $leaveRequestDateTable = LeaveRequestDate::getTableName();
     $leaveRequestTable = LeaveRequest::getTableName();
@@ -560,12 +578,63 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange extends CRM_HRLeaveAndAbsenc
 
     $result = CRM_Core_DAO::executeQuery($query, $params, true, self::class);
 
-    if($result->N == 1) {
-      $result->fetch();
-      return $result;
+    $balanceChangeRecords = [];
+    while ($result->fetch()) {
+      $balanceChangeRecords[] = clone $result;
     }
 
-    return null;
+    return $balanceChangeRecords;
+  }
+
+  /**
+   * This method is different from the getExistingBalanceChangeForALeaveRequestDate
+   * because not all balance changes are eligible to have their balances zeroed when
+   * a public holiday request is created or to have their balances restored when a public
+   * holiday request is deleted.
+   *
+   * This method defines the logic that determines if a balance change is returned or not.
+   * Basically a balance change is returned if it does not co-exist with any public holiday request
+   * balance on same date and it is not of leave type public holiday.
+   *
+   * Reason for this is if a leave request exist and a public holiday is created for same date,
+   * the balance is zeroed, therefore if a new public holiday request is created for that date,
+   * the leave request balance need not be returned again because its balance has been zeroed by first
+   * public holiday leave request already.
+   *
+   * Similarly if a leave request coexists with two public holiday requests, the leave request balance
+   * should only be restored when there no other public holiday requests it co-exists with, i.e its
+   * balance is only restored after the last public holiday is deleted.
+   *
+   * @param \CRM_HRLeaveAndAbsences_BAO_LeaveRequest $leaveRequest
+   * @param \DateTime $date
+   *
+   * @return \CRM_Core_DAO|null|object
+   */
+  public static function getBalanceChangeToModifyForLeaveDate(LeaveRequest $leaveRequest, DateTime $date) {
+    $balanceChanges = self::getBalanceChangesForLeaveRequestDate($leaveRequest, $date);
+
+    if (empty($balanceChanges)) {
+      return NULL;
+    }
+
+    $leaveBalanceChangeTypes = array_flip(self::buildOptions('type_id', 'validate'));
+
+    $publicHolidayLeaveBalances = FALSE;
+    $otherLeaveBalances = [];
+    foreach ($balanceChanges as $balanceChange) {
+      if ($balanceChange->type_id == $leaveBalanceChangeTypes['public_holiday']) {
+        $publicHolidayLeaveBalances = TRUE;
+        break;
+      }
+
+      $otherLeaveBalances[] = $balanceChange;
+    }
+
+    if (!$publicHolidayLeaveBalances && count($otherLeaveBalances) == 1) {
+      return $otherLeaveBalances[0];
+    }
+
+    return NULL;
   }
 
   /**
