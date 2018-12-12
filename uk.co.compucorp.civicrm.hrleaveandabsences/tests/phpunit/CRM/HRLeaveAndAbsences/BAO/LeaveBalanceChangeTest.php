@@ -5,6 +5,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
@@ -1192,7 +1193,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $date = new DateTime('2017-03-02');
     $leaveDate = $date->format('YmdHis');
 
-    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
+    $tableName = AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
     AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
@@ -1218,7 +1219,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'end_date' => CRM_Utils_Date::processDate('2017-12-31')
     ]);
 
-    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
+    $tableName = AbsenceType::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
     $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
@@ -1251,7 +1252,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     ));
   }
 
-  public function testGetBalanceChangeToModifyForLeaveDateDoesWillReturnResultsWhenOnlyALeaveRequestBalanceExists() {
+  public function testGetBalanceChangeToModifyForLeaveDateWillReturnResultsWhenOnlyALeaveRequestBalanceExists() {
     $absenceType = AbsenceTypeFabricator::fabricate();
     $date = new DateTime('2017-01-01');
     $leaveDate = $date->format('YmdHis');

@@ -39,8 +39,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   public function setUp() {
     // We delete everything two avoid problems with the default absence types
     // created during the extension installation
-    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    $this->deleteAllExistingAbsenceTypes();
     // Delete default absence periods created during the extension installation
     $absencePeriodTable = AbsencePeriod::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$absencePeriodTable}");
@@ -50,12 +49,37 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     ]);
   }
 
-  public function testCanCreatePublicHolidayLeaveRequestsForASingleContactWithCorrectBalanceChanges() {
+  public function testCanCreateAPublicHolidayLeaveRequestForASingleContact() {
     $absencePeriod = AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('first day of this year'),
       'end_date' => CRM_Utils_Date::processDate('last day of this year')
     ]);
 
+    $periodEntitlement = $this->createLeavePeriodEntitlementMockForBalanceTests();
+    $periodEntitlement->contact_id = 2;
+    $periodEntitlement->type_id = $this->absenceType->id;
+
+    HRJobContractFabricator::fabricate(
+      ['contact_id' => $periodEntitlement->contact_id],
+      ['period_start_date' => $absencePeriod->start_date]
+    );
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = CRM_Utils_Date::processDate('first monday of this year');
+
+    $this->getCreationLogic()->createForContact($periodEntitlement->contact_id, $publicHoliday, $this->absenceType);
+
+    $this->assertEquals(-1, LeaveBalanceChange::getLeaveRequestBalanceForEntitlement($periodEntitlement));
+  }
+
+  public function testCanCreatePublicHolidayLeaveRequestsForASingleContactWithCorrectBalanceChangesWhenMoreThanOneAbsenceTypeWithMTPHLExists() {
+    $absencePeriod = AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('first day of this year'),
+      'end_date' => CRM_Utils_Date::processDate('last day of this year')
+    ]);
+
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
     AbsenceType::del($this->absenceType->id);
     $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
@@ -171,6 +195,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   public function testCanCreatePublicHolidayLeaveRequestsForAllPublicHolidaysInTheFuture() {
     $contact = ContactFabricator::fabricate();
 
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
     AbsenceType::del($this->absenceType->id);
     $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
@@ -292,6 +318,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'period_end_date' =>   CRM_Utils_Date::processDate('+100 days'),
     ]);
 
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
     AbsenceType::del($this->absenceType->id);
     $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
@@ -421,6 +449,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
     $contact1 = ContactFabricator::fabricate();
     $contact2 = ContactFabricator::fabricate();
 
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
     AbsenceType::del($this->absenceType->id);
     $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
@@ -544,9 +574,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   }
 
   public function testCreateForContactDoesNotCreatePublicHolidayLeaveRequestsWhenNoAbsenceTypeWithMustTakePublicHolidayAsLeaveRequestExist() {
-    //We need to delete any absence type already created
-    $tableName = AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
 
     $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 0]);
     $contactID = 2;
@@ -622,6 +652,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'end_date'   => CRM_Utils_Date::processDate('+5 days'),
     ]);
 
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
     AbsenceType::del($this->absenceType->id);
     AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
@@ -882,9 +914,9 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
   }
 
   public function testCreateForAllContactsDoesNotCreatePublicHolidayLeaveRequestsWhenNoAbsenceTypeWithMustTakePublicHolidayAsLeaveRequestExist() {
-    //We need to delete any absence type already created
-    $tableName = AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
 
     AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 0]);
 
@@ -922,6 +954,8 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       'end_date' => CRM_Utils_Date::processDate('2016-12-31'),
     ]);
 
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
     AbsenceType::del($this->absenceType->id);
     $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
@@ -1475,5 +1509,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreationTest exten
       $leaveBalanceChangeService,
       $leavePeriodEntitlementService
     );
+  }
+
+  private function deleteAllExistingAbsenceTypes() {
+    $tableName = AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
   }
 }

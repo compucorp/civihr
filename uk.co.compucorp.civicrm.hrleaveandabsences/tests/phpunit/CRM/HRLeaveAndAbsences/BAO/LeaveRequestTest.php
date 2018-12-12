@@ -45,8 +45,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // We delete everything two avoid problems with the default absence types
     // created during the extension installation
-    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    $this->deleteAllExistingAbsenceTypes();
 
     $messageSpoolTable = CRM_Mailing_BAO_Spool::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$messageSpoolTable}");
@@ -216,8 +215,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = '2016-01-01';
 
-    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
 
     $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
@@ -266,8 +266,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $contactID = 2;
 
     $publicHoliday = $this->instantiatePublicHoliday('2017-01-01');
-    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
     $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE]);
 
     $publicHolidayRequest = PublicHolidayLeaveRequestFabricator::fabricate(
@@ -295,8 +296,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $contactID = 2;
 
     $publicHoliday = $this->instantiatePublicHoliday('2017-01-01');
-    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
     $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE]);
 
     $publicHolidayRequest = PublicHolidayLeaveRequestFabricator::fabricate(
@@ -313,7 +315,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $this->assertEquals(0, $publicHolidayRequestNonDeleted->is_deleted);
   }
 
-  public function testFindPublicHolidayLeaveRequestEvenIfDeletedReturnsNullForANonExistentPublicHolidayRequest() {
+  public function testFindPublicHolidayLeaveRequestEvenIfDeletedReturnsEmptyForANonExistentPublicHolidayRequest() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2017-12-01')
@@ -400,8 +402,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testCalculateBalanceChangeWhenOneOfTheRequestedLeaveDaysIsAPublicHoliday() {
     $periodStartDate = date('2016-01-01');
-    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
+
     $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
 
@@ -5355,5 +5359,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $this->assertFalse(LeaveRequest::isTOILWithPastDates($params));
+  }
+
+  private function deleteAllExistingAbsenceTypes() {
+    $tableName = AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
   }
 }
