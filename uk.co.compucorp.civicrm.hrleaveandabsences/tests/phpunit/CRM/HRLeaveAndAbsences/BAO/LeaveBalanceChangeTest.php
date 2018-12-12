@@ -5,6 +5,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_LeaveRequestDate as LeaveRequestDate;
 use CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChange as LeaveBalanceChange;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlement as LeavePeriodEntitlement;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsencePeriod as AbsencePeriodFabricator;
 use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
@@ -1181,6 +1182,98 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     );
 
     $this->assertNull($leaveBalanceChange);
+  }
+
+  public function testGetBalanceChangeToModifyForLeaveDateReturnsNullWhenOnlyPublicHolidayRequestBalanceExist() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+    ]);
+
+    $date = new DateTime('2017-03-02');
+    $leaveDate = $date->format('YmdHis');
+
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = $leaveDate;
+    $contactID = 2;
+
+    $publicHolidayLeaveRequest = $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contactID, $publicHoliday);
+    $this->assertCount(2, LeaveRequest::findAllPublicHolidayLeaveRequests($contactID, $publicHoliday));
+
+    //No leave balance record is returned because public holiday balances are not eligible for
+    //modifications.
+    $this->assertNull(LeaveBalanceChange::getBalanceChangeToModifyForLeaveDate(
+      $publicHolidayLeaveRequest[0],
+      new DateTime($leaveDate)
+    ));
+  }
+
+  public function testGetBalanceChangeToModifyForLeaveDateReturnsNullWhenALeaveRequestBalanceCoExistsWithPublicHolidayRequestBalance() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2017-12-31')
+    ]);
+
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
+    $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+    $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+
+    $date = new DateTime('2017-02-01');
+    $leaveDate = $date->format('YmdHis');
+    $contactID = 2;
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = $leaveDate;
+
+    $this->fabricatePublicHolidayLeaveRequestWithMockBalanceChange($contactID, $publicHoliday);
+    $this->assertCount(2, LeaveRequest::findAllPublicHolidayLeaveRequests($contactID, $publicHoliday));
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contactID,
+      'type_id' => $absenceType1->id,
+      'from_date' => $leaveDate,
+      'to_date' => $leaveDate,
+      'from_date_type' => 1,
+      'to_date_type' =>1,
+      'status_id' => 1
+    ], true);
+
+    // No leave balance record will be returned because public holiday balances already
+    // co-exists with the leave balance for that date.
+    $this->assertNull(LeaveBalanceChange::getBalanceChangeToModifyForLeaveDate(
+      $leaveRequest,
+      new DateTime($leaveDate)
+    ));
+  }
+
+  public function testGetBalanceChangeToModifyForLeaveDateWillReturnResultsWhenOnlyALeaveRequestBalanceExists() {
+    $absenceType = AbsenceTypeFabricator::fabricate();
+    $date = new DateTime('2017-01-01');
+    $leaveDate = $date->format('YmdHis');
+    $contactID = 2;
+
+    $leaveRequest = LeaveRequestFabricator::fabricateWithoutValidation([
+      'contact_id' => $contactID,
+      'type_id' => $absenceType->id,
+      'from_date' => $leaveDate,
+      'to_date' => $leaveDate,
+      'from_date_type' => 1,
+      'to_date_type' =>1,
+      'status_id' => 1
+    ], true);
+
+    $this->assertNotNull(LeaveBalanceChange::getBalanceChangeToModifyForLeaveDate(
+      $leaveRequest,
+      new DateTime($leaveDate)
+    ));
   }
 
   public function testGetExistingBalanceChangeForALeaveRequestDateShouldReturnARecordIfItIsLinkedToALeaveRequestForTheSameContactTypeAndDate() {
@@ -3733,5 +3826,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   private function calculateAmountForDateWhenWorkDayIsNull(LeaveRequest $leaveRequest, DateTime $date, $amount) {
     $this->calculateAmountForDate($leaveRequest, $date, $amount, null);
+  }
+
+  private function deleteAllExistingAbsenceTypes() {
+    $tableName = AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
   }
 }

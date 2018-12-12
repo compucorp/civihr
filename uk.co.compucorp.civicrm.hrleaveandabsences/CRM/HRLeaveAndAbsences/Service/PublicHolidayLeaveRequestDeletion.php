@@ -6,6 +6,7 @@ use CRM_HRLeaveAndAbsences_BAO_LeaveRequest as LeaveRequest;
 use CRM_HRLeaveAndAbsences_BAO_AbsencePeriod as AbsencePeriod;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_BAO_WorkPattern as WorkPattern;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_BAO_ContactWorkPattern as ContactWorkPattern;
 use CRM_HRLeaveAndAbsences_Factory_LeaveDateAmountDeduction as LeaveDateAmountDeductionFactory;
 use CRM_HRLeaveAndAbsences_Service_ContactWorkPattern as ContactWorkPatternService;
@@ -48,14 +49,16 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
    */
   public function deleteForContact($contactID, PublicHoliday $publicHoliday) {
-    $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+    $leaveRequests = LeaveRequest::findAllPublicHolidayLeaveRequests($contactID, $publicHoliday);
 
-    if(!$leaveRequest) {
+    if (empty($leaveRequests)) {
       return;
     }
 
-    $this->deleteDatesWithBalanceChanges($leaveRequest);
-    $leaveRequest->delete();
+    foreach ($leaveRequests as $leaveRequest) {
+      $this->deleteDatesWithBalanceChanges($leaveRequest);
+      $leaveRequest->delete();
+    }
   }
 
   /**
@@ -66,11 +69,13 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
    *
    * @param int $contactID
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
+   * @param int $absenceTypeID
    */
-  public function softDeleteForContact($contactID, PublicHoliday $publicHoliday) {
-    $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+  public function softDeleteForContact($contactID, PublicHoliday $publicHoliday, $absenceTypeID) {
+    $absenceType = AbsenceType::findById($absenceTypeID);
+    $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday, $absenceType);
 
-    if(!$leaveRequest) {
+    if (!$leaveRequest) {
       return;
     }
 
@@ -156,7 +161,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestDeletion {
    * @param \DateTime $date
    */
   private function recalculateDeductionForOverlappingLeaveRequestDate(LeaveRequest $leaveRequest, DateTime $date) {
-    $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $date);
+    $leaveBalanceChange = LeaveBalanceChange::getBalanceChangeToModifyForLeaveDate($leaveRequest, $date);
     $dateDeductionFactory = LeaveDateAmountDeductionFactory::createForAbsenceType($leaveRequest->type_id);
     $contactWorkPatternService = new ContactWorkPatternService();
 

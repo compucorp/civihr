@@ -30,10 +30,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   private $leavePeriodEntitlementService;
 
   /**
-   * @var \CRM_HRLeaveAndAbsences_BAO_AbsenceType|null
-   *   An absence Type with MTPHL set to true
+   * @var \CRM_HRLeaveAndAbsences_BAO_AbsenceType[]
+   *   Absence Types with MTPHL set to true
    */
-  private $absenceType;
+  private $absenceTypes;
 
   public function __construct(
     JobContractService $jobContractService,
@@ -43,7 +43,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     $this->jobContractService = $jobContractService;
     $this->leaveBalanceChangeService = $leaveBalanceChangeService;
     $this->leavePeriodEntitlementService = $leavePeriodEntitlementService;
-    $this->absenceType = AbsenceType::getOneWithMustTakePublicHolidayAsLeaveRequest();
+    $this->absenceTypes = AbsenceType::getAllWithMustTakePublicHolidayAsLeaveRequest();
   }
 
   /**
@@ -59,7 +59,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   public function createForAllContacts(PublicHoliday $publicHoliday) {
     $absencePeriod = AbsencePeriod::getPeriodOverlappingDate(new DateTime($publicHoliday->date));
 
-    if(!$absencePeriod || !$this->absenceType) {
+    if (!$absencePeriod || empty($this->absenceTypes)) {
       return;
     }
 
@@ -72,8 +72,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     $entitlements = $this->getEntitlementsForContacts($contactIDs, $absencePeriod);
 
     foreach($contracts as $contract) {
-      if($this->contactHasEntitlement($entitlements, $contract['contact_id'])) {
-        $this->createForContact($contract['contact_id'], $publicHoliday);
+      foreach ($this->absenceTypes as $absenceType) {
+        if ($this->contactHasEntitlement($entitlements, $contract['contact_id'], $absenceType)) {
+          $this->createForContact($contract['contact_id'], $publicHoliday, $absenceType);
+        }
       }
     }
   }
@@ -93,7 +95,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    *  If not empty, Public Holiday Leave Requests are created for only these contacts
    */
   public function createAllInTheFuture(array $contactID = []) {
-    if(!$this->absenceType) {
+    if (empty($this->absenceTypes)) {
       return;
     }
 
@@ -147,7 +149,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   public function createAllForContract($contractID) {
     $contract = $this->jobContractService->getContractByID($contractID);
 
-    if (!$contract || !$this->absenceType) {
+    if (!$contract || empty($this->absenceTypes)) {
       return;
     }
 
@@ -168,8 +170,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
 
       $entitlements = $this->getEntitlementsForContacts([$contract['contact_id']], $absencePeriod);
       foreach($publicHolidays as $publicHoliday) {
-        if($this->contactHasEntitlement($entitlements, $contract['contact_id'])) {
-          $this->createForContact($contract['contact_id'], $publicHoliday);
+        foreach ($this->absenceTypes as $absenceType) {
+          if ($this->contactHasEntitlement($entitlements, $contract['contact_id'], $absenceType)) {
+            $this->createForContact($contract['contact_id'], $publicHoliday, $absenceType);
+          }
         }
       }
     }
@@ -180,21 +184,27 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * given $contactId
    *
    * @param int $contactID
+   * @param AbsenceType $absenceType
    * @param \CRM_HRLeaveAndAbsences_BAO_PublicHoliday $publicHoliday
    *
    * @return LeaveRequest|null
    */
-  public function createForContact($contactID, PublicHoliday $publicHoliday) {
-    if (!$this->absenceType) {
+  public function createForContact($contactID, PublicHoliday $publicHoliday, AbsenceType $absenceType) {
+    if (!$absenceType->must_take_public_holiday_as_leave) {
       return;
     }
 
-    $existingLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted($contactID, $publicHoliday);
-    if($existingLeaveRequest) {
+    $existingLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted(
+      $contactID,
+      $publicHoliday,
+      $absenceType
+    );
+
+    if ($existingLeaveRequest) {
       return;
     }
 
-    $leaveRequest = $this->createLeaveRequest($contactID, $this->absenceType, $publicHoliday);
+    $leaveRequest = $this->createLeaveRequest($contactID, $absenceType, $publicHoliday);
     $this->createLeaveBalanceChangeRecord($leaveRequest);
     $this->recalculateExpiredBalanceChange($leaveRequest);
 
@@ -270,7 +280,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   private function zeroDeductionForOverlappingLeaveRequestDate(LeaveRequest $leaveRequest, LeaveRequestDate $leaveRequestDate) {
     $date = new DateTime($leaveRequestDate->date);
 
-    $leaveBalanceChange = LeaveBalanceChange::getExistingBalanceChangeForALeaveRequestDate($leaveRequest, $date);
+    $leaveBalanceChange = LeaveBalanceChange::getBalanceChangeToModifyForLeaveDate($leaveRequest, $date);
 
     if($leaveBalanceChange) {
       LeaveBalanceChange::create([
@@ -334,7 +344,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * @param array $contactID
    */
   public function createAllForAbsencePeriod($absencePeriod, array $contactID = []) {
-    if(!$this->absenceType) {
+    if(empty($this->absenceTypes)) {
       return;
     }
 
@@ -355,8 +365,10 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
     foreach($contracts as $contract) {
       foreach($publicHolidays as $publicHoliday) {
         if($this->publicHolidayOverlapsContract($contract, $publicHoliday)) {
-          if($this->contactHasEntitlement($entitlements, $contract['contact_id'])) {
-            $this->createForContact($contract['contact_id'], $publicHoliday);
+          foreach ($this->absenceTypes as $absenceType) {
+            if ($this->contactHasEntitlement($entitlements, $contract['contact_id'], $absenceType)) {
+              $this->createForContact($contract['contact_id'], $publicHoliday, $absenceType);
+            }
           }
         }
       }
@@ -377,7 +389,7 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
   public function createAll() {
     $absencePeriods = $this->getAllAbsencePeriods();
 
-    if(!$absencePeriods || !$this->absenceType) {
+    if(!$absencePeriods || empty($this->absenceTypes)) {
       return;
     }
 
@@ -403,16 +415,17 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    *
    * @param array $entitlements
    * @param int $contactID
+   * @param AbsenceType $absenceType
    *
    * @return bool
    */
-  private function contactHasEntitlement($entitlements, $contactID) {
-    return !empty($entitlements[$contactID][$this->absenceType->id]) && $entitlements[$contactID][$this->absenceType->id] > 0;
+  private function contactHasEntitlement($entitlements, $contactID, $absenceType) {
+    return !empty($entitlements[$absenceType->id][$contactID][$absenceType->id]) && $entitlements[$absenceType->id][$contactID][$absenceType->id] > 0;
   }
 
   /**
    * Returns the entitlements for the given contact(s) during the absence
-   * period for the absence type with MTPHL.
+   * period for the absence types with MTPHL.
    *
    * @param array $contactIDs
    * @param AbsencePeriod $absencePeriod
@@ -420,11 +433,16 @@ class CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation {
    * @return array
    */
   private function getEntitlementsForContacts($contactIDs, AbsencePeriod $absencePeriod) {
-    return $this->leavePeriodEntitlementService->getEntitlementsForContacts(
-      $contactIDs,
-      $absencePeriod->id,
-      $this->absenceType->id
-    );
+    $entitlements = [];
+    foreach ($this->absenceTypes as $absenceType) {
+      $entitlements[$absenceType->id] = $this->leavePeriodEntitlementService->getEntitlementsForContacts(
+        $contactIDs,
+        $absencePeriod->id,
+        $absenceType->id
+      );
+    }
+
+    return $entitlements;
   }
 
   /**
