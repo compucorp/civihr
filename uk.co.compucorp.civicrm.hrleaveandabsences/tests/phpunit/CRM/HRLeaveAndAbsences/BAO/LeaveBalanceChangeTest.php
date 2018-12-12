@@ -1193,8 +1193,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
     $date = new DateTime('2017-03-02');
     $leaveDate = $date->format('YmdHis');
 
-    $tableName = AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
     AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
 
@@ -1219,8 +1220,9 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
       'end_date' => CRM_Utils_Date::processDate('2017-12-31')
     ]);
 
-    $tableName = AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
     $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
     $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
 
@@ -3824,5 +3826,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveBalanceChangeTest extends BaseHeadlessTest
 
   private function calculateAmountForDateWhenWorkDayIsNull(LeaveRequest $leaveRequest, DateTime $date, $amount) {
     $this->calculateAmountForDate($leaveRequest, $date, $amount, null);
+  }
+
+  private function deleteAllExistingAbsenceTypes() {
+    $tableName = AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
   }
 }
