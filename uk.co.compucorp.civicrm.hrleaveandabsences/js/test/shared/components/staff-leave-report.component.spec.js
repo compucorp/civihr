@@ -505,19 +505,77 @@
           });
 
           describe('section: Public Holidays', function () {
-            beforeEach(function () {
-              openSection('holidays');
+            describe('basic tests', function () {
+              beforeEach(function () {
+                openSection('holidays');
+              });
+
+              it('fetches all leave requests linked to a public holiday', function () {
+                expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  public_holiday: true,
+                  type_id: { IN: absenceTypesIDs }
+                }), null, requestSortParam, null, false);
+              });
+
+              it('caches the data', function () {
+                expect(controller.sections.holidays.data.length).not.toBe(0);
+              });
             });
 
-            it('fetches all leave requests linked to a public holiday', function () {
-              expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                public_holiday: true,
-                type_id: { IN: absenceTypesIDs }
-              }), null, requestSortParam, null, false);
+            describe('when public holidays can be grouped by date', function () {
+              var section, publicHolidays, groupedPublicHoliday;
+
+              beforeEach(function () {
+                section = controller.sections.holidays;
+                publicHolidays = _.cloneDeep(leaveRequestMock.all().values)
+                  .map(function (leaveRequest, index) {
+                    leaveRequest.from_date = '20-20-2020';
+                    leaveRequest.type_id = (index + 1).toString();
+
+                    return leaveRequest;
+                  });
+
+                LeaveRequest.all.and.returnValue($q.resolve({ list: publicHolidays }));
+                openSection('holidays');
+
+                groupedPublicHoliday = _.first(section.groupedData);
+              });
+
+              it('stores grouped public holidays inside the section', function () {
+                expect(section.groupedData)
+                  .toEqual(jasmine.any(Array));
+              });
+
+              it('groups public holidays by date', function () {
+                expect(section.groupedData.length).toBe(1);
+              });
+
+              it('groups types IDs into a separate indexed object', function () {
+                expect(groupedPublicHoliday.types_ids[1]).toBe(true);
+                expect(groupedPublicHoliday.types_ids[publicHolidays.length]).toBe(true);
+              });
+
+              it('removes `id` property from grouped public holidays', function () {
+                expect(groupedPublicHoliday.id).not.toBeDefined();
+              });
+
+              it('removes `type_id` property from grouped public holidays', function () {
+                expect(groupedPublicHoliday.type_id).not.toBeDefined();
+              });
+
+              it('sets `grouped` property to a section', function () {
+                expect(section.grouped).toBe(true);
+              });
             });
 
-            it('caches the data', function () {
-              expect(controller.sections.holidays.data.length).not.toBe(0);
+            describe('when public holidays can not be grouped by date', function () {
+              beforeEach(function () {
+                openSection('holidays');
+              });
+
+              it('does not set `grouped` property to a section', function () {
+                expect(controller.sections.holidays.grouped).toBe(false);
+              });
             });
           });
 

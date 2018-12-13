@@ -202,6 +202,36 @@ define([
     }
 
     /**
+     * Creates a new `groupedData` collection of public holidays grouped by date.
+     * Their type IDs are collected in a `types_ids` property.
+     *
+     * @NOTE it is considered safe to:
+     * 1) group by from_date only because public holidays are full day requests
+     * 2) leave the balance change ungrouped because public holidays are single day requests
+     */
+    function groupPublicHolidaysByDate () {
+      var section = vm.sections.holidays;
+
+      section.groupedData = [];
+
+      section.data.forEach(function (request) {
+        var groupedRequest =
+          _.find(section.groupedData, {
+            from_date: request.from_date
+          });
+
+        if (!groupedRequest) {
+          groupedRequest = _.omit(request, ['id', 'type_id']);
+          groupedRequest.types_ids = {};
+
+          section.groupedData.push(groupedRequest);
+        }
+
+        groupedRequest.types_ids[request.type_id] = true;
+      });
+    }
+
+    /**
      * Labels the given period according to whether it's current or not
      *
      * @param  {AbsencePeriodInstance} period
@@ -436,9 +466,17 @@ define([
      * @return {Promise}
      */
     function loadPublicHolidaysRequests () {
-      return loadLeaveRequestsForSection('holidays', {
+      var sectionName = 'holidays';
+
+      return loadLeaveRequestsForSection(sectionName, {
         public_holiday: true
-      });
+      })
+        .then(groupPublicHolidaysByDate)
+        .then(function () {
+          var section = vm.sections[sectionName];
+
+          section.grouped = (section.groupedData.length < section.data.length);
+        });
     }
 
     /**
