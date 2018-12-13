@@ -19,6 +19,7 @@
         changeContactSourceFieldHelpText();
         toggleActiveClassOnHoverOnAnyMainMenuItem();
         useFontAwesomeArrowsInSubMenuItems();
+        $('#addEmail').on('click', amendContactsPage);
       });
 
     /**
