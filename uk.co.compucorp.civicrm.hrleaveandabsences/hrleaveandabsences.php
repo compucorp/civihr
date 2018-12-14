@@ -334,7 +334,7 @@ function hrleaveandabsences_civicrm_post($op, $objectName, $objectId, &$objectRe
     return;
   }
 
-  call_user_func_array($postFunction, [$op, $objectId, $objectRef]);
+  call_user_func_array($postFunction, [$op, $objectId, &$objectRef]);
 }
 
 /**
