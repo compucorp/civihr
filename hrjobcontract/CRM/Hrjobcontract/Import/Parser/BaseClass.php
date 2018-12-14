@@ -83,7 +83,7 @@ class CRM_Hrjobcontract_Import_Parser_BaseClass extends CRM_Hrjobcontract_Import
       $this->addField($name, CRM_Utils_Array::value('title', $field, $name), $field['type'], $field['headerPattern'], $field['dataPattern']);
     }
 
-    $mapperLocType = !empty($mapperLocType) ? $mapperLocType : [];
+    $mapperLocType = !empty($this->_mapperLocType) ? $this->_mapperLocType : [];
     $this->setActiveFields($this->_mapperKeys);
     $this->setActiveFieldLocationTypes($mapperLocType);
 
