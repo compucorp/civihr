@@ -313,9 +313,9 @@ abstract class CRM_Hrjobcontract_Import_Parser extends CRM_Import_Parser {
   }
 
   /**
-   * @param $elements
+   * @param array $elements
    */
-  function setActiveFieldLocationTypes($elements) {
+  function setActiveFieldLocationTypes(Array $elements) {
     for ($i = 0; $i < count($elements); $i++) {
       $this->_activeFields[$i]->_hasLocationType = $elements[$i];
     }
