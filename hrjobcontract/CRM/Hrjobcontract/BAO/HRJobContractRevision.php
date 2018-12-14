@@ -335,10 +335,9 @@ class CRM_Hrjobcontract_BAO_HRJobContractRevision extends CRM_Hrjobcontract_DAO_
   protected static function normalizeFullDetailsResult($result) {
     $normalized = [];
 
-    foreach ($result as $key => $value) {
-      if ($key[0] == '_' || $key == 'N') { continue; } // ignores "internal" fields
-
-      list($entity, $field) = explode('__', $key);
+    $allFields = $result->toArray();
+    foreach ($allFields as $entityField => $value) {
+      list($entity, $field) = explode('__', $entityField);
 
       // This is necessary because some fields are stored in the DB as strings
       // although the content is actually a JSON. It is done automatically when
