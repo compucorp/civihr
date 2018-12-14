@@ -568,7 +568,7 @@ class CRM_Hrjobcontract_Import_Parser_Api extends CRM_Hrjobcontract_Import_Parse
     switch($key)  {
       case 'HRJobContractRevision-jobcontract_id':
         $contractDetails = CRM_Hrjobcontract_BAO_HRJobContract::checkContract($value);
-        if ($contractDetails == 0)  {
+        if (!$contractDetails)  {
           $errorMessage = "{$this->_fields[$key]->_title} is not found";
         }
         break;
