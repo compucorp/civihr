@@ -203,7 +203,7 @@ define([
 
     /**
      * Creates a new `groupedData` collection of public holidays grouped by date.
-     * Their type IDs are collected in a `types_ids` property.
+     * Their type IDs are collected in a `types_to_balance_changes` property.
      *
      * @NOTE it is considered safe to:
      * 1) group by from_date only because public holidays are full day requests
@@ -222,12 +222,12 @@ define([
 
         if (!groupedRequest) {
           groupedRequest = _.omit(request, ['id', 'type_id']);
-          groupedRequest.types_ids = {};
+          groupedRequest.types_to_balance_changes = {};
 
           section.groupedData.push(groupedRequest);
         }
 
-        groupedRequest.types_ids[request.type_id] = true;
+        groupedRequest.types_to_balance_changes[request.type_id] = request.balance_change;
       });
     }
 
@@ -626,9 +626,9 @@ define([
         from_date: leaveRequest.from_date
       });
 
-      delete groupedRequest.types_ids[+leaveRequest.type_id];
+      delete groupedRequest.types_to_balance_changes[+leaveRequest.type_id];
 
-      isGroupedRequestEmpty = !_.keys(groupedRequest.types_ids).length;
+      isGroupedRequestEmpty = !_.keys(groupedRequest.types_to_balance_changes).length;
 
       if (isGroupedRequestEmpty) {
         _.remove(section.groupedData, { from_date: leaveRequest.from_date });

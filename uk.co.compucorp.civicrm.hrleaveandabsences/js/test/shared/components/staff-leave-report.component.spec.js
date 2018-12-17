@@ -552,9 +552,11 @@
                 expect(section.groupedData.length).toBe(1);
               });
 
-              it('groups types IDs into a separate indexed object', function () {
-                expect(groupedPublicHoliday.types_ids[1]).toBe(true);
-                expect(groupedPublicHoliday.types_ids[publicHolidays.length]).toBe(true);
+              it('groups types IDs into a separate indexed object and that stores balance changes', function () {
+                expect(groupedPublicHoliday.types_to_balance_changes[1])
+                  .toEqual(publicHolidays[0].balance_change);
+                expect(groupedPublicHoliday.types_to_balance_changes[publicHolidays.length])
+                  .toEqual(_.last(publicHolidays).balance_change);
               });
 
               it('removes `id` property from grouped public holidays', function () {
@@ -576,7 +578,7 @@
                 });
 
                 it('deletes absence type ID from the `types_id`', function () {
-                  expect(groupedPublicHoliday.types_ids[1]).not.toBeDefined();
+                  expect(groupedPublicHoliday.types_to_balance_changes[1]).not.toBeDefined();
                 });
               });
 
