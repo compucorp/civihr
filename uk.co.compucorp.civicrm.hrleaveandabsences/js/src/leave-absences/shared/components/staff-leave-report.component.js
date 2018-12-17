@@ -620,6 +620,7 @@ define([
      * @param {LeaveRequestInstance} leaveRequest
      */
     function removePublicHolidayLeaveRequestFromGroupedData (leaveRequest) {
+      var isGroupedRequestEmpty;
       var section = vm.sections.holidays;
       var groupedRequest = _.find(section.groupedData, {
         from_date: leaveRequest.from_date
@@ -627,7 +628,9 @@ define([
 
       delete groupedRequest.types_ids[+leaveRequest.type_id];
 
-      if (!_.keys(groupedRequest.types_ids).length) {
+      isGroupedRequestEmpty = !_.keys(groupedRequest.types_ids).length;
+
+      if (isGroupedRequestEmpty) {
         _.remove(section.groupedData, { from_date: leaveRequest.from_date });
       }
     }
