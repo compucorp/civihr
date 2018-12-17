@@ -527,13 +527,15 @@
 
               beforeEach(function () {
                 section = controller.sections.holidays;
-                publicHolidays = _.cloneDeep(leaveRequestMock.all().values)
+                publicHolidays = _.compact(_.cloneDeep(
+                  leaveRequestMock.all().values)
                   .map(function (leaveRequest, index) {
                     leaveRequest.from_date = '20-20-2020';
-                    leaveRequest.type_id = (index + 1).toString();
+                    leaveRequest.type_id = absenceTypesIDs[index];
+                    leaveRequest.request_type = 'public_holiday';
 
-                    return leaveRequest;
-                  });
+                    return leaveRequest.type_id ? leaveRequest : null;
+                  }));
 
                 LeaveRequest.all.and.returnValue($q.resolve({ list: publicHolidays }));
                 openSection('holidays');
@@ -565,6 +567,32 @@
 
               it('sets `grouped` property to a section', function () {
                 expect(section.grouped).toBe(true);
+              });
+
+              describe('when a grouped public holiday gets deleted', function () {
+                beforeEach(function () {
+                  pubSub.publish('LeaveRequest::delete', publicHolidays[0]);
+                  $rootScope.$digest();
+                });
+
+                it('deletes absence type ID from the `types_id`', function () {
+                  expect(groupedPublicHoliday.types_ids[1]).not.toBeDefined();
+                });
+              });
+
+              describe('when a whole public holiday leave requests group gets deleted', function () {
+                beforeEach(function () {
+                  // We need to clone to avoid mutation
+                  _.cloneDeep(publicHolidays).forEach(function (publicHoliday) {
+                    pubSub.publish('LeaveRequest::delete',
+                      _.find(publicHolidays, { id: publicHoliday.id }));
+                    $rootScope.$digest();
+                  });
+                });
+
+                it('removes public holiday leave requests group from the grouped data', function () {
+                  expect(section.groupedData.length).toBe(0);
+                });
               });
             });
 
