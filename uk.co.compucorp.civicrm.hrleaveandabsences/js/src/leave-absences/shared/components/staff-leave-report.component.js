@@ -586,7 +586,7 @@ define([
      * After the request is removed, it recalculates the balance change
      * for the section.
      *
-     * @param  {LeaveRequestInstance} leaveRequest
+     * @param {LeaveRequestInstance} leaveRequest
      */
     function removeLeaveRequestFromItsSection (leaveRequest) {
       _.forEach(vm.sections, function (section, sectionName) {
@@ -605,6 +605,31 @@ define([
           updateSectionNumbersWithLeaveRequestBalanceChange(leaveRequest, sectionName);
         }
       });
+
+      if (leaveRequest.request_type === 'public_holiday') {
+        removePublicHolidayLeaveRequestFromGroupedData(leaveRequest);
+      }
+    }
+
+    /**
+     * Removes the given public holiday leave request from its grouped entity.
+     * It finds the grouped entity dy the date, then removes the absence type ID.
+     * If there are no more absence type IDs for the given date, it considers
+     * the grouped entity empty and then deletes is completely.
+     *
+     * @param {LeaveRequestInstance} leaveRequest
+     */
+    function removePublicHolidayLeaveRequestFromGroupedData (leaveRequest) {
+      var section = vm.sections.holidays;
+      var groupedRequest = _.find(section.groupedData, {
+        from_date: leaveRequest.from_date
+      });
+
+      delete groupedRequest.types_ids[+leaveRequest.type_id];
+
+      if (!_.keys(groupedRequest.types_ids).length) {
+        _.remove(section.groupedData, { from_date: leaveRequest.from_date });
+      }
     }
 
     /**
