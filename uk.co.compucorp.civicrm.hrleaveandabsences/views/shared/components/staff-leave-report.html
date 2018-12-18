@@ -133,9 +133,15 @@
                               <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
                                 title="({{ absenceType.calculation_unit_label | lowercase }})">
                                 {{((
-                                  report.sections.holidays.grouped && request.types_ids[absenceType.id] ||
-                                  !report.sections.holidays.grouped && request.type_id === absenceType.id
-                                  ) ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '') }}
+                                    report.sections.holidays.grouped && request.types_to_balance_changes[absenceType.id] ||
+                                    !report.sections.holidays.grouped && request.type_id === absenceType.id
+                                  )
+                                  ? ((
+                                      report.sections.holidays.grouped
+                                      ? request.types_to_balance_changes[absenceType.id]
+                                      : request.balance_change
+                                    ) | timeUnitApplier : absenceType.calculation_unit_name)
+                                  : '')}}
                               </td>
                               <td>
                                 <leave-request-actions
