@@ -133,7 +133,7 @@
                               <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
                                 title="({{ absenceType.calculation_unit_label | lowercase }})">
                                 {{((
-                                    report.sections.holidays.grouped && request.types_to_balance_changes[absenceType.id] ||
+                                    report.sections.holidays.grouped && request.types_to_balance_changes[absenceType.id] !== undefined ||
                                     !report.sections.holidays.grouped && request.type_id === absenceType.id
                                   )
                                   ? ((
