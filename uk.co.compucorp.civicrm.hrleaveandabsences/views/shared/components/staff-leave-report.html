@@ -145,9 +145,9 @@
                               </td>
                               <td>
                                 <leave-request-actions
-                                  ng-if="!report.sections.holidays.grouped"
+                                  ng-if="!report.sections.holidays.grouped && $root.section !== 'my-leave'"
                                   leave-request="request"
-                                  role="$root.section === 'my-leave' ? 'staff' : report.role"
+                                  role="report.role"
                                   absence-types="report.absenceTypes"
                                   leave-request-statuses="report.leaveRequestStatuses">
                                 </leave-request-actions>
