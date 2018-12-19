@@ -1,7 +1,8 @@
 <tr>
   <th class="chr_leave-report__table__heading--label">
     <small ng-if="section && section.groupedData &&
-      report.sections.holidays.groupedData.length < report.sections.holidays.data.length"
+      section.groupedData.length < section.data.length &&
+      $root.section !== 'my-leave'"
       ng-switch="section.grouped">
       <a href ng-switch-when="true"
         ng-click="section.grouped = false">
