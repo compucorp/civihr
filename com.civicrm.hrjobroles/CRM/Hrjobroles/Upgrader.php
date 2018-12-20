@@ -79,6 +79,85 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
   }
 
   /**
+   * Updates job role having wrong funder id with correct contact id
+   *
+   * @return bool
+   * @throws CiviCRM_API3_Exception
+   */
+  public function upgrade_1007() {
+    $contactDetails = $this->getContactsWithJobRole();
+    $jobRoles = civicrm_api3('HrJobRoles', 'get', [
+      'funder' => ['!=' => '|'],
+    ]);
+
+    foreach($jobRoles['values'] as $key => $value) {
+      $funders = explode('|', $value['funder']);
+      $funders = array_filter($funders);
+
+      list($funders, $allowUpdate) = $this->changeFunderToCorrectContactId($funders, $contactDetails);
+      if ($allowUpdate) {
+        civicrm_api3('HrJobRoles', 'create', [
+          'id' => $key,
+          'funder' => '|' . implode('|', $funders) . '|',
+        ]);
+      }
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Retrieves the correct contact for a funder and
+   * indicates update is required when found
+   *
+   * @param $funders
+   * @param $contactDetails
+   *
+   * @return array
+   */
+  private function changeFunderToCorrectContactId($funders, $contactDetails) {
+    $allowUpdate = FALSE;
+    foreach ($funders as $index => $funder) {
+      $jobRoleIds = array_column($contactDetails, 'jobrole_id');
+      $funderIndex = array_search($funder, $jobRoleIds);
+      if ($funderIndex) {
+        $funders[$index] = array_values($contactDetails)[$funderIndex]['id'];
+        $allowUpdate = TRUE;
+      }
+    }
+
+    return [$funders, $allowUpdate];
+  }
+
+  /**
+   * Retrieves contacts with their job contract and job role
+   *
+   * @return array
+   */
+  private function getContactsWithJobRole() {
+    $contacts = [];
+    $query = "
+      SELECT c.id, jc.id as contract_id, jr.id AS jobrole_id, jr.funder
+      FROM `civicrm_contact` c
+      INNER JOIN civicrm_hrjobcontract jc ON (c.id = jc.contact_id)
+      LEFT JOIN `civicrm_hrjobroles` jr ON (jc.id = jr.job_contract_id)
+      WHERE c.contact_type = 'Individual'
+    ";
+
+    $result = CRM_Core_DAO::executeQuery($query);
+    while ($result->fetch()) {
+      $contacts[$result->id] = [
+        'id' => $result->id,
+        'contract_id' => $result->contract_id,
+        'jobrole_id' => $result->jobrole_id,
+        'funder' => $result->funder
+      ];
+    }
+
+    return $contacts;
+  }
+
+  /**
    * Deletes cost centre option value with name "other"
    */
   private function deleteCostCentreOther() {

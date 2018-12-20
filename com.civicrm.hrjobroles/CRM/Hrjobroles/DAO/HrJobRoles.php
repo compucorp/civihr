@@ -266,7 +266,7 @@ class CRM_Hrjobroles_DAO_HrJobRoles extends CRM_Core_DAO
   {
     if (!(self::$_fields)) {
       self::$_fields = array(
-        'id' => array(
+        'hrjobroles_id' => array(
           'name' => 'id',
           'type' => CRM_Utils_Type::T_INT,
           'required' => true,
