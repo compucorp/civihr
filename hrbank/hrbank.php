@@ -104,3 +104,22 @@ function hrbank_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
 function hrbank_civicrm_managed(&$entities) {
   return _hrbank_civix_civicrm_managed($entities);
 }
+
+/**
+ * Implementation of hook_civicrm_tabset
+ *
+ * @param string $tabsetName
+ * @param array $tabs
+ * @param mixed $context
+ */
+function hrbank_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName != 'civicrm/contact/view') {
+    return;
+  }
+
+  foreach ($tabs as $i => $tab) {
+    if ($tab['title'] == 'Bank Details') {
+        $tabs[$i]['icon'] = 'fa fa-bank';
+    }
+  }
+}
