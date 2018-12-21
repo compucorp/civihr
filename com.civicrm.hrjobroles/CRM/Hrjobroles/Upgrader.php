@@ -79,7 +79,17 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
   }
 
   /**
-   * Updates job role having wrong funder id with correct contact id
+   * Updates job role having wrong funder id with correct contact id.
+   *
+   * The wrong funder ids were as a result of contact api not returning
+   * correct contact id. When requesting for list of individual contact
+   * types to be used as funders, the api returns job role id instead of
+   * contact id whenever a contacts have existing job role.
+   *
+   * To decide the correct id, the funders in each job roles are checked
+   * against contacts whose contact types are individual. The id of contacts,
+   * whose job role id matches the funder are used to update the previously
+   * saved funder.
    *
    * @return bool
    * @throws CiviCRM_API3_Exception
@@ -110,8 +120,8 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
    * Retrieves the correct contact for a funder and
    * indicates update is required when found
    *
-   * @param $funders
-   * @param $contactDetails
+   * @param array $funders
+   * @param array $contactDetails
    *
    * @return array
    */
@@ -119,9 +129,9 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     $allowUpdate = FALSE;
     foreach ($funders as $index => $funder) {
       $jobRoleIds = array_column($contactDetails, 'jobrole_id');
-      $funderIndex = array_search($funder, $jobRoleIds);
-      if ($funderIndex) {
-        $funders[$index] = array_values($contactDetails)[$funderIndex]['id'];
+      $funderIndex = array_search($funder, $jobRoleIds, TRUE);
+      if ($funderIndex !== FALSE) {
+        $funders[$index] = $contactDetails[$funderIndex]['id'];
         $allowUpdate = TRUE;
       }
     }
@@ -135,7 +145,6 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
    * @return array
    */
   private function getContactsWithJobRole() {
-    $contacts = [];
     $query = "
       SELECT c.id, jc.id as contract_id, jr.id AS jobrole_id, jr.funder
       FROM `civicrm_contact` c
@@ -145,16 +154,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     ";
 
     $result = CRM_Core_DAO::executeQuery($query);
-    while ($result->fetch()) {
-      $contacts[$result->id] = [
-        'id' => $result->id,
-        'contract_id' => $result->contract_id,
-        'jobrole_id' => $result->jobrole_id,
-        'funder' => $result->funder
-      ];
-    }
-
-    return $contacts;
+    return $result->fetchAll();
   }
 
   /**
