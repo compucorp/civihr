@@ -191,6 +191,12 @@ function hrqual_civicrm_tabset($tabsetName, &$tabs, $context) {
         'optionGroups' => $val,
       ),
     ));
+
+    foreach ($tabs as $i => $tab) {
+      if ($tab['title'] == 'Qualifications') {
+        $tabs[$i]['icon'] = 'fa fa-certificate';
+      }
+    }
   }
 }
 
