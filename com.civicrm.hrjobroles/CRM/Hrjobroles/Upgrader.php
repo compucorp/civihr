@@ -129,7 +129,7 @@ class CRM_Hrjobroles_Upgrader extends CRM_Hrjobroles_Upgrader_Base {
     $allowUpdate = FALSE;
     foreach ($funders as $index => $funder) {
       $jobRoleIds = array_column($contactDetails, 'jobrole_id');
-      $funderIndex = array_search($funder, $jobRoleIds, TRUE);
+      $funderIndex = array_search($funder, $jobRoleIds);
       if ($funderIndex !== FALSE) {
         $funders[$index] = $contactDetails[$funderIndex]['id'];
         $allowUpdate = TRUE;
