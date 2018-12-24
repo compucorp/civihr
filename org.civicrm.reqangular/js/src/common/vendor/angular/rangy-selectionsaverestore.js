@@ -1,3 +1,20 @@
+/*
+  !CUSTOMIZED VENDOR FILE!
+
+  Rangy is written to correctly work as an AMD module, but textAngular.js
+  (which is a shimmed, not-AMD "module") expects window.rangy to exist.
+
+  The workaround consists of making sure a global variable is created before
+  defining the module
+
+  More details on dependencies for shimmed modules here:
+  http://requirejs.org/docs/api.html#config-shim
+
+  > Only use other "shim" modules as dependencies for shimmed scripts,
+  or AMD libraries that have no dependencies and call define() after they
+  also create a global
+*/
+
 /**
  * Selection save and restore module for Rangy.
  * Saves and restores user selections using marker invisible elements in the DOM.
@@ -13,15 +30,14 @@
  * Build date: 20 May 2015
  */
 (function (factory, root) {
+  factory(root.rangy);
+
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module with a dependency on Rangy.
     define(['./rangy-core'], factory);
   } else if (typeof module !== 'undefined' && typeof exports === 'object') {
     // Node/CommonJS style
     module.exports = factory(require('rangy'));
-  } else {
-    // No AMD or CommonJS support so we use the rangy property of root (probably the global variable)
-    factory(root.rangy);
   }
 })(function (rangy) {
   rangy.createModule('SaveRestore', ['WrappedRange'], function (api, module) {

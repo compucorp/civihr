@@ -161,15 +161,21 @@ define([
      * been loaded.
      */
     function loadDependencies () {
-      loadCurrentJobContract().then(function () {
-        return $q.all([
-          loadAbsenceTypes(),
-          loadAbsencePeriod(),
-          loadLeaveRequestTypes()
-        ]);
-      }).finally(function () {
-        vm.loading.component = false;
-      });
+      loadCurrentJobContract()
+        .then(function () {
+          if (!vm.jobContract) {
+            return;
+          }
+
+          return $q.all([
+            loadAbsenceTypes(),
+            loadAbsencePeriod(),
+            loadLeaveRequestTypes()
+          ]);
+        })
+        .finally(function () {
+          vm.loading.component = false;
+        });
     }
 
     /**
@@ -195,18 +201,16 @@ define([
      * @return {Promise}
      */
     function loadCurrentJobContract () {
-      return Contract.all({
-        contact_id: vm.contactId,
-        deleted: false
-      }).then(function (contracts) {
-        vm.jobContract = _.find(contracts, function (contract) {
-          return +contract.is_current;
+      return Contract
+        .all({
+          contact_id: vm.contactId,
+          deleted: false
+        })
+        .then(function (contracts) {
+          vm.jobContract = _.find(contracts, function (contract) {
+            return +contract.is_current;
+          });
         });
-      }).then(function () {
-        if (!vm.jobContract) {
-          return $q.reject();
-        }
-      });
     }
 
     /**

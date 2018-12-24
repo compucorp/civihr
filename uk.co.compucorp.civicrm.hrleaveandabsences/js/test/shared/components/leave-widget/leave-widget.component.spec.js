@@ -11,7 +11,7 @@ define([
 ], function (_) {
   describe('LeaveWidget', function () {
     var $componentController, $provide, $q, $rootScope, $scope, AbsencePeriod,
-      AbsenceType, Contract, ctrl, OptionGroup, pubSub;
+      AbsenceType, Contract, ctrl, jobContractSpy, OptionGroup, pubSub;
     var contactId = 208;
 
     beforeEach(module('common.mocks', 'leave-absences.components.leave-widget',
@@ -39,6 +39,7 @@ define([
       AbsencePeriod = _AbsencePeriod_;
       AbsenceType = _AbsenceType_;
       Contract = _Contract_;
+      jobContractSpy = spyOn(Contract, 'all').and.callThrough();
       OptionGroup = _OptionGroup_;
       pubSub = _pubSub_;
 
@@ -46,7 +47,6 @@ define([
       spyOn(AbsencePeriod, 'all').and.callThrough();
       spyOn(AbsenceType, 'all').and.callThrough();
       spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
-      spyOn(Contract, 'all').and.callThrough();
       spyOn(OptionGroup, 'valuesOf').and.callThrough();
     }));
 
@@ -55,7 +55,6 @@ define([
         { $scope: $scope },
         { contactId: contactId }
       );
-      ctrl.$onInit();
     });
 
     it('should be defined', function () {
@@ -63,6 +62,11 @@ define([
     });
 
     describe('on init', function () {
+      beforeEach(function () {
+        jobContractSpy.and.callThrough();
+        ctrl.$onInit();
+      });
+
       it('sets loading child components to false', function () {
         expect(ctrl.loading.childComponents).toBe(false);
       });
@@ -314,6 +318,20 @@ define([
         it('sets loading component to false', function () {
           expect(ctrl.loading.component).toBe(false);
         });
+      });
+    });
+
+    describe('when there is no job contract', function () {
+      beforeEach(function () {
+        jobContractSpy.and.returnValue($q.resolve([]));
+        ctrl.$onInit();
+        $rootScope.$digest();
+      });
+
+      it('does not fetch other supportive data', function () {
+        expect(AbsencePeriod.all).not.toHaveBeenCalled();
+        expect(AbsenceType.all).not.toHaveBeenCalled();
+        expect(OptionGroup.valuesOf).not.toHaveBeenCalled();
       });
     });
   });
