@@ -65,7 +65,7 @@ class CRM_Hrjobcontract_BAO_HRJobHealth extends CRM_Hrjobcontract_DAO_HRJobHealt
   public static function checkProvider($searchValue, $providerType) {
     $result = civicrm_api3('OptionValue', 'get', [
       'option_group_id' => 'hrjc_' . strtolower($providerType),
-      'value' => $searchValue,
+      'name' => $searchValue,
     ]);
 
     if ($result['count']) {
