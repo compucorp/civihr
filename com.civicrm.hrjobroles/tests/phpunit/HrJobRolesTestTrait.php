@@ -28,7 +28,8 @@ trait HrJobRolesTestTrait {
       'hrjc_region' => 'south amman',
       'hrjc_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'cost_centres' => 'abdali'
+      'cost_centres' => 'abdali',
+      'hrjc_funder' => 'funder'
     ];
 
     $optionGroupsList = array_keys($optionGroupsValuesList);
@@ -98,7 +99,7 @@ trait HrJobRolesTestTrait {
       'label' => $funder,
     ]);
 
-    return $result['id'];
+    return array_shift($result['values']);
   }
 
   /**
