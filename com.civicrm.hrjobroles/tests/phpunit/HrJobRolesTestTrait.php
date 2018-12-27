@@ -85,6 +85,23 @@ trait HrJobRolesTestTrait {
   }
 
   /**
+   * Creates an option value for hrjc_funder option group
+   *
+   * @param $funder
+   * @return mixed
+   * @throws CiviCRM_API3_Exception
+   */
+  protected function createFunder($funder) {
+    $result = civicrm_api3('OptionValue', 'create', [
+      'option_group_id' => 'hrjc_funder',
+      'name' => $funder,
+      'label' => $funder,
+    ]);
+
+    return $result['id'];
+  }
+
+  /**
    * Creates a new Job Contract for the given contact
    *
    * If a startDate is given, it will also create a JobDetails instance to save

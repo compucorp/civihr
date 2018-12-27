@@ -122,6 +122,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
+    $funderId = $this->createFunder('Test Funder');
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -134,7 +135,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_region' => 'south amman',
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'funder' => $contactID,
+      'funder' => $funderId,
       'hrjc_funder_val_type' => '%',
       'hrjc_role_percent_pay_funder' => '30'
     ];
@@ -152,6 +153,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
+    $funderId = $this->createFunder('Test Funder');
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -164,7 +166,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_region' => 'south amman',
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'funder' => $contactID,
+      'funder' => $funderId,
       'hrjc_funder_val_type' => 'fixed',
       'hrjc_role_amount_pay_funder' => '30'
     ];
