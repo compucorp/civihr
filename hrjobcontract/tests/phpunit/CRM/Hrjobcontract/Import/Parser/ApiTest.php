@@ -442,7 +442,7 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CRM_Hrjobcontract_Test_Bas
       'is_active' => TRUE,
     ]);
 
-    return $providerOption['value'];
+    return $providerOption['name'];
   }
 
   public function testImportingContractWithEndDateWithoutEndReason() {

@@ -249,14 +249,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRoles extends CRM_Hrjobroles_Import_Pars
 
       $funder_error = FALSE;
       if (!empty($params['funder'])) {
-        $funder_value = $params['funder'];
-        if (is_numeric ($funder_value))  {
-          $search_field = 'id';
-        }
-        else {
-          $search_field = 'display_name';
-        }
-        $result = CRM_Hrjobroles_BAO_HrJobRoles::contactExists($funder_value, $search_field);
+        $result = CRM_Hrjobroles_BAO_HrJobRoles::funderExists($params['funder']);
         if ($result !== 0)  {
           $params['funder'] = $result;
           if (!empty($params['hrjc_funder_val_type']))  {

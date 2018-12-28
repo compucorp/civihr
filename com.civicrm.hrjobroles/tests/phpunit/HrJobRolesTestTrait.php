@@ -28,7 +28,8 @@ trait HrJobRolesTestTrait {
       'hrjc_region' => 'south amman',
       'hrjc_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'cost_centres' => 'abdali'
+      'cost_centres' => 'abdali',
+      'hrjc_funder' => 'funder'
     ];
 
     $optionGroupsList = array_keys($optionGroupsValuesList);
@@ -82,6 +83,23 @@ trait HrJobRolesTestTrait {
       'display_name' => $params['first_name'] . ' ' . $params['last_name'],
     ));
     return $result['id'];
+  }
+
+  /**
+   * Creates an option value for hrjc_funder option group
+   *
+   * @param $funder
+   * @return mixed
+   * @throws CiviCRM_API3_Exception
+   */
+  protected function createFunder($funder) {
+    $result = civicrm_api3('OptionValue', 'create', [
+      'option_group_id' => 'hrjc_funder',
+      'name' => $funder,
+      'label' => $funder,
+    ]);
+
+    return array_shift($result['values']);
   }
 
   /**
