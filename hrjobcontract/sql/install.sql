@@ -136,11 +136,11 @@ CREATE TABLE `civicrm_hrjobcontract_pay` (
 
 CREATE TABLE `civicrm_hrjobcontract_health` (
     `id` int unsigned NOT NULL AUTO_INCREMENT  COMMENT 'Unique HRJobHealth ID',
-    `provider` int unsigned    COMMENT 'FK to Contact ID for the organization or company which manages healthcare service',
+    `provider` varchar(512)    COMMENT 'Reference to option value belonging to hrjc_health_insurance_provider option group',
     `plan_type` varchar(63)   COMMENT '.',
     `description` text    ,
     `dependents` text,
-    `provider_life_insurance` int unsigned    COMMENT 'FK to Contact ID for the organization or company which manages life insurance service',
+    `provider_life_insurance` varchar(512)    COMMENT 'Reference to option value belonging to hrjc_life_insurance_provider option group',
     `plan_type_life_insurance` varchar(63)    COMMENT '.',
     `description_life_insurance` text,
     `dependents_life_insurance` text,
@@ -151,8 +151,6 @@ CREATE TABLE `civicrm_hrjobcontract_health` (
     INDEX `index_provider_life_insurance`(provider_life_insurance),
     INDEX `index_plan_type_life_insurance`(plan_type_life_insurance),
     INDEX `index_jobcontract_revision_id` (jobcontract_revision_id ASC),
-    CONSTRAINT `FK_civicrm_hrjobcontract_health_provider` FOREIGN KEY (`provider`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL,
-    CONSTRAINT `FK_civicrm_hrjobcontract_health_provider_life_insurance` FOREIGN KEY (`provider_life_insurance`)  REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL,
     CONSTRAINT `FK_civicrm_hrjobcontract_health_jobcontract_revision_id` FOREIGN KEY (`jobcontract_revision_id`)  REFERENCES `civicrm_hrjobcontract_revision` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
@@ -213,7 +211,7 @@ CREATE TABLE `civicrm_hrjobcontract_pension` (
     `is_enrolled` tinyint   DEFAULT 0 ,
     `ee_contrib_pct` double   DEFAULT 0 COMMENT 'Employee Contribution Percentage',
     `er_contrib_pct` double   DEFAULT 0 COMMENT 'Employer Contribution Percentage',
-    `pension_type` varchar(63) COMMENT 'Pension Type',
+    `pension_type` varchar(512) COMMENT 'Pension Type',
     `ee_contrib_abs` decimal(20,2)   DEFAULT 0 COMMENT 'Employee Contribution Absolute Amount',
     `ee_evidence_note` varchar(127)   COMMENT 'Employee evidence note',
     `jobcontract_revision_id` INT(10) UNSIGNED DEFAULT NULL,

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<CustomData>
+  <OptionGroups>
+    <OptionGroup>
+      <name>hrjc_health_insurance_provider</name>
+      <title>Health Insurance Provider</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+
+    <OptionGroup>
+      <name>hrjc_life_insurance_provider</name>
+      <title>Life Insurance Provider</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+
+    <OptionGroup>
+      <name>hrjc_pension_provider</name>
+      <title>Pension Provider</title>
+      <is_reserved>1</is_reserved>
+      <is_active>1</is_active>
+    </OptionGroup>
+  </OptionGroups>
+</CustomData>

@@ -94,7 +94,7 @@
                         title="Choose a location"
                         name="newLocation">
                         <ui-select-match prevent-animations allow-clear placeholder="Select a location">{{$select.selected.value.title}}</ui-select-match>
-                        <ui-select-choices prevent-animations repeat="location.value.value as (key,location) in jobroles.LocationsData | filter: { value: { title: $select.search }}">
+                        <ui-select-choices prevent-animations repeat="location.value.value as (key,location) in jobroles.locationsData | filter: { value: { title: $select.search }}">
                           <div ng-bind-html="location.value.title | highlight: $select.search"></div>
                         </ui-select-choices>
                       </ui-select>
@@ -119,7 +119,7 @@
                         title="Choose a Region"
                         name="newRegion">
                         <ui-select-match prevent-animations allow-clear placeholder="Select a region">{{$select.selected.value.title}}</ui-select-match>
-                        <ui-select-choices prevent-animations repeat="region.value.value as (key,region) in jobroles.RegionsData | filter: { value: { title: $select.search }}">
+                        <ui-select-choices prevent-animations repeat="region.value.value as (key,region) in jobroles.regionsData | filter: { value: { title: $select.search }}">
                           <div ng-bind-html="region.value.title | highlight: $select.search"></div>
                         </ui-select-choices>
                       </ui-select>
@@ -143,7 +143,7 @@
                         theme="civihr-ui-select"
                         title="Choose a Department">
                         <ui-select-match prevent-animations allow-clear placeholder="Select a department">{{$select.selected.value.title}}</ui-select-match>
-                        <ui-select-choices prevent-animations repeat="department.value.value as (key,department) in jobroles.DepartmentsData | filter: { value: { title: $select.search }}">
+                        <ui-select-choices prevent-animations repeat="department.value.value as (key,department) in jobroles.departmentsData | filter: { value: { title: $select.search }}">
                           <div ng-bind-html="department.value.title | highlight: $select.search"></div>
                         </ui-select-choices>
                       </ui-select>
@@ -167,7 +167,7 @@
                         theme="civihr-ui-select"
                         title="Choose a Level">
                         <ui-select-match prevent-animations allow-clear placeholder="Select a level">{{$select.selected.value.title}}</ui-select-match>
-                        <ui-select-choices prevent-animations repeat="level.value.value as (key,level) in jobroles.LevelsData | filter: { value: { title: $select.search }}">
+                        <ui-select-choices prevent-animations repeat="level.value.value as (key,level) in jobroles.levelsData | filter: { value: { title: $select.search }}">
                           <div ng-bind-html="level.value.title | highlight: $select.search"></div>
                         </ui-select-choices>
                       </ui-select>
@@ -214,7 +214,12 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th style="width:40%">Funder</th>
+                  <th style="width:40%">
+                    Funder
+                    <span class="btn-link pointer" ng-click="jobroles.openOptionsEditor('hrjc_funder')">
+                      <i class="fa fa-wrench"></i>
+                    </span>
+                  </th>
                   <th style="width:15%">Type</th>
                   <th style="width:15%">% Amount</th>
                   <th style="width:15%">Absolute Amount</th>
@@ -225,23 +230,24 @@
                 <tr ng-repeat="(key, funder) in jobroles.editData['new_role_id']['funders']">
                   <td>
                     <!--show funder in non-edit mode-->
-                    <span ng-show="!tableform.$visible">{{funder.funder_id.sort_name}}</span>
+                    <span ng-show="!tableform.$visible">{{funder.funder_id.title}}</span>
                     <!--show ui-select for funder in edit mode-->
                     <span ng-show="tableform.$visible">
-                      <ui-select class="funder-select"
+                      <ui-select
+                        class="funder-select"
                         prevent-animations
                         theme="civihr-ui-select"
                         ng-model="funder.funder_id">
                         <ui-select-match prevent-animations allow-clear placeholder="Select a funder" class="ui-select-match">
-                          {{$select.selected.sort_name}}
+                          {{$select.selected.value.title}}
                         </ui-select-match>
                         <ui-select-choices
                           prevent-animations
                           class="ui-select-choices"
-                          repeat="contact in jobroles.contactList | filter: $select.search"
-                          refresh="jobroles.getContactList($select.search)"
+                          repeat="funder.value.value as (key,funder) in jobroles.fundersData | filter: { value: { title: $select.search }}"
+                          refresh="jobroles.getOptionGroupTypeValues('hrjc_funder')"
                           refresh-delay="500">
-                          <div ng-bind-html="contact.sort_name | highlight: $select.search"></div>
+                          <div ng-bind-html="funder.value.title | highlight: $select.search"></div>
                         </ui-select-choices>
                       </ui-select>
                     </span>

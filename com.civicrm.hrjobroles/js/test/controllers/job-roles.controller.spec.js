@@ -50,13 +50,14 @@ define([
     });
 
     describe('getOptionValues', function () {
-      var expectedDepartmentValue, expectedLocationValue, expectedLevelValue, expectedRegionValue;
+      var expectedDepartmentValue, expectedLocationValue, expectedLevelValue, expectedRegionValue, expectedFunderValue;
 
       beforeEach(function () {
         expectedLevelValue = JobRoleDataMock.option_values.values[0].value;
         expectedDepartmentValue = JobRoleDataMock.option_values.values[4].value;
         expectedLocationValue = JobRoleDataMock.option_values.values[5].value;
         expectedRegionValue = JobRoleDataMock.option_values.values[6].value;
+        expectedFunderValue = JobRoleDataMock.option_values.values[7].value;
 
         spyOn(jobRoleService, 'getOptionValues').and.returnValue($q.resolve(JobRoleDataMock.option_values));
         initController();
@@ -72,23 +73,28 @@ define([
       });
 
       it('builds the "hrjc_level_type" collection containing the "value" property', function () {
-        expect(Object.keys(ctrl.LevelsData).length).toBe(1);
-        expect(ctrl.LevelsData[Object.keys(ctrl.LevelsData)[0]]['value']).toBe(expectedLevelValue);
+        expect(Object.keys(ctrl.levelsData).length).toBe(1);
+        expect(ctrl.levelsData[Object.keys(ctrl.levelsData)[0]]['value']).toBe(expectedLevelValue);
       });
 
       it('builds the "hrjc_department" collection containing the "value" property', function () {
-        expect(Object.keys(ctrl.DepartmentsData).length).toBe(1);
-        expect(ctrl.DepartmentsData[Object.keys(ctrl.DepartmentsData)[0]]['value']).toBe(expectedDepartmentValue);
+        expect(Object.keys(ctrl.departmentsData).length).toBe(1);
+        expect(ctrl.departmentsData[Object.keys(ctrl.departmentsData)[0]]['value']).toBe(expectedDepartmentValue);
       });
 
       it('builds the "hrjc_location" collection containing the "value" property', function () {
-        expect(Object.keys(ctrl.LocationsData).length).toBe(1);
-        expect(ctrl.LocationsData[Object.keys(ctrl.LocationsData)[0]]['value']).toBe(expectedLocationValue);
+        expect(Object.keys(ctrl.locationsData).length).toBe(1);
+        expect(ctrl.locationsData[Object.keys(ctrl.locationsData)[0]]['value']).toBe(expectedLocationValue);
       });
 
       it('builds the "hrjc_region" collection containing the "value" property', function () {
-        expect(Object.keys(ctrl.RegionsData).length).toBe(1);
-        expect(ctrl.RegionsData[Object.keys(ctrl.RegionsData)[0]]['value']).toBe(expectedRegionValue);
+        expect(Object.keys(ctrl.regionsData).length).toBe(1);
+        expect(ctrl.regionsData[Object.keys(ctrl.regionsData)[0]]['value']).toBe(expectedRegionValue);
+      });
+
+      it('builds the "hrjc_funder" collection containing the "value" property', function () {
+        expect(Object.keys(ctrl.fundersData).length).toBe(1);
+        expect(ctrl.fundersData[Object.keys(ctrl.fundersData)[0]]['value']).toBe(expectedFunderValue);
       });
     });
 
@@ -442,42 +448,6 @@ define([
             expect(ctrl.pastJobRoles.length).toBe(2);
           });
         });
-      });
-
-      describe('funders data', function () {
-        var funderContactIds;
-
-        beforeEach(function () {
-          jobRoles = _.toArray(angular.copy(JobRoleDataMock.roles_data_from_api));
-
-          spyOn(jobRoleService, 'getContactList').and.callThrough();
-          initController();
-          $rootScope.$digest();
-
-          funderContactIds = extractFundersContactIds();
-        });
-
-        it('fetches the contact for each job role funder', function () {
-          expect(jobRoleService.getContactList).toHaveBeenCalledWith(null, funderContactIds);
-        });
-
-        /**
-         * Method that mimics how the controller extracts the ids
-         *
-         * @return {Array}
-         */
-        function extractFundersContactIds () {
-          return _(ctrl.presentJobRoles.concat(ctrl.pastJobRoles))
-            .map(function (jobRole) {
-              return jobRole.funder;
-            })
-            .thru(function (funderIds) {
-              return funderIds.join('').split('|');
-            })
-            .compact()
-            .uniq()
-            .value();
-        }
       });
 
       /**

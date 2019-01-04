@@ -95,9 +95,9 @@ class CRM_Hrjobcontract_DAO_HRJobHealth extends CRM_Hrjobcontract_DAO_Base
    */
   public $id;
   /**
-   * FK to Contact ID for the organization or company which manages healthcare service
+   * Reference to option value belonging to hrjc_health_insurance_provider option group
    *
-   * @var int unsigned
+   * @var string
    */
   public $provider;
   /**
@@ -117,9 +117,9 @@ class CRM_Hrjobcontract_DAO_HRJobHealth extends CRM_Hrjobcontract_DAO_Base
    */
   public $dependents;
   /**
-   * FK to Contact ID for the organization or company which manages life insurance service
+   * Reference to option value belonging to hrjc_life_insurance_provider option group
    *
-   * @var int unsigned
+   * @var string
    */
   public $provider_life_insurance;
   /**
@@ -160,8 +160,6 @@ class CRM_Hrjobcontract_DAO_HRJobHealth extends CRM_Hrjobcontract_DAO_Base
   {
     if (!self::$_links) {
       self::$_links = array(
-        new CRM_Core_Reference_Basic(self::getTableName() , 'provider', 'civicrm_contact', 'id') ,
-        new CRM_Core_Reference_Basic(self::getTableName() , 'provider_life_insurance', 'civicrm_contact', 'id') ,
         new CRM_Core_Reference_Basic(self::getTableName() , 'jobcontract_revision_id', 'civicrm_hrjobcontract_revision', 'id') ,
       );
     }
@@ -191,14 +189,18 @@ class CRM_Hrjobcontract_DAO_HRJobHealth extends CRM_Hrjobcontract_DAO_Base
               ) ,
               'hrjobcontract_health_health_provider' => array(
                 'name' => 'provider',
-                'type' => CRM_Utils_Type::T_INT,
+                'type' => CRM_Utils_Type::T_STRING,
                 'title' => ts('Health Insurance Provider') ,
                 'export' => true,
                 'import' => true,
+                'maxlength' => 512,
+                'size' => CRM_Utils_Type::HUGE,
                 'where' => 'civicrm_hrjobcontract_health.provider',
                 'headerPattern' => '',
                 'dataPattern' => '',
-                'FKClassName' => 'CRM_Contact_DAO_Contact',
+                'pseudoconstant' => [
+                  'optionGroupName' => 'hrjc_health_insurance_provider'
+                ],
                 'headerPattern' => '/^health\s?insurance\s?provider/i',
                 'entity' => 'HRJobHealth',
                 'bao' => 'CRM_Hrjobcontract_DAO_HRJobHealth',
@@ -249,14 +251,18 @@ class CRM_Hrjobcontract_DAO_HRJobHealth extends CRM_Hrjobcontract_DAO_Base
               ) ,
               'hrjobcontract_health_health_provider_life_insurance' => array(
                 'name' => 'provider_life_insurance',
-                'type' => CRM_Utils_Type::T_INT,
+                'type' => CRM_Utils_Type::T_STRING,
                 'title' => ts('Life insurance Provider') ,
                 'export' => true,
                 'import' => true,
+                'maxlength' => 512,
+                'size' => CRM_Utils_Type::HUGE,
                 'where' => 'civicrm_hrjobcontract_health.provider_life_insurance',
                 'headerPattern' => '',
                 'dataPattern' => '',
-                'FKClassName' => 'CRM_Contact_DAO_Contact',
+                'pseudoconstant' => [
+                  'optionGroupName' => 'hrjc_life_insurance_provider'
+                ],
                 'headerPattern' => '/^life\s?insurance\s?provider/i',
                 'entity' => 'HRJobHealth',
                 'bao' => 'CRM_Hrjobcontract_DAO_HRJobHealth',

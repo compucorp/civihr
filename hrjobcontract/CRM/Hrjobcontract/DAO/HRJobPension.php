@@ -114,7 +114,7 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
   /**
    * Pension Type
    *
-   * @var int
+   * @var string
    */
   public $pension_type;
   /**
@@ -220,19 +220,18 @@ class CRM_Hrjobcontract_DAO_HRJobPension extends CRM_Hrjobcontract_DAO_Base
                 ) ,
                 'hrjobcontract_pension_pension_type' => array(
                   'name' => 'pension_type',
-                  'type' => CRM_Utils_Type::T_INT,
+                  'type' => CRM_Utils_Type::T_STRING,
                   'title' => ts('Pension Provider') ,
                   'export' => true,
                   'import' => true,
+                  'maxlength' => 512,
+                  'size' => CRM_Utils_Type::HUGE,
                   'where' => 'civicrm_hrjobcontract_pension.pension_type',
                   'headerPattern' => '/^pension\s?provider/i',
                   'dataPattern' => '',
-                  'FKClassName' => 'CRM_Contact_DAO_Contact',
-                  'pseudoconstant' => array(
-                    'table' => 'civicrm_contact',
-                    'keyColumn' => 'id',
-                    'labelColumn' => 'display_name',
-                  ),
+                  'pseudoconstant' => [
+                    'optionGroupName' => 'hrjc_pension_provider'
+                  ],
                   'entity' => 'HRJobPension',
                   'bao' => 'CRM_Hrjobcontract_DAO_HRJobPension',
                   'localizable' => 0,
