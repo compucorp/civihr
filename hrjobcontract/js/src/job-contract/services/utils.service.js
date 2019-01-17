@@ -1,8 +1,9 @@
 /* eslint-env amd */
 
 define([
-  'common/angular'
-], function (angular) {
+  'common/angular',
+  'common/lodash'
+], function (angular, _) {
   'use strict';
 
   utilsService.$inject = ['apiService', 'settings', '$q', '$log', '$rootElement', '$timeout', '$uibModal', '$window', 'AbsencePeriod'];
@@ -70,6 +71,24 @@ define([
         });
 
         return deffered.promise;
+      },
+
+      getOptionValues: function (groupNames) {
+        var deferred = $q.defer();
+        var multiple = _.isArray(groupNames);
+
+        API.resource('OptionValue', 'get', {
+          'sequential': 1,
+          'is_active': 1,
+          'option_group_id.name': { 'IN': multiple ? groupNames : [groupNames] },
+          'return': [ 'id', 'label', 'weight', 'value', 'is_active', 'option_group_id', 'option_group_id.name' ]
+        }).get(function (data) {
+          deferred.resolve(data);
+        }, function () {
+          deferred.reject('Unable to fetch standard hours');
+        });
+
+        return deferred.promise;
       },
 
       /**

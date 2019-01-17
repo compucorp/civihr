@@ -122,6 +122,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
+    $funderOptionValue = $this->createFunder('Test Funder');
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -134,7 +135,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_region' => 'south amman',
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'funder' => $contactID,
+      'funder' => $funderOptionValue['name'],
       'hrjc_funder_val_type' => '%',
       'hrjc_role_percent_pay_funder' => '30'
     ];
@@ -143,7 +144,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
 
     $roleEntity = $this->findRole(['title' => $importParams['title']]);
     $this->assertEquals($importParams['title'], $roleEntity->title);
-    $this->assertEquals($importParams['funder'], $roleEntity->funder);
+    $this->assertEquals($funderOptionValue['value'], $roleEntity->funder);
     $this->assertEquals(1, $roleEntity->funder_val_type);
     $this->assertEquals($importParams['hrjc_role_percent_pay_funder'], $roleEntity->percent_pay_funder);
   }
@@ -152,6 +153,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
     // create contact
     $contactParams = ['first_name'=>'walter', 'last_name'=>'white'];
     $contactID = $this->createContact($contactParams);
+    $funderOptionValue = $this->createFunder('Test Funder');
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -164,7 +166,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_region' => 'south amman',
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'funder' => $contactID,
+      'funder' => $funderOptionValue['name'],
       'hrjc_funder_val_type' => 'fixed',
       'hrjc_role_amount_pay_funder' => '30'
     ];
@@ -173,7 +175,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
 
     $roleEntity = $this->findRole(['title' => $importParams['title']]);
     $this->assertEquals($importParams['title'], $roleEntity->title);
-    $this->assertEquals($importParams['funder'], $roleEntity->funder);
+    $this->assertEquals($funderOptionValue['value'], $roleEntity->funder);
     $this->assertEquals(0, $roleEntity->funder_val_type);
     $this->assertEquals($importParams['hrjc_role_amount_pay_funder'], $roleEntity->amount_pay_funder);
   }
@@ -186,6 +188,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'display_name' => 'walter white'
     ];
     $contactID = $this->createContact($contactParams);
+    $funderOptionValue = $this->createFunder('Test Funder');
 
     // create contract
     $contract = $this->createJobContract($contactID, date('Y-m-d', strtotime('-14 days')));
@@ -198,7 +201,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
       'hrjc_region' => 'south amman',
       'hrjc_role_department' => 'amman devs',
       'hrjc_level_type' => 'guru',
-      'funder' => $contactParams['display_name'],
+      'funder' => $funderOptionValue['name'],
       'hrjc_funder_val_type' => 'fixed',
       'hrjc_role_amount_pay_funder' => '30'
     ];
@@ -207,7 +210,7 @@ class CRM_Hrjobroles_Import_Parser_HrJobRolesTest extends CRM_Hrjobroles_Test_Ba
 
     $roleEntity = $this->findRole(['title' => $importParams['title']]);
     $this->assertEquals($importParams['title'], $roleEntity->title);
-    $this->assertEquals($contactID, $roleEntity->funder);
+    $this->assertEquals($funderOptionValue['value'], $roleEntity->funder);
     $this->assertEquals(0, $roleEntity->funder_val_type);
     $this->assertEquals($importParams['hrjc_role_amount_pay_funder'], $roleEntity->amount_pay_funder);
   }

@@ -85,14 +85,14 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
 
   public function upgradeBundle() {
     //$this->ctx->log->info('Applying update 0999');
-    $this->executeCustomDataFile('xml/option_group_install.xml');
+    $this->executeCustomDataFile('xml/option_groups/option_group_install.xml');
 
     //$this->ctx->log->info('Applying update 1101');
-    $this->executeCustomDataFile('xml/1101_departments.xml');
+    $this->executeCustomDataFile('xml/option_groups/1101_departments.xml');
 
     //$this->ctx->log->info('Applying update 1105');
     if (!CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup','hrjc_pension_type', 'name')) {
-      $this->executeCustomDataFile('xml/1105_pension_type.xml');
+      $this->executeCustomDataFile('xml/option_groups/1105_pension_type.xml');
     }
 
     $i = 4;
@@ -336,6 +336,8 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     $this->upgrade_1041();
     $this->upgrade_1042();
     $this->upgrade_1043();
+    $this->upgrade_1044();
+    $this->upgrade_1045();
   }
 
   function upgrade_1001() {
@@ -1051,6 +1053,101 @@ class CRM_Hrjobcontract_Upgrader extends CRM_Hrjobcontract_Upgrader_Base {
     ]);
 
     return TRUE;
+  }
+
+  /**
+   * Creates option groups for organisation providers belonging to sub types
+   * Health Insurance Provider, Life Insurance Provider, or Pension Provider
+   *
+   * @return bool
+   */
+  public function upgrade_1044() {
+    $result = civicrm_api3('OptionGroup', 'get', [
+      'name' => ['IN' => [
+        'hrjc_health_insurance_provider',
+        'hrjc_life_insurance_provider',
+        'hrjc_pension_provider'
+      ]],
+    ]);
+
+    if ($result['count'] === 0) {
+      $file = 'xml/option_groups/organisation_contact_install.xml';
+      $this->executeCustomDataFile($file);
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Migrates existing organisation contact to option value
+   * grouping them by contact_sub_type as option group and
+   * updates pension and health table for Hrjobroles
+   *
+   * @return bool
+   */
+  public function upgrade_1045() {
+    $provider = [ 'Health_Insurance_Provider', 'Life_Insurance_Provider', 'Pension_Provider' ];
+    $result = civicrm_api3('Contact', 'get', [
+      'contact_sub_type' => ['IN' => $provider],
+    ]);
+    $contacts = $result['values'];
+    foreach ($contacts as $contact) {
+      foreach ($contact['contact_sub_type'] as $contactType) {
+        $params = [
+          'option_group_id' => 'hrjc_' .  strtolower($contactType),
+          'value' => $contact['id'],
+          'name' => $contact['organization_name'],
+          'label' => $contact['sort_name']
+        ];
+
+        civicrm_api3('OptionValue', 'create', $params);
+      }
+    }
+
+    $this->updateJobContractHealthSchema();
+    $this->updateJobContractPensionSchema();
+
+    return TRUE;
+  }
+
+  /**
+   * Updates job contract health schema
+   */
+  private function updateJobContractHealthSchema() {
+    $healthTableName = CRM_Hrjobcontract_BAO_HRJobHealth::getTableName();
+    $healthForeignKey = 'FK_civicrm_hrjobcontract_health_provider';
+    $lifeInsuranceForeignKey = 'FK_civicrm_hrjobcontract_health_provider_life_insurance';
+
+    $healthConstraintExist = CRM_Core_DAO::checkConstraintExists($healthTableName, $healthForeignKey);
+    if ($healthConstraintExist) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE $healthTableName DROP FOREIGN KEY $healthForeignKey");
+    }
+
+    $lifeInsuranceConstraintExist = CRM_Core_DAO::checkConstraintExists($healthTableName, $lifeInsuranceForeignKey);
+    if ($lifeInsuranceConstraintExist) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE $healthTableName DROP FOREIGN KEY $lifeInsuranceForeignKey");
+    }
+
+    CRM_Core_DAO::executeQuery("
+      ALTER TABLE $healthTableName
+      MODIFY provider VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_health_insurance_provider option group',
+      MODIFY provider_life_insurance VARCHAR(512) COMMENT 'Reference to option value belonging to hrjc_life_insurance_provider option group'
+    ");
+  }
+
+  /**
+   * Updates job contract pension schema
+   */
+  private function updateJobContractPensionSchema() {
+    $pensionTableName = CRM_Hrjobcontract_BAO_HRJobPension::getTableName();
+    $pensionTypeForeignKey = 'pension_type_contact_id_fk';
+
+    $pensionTypeConstraintExist = CRM_Core_DAO::checkConstraintExists($pensionTableName, $pensionTypeForeignKey);
+    if ($pensionTypeConstraintExist) {
+      CRM_Core_DAO::executeQuery("ALTER TABLE $pensionTableName DROP FOREIGN KEY $pensionTypeForeignKey");
+    }
+
+    CRM_Core_DAO::executeQuery("ALTER TABLE $pensionTableName MODIFY pension_type VARCHAR(512)");
   }
 
   /**

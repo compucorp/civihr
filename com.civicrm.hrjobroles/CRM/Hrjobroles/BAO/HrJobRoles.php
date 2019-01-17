@@ -47,17 +47,24 @@ class CRM_Hrjobroles_BAO_HrJobRoles extends CRM_Hrjobroles_DAO_HrJobRoles {
   }
 
   /**
-   * Check Contact if exist   .
+   * Retrieves funder option value if it exists
    *
-   * @param String $searchValue
-   * @param String $searchField
-   * @return Integer ( Contact ID or 0 if not exist)
+   * @param $searchValue
+   *
+   * @return int
    */
-  public static function contactExists($searchValue, $searchField) {
-    $queryParam = array(1 => array($searchValue, 'String'));
-    $query = "SELECT id from civicrm_contact where ".$searchField." = %1";
-    $result = CRM_Core_DAO::executeQuery($query, $queryParam);
-    return $result->fetch() ? $result->id : 0;
+  public static function funderExists($searchValue) {
+    $result = civicrm_api3('OptionValue', 'get', [
+      'option_group_id' => 'hrjc_funder',
+      'name' => $searchValue,
+    ]);
+
+    if ($result['count']) {
+      $optionValue = array_shift($result['values']);
+      return $optionValue['value'];
+    }
+
+    return 0;
   }
 
   /**

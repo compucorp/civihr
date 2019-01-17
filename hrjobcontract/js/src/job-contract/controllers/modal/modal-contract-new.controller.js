@@ -22,6 +22,13 @@ define([
     settings, pubSub) {
     $log.debug('Controller: ModalContractNewController');
 
+    // option group name: key used to store option values for group in scope
+    var PROVIDERS = {
+      'hrjc_health_insurance_provider': 'health_insurance_provider',
+      'hrjc_life_insurance_provider': 'life_insurance_provider',
+      'hrjc_pension_provider': 'pension_provider'
+    };
+
     $scope.allowSave = true;
     $scope.action = 'new';
     $scope.entity = {};
@@ -81,6 +88,8 @@ define([
     $scope.openPayScaleGradeOptionsEditor = openPayScaleGradeOptionsEditor;
     $scope.openAnnualBenefitOptionsEditor = openAnnualBenefitOptionsEditor;
     $scope.openAnnualDeductionOptionsEditor = openAnnualDeductionOptionsEditor;
+    $scope.openProvidersEditor = openProvidersEditor;
+    $scope.loadProviderOptions = loadProviderOptions;
     $scope.save = save;
 
     (function init () {
@@ -101,9 +110,13 @@ define([
       setDefaultLeaveValuesFromAbsenceType();
 
       $rootScope.$broadcast('hrjc-loader-show');
-      fetchInsurancePlanTypes().then(function () {
-        $rootScope.$broadcast('hrjc-loader-hide');
-      });
+      $q.all([
+        fetchInsurancePlanTypes(),
+        loadProviderOptions(Object.keys(PROVIDERS))
+      ])
+        .then(function () {
+          $rootScope.$broadcast('hrjc-loader-hide');
+        });
     }());
 
     function cancel () {
@@ -369,6 +382,20 @@ define([
     }
 
     /**
+     * Opens providers options editor for editing
+     *
+     * @param {String} provider
+     */
+    function openProvidersEditor (provider) {
+      var url = '/civicrm/admin/options/' + provider + '?reset=1';
+
+      crmAngService.loadForm(url)
+        .on('crmUnload', function () {
+          loadProviderOptions([provider]);
+        });
+    }
+
+    /**
      * Reload updated changes for annual deduction and benefit options
      *
      * @param {String} optionType
@@ -380,6 +407,48 @@ define([
         .then(function (data) {
           $rootScope.options.pay[optionName] = _.mapValues(_.keyBy(data, 'value'), 'label');
         });
+    }
+
+    /**
+     * Loads updated record of providers option group
+     *
+     * @param {Array} providers
+     * @returns {Promise}
+     */
+    function loadProviderOptions (providers) {
+      return utilsService.getOptionValues(providers)
+        .then(function (data) {
+          $scope.providers = groupResultByProviders(data);
+        });
+    }
+
+    /**
+     * Groups result of getOptionValues from utilsService.
+     * Results from getOptionValues contains providers from different
+     * option groups. This function pulls each option value into their
+     * respective group.
+     *
+     * @param {Object} data
+     * @returns {Object}
+     */
+    function groupResultByProviders (data) {
+      var providers = Object.keys(PROVIDERS);
+
+      return providers.reduce(function (acc, provider) {
+        acc[PROVIDERS[provider]] = data.values
+          .filter(function (optionValue) {
+            return optionValue['option_group_id.name'] === provider;
+          })
+          .map(function (optionValue) {
+            return {
+              id: optionValue.id,
+              value: optionValue.value,
+              label: optionValue.label
+            };
+          });
+
+        return acc;
+      }, {});
     }
   }
 

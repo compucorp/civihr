@@ -82,7 +82,9 @@ define(function () {
             type: '1',
             funder_id: {
               id: '1',
-              sort_name: 'Default Organization'
+              title: 'Default Organization',
+              weight: 1,
+              is_active: 1
             }
           },
           {
@@ -92,7 +94,9 @@ define(function () {
             type: '0',
             funder_id: {
               id: '3',
-              sort_name: 'Bar Baz'
+              title: 'Bar Baz',
+              weight: 3,
+              is_active: 1
             }
           }
         ],
@@ -126,7 +130,9 @@ define(function () {
             type: '1',
             funder_id: {
               id: '1',
-              sort_name: 'Default Organization'
+              title: 'Default Organization',
+              weight: 1,
+              is_active: 1
             }
           },
           {
@@ -136,7 +142,9 @@ define(function () {
             type: '1',
             funder_id: {
               id: '2',
-              sort_name: 'Foo Bar'
+              title: 'Foo Bar',
+              weight: 2,
+              is_active: 1
             }
           },
           {
@@ -146,7 +154,9 @@ define(function () {
             type: '0',
             funder_id: {
               id: '3',
-              sort_name: 'Bar Baz'
+              title: 'Bar Baz',
+              weight: 3,
+              is_active: 1
             }
           }
         ],
@@ -245,7 +255,7 @@ define(function () {
       }
     },
     option_values: {
-      'count': 7,
+      'count': 8,
       'values': [
         {
           'id': '845',
@@ -334,6 +344,18 @@ define(function () {
           'is_optgroup': '0',
           'is_reserved': '0',
           'is_active': '1'
+        },
+        {
+          'id': '1293',
+          'option_group_id': '145',
+          'label': 'Compucorp',
+          'value': '5',
+          'name': 'Compucorp',
+          'is_default': '0',
+          'weight': '5',
+          'is_optgroup': '0',
+          'is_reserved': '0',
+          'is_active': '1'
         }
       ],
       'optionGroupData': {
@@ -341,7 +363,8 @@ define(function () {
         'hrjc_department': '231',
         'hrjc_level_type': '111',
         'hrjc_location': '102',
-        'hrjc_region': '107'
+        'hrjc_region': '107',
+        'hrjc_funder': '145'
       }
     }
   };

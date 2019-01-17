@@ -71,6 +71,27 @@ define([
       });
     });
 
+    describe('getOptionValues', function () {
+      var optionValueApiParams;
+      var groupNames;
+
+      beforeEach(function () {
+        groupNames = 'hrjc_health_insurance_provider';
+        optionValueApiParams = {
+          'sequential': 1,
+          'is_active': 1,
+          'option_group_id.name': { 'IN': [groupNames] },
+          'return': [ 'id', 'label', 'weight', 'value', 'is_active', 'option_group_id', 'option_group_id.name' ]
+        };
+
+        utilsService.getOptionValues([groupNames]);
+      });
+
+      it('returns only the active option value entries', function () {
+        expect(apiService.resource).toHaveBeenCalledWith('OptionValue', 'get', optionValueApiParams);
+      });
+    });
+
     describe('getManageEntitlementsPageURL', function () {
       it('returns an URL to the Manage Entitlements page', function () {
         var url = utilsService.getManageEntitlementsPageURL(1);

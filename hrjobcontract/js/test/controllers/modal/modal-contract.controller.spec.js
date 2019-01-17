@@ -6,8 +6,9 @@ define([
   'common/moment',
   'mocks/data/contract.data',
   'mocks/data/insurance-plan-types.data',
+  'mocks/data/option-value.data',
   'job-contract/job-contract.module'
-], function (angular, _, moment, MockContract, InsurancePlanTypesMock) {
+], function (angular, _, moment, MockContract, InsurancePlanTypesMock, OptionValueMock) {
   'use strict';
 
   describe('ModalContractController', function () {
@@ -96,6 +97,7 @@ define([
         ModalDialogController: 'edit'
       });
       contractHealthServiceSpy();
+      utilsServiceSpy();
       makeController();
       createContractDetailsServiceSpy(true);
       addSpiesToServicesSaveMethod();
@@ -122,6 +124,10 @@ define([
 
       it('fetches life insurance plan types', function () {
         expect($rootScope.options.health.plan_type_life_insurance).toEqual(result);
+      });
+
+      it('calls getOptionValues() from utilsService', function () {
+        expect(utilsService.getOptionValues).toHaveBeenCalled();
       });
     });
 
@@ -570,6 +576,42 @@ define([
       });
     });
 
+    describe('when user clicks on the "Provider options" wrench icon', function () {
+      var providersPopupLists;
+
+      beforeEach(function () {
+        providersPopupLists = [
+          {
+            'popupFormUrl': '/civicrm/admin/options/hrjc_health_insurance_provider?reset=1',
+            'popupFormField': 'hrjc_health_insurance_provider'
+          },
+          {
+            'popupFormUrl': '/civicrm/admin/options/hrjc_life_insurance_provider?reset=1',
+            'popupFormField': 'hrjc_life_insurance_provider'
+          },
+          {
+            'popupFormUrl': '/civicrm/admin/options/hrjc_pension_provider?reset=1',
+            'popupFormField': 'hrjc_pension_provider'
+          }
+        ];
+        spyOn(crmAngService, 'loadForm').and.callFake(function () {
+          return {
+            on: function (event, callback) {
+            }
+          };
+        });
+        _.each(providersPopupLists, function (popupList) {
+          $scope.openProvidersEditor(popupList.popupFormField);
+        });
+      });
+
+      it('calls the crmAngService with the requested url', function () {
+        _.each(providersPopupLists, function (popupList) {
+          expect(crmAngService.loadForm).toHaveBeenCalledWith(popupList.popupFormUrl);
+        });
+      });
+    });
+
     /**
      * Add spies and return values to the save methods of the different services
      * used by the job contract.
@@ -667,6 +709,15 @@ define([
     function contractHealthServiceSpy () {
       spyOn(contractHealthService, 'getOptions').and.callFake(function () {
         return $q.resolve(InsurancePlanTypesMock.values);
+      });
+    }
+
+    /**
+     * Mocks the response of the getOptionValues from utilsService.
+     */
+    function utilsServiceSpy () {
+      spyOn(utilsService, 'getOptionValues').and.callFake(function () {
+        return $q.resolve(OptionValueMock);
       });
     }
   });

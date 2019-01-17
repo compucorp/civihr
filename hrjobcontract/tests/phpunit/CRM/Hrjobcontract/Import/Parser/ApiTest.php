@@ -435,13 +435,14 @@ class CRM_Hrjobcontract_Import_Parser_ApiTest extends CRM_Hrjobcontract_Test_Bas
   }
 
   private function createProvider($providerName, $type) {
-    $provider = ContactFabricator::fabricateOrganization([
-      'contact_type' => 'Organization',
-      'contact_sub_type' => $type,
-      'organization_name' => $providerName,
+    $providerOption = CRM_Core_BAO_OptionValue::ensureOptionValueExists([
+      'option_group_id' => 'hrjc_' . strtolower($type),
+      'name' => $providerName,
+      'label' => $providerName,
+      'is_active' => TRUE,
     ]);
 
-    return $provider['id'];
+    return $providerOption['name'];
   }
 
   public function testImportingContractWithEndDateWithoutEndReason() {
