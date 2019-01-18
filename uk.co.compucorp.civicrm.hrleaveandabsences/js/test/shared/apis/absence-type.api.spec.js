@@ -9,18 +9,22 @@ define([
   'use strict';
 
   describe('AbsenceTypeAPI', function () {
-    var AbsenceTypeAPI, $httpBackend, sharedSettings;
+    var $q, $rootScope, AbsenceTypeAPI, $httpBackend, sharedSettings;
 
     beforeEach(module('leave-absences.apis', 'leave-absences.settings'));
 
-    beforeEach(inject(['shared-settings', 'AbsenceTypeAPI', '$httpBackend',
-      function (_sharedSettings_, _AbsenceTypeAPI_, _$httpBackend_) {
-        AbsenceTypeAPI = _AbsenceTypeAPI_;
-        $httpBackend = _$httpBackend_;
-        sharedSettings = _sharedSettings_;
+    beforeEach(inject(['shared-settings', function (_sharedSettings_) {
+      sharedSettings = _sharedSettings_;
+    }]));
 
-        spyOn(AbsenceTypeAPI, 'sendGET').and.callThrough();
-      }]));
+    beforeEach(inject($httpBackend, $q, $rootScope, AbsenceTypeAPI, function (_$httpBackend_, _$q_, _$rootScope_, _AbsenceTypeAPI_) {
+      $httpBackend = _$httpBackend_;
+      $q = _$q_;
+      $rootScope = _$rootScope_;
+      AbsenceTypeAPI = _AbsenceTypeAPI_;
+
+      spyOn(AbsenceTypeAPI, 'sendGET').and.callThrough();
+    }));
 
     it('has expected interface', function () {
       expect(Object.keys(AbsenceTypeAPI)).toContain('all', 'calculateToilExpiryDate');
@@ -45,12 +49,22 @@ define([
 
       it('sends GET request with correct parameters and default values', function () {
         expect(AbsenceTypeAPI.sendGET).toHaveBeenCalledWith('AbsenceType', 'get',
-          { is_active: true, options: { sort: 'weight ASC' } });
+          { is_active: true, options: { sort: 'weight ASC' } }, undefined);
       });
 
       it('with expected length', function () {
         absenceTypePromise.then(function (result) {
           expect(result.length).toEqual(totalAbsenceTypes);
+        });
+      });
+
+      describe('when passing no parameters', function () {
+        beforeEach(function () {
+          AbsenceTypeAPI.all();
+        });
+
+        it('handles the case gracefully', function () {
+          expect(AbsenceTypeAPI.sendGET).toHaveBeenCalled();
         });
       });
 
@@ -62,7 +76,6 @@ define([
           expect(firstAbsenceType.title).toBeDefined();
           expect(firstAbsenceType.weight).toBeDefined();
           expect(firstAbsenceType.color).toBeDefined();
-          expect(firstAbsenceType.is_default).toBeDefined();
           expect(firstAbsenceType.is_reserved).toBeDefined();
           expect(firstAbsenceType.allow_request_cancelation).toBeDefined();
           expect(firstAbsenceType.allow_overuse).toBeDefined();
@@ -143,6 +156,45 @@ define([
       it('returns expiry_date', function () {
         absenceTypePromise.then(function (result) {
           expect(result).toEqual(mockData.calculateToilExpiryDate().values.expiry_date);
+        });
+      });
+    });
+
+    describe('save()', function () {
+      var params = { key: 'value' };
+
+      describe('basic tests', function () {
+        beforeEach(function (done) {
+          spyOn(AbsenceTypeAPI, 'sendPOST').and.returnValue($q.resolve());
+
+          AbsenceTypeAPI.save(params)
+            .finally(done);
+          $rootScope.$digest();
+        });
+
+        it('calls API with parameters', function () {
+          expect(AbsenceTypeAPI.sendPOST).toHaveBeenCalledWith(
+            'AbsenceType', 'create', params);
+        });
+      });
+
+      describe('when there are backend errors', function () {
+        var error;
+        var expectedError = 'error';
+
+        beforeEach(function (done) {
+          spyOn(AbsenceTypeAPI, 'sendPOST').and.returnValue($q.reject(expectedError));
+
+          AbsenceTypeAPI.save(params)
+            .catch(function (_error_) {
+              error = _error_;
+            })
+            .finally(done);
+          $rootScope.$digest();
+        });
+
+        it('returns error', function () {
+          expect(error).toBe(expectedError);
         });
       });
     });

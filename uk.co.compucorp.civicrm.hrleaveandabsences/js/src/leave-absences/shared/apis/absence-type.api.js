@@ -8,7 +8,7 @@ define([
 ], function (_, moment, apis) {
   'use strict';
 
-  apis.factory('AbsenceTypeAPI', ['$log', 'api', 'shared-settings', function ($log, api, sharedSettings) {
+  apis.factory('AbsenceTypeAPI', ['$log', '$q', 'api', 'shared-settings', function ($log, $q, api, sharedSettings) {
     $log.debug('AbsenceTypeAPI');
 
     return api.extend({
@@ -17,15 +17,20 @@ define([
        * This method returns all the active AbsenceTypes unless specified in param.
        *
        * @param  {Object} params  matches the api endpoint params (title, weight etc)
+       * @param  {Object} additionalParams
        * @return {Promise}
        */
-      all: function (params) {
+      all: function (params, additionalParams) {
         $log.debug('AbsenceTypeAPI.all');
 
-        return this.sendGET('AbsenceType', 'get', _.defaultsDeep(params || {},
-          { is_active: true, options: { sort: 'weight ASC' } }))
+        var sort;
+
+        params = _.defaults({}, params, { is_active: true });
+        sort = _.get(params, 'options.sort') || 'weight ASC';
+
+        return this.getAll('AbsenceType', params, undefined, sort, additionalParams)
           .then(function (data) {
-            return data.values;
+            return data.list;
           });
       },
 
@@ -49,6 +54,16 @@ define([
           .then(function (data) {
             return data.values.expiry_date;
           });
+      },
+
+      /**
+       * Saves Absence Type
+       *
+       * @param {Object} params matching the `create()` API endpoint parameters
+       */
+      save: function (params) {
+        return this.sendPOST('AbsenceType', 'create', params)
+          .catch($q.reject);
       }
     });
   }]);

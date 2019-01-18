@@ -45,13 +45,6 @@
     <comment>The color hex value (including the #) used to display this type on a calendar</comment>
   </field>
   <field>
-    <name>is_default</name>
-    <title>Is default?</title>
-    <type>boolean</type>
-    <default>0</default>
-    <comment>There can only be one default entity at any given time</comment>
-  </field>
-  <field>
     <name>is_reserved</name>
     <title>Is reserved?</title>
     <type>boolean</type>
@@ -177,6 +170,17 @@
     <title>This controls the visibility of the Leave Type label in the calendar and feeds.</title>
     <type>boolean</type>
     <default>0</default>
+  </field>
+  <field>
+    <name>category</name>
+    <title>Category</title>
+    <type>varchar</type>
+    <length>512</length>
+    <required>true</required>
+    <comment>This is used for grouping leave types.</comment>
+    <pseudoconstant>
+      <optionGroupName>hrleaveandabsences_absence_type_category</optionGroupName>
+    </pseudoconstant>
   </field>
 
 </table>

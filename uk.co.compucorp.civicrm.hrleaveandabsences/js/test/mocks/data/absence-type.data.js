@@ -2,8 +2,9 @@
 
 define([
   'common/lodash',
+  'common/mocks/data/contact.data',
   'leave-absences/mocks/data/option-group.data'
-], function (_, OptionGroupData) {
+], function (_, contactsData, optionGroupsData) {
   var allData = {
     'is_error': 0,
     'version': 3,
@@ -13,7 +14,6 @@ define([
       'title': 'Holiday / Vacation',
       'weight': '1',
       'color': '#151D2C',
-      'is_default': '1',
       'is_reserved': '1',
       'allow_request_cancelation': '3',
       'allow_overuse': '0',
@@ -28,13 +28,13 @@ define([
       'carry_forward_expiration_duration': '12',
       'carry_forward_expiration_unit': '2',
       'calculation_unit': '1',
-      'is_sick': '0'
+      'is_sick': '0',
+      'category': '1'
     }, {
       'id': '2',
       'title': 'TOIL',
       'weight': '2',
       'color': '#056780',
-      'is_default': '0',
       'is_reserved': '1',
       'allow_request_cancelation': '3',
       'allow_overuse': '0',
@@ -49,13 +49,13 @@ define([
       'accrual_expiration_unit': '2',
       'allow_carry_forward': '0',
       'calculation_unit': '1',
-      'is_sick': '0'
+      'is_sick': '0',
+      'category': '3'
     }, {
       'id': '3',
       'title': 'Sick',
       'weight': '3',
       'color': '#B32E2E',
-      'is_default': '0',
       'is_reserved': '1',
       'allow_request_cancelation': '1',
       'allow_overuse': '1',
@@ -67,13 +67,13 @@ define([
       'allow_accrue_in_the_past': '0',
       'allow_carry_forward': '0',
       'calculation_unit': '1',
-      'is_sick': '1'
+      'is_sick': '1',
+      'category': '2'
     }, {
       'id': '4',
       'title': 'Weekend',
       'weight': '4',
       'color': '#B32E2E',
-      'is_default': '0',
       'is_reserved': '1',
       'allow_request_cancelation': '1',
       'allow_overuse': '1',
@@ -85,13 +85,13 @@ define([
       'allow_accrue_in_the_past': '0',
       'allow_carry_forward': '0',
       'calculation_unit': '1',
-      'is_sick': '0'
+      'is_sick': '0',
+      'category': '4'
     }, {
       'id': '5',
       'title': 'Custom',
       'weight': '5',
       'color': 'null',
-      'is_default': '0',
       'is_reserved': '0',
       'allow_request_cancelation': '3',
       'must_take_public_holiday_as_leave': '0',
@@ -101,7 +101,8 @@ define([
       'allow_accruals_request': '0',
       'allow_carry_forward': '0',
       'is_sick': '0',
-      'calculation_unit': '1'
+      'calculation_unit': '1',
+      'category': '4'
     }]
   };
 
@@ -114,6 +115,29 @@ define([
   return {
     all: function () {
       return allData;
+    },
+    allWithNotificationReceivers: function () {
+      var data = _.cloneDeep(allData);
+
+      data.values.forEach(function (absenceType) {
+        var notificationReceivers =
+          contactsData.all.values.map(function (contact, index) {
+            return {
+              id: index + 1,
+              type_id: absenceType.id,
+              contact_id: contact.id
+            };
+          });
+
+        absenceType['api.NotificationReceiver.get'] = {
+          is_error: '0',
+          version: '3',
+          count: notificationReceivers.length,
+          values: notificationReceivers
+        };
+      });
+
+      return data;
     },
     getRandomAbsenceType: function (key) {
       return _.sample(allData.values)[key];
@@ -151,7 +175,7 @@ define([
     getAllAndTheirCalculationUnits: function () {
       var calculationUnits, unit;
 
-      calculationUnits = OptionGroupData.getCollection('hrleaveandabsences_absence_type_calculation_unit');
+      calculationUnits = optionGroupsData.getCollection('hrleaveandabsences_absence_type_calculation_unit');
       calculationUnits = _.keyBy(calculationUnits, 'value');
 
       return this.all().values.map(function (absenceType) {

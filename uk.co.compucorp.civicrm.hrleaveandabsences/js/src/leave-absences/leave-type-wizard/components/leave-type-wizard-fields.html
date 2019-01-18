@@ -1,0 +1,64 @@
+<div ng-repeat="tab in section.tabs"
+  ng-if="tab.active && !tab.hidden"
+  class="row form-horizontal">
+  <div class="col-md-12">
+    <div class="form-group" ng-repeat="field in tab.fields" ng-if="!field.hidden">
+      <label class="control-label"
+        ng-class="{
+          'col-md-3': !field.labelLayout,
+          'col-md-12': field.labelLayout === 'horizontal',
+          'required-mark': field.label && field.required
+        }">
+        {{field.label}}
+        <help-text ng-if="field.helpText" title="{{field.label}}">
+          <p class="respect-line-breaks">{{field.helpText}}</p>
+        </help-text>
+      </label>
+      <div ng-class="{ 'col-md-9': !field.labelLayout, 'col-md-12': field.labelLayout === 'horizontal' }">
+        <ng-include
+          src="form.componentsPath + '/fields-templates/leave-type-wizard-field-' + field.name + '.html'"></ng-include>
+      </div>
+    </div>
+    <hr ng-if="section.tabs.length > 1"/>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="pull-right">
+          <button class="btn btn-primary leave-type-wizard__next-section-button"
+            ng-if="tab.last && !form.isEditMode"
+            ng-click="form.goNext()"
+            ng-disabled="section.disableNextSectionButton">
+            {{section.nextSectionButtonCustomText || 'Next section'}}
+            <i class="fa fa-chevron-right"
+              ng-if="section.nextSectionButtonChevron"></i>
+          </button>
+          <button class="btn btn-secondary"
+            ng-if="!tab.last"
+            ng-click="form.goNext()">
+            Next
+          </button>
+          <button class="btn btn-primary"
+            ng-if="form.isEditMode"
+            ng-click="form.submit()"
+            ng-disabled="form.disableFormSubmission">
+            Save and Done
+          </button>
+        </div>
+        <button class="btn btn-secondary"
+          ng-if="tab.first && !form.isEditMode"
+          ng-click="form.goBack()">
+          {{section.previousSectionButtonCustomText || 'Previous section'}}
+        </button>
+        <button class="btn btn-secondary"
+          ng-if="form.isEditMode"
+          ng-click="form.cancel()">
+          Cancel
+        </button>
+        <button class="btn btn-secondary"
+          ng-if="!tab.first"
+          ng-click="form.goBack()">
+          Back
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

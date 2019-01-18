@@ -1,5 +1,17 @@
 <tr>
-  <th class="chr_leave-report__table__heading--label"></th>
+  <th class="chr_leave-report__table__heading--label">
+    <small ng-if="section && section.groupedData &&
+      section.groupedData.length < section.data.length &&
+      $root.section !== 'my-leave'"
+      ng-switch="section.grouped">
+      <a href ng-switch-when="true"
+        ng-click="section.grouped = false">
+        Show individual {{sectionName}}</a>
+      <a href ng-switch-when="false"
+        ng-click="section.grouped = true">
+        Group {{sectionName}} by date</a>
+    </small>
+  </th>
   <th class="chr_leave-report__table__heading--dates">Dates</th>
   <th class="chr_leave-report__table__heading--status">Status</th>
   <th

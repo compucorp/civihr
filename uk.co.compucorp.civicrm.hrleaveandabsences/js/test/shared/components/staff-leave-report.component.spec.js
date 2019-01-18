@@ -505,19 +505,107 @@
           });
 
           describe('section: Public Holidays', function () {
-            beforeEach(function () {
-              openSection('holidays');
+            describe('basic tests', function () {
+              beforeEach(function () {
+                openSection('holidays');
+              });
+
+              it('fetches all leave requests linked to a public holiday', function () {
+                expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
+                  public_holiday: true,
+                  type_id: { IN: absenceTypesIDs }
+                }), null, requestSortParam, null, false);
+              });
+
+              it('caches the data', function () {
+                expect(controller.sections.holidays.data.length).not.toBe(0);
+              });
             });
 
-            it('fetches all leave requests linked to a public holiday', function () {
-              expect(LeaveRequest.all).toHaveBeenCalledWith(jasmine.objectContaining({
-                public_holiday: true,
-                type_id: { IN: absenceTypesIDs }
-              }), null, requestSortParam, null, false);
+            describe('when public holidays can be grouped by date', function () {
+              var section, publicHolidays, groupedPublicHoliday;
+
+              beforeEach(function () {
+                section = controller.sections.holidays;
+                publicHolidays = _.compact(_.cloneDeep(
+                  leaveRequestMock.all().values)
+                  .map(function (leaveRequest, index) {
+                    leaveRequest.from_date = '20-20-2020';
+                    leaveRequest.type_id = absenceTypesIDs[index];
+                    leaveRequest.request_type = 'public_holiday';
+
+                    return leaveRequest.type_id ? leaveRequest : null;
+                  }));
+
+                LeaveRequest.all.and.returnValue($q.resolve({ list: publicHolidays }));
+                openSection('holidays');
+
+                groupedPublicHoliday = _.first(section.groupedData);
+              });
+
+              it('stores grouped public holidays inside the section', function () {
+                expect(section.groupedData)
+                  .toEqual(jasmine.any(Array));
+              });
+
+              it('groups public holidays by date', function () {
+                expect(section.groupedData.length).toBe(1);
+              });
+
+              it('groups types IDs into a separate indexed object and that stores balance changes', function () {
+                expect(groupedPublicHoliday.types_to_balance_changes[1])
+                  .toEqual(publicHolidays[0].balance_change);
+                expect(groupedPublicHoliday.types_to_balance_changes[publicHolidays.length])
+                  .toEqual(_.last(publicHolidays).balance_change);
+              });
+
+              it('removes `id` property from grouped public holidays', function () {
+                expect(groupedPublicHoliday.id).not.toBeDefined();
+              });
+
+              it('removes `type_id` property from grouped public holidays', function () {
+                expect(groupedPublicHoliday.type_id).not.toBeDefined();
+              });
+
+              it('sets `grouped` property to a section', function () {
+                expect(section.grouped).toBe(true);
+              });
+
+              describe('when a grouped public holiday gets deleted', function () {
+                beforeEach(function () {
+                  pubSub.publish('LeaveRequest::delete', publicHolidays[0]);
+                  $rootScope.$digest();
+                });
+
+                it('deletes absence type ID from the `types_id`', function () {
+                  expect(groupedPublicHoliday.types_to_balance_changes[1]).not.toBeDefined();
+                });
+              });
+
+              describe('when a whole public holiday leave requests group gets deleted', function () {
+                beforeEach(function () {
+                  // We need to clone to avoid mutation
+                  _.cloneDeep(publicHolidays).forEach(function (publicHoliday) {
+                    pubSub.publish('LeaveRequest::delete',
+                      _.find(publicHolidays, { id: publicHoliday.id }));
+                    $rootScope.$digest();
+                  });
+                });
+
+                it('removes public holiday leave requests group from the grouped data', function () {
+                  expect(section.groupedData.length).toBe(0);
+                });
+              });
             });
 
-            it('caches the data', function () {
-              expect(controller.sections.holidays.data.length).not.toBe(0);
+            describe('when public holidays can not be grouped by date', function () {
+              beforeEach(function () {
+                openSection('holidays');
+              });
+
+              it('does not set `grouped` property to a section', function () {
+                expect(controller.sections.holidays.grouped).toBe(false);
+              });
             });
           });
 

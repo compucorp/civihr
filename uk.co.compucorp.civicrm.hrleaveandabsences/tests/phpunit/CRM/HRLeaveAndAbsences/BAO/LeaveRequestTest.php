@@ -45,8 +45,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
     // We delete everything two avoid problems with the default absence types
     // created during the extension installation
-    $tableName = CRM_HRLeaveAndAbsences_BAO_AbsenceType::getTableName();
-    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
+    $this->deleteAllExistingAbsenceTypes();
 
     $messageSpoolTable = CRM_Mailing_BAO_Spool::getTableName();
     CRM_Core_DAO::executeQuery("DELETE FROM {$messageSpoolTable}");
@@ -194,22 +193,68 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = '2016-01-01';
 
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday, $this->absenceType));
 
     PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
 
-    $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+    $leaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday, $this->absenceType);
     $leaveFromDate = new DateTime($leaveRequest->from_date);
     $this->assertInstanceOf(LeaveRequest::class, $leaveRequest);
     $this->assertEquals($publicHoliday->date, $leaveFromDate->format('Y-m-d'));
     $this->assertEquals($contactID, $leaveRequest->contact_id);
   }
 
+  public function testFindAllPublicHolidayLeaveRequestsForAContact() {
+    AbsencePeriodFabricator::fabricate([
+      'start_date' => CRM_Utils_Date::processDate('2016-01-01'),
+      'end_date' => CRM_Utils_Date::processDate('2016-12-01')
+    ]);
+
+    $contactID = 2;
+
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = '2016-01-01';
+
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
+
+    $absenceType1 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+    $absenceType2 = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+
+    // Two public holiday leave requests will be created since there are two absence types with
+    // MTPHL as true.
+    PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
+
+    $leaveRequests = LeaveRequest::findAllPublicHolidayLeaveRequests($contactID, $publicHoliday);
+    $this->assertCount(2, $leaveRequests);
+    $publicHolidayRequest1 = $leaveRequests[0];
+    $publicHolidayRequest2 = $leaveRequests[1];
+    $leaveFromDate1 = new DateTime($publicHolidayRequest1->from_date);
+    $leaveFromDate2 = new DateTime($publicHolidayRequest2->from_date);
+
+    $this->assertEquals($publicHoliday->date, $leaveFromDate1->format('Y-m-d'));
+    $this->assertEquals($absenceType1->id, $publicHolidayRequest1->type_id);
+    $this->assertEquals($contactID, $publicHolidayRequest1->contact_id);
+
+    $this->assertEquals($publicHoliday->date, $leaveFromDate2->format('Y-m-d'));
+    $this->assertEquals($absenceType2->id, $publicHolidayRequest2->type_id);
+    $this->assertEquals($contactID, $publicHolidayRequest2->contact_id);
+  }
+
+  public function testFindAllPublicHolidayLeaveRequestsForAContactReturnsEmptyWhenNoSuchRequestExists() {
+    $contactID = 2;
+    $publicHoliday = new PublicHoliday();
+    $publicHoliday->date = '2016-01-01';
+
+    $this->assertEmpty(LeaveRequest::findAllPublicHolidayLeaveRequests($contactID, $publicHoliday));
+  }
+
   public function testShouldReturnNullIfItCantFindAPublicHolidayLeaveRequestForAContact() {
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = '2016-01-03';
 
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest(3, $publicHoliday));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest(3, $publicHoliday, $this->absenceType));
   }
 
   public function testFindPublicHolidayLeaveRequestEvenIfDeletedReturnsResultForADeletedPublicHolidayRequest() {
@@ -221,11 +266,23 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $contactID = 2;
 
     $publicHoliday = $this->instantiatePublicHoliday('2017-01-01');
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE]);
 
-    $publicHolidayRequest = PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
+    $publicHolidayRequest = PublicHolidayLeaveRequestFabricator::fabricate(
+      $contactID,
+      $publicHoliday
+    );
+
     LeaveRequest::softDelete($publicHolidayRequest->id);
 
-    $publicHolidayRequestDeleted = LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted($contactID, $publicHoliday);
+    $publicHolidayRequestDeleted = LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted(
+      $contactID,
+      $publicHoliday,
+      $absenceType
+    );
     $this->assertEquals($publicHolidayRequest->id, $publicHolidayRequestDeleted->id);
     $this->assertEquals(1, $publicHolidayRequestDeleted->is_deleted);
   }
@@ -239,24 +296,36 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $contactID = 2;
 
     $publicHoliday = $this->instantiatePublicHoliday('2017-01-01');
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE]);
 
-    $publicHolidayRequest = PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
+    $publicHolidayRequest = PublicHolidayLeaveRequestFabricator::fabricate(
+      $contactID,
+      $publicHoliday
+    );
 
-    $publicHolidayRequestNonDeleted = LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted($contactID, $publicHoliday);
+    $publicHolidayRequestNonDeleted = LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted(
+      $contactID,
+      $publicHoliday,
+      $absenceType
+    );
     $this->assertEquals($publicHolidayRequest->id, $publicHolidayRequestNonDeleted->id);
     $this->assertEquals(0, $publicHolidayRequestNonDeleted->is_deleted);
   }
 
-  public function testFindPublicHolidayLeaveRequestEvenIfDeletedReturnsNullForANonExistentPublicHolidayRequest() {
+  public function testFindPublicHolidayLeaveRequestEvenIfDeletedReturnsEmptyForANonExistentPublicHolidayRequest() {
     AbsencePeriodFabricator::fabricate([
       'start_date' => CRM_Utils_Date::processDate('2017-01-01'),
       'end_date' => CRM_Utils_Date::processDate('2017-12-01')
     ]);
 
     $contactID = 2;
+    $absenceType = AbsenceTypeFabricator::fabricate();
 
     $publicHoliday = $this->instantiatePublicHoliday('2017-01-01');
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted($contactID, $publicHoliday));
+    $this->assertEmpty(LeaveRequest::findPublicHolidayLeaveRequestEvenIfDeleted($contactID, $publicHoliday, $absenceType));
   }
 
   public function testCalculateBalanceChangeForALeaveRequestForAContact() {
@@ -333,7 +402,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
 
   public function testCalculateBalanceChangeWhenOneOfTheRequestedLeaveDaysIsAPublicHoliday() {
     $periodStartDate = date('2016-01-01');
-    $absenceType = AbsenceTypeFabricator::fabricate();
+    //We need to delete existing absence type already created to avoid problems with this test
+    //as this test assumes no absence type should exist before.
+    $this->deleteAllExistingAbsenceTypes();
+
+    $absenceType = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+    AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => 1]);
+
     $contract = HRJobContractFabricator::fabricate(
       ['contact_id' => 1],
       ['period_start_date' => $periodStartDate]
@@ -354,8 +429,13 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $publicHoliday = new PublicHoliday();
     $publicHoliday->date = date('2016-11-14');
 
-    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($periodEntitlement->contact_id, $publicHoliday));
+    $this->assertNull(LeaveRequest::findPublicHolidayLeaveRequest($periodEntitlement->contact_id, $publicHoliday, $this->absenceType));
     PublicHolidayLeaveRequestFabricator::fabricate($periodEntitlement->contact_id, $publicHoliday);
+    //Two public holiday leave requests exist for this day
+    $this->assertCount(2, LeaveRequest::findAllPublicHolidayLeaveRequests(
+      $periodEntitlement->contact_id,
+      $publicHoliday
+    ));
 
     $fromDate = new DateTime('2016-11-14');
     $toDate = new DateTime('2016-11-15');
@@ -1589,7 +1669,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ], true);
 
     PublicHolidayLeaveRequestFabricator::fabricate($contactID, $publicHoliday);
-    $publicHolidayLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday);
+    $publicHolidayLeaveRequest = LeaveRequest::findPublicHolidayLeaveRequest($contactID, $publicHoliday, $this->absenceType);
 
     //The start date and end date has dates in both leave request dates in both leaveRequest1,
     //leaveRequest2 and public holiday
@@ -3064,6 +3144,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     $maxLeaveAccrual = 1;
     AbsenceType::create([
       'id' => $absenceType->id,
+      'title' => $absenceType->title,
       'max_leave_accrual' => $maxLeaveAccrual,
       'allow_accruals_request' => true,
       'color' => '#000000'
@@ -5278,5 +5359,10 @@ class CRM_HRLeaveAndAbsences_BAO_LeaveRequestTest extends BaseHeadlessTest {
     ];
 
     $this->assertFalse(LeaveRequest::isTOILWithPastDates($params));
+  }
+
+  private function deleteAllExistingAbsenceTypes() {
+    $tableName = AbsenceType::getTableName();
+    CRM_Core_DAO::executeQuery("DELETE FROM {$tableName}");
   }
 }

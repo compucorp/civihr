@@ -1,10 +1,12 @@
 <?php
 
 use CRM_HRLeaveAndAbsences_BAO_PublicHoliday as PublicHoliday;
+use CRM_HRLeaveAndAbsences_BAO_AbsenceType as AbsenceType;
 use CRM_HRLeaveAndAbsences_Service_JobContract as JobContractService;
 use CRM_HRLeaveAndAbsences_Service_LeaveBalanceChange as LeaveBalanceChangeService;
 use CRM_HRLeaveAndAbsences_Service_PublicHolidayLeaveRequestCreation as PublicHolidayLeaveRequestCreation;
 use CRM_HRLeaveAndAbsences_Service_LeavePeriodEntitlement as LeavePeriodEntitlementService;
+use CRM_HRLeaveAndAbsences_Test_Fabricator_AbsenceType as AbsenceTypeFabricator;
 
 class CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest {
 
@@ -34,6 +36,21 @@ class CRM_HRLeaveAndAbsences_Test_Fabricator_PublicHolidayLeaveRequest {
       $leavePeriodEntitlementService
     );
 
-    return $creationLogic->createForContact($contactID, $publicHoliday);
+    $absenceTypes = AbsenceType::getAllWithMustTakePublicHolidayAsLeaveRequest();
+
+    if (empty($absenceTypes)) {
+      $absenceTypes[] = AbsenceTypeFabricator::fabricate(['must_take_public_holiday_as_leave' => TRUE]);
+    }
+
+    $publicHolidayRequests = [];
+    foreach ($absenceTypes as $absenceType) {
+      $publicHolidayRequests[] = $creationLogic->createForContact($contactID, $publicHoliday, $absenceType);
+    }
+
+    if (count($publicHolidayRequests) == 1) {
+      return $publicHolidayRequests[0];
+    }
+
+    return $publicHolidayRequests;
   }
 }

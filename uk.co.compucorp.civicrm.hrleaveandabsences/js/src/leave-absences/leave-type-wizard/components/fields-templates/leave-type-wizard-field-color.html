@@ -1,0 +1,19 @@
+<div class="row">
+  <div class="col-md-12">
+    <crm-loading show="form.availableColours" ng-class="{ 'pull-left': !form.availableColours }">
+      <spectrum-colorpicker
+        options="{
+          preferredFormat: 'hex3',
+          allowEmpty:true,
+          hideAfterPaletteSelect: true,
+          showPaletteOnly: true,
+          showPalette:true
+        }"
+        ng-attr-palette="form.availableColours"
+        ng-model="field.value"
+      ></spectrum-colorpicker>
+      <ng-include
+        src="form.componentsPath + '/leave-type-wizard-field-error.html'"></ng-include>
+    </crm-loading>
+  </div>
+</div>

@@ -8,6 +8,7 @@
     { name: 'admin-dashboard' },
     { name: 'absence-tab' },
     { name: 'calendar-feeds-list' },
+    { name: 'leave-type-wizard-form' },
     { name: 'manager-leave' },
     { name: 'manager-notification-badge' },
     { name: 'my-leave' },

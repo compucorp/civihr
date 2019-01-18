@@ -1,0 +1,10 @@
+<div class="row">
+  <div class="col-md-4">
+    <input type="text" class="form-control" ng-model="field.value"/>
+    <ng-include
+      src="form.componentsPath + '/leave-type-wizard-field-error.html'"></ng-include>
+  </div>
+  <div class="col-md-1">
+    <crm-loading show="!field.validating"></crm-loading>
+  </div>
+</div>

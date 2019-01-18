@@ -10,7 +10,6 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `title` varchar(127) NOT NULL   COMMENT 'The AbsenceType title. There cant be more than one entity with the same title',
      `weight` int unsigned NOT NULL   COMMENT 'The weight value is used to order the types on a list',
      `color` varchar(7) NOT NULL   COMMENT 'The color hex value (including the #) used to display this type on a calendar',
-     `is_default` tinyint   DEFAULT 0 COMMENT 'There can only be one default entity at any given time',
      `is_reserved` tinyint   DEFAULT 0 COMMENT 'Reserved entities are used by internal calculations and cannot be deleted.',
      `max_consecutive_leave_days` decimal(20,2)    ,
      `allow_request_cancelation` int unsigned NOT NULL   COMMENT 'Can only be one of the values defined in AbsenceType::REQUEST_CANCELATION_OPTIONS',
@@ -31,6 +30,7 @@ CREATE TABLE `civicrm_hrleaveandabsences_absence_type` (
      `is_sick` tinyint   DEFAULT 0 COMMENT 'A flag which is used to determine if this Absence Type can be used for a Sickness Request',
      `calculation_unit` varchar(512) NOT NULL   COMMENT 'One of the values of the Absence type calculation units option group',
      `hide_label` tinyint   DEFAULT 0 COMMENT 'This controls the visibility of the Leave Type label in the calendar and feeds.',
+     `category` varchar(512) NOT NULL   COMMENT 'This is used for grouping leave types.',
     PRIMARY KEY ( `id` ),
     UNIQUE INDEX `hrleaveandabsences_absence_type_title`(title)
 
@@ -57,9 +57,9 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   carry_forward_expiration_duration,
   carry_forward_expiration_unit,
   is_reserved,
-  is_default,
   weight,
-  calculation_unit
+  calculation_unit,
+  category
 ) VALUES (
   1,
   'Holiday / Vacation',
@@ -93,7 +93,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   accrual_expiration_unit,
   is_reserved,
   weight,
-  calculation_unit
+  calculation_unit,
+  category
 ) VALUES (
   2,
   'TOIL',
@@ -108,7 +109,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   2, -- months
   1,
   2,
-  1
+  1,
+  3
 );
 
 INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
@@ -122,7 +124,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   is_reserved,
   weight,
   is_sick,
-  calculation_unit
+  calculation_unit,
+  category
 ) VALUES (
   3,
   'Sick',
@@ -134,7 +137,8 @@ INSERT INTO `civicrm_hrleaveandabsences_absence_type`(
   1,
   3,
   1,
-  1
+  1,
+  2
 );
 
 -- /*******************************************************

@@ -118,21 +118,36 @@
                         </table>
                         <table class="table table-condensed" ng-switch-when="true">
                           <thead ng-include="$root.sharedPathTpl +
-                            'components/partials/staff-leave-report-section-header.html'">
+                            'components/partials/staff-leave-report-section-header.html'"
+                            ng-init="section = report.sections.holidays; sectionName = 'Public Holidays'">
                           </thead>
                           <tbody>
-                            <tr ng-repeat="request in report.sections.holidays.data track by $index">
+                            <tr ng-repeat="request in
+                              (report.sections.holidays.grouped
+                                ? report.sections.holidays.groupedData
+                                : report.sections.holidays.data)
+                              track by $index">
                               <td class="chr_leave-report__label">Public Holiday</td>
                               <td>{{request.from_date | formatDate}}</td>
                               <td>{{report.leaveRequestStatuses[request.status_id].label}}</td>
                               <td ng-repeat="absenceType in report.absenceTypesFiltered track by $index"
                                 title="({{ absenceType.calculation_unit_label | lowercase }})">
-                                {{ (request.type_id == absenceType.id ? (request.balance_change | timeUnitApplier : absenceType.calculation_unit_name) : '') }}
+                                {{((
+                                    report.sections.holidays.grouped && request.types_to_balance_changes[absenceType.id] !== undefined ||
+                                    !report.sections.holidays.grouped && request.type_id === absenceType.id
+                                  )
+                                  ? ((
+                                      report.sections.holidays.grouped
+                                      ? request.types_to_balance_changes[absenceType.id]
+                                      : request.balance_change
+                                    ) | timeUnitApplier : absenceType.calculation_unit_name)
+                                  : '')}}
                               </td>
                               <td>
                                 <leave-request-actions
+                                  ng-if="!report.sections.holidays.grouped && $root.section !== 'my-leave'"
                                   leave-request="request"
-                                  role="$root.section === 'my-leave' ? 'staff' : report.role"
+                                  role="report.role"
                                   absence-types="report.absenceTypes"
                                   leave-request-statuses="report.leaveRequestStatuses">
                                 </leave-request-actions>

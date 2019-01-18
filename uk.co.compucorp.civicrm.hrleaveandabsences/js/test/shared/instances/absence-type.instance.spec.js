@@ -34,7 +34,6 @@ define([
         expect(instance.title).toEqual(attributes.title);
         expect(instance.weight).toEqual(attributes.weight);
         expect(instance.color).toEqual(attributes.color);
-        expect(instance.is_default).toEqual(attributes.is_default);
         expect(instance.is_reserved).toEqual(attributes.is_reserved);
         expect(instance.allow_request_cancelation).toEqual(attributes.allow_request_cancelation);
         expect(instance.allow_overuse).toEqual(attributes.allow_overuse);
