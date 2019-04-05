@@ -149,7 +149,7 @@ function hrcareer_getUFGroupID() {
  */
 function hrcareer_civicrm_buildProfile($name) {
   if ($name == 'hrcareer_tab') {
-    $isDialog = ('multiProfileDialog' == CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject));
+    $isDialog = ('multiProfileDialog' == CRM_Utils_Request::retrieve('context', 'String'));
 
     // To fix validation alert issue
     $smarty = CRM_Core_Smarty::singleton();
@@ -167,7 +167,7 @@ function hrcareer_civicrm_buildProfile($name) {
 
     $config = CRM_Core_Config::singleton();
     if ($config->logging && ! $isDialog) {
-      $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
+      $contactID = CRM_Utils_Request::retrieve('id', 'Positive');
       CRM_Core_Region::instance('profile-form-hrcareer_tab')->add(array(
         'template' => 'CRM/common/logButton.tpl',
         'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
