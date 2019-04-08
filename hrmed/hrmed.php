@@ -166,3 +166,22 @@ function hrmed_civicrm_pageRun($page) {
       ->addScriptFile('org.civicrm.hrmed', 'js/dist/hrmed.min.js', 1010);
   }
 }
+
+/**
+ * Implementation of hook_civicrm_tabset
+ *
+ * @param string $tabsetName
+ * @param array $tabs
+ * @param mixed $context
+ */
+function hrmed_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName != 'civicrm/contact/view') {
+    return;
+  }
+
+  foreach ($tabs as $i => $tab) {
+    if ($tab['title'] == 'Medical & Disability') {
+      $tabs[$i]['icon'] = 'fa fa-wheelchair';
+    }
+  }
+}

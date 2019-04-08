@@ -192,3 +192,22 @@ function hrcareer_civicrm_pageRun($page) {
       ->addScriptFile('org.civicrm.hrcareer', 'js/dist/hrcareer.min.js', 1010);
   }
 }
+
+/**
+ * Implementation of hook_civicrm_tabset
+ *
+ * @param string $tabsetName
+ * @param array $tabs
+ * @param mixed $context
+ */
+function hrcareer_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName != 'civicrm/contact/view') {
+    return;
+  }
+
+  foreach ($tabs as $i => $tab) {
+    if ($tab['title'] == 'Career History') {
+        $tabs[$i]['icon'] = 'fa fa-history';
+    }
+  }
+}
