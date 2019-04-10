@@ -207,7 +207,7 @@ function hrcareer_civicrm_tabset($tabsetName, &$tabs, $context) {
 
   foreach ($tabs as $i => $tab) {
     if ($tab['title'] == 'Career History') {
-        $tabs[$i]['icon'] = 'fa fa-history';
+        $tabs[$i]['icon'] = 'crm-i fa-history';
     }
   }
 }

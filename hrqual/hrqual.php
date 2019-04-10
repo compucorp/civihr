@@ -194,7 +194,7 @@ function hrqual_civicrm_tabset($tabsetName, &$tabs, $context) {
 
     foreach ($tabs as $i => $tab) {
       if ($tab['title'] == 'Qualifications') {
-        $tabs[$i]['icon'] = 'fa fa-certificate';
+        $tabs[$i]['icon'] = 'crm-i fa-certificate';
       }
     }
   }

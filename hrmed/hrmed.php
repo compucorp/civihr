@@ -181,7 +181,7 @@ function hrmed_civicrm_tabset($tabsetName, &$tabs, $context) {
 
   foreach ($tabs as $i => $tab) {
     if ($tab['title'] == 'Medical & Disability') {
-      $tabs[$i]['icon'] = 'fa fa-wheelchair';
+      $tabs[$i]['icon'] = 'crm-i fa-wheelchair';
     }
   }
 }

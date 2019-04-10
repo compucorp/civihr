@@ -125,7 +125,7 @@ function hrjobroles_civicrm_tabset($tabsetName, &$tabs, $context) {
     $tabs[] = array( 'id' => 'hrjobroles',
       'url' => $url,
       'title' => 'Job Roles',
-      'icon' => 'fa fa-list-alt',
+      'icon' => 'crm-i fa-list-alt',
       'weight' => -180,
     );
   }

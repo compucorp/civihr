@@ -151,7 +151,7 @@ function hremergency_civicrm_tabset($tabsetName, &$tabs, $context) {
 
   foreach ($tabs as $i => $tab) {
     if ($tab['title'] == 'Emergency Contacts') {
-      $tabs[$i]['icon'] = 'fa fa-medkit';
+      $tabs[$i]['icon'] = 'crm-i fa-medkit';
     }
   }
 }

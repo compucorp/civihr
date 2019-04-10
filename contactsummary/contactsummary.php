@@ -157,7 +157,7 @@ function contactsummary_civicrm_tabset($tabsetName, &$tabs, $context) {
       'id'     => 'contactsummary',
       'url'    => CRM_Utils_System::url('civicrm/contact-summary'),
       'title'  => ts('Contact Summary'),
-      'icon'   => 'fa fa-user',
+      'icon'   => 'crm-i fa-user',
       'weight' => -200,
     );
   }

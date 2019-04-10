@@ -119,7 +119,7 @@ function hrbank_civicrm_tabset($tabsetName, &$tabs, $context) {
 
   foreach ($tabs as $i => $tab) {
     if ($tab['title'] == 'Bank Details') {
-        $tabs[$i]['icon'] = 'fa fa-bank';
+        $tabs[$i]['icon'] = 'crm-i fa-bank';
     }
   }
 }
