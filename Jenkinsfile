@@ -17,6 +17,7 @@ pipeline {
     WEBURL = "http://jenkins.compucorp.co.uk:8900"
     KARMA_TESTS_REPORT_FOLDER = "reports/js-karma"
     PHPUNIT_TESTS_REPORT_FOLDER = "reports/phpunit"
+    GITHUB_REPO_URL = "https://github.com/compucorp/civihr"
   }
 
   stages {
@@ -51,8 +52,8 @@ pipeline {
           sh "civibuild create ${params.CIVIHR_BUILDNAME} --type drupal-clean --civi-ver 5.3.1 --url $WEBURL"
 
           // Get target and PR branches name
-          def prBranch = env.CHANGE_BRANCH
-          def envBranch = env.CHANGE_TARGET ? env.CHANGE_TARGET : env.BRANCH_NAME
+          def prBranch = env.BRANCH_NAME
+          def envBranch = env.GITHUB_PR_TARGET_BRANCH ? env.GITHUB_PR_TARGET_BRANCH : env.BRANCH_NAME
           if (prBranch != null && prBranch.startsWith("hotfix-")) {
             envBranch = 'master'
           }
@@ -229,7 +230,7 @@ def getBuildTargetLink() {
   def link = ''
   def forPR = buildIsForAPullRequest()
 
-  link = forPR ? "<${env.CHANGE_URL}|${env.CHANGE_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
+  link = forPR ? "<${env.GITHUB_PR_URL}|${env.GITHUB_PR_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
 
   return link
 }
@@ -238,17 +239,14 @@ def getBuildTargetLink() {
  * Returns true if this build as triggered by a Pull Request.
  */
 def buildIsForAPullRequest() {
-  return env.CHANGE_URL != null
+  return env.GITHUB_PR_NUMBER != null
 }
 
 /*
  * Returns a URL pointing to branch currently being built
  */
 def getRepositoryUrlForBuildBranch() {
-  def repositoryURL = env.GIT_URL
-  repositoryURL = repositoryURL.replace('.git', '')
-
-  return repositoryURL + '/tree/' + env.BRANCH_NAME
+  return env.GITHUB_REPO_URL + '/tree/' + env.BRANCH_NAME
 }
 
 /*
