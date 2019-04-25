@@ -17,6 +17,7 @@ pipeline {
     WEBURL = "http://jenkins.compucorp.co.uk:8900"
     KARMA_TESTS_REPORT_FOLDER = "reports/js-karma"
     PHPUNIT_TESTS_REPORT_FOLDER = "reports/phpunit"
+    GIT_URL = "https://github.com/compucorp/civihr"
   }
 
   stages {
@@ -68,10 +69,8 @@ pipeline {
  * Sends a notification when the build starts
  */
 def sendBuildStartNotification() {
-  def msgHipChat = 'Building ' + getBuildTargetLink('hipchat') + '. ' + getReportLink('hipchat')
   def msgSlack = 'Building ' + getBuildTargetLink('slack') + '. ' + getReportLink('slack')
 
-  sendHipchatNotification('YELLOW', msgHipChat)
   sendSlackNotification('warning', msgSlack)
 }
 
@@ -79,10 +78,8 @@ def sendBuildStartNotification() {
  * Sends a notification when the build is completed successfully
  */
 def sendBuildSuccessNotification() {
-  def msgHipChat = getBuildTargetLink('hipchat') + ' built successfully. Time: $BUILD_DURATION. ' + getReportLink('hipchat')
   def msgSlack = getBuildTargetLink('slack') + ' built successfully. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink('slack')
 
-  sendHipchatNotification('GREEN', msgHipChat)
   sendSlackNotification('good', msgSlack)
 }
 
@@ -90,18 +87,9 @@ def sendBuildSuccessNotification() {
  * Sends a notification when the build fails
  */
 def sendBuildFailureNotification() {
-  def msgHipChat = 'Failed to build ' + getBuildTargetLink('hipchat') + '. Time: $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink('hipchat')
   def msgSlack = 'Failed to build ' + getBuildTargetLink('slack') + '. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink('slack')
 
-  sendHipchatNotification('RED', msgHipChat)
   sendSlackNotification('danger', msgSlack)
-}
-
-/*
- * Sends a notification to Hipchat
- */
-def sendHipchatNotification(String color, String message) {
-  hipchatSend color: color, message: message, notify: true
 }
 
 /*
@@ -127,9 +115,6 @@ def getBuildTargetLink(String client) {
   def forPR = buildIsForAPullRequest()
 
   switch (client) {
-    case 'hipchat':
-      link = forPR ? "<a href=\"${env.CHANGE_URL}\">\"${env.CHANGE_TITLE}\"</a>" : '<a href="' + getRepositoryUrlForBuildBranch() + '">"' + env.BRANCH_NAME + '"</a>'
-      break;
     case 'slack':
       link = forPR ? "<${env.CHANGE_URL}|${env.CHANGE_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
       break;
@@ -162,9 +147,6 @@ def getReportLink(String client) {
   def link = ''
 
   switch (client) {
-    case 'hipchat':
-      link = 'Click <a href="$BLUE_OCEAN_URL">here</a> to see the build report'
-      break
     case 'slack':
       link = "Click <${env.RUN_DISPLAY_URL}|here> to see the build report"
       break
