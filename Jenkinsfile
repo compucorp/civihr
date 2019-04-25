@@ -116,7 +116,7 @@ def getBuildTargetLink(String client) {
 
   switch (client) {
     case 'slack':
-      link = forPR ? "<${env.CHANGE_URL}|${env.CHANGE_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
+      link = forPR ? "<${env.GITHUB_PR_URL}|${env.GITHUB_PR_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
       break;
   }
 
@@ -127,7 +127,7 @@ def getBuildTargetLink(String client) {
  * Returns true if this build as triggered by a Pull Request.
  */
 def buildIsForAPullRequest() {
-  return env.CHANGE_URL != null
+  return env.GITHUB_PR_NUMBER != null
 }
 
 /*
