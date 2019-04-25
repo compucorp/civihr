@@ -184,10 +184,8 @@ pipeline {
  * Sends a notification when the build starts
  */
 def sendBuildStartNotification() {
-  def msgHipChat = 'Building ' + getBuildTargetLink('hipchat') + '. ' + getReportLink('hipchat')
-  def msgSlack = 'Building ' + getBuildTargetLink('slack') + '. ' + getReportLink('slack')
+  def msgSlack = 'Building ' + getBuildTargetLink() + '. ' + getReportLink()
 
-  sendHipchatNotification('YELLOW', msgHipChat)
   sendSlackNotification('warning', msgSlack)
 }
 
@@ -195,10 +193,8 @@ def sendBuildStartNotification() {
  * Sends a notification when the build is completed successfully
  */
 def sendBuildSuccessNotification() {
-  def msgHipChat = getBuildTargetLink('hipchat') + ' built successfully. Time: $BUILD_DURATION. ' + getReportLink('hipchat')
-  def msgSlack = getBuildTargetLink('slack') + ' built successfully. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink('slack')
+  def msgSlack = getBuildTargetLink() + ' built successfully. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink()
 
-  sendHipchatNotification('GREEN', msgHipChat)
   sendSlackNotification('good', msgSlack)
 }
 
@@ -206,18 +202,9 @@ def sendBuildSuccessNotification() {
  * Sends a notification when the build fails
  */
 def sendBuildFailureNotification() {
-  def msgHipChat = 'Failed to build ' + getBuildTargetLink('hipchat') + '. Time: $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink('hipchat')
-  def msgSlack = 'Failed to build ' + getBuildTargetLink('slack') + '. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink('slack')
+  def msgSlack = 'Failed to build ' + getBuildTargetLink() + '. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink()
 
-  sendHipchatNotification('RED', msgHipChat)
   sendSlackNotification('danger', msgSlack)
-}
-
-/*
- * Sends a notification to Hipchat
- */
-def sendHipchatNotification(String color, String message) {
-  hipchatSend color: color, message: message, notify: true
 }
 
 /*
@@ -238,18 +225,11 @@ def getBuildDuration(build) {
  * Returns a link to what is being built. If it's a PR, then it's a link to the pull request itself.
  * If it's a branch, then it's a link in the format http://github.com/org/repo/tree/branch
  */
-def getBuildTargetLink(String client) {
+def getBuildTargetLink() {
   def link = ''
   def forPR = buildIsForAPullRequest()
 
-  switch (client) {
-    case 'hipchat':
-      link = forPR ? "<a href=\"${env.CHANGE_URL}\">\"${env.CHANGE_TITLE}\"</a>" : '<a href="' + getRepositoryUrlForBuildBranch() + '">"' + env.BRANCH_NAME + '"</a>'
-      break;
-    case 'slack':
-      link = forPR ? "<${env.CHANGE_URL}|${env.CHANGE_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
-      break;
-  }
+  link = forPR ? "<${env.CHANGE_URL}|${env.CHANGE_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
 
   return link
 }
@@ -274,17 +254,9 @@ def getRepositoryUrlForBuildBranch() {
 /*
  * Returns the Blue Ocean build report URL for the current job
  */
-def getReportLink(String client) {
+def getReportLink() {
   def link = ''
-
-  switch (client) {
-    case 'hipchat':
-      link = 'Click <a href="$BLUE_OCEAN_URL">here</a> to see the build report'
-      break
-    case 'slack':
-      link = "Click <${env.RUN_DISPLAY_URL}|here> to see the build report"
-      break
-  }
+  link = "Click <${env.RUN_DISPLAY_URL}|here> to see the build report"
 
   return link
 }
