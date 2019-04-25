@@ -15,7 +15,6 @@ pipeline {
     DRUPAL_THEMES_ROOT = "$DRUPAL_SITES_ALL/themes"
     CIVICRM_EXT_ROOT = "$DRUPAL_MODULES_ROOT/civicrm/tools/extensions"
     WEBURL = "http://jenkins.compucorp.co.uk:8900"
-    ADMIN_PASS = credentials('CVHR_ADMIN_PASS')
     KARMA_TESTS_REPORT_FOLDER = "reports/js-karma"
     PHPUNIT_TESTS_REPORT_FOLDER = "reports/phpunit"
   }
@@ -49,7 +48,7 @@ pipeline {
       steps {
         script {
           // Build site with CV Buildkit
-          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type drupal-clean --civi-ver 5.3.1 --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type drupal-clean --civi-ver 5.3.1 --url $WEBURL"
 
           // Get target and PR branches name
           def prBranch = env.CHANGE_BRANCH
