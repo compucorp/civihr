@@ -98,7 +98,7 @@ pipeline {
                 ],
                 tools: [
                   [
-                    $class: 'JUnitType',
+                    $class: 'PHPUnitType',
                     pattern: env.PHPUNIT_TESTS_REPORT_FOLDER + '/*.xml'
                   ]
                 ]
