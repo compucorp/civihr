@@ -25,17 +25,11 @@ pipeline {
       steps {
         sendBuildStartNotification()
 
-        // Print all Environment variables
-        sh 'printenv | sort'
-
         // Update buildkit
         sh "cd /opt/buildkit && git pull"
 
         // Destroy existing site
         sh "civibuild destroy ${params.CIVIHR_BUILDNAME} || true"
-
-        // Test build tools
-        sh 'amp test'
 
         // Cleanup old Karma test reports
         sh "rm -f $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/* || true"
