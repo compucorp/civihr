@@ -51,13 +51,13 @@
     }
   },
   "devDependencies": {
-    "husky": "^0.14.3",
-    "lint-staged": "^6.1.0",
-    "semistandard": "^12.0.0",
-    "stylelint": "^8.4.0",
-    "stylelint-config-sass-guidelines": "^4.1.0",
-    "stylelint-order": "^0.8.0",
-    "stylelint-scss": "^2.5.0",
-    "yargs": "^12.0.1"
+    "husky": "^3.0.0",
+    "lint-staged": "^9.0.1",
+    "semistandard": "^13.0.1",
+    "stylelint": "^10.1.0",
+    "stylelint-config-sass-guidelines": "^6.0.0",
+    "stylelint-order": "^3.0.0",
+    "stylelint-scss": "^3.8.0",
+    "yargs": "^13.2.4"
   }
 }

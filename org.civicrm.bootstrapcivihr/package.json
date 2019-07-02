@@ -9,10 +9,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "gulp": "^4.0.0",
-    "gulp-postcss": "^7.0.1",
+    "gulp": "^4.0.2",
+    "gulp-postcss": "^8.0.0",
     "gulp-transform-selectors": "0.0.2",
     "path": "^0.12.7",
-    "postcss-prefix-selector": "^1.6.0"
+    "postcss-prefix-selector": "^1.7.2"
   }
 }
