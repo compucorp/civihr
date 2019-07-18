@@ -93,6 +93,8 @@ class CRM_HRCore_Service_FileCache {
       return NULL;
     }
 
+    // Clear the stat cache to make sure filemtime won't return cached data
+    clearstatcache();
     $timeStamp = filemtime($filename);
     $modified = new \DateTime();
     $modified->setTimestamp($timeStamp);

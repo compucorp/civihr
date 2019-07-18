@@ -235,7 +235,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $contactWorkPhone = '209889940';
     $contactWorkPhoneExtension = 01;
     $contractTitle = 'Most Recent Contract';
-    $contact1 = $this->fabricateContactWithWorkContactDetails(
+    $contact1 = self::fabricateContactWithWorkContactDetails(
       [],
       $contactWorkEmail,
       $contactWorkPhone,
@@ -317,7 +317,7 @@ class CRM_HRCore_Form_Search_StaffDirectoryTest extends CRM_HRCore_Test_BaseHead
     $contactWorkPhone = '209889940';
     $contactWorkPhoneExtension = 01;
     $contractTitle = 'Most Recent Contract';
-    $contact1 = $this->fabricateContactWithWorkContactDetails(
+    $contact1 = self::fabricateContactWithWorkContactDetails(
       [],
       $contactWorkEmail,
       $contactWorkPhone,
