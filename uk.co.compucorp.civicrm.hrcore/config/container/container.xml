@@ -34,6 +34,18 @@
             class="CRM_HRCore_CMSData_Role_RoleServiceInterface"
     />
     <service id="core.cache" class="CRM_Core_BAO_Cache"/>
+    <service id="cache.HRCore_Info" class="CRM_Utils_Cache_Interface"
+      factory-class="CRM_Utils_Cache" factory-method="create">
+      <argument type="collection">
+        <argument key="name">HRCore_Info</argument>
+        <argument key="type" type="collection">
+          <argument>*memory*</argument>
+          <argument>SqlGroup</argument>
+          <argument>ArrayCache</argument>
+        </argument>
+        <argument key="withArray">fast</argument>
+      </argument>
+    </service>
     <service id="core.http_client" class="CRM_Utils_HttpClient">
       <argument>%civihr.connection_timeout%</argument>
     </service>

@@ -120,7 +120,6 @@ class CRM_Hrjobcontract_BAO_HRJobHealth extends CRM_Hrjobcontract_DAO_HRJobHealt
       $fields = CRM_Utils_Array::crmArraySortByField($fields, 'title');
       $fields = CRM_Utils_Array::index(array('name'), $fields);
 
-      CRM_Core_BAO_Cache::setItem($fields, 'contact fields', $cacheKeyString);
      }
 
     self::$_importableFields[$cacheKeyString] = $fields;
