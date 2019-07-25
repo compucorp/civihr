@@ -56,6 +56,6 @@ class CRM_HRCore_Service_Stats_StatsCache {
 
     $oneWeekAgo = new \DateTime('now - 1 week');
 
-    return $oneWeekAgo > $modified;
+    return $oneWeekAgo->getTimestamp() > $modified->getTimestamp();
   }
 }

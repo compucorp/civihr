@@ -11,7 +11,7 @@ trait HRJobContractTestTrait {
    *
    * @var array
    */
-  protected $contacts;
+  protected $contacts = [];
 
   /**
    * Creates a new Job Contract for the given contact

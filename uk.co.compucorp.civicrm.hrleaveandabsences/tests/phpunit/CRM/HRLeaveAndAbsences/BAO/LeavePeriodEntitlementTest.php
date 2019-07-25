@@ -691,7 +691,7 @@ class CRM_HRLeaveAndAbsences_BAO_LeavePeriodEntitlementTest extends BaseHeadless
 
     $this->assertNotNull($periodEntitlement);
     $this->assertEquals($comment, $periodEntitlement->comment);
-    $this->assertEquals($createdDate, new DateTime($periodEntitlement->created_date));
+    $this->assertEquals($createdDate->format('Y-m-d H:i:s'), $periodEntitlement->created_date);
     $this->assertEquals($userId, $periodEntitlement->editor_id);
 
     $this->unregisterCurrentLoggedInContactFromSession();

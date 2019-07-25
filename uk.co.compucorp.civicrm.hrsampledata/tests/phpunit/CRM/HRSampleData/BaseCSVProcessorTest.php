@@ -58,7 +58,9 @@ class CRM_HRSampleData_BaseCSVProcessorTest extends \PHPUnit_Framework_TestCase 
     $calls = 0;
     $rowsCount = count($rows);
 
-    $splObjectMock = $this->getMock('SplFileObject', [], ['php://memory']);
+    $splObjectMock = $this->getMockBuilder(SplFileObject::class)
+                          ->setConstructorArgs(['php://memory'])
+                          ->getMock();
 
     $splObjectMock
       ->method('fgetcsv')
