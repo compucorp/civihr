@@ -51,13 +51,13 @@
     }
   },
   "devDependencies": {
-    "husky": "^3.0.0",
-    "lint-staged": "^9.0.1",
+    "husky": "^3.0.1",
+    "lint-staged": "^9.2.1",
     "semistandard": "^13.0.1",
     "stylelint": "^10.1.0",
     "stylelint-config-sass-guidelines": "^6.0.0",
-    "stylelint-order": "^3.0.0",
-    "stylelint-scss": "^3.8.0",
-    "yargs": "^13.2.4"
+    "stylelint-order": "^3.0.1",
+    "stylelint-scss": "^3.9.2",
+    "yargs": "^13.3.0"
   }
 }
