@@ -1,7 +1,10 @@
 <?php
 
 return [
-  'Home' => 'civicrm/tasksassignments/dashboard#!/tasks',
+  'Home' => [
+    'icon' => 'crm-logo-sm',
+    'url' => 'civicrm/tasksassignments/dashboard#!/tasks',
+  ],
 
   'Staff' => [
     'icon' => 'crm-i fa-users',

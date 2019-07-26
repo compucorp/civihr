@@ -1,7 +1,8 @@
-.crm-link-home {
+.menumain-icon {
   .chr_logo {
     font-size: $chr-user-menu-logo-size;
-    margin-right: $crm-main-menu-item-icon-caption-gap;
-    vertical-align: sub;
+    line-height: $chr-user-menu-line-height;
+    margin-right: 6px !important;
+    vertical-align: sub !important;
   }
 }

@@ -1,4 +1,7 @@
 <?php
+
+use Civi\Core\Event\GenericHookEvent;
+
 require_once 'bootstrapcivihr.civix.php';
 /**
  * Implements hook_civicrm_config().
@@ -7,6 +10,9 @@ require_once 'bootstrapcivihr.civix.php';
  */
 function bootstrapcivihr_civicrm_config(&$config) {
   _bootstrapcivihr_civix_civicrm_config($config);
+  Civi::dispatcher()->addListener('hook_civicrm_buildAsset', function(GenericHookEvent $e) {
+    $e->params['height'] = 60;
+  }, 2000);
 }
 /**
  * Implements hook_civicrm_xmlMenu().
@@ -116,6 +122,7 @@ function bootstrapcivihr_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) 
 function bootstrapcivihr_civicrm_coreResourceList(&$items, $region) {
   if ($region == 'html-header') {
     CRM_Core_Resources::singleton()->addStyleFile('org.civicrm.bootstrapcivihr', 'css/civihr.css', 100, 'html-header');
+    CRM_Core_Resources::singleton()->addScriptFile('org.civicrm.bootstrapcivihr', 'js/main-menu.js');
   }
 }
 /**

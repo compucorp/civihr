@@ -28,7 +28,7 @@
      * toggle for a sub menu dropdown
      */
     function amendAppLogoMenuItem () {
-      var $menuItem = $('.crm-link-home');
+      var $menuItem = $('#civicrm-menu li[data-name="Home"]');
       var $wrappedLogo = swapAndWrapAppLogo($menuItem);
       var $customHomeLink = customizeHomeLinkInLogoMenuItem($menuItem, $wrappedLogo);
 
