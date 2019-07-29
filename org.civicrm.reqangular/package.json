@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "gulp": "^4.0.0",
-    "gulp-angular-templatecache": "^2.2.1",
-    "gulp-replace": "^0.6.1",
+    "gulp": "^4.0.2",
+    "gulp-angular-templatecache": "^3.0.0",
+    "gulp-replace": "^1.0.0",
     "path": "^0.12.7"
   },
   "dependencies": {
