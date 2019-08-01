@@ -181,6 +181,7 @@ function contactaccessrights_civicrm_aclWhereClause($type, &$tables, &$whereTabl
   $aclUtil = new CRM_Contactaccessrights_Utils_ACL($contactID);
 
   $whereTables = array_merge($whereTables, $aclUtil->getWhereTables());
+  $tables = array_merge($tables, $aclUtil->getWhereTables());
 
   $whereStr = implode(' AND ', $aclUtil->getWhereConditions());
   $whereStr = '(' . ($whereStr ?: '1') . ')';
