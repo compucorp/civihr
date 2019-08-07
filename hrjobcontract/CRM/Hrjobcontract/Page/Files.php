@@ -28,96 +28,40 @@
 require_once 'CRM/Core/Page.php';
 
 class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
+
   public static function fileList() {
     $config = CRM_Core_Config::singleton();
     $postParams = $_GET;
     $result = array();
-    $fileID = CRM_Core_BAO_File::getEntityFile( $postParams['entityTable'], $postParams['entityID'] );
-    
-    if($fileID) {
-      foreach($fileID as $k => $v) {
-        $fileType = $v['mime_type'];
-        $fid = $v['fileID'];
-        $eid = $postParams['entityID'];
+    $entityFiles = CRM_Core_BAO_File::getEntityFile( $postParams['entityTable'], $postParams['entityID'] );
+
+    if($entityFiles) {
+      foreach($entityFiles as $file) {
+        $fid = $file['fileID'];
         $url = null;
         $uri = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_File', $fid, 'uri');
-        
-        if ($fileType == 'image/jpeg' ||
-          $fileType == 'image/pjpeg' ||
-          $fileType == 'image/gif' ||
-          $fileType == 'image/x-png' ||
-          $fileType == 'image/png'
-        ) {
-          $url = CRM_Utils_System::url('civicrm/file',
-                 "reset=1&id=$fid&eid=$eid",
-                 FALSE, NULL, TRUE, TRUE
-          );
-        } else {
-          $url = CRM_Utils_System::url('civicrm/file', "reset=1&id=$fid&eid=$eid");
-        }
-        
-        list($sql, $params) = CRM_Core_BAO_File::sql($postParams['entityTable'], $postParams['entityID'], NULL, $v['fileID']);
+
+        list($sql, $params) = CRM_Core_BAO_File::sql($postParams['entityTable'], $postParams['entityID'], NULL, $file['fileID']);
         $dao = CRM_Core_DAO::executeQuery($sql, $params);
-        
+
         $fileSize = 0;
         if ($dao->fetch()) {
           $fileSize = filesize($config->customFileUploadDir . DIRECTORY_SEPARATOR . $dao->uri);
         }
-        
-        $result[] = array(
+
+        $result[] = [
           'entityTable' => $postParams['entityTable'],
-          'entityID' => $eid,
-          'fileID' => $fid,
-          'fileType' => $fileType,
+          'entityID' => $postParams['entityID'],
+          'fileID' => $file['fileID'],
+          'fileType' => $file['mime_type'],
           'fileSize' => $fileSize,
           'name' => $uri,
-          'url' => $url,
-        );
+          'url' => $file['url'],
+        ];
       }
     }
-    
+
     echo html_entity_decode(stripcslashes(json_encode(array('values' => $result))));
-    CRM_Utils_System::civiExit( );
-  }
-  public static function fileDisplay() {// Display evidence file
-    $postParams = $_POST;
-    $fileID = CRM_Core_BAO_File::getEntityFile( $postParams['entityTable'], $postParams['entityID'] );
-    
-    if($fileID) {
-      foreach($fileID as $k => $v) {
-        $fileType = $v['mime_type'];
-        $fid = $v['fileID'];
-        $eid = $postParams['entityID'];
-        if ($fileType == 'image/jpeg' ||
-          $fileType == 'image/pjpeg' ||
-          $fileType == 'image/gif' ||
-          $fileType == 'image/x-png' ||
-          $fileType == 'image/png'
-        ) {
-          list($path) = CRM_Core_BAO_File::path($fid, $eid, NULL, NULL);
-          list($imageWidth, $imageHeight) = getimagesize($path);
-          list($imageThumbWidth, $imageThumbHeight) = CRM_Contact_BAO_Contact::getThumbSize($imageWidth, $imageHeight);
-          $url = CRM_Utils_System::url('civicrm/file',
-                 "reset=1&id=$fid&eid=$eid",
-                 FALSE, NULL, TRUE, TRUE
-          );
-          $file_url = "
-              <a href=\"$url\" class='crm-image-popup'>
-              <img src=\"$url\" width=$imageThumbWidth height=$imageThumbHeight/>
-              </a>";
-          // for non image files
-        }
-        else {
-          $uri = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_File', $fid, 'uri');
-          $url = CRM_Utils_System::url('civicrm/file', "reset=1&id=$fid&eid=$eid");
-          $file_url = "<a href=\"$url\">{$uri}</a>";
-        }
-        if(isset($fid)) {
-          $deleteurl = "<div class=file-delete><a class='action-item crm-hover-button' href='javascript:void(0)' id=file_{$fid}>Delete Attached File</a></div>";
-          echo "<div id='del_{$fid}'>{$file_url}{$deleteurl}</div>";
-        }
-      }
-    }
     CRM_Utils_System::civiExit( );
   }
 
@@ -125,9 +69,9 @@ class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
     $postParams = $_GET;
     $fileId = $postParams['fileID'];
     $result = 0;
-    
+
     CRM_Core_BAO_File::deleteEntityFile( $postParams['entityTable'], $postParams['entityID'], $fileTypeID = NULL, $fileId );
-    
+
     list($path) = CRM_Core_BAO_File::path($fileId, $postParams['entityID'], NULL, NULL);
     if ($path === null)
     {
@@ -146,7 +90,7 @@ class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
     if ($dest != ''  && substr($dest, -1) != '/') {
       $dest .= '/';
     }
-    
+
     $files = $_FILES;
     if(is_array($files) && !empty($files)) {
       foreach($files as $k => $v) {
@@ -182,7 +126,7 @@ class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
     echo html_entity_decode(stripcslashes(json_encode(array('values' => array(array('result' => $result))), true)));
     CRM_Utils_System::civiExit( );
   }
-  
+
   static function fileZip() {
       $config = CRM_Core_Config::singleton();
       $dest = $config->customFileUploadDir;
@@ -192,11 +136,11 @@ class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
       $ext = 'zip';
       $revisionId = (int)$params['entityID'];
       $entityFiles = CRM_Core_BAO_File::getEntityFile( $params['entityTable'], $revisionId );
-      
+
       if (empty($entityFiles)) {
           CRM_Utils_System::civiExit();
       }
-      
+
       $zipname = 'jobcontract_' . (int)$params['entityID'] . '_files';
       $jobContractResult = civicrm_api3('HRJobContract', 'get', array(
         'sequential' => 1,
@@ -215,7 +159,7 @@ class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
             $zipname = CRM_Utils_String::munge($contactResult['values'][0]['sort_name']) . '-' . CRM_Utils_String::munge($jobContractDetailsResult['values'][0]['position']) . '-r' . $revisionId;
         }
       }
-      
+
       if (count($entityFiles) > 1) {
         foreach ($entityFiles as $entityFile) {
             if (!empty($entityFile['fullPath'])) {
@@ -226,7 +170,7 @@ class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
         if (empty($files)) {
             CRM_Utils_System::civiExit();
         }
-        
+
         $zipname .= '.' . $ext;
         $zipfullpath = $dest . '/' . $zipname;
         $zip = new ZipArchive();
@@ -243,15 +187,15 @@ class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
         $ext = end($parts);
         $zipname .= '.' . $ext;
       }
-      
+
       header('Content-Type: ' . $mimeType);
       header('Content-disposition: attachment; filename='.$zipname);
       header('Content-Length: ' . filesize($zipfullpath));
       readfile($zipfullpath);
-      
+
       CRM_Utils_System::civiExit();
   }
-  
+
   /**
    * @param $name
    *
@@ -263,7 +207,7 @@ class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
       0, -(strlen(CRM_Utils_Array::value('extension', $info)) + (CRM_Utils_Array::value('extension', $info) == '' ? 0 : 1))
     );
     $filename = null;
-    
+
     if (!CRM_Utils_File::isExtensionSafe(CRM_Utils_Array::value('extension', $info))) {
       // munge extension so it cannot have an embbeded dot in it
       // The maximum length of a filename for most filesystems is 255 chars.
@@ -273,14 +217,14 @@ class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
     else {
       $filename = CRM_Utils_String::munge("{$basename}", '_', 240) . "." . CRM_Utils_Array::value('extension', $info);
     }
-    
+
     $newFilename = $filename;
     $i = 1;
     while (file_exists($dest . $newFilename)) {
         $fileinfo = pathinfo($dest . $filename);
         $newFilename = $fileinfo['filename'] . '(' . $i++ . ')' . '.' . $fileinfo['extension'];
     }
-    
+
     return $newFilename;
   }
 }

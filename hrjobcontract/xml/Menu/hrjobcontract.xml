@@ -31,12 +31,6 @@
     <!--<access_arguments>edit HRJobs</access_arguments>-->
   </item>
   <item>
-    <path>civicrm/hrjobcontract/file/display</path>
-    <page_callback>CRM_Hrjobcontract_Page_Files::fileDisplay</page_callback>
-    <title>FileDisplay</title>
-    <!--<access_arguments>edit HRJobs</access_arguments>-->
-  </item>
-  <item>
     <path>civicrm/hrjobcontract/file/delete</path>
     <page_callback>CRM_Hrjobcontract_Page_Files::fileDelete</page_callback>
     <title>FileDelete</title>
