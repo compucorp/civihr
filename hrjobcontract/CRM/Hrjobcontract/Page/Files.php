@@ -30,38 +30,25 @@ require_once 'CRM/Core/Page.php';
 class CRM_Hrjobcontract_Page_Files extends CRM_Core_Page {
 
   public static function fileList() {
-    $config = CRM_Core_Config::singleton();
     $postParams = $_GET;
-    $result = array();
+    $result = [];
     $entityFiles = CRM_Core_BAO_File::getEntityFile( $postParams['entityTable'], $postParams['entityID'] );
 
     if($entityFiles) {
       foreach($entityFiles as $file) {
-        $fid = $file['fileID'];
-        $url = null;
-        $uri = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_File', $fid, 'uri');
-
-        list($sql, $params) = CRM_Core_BAO_File::sql($postParams['entityTable'], $postParams['entityID'], NULL, $file['fileID']);
-        $dao = CRM_Core_DAO::executeQuery($sql, $params);
-
-        $fileSize = 0;
-        if ($dao->fetch()) {
-          $fileSize = filesize($config->customFileUploadDir . DIRECTORY_SEPARATOR . $dao->uri);
-        }
-
         $result[] = [
           'entityTable' => $postParams['entityTable'],
           'entityID' => $postParams['entityID'],
           'fileID' => $file['fileID'],
           'fileType' => $file['mime_type'],
-          'fileSize' => $fileSize,
-          'name' => $uri,
+          'fileSize' => filesize($file['fullPath']),
+          'name' => $file['fileName'],
           'url' => $file['url'],
         ];
       }
     }
 
-    echo html_entity_decode(stripcslashes(json_encode(array('values' => $result))));
+    echo html_entity_decode(stripcslashes(json_encode(['values' => $result])));
     CRM_Utils_System::civiExit( );
   }
 
