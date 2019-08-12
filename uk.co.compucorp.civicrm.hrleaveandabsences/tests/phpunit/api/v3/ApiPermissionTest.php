@@ -57,6 +57,7 @@ class api_v3_ApiPermissionTest extends BaseHeadlessTest {
       ['Comment', 'create'],
       ['Comment', 'delete'],
       ['Contact', 'getleavemanagees'],
+      ['Contact', 'getstaff'],
     ];
   }
 }

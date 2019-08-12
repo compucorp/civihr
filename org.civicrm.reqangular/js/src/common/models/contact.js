@@ -164,6 +164,25 @@ define([
             });
         },
 
+        getStaff: function (filters, pagination, sort, additionalParams) {
+          return processContactFilters.call(this, filters)
+            .then(function (filters) {
+              // In case of an empty array directly resolve the promise without calling the API
+              if (filters && filters.id && !filters.id.IN.length) {
+                return {list: []};
+              } else {
+                return contactAPI.getStaff(filters, pagination, sort, additionalParams);
+              }
+            })
+            .then(function (response) {
+              response.list = response.list.map(function (contact) {
+                return instance.init(contact, true);
+              });
+
+              return response;
+            });
+        },
+
         /**
          * Finds a contact by ID
          *

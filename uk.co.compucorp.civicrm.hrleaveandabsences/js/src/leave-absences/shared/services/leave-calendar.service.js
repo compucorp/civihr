@@ -44,7 +44,7 @@ define([
        * @return {Promise} resolves to an array of contacts.
        */
       function loadAllContacts () {
-        return Contact.all().then(function (contacts) {
+        return Contact.getStaff().then(function (contacts) {
           return contacts.list;
         });
       }
@@ -82,7 +82,7 @@ define([
        * @return {Promise} resolves to an array of contacts.
        */
       function loadFilteredContacts () {
-        return Contact.all(prepareContactFilters(), null, 'display_name')
+        return Contact.getStaff(prepareContactFilters(), null, 'display_name')
           .then(function (contacts) {
             return contacts.list;
           });
@@ -95,7 +95,7 @@ define([
        * @return {Promise} resolves to an array of contacts.
        */
       function loadLookUpContacts () {
-        var filterByAssignee = _.get(vm, 'filters.userSettings.assignedTo.type', 'all');
+        var filterByAssignee = _.get(vm, 'filters.userSettings.assignedTo.type', 'getStaff');
         var loadLookUpContactsMethod = contactsLookUpStrategies[filterByAssignee];
 
         return loadLookUpContactsMethod();

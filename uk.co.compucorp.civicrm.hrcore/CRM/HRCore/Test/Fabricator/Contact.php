@@ -33,11 +33,11 @@ class CRM_HRCore_Test_Fabricator_Contact {
 
     return $contact;
   }
-  
+
   public static function fabricateOrganization($params = []) {
     $params['contact_type'] = 'Organization';
-    $params['organization_name'] = empty($params['organization_name']) 
-      ? 'Organization ' . rand(1000, 9999) 
+    $params['organization_name'] = empty($params['organization_name'])
+      ? 'Organization ' . rand(1000, 9999)
       : $params['organization_name'];
 
     $result = civicrm_api3(

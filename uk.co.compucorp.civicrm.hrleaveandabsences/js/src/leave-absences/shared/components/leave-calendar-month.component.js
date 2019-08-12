@@ -508,7 +508,7 @@ define([
      * @return {Promise}
      */
     function reduceContactsToOnlyThoseWhoHaveJobContracts () {
-      return Contact.all({
+      return Contact.getStaff({
         with_contract_in_period: [
           vm.month.days[0].date + ' 00:00:00',
           vm.month.days[vm.month.days.length - 1].date + ' 23:59:59'

@@ -25,6 +25,21 @@ define([
       },
 
       /**
+       * Returns a list of Staff (i.e. Contacts where the contact Type is "Individual")
+       *
+       * @param filters
+       * @param pagination
+       * @param sort
+       * @param additionalParams
+       * @returns {*}
+       */
+      getStaff: function (filters, pagination, sort, additionalParams) {
+        $log.debug('api.contact.getStaff');
+
+        return this.getAll('Contact', filters, pagination, sort, additionalParams, 'getStaff');
+      },
+
+      /**
        * Finds the contact with the given id
        *
        * @param {string/int} id
