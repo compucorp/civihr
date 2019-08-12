@@ -18,6 +18,8 @@
     giveFocusToQuickSearchFieldWhenBlockGetsClick();
     manageCustomClassOfQuickSearchField();
     onFieldSelectedRemoveSearchIconFromQuickSearch();
+    updateContentSpacingRelatedToHRMenu();
+    onWindowResizeUpdateContentSpacingRelatedToHRMenu();
   }
 
   /**
@@ -90,6 +92,14 @@
   }
 
   /**
+   * It will update the the content spacing related to the HR menu each time the
+   * window is resized.
+   */
+  function onWindowResizeUpdateContentSpacingRelatedToHRMenu () {
+    $(window).resize(updateContentSpacingRelatedToHRMenu);
+  }
+
+  /**
    * Removes the given custom class when the user clicks
    * outside the quick search field (if there is no ongoing search)
    *
@@ -125,5 +135,23 @@
         }
       }
     );
+  }
+
+  /**
+   * Updates the content area so it includes a padding top equal to the HR Menu's
+   * height. This padding is necesary to avoid the menu from overlaping on top of
+   * the content since the menu has a fixed position and the height can't be
+   * determined using CSS.
+   *
+   * `style.setProperty()` is prefered over `.css()` because `!important` only
+   * works on the former. This rule was originally added in `civicrm-core/css/menubar-drupal7.css`
+   * including the `!important` statement, hence the need to include it here.
+   */
+  function updateContentSpacingRelatedToHRMenu () {
+    var mainContentArea = $('.crm-menubar-over-cms-menu')[0];
+    var hrMenuHeight = $('#civihr-menu').height();
+
+    mainContentArea.style.removeProperty('padding-top');
+    mainContentArea.style.setProperty('padding-top', hrMenuHeight + 'px', 'important');
   }
 }(CRM.$, CRM._, CRM.ts('org.civicrm.bootstrapcivihr')));
