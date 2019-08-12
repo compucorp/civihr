@@ -43,6 +43,7 @@
         dataType: 'html',
         success: function (menuMarkup) {
           injectUserMenuInAMainMenuWrapper(menuMarkup, 'civihr-menu');
+          $(window).trigger('civihr-menu::ready');
         }
       });
     }

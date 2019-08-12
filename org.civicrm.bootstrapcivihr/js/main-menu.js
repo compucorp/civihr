@@ -18,8 +18,8 @@
     giveFocusToQuickSearchFieldWhenBlockGetsClick();
     manageCustomClassOfQuickSearchField();
     onFieldSelectedRemoveSearchIconFromQuickSearch();
-    updateContentSpacingRelatedToHRMenu();
-    onWindowResizeUpdateContentSpacingRelatedToHRMenu();
+    $(window).resize(updateContentSpacingRelatedToHRMenu);
+    $(window).on('civihr-menu::ready', updateContentSpacingRelatedToHRMenu);
   }
 
   /**
@@ -89,14 +89,6 @@
         quickSearchInput.attr('placeholder', selectedFieldName);
       });
     });
-  }
-
-  /**
-   * It will update the the content spacing related to the HR menu each time the
-   * window is resized.
-   */
-  function onWindowResizeUpdateContentSpacingRelatedToHRMenu () {
-    $(window).resize(updateContentSpacingRelatedToHRMenu);
   }
 
   /**
