@@ -51,6 +51,10 @@
     display: none;
   }
 
+  #crm-qsearch-input::placeholder {
+    font-family: $font-family-base;
+  }
+
   &.search-ongoing {
     #crm-qsearch {
       #crm-qsearch-input {
