@@ -17,6 +17,7 @@
     changeQuickSearchFieldPlaceholder();
     giveFocusToQuickSearchFieldWhenBlockGetsClick();
     manageCustomClassOfQuickSearchField();
+    onFieldSelectedRemoveSearchIconFromQuickSearch();
   }
 
   /**
@@ -64,6 +65,28 @@
 
     toggleCustomClassToQuickSearchFieldOnHover(customClass);
     removeCustomClassOnOutsideClick(customClass);
+  }
+
+  /**
+   * When a field is selected for the quick search it will remove the search icon
+   * that is added automatically to the placeholder of the quick search.
+   * This search icon is added dynamically by `civicrm-core/js/crm.menubar.js`'s
+   * `setQuickSearchValue` method.
+   *
+   * This will set the placeholder of the quick search equal to the text value
+   * of the last selected quick search field. The timeout is needed to make this
+   * change after CiviCRM adds the icon.
+   */
+  function onFieldSelectedRemoveSearchIconFromQuickSearch () {
+    var quickSearchInput = $('#crm-qsearch-input');
+
+    $('.crm-quickSearchField').click(function () {
+      var selectedFieldName = $(this).text().trim();
+
+      setTimeout(function () {
+        quickSearchInput.attr('placeholder', selectedFieldName);
+      });
+    });
   }
 
   /**
