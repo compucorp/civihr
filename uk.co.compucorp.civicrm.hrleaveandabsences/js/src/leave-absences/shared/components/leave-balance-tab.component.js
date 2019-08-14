@@ -85,7 +85,7 @@ define([
      * @return {Promise}
      */
     function loadAllContacts () {
-      return Contact.all(null, null, 'sort_name ASC')
+      return Contact.getStaff(null, null, 'sort_name ASC')
         .then(function (contacts) {
           vm.lookupContacts = contacts.list;
         });
