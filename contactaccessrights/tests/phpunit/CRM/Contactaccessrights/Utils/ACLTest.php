@@ -13,44 +13,40 @@ use CRM_Contactaccessrights_Test_Fabricator_Rights as RightsFabricator;
 class CRM_Contactaccessrights_Utils_ACLTest extends BaseHeadlessTest {
 
   /**
-   * Tests if ACL Utility class is building the Job Roles Clause appropriately,
+   * Tests if ACL Utility class is building the Where Conditions appropriately,
    * using option_value.value for Locations and Regions in the table join.
    */
-  public function testJobRolesClauseWhereACL() {
-    // Setup local admin
+  public function testWhereConditionsIncludesTheRightContactIdLocationsAndRegions() {
     $localAdmin = ContactFabricator::fabricate();
 
-    // Create Regions and Locations
     $region1 = $this->createOptionValue('hrjc_region', 'Region 1');
     $region2 = $this->createOptionValue('hrjc_region', 'Region 2');
     $location1 = $this->createOptionValue('hrjc_location', 'Location 1');
     $location2 = $this->createOptionValue('hrjc_location', 'Location 2');
 
-    // Add Regions / Locations to localAdmin's Rights
     $this->setContactRights($localAdmin, $region1);
     $this->setContactRights($localAdmin, $location1);
     $this->setContactRights($localAdmin, $location2);
 
-    // Get Job Roles Clause
     $aclUtil = new CRM_Contactaccessrights_Utils_ACL($localAdmin['id']);
-    $whereTables = $aclUtil->getWhereTables();
-    $jobsClause = $whereTables['car_3_jr'];
+    $whereConditions = $aclUtil->getWhereConditions();
 
-    // Check Locations Clause
-    $locationMatches = [];
-    preg_match("/car_jr.location IN \(('[^']*'(, ?'[^']*')*)\)/", $jobsClause, $locationMatches);
-    $this->assertTrue(isset($locationMatches[1]), 'Jobs clause does not have expected format for locations.');
+    $matches = [];
+    preg_match(
+      "/contact_a.id = {$localAdmin['id']} OR car_jr.location IN \((.+?)\) OR car_jr.region IN \((.+?)\)/",
+      $whereConditions[0],
+      $matches
+    );
 
-    $locations = array_map('trim', explode(',', $locationMatches[1]));
+    $this->assertTrue(isset($matches[0]), 'Where clause does not the expected format');
+
+    $locations = array_map('trim', explode(',', $matches[1]));
     $this->assertContains("'{$location1['value']}'", $locations, 'Expected value in clause for locations is not found.');
     $this->assertContains("'{$location2['value']}'", $locations, 'Expected value in clause for locations is not found.');
 
-    // Check Regions Clause
-    $regionMatches = [];
-    preg_match("/car_jr.region IN \(('[^']*'(, ?'[^']*')*)\)/", $jobsClause, $regionMatches);
-    $this->assertTrue(isset($regionMatches[1]), 'Jobs clause does not have expected format for Regions.');
-
-    $regions = array_map('trim', explode(',', $regionMatches[1]));
+    // Note that Region 2 was not set to this contact, so it shouldn't be
+    // in the where condition
+    $regions = array_map('trim', explode(',', $matches[2]));
     $this->assertContains("'{$region1['value']}'", $regions);
     $this->assertNotContains("'{$region2['value']}'", $regions);
   }
