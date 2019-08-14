@@ -374,6 +374,41 @@ class api_v3_ContactTest extends BaseHeadlessTest implements HookInterface {
     $this->assertEquals(1, $result['count']);
   }
 
+  public function testGetStaffAllowsSequential() {
+    $sequentialResult = civicrm_api3('Contact', 'getStaff', ['sequential' => true]);
+    $nonSequentialResult = civicrm_api3('Contact', 'getStaff', ['sequential' => false]);
+
+    $sequentialKeys = array_keys($sequentialResult['values']);
+    $nonSequentialKeys = array_keys($nonSequentialResult['values']);
+
+    $this->assertNotEquals($sequentialKeys, $nonSequentialKeys);
+  }
+
+  public function testGetStaffAllowsReturn() {
+    $result = civicrm_api3('Contact', 'getStaff', ['return' => ['first_name']]);
+
+    foreach ($result['values'] as $record) {
+      $recordKeys = array_keys($record);
+      sort($recordKeys);
+      // The ID is always returned by civi, so even though we asked
+      // for first_name only, we'll actually get the ID too
+      $this->assertEquals($recordKeys, ['first_name', 'id']);
+    }
+  }
+
+  public function testGetStaffDoesNotReturnDisallowedFields() {
+    $result = civicrm_api3('Contact', 'getStaff', ['return' => 'email']);
+
+    foreach ($result['values'] as $record) {
+      $recordKeys = array_keys($record);
+      // ID is always returned, so this is why count is 1
+      // However, since email is not an allowed field,
+      // it won't be returned.
+      $this->assertCount(1, $recordKeys);
+      $this->assertEquals('id', $recordKeys[0]);
+    }
+  }
+
   public function testGetStaffDoesNotCheckForPermissions() {
     // In hook_civicrm_aclWhereClause, implemented in this class, we
     // make sure the current logged in user (manager) will only be able to

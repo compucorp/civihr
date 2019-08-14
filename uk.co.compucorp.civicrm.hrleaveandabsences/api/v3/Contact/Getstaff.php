@@ -44,10 +44,12 @@ function _civicrm_api3_contact_getstaff_strip_non_basic_details($result) {
     return $result;
   }
 
+  $allowedFields = _civicrm_api3_contact_getstaff_fields();
   foreach ($result['values'] as $i => $value) {
-    $result['values'][$i] = [];
-    foreach (_civicrm_api3_contact_getstaff_fields() as $field) {
-      $result['values'][$i][$field] = CRM_Utils_Array::value($field, $value);
+    foreach (array_keys($value) as $field) {
+      if (!in_array($field, $allowedFields)) {
+        unset($result['values'][$i][$field]);
+      }
     }
   }
 
@@ -125,6 +127,8 @@ function _civicrm_api3_contact_getstaff_fields() {
 function _civicrm_api3_contact_getstaff_filter_params(&$params) {
   $allowedFields = _civicrm_api3_contact_getstaff_fields();
   $allowedFields[] = 'options';
+  $allowedFields[] = 'sequential';
+  $allowedFields[] = 'return';
 
   foreach (array_keys($params) as $key) {
     if (!in_array($key, $allowedFields, TRUE)) {
