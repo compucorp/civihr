@@ -252,23 +252,6 @@ define([
         return deferred.promise;
       },
 
-      getContactList: function (sortName, idsList) {
-        var deferred = $q.defer();
-
-        CRM.api3('Contact', 'get', {
-          'sequential': 1,
-          'return': 'id, sort_name',
-          'id': _.isArray(idsList) ? { 'IN': idsList } : null,
-          'sort_name': sortName || null
-        }).done(function (result) {
-          deferred.resolve(result);
-        }).error(function (result) {
-          deferred.reject('An error occured while fetching items');
-        });
-
-        return deferred.promise;
-      },
-
       /**
        * Returns the option values of the given option groups
        *
