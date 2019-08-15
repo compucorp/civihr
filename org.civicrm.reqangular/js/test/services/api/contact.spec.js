@@ -22,6 +22,7 @@ define([
 
     it('has expected interface', function () {
       expect(Object.keys(ContactAPI)).toContain('all');
+      expect(Object.keys(ContactAPI)).toContain('getStaff');
       expect(Object.keys(ContactAPI)).toContain('find');
       expect(Object.keys(ContactAPI)).toContain('leaveManagees');
     });
