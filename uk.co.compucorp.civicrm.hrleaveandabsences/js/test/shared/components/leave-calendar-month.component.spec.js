@@ -73,7 +73,7 @@
           return OptionGroupAPIMock.valuesOf(name);
         });
         // The contact list will not be reduced for testing purposes
-        spyOn(Contact, 'all').and.returnValue($q.resolve({
+        spyOn(Contact, 'getStaff').and.returnValue($q.resolve({
           list: ContactData.all.values.map(function (contact) {
             return { id: contact.id };
           })
@@ -217,7 +217,7 @@
               var sampleContact = _.sample(ContactData.all.values);
 
               beforeEach(function () {
-                Contact.all.and.returnValue($q.resolve({
+                Contact.getStaff.and.returnValue($q.resolve({
                   list: [{ id: sampleContact.id }]
                 }));
 
