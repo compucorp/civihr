@@ -79,7 +79,7 @@ define([
         spyOn(AbsencePeriod, 'all').and.callThrough();
         spyOn(AbsenceType, 'all').and.callThrough();
         spyOn(AbsenceType, 'loadCalculationUnits').and.callThrough();
-        spyOn(Contact, 'all').and.callThrough();
+        spyOn(Contact, 'getStaff').and.callThrough();
         spyOn(leaveBalanceReport, 'all').and.callThrough();
         spyOn(notificationService, 'error');
         spyOn(Session, 'get').and.returnValue($q.resolve({ contactId: loggedInContactId }));
@@ -203,7 +203,7 @@ define([
         });
 
         it('loads the contacts sorted by sort name', function () {
-          expect(Contact.all).toHaveBeenCalledWith(null, null, 'sort_name ASC');
+          expect(Contact.getStaff).toHaveBeenCalledWith(null, null, 'sort_name ASC');
         });
 
         it('stores the absence periods', function () {

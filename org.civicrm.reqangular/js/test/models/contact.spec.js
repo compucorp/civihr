@@ -67,7 +67,13 @@ define([
     ]));
 
     it('has the expected api', function () {
-      expect(Object.keys(Contact)).toEqual(['all', 'find', 'getLoggedIn', 'leaveManagees']);
+      expect(Object.keys(Contact)).toEqual([
+        'all',
+        'getStaff',
+        'find',
+        'getLoggedIn',
+        'leaveManagees'
+      ]);
     });
 
     describe('all()', function () {

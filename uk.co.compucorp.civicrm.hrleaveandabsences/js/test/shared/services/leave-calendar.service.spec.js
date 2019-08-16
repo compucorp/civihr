@@ -55,7 +55,7 @@ define([
         }
       };
 
-      spyOn(Contact, 'all').and.returnValue($q.resolve({ list: mockData.contacts }));
+      spyOn(Contact, 'getStaff').and.returnValue($q.resolve({ list: mockData.contacts }));
       spyOn(Contact, 'leaveManagees').and.returnValue($q.resolve(mockData.lookupContacts));
       contractApi.all.and.returnValue($q.resolve(mockedContracts));
 
@@ -144,7 +144,7 @@ define([
         });
 
         it('requests a list of contacts using the selected filters and sorted by display name', function () {
-          expect(Contact.all).toHaveBeenCalledWith(
+          expect(Contact.getStaff).toHaveBeenCalledWith(
             jasmine.objectContaining(expectedFilters), null, 'display_name');
         });
 
@@ -162,7 +162,7 @@ define([
         });
 
         it('only returns the selected contact from the filter', function () {
-          expect(Contact.all).toHaveBeenCalledWith(expectedFilters, null, 'display_name');
+          expect(Contact.getStaff).toHaveBeenCalledWith(expectedFilters, null, 'display_name');
         });
       });
 
@@ -178,7 +178,7 @@ define([
         });
 
         it('only returns the contacts from the look up list', function () {
-          expect(Contact.all).toHaveBeenCalledWith(expectedFilters, null, 'display_name');
+          expect(Contact.getStaff).toHaveBeenCalledWith(expectedFilters, null, 'display_name');
         });
       });
 
@@ -191,7 +191,7 @@ define([
         });
 
         it('does not filter the request by contact id', function () {
-          expect(Contact.all).not.toHaveBeenCalledWith(jasmine.objectContaining({
+          expect(Contact.getStaff).not.toHaveBeenCalledWith(jasmine.objectContaining({
             id: { 'IN': jasmine.any(Array) }
           }), null, 'display_name');
         });
@@ -206,7 +206,7 @@ define([
         });
 
         it('filters the request by look up contact ids', function () {
-          expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+          expect(Contact.getStaff).toHaveBeenCalledWith(jasmine.objectContaining({
             id: { 'IN': vm.lookupContacts }
           }), null, 'display_name');
         });
@@ -234,7 +234,7 @@ define([
       });
 
       it('requests a list of filtered contacts using the look ups', function () {
-        expect(Contact.all).toHaveBeenCalledWith(jasmine.objectContaining({
+        expect(Contact.getStaff).toHaveBeenCalledWith(jasmine.objectContaining({
           id: { 'IN': _.map(vm.lookupContacts, 'id') }
         }), null, 'display_name');
       });
@@ -253,7 +253,7 @@ define([
         });
 
         it('requests all contacts', function () {
-          expect(Contact.all).toHaveBeenCalledWith();
+          expect(Contact.getStaff).toHaveBeenCalledWith();
         });
 
         it('returns a list of contacts', function () {

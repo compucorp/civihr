@@ -7,6 +7,9 @@ define([
 ], function (_, mocks, ContactData) {
   'use strict';
 
+  var CONTACTS_PUBLIC_FIELDS = ['display_name', 'first_name', 'id', 'last_name',
+    'middle_name'];
+
   mocks.factory('api.contact.mock', ['$q', function ($q) {
     return {
       all: function (filters, pagination, sort, additionalParam, value) {
@@ -44,6 +47,26 @@ define([
           }).join(',')
         });
       },
+
+      /**
+       * Returns the same response as the `.all` method, but removes all but public
+       * fields from the contact record.
+       *
+       * @return {Promise} resolves to a contact api response.
+       */
+      getStaff: function () {
+        return this.all.apply(this, arguments)
+          .then(function (contactsResponse) {
+            var contactsWithPublicFields = _.map(contactsResponse.list, function (contact) {
+              return _.pick(contact, CONTACTS_PUBLIC_FIELDS);
+            });
+
+            return _.assign({}, contactsResponse, {
+              list: contactsWithPublicFields
+            });
+          });
+      },
+
       find: function (id, value) {
         var contact = value || ContactData.all.values.filter(function (contact) {
           return contact.id === id;

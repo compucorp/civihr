@@ -145,11 +145,11 @@ define([
       var contactsIndex = _.keyBy(vm.request.comments, 'contact_id');
       var contactIDs = Object.keys(contactsIndex);
 
-      return Contact.all({
+      return Contact.getStaff({
         id: { IN: contactIDs }
       }, { page: 1, size: 0 })
         .then(function (contacts) {
-          vm.comment.contacts = _.keyBy(contacts.list, 'contact_id');
+          vm.comment.contacts = _.keyBy(contacts.list, 'id');
         });
     }
 
