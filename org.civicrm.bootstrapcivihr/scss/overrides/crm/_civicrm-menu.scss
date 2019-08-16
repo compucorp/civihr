@@ -1,3 +1,5 @@
+/* stylelint-disable selector-max-compound-selectors, selector-max-id */
+
 #civicrm-menu.sm {
   > li {
     line-height: $chr-user-menu-line-height;
@@ -17,7 +19,7 @@
     margin-right: 6px;
   }
 
-  li[data-name='Self Service Portal'] {
+  [data-name='Self Service Portal'] {
 
     padding: 0 15px;
 
@@ -49,6 +51,10 @@
     display: none;
   }
 
+  #crm-qsearch-input::placeholder {
+    font-family: $font-family-base;
+  }
+
   &.search-ongoing {
     #crm-qsearch {
       #crm-qsearch-input {
@@ -73,7 +79,7 @@
       float: left;
     }
 
-    a.has-submenu {
+    .has-submenu {
       background: none;
       padding: 0;
     }
@@ -82,7 +88,7 @@
       float: left;
     }
 
-    input#crm-qsearch-input {
+    #crm-qsearch-input {
       background: transparent !important;
       border: 0;
       color: $gray-dark;
