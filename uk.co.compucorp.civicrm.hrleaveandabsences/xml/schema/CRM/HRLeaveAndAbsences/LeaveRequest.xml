@@ -172,4 +172,10 @@
     <add>4.4</add>
   </field>
 
+  <field>
+    <name>notes</name>
+    <type>text</type>
+    <comment>A note about the request, left by the manager.</comment>
+  </field>
+
 </table>
