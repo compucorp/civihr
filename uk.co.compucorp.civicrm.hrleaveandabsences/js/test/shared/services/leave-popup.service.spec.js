@@ -27,6 +27,9 @@ define([
 
       spyOn(LeaveRequest, 'find');
       spyOn(notification, 'error');
+      $uibModal.open.and.returnValue({
+        result: $q.resolve()
+      });
     }));
 
     describe('openModal()', function () {
@@ -66,6 +69,59 @@ define([
         it('opens the leave popup with a default status', function () {
           expect($uibModal.open.calls.mostRecent().args[0].resolve
             .directiveOptions().defaultStatus).toBe(defaultStatus);
+        });
+      });
+
+      describe('resolving the modal', function () {
+        describe('when the modal resolves as normal', function () {
+          beforeEach(function () {
+            $uibModal.open.and.returnValue({
+              result: $q.resolve()
+            });
+
+            LeavePopup.openModal();
+          });
+
+          it('does not emit an error', function () {
+            expect(function () {
+              $rootScope.$digest();
+            })
+              .not.toThrow();
+          });
+        });
+
+        describe('when the modal is rejected by the "backdrop click" event', function () {
+          beforeEach(function () {
+            $uibModal.open.and.returnValue({
+              result: $q.reject('backdrop click')
+            });
+
+            LeavePopup.openModal();
+          });
+
+          it('does not emit an error', function () {
+            expect(function () {
+              $rootScope.$digest();
+            })
+              .not.toThrow();
+          });
+        });
+
+        describe('when the modal is rejected by any reason other than the "backdrop click" event', function () {
+          beforeEach(function () {
+            $uibModal.open.and.returnValue({
+              result: $q.reject('another reason')
+            });
+
+            LeavePopup.openModal();
+          });
+
+          it('emits an error', function () {
+            expect(function () {
+              $rootScope.$digest();
+            })
+              .toThrow();
+          });
         });
       });
     });
