@@ -18,6 +18,8 @@ define([
   ];
 
   function LeavePopupService ($log, $rootElement, $rootScope, $modal, notification, sharedSettings, DateFormat, Session, LeaveRequest) {
+    var BACKDROP_CLICK_EVENT_NAME = 'backdrop click';
+
     $log.debug('LeavePopup');
 
     return {
@@ -67,7 +69,13 @@ define([
             return DateFormat.getDateFormat();
           }]
         }
-      });
+      })
+        .result
+        .catch(function (error) {
+          if (error !== BACKDROP_CLICK_EVENT_NAME) {
+            throw error;
+          }
+        });
     }
 
     /**
