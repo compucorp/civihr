@@ -111,7 +111,6 @@ class CRM_Hrjobcontract_BAO_HRJobHour extends CRM_Hrjobcontract_DAO_HRJobHour {
       $fields = CRM_Utils_Array::crmArraySortByField($fields, 'title');
       $fields = CRM_Utils_Array::index(array('name'), $fields);
 
-      CRM_Core_BAO_Cache::setItem($fields, 'contact fields', $cacheKeyString);
      }
 
     self::$_importableFields[$cacheKeyString] = $fields;

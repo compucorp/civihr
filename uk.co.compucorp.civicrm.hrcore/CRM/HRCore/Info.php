@@ -9,12 +9,12 @@ class CRM_HRCore_Info {
    */
   public static function getVersion() {
 
-    $version = CRM_Core_BAO_Cache::getItem('HRCore_Info', 'version');
+    $version = Civi::cache('HRCore_Info')->get('version');
 
     if (empty($version)) {
       $info = CRM_Extension_Info::loadFromFile(__DIR__ . '/../../info.xml');
       $version = $info->version;
-      CRM_Core_BAO_Cache::setItem($version, 'HRCore_Info', 'version');
+      Civi::cache('HRCore_Info')->set('version', $version);
     }
 
     return $version;
