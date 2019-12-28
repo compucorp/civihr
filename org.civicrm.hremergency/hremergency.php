@@ -136,3 +136,22 @@ function hremergency_civicrm_container($container) {
 function hremergency_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
   $permissions['contact']['deleteemergencycontact'] = 'access AJAX API';
 }
+
+/**
+ * Implementation of hook_civicrm_tabset
+ *
+ * @param string $tabsetName
+ * @param array $tabs
+ * @param mixed $context
+ */
+function hremergency_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName != 'civicrm/contact/view') {
+    return;
+  }
+
+  foreach ($tabs as $i => $tab) {
+    if ($tab['title'] == 'Emergency Contacts') {
+      $tabs[$i]['icon'] = 'crm-i fa-medkit';
+    }
+  }
+}

@@ -288,6 +288,7 @@ function hrjobcontract_civicrm_tabset($tabsetName, &$tabs, $context) {
       'id'        => 'hrjobcontract',
       'url'       => CRM_Utils_System::url('civicrm/contact/view/hrjobcontract', array('cid' => $context['contact_id'])),
       'title'     => ts('Job Contract'),
+      'icon'      => 'crm-i fa-file-o',
       'weight'    => -190,
     );
   }

@@ -130,12 +130,6 @@
      */
     function amendPersonalDetailsTab () {
       if (CRM.pageName === 'viewSummary') {
-        // Rename "Summary" tab to "Personal Details"
-        // Hack to check contact type - This field only appears for individuals
-        if ($('.crm-contact-job_title', '.crm-summary-contactinfo-block').length) {
-          $('.crm-contact-tabs-list #tab_summary a').text('Personal Details');
-        }
-
         if ($('.Inline_Custom_Data').length) {
           repositionPersonalDetailsBlock('.Inline_Custom_Data');
         }

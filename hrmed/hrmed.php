@@ -141,8 +141,8 @@ function hrmed_civicrm_buildProfile($name) {
     $smarty->assign('urlIsPublic', FALSE);
 
     $config = CRM_Core_Config::singleton();
-    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String', CRM_Core_DAO::$_nullObject)) {
-      $contactID = CRM_Utils_Request::retrieve('id', 'Positive', $this);
+    if ($config->logging && 'multiProfileDialog' !== CRM_Utils_Request::retrieve('context', 'String')) {
+      $contactID = CRM_Utils_Request::retrieve('id', 'Positive');
       CRM_Core_Region::instance('profile-form-hrmed_tab')->add(array(
         'template' => 'CRM/common/logButton.tpl',
         'instance_id' => CRM_Report_Utils_Report::getInstanceIDForValue('logging/contact/summary'),
@@ -164,5 +164,24 @@ function hrmed_civicrm_pageRun($page) {
       ->addScriptFile('civicrm', 'js/jquery/jquery.crmRevisionLink.js', CRM_Core_Resources::DEFAULT_WEIGHT, 'html-header');
     CRM_Core_Resources::singleton()
       ->addScriptFile('org.civicrm.hrmed', 'js/dist/hrmed.min.js', 1010);
+  }
+}
+
+/**
+ * Implementation of hook_civicrm_tabset
+ *
+ * @param string $tabsetName
+ * @param array $tabs
+ * @param mixed $context
+ */
+function hrmed_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName != 'civicrm/contact/view') {
+    return;
+  }
+
+  foreach ($tabs as $i => $tab) {
+    if ($tab['title'] == 'Medical & Disability') {
+      $tabs[$i]['icon'] = 'crm-i fa-wheelchair';
+    }
   }
 }

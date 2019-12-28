@@ -72,7 +72,7 @@ function hrui_civicrm_buildForm($formName, &$form) {
   }
 
   if ($formName == 'CRM_Admin_Form_Extensions') {
-    $extensionKey= CRM_Utils_Request::retrieve('key', 'String', $this);
+    $extensionKey= CRM_Utils_Request::retrieve('key', 'String');
     if ($extensionKey == 'uk.co.compucorp.civicrm.hrsampledata') {
       $title = ts("Be Careful");
       $message = ts("Installing/Uninstalling this extension will remove all existing data, so make sure to create a backup first !");
@@ -405,7 +405,6 @@ function hrui_civicrm_summary($contactId, &$content, &$contentPlacement) {
     return;
   }
 
-  $content['userid'] = $result['values'][0]['id'];
   $content['username'] = $result['values'][0]['name'];
   $contentPlacement = NULL;
 }

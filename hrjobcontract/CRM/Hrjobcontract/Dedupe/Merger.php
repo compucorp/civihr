@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2018                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2018
+ * @copyright CiviCRM LLC (c) 2004-2019
  */
 class CRM_Hrjobcontract_Dedupe_Merger {
 
@@ -203,35 +203,23 @@ class CRM_Hrjobcontract_Dedupe_Merger {
   /**
    * Get array tables and fields that reference civicrm_contact.id.
    *
-   * This includes core tables, custom group tables, tables added by the merge
-   * hook and (somewhat randomly) the entity_tag table.
+   * This function calls the merge hook and only exists to wrap the DAO function to support that deprecated call.
+   * The entityTypes hook is the recommended way to add tables to this result.
    *
-   * Refer to CRM-17454 for information on the danger of querying the information
-   * schema to derive this.
-   *
-   * This function calls the merge hook but the entityTypes hook is the recommended
-   * way to add tables to this result.
+   * I thought about adding another hook to alter tableReferences but decided it was unclear if there
+   * are use cases not covered by entityTables and instead we should wait & see.
    */
   public static function cidRefs() {
     if (isset(\Civi::$statics[__CLASS__]) && isset(\Civi::$statics[__CLASS__]['contact_references'])) {
       return \Civi::$statics[__CLASS__]['contact_references'];
     }
-    $contactReferences = array();
-    $coreReferences = CRM_Core_DAO::getReferencesToTable('civicrm_contact');
-    foreach ($coreReferences as $coreReference) {
-      if (!is_a($coreReference, 'CRM_Core_Reference_Dynamic')) {
-        $contactReferences[$coreReference->getReferenceTable()][] = $coreReference->getReferenceKey();
-      }
-    }
-    self::addCustomTablesExtendingContactsToCidRefs($contactReferences);
 
-    // FixME for time being adding below line statically as no Foreign key constraint defined for table 'civicrm_entity_tag'
-    $contactReferences['civicrm_entity_tag'][] = 'entity_id';
+    $contactReferences = $coreReferences = CRM_Core_DAO::getReferencesToContactTable();
 
-    // Allow hook_civicrm_merge() to adjust $cidRefs.
-    // Note that if entities are registered using the entityTypes hook there
-    // is no need to use this hook.
     CRM_Utils_Hook::merge('cidRefs', $contactReferences);
+    if ($contactReferences !== $coreReferences) {
+      Civi::log()->warning("Deprecated hook ::merge in context of 'cidRefs. Use entityTypes instead.", array('civi.tag' => 'deprecated'));
+    }
     \Civi::$statics[__CLASS__]['contact_references'] = $contactReferences;
     return \Civi::$statics[__CLASS__]['contact_references'];
   }
@@ -486,7 +474,8 @@ INNER JOIN  civicrm_membership membership2 ON membership1.membership_type_id = m
     // getting all custom tables
     $customTables = array();
     if ($customTableToCopyFrom !== NULL) {
-      self::addCustomTablesExtendingContactsToCidRefs($customTables);
+      // @todo this duplicates cidRefs?
+      CRM_Core_DAO::appendCustomTablesExtendingContacts($customTables);
       $customTables = array_keys($customTables);
     }
 
@@ -630,8 +619,11 @@ INNER JOIN  civicrm_membership membership2 ON membership1.membership_type_id = m
       }
       $key1 = CRM_Utils_Array::value($key, $mainEvs);
       $key2 = CRM_Utils_Array::value($key, $otherEvs);
-      // CRM-17556 Get all non-empty fields, to make comparison easier
-      if (!empty($key1) || !empty($key2)) {
+      // We wish to retain '0' as it has a different meaning than NULL on a checkbox.
+      // However I can't think of a case where an empty string is more meaningful than null
+      // or where it would be FALSE or something else nullish.
+      $valuesToIgnore = [NULL, '', []];
+      if (!in_array($key1, $valuesToIgnore, TRUE) || !in_array($key2, $valuesToIgnore, TRUE)) {
         $result['custom'][] = $key;
       }
     }
@@ -1441,7 +1433,16 @@ INNER JOIN  civicrm_membership membership2 ON membership1.membership_type_id = m
         }
       }
       if ($name == 'rel_table_memberships') {
-        $elements[] = array('checkbox', "operation[move_{$name}][add]", NULL, ts('add new'));
+        //Enable 'add new' checkbox if main contact does not contain any membership similar to duplicate contact.
+        $attributes = ['checked' => 'checked'];
+        $otherContactMemberships = CRM_Member_BAO_Membership::getAllContactMembership($otherId);
+        foreach ($otherContactMemberships as $membership) {
+          $mainMembership = CRM_Member_BAO_Membership::getContactMembership($mainId, $membership['membership_type_id'], FALSE);
+          if ($mainMembership) {
+            $attributes = [];
+          }
+        }
+        $elements[] = array('checkbox', "operation[move_{$name}][add]", NULL, ts('add new'), $attributes);
         $migrationInfo["operation"]["move_{$name}"]['add'] = 1;
       }
     }
@@ -1457,7 +1458,6 @@ INNER JOIN  civicrm_membership membership2 ON membership1.membership_type_id = m
     $otherTree = CRM_Core_BAO_CustomGroup::getTree($main['contact_type'], NULL, $otherId, -1,
       CRM_Utils_Array::value('contact_sub_type', $other), NULL, TRUE, NULL, TRUE, $checkPermissions
     );
-    CRM_Core_DAO::freeResult();
 
     foreach ($otherTree as $gid => $group) {
       $foundField = FALSE;
@@ -2019,26 +2019,6 @@ INNER JOIN  civicrm_membership membership2 ON membership1.membership_type_id = m
   }
 
   /**
-   * Add custom tables that extend contacts to the list of contact references.
-   *
-   * CRM_Core_BAO_CustomGroup::getAllCustomGroupsByBaseEntity seems like a safe-ish
-   * function to be sure all are retrieved & we don't miss subtypes or inactive or multiples
-   * - the down side is it is not cached.
-   *
-   * Further changes should be include tests in the CRM_Core_MergerTest class
-   * to ensure that disabled, subtype, multiple etc groups are still captured.
-   *
-   * @param array $cidRefs
-   */
-  public static function addCustomTablesExtendingContactsToCidRefs(&$cidRefs) {
-    $customValueTables = CRM_Core_BAO_CustomGroup::getAllCustomGroupsByBaseEntity('Contact');
-    $customValueTables->find();
-    while ($customValueTables->fetch()) {
-      $cidRefs[$customValueTables->table_name] = array('entity_id');
-    }
-  }
-
-  /**
    * Create activities tracking the merge on affected contacts.
    *
    * @param int $mainId
@@ -2078,6 +2058,7 @@ INNER JOIN  civicrm_membership membership2 ON membership1.membership_type_id = m
    * @param int $rule_group_id
    * @param int $group_id
    * @param bool $reloadCacheIfEmpty
+   *   Should the cache be reloaded if empty - this must be false when in a dedupe action!
    * @param int $batchLimit
    * @param bool $isSelected
    *   Limit to selected pairs.
@@ -2127,7 +2108,7 @@ INNER JOIN  civicrm_membership membership2 ON membership1.membership_type_id = m
    */
   public static function getMergeCacheKeyString($rule_group_id, $group_id, $criteria = array(), $checkPermissions = TRUE) {
     $contactType = CRM_Dedupe_BAO_RuleGroup::getContactTypeForRuleGroup($rule_group_id);
-    $cacheKeyString = "merge {$contactType}";
+    $cacheKeyString = "merge_{$contactType}";
     $cacheKeyString .= $rule_group_id ? "_{$rule_group_id}" : '_0';
     $cacheKeyString .= $group_id ? "_{$group_id}" : '_0';
     $cacheKeyString .= !empty($criteria) ? md5(serialize($criteria)) : '_0';
@@ -2420,8 +2401,6 @@ INNER JOIN  civicrm_membership membership2 ON membership1.membership_type_id = m
       // pair may have been flipped, so make sure we delete using both orders
       CRM_Core_BAO_PrevNextCache::deletePair($mainId, $otherId, $cacheKeyString, TRUE);
     }
-
-    CRM_Core_DAO::freeResult();
   }
 
 }

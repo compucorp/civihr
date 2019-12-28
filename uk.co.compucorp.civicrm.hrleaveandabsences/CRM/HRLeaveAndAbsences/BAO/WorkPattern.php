@@ -414,7 +414,7 @@ class CRM_HRLeaveAndAbsences_BAO_WorkPattern extends CRM_HRLeaveAndAbsences_DAO_
         'time_to' => $row['time_to'],
         'break' => $row['break'],
         'leave_days' => $row['leave_days'],
-        'number_of_hours' => $row['number_of_hours'],
+        'number_of_hours' => (float)$row['number_of_hours'],
       ];
 
       $workDayIndex++;

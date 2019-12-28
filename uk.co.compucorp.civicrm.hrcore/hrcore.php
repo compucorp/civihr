@@ -50,6 +50,8 @@ function hrcore_civicrm_searchTasks($objectName, &$tasks) {
 function hrcore_civicrm_tabset($tabsetName, &$tabs, $context) {
   $listeners = [
     new CRM_HRCore_Hook_Tabset_ActivityTabModifier(),
+    new CRM_HRCore_Hook_Tabset_SummaryTabModifier(),
+    new CRM_HRCore_Hook_Tabset_CustomTabIconSetter(),
   ];
 
   foreach ($listeners as $currentListener) {
