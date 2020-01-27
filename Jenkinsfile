@@ -15,9 +15,9 @@ pipeline {
     DRUPAL_THEMES_ROOT = "$DRUPAL_SITES_ALL/themes"
     CIVICRM_EXT_ROOT = "$DRUPAL_MODULES_ROOT/civicrm/tools/extensions"
     WEBURL = "http://jenkins.compucorp.co.uk:8900"
-    ADMIN_PASS = credentials('CVHR_ADMIN_PASS')
     KARMA_TESTS_REPORT_FOLDER = "reports/js-karma"
     PHPUNIT_TESTS_REPORT_FOLDER = "reports/phpunit"
+    GIT_URL = "https://github.com/compucorp/civihr"
   }
 
   stages {
@@ -42,122 +42,6 @@ pipeline {
 
         // Cleanup old PHPUnit test reports
         sh "rm -f $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/* || true"
-      }
-    }
-
-    stage('Build site') {
-      steps {
-        script {
-          // Build site with CV Buildkit
-          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type drupal-clean --civi-ver 5.3.1 --url $WEBURL --admin-pass $ADMIN_PASS"
-
-          // Get target and PR branches name
-          def prBranch = env.CHANGE_BRANCH
-          def envBranch = env.CHANGE_TARGET ? env.CHANGE_TARGET : env.BRANCH_NAME
-          if (prBranch != null && prBranch.startsWith("hotfix-")) {
-            envBranch = 'master'
-          }
-
-          // Clone CiviHR
-          cloneCiviHRRepositories(envBranch)
-
-          if (prBranch) {
-            checkoutPrBranchInCiviHRRepos(prBranch)
-            mergeEnvBranchInAllRepos(envBranch)
-          }
-
-          applyCoreForkPatch()
-
-          // The JS tests use the cv tool to find the path  of an extension.
-          // For it to work, the extensions have to be installed on the site
-          installCiviHRExtensions()
-        }
-      }
-    }
-
-    stage('Run tests') {
-      parallel {
-        stage('Test PHP') {
-          steps {
-            script {
-              for (item in mapToList(listCivihrExtensions())) {
-                def extension = item.value
-
-                if (extension.hasPHPTests) {
-                  testPHPUnit(extension)
-                }
-              }
-            }
-          }
-          post {
-            always {
-              step([
-                $class: 'XUnitBuilder',
-                thresholds: [
-                  [
-                    $class: 'FailedThreshold',
-                    failureNewThreshold: '0',
-                    failureThreshold: '0',
-                    unstableNewThreshold: '0',
-                    unstableThreshold: '0'
-                  ]
-                ],
-                tools: [
-                  [
-                    $class: 'JUnitType',
-                    pattern: env.PHPUNIT_TESTS_REPORT_FOLDER + '/*.xml'
-                  ]
-                ]
-              ])
-            }
-          }
-        }
-
-        stage('Test JS') {
-          steps {
-            script {
-              installNodePackages();
-
-              // HRCore is the extension where the JS tests are ran from
-              def hrcore = listCivihrExtensions().hrcore;
-
-              // This is necessary to avoid an additional loop
-              // in each extension folder to read the XML.
-              // After each test we move the reports to this folder
-              sh "mkdir -p $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER"
-
-              for (item in mapToList(listCivihrExtensions())) {
-                def extension = item.value
-
-                if (extension.hasJSTests) {
-                  testJS(hrcore.folder, extension)
-                }
-              }
-            }
-          }
-          post {
-            always {
-              step([
-                $class: 'XUnitBuilder',
-                thresholds: [
-                  [
-                    $class: 'FailedThreshold',
-                    failureNewThreshold: '0',
-                    failureThreshold: '0',
-                    unstableNewThreshold: '0',
-                    unstableThreshold: '0'
-                  ]
-                ],
-                tools: [
-                  [
-                    $class: 'JUnitType',
-                    pattern: env.KARMA_TESTS_REPORT_FOLDER + '/*.xml'
-                  ]
-                ]
-              ])
-            }
-          }
-        }
       }
     }
   }
@@ -185,10 +69,8 @@ pipeline {
  * Sends a notification when the build starts
  */
 def sendBuildStartNotification() {
-  def msgHipChat = 'Building ' + getBuildTargetLink('hipchat') + '. ' + getReportLink('hipchat')
   def msgSlack = 'Building ' + getBuildTargetLink('slack') + '. ' + getReportLink('slack')
 
-  sendHipchatNotification('YELLOW', msgHipChat)
   sendSlackNotification('warning', msgSlack)
 }
 
@@ -196,10 +78,8 @@ def sendBuildStartNotification() {
  * Sends a notification when the build is completed successfully
  */
 def sendBuildSuccessNotification() {
-  def msgHipChat = getBuildTargetLink('hipchat') + ' built successfully. Time: $BUILD_DURATION. ' + getReportLink('hipchat')
   def msgSlack = getBuildTargetLink('slack') + ' built successfully. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink('slack')
 
-  sendHipchatNotification('GREEN', msgHipChat)
   sendSlackNotification('good', msgSlack)
 }
 
@@ -207,18 +87,9 @@ def sendBuildSuccessNotification() {
  * Sends a notification when the build fails
  */
 def sendBuildFailureNotification() {
-  def msgHipChat = 'Failed to build ' + getBuildTargetLink('hipchat') + '. Time: $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink('hipchat')
   def msgSlack = 'Failed to build ' + getBuildTargetLink('slack') + '. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink('slack')
 
-  sendHipchatNotification('RED', msgHipChat)
   sendSlackNotification('danger', msgSlack)
-}
-
-/*
- * Sends a notification to Hipchat
- */
-def sendHipchatNotification(String color, String message) {
-  hipchatSend color: color, message: message, notify: true
 }
 
 /*
@@ -244,11 +115,8 @@ def getBuildTargetLink(String client) {
   def forPR = buildIsForAPullRequest()
 
   switch (client) {
-    case 'hipchat':
-      link = forPR ? "<a href=\"${env.CHANGE_URL}\">\"${env.CHANGE_TITLE}\"</a>" : '<a href="' + getRepositoryUrlForBuildBranch() + '">"' + env.BRANCH_NAME + '"</a>'
-      break;
     case 'slack':
-      link = forPR ? "<${env.CHANGE_URL}|${env.CHANGE_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
+      link = forPR ? "<${env.GITHUB_PR_URL}|${env.GITHUB_PR_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
       break;
   }
 
@@ -259,7 +127,7 @@ def getBuildTargetLink(String client) {
  * Returns true if this build as triggered by a Pull Request.
  */
 def buildIsForAPullRequest() {
-  return env.CHANGE_URL != null
+  return env.GITHUB_PR_NUMBER != null
 }
 
 /*
@@ -279,9 +147,6 @@ def getReportLink(String client) {
   def link = ''
 
   switch (client) {
-    case 'hipchat':
-      link = 'Click <a href="$BLUE_OCEAN_URL">here</a> to see the build report'
-      break
     case 'slack':
       link = "Click <${env.RUN_DISPLAY_URL}|here> to see the build report"
       break
