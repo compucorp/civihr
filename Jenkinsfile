@@ -15,9 +15,9 @@ pipeline {
     DRUPAL_THEMES_ROOT = "$DRUPAL_SITES_ALL/themes"
     CIVICRM_EXT_ROOT = "$DRUPAL_MODULES_ROOT/civicrm/tools/extensions"
     WEBURL = "http://jenkins.compucorp.co.uk:8900"
-    ADMIN_PASS = credentials('CVHR_ADMIN_PASS')
     KARMA_TESTS_REPORT_FOLDER = "reports/js-karma"
     PHPUNIT_TESTS_REPORT_FOLDER = "reports/phpunit"
+    GITHUB_REPO_URL = "https://github.com/compucorp/civihr"
   }
 
   stages {
@@ -25,17 +25,11 @@ pipeline {
       steps {
         sendBuildStartNotification()
 
-        // Print all Environment variables
-        sh 'printenv | sort'
-
         // Update buildkit
         sh "cd /opt/buildkit && git pull"
 
         // Destroy existing site
         sh "civibuild destroy ${params.CIVIHR_BUILDNAME} || true"
-
-        // Test build tools
-        sh 'amp test'
 
         // Cleanup old Karma test reports
         sh "rm -f $WORKSPACE/$KARMA_TESTS_REPORT_FOLDER/* || true"
@@ -49,11 +43,11 @@ pipeline {
       steps {
         script {
           // Build site with CV Buildkit
-          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type drupal-clean --civi-ver 5.3.1 --url $WEBURL --admin-pass $ADMIN_PASS"
+          sh "civibuild create ${params.CIVIHR_BUILDNAME} --type drupal-clean --civi-ver 5.12.0 --url $WEBURL"
 
           // Get target and PR branches name
-          def prBranch = env.CHANGE_BRANCH
-          def envBranch = env.CHANGE_TARGET ? env.CHANGE_TARGET : env.BRANCH_NAME
+          def prBranch = env.BRANCH_NAME
+          def envBranch = env.GITHUB_PR_TARGET_BRANCH ? env.GITHUB_PR_TARGET_BRANCH : env.BRANCH_NAME
           if (prBranch != null && prBranch.startsWith("hotfix-")) {
             envBranch = 'master'
           }
@@ -104,7 +98,7 @@ pipeline {
                 ],
                 tools: [
                   [
-                    $class: 'JUnitType',
+                    $class: 'PHPUnitType',
                     pattern: env.PHPUNIT_TESTS_REPORT_FOLDER + '/*.xml'
                   ]
                 ]
@@ -185,10 +179,8 @@ pipeline {
  * Sends a notification when the build starts
  */
 def sendBuildStartNotification() {
-  def msgHipChat = 'Building ' + getBuildTargetLink('hipchat') + '. ' + getReportLink('hipchat')
-  def msgSlack = 'Building ' + getBuildTargetLink('slack') + '. ' + getReportLink('slack')
+  def msgSlack = 'Building ' + getBuildTargetLink() + '. ' + getReportLink()
 
-  sendHipchatNotification('YELLOW', msgHipChat)
   sendSlackNotification('warning', msgSlack)
 }
 
@@ -196,10 +188,8 @@ def sendBuildStartNotification() {
  * Sends a notification when the build is completed successfully
  */
 def sendBuildSuccessNotification() {
-  def msgHipChat = getBuildTargetLink('hipchat') + ' built successfully. Time: $BUILD_DURATION. ' + getReportLink('hipchat')
-  def msgSlack = getBuildTargetLink('slack') + ' built successfully. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink('slack')
+  def msgSlack = getBuildTargetLink() + ' built successfully. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink()
 
-  sendHipchatNotification('GREEN', msgHipChat)
   sendSlackNotification('good', msgSlack)
 }
 
@@ -207,18 +197,9 @@ def sendBuildSuccessNotification() {
  * Sends a notification when the build fails
  */
 def sendBuildFailureNotification() {
-  def msgHipChat = 'Failed to build ' + getBuildTargetLink('hipchat') + '. Time: $BUILD_DURATION. No. of failed tests: ${TEST_COUNTS,var=\"fail\"}. ' + getReportLink('hipchat')
-  def msgSlack = 'Failed to build ' + getBuildTargetLink('slack') + '. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink('slack')
+  def msgSlack = 'Failed to build ' + getBuildTargetLink() + '. Time: ' + getBuildDuration(currentBuild) + '. ' + getReportLink()
 
-  sendHipchatNotification('RED', msgHipChat)
   sendSlackNotification('danger', msgSlack)
-}
-
-/*
- * Sends a notification to Hipchat
- */
-def sendHipchatNotification(String color, String message) {
-  hipchatSend color: color, message: message, notify: true
 }
 
 /*
@@ -239,18 +220,11 @@ def getBuildDuration(build) {
  * Returns a link to what is being built. If it's a PR, then it's a link to the pull request itself.
  * If it's a branch, then it's a link in the format http://github.com/org/repo/tree/branch
  */
-def getBuildTargetLink(String client) {
+def getBuildTargetLink() {
   def link = ''
   def forPR = buildIsForAPullRequest()
 
-  switch (client) {
-    case 'hipchat':
-      link = forPR ? "<a href=\"${env.CHANGE_URL}\">\"${env.CHANGE_TITLE}\"</a>" : '<a href="' + getRepositoryUrlForBuildBranch() + '">"' + env.BRANCH_NAME + '"</a>'
-      break;
-    case 'slack':
-      link = forPR ? "<${env.CHANGE_URL}|${env.CHANGE_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
-      break;
-  }
+  link = forPR ? "<${env.GITHUB_PR_URL}|${env.GITHUB_PR_TITLE}>" : '<' + getRepositoryUrlForBuildBranch() + '|' + env.BRANCH_NAME + '>'
 
   return link
 }
@@ -259,33 +233,22 @@ def getBuildTargetLink(String client) {
  * Returns true if this build as triggered by a Pull Request.
  */
 def buildIsForAPullRequest() {
-  return env.CHANGE_URL != null
+  return env.GITHUB_PR_NUMBER != null
 }
 
 /*
  * Returns a URL pointing to branch currently being built
  */
 def getRepositoryUrlForBuildBranch() {
-  def repositoryURL = env.GIT_URL
-  repositoryURL = repositoryURL.replace('.git', '')
-
-  return repositoryURL + '/tree/' + env.BRANCH_NAME
+  return env.GITHUB_REPO_URL + '/tree/' + env.BRANCH_NAME
 }
 
 /*
  * Returns the Blue Ocean build report URL for the current job
  */
-def getReportLink(String client) {
+def getReportLink() {
   def link = ''
-
-  switch (client) {
-    case 'hipchat':
-      link = 'Click <a href="$BLUE_OCEAN_URL">here</a> to see the build report'
-      break
-    case 'slack':
-      link = "Click <${env.RUN_DISPLAY_URL}|here> to see the build report"
-      break
-  }
+  link = "Click <${env.RUN_DISPLAY_URL}|here> to see the build report"
 
   return link
 }
@@ -331,7 +294,7 @@ def testPHPUnit(java.util.LinkedHashMap extension) {
 
   sh """
     cd $CIVICRM_EXT_ROOT/civihr/${extension.folder}
-    phpunit4 --testsuite="Unit Tests" --log-junit $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/result-phpunit_${extension.folder}.xml
+    phpunit5 --testsuite="Unit Tests" --log-junit $WORKSPACE/$PHPUNIT_TESTS_REPORT_FOLDER/result-phpunit_${extension.folder}.xml
   """
 }
 
