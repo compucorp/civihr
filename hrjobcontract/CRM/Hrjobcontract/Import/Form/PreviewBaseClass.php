@@ -46,7 +46,7 @@ class CRM_Hrjobcontract_Import_Form_Previewbaseclass extends CRM_Import_Form_Pre
    * manefestations
    * @var unknown
    */
-  protected $_importParserUrl = '&parser=CRM_Event_Import_Parser';
+  protected $_importParserUrl = '&parser=CRM_Event_Import_Parser_Participant';
   /**
    * Function to set variables up before form is built
    *

@@ -45,7 +45,7 @@ class CRM_Hrjobcontract_Import_Form_SummaryBaseClass extends CRM_Import_Form_Sum
    * manefestations
    * @var unknown
    */
-  protected $_importParserUrl = '&parser=CRM_Event_Import_Parser';
+  protected $_importParserUrl = '&parser=CRM_Event_Import_Parser_Participant';
   /**
    * Function to set variables up before form is built
    *
