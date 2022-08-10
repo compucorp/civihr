@@ -76,4 +76,39 @@ class CRM_Hrjobroles_Import_Form_DataSource extends CRM_Import_Form_DataSource {
     $this->submitFileForMapping('CRM_Hrjobroles_Import_Parser_HrJobRoles');
   }
 
+
+  /**
+   * Common form postProcess.
+   * @deprecated - just use postProcess.
+   *
+   * @param string $parserClassName
+   * @param string|null $entity
+   *   Entity to set for paraser currently only for custom import
+   */
+  protected function submitFileForMapping($parserClassName, $entity = NULL) {
+    CRM_Core_Session::singleton()->set('dateTypes', $this->getSubmittedValue('dateFormats'));
+    $this->processDatasource();
+
+    $mapper = [];
+
+    $parser = new $parserClassName($mapper);
+    if ($entity) {
+      $parser->setEntity($this->get($entity));
+    }
+    $parser->setMaxLinesToProcess(100);
+    $parser->setUserJobID($this->getUserJobID());
+    $parser->run(
+      $this->getSubmittedValue('uploadFile'),
+      $this->getSubmittedValue('fieldSeparator'),
+      [],
+      $this->getSubmittedValue('skipColumnHeader'),
+      CRM_Import_Parser::MODE_MAPFIELD,
+      $this->getSubmittedValue('contactType')
+    );
+
+    // add all the necessary variables to the form
+    $parser->set($this);
+    $this->controller->resetPage('MapField');
+  }
+
 }
