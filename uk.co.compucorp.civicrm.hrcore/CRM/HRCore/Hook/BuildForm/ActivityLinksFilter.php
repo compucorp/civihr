@@ -44,7 +44,7 @@ class CRM_HRCore_Hook_BuildForm_ActivityLinksFilter {
   private function filterActivityTypeLinks($form) {
     $allowedActivities = $this->getAllowedActivityTypes();
     $activityTypes = [];
-    $activityTypeLinks = $form->get_template_vars('activityTypes');
+    $activityTypeLinks = $form->getTemplateVars('activityTypes');
 
     foreach ($activityTypeLinks as $id => $activityTypeLink) {
       if (!empty($allowedActivities[$activityTypeLink['name']]))  {

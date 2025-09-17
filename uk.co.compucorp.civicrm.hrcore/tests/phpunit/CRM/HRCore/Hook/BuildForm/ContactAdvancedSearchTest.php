@@ -24,7 +24,7 @@ class CRM_HRCore_Hook_BuildForm_ContactAdvancedSearchTest extends BaseHeadlessTe
 
     $hook = new ContactAdvancedSearch();
     $hook->handle($formName, $form);
-    $fields = $form->get_template_vars('basicSearchFields');
+    $fields = $form->getTemplateVars('basicSearchFields');
 
     $this->assertEquals($fields, [
       'sort_name' => []
@@ -42,7 +42,7 @@ class CRM_HRCore_Hook_BuildForm_ContactAdvancedSearchTest extends BaseHeadlessTe
 
     $hook = new ContactAdvancedSearch();
     $hook->handle($formName, $form);
-    $fields = $form->get_template_vars('basicSearchFields');
+    $fields = $form->getTemplateVars('basicSearchFields');
 
     $this->assertEquals($fields, $this->getBasicSearchFields());
   }

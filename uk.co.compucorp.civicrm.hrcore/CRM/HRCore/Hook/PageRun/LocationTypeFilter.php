@@ -12,7 +12,7 @@ class CRM_HRCore_Hook_PageRun_LocationTypeFilter {
       return;
     }
 
-    $rows = $page->get_template_vars('rows');
+    $rows = $page->getTemplateVars('rows');
     // remove the "Billing" location type
     foreach ($rows as $index => $row) {
       if (CRM_Utils_Array::value('name', $row) === 'Billing') {

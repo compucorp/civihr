@@ -24,7 +24,7 @@ class CRM_HRCore_Hook_BuildForm_ContactFormCustomGroupFilter {
       return;
     }
 
-    $customGroupTree = $form->get_template_vars('groupTree');
+    $customGroupTree = $form->getTemplateVars('groupTree');
     //remove the Contact_Length_Of_Service from the custom group list.
     unset($customGroupTree[$customGroup['id']]);
     $form->assign('groupTree', $customGroupTree);
