@@ -24,7 +24,7 @@ class CRM_HRCore_Hook_PageRun_ContactSummaryCustomGroupFilter {
       return;
     }
 
-    $customData = $page->get_template_vars('viewCustomData');
+    $customData = $page->getTemplateVars('viewCustomData');
     //remove the Contact_Length_Of_Service from the custom group list.
     unset($customData[$customGroup['id']]);
     $page->assign('viewCustomData', $customData);

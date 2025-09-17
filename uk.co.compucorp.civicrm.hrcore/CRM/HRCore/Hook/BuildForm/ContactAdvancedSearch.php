@@ -37,7 +37,7 @@ class CRM_HRCore_Hook_BuildForm_ContactAdvancedSearch {
    * @param CRM_Core_Form $form
    */
   private function removeUnusedSearchFields($form) {
-    $basicSearchFields = $form->get_template_vars('basicSearchFields');
+    $basicSearchFields = $form->getTemplateVars('basicSearchFields');
     $fieldsToRemove = [
       'privacy_toggle',
       'preferred_communication_method',

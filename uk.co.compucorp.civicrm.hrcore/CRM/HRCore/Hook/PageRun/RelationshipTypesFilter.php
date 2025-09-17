@@ -12,7 +12,7 @@ class CRM_HRCore_Hook_PageRun_RelationshipTypesFilter {
       return;
     }
 
-    $rows = $page->get_template_vars('rows');
+    $rows = $page->getTemplateVars('rows');
     $targetRelTypes = [
       'Case Coordinator is',
       'Employee of',
